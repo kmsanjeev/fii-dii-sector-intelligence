@@ -6,6 +6,16 @@ from fetchers.fii_dii_fetcher import (
     fetch_fii_dii
 )
 
+from fetchers.data_store import (
+    save_fii_dii
+)
+
+from sheets.google_sheet_updater import (
+    connect_sheet,
+    create_sheet_if_missing,
+    append_unique_dataframe
+)
+
 from utils.logger import logger
 
 
@@ -20,12 +30,36 @@ def main():
     if df.empty:
 
         send_message(
-"""
-❌ FII/DII Fetch Failed
-"""
+            "❌ FII/DII Fetch Failed"
         )
 
         return
+
+    # Save CSV
+
+    save_fii_dii(
+        df
+    )
+
+    # Google Sheets
+
+    spreadsheet = (
+        connect_sheet()
+    )
+
+    if spreadsheet:
+
+        sheet = (
+            create_sheet_if_missing(
+                spreadsheet,
+                "Raw_FII_DII"
+            )
+        )
+
+        append_unique_dataframe(
+            sheet,
+            df
+        )
 
     row = df.iloc[0]
 
@@ -34,18 +68,15 @@ def main():
 
 Date: {row['Date']}
 
-FII:
-Buy: ₹{row['FII_Buy']} Cr
-Sell: ₹{row['FII_Sell']} Cr
-Net: ₹{row['FII_Net']} Cr
+FII Net:
+₹{row['FII_Net']} Cr
 
-DII:
-Buy: ₹{row['DII_Buy']} Cr
-Sell: ₹{row['DII_Sell']} Cr
-Net: ₹{row['DII_Net']} Cr
+DII Net:
+₹{row['DII_Net']} Cr
 
-Source:
-NSE
+Status:
+✅ CSV updated
+✅ Google Sheet updated
 """
 
     send_message(
@@ -53,7 +84,7 @@ NSE
     )
 
     logger.info(
-        "Telegram update sent"
+        "Completed"
     )
 
 
