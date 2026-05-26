@@ -36,21 +36,18 @@ def get_existing_dates():
 
     for _, row in df.iterrows():
 
-        fii_net = row.get(
-            "FII_Net"
-        )
-
-        dii_net = row.get(
-            "DII_Net"
-        )
-
         source = row.get(
             "Source"
         )
 
         is_complete = (
 
-             source == "Official"
+            source in [
+
+                "Official",
+                "Pending_Official"
+
+            ]
 
         )
 

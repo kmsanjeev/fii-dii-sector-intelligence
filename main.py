@@ -67,7 +67,7 @@ Status:
 Records Loaded: {len(df)}
 Fetched This Run: {len(df)}
 
-Source: Official NSE/NSDL
+Source: Historical Processing Engine
 Remaining Dates: {remaining_dates}
 
 Status:

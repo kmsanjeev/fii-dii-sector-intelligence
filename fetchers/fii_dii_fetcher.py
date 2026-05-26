@@ -1,6 +1,5 @@
 import pandas as pd
 import requests
-from bs4 import BeautifulSoup
 
 from fetchers.historical_backfill import (
     get_dates_for_current_run
@@ -17,14 +16,6 @@ HEADERS = {
 
 def fetch_single_date_data(date):
 
-    """
-    Phase 1:
-    Retrieve official data structure and normalize.
-
-    If retrieval fails, return None and
-    allow fallback logic later.
-    """
-
     try:
 
         session = requests.Session()
@@ -33,14 +24,14 @@ def fetch_single_date_data(date):
             HEADERS
         )
 
-        # NSE warmup request
+        # Warm-up request
         session.get(
             "https://www.nseindia.com",
             timeout=30
         )
 
-        # Placeholder for official parsing layer
-        # Structure validation first
+        # Temporary placeholder until
+        # actual NSE parser is connected
 
         record = {
 
@@ -54,7 +45,7 @@ def fetch_single_date_data(date):
             "DII_Sell": 0,
             "DII_Net": 0,
 
-            "Source": "Official"
+            "Source": "Pending_Official"
 
         }
 
@@ -63,7 +54,7 @@ def fetch_single_date_data(date):
     except Exception as e:
 
         logger.warning(
-            f"{date} fetch failed : {e}"
+            f"{date} fetch failed: {e}"
         )
 
         return None
