@@ -1,5 +1,8 @@
 import gspread
-from google.oauth2.service_account import Credentials
+
+from google.oauth2.service_account import (
+    Credentials
+)
 
 from config import (
     GOOGLE_CREDS,
@@ -10,8 +13,11 @@ from utils.logger import logger
 
 
 SCOPES = [
+
     "https://www.googleapis.com/auth/spreadsheets",
+
     "https://www.googleapis.com/auth/drive"
+
 ]
 
 
@@ -41,7 +47,7 @@ def connect_sheet():
     except Exception as e:
 
         logger.error(
-            f"Google Sheet Error: {e}"
+            f"Google connection error: {e}"
         )
 
         return None
@@ -62,12 +68,16 @@ def create_sheet_if_missing(
             f"{sheet_name} exists"
         )
 
-    except Exception:
+    except:
 
         worksheet = spreadsheet.add_worksheet(
+
             title=sheet_name,
+
             rows=1000,
+
             cols=20
+
         )
 
         logger.info(
@@ -79,58 +89,55 @@ def create_sheet_if_missing(
 
 def append_unique_dataframe(
         worksheet,
-        dataframe,
-        key_column=0
+        dataframe
 ):
 
-    existing_values = (
-        worksheet.get_all_values()
-    )
+    existing = worksheet.get_all_records()
 
-    existing_keys = set()
+    existing_dates = set()
 
-    if len(existing_values) > 1:
+    if existing:
 
-        for row in existing_values[1:]:
+        existing_dates = {
 
-            if len(row) > key_column:
+            str(
+                x["Date"]
+            )
 
-                existing_keys.add(
-                    row[key_column]
-                )
+            for x in existing
 
-    new_rows = []
+        }
+
+    rows = []
 
     for _, row in dataframe.iterrows():
 
-        key = str(
-            row.iloc[key_column]
-        )
+        if str(
+            row["Date"]
+        ) not in existing_dates:
 
-        if key not in existing_keys:
-
-            new_rows.append(
+            rows.append(
                 row.tolist()
             )
 
-    if len(existing_values) == 0:
+    if not existing:
 
         worksheet.append_row(
             dataframe.columns.tolist()
         )
 
-    if new_rows:
+    if rows:
 
         worksheet.append_rows(
-            new_rows
+            rows
         )
 
         logger.info(
-            f"{len(new_rows)} rows inserted"
+            f"Added {len(rows)} rows"
         )
 
     else:
 
         logger.info(
-            "No new rows to insert"
+            "No new rows"
         )
