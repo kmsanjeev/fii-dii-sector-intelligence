@@ -65,9 +65,7 @@ Status:
 📊 Historical Backfill Status
 
 Records Loaded: {len(df)}
-
 Remaining Dates: {remaining_dates}
-
 Fetched This Run: {len(df)}
 
 Status:
