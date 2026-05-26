@@ -65,8 +65,10 @@ Status:
 📊 Historical Backfill Status
 
 Records Loaded: {len(df)}
-Remaining Dates: {remaining_dates}
 Fetched This Run: {len(df)}
+
+Source: Official NSE/NSDL
+Remaining Dates: {remaining_dates}
 
 Status:
 ✅ Historical file updated
