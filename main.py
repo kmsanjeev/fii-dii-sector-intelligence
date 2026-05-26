@@ -1,13 +1,9 @@
-from alerts.telegram_bot import send_message
+from alerts.telegram_bot import (
+    send_message
+)
 
 from fetchers.fii_dii_fetcher import (
     fetch_fii_dii
-)
-
-from fetchers.historical_backfill import (
-    save_data,
-    load_history,
-    get_missing_dates
 )
 
 from utils.logger import logger
@@ -21,32 +17,27 @@ def main():
 
     df = fetch_fii_dii()
 
-    if not df.empty:
+    if df.empty:
 
-        save_data(df)
+        send_message(
+"""
+❌ FII/DII Fetch Failed
+"""
+        )
 
-    history = load_history()
+        return
 
-    total_rows = len(history)
-
-    remaining = len(
-        get_missing_dates()
+    logger.info(
+        f"Rows fetched: {len(df)}"
     )
 
     message = f"""
-📊 Historical Backfill Status
+📊 Daily FII/DII Update
 
-Records Loaded: {len(df)}
-Fetched This Run: {len(df)}
-
-Historical Records: {total_rows}
-
-Remaining Dates: {remaining}
-
-Source: Placeholder Framework
+Rows fetched: {len(df)}
 
 Status:
-✅ Historical file updated
+✅ Official source connected
 """
 
     send_message(

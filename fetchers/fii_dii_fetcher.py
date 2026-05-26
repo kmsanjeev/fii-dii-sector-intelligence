@@ -1,46 +1,58 @@
+import requests
 import pandas as pd
-
-from fetchers.historical_backfill import (
-    get_missing_dates
-)
 
 from utils.logger import logger
 
 
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0"
+    )
+}
+
+
 def fetch_fii_dii():
 
-    dates = (
-        get_missing_dates()
-    )
+    try:
 
-    if not dates:
+        session = requests.Session()
+
+        session.headers.update(
+            HEADERS
+        )
+
+        # Warm-up request required by NSE
+
+        session.get(
+            "https://www.nseindia.com",
+            timeout=30
+        )
+
+        url = (
+            "https://www.nseindia.com/api/fiidiiTradeReact"
+        )
+
+        response = session.get(
+            url,
+            timeout=30
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        logger.info(
+            "FII/DII data fetched"
+        )
+
+        return pd.DataFrame(
+            data
+        )
+
+    except Exception as e:
+
+        logger.error(
+            f"Fetch Error: {e}"
+        )
 
         return pd.DataFrame()
-
-    rows = []
-
-    for date in dates:
-
-        rows.append({
-
-            "Date": date,
-
-            "FII_Buy": "",
-            "FII_Sell": "",
-            "FII_Net": "",
-
-            "DII_Buy": "",
-            "DII_Sell": "",
-            "DII_Net": "",
-
-            "Source": "Placeholder"
-
-        })
-
-    logger.info(
-        f"Fetched:{len(rows)}"
-    )
-
-    return pd.DataFrame(
-        rows
-    )
