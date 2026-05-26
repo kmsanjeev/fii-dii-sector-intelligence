@@ -19,7 +19,7 @@ FILE_PATH = (
     "fii_dii_history.csv"
 )
 
-BACKFILL_BATCH_SIZE = 250
+BACKFILL_BATCH_SIZE = 500
 
 
 def get_existing_dates():
