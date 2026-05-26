@@ -62,7 +62,7 @@ def create_sheet_if_missing(
             f"{sheet_name} exists"
         )
 
-    except:
+    except Exception:
 
         worksheet = spreadsheet.add_worksheet(
             title=sheet_name,
@@ -76,30 +76,16 @@ def create_sheet_if_missing(
 
     return worksheet
 
-def append_dataframe(
-        worksheet,
-        dataframe
-):
 
-    values = dataframe.values.tolist()
-
-    if worksheet.row_count == 0:
-
-        worksheet.append_row(
-            dataframe.columns.tolist()
-        )
-
-    worksheet.append_rows(
-        values
-    )
-
-    def append_unique_dataframe(
+def append_unique_dataframe(
         worksheet,
         dataframe,
         key_column=0
 ):
 
-    existing_values = worksheet.get_all_values()
+    existing_values = (
+        worksheet.get_all_values()
+    )
 
     existing_keys = set()
 
@@ -137,4 +123,14 @@ def append_dataframe(
 
         worksheet.append_rows(
             new_rows
+        )
+
+        logger.info(
+            f"{len(new_rows)} rows inserted"
+        )
+
+    else:
+
+        logger.info(
+            "No new rows to insert"
         )
