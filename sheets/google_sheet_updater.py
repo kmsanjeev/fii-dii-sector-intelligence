@@ -92,3 +92,49 @@ def append_dataframe(
     worksheet.append_rows(
         values
     )
+
+    def append_unique_dataframe(
+        worksheet,
+        dataframe,
+        key_column=0
+):
+
+    existing_values = worksheet.get_all_values()
+
+    existing_keys = set()
+
+    if len(existing_values) > 1:
+
+        for row in existing_values[1:]:
+
+            if len(row) > key_column:
+
+                existing_keys.add(
+                    row[key_column]
+                )
+
+    new_rows = []
+
+    for _, row in dataframe.iterrows():
+
+        key = str(
+            row.iloc[key_column]
+        )
+
+        if key not in existing_keys:
+
+            new_rows.append(
+                row.tolist()
+            )
+
+    if len(existing_values) == 0:
+
+        worksheet.append_row(
+            dataframe.columns.tolist()
+        )
+
+    if new_rows:
+
+        worksheet.append_rows(
+            new_rows
+        )

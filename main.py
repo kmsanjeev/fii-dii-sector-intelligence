@@ -10,7 +10,7 @@ from sheets.google_sheet_updater import (
 
     connect_sheet,
     create_sheet_if_missing,
-    append_dataframe
+    append_unique_dataframe
 
 )
 
@@ -32,7 +32,7 @@ def main():
 
     df = fetch_fii_dii()
 
-    append_dataframe(
+    append_unique_dataframe(
         raw_sheet,
         df
     )
