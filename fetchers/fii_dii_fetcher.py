@@ -1,74 +1,46 @@
-import requests
 import pandas as pd
-from datetime import datetime
+
+from fetchers.historical_backfill import (
+    get_dates_for_current_run
+)
 
 from utils.logger import logger
 
 
-def fetch_from_nse():
+def fetch_fii_dii_history():
 
-    """
-    NSE source placeholder
-    Official endpoint integration
-    will be added progressively
-    """
+    dates = (
+        get_dates_for_current_run()
+    )
 
-    headers = {
-
-        "User-Agent":
-        "Mozilla/5.0"
-
-    }
-
-    try:
-
-        session = requests.Session()
-
-        session.headers.update(
-            headers
-        )
-
-        date = datetime.now().strftime(
-            "%d-%b-%Y"
-        )
-
-        data = {
-
-            "Date": [date],
-
-            "FII_Net": [0],
-
-            "DII_Net": [0],
-
-            "Source": ["NSE"]
-
-        }
+    if not dates:
 
         logger.info(
-            "Fetched FII/DII data"
-        )
-
-        return pd.DataFrame(data)
-
-    except Exception as e:
-
-        logger.error(
-            f"Fetch error:{e}"
-        )
-
-        raise
-
-
-def fetch_fii_dii():
-
-    try:
-
-        return fetch_from_nse()
-
-    except:
-
-        logger.warning(
-            "Switching to fallback"
+            "Backfill complete"
         )
 
         return pd.DataFrame()
+
+    records = []
+
+    for date in dates:
+
+        records.append({
+
+            "Date": date,
+
+            "FII_Net": 0,
+
+            "DII_Net": 0,
+
+            "Source": "Historical"
+
+        })
+
+    logger.info(
+        f"Fetched {len(records)} dates"
+    )
+
+    return pd.DataFrame(
+        records
+    )

@@ -14,20 +14,22 @@ BASE_PATH.mkdir(
     exist_ok=True
 )
 
+FILE_PATH = (
+    BASE_PATH /
+    "fii_dii_history.csv"
+)
+
+BACKFILL_BATCH_SIZE = 250
+
 
 def get_existing_dates():
 
-    file_path = (
-        BASE_PATH /
-        "fii_dii_history.csv"
-    )
-
-    if not file_path.exists():
+    if not FILE_PATH.exists():
 
         return set()
 
     df = pd.read_csv(
-        file_path
+        FILE_PATH
     )
 
     return set(
@@ -50,7 +52,7 @@ def generate_required_dates():
         end=end_date
     )
 
-    return set(
+    return sorted(
         dates.strftime(
             "%Y-%m-%d"
         )
@@ -59,22 +61,69 @@ def generate_required_dates():
 
 def get_missing_dates():
 
-    existing = (
+    existing_dates = (
         get_existing_dates()
     )
 
-    required = (
+    required_dates = (
         generate_required_dates()
     )
 
-    missing = sorted(
-        list(
-            required - existing
-        )
-    )
+    missing = [
+
+        d for d in required_dates
+
+        if d not in existing_dates
+
+    ]
 
     logger.info(
         f"Missing dates:{len(missing)}"
     )
 
     return missing
+
+
+def get_dates_for_current_run():
+
+    missing = (
+        get_missing_dates()
+    )
+
+    return missing[
+        :BACKFILL_BATCH_SIZE
+    ]
+
+
+def save_historical_data(
+        dataframe
+):
+
+    if FILE_PATH.exists():
+
+        existing_df = pd.read_csv(
+            FILE_PATH
+        )
+
+        dataframe = pd.concat(
+            [
+                existing_df,
+                dataframe
+            ]
+        )
+
+        dataframe = (
+            dataframe
+            .drop_duplicates(
+                subset=["Date"]
+            )
+        )
+
+    dataframe.to_csv(
+        FILE_PATH,
+        index=False
+    )
+
+    logger.info(
+        "Historical file updated"
+    )

@@ -3,22 +3,14 @@ from alerts.telegram_bot import (
 )
 
 from fetchers.fii_dii_fetcher import (
-    fetch_fii_dii
+    fetch_fii_dii_history
 )
 
-from sheets.google_sheet_updater import (
-
-    connect_sheet,
-    create_sheet_if_missing,
-    append_unique_dataframe
-
+from fetchers.historical_backfill import (
+    save_historical_data
 )
 
 from utils.logger import logger
-
-from fetchers.historical_backfill import (
-    get_missing_dates
-)
 
 
 def main():
@@ -27,32 +19,29 @@ def main():
         "Engine Started"
     )
 
-    spreadsheet = connect_sheet()
-
-    raw_sheet = create_sheet_if_missing(
-        spreadsheet,
-        "Raw_FII_DII"
+    df = (
+        fetch_fii_dii_history()
     )
 
-    df = fetch_fii_dii()
+    if not df.empty:
 
-    append_unique_dataframe(
-        raw_sheet,
-        df
-    )
+        save_historical_data(
+            df
+        )
 
-    missing_dates = (
-        get_missing_dates()
-    )
+        send_message(
 
-    logger.info(
-        f"Need to fetch "
-        f"{len(missing_dates)} dates"
-    )
+            f"📊 Historical records loaded: {len(df)}"
 
-    send_message(
-        "📊 FII/DII test data updated"
-    )
+        )
+
+    else:
+
+        send_message(
+
+            "✅ Historical backfill complete"
+
+        )
 
 
 if __name__ == "__main__":
