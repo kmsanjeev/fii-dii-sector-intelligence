@@ -7,7 +7,8 @@ from fetchers.fii_dii_fetcher import (
 )
 
 from fetchers.historical_backfill import (
-    save_historical_data
+    save_historical_data,
+    get_missing_dates
 )
 
 from utils.logger import logger
@@ -19,29 +20,67 @@ def main():
         "Engine Started"
     )
 
+    # Get historical data for current batch
+
     df = (
         fetch_fii_dii_history()
     )
 
-    if not df.empty:
+    # Backfill completed
 
-        save_historical_data(
-            df
-        )
+    if df.empty:
 
         send_message(
+"""
+🎉 Historical Backfill Complete
 
-            f"📊 Historical records loaded: {len(df)}"
+Remaining Dates: 0
 
+Status:
+✅ Historical dataset fully loaded
+"""
         )
 
-    else:
-
-        send_message(
-
-            "✅ Historical backfill complete"
-
+        logger.info(
+            "Backfill completed"
         )
+
+        return
+
+    # Save historical records
+
+    save_historical_data(
+        df
+    )
+
+    # Check remaining dates
+
+    remaining_dates = len(
+        get_missing_dates()
+    )
+
+    # Telegram summary
+
+    message = f"""
+📊 Historical Backfill Status
+
+Records Loaded: {len(df)}
+
+Remaining Dates: {remaining_dates}
+
+Fetched This Run: {len(df)}
+
+Status:
+✅ Historical file updated
+"""
+
+    send_message(
+        message
+    )
+
+    logger.info(
+        f"Loaded {len(df)} records"
+    )
 
 
 if __name__ == "__main__":
