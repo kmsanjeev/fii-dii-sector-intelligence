@@ -1,51 +1,71 @@
 import pandas as pd
-from datetime import datetime
 from pathlib import Path
+from datetime import datetime
 
 from utils.logger import logger
 
 
-BASE_PATH = Path(
+DATA_DIR = Path(
     "data/historical/fii_dii"
 )
 
-BASE_PATH.mkdir(
+DATA_DIR.mkdir(
     parents=True,
     exist_ok=True
 )
 
-FILE_PATH = (
-    BASE_PATH /
+CSV_FILE = (
+    DATA_DIR /
     "fii_dii_history.csv"
 )
 
-BACKFILL_BATCH_SIZE = 500
+BATCH_SIZE = 500
 
 
-def get_existing_dates():
+def create_file_if_missing():
 
-    if not FILE_PATH.exists():
+    if not CSV_FILE.exists():
 
-        logger.info(
-            "Historical file not found"
+        df = pd.DataFrame(
+            columns=[
+                "Date",
+                "FII_Buy",
+                "FII_Sell",
+                "FII_Net",
+                "DII_Buy",
+                "DII_Sell",
+                "DII_Net",
+                "Source"
+            ]
         )
 
-        return set()
+        df.to_csv(
+            CSV_FILE,
+            index=False
+        )
 
-    df = pd.read_csv(
-        FILE_PATH
+        logger.info(
+            "Created empty CSV"
+        )
+
+
+def load_history():
+
+    create_file_if_missing()
+
+    return pd.read_csv(
+        CSV_FILE
     )
 
-    if df.empty:
 
-        return set()
+def get_missing_dates():
 
-    return set(
-        df["Date"].astype(str)
+    history = load_history()
+
+    existing_dates = set(
+        history["Date"]
+        .astype(str)
     )
-
-
-def generate_required_dates():
 
     end_date = datetime.now()
 
@@ -55,74 +75,47 @@ def generate_required_dates():
         end_date.day
     )
 
-    dates = pd.bdate_range(
+    required_dates = pd.bdate_range(
         start=start_date,
         end=end_date
     )
 
-    return sorted(
-        dates.strftime(
+    required_dates = set(
+        required_dates.strftime(
             "%Y-%m-%d"
         )
     )
 
-
-def get_missing_dates():
-
-    existing_dates = (
-        get_existing_dates()
+    missing = sorted(
+        list(
+            required_dates -
+            existing_dates
+        )
     )
-
-    required_dates = (
-        generate_required_dates()
-    )
-
-    missing = [
-
-        d for d in required_dates
-
-        if d not in existing_dates
-
-    ]
 
     logger.info(
         f"Missing dates:{len(missing)}"
     )
 
-    return missing
-
-
-def get_dates_for_current_run():
-
-    missing = (
-        get_missing_dates()
-    )
-
     return missing[
-        :BACKFILL_BATCH_SIZE
+        :BATCH_SIZE
     ]
 
 
-def save_historical_data(
-        dataframe
-):
+def save_data(df):
 
-    if FILE_PATH.exists():
+    history = load_history()
 
-        existing_df = pd.read_csv(
-            FILE_PATH
-        )
+    history = pd.concat(
+        [
+            history,
+            df
+        ],
+        ignore_index=True
+    )
 
-        dataframe = pd.concat(
-            [
-                existing_df,
-                dataframe
-            ],
-            ignore_index=True
-        )
-
-    dataframe = (
-        dataframe
+    history = (
+        history
         .drop_duplicates(
             subset=["Date"]
         )
@@ -131,19 +124,11 @@ def save_historical_data(
         )
     )
 
-    dataframe.to_csv(
-        FILE_PATH,
+    history.to_csv(
+        CSV_FILE,
         index=False
     )
 
     logger.info(
-        f"Saved file path: {FILE_PATH}"
-    )
-
-    logger.info(
-        f"Total rows: {len(dataframe)}"
-    )
-
-    logger.info(
-        f"Saved {len(dataframe)} records"
+        f"Total rows:{len(history)}"
     )
