@@ -50,11 +50,7 @@ def get_existing_dates():
 
         is_complete = (
 
-            pd.notna(fii_net)
-            and
-            pd.notna(dii_net)
-            and
-            source == "Official"
+             source == "Official"
 
         )
 

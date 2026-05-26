@@ -46,13 +46,13 @@ def fetch_single_date_data(date):
 
             "Date": date,
 
-            "FII_Buy": None,
-            "FII_Sell": None,
-            "FII_Net": None,
+            "FII_Buy": 0,
+            "FII_Sell": 0,
+            "FII_Net": 0,
 
-            "DII_Buy": None,
-            "DII_Sell": None,
-            "DII_Net": None,
+            "DII_Buy": 0,
+            "DII_Sell": 0,
+            "DII_Net": 0,
 
             "Source": "Official"
 
