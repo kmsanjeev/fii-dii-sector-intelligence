@@ -5,9 +5,7 @@ from utils.logger import logger
 
 
 HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0"
-    )
+    "User-Agent": "Mozilla/5.0"
 }
 
 
@@ -20,8 +18,6 @@ def fetch_fii_dii():
         session.headers.update(
             HEADERS
         )
-
-        # Warm-up request required by NSE
 
         session.get(
             "https://www.nseindia.com",
@@ -39,20 +35,56 @@ def fetch_fii_dii():
 
         response.raise_for_status()
 
-        data = response.json()
+        raw = response.json()
+
+        fii = next(
+            x for x in raw
+            if x["category"] == "FII/FPI"
+        )
+
+        dii = next(
+            x for x in raw
+            if x["category"] == "DII"
+        )
+
+        final = pd.DataFrame([{
+
+            "Date":
+            fii["date"],
+
+            "FII_Buy":
+            fii["buyValue"],
+
+            "FII_Sell":
+            fii["sellValue"],
+
+            "FII_Net":
+            fii["netValue"],
+
+            "DII_Buy":
+            dii["buyValue"],
+
+            "DII_Sell":
+            dii["sellValue"],
+
+            "DII_Net":
+            dii["netValue"],
+
+            "Source":
+            "NSE"
+
+        }])
 
         logger.info(
-            "FII/DII data fetched"
+            "Normalized FII/DII data"
         )
 
-        return pd.DataFrame(
-            data
-        )
+        return final
 
     except Exception as e:
 
         logger.error(
-            f"Fetch Error: {e}"
+            f"Fetch Error:{e}"
         )
 
         return pd.DataFrame()

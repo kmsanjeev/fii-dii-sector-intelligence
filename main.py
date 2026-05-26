@@ -20,36 +20,40 @@ def main():
     if df.empty:
 
         send_message(
-            "❌ FII/DII Fetch Failed"
+"""
+❌ FII/DII Fetch Failed
+"""
         )
 
         return
 
-    logger.info(
-        f"Columns: {list(df.columns)}"
-    )
-
-    logger.info(
-        f"\n{df.head()}"
-    )
-
-    preview = df.head().to_string()
+    row = df.iloc[0]
 
     message = f"""
-📊 FII/DII Structure Check
+📊 Daily FII/DII Update
 
-Rows fetched: {len(df)}
+Date: {row['Date']}
 
-Columns:
-{', '.join(df.columns)}
+FII:
+Buy: ₹{row['FII_Buy']} Cr
+Sell: ₹{row['FII_Sell']} Cr
+Net: ₹{row['FII_Net']} Cr
 
-Preview:
+DII:
+Buy: ₹{row['DII_Buy']} Cr
+Sell: ₹{row['DII_Sell']} Cr
+Net: ₹{row['DII_Net']} Cr
 
-{preview[:1000]}
+Source:
+NSE
 """
 
     send_message(
         message
+    )
+
+    logger.info(
+        "Telegram update sent"
     )
 
 
