@@ -26,29 +26,23 @@ def get_existing_dates():
 
     if not FILE_PATH.exists():
 
+        logger.info(
+            "Historical file not found"
+        )
+
         return set()
 
     df = pd.read_csv(
         FILE_PATH
     )
 
-    completed_dates = set()
+    if df.empty:
 
-    for _, row in df.iterrows():
+        return set()
 
-        source = row.get(
-            "Source"
-        )
-
-        if source == "Official":
-
-            completed_dates.add(
-                str(
-                    row["Date"]
-                )
-            )
-
-    return completed_dates
+    return set(
+        df["Date"].astype(str)
+    )
 
 
 def generate_required_dates():
@@ -123,15 +117,19 @@ def save_historical_data(
             [
                 existing_df,
                 dataframe
-            ]
+            ],
+            ignore_index=True
         )
 
-        dataframe = (
-            dataframe
-            .drop_duplicates(
-                subset=["Date"]
-            )
+    dataframe = (
+        dataframe
+        .drop_duplicates(
+            subset=["Date"]
         )
+        .sort_values(
+            by="Date"
+        )
+    )
 
     dataframe.to_csv(
         FILE_PATH,
@@ -139,5 +137,5 @@ def save_historical_data(
     )
 
     logger.info(
-        "Historical file updated"
+        f"Saved {len(dataframe)} records"
     )
