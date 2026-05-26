@@ -16,6 +16,10 @@ from sheets.google_sheet_updater import (
 
 from utils.logger import logger
 
+from fetchers.historical_backfill import (
+    get_missing_dates
+)
+
 
 def main():
 
@@ -35,6 +39,15 @@ def main():
     append_unique_dataframe(
         raw_sheet,
         df
+    )
+
+    missing_dates = (
+        get_missing_dates()
+    )
+
+    logger.info(
+        f"Need to fetch "
+        f"{len(missing_dates)} dates"
     )
 
     send_message(
