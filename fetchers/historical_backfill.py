@@ -32,9 +32,41 @@ def get_existing_dates():
         FILE_PATH
     )
 
-    return set(
-        df["Date"].astype(str)
-    )
+    completed_dates = set()
+
+    for _, row in df.iterrows():
+
+        fii_net = row.get(
+            "FII_Net"
+        )
+
+        dii_net = row.get(
+            "DII_Net"
+        )
+
+        source = row.get(
+            "Source"
+        )
+
+        is_complete = (
+
+            pd.notna(fii_net)
+            and
+            pd.notna(dii_net)
+            and
+            source == "Official"
+
+        )
+
+        if is_complete:
+
+            completed_dates.add(
+                str(
+                    row["Date"]
+                )
+            )
+
+    return completed_dates
 
 
 def generate_required_dates():
