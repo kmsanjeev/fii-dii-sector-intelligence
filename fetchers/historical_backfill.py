@@ -137,5 +137,13 @@ def save_historical_data(
     )
 
     logger.info(
+        f"Saved file path: {FILE_PATH}"
+    )
+
+    logger.info(
+        f"Total rows: {len(dataframe)}"
+    )
+
+    logger.info(
         f"Saved {len(dataframe)} records"
     )

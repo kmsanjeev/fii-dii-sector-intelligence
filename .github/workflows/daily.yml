@@ -1,7 +1,6 @@
 name: Daily FII DII Tracker
 
 on:
-
   workflow_dispatch:
 
 jobs:
@@ -17,6 +16,8 @@ jobs:
 
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -27,7 +28,7 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Run Python
+      - name: Run Engine
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -36,7 +37,11 @@ jobs:
         run: |
           python main.py
 
-      - name: Commit historical data
+      - name: Show generated files
+        run: |
+          ls -R data
+
+      - name: Commit generated data
 
         run: |
 
@@ -46,6 +51,9 @@ jobs:
 
           git add data/
 
-          git diff --cached --quiet || git commit -m "Updated historical data"
-
-          git push
+          if ! git diff --cached --quiet; then
+            git commit -m "Updated historical dataset"
+            git push
+          else
+            echo "No changes detected"
+          fi
