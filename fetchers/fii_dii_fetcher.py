@@ -9,8 +9,7 @@ from utils.logger import logger
 
 
 HEADERS = {
-    "User-Agent":
-    "Mozilla/5.0"
+    "User-Agent": "Mozilla/5.0"
 }
 
 
@@ -24,28 +23,27 @@ def fetch_single_date_data(date):
             HEADERS
         )
 
-        # Warm-up request
         session.get(
             "https://www.nseindia.com",
             timeout=30
         )
 
-        # Temporary placeholder until
-        # actual NSE parser is connected
+        # Placeholder only
+        # Real parser comes next phase
 
         record = {
 
             "Date": date,
 
-            "FII_Buy": 0,
-            "FII_Sell": 0,
-            "FII_Net": 0,
+            "FII_Buy": "",
+            "FII_Sell": "",
+            "FII_Net": "",
 
-            "DII_Buy": 0,
-            "DII_Sell": 0,
-            "DII_Net": 0,
+            "DII_Buy": "",
+            "DII_Sell": "",
+            "DII_Net": "",
 
-            "Source": "Pending_Official"
+            "Source": "Placeholder"
 
         }
 
@@ -54,7 +52,7 @@ def fetch_single_date_data(date):
     except Exception as e:
 
         logger.warning(
-            f"{date} fetch failed: {e}"
+            f"{date} failed:{e}"
         )
 
         return None
@@ -78,10 +76,8 @@ def fetch_fii_dii_history():
 
     for date in dates:
 
-        row = (
-            fetch_single_date_data(
-                date
-            )
+        row = fetch_single_date_data(
+            date
         )
 
         if row:

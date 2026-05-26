@@ -40,18 +40,7 @@ def get_existing_dates():
             "Source"
         )
 
-        is_complete = (
-
-            source in [
-
-                "Official",
-                "Pending_Official"
-
-            ]
-
-        )
-
-        if is_complete:
+        if source == "Official":
 
             completed_dates.add(
                 str(

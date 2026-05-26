@@ -67,7 +67,7 @@ Status:
 Records Loaded: {len(df)}
 Fetched This Run: {len(df)}
 
-Source: Historical Processing Engine
+Source: Placeholder Framework
 Remaining Dates: {remaining_dates}
 
 Status:
