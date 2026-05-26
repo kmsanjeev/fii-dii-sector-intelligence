@@ -20,24 +20,32 @@ def main():
     if df.empty:
 
         send_message(
-"""
-❌ FII/DII Fetch Failed
-"""
+            "❌ FII/DII Fetch Failed"
         )
 
         return
 
     logger.info(
-        f"Rows fetched: {len(df)}"
+        f"Columns: {list(df.columns)}"
     )
 
+    logger.info(
+        f"\n{df.head()}"
+    )
+
+    preview = df.head().to_string()
+
     message = f"""
-📊 Daily FII/DII Update
+📊 FII/DII Structure Check
 
 Rows fetched: {len(df)}
 
-Status:
-✅ Official source connected
+Columns:
+{', '.join(df.columns)}
+
+Preview:
+
+{preview[:1000]}
 """
 
     send_message(
