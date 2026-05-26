@@ -1,6 +1,4 @@
-from alerts.telegram_bot import (
-    send_message
-)
+from alerts.telegram_bot import send_message
 
 from fetchers.fii_dii_fetcher import (
     fetch_fii_dii
@@ -8,7 +6,8 @@ from fetchers.fii_dii_fetcher import (
 
 from fetchers.historical_backfill import (
     save_data,
-    load_history
+    load_history,
+    get_missing_dates
 )
 
 from utils.logger import logger
@@ -24,22 +23,25 @@ def main():
 
     if not df.empty:
 
-        save_data(
-            df
-        )
+        save_data(df)
 
-    total_rows = len(
-        load_history()
+    history = load_history()
+
+    total_rows = len(history)
+
+    remaining = len(
+        get_missing_dates()
     )
 
     message = f"""
 📊 Historical Backfill Status
 
 Records Loaded: {len(df)}
+Fetched This Run: {len(df)}
 
 Historical Records: {total_rows}
 
-Fetched This Run: {len(df)}
+Remaining Dates: {remaining}
 
 Source: Placeholder Framework
 
