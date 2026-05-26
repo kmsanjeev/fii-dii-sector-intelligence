@@ -2,9 +2,16 @@ from alerts.telegram_bot import (
     send_message
 )
 
+from fetchers.fii_dii_fetcher import (
+    fetch_fii_dii
+)
+
 from sheets.google_sheet_updater import (
+
     connect_sheet,
-    create_sheet_if_missing
+    create_sheet_if_missing,
+    append_dataframe
+
 )
 
 from utils.logger import logger
@@ -18,34 +25,21 @@ def main():
 
     spreadsheet = connect_sheet()
 
-    if spreadsheet:
+    raw_sheet = create_sheet_if_missing(
+        spreadsheet,
+        "Raw_FII_DII"
+    )
 
-        sheet_names = [
+    df = fetch_fii_dii()
 
-            "Raw_FII_DII",
-            "Sector_Data",
-            "Stock_Movers",
-            "Signals",
-            "Dashboard"
+    append_dataframe(
+        raw_sheet,
+        df
+    )
 
-        ]
-
-        for sheet in sheet_names:
-
-            create_sheet_if_missing(
-                spreadsheet,
-                sheet
-            )
-
-        send_message(
-            "✅ Google Sheet Connected Successfully"
-        )
-
-    else:
-
-        send_message(
-            "❌ Google Sheet Connection Failed"
-        )
+    send_message(
+        "📊 FII/DII test data updated"
+    )
 
 
 if __name__ == "__main__":

@@ -75,3 +75,20 @@ def create_sheet_if_missing(
         )
 
     return worksheet
+
+def append_dataframe(
+        worksheet,
+        dataframe
+):
+
+    values = dataframe.values.tolist()
+
+    if worksheet.row_count == 0:
+
+        worksheet.append_row(
+            dataframe.columns.tolist()
+        )
+
+    worksheet.append_rows(
+        values
+    )
