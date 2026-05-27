@@ -1,30 +1,8 @@
-from alerts.telegram_bot import (
-    send_message
+from fetchers.sector_stock_mapper import (
+    fetch_sector_leaders
 )
 
-from fetchers.fii_dii_fetcher import (
-    fetch_fii_dii
-)
-
-from fetchers.sector_fetcher import (
-    fetch_sectors
-)
-
-from fetchers.movers_fetcher import (
-    fetch_top_movers
-)
-
-from fetchers.data_store import (
-    save_fii_dii
-)
-
-from sheets.google_sheet_updater import (
-    connect_sheet,
-    create_sheet_if_missing,
-    append_unique_dataframe
-)
-
-from utils.logger import logger
+# keep all your previous imports unchanged
 
 
 def main():
@@ -33,148 +11,41 @@ def main():
         "Engine Started"
     )
 
-    # ====================
-    # FII / DII Processing
-    # ====================
+    # Existing code unchanged above...
 
-    df = fetch_fii_dii()
-
-    if df.empty:
-
-        send_message(
-            "❌ FII/DII Fetch Failed"
-        )
-
-        return
-
-    save_fii_dii(
-        df
-    )
-
-    spreadsheet = (
-        connect_sheet()
-    )
-
-    if spreadsheet:
-
-        worksheet = (
-            create_sheet_if_missing(
-                spreadsheet,
-                "Raw_FII_DII"
-            )
-        )
-
-        append_unique_dataframe(
-            worksheet,
-            df
-        )
-
-    row = df.iloc[0]
-
-    # ====================
-    # Sector Processing
-    # ====================
-
-    top_sector_text = "N/A"
-    bottom_sector_text = "N/A"
-
-    sector_df = fetch_sectors()
+    strongest_sector = None
 
     if not sector_df.empty:
 
-        sector_df["percentChange"] = (
-            sector_df["percentChange"]
-            .astype(float)
+        strongest_sector = (
+            top3.iloc[0]["index"]
         )
 
-        top3 = (
+    sector_leader_text = "N/A"
 
-            sector_df
-            .sort_values(
-                by="percentChange",
-                ascending=False
+    if strongest_sector:
+
+        leaders = (
+
+            fetch_sector_leaders(
+                strongest_sector
             )
-            .head(3)
-
-        )
-
-        bottom3 = (
-
-            sector_df
-            .sort_values(
-                by="percentChange",
-                ascending=True
-            )
-            .head(3)
 
         )
 
-        top_sector_text = "\n".join([
+        if not leaders.empty:
 
-            f"{i+1}. {r['index']}: {round(r['percentChange'],2)}%"
+            sector_leader_text = "\n".join([
 
-            for i, (_, r)
+                f"{i+1}. {r['symbol']}: +{round(r['change'],2)}%"
 
-            in enumerate(
-                top3.iterrows()
-            )
+                for i,(_,r)
 
-        ])
+                in enumerate(
+                    leaders.iterrows()
+                )
 
-        bottom_sector_text = "\n".join([
-
-            f"{i+1}. {r['index']}: {round(r['percentChange'],2)}%"
-
-            for i, (_, r)
-
-            in enumerate(
-                bottom3.iterrows()
-            )
-
-        ])
-
-    # ====================
-    # Top Movers
-    # ====================
-
-    gainers_text = "N/A"
-    losers_text = "N/A"
-
-    gainers, losers = (
-        fetch_top_movers()
-    )
-
-    if not gainers.empty:
-
-        gainers_text = "\n".join([
-
-            f"{i+1}. {r['symbol']}: +{round(float(r['percentChange']),2)}%"
-
-            for i, (_, r)
-
-            in enumerate(
-                gainers.iterrows()
-            )
-
-        ])
-
-    if not losers.empty:
-
-        losers_text = "\n".join([
-
-            f"{i+1}. {r['symbol']}: {round(float(r['percentChange']),2)}%"
-
-            for i, (_, r)
-
-            in enumerate(
-                losers.iterrows()
-            )
-
-        ])
-
-    # ====================
-    # Final Telegram Report
-    # ====================
+            ])
 
     message = f"""
 📊 Market Intelligence Report
@@ -200,6 +71,12 @@ Sentiment: {row['Market_Sentiment']}
 📉 Bottom 3 Sectors
 
 {bottom_sector_text}
+
+━━━━━━━━━━━━━━
+
+🚀 Leaders in {strongest_sector}
+
+{sector_leader_text}
 
 ━━━━━━━━━━━━━━
 
