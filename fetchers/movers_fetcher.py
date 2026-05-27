@@ -19,44 +19,52 @@ def fetch_top_movers():
             HEADERS
         )
 
-        # NSE warm-up
+        # NSE warm-up request
         session.get(
             "https://www.nseindia.com",
             timeout=30
         )
 
         response = session.get(
-            "https://www.nseindia.com/api/equity-stockIndices?index=NIFTY%2050",
+            "https://www.nseindia.com/api/live-analysis-variations?index=gainers",
             timeout=30
         )
 
         response.raise_for_status()
 
-        data = response.json()
-
-        logger.info(
-            f"Response keys: {list(data.keys())}"
+        gainers_data = (
+            response.json()
         )
 
-        df = pd.DataFrame(
-            data.get(
+        gainers = pd.DataFrame(
+            gainers_data.get(
                 "data",
                 []
             )
         )
 
-        logger.info(
-            f"Columns: {list(df.columns)}"
+        response = session.get(
+            "https://www.nseindia.com/api/live-analysis-variations?index=losers",
+            timeout=30
         )
 
-        logger.info(
-            f"\n{df.head(5)}"
+        response.raise_for_status()
+
+        losers_data = (
+            response.json()
         )
 
-        if df.empty:
+        losers = pd.DataFrame(
+            losers_data.get(
+                "data",
+                []
+            )
+        )
+
+        if gainers.empty or losers.empty:
 
             logger.warning(
-                "Movers dataframe empty"
+                "Movers data empty"
             )
 
             return (
@@ -64,34 +72,24 @@ def fetch_top_movers():
                 pd.DataFrame()
             )
 
-        if "pChange" not in df.columns:
-
-            logger.warning(
-                "pChange missing"
-            )
-
-            return (
-                pd.DataFrame(),
-                pd.DataFrame()
-            )
-
-        df["pChange"] = pd.to_numeric(
-            df["pChange"],
+        gainers["percentChange"] = pd.to_numeric(
+            gainers["percentChange"],
             errors="coerce"
         )
 
-        df = df.dropna(
-            subset=["pChange"]
+        losers["percentChange"] = pd.to_numeric(
+            losers["percentChange"],
+            errors="coerce"
         )
 
         gainers = (
 
-            df.sort_values(
-                by="pChange",
-                ascending=False
+            gainers
+            .dropna(
+                subset=["percentChange"]
             )
 
-            [["symbol","pChange"]]
+            [["symbol","percentChange"]]
 
             .head(3)
 
@@ -99,12 +97,12 @@ def fetch_top_movers():
 
         losers = (
 
-            df.sort_values(
-                by="pChange",
-                ascending=True
+            losers
+            .dropna(
+                subset=["percentChange"]
             )
 
-            [["symbol","pChange"]]
+            [["symbol","percentChange"]]
 
             .head(3)
 

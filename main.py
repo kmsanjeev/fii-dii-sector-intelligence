@@ -148,7 +148,7 @@ def main():
 
         gainers_text = "\n".join([
 
-            f"{i+1}. {r['symbol']}: +{round(float(r['pChange']),2)}%"
+            f"{i+1}. {r['symbol']}: +{round(float(r['percentChange']),2)}%"
 
             for i, (_, r)
 
@@ -162,7 +162,7 @@ def main():
 
         losers_text = "\n".join([
 
-            f"{i+1}. {r['symbol']}: {round(float(r['pChange']),2)}%"
+            f"{i+1}. {r['symbol']}: {round(float(r['percentChange']),2)}%"
 
             for i, (_, r)
 
