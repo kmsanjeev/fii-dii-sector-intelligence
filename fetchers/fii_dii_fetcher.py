@@ -5,7 +5,7 @@ from utils.logger import logger
 
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0"
+    "User-Agent":"Mozilla/5.0"
 }
 
 
@@ -24,12 +24,8 @@ def fetch_fii_dii():
             timeout=30
         )
 
-        url = (
-            "https://www.nseindia.com/api/fiidiiTradeReact"
-        )
-
         response = session.get(
-            url,
+            "https://www.nseindia.com/api/fiidiiTradeReact",
             timeout=30
         )
 
@@ -39,56 +35,38 @@ def fetch_fii_dii():
 
         fii = next(
             x for x in raw
-            if x["category"] == "FII/FPI"
+            if x["category"]=="FII/FPI"
         )
 
         dii = next(
             x for x in raw
-            if x["category"] == "DII"
+            if x["category"]=="DII"
         )
 
-        # Convert strings to float
+        fii_buy=float(fii["buyValue"])
+        fii_sell=float(fii["sellValue"])
+        fii_net=float(fii["netValue"])
 
-        fii_buy = float(
-            fii["buyValue"]
-        )
+        dii_buy=float(dii["buyValue"])
+        dii_sell=float(dii["sellValue"])
+        dii_net=float(dii["netValue"])
 
-        fii_sell = float(
-            fii["sellValue"]
-        )
-
-        fii_net = float(
-            fii["netValue"]
-        )
-
-        dii_buy = float(
-            dii["buyValue"]
-        )
-
-        dii_sell = float(
-            dii["sellValue"]
-        )
-
-        dii_net = float(
-            dii["netValue"]
-        )
-
-        net_difference = round(
-            dii_net - fii_net,
+        combined_net=round(
+            fii_net+dii_net,
             2
         )
 
-        sentiment = (
+        sentiment=(
 
             "Bullish"
 
-            if fii_net > 1000
+            if combined_net>1000
 
             else
 
             "Bearish"
 
-            if fii_net < -1000
+            if combined_net<-1000
 
             else
 
@@ -96,37 +74,25 @@ def fetch_fii_dii():
 
         )
 
-        final = pd.DataFrame([{
+        final=pd.DataFrame([{
 
-            "Date":
-            fii["date"],
+            "Date":fii["date"],
 
-            "FII_Buy":
-            fii_buy,
+            "FII_Buy":fii_buy,
+            "FII_Sell":fii_sell,
+            "FII_Net":fii_net,
 
-            "FII_Sell":
-            fii_sell,
+            "DII_Buy":dii_buy,
+            "DII_Sell":dii_sell,
+            "DII_Net":dii_net,
 
-            "FII_Net":
-            fii_net,
-
-            "DII_Buy":
-            dii_buy,
-
-            "DII_Sell":
-            dii_sell,
-
-            "DII_Net":
-            dii_net,
-
-            "Net_Difference":
-            net_difference,
+            "Combined_Net_Flow":
+            combined_net,
 
             "Market_Sentiment":
             sentiment,
 
-            "Source":
-            "NSE"
+            "Source":"NSE"
 
         }])
 

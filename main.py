@@ -146,14 +146,9 @@ def main():
 
     if not gainers.empty:
 
-        gainers["percentChange"] = (
-            gainers["percentChange"]
-            .astype(float)
-        )
-
         gainers_text = "\n".join([
 
-            f"{i+1}. {r['symbol']}: +{round(r['percentChange'],2)}%"
+            f"{i+1}. {r['symbol']}: +{round(float(r['pChange']),2)}%"
 
             for i, (_, r)
 
@@ -165,14 +160,9 @@ def main():
 
     if not losers.empty:
 
-        losers["percentChange"] = (
-            losers["percentChange"]
-            .astype(float)
-        )
-
         losers_text = "\n".join([
 
-            f"{i+1}. {r['symbol']}: {round(r['percentChange'],2)}%"
+            f"{i+1}. {r['symbol']}: {round(float(r['pChange']),2)}%"
 
             for i, (_, r)
 
@@ -197,7 +187,7 @@ Date: {row['Date']}
 
 FII Net: ₹{row['FII_Net']} Cr
 DII Net: ₹{row['DII_Net']} Cr
-Net Difference: ₹{row['Net_Difference']} Cr
+Combined Net Flow: ₹{row['Combined_Net_Flow']} Cr
 
 Sentiment: {row['Market_Sentiment']}
 
