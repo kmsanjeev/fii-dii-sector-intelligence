@@ -19,52 +19,53 @@ def fetch_top_movers():
             HEADERS
         )
 
-        # NSE warm-up request
+        # Warm-up request for NSE cookies
+
         session.get(
             "https://www.nseindia.com",
             timeout=30
         )
 
         response = session.get(
-            "https://www.nseindia.com/api/live-analysis-variations?index=gainers",
+            "https://www.nseindia.com/api/live-analysis-variations?index=nifty50",
             timeout=30
         )
 
         response.raise_for_status()
 
-        gainers_data = (
-            response.json()
+        data = response.json()
+
+        logger.info(
+            f"Movers response type: {type(data)}"
         )
 
-        gainers = pd.DataFrame(
-            gainers_data.get(
-                "data",
-                []
+        # Response returns list directly
+
+        if isinstance(
+            data,
+            list
+        ):
+
+            df = pd.DataFrame(
+                data
             )
-        )
 
-        response = session.get(
-            "https://www.nseindia.com/api/live-analysis-variations?index=losers",
-            timeout=30
-        )
+        elif isinstance(
+            data,
+            dict
+        ):
 
-        response.raise_for_status()
-
-        losers_data = (
-            response.json()
-        )
-
-        losers = pd.DataFrame(
-            losers_data.get(
-                "data",
-                []
+            df = pd.DataFrame(
+                data.get(
+                    "data",
+                    []
+                )
             )
-        )
 
-        if gainers.empty or losers.empty:
+        else:
 
             logger.warning(
-                "Movers data empty"
+                "Unknown movers structure"
             )
 
             return (
@@ -72,24 +73,38 @@ def fetch_top_movers():
                 pd.DataFrame()
             )
 
-        gainers["percentChange"] = pd.to_numeric(
-            gainers["percentChange"],
+        if df.empty:
+
+            logger.warning(
+                "Movers dataframe empty"
+            )
+
+            return (
+                pd.DataFrame(),
+                pd.DataFrame()
+            )
+
+        logger.info(
+            f"Movers columns: {list(df.columns)}"
+        )
+
+        df["percentChange"] = pd.to_numeric(
+            df["percentChange"],
             errors="coerce"
         )
 
-        losers["percentChange"] = pd.to_numeric(
-            losers["percentChange"],
-            errors="coerce"
+        df = df.dropna(
+            subset=["percentChange"]
         )
 
         gainers = (
 
-            gainers
-            .dropna(
-                subset=["percentChange"]
+            df.sort_values(
+                by="percentChange",
+                ascending=False
             )
 
-            [["symbol","percentChange"]]
+            [["symbol", "percentChange"]]
 
             .head(3)
 
@@ -97,19 +112,19 @@ def fetch_top_movers():
 
         losers = (
 
-            losers
-            .dropna(
-                subset=["percentChange"]
+            df.sort_values(
+                by="percentChange",
+                ascending=True
             )
 
-            [["symbol","percentChange"]]
+            [["symbol", "percentChange"]]
 
             .head(3)
 
         )
 
         logger.info(
-            "Movers fetched"
+            f"Movers fetched: {len(df)}"
         )
 
         return (
