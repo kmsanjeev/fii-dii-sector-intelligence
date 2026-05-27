@@ -98,15 +98,15 @@ def append_unique_dataframe(
 
     if existing:
 
-        existing_dates = {
+        for row in existing:
 
-            str(
-                x["Date"]
-            )
+            if "Date" in row:
 
-            for x in existing
-
-        }
+                existing_dates.add(
+                    str(
+                        row["Date"]
+                    )
+                )
 
     rows = []
 
@@ -120,7 +120,11 @@ def append_unique_dataframe(
                 row.tolist()
             )
 
-    if not existing:
+    # Empty sheet handling
+
+    values = worksheet.get_all_values()
+
+    if len(values) == 0:
 
         worksheet.append_row(
             dataframe.columns.tolist()
