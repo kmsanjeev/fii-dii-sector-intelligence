@@ -67,35 +67,12 @@ def main():
 
     row = df.iloc[0]
 
-    fii_message = f"""
-📊 Daily FII/DII Update
-
-Date: {row['Date']}
-
-FII Net:
-₹{row['FII_Net']} Cr
-
-DII Net:
-₹{row['DII_Net']} Cr
-
-Net Difference:
-₹{row['Net_Difference']} Cr
-
-Sentiment:
-{row['Market_Sentiment']}
-
-Status:
-✅ CSV updated
-✅ Google Sheet updated
-"""
-
-    send_message(
-        fii_message
-    )
-
     # ====================
     # Sector Processing
     # ====================
+
+    sector_name = "N/A"
+    sector_change = "N/A"
 
     sector_df = fetch_sectors()
 
@@ -112,23 +89,56 @@ Status:
 
         )
 
-        sector_message = f"""
+        sector_name = (
+            top_sector["index"]
+        )
+
+        sector_change = (
+            top_sector[
+                "percentChange"
+            ]
+        )
+
+    # ====================
+    # Single Telegram Message
+    # ====================
+
+    message = f"""
+📊 Market Intelligence Report
+
+Date: {row['Date']}
+
+━━━━━━━━━━━━━━
+
+💰 FII / DII Flow
+
+FII Net: ₹{row['FII_Net']} Cr
+
+DII Net: ₹{row['DII_Net']} Cr
+
+Net Difference: ₹{row['Net_Difference']} Cr
+
+Sentiment: {row['Market_Sentiment']}
+
+━━━━━━━━━━━━━━
+
 🔥 Strongest Sector
 
-Sector:
-{top_sector['index']}
+Sector: {sector_name}
 
-Change:
-{top_sector['percentChange']}%
+Change: {sector_change}%
+
+━━━━━━━━━━━━━━
+
+Status:
+
+✅ CSV updated
+✅ Google Sheet updated
 """
 
-        send_message(
-            sector_message
-        )
-
-        logger.info(
-            "Sector update sent"
-        )
+    send_message(
+        message
+    )
 
     logger.info(
         "Completed"
