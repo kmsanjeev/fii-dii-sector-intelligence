@@ -19,8 +19,7 @@ def fetch_top_movers():
             HEADERS
         )
 
-        # Warm-up request for NSE cookies
-
+        # NSE cookie initialization
         session.get(
             "https://www.nseindia.com",
             timeout=30
@@ -36,57 +35,63 @@ def fetch_top_movers():
         data = response.json()
 
         logger.info(
-            f"Movers response type: {type(data)}"
+            f"Response keys: {list(data.keys())}"
         )
 
-        # Response returns list directly
+        # Extract nested structure safely
 
-        if isinstance(
-            data,
-            list
-        ):
+        raw_data = None
 
-            df = pd.DataFrame(
-                data
+        for key, value in data.items():
+
+            logger.info(
+                f"{key}: {type(value)}"
             )
 
-        elif isinstance(
-            data,
-            dict
-        ):
+            if isinstance(
+                value,
+                list
+            ):
 
-            df = pd.DataFrame(
-                data.get(
-                    "data",
-                    []
-                )
-            )
+                raw_data = value
+                break
 
-        else:
+        if raw_data is None:
 
             logger.warning(
-                "Unknown movers structure"
+                "No list found in response"
             )
 
             return (
                 pd.DataFrame(),
                 pd.DataFrame()
             )
+
+        df = pd.DataFrame(
+            raw_data
+        )
+
+        logger.info(
+            f"Columns: {list(df.columns)}"
+        )
 
         if df.empty:
 
+            return (
+                pd.DataFrame(),
+                pd.DataFrame()
+            )
+
+        if "percentChange" not in df.columns:
+
             logger.warning(
-                "Movers dataframe empty"
+                "percentChange missing"
             )
 
             return (
                 pd.DataFrame(),
                 pd.DataFrame()
             )
-
-        logger.info(
-            f"Movers columns: {list(df.columns)}"
-        )
 
         df["percentChange"] = pd.to_numeric(
             df["percentChange"],
@@ -124,7 +129,7 @@ def fetch_top_movers():
         )
 
         logger.info(
-            f"Movers fetched: {len(df)}"
+            "Movers fetched successfully"
         )
 
         return (
