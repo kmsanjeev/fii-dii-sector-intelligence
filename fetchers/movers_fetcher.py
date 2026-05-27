@@ -19,7 +19,7 @@ def fetch_top_movers():
             HEADERS
         )
 
-        # Warm-up request
+        # NSE warm-up
         session.get(
             "https://www.nseindia.com",
             timeout=30
@@ -34,14 +34,29 @@ def fetch_top_movers():
 
         data = response.json()
 
+        logger.info(
+            f"Response keys: {list(data.keys())}"
+        )
+
         df = pd.DataFrame(
-            data["data"]
+            data.get(
+                "data",
+                []
+            )
+        )
+
+        logger.info(
+            f"Columns: {list(df.columns)}"
+        )
+
+        logger.info(
+            f"\n{df.head(5)}"
         )
 
         if df.empty:
 
             logger.warning(
-                "No movers data returned"
+                "Movers dataframe empty"
             )
 
             return (
@@ -49,18 +64,24 @@ def fetch_top_movers():
                 pd.DataFrame()
             )
 
-        # Convert to numeric
-        df["pChange"] = (
-            pd.to_numeric(
-                df["pChange"],
-                errors="coerce"
+        if "pChange" not in df.columns:
+
+            logger.warning(
+                "pChange missing"
             )
+
+            return (
+                pd.DataFrame(),
+                pd.DataFrame()
+            )
+
+        df["pChange"] = pd.to_numeric(
+            df["pChange"],
+            errors="coerce"
         )
 
-        df = (
-            df.dropna(
-                subset=["pChange"]
-            )
+        df = df.dropna(
+            subset=["pChange"]
         )
 
         gainers = (
@@ -70,7 +91,7 @@ def fetch_top_movers():
                 ascending=False
             )
 
-            [["symbol", "pChange"]]
+            [["symbol","pChange"]]
 
             .head(3)
 
@@ -83,14 +104,14 @@ def fetch_top_movers():
                 ascending=True
             )
 
-            [["symbol", "pChange"]]
+            [["symbol","pChange"]]
 
             .head(3)
 
         )
 
         logger.info(
-            f"Movers fetched: {len(df)} stocks"
+            "Movers fetched"
         )
 
         return (
