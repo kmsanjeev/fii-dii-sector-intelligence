@@ -6,7 +6,7 @@ from utils.logger import logger
 
 SECTOR_MAP = {
 
-    "NIFTY IT": [
+    "NIFTY IT":[
         "TCS.NS",
         "INFY.NS",
         "HCLTECH.NS",
@@ -14,7 +14,7 @@ SECTOR_MAP = {
         "TECHM.NS"
     ],
 
-    "NIFTY BANK": [
+    "NIFTY BANK":[
         "HDFCBANK.NS",
         "ICICIBANK.NS",
         "SBIN.NS",
@@ -22,7 +22,7 @@ SECTOR_MAP = {
         "KOTAKBANK.NS"
     ],
 
-    "NIFTY AUTO": [
+    "NIFTY AUTO":[
         "MARUTI.NS",
         "M&M.NS",
         "TATAMOTORS.NS",
@@ -30,7 +30,7 @@ SECTOR_MAP = {
         "EICHERMOT.NS"
     ],
 
-    "NIFTY PHARMA": [
+    "NIFTY PHARMA":[
         "SUNPHARMA.NS",
         "DRREDDY.NS",
         "CIPLA.NS",
@@ -38,7 +38,7 @@ SECTOR_MAP = {
         "LUPIN.NS"
     ],
 
-    "NIFTY METAL": [
+    "NIFTY METAL":[
         "TATASTEEL.NS",
         "JSWSTEEL.NS",
         "HINDALCO.NS",
@@ -46,13 +46,14 @@ SECTOR_MAP = {
         "SAIL.NS"
     ],
 
-    "NIFTY MEDIA": [
+    "NIFTY MEDIA":[
         "ZEEL.NS",
         "SUNTV.NS",
         "PVRINOX.NS",
-        "TV18BRDCST.NS",
-        "DISHTV.NS"
+        "SAREGAMA.NS",
+        "NETWORK18.NS"
     ]
+
 }
 
 
@@ -64,13 +65,15 @@ def fetch_sector_leaders(
 
         if sector_name not in SECTOR_MAP:
 
+            logger.warning(
+                f"{sector_name} not mapped"
+            )
+
             return pd.DataFrame()
 
-        stocks = (
-            SECTOR_MAP[
-                sector_name
-            ]
-        )
+        stocks = SECTOR_MAP[
+            sector_name
+        ]
 
         logger.info(
             f"Fetching leaders for {sector_name}"
@@ -135,7 +138,7 @@ def fetch_sector_leaders(
         )
 
         logger.info(
-            "Sector leaders fetched"
+            f"Sector leaders fetched: {len(df)}"
         )
 
         return df
