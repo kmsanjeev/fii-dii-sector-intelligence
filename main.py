@@ -18,6 +18,10 @@ from fetchers.sector_stock_mapper import (
     fetch_sector_leaders
 )
 
+from fetchers.signal_engine import (
+    generate_signals
+)
+
 from fetchers.data_store import (
     save_fii_dii
 )
@@ -28,6 +32,10 @@ from sheets.google_sheet_updater import (
     append_unique_dataframe
 )
 
+from sheets.signal_sheet_updater import (
+    save_signals_to_sheet
+)
+
 from utils.logger import logger
 
 
@@ -36,10 +44,6 @@ def main():
     logger.info(
         "Engine Started"
     )
-
-    # ====================
-    # FII / DII
-    # ====================
 
     df = fetch_fii_dii()
 
@@ -57,7 +61,7 @@ def main():
 
     if spreadsheet:
 
-        worksheet = (
+        worksheet=(
 
             create_sheet_if_missing(
                 spreadsheet,
@@ -71,28 +75,24 @@ def main():
             df
         )
 
-    row = df.iloc[0]
+    row=df.iloc[0]
 
-    # ====================
-    # Sector Ranking
-    # ====================
+    top_sector_text="N/A"
+    bottom_sector_text="N/A"
 
-    top_sector_text = "N/A"
-    bottom_sector_text = "N/A"
-    strongest_sector = None
+    strongest_sector=None
+    weakest_sector=None
 
-    sector_df = fetch_sectors()
+    sector_df=fetch_sectors()
 
     if not sector_df.empty:
 
-        sector_df["percentChange"] = (
-
+        sector_df["percentChange"]=(
             sector_df["percentChange"]
             .astype(float)
-
         )
 
-        top3 = (
+        top3=(
 
             sector_df
             .sort_values(
@@ -103,26 +103,29 @@ def main():
 
         )
 
-        bottom3 = (
+        bottom3=(
 
             sector_df
             .sort_values(
-                by="percentChange",
-                ascending=True
+                by="percentChange"
             )
             .head(3)
 
         )
 
-        strongest_sector = (
+        strongest_sector=(
             top3.iloc[0]["index"]
         )
 
-        top_sector_text = "\n".join([
+        weakest_sector=(
+            bottom3.iloc[0]["index"]
+        )
+
+        top_sector_text="\n".join([
 
             f"{i+1}. {r['index']}: {round(r['percentChange'],2)}%"
 
-            for i, (_, r)
+            for i,(_,r)
 
             in enumerate(
                 top3.iterrows()
@@ -130,11 +133,11 @@ def main():
 
         ])
 
-        bottom_sector_text = "\n".join([
+        bottom_sector_text="\n".join([
 
             f"{i+1}. {r['index']}: {round(r['percentChange'],2)}%"
 
-            for i, (_, r)
+            for i,(_,r)
 
             in enumerate(
                 bottom3.iterrows()
@@ -142,29 +145,21 @@ def main():
 
         ])
 
-    # ====================
-    # Sector Leaders
-    # ====================
-
-    sector_leader_text = "N/A"
+    sector_leader_text="N/A"
 
     if strongest_sector:
 
-        leaders = (
-
-            fetch_sector_leaders(
-                strongest_sector
-            )
-
+        leaders=fetch_sector_leaders(
+            strongest_sector
         )
 
         if not leaders.empty:
 
-            sector_leader_text = "\n".join([
+            sector_leader_text="\n".join([
 
                 f"{i+1}. {r['symbol']}: +{round(r['change'],2)}%"
 
-                for i, (_, r)
+                for i,(_,r)
 
                 in enumerate(
                     leaders.iterrows()
@@ -172,50 +167,31 @@ def main():
 
             ])
 
-    # ====================
-    # Top Movers
-    # ====================
-
-    gainers_text = "N/A"
-    losers_text = "N/A"
-
-    gainers, losers = (
+    gainers, losers=(
         fetch_top_movers()
     )
 
-    if not gainers.empty:
+    signals=generate_signals(
 
-        gainers_text = "\n".join([
+        row["Date"],
+        gainers,
+        losers,
+        strongest_sector,
+        weakest_sector,
+        row["Combined_Net_Flow"]
 
-            f"{i+1}. {r['symbol']}: +{round(float(r['percentChange']),2)}%"
+    )
 
-            for i, (_, r)
+    if spreadsheet:
 
-            in enumerate(
-                gainers.iterrows()
-            )
+        save_signals_to_sheet(
 
-        ])
+            spreadsheet,
+            signals
 
-    if not losers.empty:
+        )
 
-        losers_text = "\n".join([
-
-            f"{i+1}. {r['symbol']}: {round(float(r['percentChange']),2)}%"
-
-            for i, (_, r)
-
-            in enumerate(
-                losers.iterrows()
-            )
-
-        ])
-
-    # ====================
-    # Telegram Report
-    # ====================
-
-    message = f"""
+    message=f"""
 📊 Market Intelligence Report
 
 Date: {row['Date']}
@@ -248,16 +224,6 @@ Sentiment: {row['Market_Sentiment']}
 
 ━━━━━━━━━━━━━━
 
-📈 Top Gainers
-
-{gainers_text}
-
-📉 Top Losers
-
-{losers_text}
-
-━━━━━━━━━━━━━━
-
 Status:
 
 ✅ CSV updated
@@ -271,6 +237,5 @@ Status:
     )
 
 
-if __name__ == "__main__":
-
+if __name__=="__main__":
     main()
