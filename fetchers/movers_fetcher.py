@@ -19,14 +19,14 @@ def fetch_top_movers():
             HEADERS
         )
 
-        # NSE cookie initialization
+        # Initialize NSE session/cookies
         session.get(
             "https://www.nseindia.com",
             timeout=30
         )
 
         response = session.get(
-            "https://www.nseindia.com/api/live-analysis-variations?index=nifty50",
+            "https://www.nseindia.com/api/equity-stockIndices?index=NIFTY%2050",
             timeout=30
         )
 
@@ -38,28 +38,26 @@ def fetch_top_movers():
             f"Response keys: {list(data.keys())}"
         )
 
-        # Extract nested structure safely
-
-        raw_data = None
-
-        for key, value in data.items():
-
-            logger.info(
-                f"{key}: {type(value)}"
-            )
-
-            if isinstance(
-                value,
-                list
-            ):
-
-                raw_data = value
-                break
-
-        if raw_data is None:
+        if "data" not in data:
 
             logger.warning(
-                "No list found in response"
+                "No data key present"
+            )
+
+            return (
+                pd.DataFrame(),
+                pd.DataFrame()
+            )
+
+        records = data["data"]
+
+        if not isinstance(
+            records,
+            list
+        ):
+
+            logger.warning(
+                f"Unexpected records type: {type(records)}"
             )
 
             return (
@@ -68,48 +66,49 @@ def fetch_top_movers():
             )
 
         df = pd.DataFrame(
-            raw_data
+            records
         )
 
         logger.info(
-            f"Columns: {list(df.columns)}"
+            f"Movers columns: {list(df.columns)}"
         )
 
-        if df.empty:
+        required_columns = [
+            "symbol",
+            "pChange"
+        ]
 
-            return (
-                pd.DataFrame(),
-                pd.DataFrame()
-            )
+        for col in required_columns:
 
-        if "percentChange" not in df.columns:
+            if col not in df.columns:
 
-            logger.warning(
-                "percentChange missing"
-            )
+                logger.warning(
+                    f"Missing column: {col}"
+                )
 
-            return (
-                pd.DataFrame(),
-                pd.DataFrame()
-            )
+                return (
+                    pd.DataFrame(),
+                    pd.DataFrame()
+                )
 
-        df["percentChange"] = pd.to_numeric(
-            df["percentChange"],
+        df["pChange"] = pd.to_numeric(
+            df["pChange"],
             errors="coerce"
         )
 
         df = df.dropna(
-            subset=["percentChange"]
+            subset=["pChange"]
         )
 
         gainers = (
 
-            df.sort_values(
-                by="percentChange",
+            df
+            .sort_values(
+                by="pChange",
                 ascending=False
             )
 
-            [["symbol", "percentChange"]]
+            [["symbol", "pChange"]]
 
             .head(3)
 
@@ -117,19 +116,20 @@ def fetch_top_movers():
 
         losers = (
 
-            df.sort_values(
-                by="percentChange",
+            df
+            .sort_values(
+                by="pChange",
                 ascending=True
             )
 
-            [["symbol", "percentChange"]]
+            [["symbol", "pChange"]]
 
             .head(3)
 
         )
 
         logger.info(
-            "Movers fetched successfully"
+            f"Movers fetched: {len(df)} stocks"
         )
 
         return (
