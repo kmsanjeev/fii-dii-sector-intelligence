@@ -70,6 +70,30 @@ def fetch_fii_dii():
             "DII_Net":
             dii["netValue"],
 
+            "Net_Difference":
+            round(
+                dii["netValue"]
+                -
+                fii["netValue"],
+                2
+            ),
+
+            "Market_Sentiment":
+
+            "Bullish"
+
+            if fii["netValue"] > 1000
+
+            else
+
+            "Bearish"
+
+            if fii["netValue"] < -1000
+
+            else
+
+            "Neutral",
+
             "Source":
             "NSE"
 

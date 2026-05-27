@@ -63,21 +63,27 @@ def main():
 
     row = df.iloc[0]
 
-    message = f"""
-📊 Daily FII/DII Update
+        message = f"""
+        📊 Daily FII/DII Update
 
-Date: {row['Date']}
+        Date: {row['Date']}
 
-FII Net:
-₹{row['FII_Net']} Cr
+        FII Net:
+        ₹{row['FII_Net']} Cr
 
-DII Net:
-₹{row['DII_Net']} Cr
+        DII Net:
+        ₹{row['DII_Net']} Cr
 
-Status:
-✅ CSV updated
-✅ Google Sheet updated
-"""
+        Net Difference:
+        ₹{row['Net_Difference']} Cr
+
+        Sentiment:
+        {row['Market_Sentiment']}
+
+        Status:
+        ✅ CSV updated
+        ✅ Google Sheet updated
+        """
 
     send_message(
         message
