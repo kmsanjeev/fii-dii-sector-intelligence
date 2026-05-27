@@ -71,36 +71,66 @@ def main():
     # Sector Processing
     # ====================
 
-    sector_name = "N/A"
-    sector_change = "N/A"
+    top_sector_text = "N/A"
+    bottom_sector_text = "N/A"
 
     sector_df = fetch_sectors()
 
     if not sector_df.empty:
 
-        top_sector = (
+        sector_df["percentChange"] = (
+            sector_df["percentChange"]
+            .astype(float)
+        )
+
+        top3 = (
 
             sector_df
             .sort_values(
                 by="percentChange",
                 ascending=False
             )
-            .iloc[0]
+            .head(3)
 
         )
 
-        sector_name = (
-            top_sector["index"]
+        bottom3 = (
+
+            sector_df
+            .sort_values(
+                by="percentChange",
+                ascending=True
+            )
+            .head(3)
+
         )
 
-        sector_change = (
-            top_sector[
-                "percentChange"
-            ]
-        )
+        top_sector_text = "\n".join([
+
+            f"{i+1}. {row['index']} : {row['percentChange']}%"
+
+            for i, (_, row)
+
+            in enumerate(
+                top3.iterrows()
+            )
+
+        ])
+
+        bottom_sector_text = "\n".join([
+
+            f"{i+1}. {row['index']} : {row['percentChange']}%"
+
+            for i, (_, row)
+
+            in enumerate(
+                bottom3.iterrows()
+            )
+
+        ])
 
     # ====================
-    # Single Telegram Message
+    # Final Telegram Report
     # ====================
 
     message = f"""
@@ -113,20 +143,20 @@ Date: {row['Date']}
 💰 FII / DII Flow
 
 FII Net: ₹{row['FII_Net']} Cr
-
 DII Net: ₹{row['DII_Net']} Cr
-
 Net Difference: ₹{row['Net_Difference']} Cr
 
 Sentiment: {row['Market_Sentiment']}
 
 ━━━━━━━━━━━━━━
 
-🔥 Strongest Sector
+🔥 Top 3 Sectors
 
-Sector: {sector_name}
+{top_sector_text}
 
-Change: {sector_change}%
+📉 Bottom 3 Sectors
+
+{bottom_sector_text}
 
 ━━━━━━━━━━━━━━
 
