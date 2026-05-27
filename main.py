@@ -41,7 +41,7 @@ def main():
         df
     )
 
-    # Google Sheets
+    # Google Sheet update
 
     spreadsheet = (
         connect_sheet()
@@ -49,7 +49,7 @@ def main():
 
     if spreadsheet:
 
-        sheet = (
+        worksheet = (
             create_sheet_if_missing(
                 spreadsheet,
                 "Raw_FII_DII"
@@ -57,33 +57,33 @@ def main():
         )
 
         append_unique_dataframe(
-            sheet,
+            worksheet,
             df
         )
 
     row = df.iloc[0]
 
-        message = f"""
-        📊 Daily FII/DII Update
+    message = f"""
+📊 Daily FII/DII Update
 
-        Date: {row['Date']}
+Date: {row['Date']}
 
-        FII Net:
-        ₹{row['FII_Net']} Cr
+FII Net:
+₹{row['FII_Net']} Cr
 
-        DII Net:
-        ₹{row['DII_Net']} Cr
+DII Net:
+₹{row['DII_Net']} Cr
 
-        Net Difference:
-        ₹{row['Net_Difference']} Cr
+Net Difference:
+₹{row['Net_Difference']} Cr
 
-        Sentiment:
-        {row['Market_Sentiment']}
+Sentiment:
+{row['Market_Sentiment']}
 
-        Status:
-        ✅ CSV updated
-        ✅ Google Sheet updated
-        """
+Status:
+✅ CSV updated
+✅ Google Sheet updated
+"""
 
     send_message(
         message
@@ -95,4 +95,5 @@ def main():
 
 
 if __name__ == "__main__":
+
     main()
