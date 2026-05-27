@@ -111,9 +111,9 @@ def main():
 
         top_sector_text = "\n".join([
 
-            f"{i+1}. {row['index']} : {row['percentChange']}%"
+            f"{i+1}. {r['index']}: {round(r['percentChange'],2)}%"
 
-            for i, (_, row)
+            for i, (_, r)
 
             in enumerate(
                 top3.iterrows()
@@ -123,12 +123,61 @@ def main():
 
         bottom_sector_text = "\n".join([
 
-            f"{i+1}. {row['index']} : {row['percentChange']}%"
+            f"{i+1}. {r['index']}: {round(r['percentChange'],2)}%"
 
-            for i, (_, row)
+            for i, (_, r)
 
             in enumerate(
                 bottom3.iterrows()
+            )
+
+        ])
+
+    # ====================
+    # Top Movers
+    # ====================
+
+    gainers_text = "N/A"
+    losers_text = "N/A"
+
+    gainers, losers = (
+        fetch_top_movers()
+    )
+
+    if not gainers.empty:
+
+        gainers["percentChange"] = (
+            gainers["percentChange"]
+            .astype(float)
+        )
+
+        gainers_text = "\n".join([
+
+            f"{i+1}. {r['symbol']}: +{round(r['percentChange'],2)}%"
+
+            for i, (_, r)
+
+            in enumerate(
+                gainers.iterrows()
+            )
+
+        ])
+
+    if not losers.empty:
+
+        losers["percentChange"] = (
+            losers["percentChange"]
+            .astype(float)
+        )
+
+        losers_text = "\n".join([
+
+            f"{i+1}. {r['symbol']}: {round(r['percentChange'],2)}%"
+
+            for i, (_, r)
+
+            in enumerate(
+                losers.iterrows()
             )
 
         ])
@@ -188,44 +237,6 @@ Status:
         "Completed"
     )
 
-    # ====================
-    # Top Movers
-    # ====================
-
-    gainers_text = "N/A"
-    losers_text = "N/A"
-
-    gainers, losers = (
-        fetch_top_movers()
-    )
-
-    if not gainers.empty:
-
-        gainers_text = "\n".join([
-
-            f"{i+1}. {row['symbol']}: +{row['percentChange']}%"
-
-            for i, (_, row)
-
-            in enumerate(
-                gainers.iterrows()
-            )
-
-        ])
-
-    if not losers.empty:
-
-        losers_text = "\n".join([
-
-            f"{i+1}. {row['symbol']}: {row['percentChange']}%"
-
-            for i, (_, row)
-
-            in enumerate(
-                losers.iterrows()
-            )
-
-        ])
 
 if __name__ == "__main__":
 
