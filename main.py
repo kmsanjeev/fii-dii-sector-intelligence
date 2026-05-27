@@ -6,6 +6,10 @@ from fetchers.fii_dii_fetcher import (
     fetch_fii_dii
 )
 
+from fetchers.sector_fetcher import (
+    fetch_sectors
+)
+
 from fetchers.data_store import (
     save_fii_dii
 )
@@ -25,6 +29,10 @@ def main():
         "Engine Started"
     )
 
+    # ====================
+    # FII / DII Processing
+    # ====================
+
     df = fetch_fii_dii()
 
     if df.empty:
@@ -35,13 +43,9 @@ def main():
 
         return
 
-    # Save CSV
-
     save_fii_dii(
         df
     )
-
-    # Google Sheet update
 
     spreadsheet = (
         connect_sheet()
@@ -63,7 +67,7 @@ def main():
 
     row = df.iloc[0]
 
-    message = f"""
+    fii_message = f"""
 📊 Daily FII/DII Update
 
 Date: {row['Date']}
@@ -86,8 +90,45 @@ Status:
 """
 
     send_message(
-        message
+        fii_message
     )
+
+    # ====================
+    # Sector Processing
+    # ====================
+
+    sector_df = fetch_sectors()
+
+    if not sector_df.empty:
+
+        top_sector = (
+
+            sector_df
+            .sort_values(
+                by="percentChange",
+                ascending=False
+            )
+            .iloc[0]
+
+        )
+
+        sector_message = f"""
+🔥 Strongest Sector
+
+Sector:
+{top_sector['index']}
+
+Change:
+{top_sector['percentChange']}%
+"""
+
+        send_message(
+            sector_message
+        )
+
+        logger.info(
+            "Sector update sent"
+        )
 
     logger.info(
         "Completed"
