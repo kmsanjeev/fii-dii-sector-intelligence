@@ -10,6 +10,10 @@ from fetchers.sector_fetcher import (
     fetch_sectors
 )
 
+from fetchers.movers_fetcher import (
+    fetch_top_movers
+)
+
 from fetchers.data_store import (
     save_fii_dii
 )
@@ -160,6 +164,16 @@ Sentiment: {row['Market_Sentiment']}
 
 ━━━━━━━━━━━━━━
 
+📈 Top Gainers
+
+{gainers_text}
+
+📉 Top Losers
+
+{losers_text}
+
+━━━━━━━━━━━━━━
+
 Status:
 
 ✅ CSV updated
@@ -174,6 +188,44 @@ Status:
         "Completed"
     )
 
+    # ====================
+    # Top Movers
+    # ====================
+
+    gainers_text = "N/A"
+    losers_text = "N/A"
+
+    gainers, losers = (
+        fetch_top_movers()
+    )
+
+    if not gainers.empty:
+
+        gainers_text = "\n".join([
+
+            f"{i+1}. {row['symbol']}: +{row['percentChange']}%"
+
+            for i, (_, row)
+
+            in enumerate(
+                gainers.iterrows()
+            )
+
+        ])
+
+    if not losers.empty:
+
+        losers_text = "\n".join([
+
+            f"{i+1}. {row['symbol']}: {row['percentChange']}%"
+
+            for i, (_, row)
+
+            in enumerate(
+                losers.iterrows()
+            )
+
+        ])
 
 if __name__ == "__main__":
 
