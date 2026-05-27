@@ -92,21 +92,37 @@ def append_unique_dataframe(
         dataframe
 ):
 
-    existing = worksheet.get_all_records()
+    values = worksheet.get_all_values()
+
+    # Create headers if absent
+
+    if not values:
+
+        worksheet.append_row(
+            dataframe.columns.tolist()
+        )
+
+        values = worksheet.get_all_values()
 
     existing_dates = set()
 
-    if existing:
+    if len(values) > 1:
 
-        for row in existing:
+        header = values[0]
 
-            if "Date" in row:
+        if "Date" in header:
 
-                existing_dates.add(
-                    str(
-                        row["Date"]
+            date_index = header.index(
+                "Date"
+            )
+
+            for row in values[1:]:
+
+                if len(row) > date_index:
+
+                    existing_dates.add(
+                        row[date_index]
                     )
-                )
 
     rows = []
 
@@ -119,16 +135,6 @@ def append_unique_dataframe(
             rows.append(
                 row.tolist()
             )
-
-    # Empty sheet handling
-
-    values = worksheet.get_all_values()
-
-    if len(values) == 0:
-
-        worksheet.append_row(
-            dataframe.columns.tolist()
-        )
 
     if rows:
 
