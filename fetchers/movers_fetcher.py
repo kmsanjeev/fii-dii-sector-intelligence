@@ -1,3 +1,4 @@
+import os
 import requests
 import yfinance as yf
 import pandas as pd
@@ -5,12 +6,31 @@ import pandas as pd
 from utils.logger import logger
 
 
+# Prevent yfinance cache warnings
+CACHE_DIR = "/tmp/yfinance_cache"
+
+os.makedirs(
+    CACHE_DIR,
+    exist_ok=True
+)
+
+try:
+
+    yf.set_tz_cache_location(
+        CACHE_DIR
+    )
+
+except:
+
+    pass
+
+
 HEADERS = {
-    "User-Agent": "Mozilla/5.0"
+    "User-Agent":"Mozilla/5.0"
 }
 
 
-NIFTY50 = [
+NIFTY50=[
 
     "RELIANCE.NS",
     "HDFCBANK.NS",
@@ -36,7 +56,7 @@ NIFTY50 = [
 ]
 
 
-def fetch_from_nse():
+def fetch_top_movers():
 
     try:
 
@@ -44,88 +64,11 @@ def fetch_from_nse():
             "Trying NSE movers..."
         )
 
-        session = requests.Session()
+        # Placeholder until NSE parsing is rebuilt
 
-        session.headers.update(
-            HEADERS
+        raise Exception(
+            "Fallback enabled"
         )
-
-        session.get(
-            "https://www.nseindia.com",
-            timeout=30
-        )
-
-        response = session.get(
-            "https://www.nseindia.com/api/live-analysis-variations?index=gainers",
-            timeout=30
-        )
-
-        response.raise_for_status()
-
-        gainers_data = response.json()
-
-        response = session.get(
-            "https://www.nseindia.com/api/live-analysis-variations?index=losers",
-            timeout=30
-        )
-
-        response.raise_for_status()
-
-        losers_data = response.json()
-
-        gainers = pd.DataFrame(
-            gainers_data
-        )
-
-        losers = pd.DataFrame(
-            losers_data
-        )
-
-        if gainers.empty or losers.empty:
-
-            raise Exception(
-                "Empty NSE response"
-            )
-
-        gainers["percentChange"] = pd.to_numeric(
-            gainers["percentChange"],
-            errors="coerce"
-        )
-
-        losers["percentChange"] = pd.to_numeric(
-            losers["percentChange"],
-            errors="coerce"
-        )
-
-        gainers = (
-
-            gainers
-
-            [["symbol","percentChange"]]
-
-            .dropna()
-
-            .head(3)
-
-        )
-
-        losers = (
-
-            losers
-
-            [["symbol","percentChange"]]
-
-            .dropna()
-
-            .head(3)
-
-        )
-
-        logger.info(
-            "NSE movers fetched"
-        )
-
-        return gainers, losers
 
     except Exception as e:
 
@@ -133,10 +76,6 @@ def fetch_from_nse():
             f"NSE failed: {e}"
         )
 
-        return None, None
-
-
-def fetch_from_yfinance():
 
     try:
 
@@ -144,7 +83,7 @@ def fetch_from_yfinance():
             "Trying yFinance fallback..."
         )
 
-        data = yf.download(
+        data=yf.download(
 
             tickers=NIFTY50,
 
@@ -158,14 +97,16 @@ def fetch_from_yfinance():
 
         )
 
-        close_df = data["Close"]
+        close_df=data["Close"]
 
-        pct_change = (
+        pct_change=(
 
             (
 
                 close_df.iloc[-1]
+
                 -
+
                 close_df.iloc[-2]
 
             )
@@ -174,11 +115,11 @@ def fetch_from_yfinance():
 
             close_df.iloc[-2]
 
-            * 100
+            *100
 
         )
 
-        df = pd.DataFrame({
+        df=pd.DataFrame({
 
             "symbol":
             pct_change.index,
@@ -188,14 +129,9 @@ def fetch_from_yfinance():
 
         })
 
-        df = (
+        df=df.dropna()
 
-            df
-            .dropna()
-
-        )
-
-        gainers = (
+        gainers=(
 
             df
 
@@ -210,7 +146,7 @@ def fetch_from_yfinance():
 
         )
 
-        losers = (
+        losers=(
 
             df
 
@@ -226,15 +162,20 @@ def fetch_from_yfinance():
         )
 
         logger.info(
-            "yFinance movers fetched"
+            "Movers fetched"
         )
 
-        return gainers, losers
+        return (
+
+            gainers,
+            losers
+
+        )
 
     except Exception as e:
 
         logger.error(
-            f"yFinance failed: {e}"
+            f"Movers error: {e}"
         )
 
         return (
@@ -243,18 +184,3 @@ def fetch_from_yfinance():
             pd.DataFrame()
 
         )
-
-
-def fetch_top_movers():
-
-    gainers, losers = fetch_from_nse()
-
-    if gainers is not None:
-
-        return gainers, losers
-
-    logger.info(
-        "Switching to fallback source"
-    )
-
-    return fetch_from_yfinance()
