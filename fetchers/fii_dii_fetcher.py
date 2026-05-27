@@ -47,52 +47,83 @@ def fetch_fii_dii():
             if x["category"] == "DII"
         )
 
+        # Convert strings to float
+
+        fii_buy = float(
+            fii["buyValue"]
+        )
+
+        fii_sell = float(
+            fii["sellValue"]
+        )
+
+        fii_net = float(
+            fii["netValue"]
+        )
+
+        dii_buy = float(
+            dii["buyValue"]
+        )
+
+        dii_sell = float(
+            dii["sellValue"]
+        )
+
+        dii_net = float(
+            dii["netValue"]
+        )
+
+        net_difference = round(
+            dii_net - fii_net,
+            2
+        )
+
+        sentiment = (
+
+            "Bullish"
+
+            if fii_net > 1000
+
+            else
+
+            "Bearish"
+
+            if fii_net < -1000
+
+            else
+
+            "Neutral"
+
+        )
+
         final = pd.DataFrame([{
 
             "Date":
             fii["date"],
 
             "FII_Buy":
-            fii["buyValue"],
+            fii_buy,
 
             "FII_Sell":
-            fii["sellValue"],
+            fii_sell,
 
             "FII_Net":
-            fii["netValue"],
+            fii_net,
 
             "DII_Buy":
-            dii["buyValue"],
+            dii_buy,
 
             "DII_Sell":
-            dii["sellValue"],
+            dii_sell,
 
             "DII_Net":
-            dii["netValue"],
+            dii_net,
 
             "Net_Difference":
-            round(
-                dii["netValue"]
-                -
-                fii["netValue"],
-                2
-            ),
+            net_difference,
 
             "Market_Sentiment":
-
-            "Bullish"
-
-            if fii["netValue"] > 1000
-
-            else
-
-            "Bearish"
-
-            if fii["netValue"] < -1000
-
-            else
-
-            "Neutral",
+            sentiment,
 
             "Source":
             "NSE"
