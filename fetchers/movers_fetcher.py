@@ -88,9 +88,19 @@ def fetch_from_nse():
             timeout=30
         )
 
-        response=session.get(
+        url = (
+            "https://www.nseindia.com/api/equity-stockIndices"
+        )
 
-            "https://www.nseindia.com/api/equity-stockIndices?index=NIFTY%2050",
+        params = {
+            "index": "NIFTY 50"
+        }
+
+        response = session.get(
+
+            url,
+
+            params=params,
 
             timeout=30
 
