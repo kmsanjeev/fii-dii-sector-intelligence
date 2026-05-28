@@ -313,12 +313,6 @@ Sentiment: {row['Market_Sentiment']}
 
 ━━━━━━━━━━━━━━
 
-📌 Official Themes Tracked
-
-{len(thematic_registry)}
-
-━━━━━━━━━━━━━━
-
 Status:
 
 ✅ CSV updated
