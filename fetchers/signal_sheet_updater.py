@@ -75,13 +75,8 @@ def save_signals_to_sheet(
 
             key=(
 
-                str(
-                    r["Date"]
-                ),
-
-                str(
-                    r["Stock"]
-                )
+                str(r["Date"]),
+                str(r["Stock"])
 
             )
 
