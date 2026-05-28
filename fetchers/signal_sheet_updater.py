@@ -4,15 +4,11 @@ from utils.logger import logger
 
 
 def save_signals_to_sheet(
-
     spreadsheet,
     signals
-
 ):
 
     try:
-
-        worksheet = None
 
         try:
 
@@ -58,15 +54,15 @@ def save_signals_to_sheet(
 
             return
 
-        existing = worksheet.get_all_records()
+        existing = (
+            worksheet.get_all_records()
+        )
 
         existing_keys = {
 
             (
-
                 str(x["Date"]),
                 str(x["Stock"])
-
             )
 
             for x in existing
@@ -79,8 +75,13 @@ def save_signals_to_sheet(
 
             key=(
 
-                str(r["Date"]),
-                str(r["Stock"])
+                str(
+                    r["Date"]
+                ),
+
+                str(
+                    r["Stock"]
+                )
 
             )
 
