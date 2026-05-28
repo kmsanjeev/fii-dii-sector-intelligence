@@ -32,10 +32,7 @@ SECTOR_MAP = {
     "^CNXPSUBANK",
 
     "NIFTY REALTY":
-    "^CNXREALTY",
-
-    "NIFTY HEALTHCARE":
-    "^CNXHEALTHCARE"
+    "^CNXREALTY"
 
 }
 
@@ -56,6 +53,26 @@ def ensure_directory():
     )
 
 
+def normalize_columns(df):
+
+    # Flatten MultiIndex if present
+
+    if isinstance(
+        df.columns,
+        pd.MultiIndex
+    ):
+
+        df.columns = [
+
+            col[0]
+
+            for col in df.columns
+
+        ]
+
+    return df
+
+
 def fetch_sector_history():
 
     try:
@@ -66,53 +83,127 @@ def fetch_sector_history():
 
         for sector, ticker in SECTOR_MAP.items():
 
-            logger.info(
-                f"Downloading: {sector}"
-            )
+            try:
 
-            df = yf.download(
-
-                ticker,
-
-                period="10y",
-
-                interval="1d",
-
-                auto_adjust=True,
-
-                progress=False
-
-            )
-
-            if df.empty:
-
-                logger.warning(
-                    f"No data: {sector}"
+                logger.info(
+                    f"Downloading: {sector}"
                 )
 
-                continue
+                df = yf.download(
 
-            df = df.reset_index()
+                    ticker,
 
-            df["Sector"] = sector
+                    period="10y",
 
-            df["Daily_Change"] = (
+                    interval="1d",
 
-                (
-                    df["Close"]
-                    -
+                    auto_adjust=True,
+
+                    progress=False
+
+                )
+
+                if df.empty:
+
+                    logger.warning(
+                        f"No data: {sector}"
+                    )
+
+                    continue
+
+                df = normalize_columns(df)
+
+                df = df.reset_index()
+
+                # Safety rename
+
+                if "index" in df.columns:
+
+                    df.rename(
+
+                        columns={
+                            "index":
+                            "Date"
+                        },
+
+                        inplace=True
+
+                    )
+
+                if "Date" not in df.columns:
+
+                    logger.warning(
+                        f"Date column missing: {sector}"
+                    )
+
+                    continue
+
+                required = [
+
+                    "Open",
+                    "High",
+                    "Low",
+                    "Close",
+                    "Volume"
+
+                ]
+
+                missing = [
+
+                    x for x in required
+
+                    if x not in df.columns
+
+                ]
+
+                if missing:
+
+                    logger.warning(
+                        f"Missing columns {missing}: {sector}"
+                    )
+
+                    continue
+
+                df["Sector"] = sector
+
+                df["Daily_Change"] = (
+
+                    (
+                        df["Close"]
+                        -
+                        df["Open"]
+                    )
+
+                    /
+
                     df["Open"]
+
+                    * 100
+
+                ).round(2)
+
+                combined.append(
+
+                    df[[
+
+                        "Date",
+                        "Sector",
+                        "Open",
+                        "High",
+                        "Low",
+                        "Close",
+                        "Volume",
+                        "Daily_Change"
+
+                    ]]
+
                 )
 
-                /
+            except Exception as sector_error:
 
-                df["Open"]
-
-                * 100
-
-            ).round(2)
-
-            combined.append(df)
+                logger.error(
+                    f"{sector} error: {sector_error}"
+                )
 
         if not combined:
 
@@ -129,19 +220,6 @@ def fetch_sector_history():
             ignore_index=True
 
         )
-
-        final_df = final_df[[
-
-            "Date",
-            "Sector",
-            "Open",
-            "High",
-            "Low",
-            "Close",
-            "Volume",
-            "Daily_Change"
-
-        ]]
 
         save_file = (
 
