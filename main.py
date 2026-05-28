@@ -22,10 +22,6 @@ from fetchers.thematic_history_fetcher import (
     fetch_thematic_history
 )
 
-from fetchers.dynamic_thematic_fetcher import (
-    fetch_dynamic_thematic_indices
-)
-
 from storage.fii_dii_history_manager import (
     append_historical_data
 )
@@ -67,14 +63,6 @@ def main():
 
     sector_history = (
         fetch_sector_history()
-    )
-
-    # ====================
-    # Dynamic Thematic Discovery
-    # ====================
-
-    thematic_registry = (
-        fetch_dynamic_thematic_indices()
     )
 
     # ====================
@@ -303,7 +291,7 @@ Date: {row['Date']}
 
 FII Net: ₹{row['FII_Net']} Cr
 DII Net: ₹{row['DII_Net']} Cr
-Combined Net Flow: ₹{row['Combined_Net_Flow']} Cr
+Net Flow: ₹{row['Combined_Net_Flow']} Cr
 
 Sentiment: {row['Market_Sentiment']}
 

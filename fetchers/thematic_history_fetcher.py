@@ -7,9 +7,6 @@ from utils.logger import logger
 
 THEMATIC_MAP = {
 
-    "NIFTY CPSE":
-    "^CNXCPSE",
-
     "NIFTY INFRA":
     "^CNXINFRA",
 
@@ -19,14 +16,8 @@ THEMATIC_MAP = {
     "NIFTY PSE":
     "^CNXPSE",
 
-    "NIFTY CONSUMPTION":
-    "^CNXCONSUMPTION",
-
     "NIFTY MNC":
-    "^CNXMNC",
-
-    "NIFTY COMMODITIES":
-    "^CNXCOMMODITIES"
+    "^CNXMNC"
 
 }
 
@@ -227,7 +218,8 @@ def fetch_thematic_history():
         )
 
         logger.info(
-            f"Thematic history saved: {len(final_df)} rows"
+            f"Thematic history saved: "
+            f"{len(final_df)} rows"
         )
 
         return final_df
