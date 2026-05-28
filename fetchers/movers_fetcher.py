@@ -1,13 +1,11 @@
 import os
-import requests
 import yfinance as yf
 import pandas as pd
 
 from utils.logger import logger
 
 
-# Prevent yfinance cache warnings
-CACHE_DIR = "/tmp/yfinance_cache"
+CACHE_DIR="/tmp/yfinance_cache"
 
 os.makedirs(
     CACHE_DIR,
@@ -23,11 +21,6 @@ try:
 except:
 
     pass
-
-
-HEADERS = {
-    "User-Agent":"Mozilla/5.0"
-}
 
 
 NIFTY50=[
@@ -64,8 +57,6 @@ def fetch_top_movers():
             "Trying NSE movers..."
         )
 
-        # Placeholder until NSE parsing is rebuilt
-
         raise Exception(
             "Fallback enabled"
         )
@@ -75,7 +66,6 @@ def fetch_top_movers():
         logger.warning(
             f"NSE failed: {e}"
         )
-
 
     try:
 
@@ -87,7 +77,7 @@ def fetch_top_movers():
 
             tickers=NIFTY50,
 
-            period="2d",
+            period="5d",
 
             interval="1d",
 
@@ -99,21 +89,33 @@ def fetch_top_movers():
 
         close_df=data["Close"]
 
+        if len(close_df)<2:
+
+            logger.warning(
+                "Insufficient price history"
+            )
+
+            return (
+
+                pd.DataFrame(),
+                pd.DataFrame()
+
+            )
+
+        latest=close_df.iloc[-1]
+        previous=close_df.iloc[-2]
+
         pct_change=(
 
             (
-
-                close_df.iloc[-1]
-
+                latest
                 -
-
-                close_df.iloc[-2]
-
+                previous
             )
 
             /
 
-            close_df.iloc[-2]
+            previous
 
             *100
 
@@ -129,7 +131,12 @@ def fetch_top_movers():
 
         })
 
-        df=df.dropna()
+        df=(
+
+            df
+            .dropna()
+
+        )
 
         gainers=(
 

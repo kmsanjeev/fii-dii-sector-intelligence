@@ -4,7 +4,7 @@ import pandas as pd
 from utils.logger import logger
 
 
-SECTOR_MAP = {
+SECTOR_MAP={
 
     "NIFTY IT":[
         "TCS.NS",
@@ -65,13 +65,9 @@ def fetch_sector_leaders(
 
         if sector_name not in SECTOR_MAP:
 
-            logger.warning(
-                f"{sector_name} not mapped"
-            )
-
             return pd.DataFrame()
 
-        stocks = SECTOR_MAP[
+        stocks=SECTOR_MAP[
             sector_name
         ]
 
@@ -79,11 +75,11 @@ def fetch_sector_leaders(
             f"Fetching leaders for {sector_name}"
         )
 
-        data = yf.download(
+        data=yf.download(
 
             tickers=stocks,
 
-            period="2d",
+            period="5d",
 
             interval="1d",
 
@@ -93,27 +89,36 @@ def fetch_sector_leaders(
 
         )
 
-        close_df = data["Close"]
+        close_df=data["Close"]
 
-        pct_change = (
+        if len(close_df)<2:
+
+            logger.warning(
+                "Insufficient sector history"
+            )
+
+            return pd.DataFrame()
+
+        latest=close_df.iloc[-1]
+        previous=close_df.iloc[-2]
+
+        pct_change=(
 
             (
-
-                close_df.iloc[-1]
+                latest
                 -
-                close_df.iloc[-2]
-
+                previous
             )
 
             /
 
-            close_df.iloc[-2]
+            previous
 
             *100
 
         )
 
-        df = pd.DataFrame({
+        df=pd.DataFrame({
 
             "symbol":
             pct_change.index,
@@ -123,7 +128,7 @@ def fetch_sector_leaders(
 
         })
 
-        df = (
+        df=(
 
             df
             .dropna()
@@ -142,7 +147,6 @@ def fetch_sector_leaders(
         )
 
         return df
-
 
     except Exception as e:
 
