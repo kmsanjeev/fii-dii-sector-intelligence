@@ -4,8 +4,10 @@ from utils.logger import logger
 
 
 def save_signals_to_sheet(
+
     spreadsheet,
     signals
+
 ):
 
     try:
@@ -26,9 +28,9 @@ def save_signals_to_sheet(
 
                 title="Momentum_Signals",
 
-                rows=1000,
+                rows=5000,
 
-                cols=10
+                cols=20
 
             )
 
@@ -38,7 +40,11 @@ def save_signals_to_sheet(
                 "Signal",
                 "Stock",
                 "Sector",
-                "Strength"
+                "Strength",
+                "Score",
+                "Stock_Change",
+                "Sector_Change",
+                "Flow_Bias"
 
             ])
 
@@ -88,7 +94,11 @@ def save_signals_to_sheet(
                     r["Signal"],
                     r["Stock"],
                     r["Sector"],
-                    r["Strength"]
+                    r["Strength"],
+                    r["Score"],
+                    r["Stock_Change"],
+                    r["Sector_Change"],
+                    r["Flow_Bias"]
 
                 ])
 

@@ -1,6 +1,75 @@
 import pandas as pd
 
 
+def calculate_score(
+
+    signal,
+    combined_flow,
+    sector_change,
+    stock_change
+
+):
+
+    score = 50
+
+    # ====================
+    # Flow Bias
+    # ====================
+
+    if combined_flow > 0:
+
+        score += 20
+
+    else:
+
+        score -= 20
+
+    # ====================
+    # Sector Strength
+    # ====================
+
+    if sector_change > 1:
+
+        score += 15
+
+    elif sector_change < -1:
+
+        score -= 15
+
+    # ====================
+    # Stock Momentum
+    # ====================
+
+    if stock_change > 2:
+
+        score += 15
+
+    elif stock_change < -2:
+
+        score -= 15
+
+    # ====================
+    # Signal Bias
+    # ====================
+
+    if signal == "BUY":
+
+        score += 10
+
+    elif signal == "SELL":
+
+        score -= 10
+
+    # Clamp
+
+    score = max(
+        0,
+        min(100, score)
+    )
+
+    return round(score, 2)
+
+
 def generate_signals(
 
     date,
@@ -8,17 +77,30 @@ def generate_signals(
     losers,
     strongest_sector,
     weakest_sector,
+    strongest_sector_change,
+    weakest_sector_change,
     combined_flow
 
 ):
 
-    rows=[]
+    rows = []
+
+    # ====================
+    # BUY / WATCH
+    # ====================
 
     if not gainers.empty:
 
-        for _,r in gainers.iterrows():
+        for _, r in gainers.iterrows():
 
-            signal=(
+            stock_change = round(
+                float(
+                    r["percentChange"]
+                ),
+                2
+            )
+
+            signal = (
 
                 "BUY"
 
@@ -27,6 +109,15 @@ def generate_signals(
                 else
 
                 "WATCH"
+
+            )
+
+            score = calculate_score(
+
+                signal,
+                combined_flow,
+                strongest_sector_change,
+                stock_change
 
             )
 
@@ -45,35 +136,88 @@ def generate_signals(
                 strongest_sector,
 
                 "Strength":
-                "Strong"
+                "Strong",
+
+                "Score":
+                score,
+
+                "Stock_Change":
+                stock_change,
+
+                "Sector_Change":
+                strongest_sector_change,
+
+                "Flow_Bias":
+                combined_flow
 
             })
 
+    # ====================
+    # SELL
+    # ====================
+
     if not losers.empty:
 
-        for _,r in losers.iterrows():
+        for _, r in losers.iterrows():
 
-            if combined_flow < 0:
+            stock_change = round(
+                float(
+                    r["percentChange"]
+                ),
+                2
+            )
 
-                rows.append({
+            signal = "SELL"
 
-                    "Date":
-                    date,
+            score = calculate_score(
 
-                    "Signal":
-                    "SELL",
+                signal,
+                combined_flow,
+                weakest_sector_change,
+                stock_change
 
-                    "Stock":
-                    r["symbol"],
+            )
 
-                    "Sector":
-                    weakest_sector,
+            rows.append({
 
-                    "Strength":
-                    "Weak"
+                "Date":
+                date,
 
-                })
+                "Signal":
+                signal,
 
-    return pd.DataFrame(
+                "Stock":
+                r["symbol"],
+
+                "Sector":
+                weakest_sector,
+
+                "Strength":
+                "Weak",
+
+                "Score":
+                score,
+
+                "Stock_Change":
+                stock_change,
+
+                "Sector_Change":
+                weakest_sector_change,
+
+                "Flow_Bias":
+                combined_flow
+
+            })
+
+    df = pd.DataFrame(
         rows
     )
+
+    if not df.empty:
+
+        df = df.sort_values(
+            by="Score",
+            ascending=False
+        )
+
+    return df

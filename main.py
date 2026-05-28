@@ -171,13 +171,30 @@ def main():
         fetch_top_movers()
     )
 
-    signals=generate_signals(
+    signals = generate_signals(
 
         row["Date"],
+
         gainers,
         losers,
+
         strongest_sector,
         weakest_sector,
+
+        round(
+            float(
+                top3.iloc[0]["percentChange"]
+            ),
+            2
+        ),
+
+        round(
+            float(
+                bottom3.iloc[0]["percentChange"]
+            ),
+            2
+        ),
+
         row["Combined_Net_Flow"]
 
     )
