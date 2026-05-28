@@ -1,6 +1,24 @@
 import pandas as pd
 
+from datetime import datetime
+
+from zoneinfo import ZoneInfo
+
 from utils.logger import logger
+
+
+IST = ZoneInfo(
+    "Asia/Kolkata"
+)
+
+
+def get_ist_timestamp():
+
+    return datetime.now(
+        IST
+    ).strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
 
 
 def save_signals_to_sheet(
@@ -76,13 +94,14 @@ def save_signals_to_sheet(
 
             )
 
-            # +2 because sheets are 1-indexed
-            # and row 1 is header
-
             existing_map[key] = idx + 2
 
         added = 0
         updated = 0
+
+        current_time = (
+            get_ist_timestamp()
+        )
 
         for _, r in signals.iterrows():
 
@@ -104,9 +123,7 @@ def save_signals_to_sheet(
                 r["Stock_Change"],
                 r["Sector_Change"],
                 r["Flow_Bias"],
-                pd.Timestamp.now().strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                )
+                current_time
 
             ]
 
