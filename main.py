@@ -22,6 +22,10 @@ from fetchers.thematic_history_fetcher import (
     fetch_thematic_history
 )
 
+from fetchers.dynamic_thematic_fetcher import (
+    fetch_dynamic_thematic_indices
+)
+
 from storage.fii_dii_history_manager import (
     append_historical_data
 )
@@ -63,6 +67,14 @@ def main():
 
     sector_history = (
         fetch_sector_history()
+    )
+
+    # ====================
+    # Dynamic Thematic Discovery
+    # ====================
+
+    thematic_registry = (
+        fetch_dynamic_thematic_indices()
     )
 
     # ====================
@@ -310,6 +322,12 @@ Sentiment: {row['Market_Sentiment']}
 🚀 Leaders in {strongest_sector}
 
 {sector_leader_text}
+
+━━━━━━━━━━━━━━
+
+📌 Official Themes Tracked
+
+{len(thematic_registry)}
 
 ━━━━━━━━━━━━━━
 
