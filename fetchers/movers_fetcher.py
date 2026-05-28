@@ -1,4 +1,5 @@
 import os
+import requests
 import yfinance as yf
 import pandas as pd
 
@@ -21,6 +22,23 @@ try:
 except:
 
     pass
+
+
+HEADERS={
+
+    "User-Agent":
+    "Mozilla/5.0",
+
+    "Accept":
+    "application/json",
+
+    "Referer":
+    "https://www.nseindia.com/",
+
+    "Connection":
+    "keep-alive"
+
+}
 
 
 NIFTY50=[
@@ -49,7 +67,7 @@ NIFTY50=[
 ]
 
 
-def fetch_top_movers():
+def fetch_from_nse():
 
     try:
 
@@ -57,8 +75,122 @@ def fetch_top_movers():
             "Trying NSE movers..."
         )
 
-        raise Exception(
-            "Fallback enabled"
+        session=requests.Session()
+
+        session.headers.update(
+            HEADERS
+        )
+
+        # Initialize cookies
+
+        session.get(
+            "https://www.nseindia.com",
+            timeout=30
+        )
+
+        response=session.get(
+
+            "https://www.nseindia.com/api/equity-stockIndices?index=NIFTY%2050",
+
+            timeout=30
+
+        )
+
+        response.raise_for_status()
+
+        data=response.json()
+
+        if "data" not in data:
+
+            raise Exception(
+                "No NSE data found"
+            )
+
+        df=pd.DataFrame(
+            data["data"]
+        )
+
+        if df.empty:
+
+            raise Exception(
+                "Empty NSE dataframe"
+            )
+
+        required_cols=[
+            "symbol",
+            "pChange"
+        ]
+
+        for col in required_cols:
+
+            if col not in df.columns:
+
+                raise Exception(
+                    f"Missing column: {col}"
+                )
+
+        df["pChange"]=pd.to_numeric(
+
+            df["pChange"],
+            errors="coerce"
+
+        )
+
+        df=df.dropna(
+            subset=["pChange"]
+        )
+
+        gainers=(
+
+            df
+
+            .sort_values(
+                by="pChange",
+                ascending=False
+            )
+
+            [["symbol","pChange"]]
+
+            .head(3)
+
+            .rename(
+                columns={
+                    "pChange":
+                    "percentChange"
+                }
+            )
+
+        )
+
+        losers=(
+
+            df
+
+            .sort_values(
+                by="pChange",
+                ascending=True
+            )
+
+            [["symbol","pChange"]]
+
+            .head(3)
+
+            .rename(
+                columns={
+                    "pChange":
+                    "percentChange"
+                }
+            )
+
+        )
+
+        logger.info(
+            "NSE movers fetched"
+        )
+
+        return (
+            gainers,
+            losers
         )
 
     except Exception as e:
@@ -66,6 +198,11 @@ def fetch_top_movers():
         logger.warning(
             f"NSE failed: {e}"
         )
+
+        return None, None
+
+
+def fetch_from_yfinance():
 
     try:
 
@@ -91,15 +228,8 @@ def fetch_top_movers():
 
         if len(close_df)<2:
 
-            logger.warning(
-                "Insufficient price history"
-            )
-
-            return (
-
-                pd.DataFrame(),
-                pd.DataFrame()
-
+            raise Exception(
+                "Insufficient yFinance history"
             )
 
         latest=close_df.iloc[-1]
@@ -131,12 +261,7 @@ def fetch_top_movers():
 
         })
 
-        df=(
-
-            df
-            .dropna()
-
-        )
+        df=df.dropna()
 
         gainers=(
 
@@ -169,20 +294,18 @@ def fetch_top_movers():
         )
 
         logger.info(
-            "Movers fetched"
+            "yFinance movers fetched"
         )
 
         return (
-
             gainers,
             losers
-
         )
 
     except Exception as e:
 
         logger.error(
-            f"Movers error: {e}"
+            f"yFinance failed: {e}"
         )
 
         return (
@@ -191,3 +314,23 @@ def fetch_top_movers():
             pd.DataFrame()
 
         )
+
+
+def fetch_top_movers():
+
+    gainers, losers = (
+        fetch_from_nse()
+    )
+
+    if gainers is not None:
+
+        return (
+            gainers,
+            losers
+        )
+
+    logger.info(
+        "Switching to fallback source"
+    )
+
+    return fetch_from_yfinance()
