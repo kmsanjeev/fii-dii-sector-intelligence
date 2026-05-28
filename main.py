@@ -18,6 +18,10 @@ from fetchers.sector_stock_mapper import (
     fetch_sector_leaders
 )
 
+from fetchers.thematic_history_fetcher import (
+    fetch_thematic_history
+)
+
 from storage.fii_dii_history_manager import (
     append_historical_data
 )
@@ -59,6 +63,14 @@ def main():
 
     sector_history = (
         fetch_sector_history()
+    )
+
+    # ====================
+    # Thematic Historical Data
+    # ====================
+
+    thematic_history = (
+        fetch_thematic_history()
     )
 
     # ====================
@@ -306,6 +318,7 @@ Status:
 ✅ CSV updated
 ✅ Google Sheet updated
 ✅ Historical archive updated
+✅ Thematic archive updated
 """
 
     send_message(message)
