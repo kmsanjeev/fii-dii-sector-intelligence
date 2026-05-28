@@ -44,7 +44,8 @@ def save_signals_to_sheet(
                 "Score",
                 "Stock_Change",
                 "Sector_Change",
-                "Flow_Bias"
+                "Flow_Bias",
+                "Last_Updated"
 
             ])
 
@@ -55,7 +56,7 @@ def save_signals_to_sheet(
         if signals.empty:
 
             logger.info(
-                "No signals to insert"
+                "No signals to process"
             )
 
             return
@@ -64,59 +65,90 @@ def save_signals_to_sheet(
             worksheet.get_all_records()
         )
 
-        existing_keys = {
+        existing_map = {}
 
-            (
-                str(x["Date"]),
-                str(x["Stock"])
+        for idx, row in enumerate(existing):
+
+            key = (
+
+                str(row["Date"]),
+                str(row["Stock"])
+
             )
 
-            for x in existing
+            # +2 because sheets are 1-indexed
+            # and row 1 is header
 
-        }
+            existing_map[key] = idx + 2
 
-        rows=[]
+        added = 0
+        updated = 0
 
-        for _,r in signals.iterrows():
+        for _, r in signals.iterrows():
 
-            key=(
+            key = (
 
                 str(r["Date"]),
                 str(r["Stock"])
 
             )
 
-            if key not in existing_keys:
+            row_values = [
 
-                rows.append([
+                r["Date"],
+                r["Signal"],
+                r["Stock"],
+                r["Sector"],
+                r["Strength"],
+                r["Score"],
+                r["Stock_Change"],
+                r["Sector_Change"],
+                r["Flow_Bias"],
+                pd.Timestamp.now().strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
 
-                    r["Date"],
-                    r["Signal"],
-                    r["Stock"],
-                    r["Sector"],
-                    r["Strength"],
-                    r["Score"],
-                    r["Stock_Change"],
-                    r["Sector_Change"],
-                    r["Flow_Bias"]
+            ]
 
-                ])
+            # ====================
+            # UPDATE EXISTING
+            # ====================
 
-        if rows:
+            if key in existing_map:
 
-            worksheet.append_rows(
-                rows
-            )
+                row_number = (
+                    existing_map[key]
+                )
 
-            logger.info(
-                f"Added {len(rows)} signals"
-            )
+                worksheet.update(
 
-        else:
+                    f"A{row_number}:J{row_number}",
 
-            logger.info(
-                "No new signals"
-            )
+                    [row_values]
+
+                )
+
+                updated += 1
+
+            # ====================
+            # INSERT NEW
+            # ====================
+
+            else:
+
+                worksheet.append_row(
+                    row_values
+                )
+
+                added += 1
+
+        logger.info(
+            f"Signals Added: {added}"
+        )
+
+        logger.info(
+            f"Signals Updated: {updated}"
+        )
 
     except Exception as e:
 
