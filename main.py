@@ -26,6 +26,10 @@ from fetchers.data_store import (
     save_fii_dii
 )
 
+from fetchers.sector_history_fetcher import (
+    fetch_sector_history
+)
+
 from sheets.google_sheet_updater import (
     connect_sheet,
     create_sheet_if_missing,
@@ -43,6 +47,14 @@ def main():
 
     logger.info(
         "Engine Started"
+    )
+
+    # ====================
+    # Sector Historical Data
+    # ====================
+
+    sector_history = (
+        fetch_sector_history()
     )
 
     df = fetch_fii_dii()
