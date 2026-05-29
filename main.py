@@ -7,7 +7,7 @@ from fetchers.daily_fii_dii_fetcher import (
 )
 
 from fetchers.fii_dii_backfill_engine import (
-    run_backfill_discovery
+    run_api_recon
 )
 
 from fetchers.sector_fetcher import (
@@ -20,10 +20,6 @@ from fetchers.movers_fetcher import (
 
 from fetchers.sector_stock_mapper import (
     fetch_sector_leaders
-)
-
-from fetchers.thematic_history_fetcher import (
-    fetch_thematic_history
 )
 
 from fetchers.aggregation_engine import (
@@ -55,10 +51,6 @@ from fetchers.data_store import (
     save_fii_dii
 )
 
-from fetchers.sector_history_fetcher import (
-    fetch_sector_history
-)
-
 from sheets.google_sheet_updater import (
     connect_sheet,
     create_sheet_if_missing,
@@ -86,6 +78,8 @@ def main():
         run_historical_engine()
     )
 
+    run_api_recon()
+
     sector_history = (
         historical_data[
             "sector_history"
@@ -97,8 +91,6 @@ def main():
             "thematic_history"
         ]
     )
-
-    run_backfill_discovery()
 
     generate_sector_heatmaps(
         sector_history

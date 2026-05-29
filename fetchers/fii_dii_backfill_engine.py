@@ -1,5 +1,5 @@
 import requests
-from bs4 import BeautifulSoup
+import json
 
 from utils.logger import logger
 
@@ -9,14 +9,127 @@ HEADERS = {
 }
 
 
-ARCHIVE_URL = (
-    "https://www.nseindia.com/"
-    "static/all-reports/"
-    "historical-equities-fii-fpi-dii-trading-activity"
-)
+TEST_ENDPOINTS = [
+
+    "https://www.nseindia.com/api/fiidiiTradeReact",
+
+    "https://www.nseindia.com/api/reports-fiidii",
+
+    "https://www.nseindia.com/api/historical/fiidii",
+
+    "https://www.nseindia.com/api/fiiDiiTradeHistory"
+
+]
 
 
-def discover_archive_links():
+TEST_DATES = [
+
+    "01-01-2025",
+    "01-01-2024",
+    "01-01-2023"
+
+]
+
+
+def test_endpoint(
+    session,
+    url
+):
+
+    try:
+
+        response = session.get(
+            url,
+            timeout=30
+        )
+
+        logger.info(
+            f"Endpoint: {url}"
+        )
+
+        logger.info(
+            f"Status: "
+            f"{response.status_code}"
+        )
+
+        if response.status_code == 200:
+
+            logger.info(
+                f"Content-Type: "
+                f"{response.headers.get('Content-Type')}"
+            )
+
+            text = response.text[:500]
+
+            logger.info(
+                f"Preview: {text}"
+            )
+
+        return response.status_code
+
+    except Exception as e:
+
+        logger.warning(
+            f"Failed: {url}"
+        )
+
+        logger.warning(
+            str(e)
+        )
+
+        return None
+
+
+def test_date_parameter(
+    session,
+    base_url
+):
+
+    for date in TEST_DATES:
+
+        try:
+
+            response = session.get(
+
+                base_url,
+
+                params={
+                    "date": date
+                },
+
+                timeout=30
+
+            )
+
+            logger.info(
+                f"Date Test: "
+                f"{date}"
+            )
+
+            logger.info(
+                f"Status: "
+                f"{response.status_code}"
+            )
+
+            if response.status_code == 200:
+
+                logger.info(
+                    response.text[:300]
+                )
+
+        except Exception as e:
+
+            logger.warning(
+                f"Date test failed: "
+                f"{e}"
+            )
+
+
+def run_api_recon():
+
+    logger.info(
+        "NSE API Recon Started"
+    )
 
     try:
 
@@ -31,78 +144,26 @@ def discover_archive_links():
             timeout=30
         )
 
-        response = session.get(
-            ARCHIVE_URL,
-            timeout=30
-        )
+        for endpoint in TEST_ENDPOINTS:
 
-        response.raise_for_status()
-
-        soup = BeautifulSoup(
-            response.text,
-            "html.parser"
-        )
-
-        links = []
-
-        for tag in soup.find_all("a"):
-
-            href = tag.get("href")
-
-            if not href:
-                continue
-
-            if any(
-                ext in href.lower()
-                for ext in [
-                    ".csv",
-                    ".xls",
-                    ".xlsx",
-                    ".zip"
-                ]
-            ):
-
-                links.append(href)
-
-        links = list(
-            set(links)
-        )
-
-        logger.info(
-            f"Archive files found: "
-            f"{len(links)}"
-        )
-
-        for link in links:
-
-            logger.info(
-                f"Archive: {link}"
+            status = test_endpoint(
+                session,
+                endpoint
             )
 
-        return links
+            if status == 200:
+
+                test_date_parameter(
+                    session,
+                    endpoint
+                )
+
+        logger.info(
+            "NSE API Recon Completed"
+        )
 
     except Exception as e:
 
         logger.error(
-            f"Backfill discovery error: {e}"
+            f"Recon error: {e}"
         )
-
-        return []
-
-
-def run_backfill_discovery():
-
-    logger.info(
-        "Starting FII/DII archive discovery"
-    )
-
-    links = (
-        discover_archive_links()
-    )
-
-    logger.info(
-        f"Discovery completed. "
-        f"Files found: {len(links)}"
-    )
-
-    return links
