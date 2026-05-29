@@ -6,6 +6,10 @@ from fetchers.daily_fii_dii_fetcher import (
     fetch_fii_dii
 )
 
+from fetchers.fii_dii_backfill_engine import (
+    run_backfill_discovery
+)
+
 from fetchers.sector_fetcher import (
     fetch_sectors
 )
@@ -82,6 +86,8 @@ def main():
         run_historical_engine()
     )
 
+    run_backfill_discovery()
+
     sector_history = (
         historical_data[
             "sector_history"
@@ -93,6 +99,8 @@ def main():
             "thematic_history"
         ]
     )
+
+    run_backfill_discovery()
 
     generate_sector_heatmaps(
         sector_history
