@@ -1,8 +1,19 @@
 import os
-import yfinance as yf
 import pandas as pd
+import yfinance as yf
 
 from utils.logger import logger
+
+
+SAVE_PATH = (
+    "data/historical/thematic/"
+)
+
+SAVE_FILE = (
+    SAVE_PATH
+    +
+    "thematic_history.csv"
+)
 
 
 THEMATIC_MAP = {
@@ -22,177 +33,83 @@ THEMATIC_MAP = {
 }
 
 
-SAVE_PATH = (
-    "data/historical/thematic/"
-)
-
-
-def ensure_directory():
-
-    os.makedirs(
-
-        SAVE_PATH,
-
-        exist_ok=True
-
-    )
-
-
-def normalize_columns(df):
-
-    if isinstance(
-        df.columns,
-        pd.MultiIndex
-    ):
-
-        df.columns = [
-
-            col[0]
-
-            for col in df.columns
-
-        ]
-
-    return df
-
-
 def fetch_thematic_history():
 
     try:
 
-        ensure_directory()
+        if os.path.exists(
+            SAVE_FILE
+        ):
+
+            logger.info(
+                "Using cached thematic history"
+            )
+
+            return pd.read_csv(
+                SAVE_FILE
+            )
+
+        os.makedirs(
+            SAVE_PATH,
+            exist_ok=True
+        )
 
         combined = []
 
         for theme, ticker in THEMATIC_MAP.items():
 
-            try:
+            logger.info(
+                f"Downloading Theme: {theme}"
+            )
 
-                logger.info(
-                    f"Downloading Theme: {theme}"
-                )
+            df = yf.download(
 
-                df = yf.download(
+                ticker,
 
-                    ticker,
+                period="10y",
 
-                    period="10y",
+                progress=False,
 
-                    interval="1d",
+                auto_adjust=True
 
-                    auto_adjust=True,
+            )
 
-                    progress=False
+            if df.empty:
 
-                )
+                continue
 
-                if df.empty:
+            df = df.reset_index()
 
-                    logger.warning(
-                        f"No theme data: {theme}"
-                    )
+            if isinstance(
+                df.columns,
+                pd.MultiIndex
+            ):
 
-                    continue
+                df.columns = [
 
-                df = normalize_columns(df)
+                    col[0]
 
-                df = df.reset_index()
+                    for col in df.columns
 
-                if "index" in df.columns:
+                ]
 
-                    df.rename(
+            df["Theme"] = theme
 
-                        columns={
-                            "index":
-                            "Date"
-                        },
+            combined.append(
 
-                        inplace=True
+                df[[
 
-                    )
-
-                if "Date" not in df.columns:
-
-                    logger.warning(
-                        f"Date missing: {theme}"
-                    )
-
-                    continue
-
-                required = [
-
+                    "Date",
+                    "Theme",
                     "Open",
                     "High",
                     "Low",
                     "Close",
                     "Volume"
 
-                ]
+                ]]
 
-                missing = [
-
-                    x for x in required
-
-                    if x not in df.columns
-
-                ]
-
-                if missing:
-
-                    logger.warning(
-                        f"Missing columns {missing}: {theme}"
-                    )
-
-                    continue
-
-                df["Theme"] = theme
-
-                df["Daily_Change"] = (
-
-                    (
-                        df["Close"]
-                        -
-                        df["Open"]
-                    )
-
-                    /
-
-                    df["Open"]
-
-                    * 100
-
-                ).round(2)
-
-                combined.append(
-
-                    df[[
-
-                        "Date",
-                        "Theme",
-                        "Open",
-                        "High",
-                        "Low",
-                        "Close",
-                        "Volume",
-                        "Daily_Change"
-
-                    ]]
-
-                )
-
-            except Exception as theme_error:
-
-                logger.error(
-                    f"{theme} error: {theme_error}"
-                )
-
-        if not combined:
-
-            logger.error(
-                "No thematic data downloaded"
             )
-
-            return pd.DataFrame()
 
         final_df = pd.concat(
 
@@ -202,24 +119,19 @@ def fetch_thematic_history():
 
         )
 
-        save_file = (
-
-            SAVE_PATH
-            +
-            "thematic_history.csv"
-        )
-
         final_df.to_csv(
 
-            save_file,
+            SAVE_FILE,
 
             index=False
 
         )
 
         logger.info(
+
             f"Thematic history saved: "
             f"{len(final_df)} rows"
+
         )
 
         return final_df

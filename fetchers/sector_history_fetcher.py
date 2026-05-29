@@ -1,217 +1,113 @@
 import os
-import yfinance as yf
 import pandas as pd
+import yfinance as yf
 
 from utils.logger import logger
-
-
-SECTOR_MAP = {
-
-    "NIFTY AUTO":
-    "^CNXAUTO",
-
-    "NIFTY BANK":
-    "^NSEBANK",
-
-    "NIFTY FMCG":
-    "^CNXFMCG",
-
-    "NIFTY IT":
-    "^CNXIT",
-
-    "NIFTY MEDIA":
-    "^CNXMEDIA",
-
-    "NIFTY METAL":
-    "^CNXMETAL",
-
-    "NIFTY PHARMA":
-    "^CNXPHARMA",
-
-    "NIFTY PSU BANK":
-    "^CNXPSUBANK",
-
-    "NIFTY REALTY":
-    "^CNXREALTY"
-
-}
 
 
 SAVE_PATH = (
     "data/historical/sectors/"
 )
 
-
-def ensure_directory():
-
-    os.makedirs(
-
-        SAVE_PATH,
-
-        exist_ok=True
-
-    )
+SAVE_FILE = (
+    SAVE_PATH
+    +
+    "sector_history.csv"
+)
 
 
-def normalize_columns(df):
+SECTOR_MAP = {
 
-    # Flatten MultiIndex if present
+    "NIFTY AUTO": "^CNXAUTO",
+    "NIFTY BANK": "^NSEBANK",
+    "NIFTY FMCG": "^CNXFMCG",
+    "NIFTY IT": "^CNXIT",
+    "NIFTY MEDIA": "^CNXMEDIA",
+    "NIFTY METAL": "^CNXMETAL",
+    "NIFTY PHARMA": "^CNXPHARMA",
+    "NIFTY PSU BANK": "^CNXPSUBANK",
+    "NIFTY REALTY": "^CNXREALTY"
 
-    if isinstance(
-        df.columns,
-        pd.MultiIndex
-    ):
-
-        df.columns = [
-
-            col[0]
-
-            for col in df.columns
-
-        ]
-
-    return df
+}
 
 
 def fetch_sector_history():
 
     try:
 
-        ensure_directory()
+        if os.path.exists(
+            SAVE_FILE
+        ):
+
+            logger.info(
+                "Using cached sector history"
+            )
+
+            return pd.read_csv(
+                SAVE_FILE
+            )
+
+        os.makedirs(
+            SAVE_PATH,
+            exist_ok=True
+        )
 
         combined = []
 
         for sector, ticker in SECTOR_MAP.items():
 
-            try:
+            logger.info(
+                f"Downloading: {sector}"
+            )
 
-                logger.info(
-                    f"Downloading: {sector}"
-                )
+            df = yf.download(
 
-                df = yf.download(
+                ticker,
 
-                    ticker,
+                period="10y",
 
-                    period="10y",
+                progress=False,
 
-                    interval="1d",
+                auto_adjust=True
 
-                    auto_adjust=True,
+            )
 
-                    progress=False
+            if df.empty:
 
-                )
+                continue
 
-                if df.empty:
+            df = df.reset_index()
 
-                    logger.warning(
-                        f"No data: {sector}"
-                    )
+            if isinstance(
+                df.columns,
+                pd.MultiIndex
+            ):
 
-                    continue
+                df.columns = [
 
-                df = normalize_columns(df)
+                    col[0]
 
-                df = df.reset_index()
+                    for col in df.columns
 
-                # Safety rename
+                ]
 
-                if "index" in df.columns:
+            df["Sector"] = sector
 
-                    df.rename(
+            combined.append(
 
-                        columns={
-                            "index":
-                            "Date"
-                        },
+                df[[
 
-                        inplace=True
-
-                    )
-
-                if "Date" not in df.columns:
-
-                    logger.warning(
-                        f"Date column missing: {sector}"
-                    )
-
-                    continue
-
-                required = [
-
+                    "Date",
+                    "Sector",
                     "Open",
                     "High",
                     "Low",
                     "Close",
                     "Volume"
 
-                ]
+                ]]
 
-                missing = [
-
-                    x for x in required
-
-                    if x not in df.columns
-
-                ]
-
-                if missing:
-
-                    logger.warning(
-                        f"Missing columns {missing}: {sector}"
-                    )
-
-                    continue
-
-                df["Sector"] = sector
-
-                df["Daily_Change"] = (
-
-                    (
-                        df["Close"]
-                        -
-                        df["Open"]
-                    )
-
-                    /
-
-                    df["Open"]
-
-                    * 100
-
-                ).round(2)
-
-                combined.append(
-
-                    df[[
-
-                        "Date",
-                        "Sector",
-                        "Open",
-                        "High",
-                        "Low",
-                        "Close",
-                        "Volume",
-                        "Daily_Change"
-
-                    ]]
-
-                )
-
-            except Exception as sector_error:
-
-                logger.error(
-                    f"{sector} error: {sector_error}"
-                )
-
-        if not combined:
-
-            logger.error(
-                "No sector data downloaded"
             )
-
-            return pd.DataFrame()
 
         final_df = pd.concat(
 
@@ -221,23 +117,19 @@ def fetch_sector_history():
 
         )
 
-        save_file = (
-
-            SAVE_PATH
-            +
-            "sector_history.csv"
-        )
-
         final_df.to_csv(
 
-            save_file,
+            SAVE_FILE,
 
             index=False
 
         )
 
         logger.info(
-            f"Sector history saved: {len(final_df)} rows"
+
+            f"Sector history saved: "
+            f"{len(final_df)} rows"
+
         )
 
         return final_df
