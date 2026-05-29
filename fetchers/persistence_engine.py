@@ -21,74 +21,6 @@ def ensure_directory():
     )
 
 
-def calculate_score(
-    weekly_rank,
-    biweekly_rank,
-    monthly_rank,
-    total_items
-):
-
-    weekly_score = (
-
-        (
-            total_items
-            -
-            weekly_rank
-            +
-            1
-        )
-
-        /
-
-        total_items
-
-    ) * 30
-
-    biweekly_score = (
-
-        (
-            total_items
-            -
-            biweekly_rank
-            +
-            1
-        )
-
-        /
-
-        total_items
-
-    ) * 30
-
-    monthly_score = (
-
-        (
-            total_items
-            -
-            monthly_rank
-            +
-            1
-        )
-
-        /
-
-        total_items
-
-    ) * 40
-
-    return round(
-
-        weekly_score
-        +
-        biweekly_score
-        +
-        monthly_score,
-
-        2
-
-    )
-
-
 def classify_score(score):
 
     if score >= 85:
@@ -106,131 +38,236 @@ def classify_score(score):
     return "WEAK"
 
 
+def normalize_score(
+    value,
+    min_value,
+    max_value
+):
+
+    if max_value == min_value:
+        return 50
+
+    return round(
+
+        (
+            (
+                value
+                -
+                min_value
+            )
+
+            /
+
+            (
+                max_value
+                -
+                min_value
+            )
+        )
+
+        * 100,
+
+        2
+
+    )
+
+
+def generate_entity_scores(
+
+    weekly_df,
+    biweekly_df,
+    monthly_df,
+    entity_column
+
+):
+
+    merged = (
+
+        monthly_df[[
+
+            entity_column,
+            "Return_%"
+
+        ]]
+
+        .rename(
+
+            columns={
+                "Return_%":
+                "Monthly_Return"
+            }
+
+        )
+
+    )
+
+    merged = merged.merge(
+
+        biweekly_df[[
+
+            entity_column,
+            "Return_%"
+
+        ]]
+
+        .rename(
+
+            columns={
+                "Return_%":
+                "Biweekly_Return"
+            }
+
+        ),
+
+        on=entity_column
+
+    )
+
+    merged = merged.merge(
+
+        weekly_df[[
+
+            entity_column,
+            "Return_%"
+
+        ]]
+
+        .rename(
+
+            columns={
+                "Return_%":
+                "Weekly_Return"
+            }
+
+        ),
+
+        on=entity_column
+
+    )
+
+    merged[
+        "Raw_Score"
+    ] = (
+
+        merged[
+            "Weekly_Return"
+        ] * 0.30
+
+        +
+
+        merged[
+            "Biweekly_Return"
+        ] * 0.30
+
+        +
+
+        merged[
+            "Monthly_Return"
+        ] * 0.40
+
+    )
+
+    min_score = (
+        merged[
+            "Raw_Score"
+        ].min()
+    )
+
+    max_score = (
+        merged[
+            "Raw_Score"
+        ].max()
+    )
+
+    merged[
+        "Persistence_Score"
+    ] = merged[
+        "Raw_Score"
+    ].apply(
+
+        lambda x:
+        normalize_score(
+            x,
+            min_score,
+            max_score
+        )
+
+    )
+
+    merged[
+        "Status"
+    ] = merged[
+        "Persistence_Score"
+    ].apply(
+        classify_score
+    )
+
+    merged = (
+
+        merged
+        .sort_values(
+            by=
+            "Persistence_Score",
+            ascending=False
+        )
+
+        .reset_index(
+            drop=True
+        )
+
+    )
+
+    return merged
+
+
 def generate_persistence_scores():
 
     try:
 
         ensure_directory()
 
-        # ======================
+        # ==================
         # Sector Scores
-        # ======================
+        # ==================
 
         sector_weekly = pd.read_csv(
 
-            AGGREGATED_PATH
-            +
+            AGGREGATED_PATH +
             "sector_weekly_heatmap.csv"
 
         )
 
         sector_biweekly = pd.read_csv(
 
-            AGGREGATED_PATH
-            +
+            AGGREGATED_PATH +
             "sector_biweekly_heatmap.csv"
 
         )
 
         sector_monthly = pd.read_csv(
 
-            AGGREGATED_PATH
-            +
+            AGGREGATED_PATH +
             "sector_monthly_heatmap.csv"
 
         )
 
-        sector_results = []
+        sector_scores = (
 
-        total = len(
-            sector_monthly
-        )
+            generate_entity_scores(
 
-        for sector in sector_monthly[
-            "Sector"
-        ].unique():
+                sector_weekly,
+                sector_biweekly,
+                sector_monthly,
 
-            weekly_rank = int(
+                "Sector"
 
-                sector_weekly[
-                    sector_weekly[
-                        "Sector"
-                    ] == sector
-                ][
-                    "Rank"
-                ].iloc[0]
-
-            )
-
-            biweekly_rank = int(
-
-                sector_biweekly[
-                    sector_biweekly[
-                        "Sector"
-                    ] == sector
-                ][
-                    "Rank"
-                ].iloc[0]
-
-            )
-
-            monthly_rank = int(
-
-                sector_monthly[
-                    sector_monthly[
-                        "Sector"
-                    ] == sector
-                ][
-                    "Rank"
-                ].iloc[0]
-
-            )
-
-            score = calculate_score(
-
-                weekly_rank,
-                biweekly_rank,
-                monthly_rank,
-                total
-
-            )
-
-            sector_results.append({
-
-                "Sector":
-                sector,
-
-                "Persistence_Score":
-                score,
-
-                "Status":
-                classify_score(
-                    score
-                )
-
-            })
-
-        sector_df = pd.DataFrame(
-            sector_results
-        )
-
-        sector_df = (
-
-            sector_df
-            .sort_values(
-                by="Persistence_Score",
-                ascending=False
-            )
-            .reset_index(
-                drop=True
             )
 
         )
 
-        sector_df.to_csv(
+        sector_scores.to_csv(
 
-            OUTPUT_PATH
-            +
+            OUTPUT_PATH +
             "sector_persistence_scores.csv",
 
             index=False
@@ -241,125 +278,48 @@ def generate_persistence_scores():
             "Sector persistence generated"
         )
 
-        # ======================
+        # ==================
         # Theme Scores
-        # ======================
+        # ==================
 
         theme_weekly = pd.read_csv(
 
-            AGGREGATED_PATH
-            +
+            AGGREGATED_PATH +
             "theme_weekly_heatmap.csv"
 
         )
 
         theme_biweekly = pd.read_csv(
 
-            AGGREGATED_PATH
-            +
+            AGGREGATED_PATH +
             "theme_biweekly_heatmap.csv"
 
         )
 
         theme_monthly = pd.read_csv(
 
-            AGGREGATED_PATH
-            +
+            AGGREGATED_PATH +
             "theme_monthly_heatmap.csv"
 
         )
 
-        theme_results = []
+        theme_scores = (
 
-        total = len(
-            theme_monthly
-        )
+            generate_entity_scores(
 
-        for theme in theme_monthly[
-            "Theme"
-        ].unique():
+                theme_weekly,
+                theme_biweekly,
+                theme_monthly,
 
-            weekly_rank = int(
+                "Theme"
 
-                theme_weekly[
-                    theme_weekly[
-                        "Theme"
-                    ] == theme
-                ][
-                    "Rank"
-                ].iloc[0]
-
-            )
-
-            biweekly_rank = int(
-
-                theme_biweekly[
-                    theme_biweekly[
-                        "Theme"
-                    ] == theme
-                ][
-                    "Rank"
-                ].iloc[0]
-
-            )
-
-            monthly_rank = int(
-
-                theme_monthly[
-                    theme_monthly[
-                        "Theme"
-                    ] == theme
-                ][
-                    "Rank"
-                ].iloc[0]
-
-            )
-
-            score = calculate_score(
-
-                weekly_rank,
-                biweekly_rank,
-                monthly_rank,
-                total
-
-            )
-
-            theme_results.append({
-
-                "Theme":
-                theme,
-
-                "Persistence_Score":
-                score,
-
-                "Status":
-                classify_score(
-                    score
-                )
-
-            })
-
-        theme_df = pd.DataFrame(
-            theme_results
-        )
-
-        theme_df = (
-
-            theme_df
-            .sort_values(
-                by="Persistence_Score",
-                ascending=False
-            )
-            .reset_index(
-                drop=True
             )
 
         )
 
-        theme_df.to_csv(
+        theme_scores.to_csv(
 
-            OUTPUT_PATH
-            +
+            OUTPUT_PATH +
             "theme_persistence_scores.csv",
 
             index=False
