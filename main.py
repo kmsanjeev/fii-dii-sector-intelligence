@@ -31,6 +31,10 @@ from fetchers.persistence_engine import (
     generate_persistence_scores
 )
 
+from fetchers.flow_regime_engine import (
+    generate_flow_regime
+)
+
 from storage.fii_dii_history_manager import (
     append_historical_data
 )
@@ -91,6 +95,8 @@ def main():
     )
 
     generate_persistence_scores()
+
+    generate_flow_regime()
 
     # ====================
     # Daily FII/DII Fetch
