@@ -2,7 +2,7 @@ from alerts.telegram_bot import (
     send_message
 )
 
-from fetchers.fii_dii_fetcher import (
+from fetchers.daily_fii_dii_fetcher import (
     fetch_fii_dii
 )
 
