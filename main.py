@@ -22,6 +22,11 @@ from fetchers.thematic_history_fetcher import (
     fetch_thematic_history
 )
 
+from fetchers.aggregation_engine import (
+    generate_sector_heatmaps,
+    generate_theme_heatmaps
+)
+
 from storage.fii_dii_history_manager import (
     append_historical_data
 )
@@ -71,6 +76,14 @@ def main():
 
     thematic_history = (
         fetch_thematic_history()
+    )
+
+    generate_sector_heatmaps(
+        sector_history
+    )
+
+    generate_theme_heatmaps(
+        thematic_history
     )
 
     # ====================
