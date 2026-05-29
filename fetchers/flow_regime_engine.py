@@ -29,6 +29,9 @@ def ensure_directory():
 
 def classify_regime(score):
 
+    if pd.isna(score):
+        return "INSUFFICIENT_DATA"
+
     if score >= 3000:
         return "ACCUMULATION"
 
@@ -79,36 +82,30 @@ def generate_flow_regime():
         )
 
         df["Flow_5D"] = (
-
-            df[
-                flow_column
-            ]
-
-            .rolling(5)
+            df[flow_column]
+            .rolling(
+                window=5,
+                min_periods=1
+            )
             .mean()
-
         )
 
         df["Flow_10D"] = (
-
-            df[
-                flow_column
-            ]
-
-            .rolling(10)
+            df[flow_column]
+            .rolling(
+                window=10,
+                min_periods=1
+            )
             .mean()
-
         )
 
         df["Flow_20D"] = (
-
-            df[
-                flow_column
-            ]
-
-            .rolling(20)
+            df[flow_column]
+            .rolling(
+                window=20,
+                min_periods=1
+            )
             .mean()
-
         )
 
         df["Flow_Score"] = (
