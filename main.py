@@ -35,6 +35,10 @@ from fetchers.flow_regime_engine import (
     generate_flow_regime
 )
 
+from fetchers.historical_data_engine import (
+    run_historical_engine
+)
+
 from storage.fii_dii_history_manager import (
     append_historical_data
 )
@@ -74,16 +78,20 @@ def main():
     # Sector Historical Data
     # ====================
 
-    sector_history = (
-        fetch_sector_history()
+    historical_data = (
+        run_historical_engine()
     )
 
-    # ====================
-    # Thematic Historical Data
-    # ====================
+    sector_history = (
+        historical_data[
+            "sector_history"
+        ]
+    )
 
     thematic_history = (
-        fetch_thematic_history()
+        historical_data[
+            "thematic_history"
+        ]
     )
 
     generate_sector_heatmaps(
