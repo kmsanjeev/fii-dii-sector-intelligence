@@ -86,8 +86,6 @@ def main():
         run_historical_engine()
     )
 
-    run_backfill_discovery()
-
     sector_history = (
         historical_data[
             "sector_history"
