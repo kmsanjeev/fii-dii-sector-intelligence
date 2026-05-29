@@ -47,6 +47,10 @@ from fetchers.conviction_engine import (
     generate_conviction_scores
 )
 
+from fetchers.leadership_duration_engine import (
+    generate_leadership_duration
+)
+
 from fetchers.signal_engine import (
     generate_signals
 )
@@ -105,6 +109,8 @@ def main():
     generate_persistence_scores()
 
     generate_conviction_scores()
+
+    generate_leadership_duration()
 
     # ====================
     # Daily FII/DII Fetch
