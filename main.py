@@ -43,6 +43,10 @@ from storage.fii_dii_history_manager import (
     append_historical_data
 )
 
+from fetchers.conviction_engine import (
+    generate_conviction_scores
+)
+
 from fetchers.signal_engine import (
     generate_signals
 )
@@ -78,8 +82,6 @@ def main():
         run_historical_engine()
     )
 
-    run_api_recon()
-
     sector_history = (
         historical_data[
             "sector_history"
@@ -101,6 +103,8 @@ def main():
     )
 
     generate_persistence_scores()
+
+    generate_conviction_scores()
 
     # ====================
     # Daily FII/DII Fetch
