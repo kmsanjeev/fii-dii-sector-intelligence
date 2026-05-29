@@ -27,6 +27,10 @@ from fetchers.aggregation_engine import (
     generate_theme_heatmaps
 )
 
+from fetchers.persistence_engine import (
+    generate_persistence_scores
+)
+
 from storage.fii_dii_history_manager import (
     append_historical_data
 )
@@ -85,6 +89,8 @@ def main():
     generate_theme_heatmaps(
         thematic_history
     )
+
+    generate_persistence_scores()
 
     # ====================
     # Daily FII/DII Fetch
