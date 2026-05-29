@@ -5,7 +5,7 @@ from utils.logger import logger
 
 
 INPUT_FILE = (
-    "data/historical/"
+    "data/historical/fii_dii/"
     "historical_fii_dii.csv"
 )
 

@@ -96,8 +96,6 @@ def main():
 
     generate_persistence_scores()
 
-    generate_flow_regime()
-
     # ====================
     # Daily FII/DII Fetch
     # ====================
@@ -119,6 +117,8 @@ def main():
     append_historical_data(
         df
     )
+
+    generate_flow_regime()
 
     # ====================
     # Save Latest CSV
