@@ -2,10 +2,18 @@ import os
 import pandas as pd
 
 from datetime import datetime
+from datetime import timedelta
+
 from nselib import derivatives
 
-from datetime import datetime
-from datetime import timedelta
+from utils.logger import logger
+
+
+SAVE_FILE = (
+    "data/intelligence/"
+    "institutional_positioning.csv"
+)
+
 
 def get_latest_trading_day():
 
@@ -21,14 +29,6 @@ def get_latest_trading_day():
     return trade_date.strftime(
         "%d-%m-%Y"
     )
-
-from utils.logger import logger
-
-
-SAVE_FILE = (
-    "data/intelligence/"
-    "institutional_positioning.csv"
-)
 
 
 def _net_position(row):
@@ -56,6 +56,7 @@ def _net_position(row):
         float(row["Future Stock Short"])
 
     )
+
 
 def calculate_regime(
     institutional_score
@@ -225,14 +226,12 @@ def generate_institutional_positioning():
         )
 
         futures_rows = fii_derivatives[
-
             fii_derivatives[
                 "fii_derivatives"
             ].str.contains(
                 "FUTURES",
                 na=False
             )
-
         ]
 
         fii_derivatives_score = (
@@ -250,24 +249,65 @@ def generate_institutional_positioning():
         )
 
         institutional_score = (
-                calculate_score(
+            calculate_score(
 
-                    fii_oi_score,
-                    dii_oi_score,
-                    pro_oi_score,
+                fii_oi_score,
+                dii_oi_score,
+                pro_oi_score,
 
-                    fii_volume_score,
-                    dii_volume_score,
-                    pro_volume_score,
+                fii_volume_score,
+                dii_volume_score,
+                pro_volume_score,
 
-                    fii_derivatives_score
+                fii_derivatives_score
 
-                )
             )
+        )
 
-            regime = calculate_regime(
-                institutional_score
-            )
+        regime = calculate_regime(
+            institutional_score
+        )
+
+        result = pd.DataFrame([{
+
+            "Date":
+            datetime.now()
+            .strftime("%Y-%m-%d"),
+
+            "FII_OI_Score":
+            fii_oi_score,
+
+            "DII_OI_Score":
+            dii_oi_score,
+
+            "PRO_OI_Score":
+            pro_oi_score,
+
+            "CLIENT_OI_Score":
+            client_oi_score,
+
+            "FII_Volume_Score":
+            fii_volume_score,
+
+            "DII_Volume_Score":
+            dii_volume_score,
+
+            "PRO_Volume_Score":
+            pro_volume_score,
+
+            "CLIENT_Volume_Score":
+            client_volume_score,
+
+            "FII_Derivatives_Score":
+            fii_derivatives_score,
+
+            "Institutional_Score":
+            institutional_score,
+
+            "Regime":
+            regime
+
+        }])
 
         os.makedirs(
             "data/intelligence",
