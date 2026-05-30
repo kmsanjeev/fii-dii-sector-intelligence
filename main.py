@@ -79,7 +79,7 @@ from sheets.signal_sheet_updater import (
 
 from utils.logger import logger
 
-ENABLE_INSTITUTIONAL_BACKFILL = False
+ENABLE_INSTITUTIONAL_BACKFILL = True
 
 
 def main():
