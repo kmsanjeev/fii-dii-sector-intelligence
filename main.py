@@ -51,6 +51,10 @@ from fetchers.institutional_positioning_engine import (
     generate_institutional_positioning
 )
 
+from fetchers.institutional_backfill_engine import (
+    run_institutional_backfill
+)
+
 from fetchers.leadership_duration_engine import (
     generate_leadership_duration
 )
@@ -74,6 +78,8 @@ from sheets.signal_sheet_updater import (
 )
 
 from utils.logger import logger
+
+ENABLE_INSTITUTIONAL_BACKFILL = False
 
 
 def main():
@@ -141,6 +147,10 @@ def main():
     generate_flow_regime()
 
     generate_institutional_positioning()
+
+    if ENABLE_INSTITUTIONAL_BACKFILL:
+
+        run_institutional_backfill()
 
     # ====================
     # Save Latest CSV
