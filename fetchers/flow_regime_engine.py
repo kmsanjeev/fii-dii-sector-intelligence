@@ -6,7 +6,7 @@ from utils.logger import logger
 
 INPUT_FILE = (
     "data/historical/fii_dii/"
-    "historical_fii_dii.csv"
+    "fii_dii_history.csv"
 )
 
 OUTPUT_DIR = (

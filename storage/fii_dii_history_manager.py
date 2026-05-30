@@ -11,7 +11,7 @@ SAVE_DIR = (
 SAVE_FILE = (
     SAVE_DIR
     +
-    "historical_fii_dii.csv"
+    "fii_dii_history.csv"
 )
 
 
