@@ -96,7 +96,7 @@ def main():
 
     if ENABLE_HOLIDAY_REFRESH:
 
-    update_nse_holidays()
+        update_nse_holidays()
 
     # ====================
     # Sector Historical Data
