@@ -47,6 +47,10 @@ from fetchers.conviction_engine import (
     generate_conviction_scores
 )
 
+from fetchers.institutional_positioning_engine import (
+    generate_institutional_positioning
+)
+
 from fetchers.leadership_duration_engine import (
     generate_leadership_duration
 )
@@ -135,6 +139,8 @@ def main():
     )
 
     generate_flow_regime()
+
+    generate_institutional_positioning()
 
     # ====================
     # Save Latest CSV
