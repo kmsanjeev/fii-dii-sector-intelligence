@@ -16,11 +16,6 @@ def update_nse_holidays():
 
     try:
 
-        os.makedirs(
-            "data/reference",
-            exist_ok=True
-        )
-
         holiday_df = (
             trading_holiday_calendar()
         )
@@ -31,13 +26,81 @@ def update_nse_holidays():
                 "No NSE holidays returned"
             )
 
-            return pd.DataFrame()
+            return
 
-        holiday_df.columns = (
+        # =====================
+        # Equities Only
+        # =====================
 
-            holiday_df.columns
+        holiday_df = holiday_df[
+
+            holiday_df[
+                "Product"
+            ]
             .astype(str)
             .str.strip()
+            .eq("Equities")
+
+        ]
+
+        # =====================
+        # Required Columns Only
+        # =====================
+
+        holiday_df = holiday_df[[
+
+            "tradingDate",
+            "description"
+
+        ]]
+
+        holiday_df.columns = [
+
+            "Date",
+            "Holiday"
+
+        ]
+
+        # =====================
+        # Standard Date Format
+        # =====================
+
+        holiday_df["Date"] = pd.to_datetime(
+
+            holiday_df["Date"],
+            dayfirst=True
+
+        ).dt.strftime(
+            "%Y-%m-%d"
+        )
+
+        # =====================
+        # Remove Duplicates
+        # =====================
+
+        holiday_df = (
+
+            holiday_df
+
+            .drop_duplicates(
+                subset=["Date"]
+            )
+
+            .sort_values(
+                by="Date"
+            )
+
+            .reset_index(
+                drop=True
+            )
+
+        )
+
+        os.makedirs(
+
+            "data/reference",
+
+            exist_ok=True
 
         )
 
@@ -51,17 +114,13 @@ def update_nse_holidays():
 
         logger.info(
 
-            f"NSE holidays saved: "
+            f"NSE Equity Holidays saved: "
             f"{len(holiday_df)}"
 
         )
 
-        return holiday_df
-
     except Exception as e:
 
         logger.error(
-            f"NSE holiday error: {e}"
+            f"NSE holiday update error: {e}"
         )
-
-        return pd.DataFrame()
