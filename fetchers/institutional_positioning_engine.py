@@ -33,6 +33,12 @@ SAVE_FILE = (
 
 def _net_position(row):
 
+    row.index = (
+        row.index
+        .astype(str)
+        .str.strip()
+    )
+
     return (
 
         float(row["Future Index Long"])
@@ -47,7 +53,7 @@ def _net_position(row):
 
         -
 
-        float(row["Future Stock Short\t"])
+        float(row["Future Stock Short"])
 
     )
 
@@ -72,6 +78,18 @@ def generate_institutional_positioning():
             .participant_wise_trading_volume(
                 trade_date=trade_date
             )
+        )
+
+        oi_df.columns = (
+            oi_df.columns
+            .astype(str)
+            .str.strip()
+        )
+
+        volume_df.columns = (
+            volume_df.columns
+            .astype(str)
+            .str.strip()
         )
 
         fii_derivatives = (
