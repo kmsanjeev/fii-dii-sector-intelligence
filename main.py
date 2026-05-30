@@ -77,9 +77,15 @@ from sheets.signal_sheet_updater import (
     save_signals_to_sheet
 )
 
+from fetchers.nse_holiday_engine import (
+    update_nse_holidays
+)
+
 from utils.logger import logger
 
 ENABLE_INSTITUTIONAL_BACKFILL = True
+
+ENABLE_HOLIDAY_REFRESH = True
 
 
 def main():
@@ -87,6 +93,10 @@ def main():
     logger.info(
         "Engine Started"
     )
+
+    if ENABLE_HOLIDAY_REFRESH:
+
+    update_nse_holidays()
 
     # ====================
     # Sector Historical Data
