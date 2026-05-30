@@ -4,6 +4,24 @@ import pandas as pd
 from datetime import datetime
 from nselib import derivatives
 
+from datetime import datetime
+from datetime import timedelta
+
+def get_latest_trading_day():
+
+    trade_date = datetime.now()
+
+    while trade_date.weekday() >= 5:
+
+        trade_date = (
+            trade_date -
+            timedelta(days=1)
+        )
+
+    return trade_date.strftime(
+        "%d-%m-%Y"
+    )
+
 from utils.logger import logger
 
 
@@ -39,8 +57,7 @@ def generate_institutional_positioning():
     try:
 
         trade_date = (
-            datetime.now()
-            .strftime("%d-%m-%Y")
+            get_latest_trading_day()
         )
 
         oi_df = (
