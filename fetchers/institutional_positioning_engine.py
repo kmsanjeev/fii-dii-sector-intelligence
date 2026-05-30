@@ -57,6 +57,67 @@ def _net_position(row):
 
     )
 
+def calculate_regime(
+    institutional_score
+):
+
+    if institutional_score > 0:
+
+        return "ACCUMULATION"
+
+    elif institutional_score < 0:
+
+        return "DISTRIBUTION"
+
+    return "NEUTRAL"
+
+
+def calculate_score(
+
+    fii_oi_score,
+    dii_oi_score,
+    pro_oi_score,
+
+    fii_volume_score,
+    dii_volume_score,
+    pro_volume_score,
+
+    fii_derivatives_score
+
+):
+
+    return round(
+
+        (fii_oi_score * 0.35)
+
+        +
+
+        (dii_oi_score * 0.20)
+
+        +
+
+        (pro_oi_score * 0.15)
+
+        +
+
+        (fii_volume_score * 0.15)
+
+        +
+
+        (dii_volume_score * 0.05)
+
+        +
+
+        (pro_volume_score * 0.05)
+
+        +
+
+        (fii_derivatives_score * 0.05),
+
+        2
+
+    )
+
 
 def generate_institutional_positioning():
 
@@ -188,96 +249,25 @@ def generate_institutional_positioning():
 
         )
 
-        institutional_score = round(
+        institutional_score = (
+                calculate_score(
 
-            (fii_oi_score * 0.35)
+                    fii_oi_score,
+                    dii_oi_score,
+                    pro_oi_score,
 
-            +
+                    fii_volume_score,
+                    dii_volume_score,
+                    pro_volume_score,
 
-            (dii_oi_score * 0.20)
+                    fii_derivatives_score
 
-            +
-
-            (pro_oi_score * 0.15)
-
-            +
-
-            (fii_volume_score * 0.15)
-
-            +
-
-            (dii_volume_score * 0.05)
-
-            +
-
-            (pro_volume_score * 0.05)
-
-            +
-
-            (fii_derivatives_score * 0.05),
-
-            2
-
-        )
-
-        if institutional_score > 0:
-
-            regime = (
-                "ACCUMULATION"
+                )
             )
 
-        elif institutional_score < 0:
-
-            regime = (
-                "DISTRIBUTION"
+            regime = calculate_regime(
+                institutional_score
             )
-
-        else:
-
-            regime = (
-                "NEUTRAL"
-            )
-
-        result = pd.DataFrame([{
-
-            "Date":
-            datetime.now()
-            .strftime("%Y-%m-%d"),
-
-            "FII_OI_Score":
-            fii_oi_score,
-
-            "DII_OI_Score":
-            dii_oi_score,
-
-            "PRO_OI_Score":
-            pro_oi_score,
-
-            "CLIENT_OI_Score":
-            client_oi_score,
-
-            "FII_Volume_Score":
-            fii_volume_score,
-
-            "DII_Volume_Score":
-            dii_volume_score,
-
-            "PRO_Volume_Score":
-            pro_volume_score,
-
-            "CLIENT_Volume_Score":
-            client_volume_score,
-
-            "FII_Derivatives_Score":
-            fii_derivatives_score,
-
-            "Institutional_Score":
-            institutional_score,
-
-            "Regime":
-            regime
-
-        }])
 
         os.makedirs(
             "data/intelligence",
