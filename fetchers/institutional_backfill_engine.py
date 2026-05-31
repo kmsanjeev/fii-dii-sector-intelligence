@@ -55,9 +55,16 @@ def get_missing_dates():
             if is_nse_holiday(
                 date_str
             ):
+
+                logger.info(
+                    f"Holiday excluded: "
+                    f"{date_str}"
+                )
+
                 current += timedelta(
                     days=1
                 )
+
                 continue
 
             if date_str not in existing_dates:
