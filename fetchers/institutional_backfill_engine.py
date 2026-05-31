@@ -22,6 +22,11 @@ from fetchers.institutional_positioning_engine import (
     _net_position
 )
 
+from utils.institutional_availability import (
+    is_known_unavailable,
+    add_unavailable_date
+)
+
 
 BATCH_SIZE = 500
 
@@ -56,10 +61,15 @@ def get_missing_dates():
                 date_str
             ):
 
-                logger.info(
-                    f"Holiday excluded: "
-                    f"{date_str}"
+                current += timedelta(
+                    days=1
                 )
+
+                continue
+
+            if is_known_unavailable(
+                date_str
+            ):
 
                 current += timedelta(
                     days=1
@@ -120,6 +130,17 @@ def run_institutional_backfill():
 
                     logger.info(
                         f"Holiday skipped: "
+                        f"{date_str}"
+                    )
+
+                    continue
+
+                if is_known_unavailable(
+                    date_str
+                ):
+
+                    logger.info(
+                        f"Known unavailable: "
                         f"{date_str}"
                     )
 
@@ -356,7 +377,22 @@ def run_institutional_backfill():
 
                 })
 
-            except Exception:
+            except Exception as e:
+
+                add_unavailable_date(
+
+                    date_str,
+
+                    str(e)
+
+                )
+
+                logger.error(
+
+                    f"Unavailable data: "
+                    f"{date_str} | {e}"
+
+                )
 
                 continue
 
