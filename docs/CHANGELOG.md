@@ -291,4 +291,291 @@ Dashboard Layer
 
 ---
 
-End of Changelog
+# CHANGELOG
+
+## Version 1.1
+
+**Date:** 2026-06-01
+
+---
+
+# Major Milestone: Institutional Intelligence Foundation Completed
+
+This release marks the completion of the Institutional Intelligence data foundation layer, including historical reconstruction, holiday intelligence, institutional positioning analytics, and supporting infrastructure.
+
+---
+
+## Added
+
+### Institutional Positioning Engine
+
+Implemented institutional positioning analysis using NSE participant data.
+
+Features:
+
+* Participant Wise Open Interest Analysis
+* Participant Wise Trading Volume Analysis
+* FII Derivatives Statistics Integration
+* Institutional Score Calculation
+* Regime Classification
+
+Outputs:
+
+* ACCUMULATION
+* DISTRIBUTION
+* NEUTRAL
+
+Generated File:
+
+```text
+data/intelligence/institutional_positioning.csv
+```
+
+---
+
+### Institutional Historical Storage
+
+Implemented historical storage for institutional positioning data.
+
+Generated File:
+
+```text
+data/historical/institutional/
+institutional_positioning_history.csv
+```
+
+Capabilities:
+
+* Daily persistence
+* Duplicate protection
+* Incremental updates
+* Historical analysis support
+
+---
+
+### Institutional Backfill Engine
+
+Implemented full historical reconstruction engine.
+
+Capabilities:
+
+* Incremental backfill
+* Historical gap detection
+* Missing date recovery
+* Batch processing
+* Integrity validation
+
+Coverage Achieved:
+
+```text
+2016-01-01
+to
+2026-05-29
+```
+
+Historical Records:
+
+```text
+2560 rows
+```
+
+Status:
+
+```text
+Production Ready
+```
+
+---
+
+### NSE Holiday Engine
+
+Implemented NSE holiday intelligence framework.
+
+Initial Version:
+
+* NSE holiday download
+* Annual holiday refresh
+
+Enhanced Version:
+
+* Historical holiday database
+* Holiday repair workflow
+* Year tracking
+* Data normalization
+
+Generated File:
+
+```text
+data/reference/nse_holidays.csv
+```
+
+Coverage:
+
+```text
+2000-2026
+```
+
+Current Records:
+
+```text
+372 holidays
+```
+
+---
+
+### Trading Calendar Utility
+
+Added:
+
+```text
+utils/trading_calendar.py
+```
+
+Capabilities:
+
+* Fast holiday lookup
+* Historical holiday validation
+* Future holiday validation
+
+Used By:
+
+* Institutional Backfill Engine
+* Future Availability Cache
+* Future Integrity Engines
+
+---
+
+### Documentation Framework
+
+Added documentation structure:
+
+```text
+docs/
+
+PROJECT_DOCUMENTATION.md
+ROADMAP.md
+ARCHITECTURE.md
+CHANGELOG.md
+
+ENGINES/
+```
+
+Purpose:
+
+* Technical documentation
+* Architecture documentation
+* Development tracking
+* Future onboarding
+
+---
+
+## Data Quality Improvements
+
+### Holiday Database Repair
+
+Repaired missing or corrupted years:
+
+```text
+2003
+2019
+2023
+2024
+```
+
+Added verified NSE holiday records.
+
+Reduced unnecessary NSE API requests.
+
+Improved historical backfill accuracy.
+
+---
+
+### Institutional Data Integrity
+
+Implemented:
+
+* Weekend exclusion
+* Holiday exclusion
+* Historical validation
+* Duplicate prevention
+* Incremental persistence
+
+---
+
+## Infrastructure Improvements
+
+### Historical Intelligence Layer
+
+Established long-term institutional database.
+
+Current historical depth:
+
+```text
+10+ years
+```
+
+Supports:
+
+* Regime analysis
+* Trend analysis
+* Institutional accumulation studies
+* Institutional distribution studies
+
+---
+
+## Upcoming (Version 1.2)
+
+Planned:
+
+### Institutional Availability Cache V1
+
+Purpose:
+
+* Cache unavailable NSE participant dates
+* Prevent repeated failed requests
+* Reduce NSE traffic
+* Improve integrity scan speed
+
+Proposed File:
+
+```text
+data/reference/
+institutional_unavailable_dates.csv
+```
+
+---
+
+### Data Quality Dashboard
+
+Future monitoring framework for:
+
+* Holiday coverage
+* Missing dates
+* Data availability
+* Historical completeness
+
+---
+
+## Current Project Status
+
+Institutional Positioning Engine:
+COMPLETE
+
+Institutional Historical Database:
+COMPLETE
+
+Institutional Backfill Engine:
+COMPLETE
+
+NSE Holiday Engine:
+COMPLETE
+
+Trading Calendar Utility:
+COMPLETE
+
+Availability Cache:
+PLANNED
+
+Data Quality Dashboard:
+PLANNED
+
