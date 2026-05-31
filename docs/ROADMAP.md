@@ -161,4 +161,249 @@ Features:
 
 ---
 
-End of Roadmap
+---
+
+# ROADMAP UPDATE V1.1
+
+**Date:** 2026-06-01
+
+## Completed Milestones
+
+### Phase 1 — Sector Intelligence Foundation
+
+Status: COMPLETE
+
+Delivered:
+
+* Sector History Engine
+* Thematic History Engine
+* Persistence Engine
+* Conviction Engine
+* Leadership Duration Engine
+* Flow Regime Engine
+* Telegram Reporting Layer
+
+---
+
+### Phase 2 — Institutional Intelligence Foundation
+
+Status: COMPLETE
+
+Delivered:
+
+#### Institutional Positioning Engine
+
+Features:
+
+* Participant Wise Open Interest Analysis
+* Participant Wise Trading Volume Analysis
+* FII Derivatives Statistics Integration
+* Institutional Score Calculation
+* Institutional Regime Classification
+
+Outputs:
+
+* ACCUMULATION
+* DISTRIBUTION
+* NEUTRAL
+
+---
+
+#### Institutional Historical Database
+
+Coverage:
+
+2016-01-01 → 2026-05-29
+
+Current Records:
+
+2560+
+
+Status:
+
+Production Ready
+
+---
+
+#### Institutional Backfill Engine
+
+Delivered:
+
+* Historical Reconstruction
+* Gap Recovery
+* Incremental Backfill
+* Duplicate Protection
+* Integrity Validation
+* Batch Processing
+
+Result:
+
+Complete historical institutional database.
+
+---
+
+#### NSE Holiday Engine
+
+Delivered:
+
+* Historical Holiday Database
+* Holiday Normalization
+* Holiday Validation
+* Annual Refresh Capability
+
+Coverage:
+
+2000 → 2026
+
+Current Records:
+
+372
+
+Repaired Years:
+
+* 2003
+* 2019
+* 2023
+* 2024
+
+---
+
+#### Trading Calendar Utility
+
+Delivered:
+
+* Historical Holiday Lookup
+* Future Holiday Lookup
+* Holiday Validation Service
+
+Used By:
+
+* Backfill Engine
+* Integrity Validation
+* Future Availability Cache
+
+---
+
+## Current System Status
+
+Sector Intelligence:
+COMPLETE
+
+Theme Intelligence:
+COMPLETE
+
+Institutional Positioning:
+COMPLETE
+
+Institutional Historical Database:
+COMPLETE
+
+Holiday Intelligence:
+COMPLETE
+
+Historical Backfill:
+COMPLETE
+
+Documentation Framework:
+IN PROGRESS
+
+---
+
+## Next Priority Development
+
+### Institutional Availability Cache V1
+
+Objective:
+
+Prevent repeated NSELib requests for known unavailable participant-data dates.
+
+Proposed File:
+
+data/reference/institutional_unavailable_dates.csv
+
+Expected Benefits:
+
+* Faster Integrity Scans
+* Reduced NSE API Calls
+* Cleaner Logs
+* Self-Learning Infrastructure
+
+Priority:
+
+HIGH
+
+---
+
+### Data Quality Dashboard V1
+
+Objective:
+
+Provide visibility into:
+
+* Historical Coverage
+* Missing Dates
+* Holiday Coverage
+* Availability Cache Coverage
+
+Priority:
+
+MEDIUM
+
+---
+
+### Institutional Analytics V2
+
+Potential Features:
+
+* FII Trend Strength
+* DII Trend Strength
+* Smart Money Score
+* Institutional Momentum
+* Institutional Divergence Signals
+
+Priority:
+
+MEDIUM
+
+---
+
+### Market Regime Intelligence V2
+
+Potential Features:
+
+* Risk-On / Risk-Off Classification
+* Institutional Risk Appetite
+* Derivatives Positioning Overlay
+* Sector Rotation Overlay
+
+Priority:
+
+MEDIUM
+
+---
+
+## Long-Term Vision
+
+Build a fully automated institutional intelligence platform capable of:
+
+* Tracking institutional positioning
+* Identifying accumulation phases
+* Identifying distribution phases
+* Monitoring sector rotation
+* Monitoring thematic rotation
+* Producing actionable intelligence reports
+* Maintaining historical market memory
+
+Target Historical Coverage:
+
+2016 → Ongoing Daily Updates
+
+Target Availability:
+
+Fully Automated
+Minimal Manual Maintenance
+
+Status:
+
+Actively Advancing Toward Vision
+
