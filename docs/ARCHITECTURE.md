@@ -392,4 +392,464 @@ AI Layer
 
 ---
 
-End of Document
+---
+
+# ARCHITECTURE UPDATE V1.1
+
+**Date:** 2026-06-01
+
+# High-Level Architecture
+
+The platform is organized into six primary layers:
+
+```text
+Market Data Layer
+        │
+        ▼
+Historical Data Layer
+        │
+        ▼
+Intelligence Layer
+        │
+        ▼
+Persistence Layer
+        │
+        ▼
+Reporting Layer
+        │
+        ▼
+Documentation Layer
+```
+
+---
+
+# 1. Market Data Layer
+
+Purpose:
+
+Acquire raw market data from external sources.
+
+Primary Sources:
+
+### NSE
+
+Provides:
+
+* Sector Data
+* Participant Open Interest
+* Participant Trading Volume
+* FII Derivatives Statistics
+* Holiday Calendar
+
+---
+
+### Yahoo Finance
+
+Provides:
+
+* Fallback Market Movers
+* Price Validation
+* Backup Market Data
+
+---
+
+# 2. Historical Data Layer
+
+Purpose:
+
+Maintain long-term historical market memory.
+
+---
+
+## Sector History
+
+Storage:
+
+```text
+data/historical/sectors/
+```
+
+File:
+
+```text
+sector_history.csv
+```
+
+---
+
+## Theme History
+
+Storage:
+
+```text
+data/historical/thematic/
+```
+
+File:
+
+```text
+thematic_history.csv
+```
+
+---
+
+## FII/DII Flow History
+
+Storage:
+
+```text
+data/historical/fii_dii/
+```
+
+File:
+
+```text
+fii_dii_history.csv
+```
+
+---
+
+## Institutional Positioning History
+
+Storage:
+
+```text
+data/historical/institutional/
+```
+
+File:
+
+```text
+institutional_positioning_history.csv
+```
+
+Coverage:
+
+```text
+2016-01-01
+→
+2026-05-29
+```
+
+Records:
+
+```text
+2560+
+```
+
+---
+
+# 3. Intelligence Layer
+
+Purpose:
+
+Convert raw market data into actionable intelligence.
+
+---
+
+## Sector Intelligence
+
+Engines:
+
+* Conviction Engine
+* Persistence Engine
+* Leadership Duration Engine
+
+Outputs:
+
+* Sector Scores
+* Leadership Rankings
+* Heatmaps
+
+---
+
+## Theme Intelligence
+
+Engines:
+
+* Theme Conviction Engine
+* Theme Persistence Engine
+
+Outputs:
+
+* Theme Scores
+* Theme Heatmaps
+
+---
+
+## Institutional Intelligence
+
+Engine:
+
+```text
+Institutional Positioning Engine
+```
+
+Inputs:
+
+* Participant OI Data
+* Participant Volume Data
+* FII Derivatives Statistics
+
+Outputs:
+
+* Institutional Score
+* Institutional Regime
+
+Regimes:
+
+* ACCUMULATION
+* DISTRIBUTION
+* NEUTRAL
+
+---
+
+## Flow Intelligence
+
+Engine:
+
+```text
+Flow Regime Engine
+```
+
+Outputs:
+
+* FII/DII Flow Regime
+* Market Participation Signals
+
+---
+
+# 4. Reference Data Layer
+
+Purpose:
+
+Provide reusable supporting datasets.
+
+---
+
+## Holiday Database
+
+File:
+
+```text
+data/reference/nse_holidays.csv
+```
+
+Coverage:
+
+```text
+2000
+→
+2026
+```
+
+Records:
+
+```text
+372
+```
+
+Fields:
+
+* Date
+* Year
+* Holiday
+
+---
+
+## Trading Calendar Utility
+
+File:
+
+```text
+utils/trading_calendar.py
+```
+
+Function:
+
+```python
+is_nse_holiday()
+```
+
+Purpose:
+
+* Holiday Validation
+* Historical Integrity Checks
+* Backfill Filtering
+
+---
+
+# 5. Persistence Layer
+
+Purpose:
+
+Store intelligence outputs for historical analysis.
+
+Generated Files:
+
+```text
+data/intelligence/
+```
+
+Includes:
+
+* institutional_positioning.csv
+* institutional_flow_regime.csv
+* sector_conviction_scores.csv
+* theme_conviction_scores.csv
+* leadership_tracking.csv
+
+---
+
+# 6. Backfill Infrastructure
+
+Purpose:
+
+Reconstruct historical intelligence datasets.
+
+---
+
+## Institutional Backfill Engine
+
+Responsibilities:
+
+* Historical Recovery
+* Missing Date Detection
+* Batch Processing
+* Integrity Validation
+* Historical Reconstruction
+
+Features:
+
+* Weekend Skip Logic
+* Holiday Skip Logic
+* Duplicate Protection
+
+Current Status:
+
+Production Ready
+
+---
+
+# 7. Reporting Layer
+
+Purpose:
+
+Deliver intelligence to end users.
+
+---
+
+## Telegram Reporting
+
+Capabilities:
+
+* Automated Daily Reports
+* Sector Intelligence Reporting
+* Institutional Regime Reporting
+* Momentum Signal Reporting
+
+Status:
+
+Operational
+
+---
+
+# 8. Documentation Layer
+
+Purpose:
+
+Preserve project knowledge and architecture decisions.
+
+Structure:
+
+```text
+docs/
+│
+├── PROJECT_DOCUMENTATION.md
+├── ROADMAP.md
+├── ARCHITECTURE.md
+├── CHANGELOG.md
+│
+└── ENGINES/
+```
+
+Benefits:
+
+* Knowledge Retention
+* Faster Development
+* Easier Maintenance
+* Historical Tracking
+
+---
+
+# Planned Architectural Enhancements
+
+## Institutional Availability Cache V1
+
+Planned Storage:
+
+```text
+data/reference/
+institutional_unavailable_dates.csv
+```
+
+Purpose:
+
+Track confirmed unavailable institutional dates.
+
+Benefits:
+
+* Reduced API Calls
+* Faster Integrity Scans
+* Cleaner Logs
+
+Priority:
+
+High
+
+---
+
+## Data Quality Dashboard V1
+
+Purpose:
+
+Provide visibility into:
+
+* Historical Coverage
+* Missing Dates
+* Holiday Coverage
+* Availability Cache Coverage
+
+Priority:
+
+Medium
+
+---
+
+# Architecture Status
+
+Market Data Layer:
+Operational
+
+Historical Data Layer:
+Operational
+
+Intelligence Layer:
+Operational
+
+Reference Data Layer:
+Operational
+
+Persistence Layer:
+Operational
+
+Reporting Layer:
+Operational
+
+Documentation Layer:
+Operational
+
+Overall Architecture Maturity:
+
+Production Ready Foundation
+
