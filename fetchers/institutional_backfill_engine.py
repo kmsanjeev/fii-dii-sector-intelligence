@@ -7,6 +7,10 @@ from nselib import derivatives
 
 from utils.logger import logger
 
+from utils.trading_calendar import (
+    is_nse_holiday
+)
+
 from storage.institutional_history_manager import (
     append_historical_data,
     get_existing_dates
@@ -19,7 +23,7 @@ from fetchers.institutional_positioning_engine import (
 )
 
 
-BATCH_SIZE = 50
+BATCH_SIZE = 500
 
 
 def get_missing_dates():
@@ -47,6 +51,14 @@ def get_missing_dates():
             date_str = current.strftime(
                 "%Y-%m-%d"
             )
+
+            if is_nse_holiday(
+                date_str
+            ):
+                current += timedelta(
+                    days=1
+                )
+                continue
 
             if date_str not in existing_dates:
 
@@ -88,6 +100,23 @@ def run_institutional_backfill():
         for trade_date in missing_dates:
 
             try:
+
+                date_str = (
+                    trade_date.strftime(
+                        "%Y-%m-%d"
+                    )
+                )
+
+                if is_nse_holiday(
+                    date_str
+                ):
+
+                    logger.info(
+                        f"Holiday skipped: "
+                        f"{date_str}"
+                    )
+
+                    continue
 
                 nse_date = (
                     trade_date.strftime(
@@ -256,9 +285,7 @@ def run_institutional_backfill():
                 collected.append({
 
                     "Date":
-                    trade_date.strftime(
-                        "%Y-%m-%d"
-                    ),
+                    date_str,
 
                     "FII_OI_Net":
                     fii_oi_score,
