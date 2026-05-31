@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 
+from datetime import datetime
+
 from nselib import trading_holiday_calendar
 
 from utils.logger import logger
@@ -15,6 +17,62 @@ SAVE_FILE = (
 def update_nse_holidays():
 
     try:
+
+        current_year = (
+            datetime.now().year
+        )
+
+        # =====================
+        # Load Existing History
+        # =====================
+
+        if os.path.exists(
+            SAVE_FILE
+        ):
+
+            existing_df = (
+                pd.read_csv(
+                    SAVE_FILE
+                )
+            )
+
+        else:
+
+            existing_df = (
+                pd.DataFrame(
+                    columns=[
+                        "Date",
+                        "Year",
+                        "Holiday"
+                    ]
+                )
+            )
+
+        # =====================
+        # Skip Refresh
+        # If Current Year Exists
+        # =====================
+
+        if (
+            not existing_df.empty
+            and
+            "Year" in existing_df.columns
+            and
+            current_year in set(
+                existing_df["Year"]
+            )
+        ):
+
+            logger.info(
+                f"NSE holidays already available "
+                f"for {current_year}"
+            )
+
+            return
+
+        # =====================
+        # Fetch NSE Holidays
+        # =====================
 
         holiday_df = (
             trading_holiday_calendar()
@@ -43,10 +101,6 @@ def update_nse_holidays():
 
         ]
 
-        # =====================
-        # Required Columns Only
-        # =====================
-
         holiday_df = holiday_df[[
 
             "tradingDate",
@@ -61,26 +115,45 @@ def update_nse_holidays():
 
         ]
 
-        # =====================
-        # Standard Date Format
-        # =====================
-
         holiday_df["Date"] = pd.to_datetime(
 
             holiday_df["Date"],
             dayfirst=True
 
-        ).dt.strftime(
-            "%Y-%m-%d"
+        )
+
+        holiday_df["Year"] = (
+            holiday_df["Date"]
+            .dt.year
+        )
+
+        holiday_df["Date"] = (
+
+            holiday_df["Date"]
+            .dt.strftime(
+                "%Y-%m-%d"
+            )
+
         )
 
         # =====================
-        # Remove Duplicates
+        # Merge With History
         # =====================
 
-        holiday_df = (
+        combined = pd.concat(
 
-            holiday_df
+            [
+                existing_df,
+                holiday_df
+            ],
+
+            ignore_index=True
+
+        )
+
+        combined = (
+
+            combined
 
             .drop_duplicates(
                 subset=["Date"]
@@ -104,7 +177,7 @@ def update_nse_holidays():
 
         )
 
-        holiday_df.to_csv(
+        combined.to_csv(
 
             SAVE_FILE,
 
@@ -114,8 +187,8 @@ def update_nse_holidays():
 
         logger.info(
 
-            f"NSE Equity Holidays saved: "
-            f"{len(holiday_df)}"
+            f"NSE holidays stored: "
+            f"{len(combined)}"
 
         )
 
