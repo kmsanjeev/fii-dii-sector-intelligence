@@ -31,29 +31,114 @@ def get_latest_trading_day():
     )
 
 
+def normalize_dataframe(df):
+
+    df.columns = (
+
+        df.columns
+        .astype(str)
+        .str.strip()
+
+    )
+
+    # =====================
+    # Legacy NSE Schema Fix
+    # =====================
+
+    if (
+
+        "Client Type"
+        not in df.columns
+
+        and
+
+        "Client"
+        in df.columns
+
+    ):
+
+        df = df.rename(
+
+            columns={
+
+                "Client":
+                "Client Type"
+
+            }
+
+        )
+
+    # =====================
+    # Remove commas
+    # =====================
+
+    for col in df.columns:
+
+        df[col] = (
+
+            df[col]
+            .astype(str)
+            .str.replace(
+                ",",
+                "",
+                regex=False
+            )
+
+        )
+
+    return df
+
+
+def _safe_float(value):
+
+    try:
+
+        return float(
+
+            str(value)
+            .replace(",", "")
+            .strip()
+
+        )
+
+    except:
+
+        return 0.0
+
+
 def _net_position(row):
 
     row.index = (
+
         row.index
         .astype(str)
         .str.strip()
+
     )
 
     return (
 
-        float(row["Future Index Long"])
+        _safe_float(
+            row["Future Index Long"]
+        )
 
         +
 
-        float(row["Future Stock Long"])
+        _safe_float(
+            row["Future Stock Long"]
+        )
 
         -
 
-        float(row["Future Index Short"])
+        _safe_float(
+            row["Future Index Short"]
+        )
 
         -
 
-        float(row["Future Stock Short"])
+        _safe_float(
+            row["Future Stock Short"]
+        )
 
     )
 
@@ -142,23 +227,19 @@ def generate_institutional_positioning():
             )
         )
 
-        oi_df.columns = (
-            oi_df.columns
-            .astype(str)
-            .str.strip()
-        )
-
-        volume_df.columns = (
-            volume_df.columns
-            .astype(str)
-            .str.strip()
-        )
-
         fii_derivatives = (
             derivatives
             .fii_derivatives_statistics(
                 trade_date=trade_date
             )
+        )
+
+        oi_df = normalize_dataframe(
+            oi_df
+        )
+
+        volume_df = normalize_dataframe(
+            volume_df
         )
 
         fii_oi = oi_df[
