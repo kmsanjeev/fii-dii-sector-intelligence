@@ -379,20 +379,46 @@ def run_institutional_backfill():
 
             except Exception as e:
 
-                add_unavailable_date(
-
-                    date_str,
-
-                    str(e)
-
+                error_text = str(
+                    e
                 )
 
-                logger.error(
+                if (
 
-                    f"Unavailable data: "
-                    f"{date_str} | {e}"
+                    "No data available"
+                    in error_text
 
-                )
+                    or
+
+                    "open interest data not found"
+                    in error_text.lower()
+
+                ):
+
+                    add_unavailable_date(
+
+                        date_str,
+
+                        error_text
+
+                    )
+
+                    logger.info(
+
+                        f"Cached unavailable date: "
+                        f"{date_str}"
+
+                    )
+
+                else:
+
+                    logger.error(
+
+                        f"Unexpected error: "
+                        f"{date_str} | "
+                        f"{error_text}"
+
+                    )
 
                 continue
 
