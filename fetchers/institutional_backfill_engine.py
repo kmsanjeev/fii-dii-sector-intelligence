@@ -173,11 +173,84 @@ def run_institutional_backfill():
                     )
                 )
 
-                oi_df.columns = (
-                    oi_df.columns
-                    .astype(str)
-                    .str.strip()
-                )
+                # =====================
+                # Legacy NSE Header Fix
+                # =====================
+
+                if (
+
+                    "Client Type"
+                    not in oi_df.columns
+
+                    and
+
+                    "Client"
+                    in oi_df.columns
+
+                ):
+
+                    original_columns = list(
+                        oi_df.columns
+                    )
+
+                    oi_df.loc[-1] = (
+                        original_columns
+                    )
+
+                    oi_df.index = (
+                        oi_df.index + 1
+                    )
+
+                    oi_df = (
+                        oi_df.sort_index()
+                    )
+
+                    oi_df.columns = [
+
+                        "Client Type",
+                        "Future Index Long",
+                        "Future Index Short",
+                        "Future Stock Long",
+                        "Future Stock Short",
+                        "Option Index Call Long",
+                        "Option Index Put Long",
+                        "Option Index Call Short",
+                        "Option Index Put Short",
+                        "Option Stock Call Long",
+                        "Option Stock Put Long",
+                        "Option Stock Call Short",
+                        "Option Stock Put Short",
+                        "Total Long Contracts",
+                        "Total Short Contracts"
+
+                    ]
+
+                # =====================
+                # Normal Legacy Rename
+                # =====================
+
+                elif (
+
+                    "Client Type"
+                    not in oi_df.columns
+
+                    and
+
+                    "Client"
+                    in oi_df.columns
+
+                ):
+
+                    oi_df = oi_df.rename(
+
+                        columns={
+
+                            "Client":
+                            "Client Type"
+
+                        }
+
+                    )
 
                 volume_df.columns = (
                     volume_df.columns
