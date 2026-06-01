@@ -59,6 +59,10 @@ from fetchers.institutional_integrity_engine import (
     generate_institutional_integrity_report
 )
 
+from fetchers.institutional_trend_engine import (
+    generate_institutional_trend
+)
+
 from fetchers.leadership_duration_engine import (
     generate_leadership_duration
 )
@@ -167,6 +171,8 @@ def main():
         run_institutional_backfill()
 
         generate_institutional_integrity_report()
+
+        generate_institutional_trend()
 
 
     # ====================
