@@ -28,6 +28,11 @@ MISSING_FILE = (
     "institutional_missing_dates.csv"
 )
 
+UNAVAILABLE_FILE = (
+    "data/reference/"
+    "institutional_unavailable_dates.csv"
+)
+
 
 def generate_institutional_integrity_report():
 
@@ -133,10 +138,28 @@ def generate_institutional_integrity_report():
             missing_dates
         )
 
-        integrity_score = round(
+        unavailable_count = 0
+
+        if os.path.exists(
+            UNAVAILABLE_FILE
+        ):
+
+            unavailable_count = len(
+
+                pd.read_csv(
+                    UNAVAILABLE_FILE
+                )
+
+            )
+
+        coverage_pct = round(
 
             (
-                actual_count
+                (
+                    expected_count
+                    -
+                    missing_count
+                )
                 /
                 expected_count
             ) * 100,
@@ -144,6 +167,16 @@ def generate_institutional_integrity_report():
             2
 
         )
+
+        if missing_count == 0:
+
+            integrity_pct = 100.0
+
+        else:
+
+            integrity_pct = (
+                coverage_pct
+            )
 
         report_df = pd.DataFrame([{
 
@@ -162,8 +195,14 @@ def generate_institutional_integrity_report():
             "Missing_Dates":
             missing_count,
 
-            "Integrity_Score":
-            integrity_score
+            "Unavailable_Dates":
+            unavailable_count,
+
+            "Coverage_Pct":
+            coverage_pct,
+
+            "Integrity_Pct":
+            integrity_pct
 
         }])
 
@@ -195,8 +234,15 @@ def generate_institutional_integrity_report():
 
         logger.info(
 
-            f"Institutional Integrity: "
-            f"{integrity_score}%"
+            f"Coverage: "
+            f"{coverage_pct}%"
+
+        )
+
+        logger.info(
+
+            f"Integrity: "
+            f"{integrity_pct}%"
 
         )
 
