@@ -55,6 +55,10 @@ from fetchers.institutional_backfill_engine import (
     run_institutional_backfill
 )
 
+from fetchers.institutional_integrity_engine import (
+    generate_institutional_integrity_report
+)
+
 from fetchers.leadership_duration_engine import (
     generate_leadership_duration
 )
@@ -161,6 +165,9 @@ def main():
     if ENABLE_INSTITUTIONAL_BACKFILL:
 
         run_institutional_backfill()
+
+        generate_institutional_integrity_report()
+
 
     # ====================
     # Save Latest CSV
