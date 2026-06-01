@@ -185,6 +185,72 @@ def run_institutional_backfill():
                     .str.strip()
                 )
 
+                # =====================
+                # Legacy NSE Schema Fix
+                # =====================
+
+                if (
+                    "Client Type"
+                    not in oi_df.columns
+
+                    and
+
+                    "Client"
+                    in oi_df.columns
+                ):
+
+                    oi_df = oi_df.rename(
+                        columns={
+                            "Client":
+                            "Client Type"
+                        }
+                    )
+
+                if (
+                    "Client Type"
+                    not in volume_df.columns
+
+                    and
+
+                    "Client"
+                    in volume_df.columns
+                ):
+
+                    volume_df = volume_df.rename(
+                        columns={
+                            "Client":
+                            "Client Type"
+                        }
+                    )
+
+                # =====================
+                # Remove Commas
+                # =====================
+
+                for col in oi_df.columns:
+
+                    oi_df[col] = (
+                        oi_df[col]
+                        .astype(str)
+                        .str.replace(
+                            ",",
+                            "",
+                            regex=False
+                        )
+                    )
+
+                for col in volume_df.columns:
+
+                    volume_df[col] = (
+                        volume_df[col]
+                        .astype(str)
+                        .str.replace(
+                            ",",
+                            "",
+                            regex=False
+                        )
+                    )
+
                 fii_oi = oi_df[
                     oi_df["Client Type"] == "FII"
                 ].iloc[0]
