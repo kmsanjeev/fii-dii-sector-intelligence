@@ -16,19 +16,39 @@ REPORT_DIR.mkdir(parents=True, exist_ok=True)
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 
+def save_log(message: str):
+    log_file = LOG_DIR / "equity_master.log"
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    with open(log_file, "a", encoding="utf-8") as f:
+        f.write(f"{timestamp} | {message}\n")
+
+
 def fetch_equity_universe() -> pd.DataFrame:
     print("Fetching NSE equity universe...")
 
     df = capital_market.equity_list()
 
-    df = df.rename(
-        columns={
-            "NAME OF COMPANY": "COMPANY_NAME",
-            "DATE OF LISTING": "LISTING_DATE",
-            "FACE VALUE": "FACE_VALUE",
-            "ISIN NUMBER": "ISIN",
-        }
-    )
+    # --------------------------------------------------
+    # Normalize NSE column names
+    # --------------------------------------------------
+
+    df.columns = [str(col).strip() for col in df.columns]
+
+    save_log(f"Detected Columns: {list(df.columns)}")
+
+    rename_map = {
+        "NAME OF COMPANY": "COMPANY_NAME",
+        "DATE OF LISTING": "LISTING_DATE",
+        "FACE VALUE": "FACE_VALUE",
+        "ISIN NUMBER": "ISIN",
+    }
+
+    df = df.rename(columns=rename_map)
+
+    if "ISIN" not in df.columns:
+        df["ISIN"] = None
 
     required_columns = [
         "SYMBOL",
@@ -39,9 +59,18 @@ def fetch_equity_universe() -> pd.DataFrame:
         "FACE_VALUE",
     ]
 
-    for column in required_columns:
-        if column not in df.columns:
-            df[column] = None
+    missing_columns = [
+        col for col in required_columns
+        if col not in df.columns
+    ]
+
+    if missing_columns:
+        save_log(
+            f"Missing Columns: {missing_columns}"
+        )
+
+        for col in missing_columns:
+            df[col] = None
 
     df = df[required_columns].copy()
 
@@ -52,11 +81,13 @@ def fetch_equity_universe() -> pd.DataFrame:
     )
 
     df["IS_ACTIVE"] = True
+    df["DATA_SOURCE"] = "NSELIB"
 
     return df
 
 
 def generate_reports(df: pd.DataFrame):
+
     summary = pd.DataFrame(
         {
             "Metric": [
@@ -66,8 +97,8 @@ def generate_reports(df: pd.DataFrame):
             ],
             "Value": [
                 len(df),
-                df["IS_ACTIVE"].sum(),
-                df["SERIES"].nunique(),
+                int(df["IS_ACTIVE"].sum()),
+                int(df["SERIES"].nunique()),
             ],
         }
     )
@@ -90,21 +121,18 @@ def generate_reports(df: pd.DataFrame):
     )
 
 
-def save_log(message: str):
-    log_file = LOG_DIR / "equity_master.log"
-
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    with open(log_file, "a", encoding="utf-8") as f:
-        f.write(f"{timestamp} | {message}\n")
-
-
 def main():
+
     df = fetch_equity_universe()
 
-    output_file = OUTPUT_DIR / "equity_master.csv"
+    output_file = (
+        OUTPUT_DIR / "equity_master.csv"
+    )
 
-    df.to_csv(output_file, index=False)
+    df.to_csv(
+        output_file,
+        index=False,
+    )
 
     generate_reports(df)
 
