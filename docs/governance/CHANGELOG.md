@@ -634,3 +634,19 @@ Stock
 capital flow discovery and opportunity identification.
 
 This remains the central objective of the platform.
+
+## Version 1.3
+
+### Architecture
+
+- Added ADR-018 Market Data Reliability Framework
+
+### Key Decisions
+
+- Runtime data integrity validation
+- Self-healing data architecture
+- Automated incremental backup strategy
+- Weekly recovery point framework
+- Secondary backup repository requirement
+- Disaster recovery hierarchy
+- Metadata-only registry architecture
