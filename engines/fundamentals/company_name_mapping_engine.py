@@ -31,37 +31,40 @@ def normalize(text):
 
     text = str(text).upper()
 
-    replacements = [
-        " LIMITED",
-        " LTD",
-        " PRIVATE",
-        " PVT",
-        " COMPANY",
-        " CORPORATION",
-        " CORP",
-        " INDIA",
-        " INDUSTRIES",
-        " INDUSTRY",
-        " SERVICES",
-        " SERVICE",
-        " SYSTEMS",
-        " SYSTEM",
-        " ENGINEERING",
-        " ENGINEERS",
-        " INTERNATIONAL",
-        " TECHNOLOGIES",
-        " TECHNOLOGY",
-        " HOLDINGS",
-        " HOLDING",
-        " FINANCIAL",
-        " FINANCE",
+    remove_words = [
+        "LIMITED",
+        "LTD",
+        "PRIVATE",
+        "PVT",
+        "COMPANY",
+        "CORPORATION",
+        "CORP",
+        "INDIA",
+        "INDUSTRIES",
+        "INDUSTRY",
+        "SERVICES",
+        "SERVICE",
+        "TECHNOLOGIES",
+        "TECHNOLOGY",
+        "ENTERPRISE",
+        "ENTERPRISES",
+        "HOLDINGS",
+        "HOLDING",
+        "PROJECTS",
+        "PROJECT",
+        "AND",
         "&",
         ".",
         ",",
         "-",
         "(",
-        ")",
+        ")"
     ]
+
+    for word in remove_words:
+        text = text.replace(word, " ")
+
+    return " ".join(text.split())
 
     for item in replacements:
         text = text.replace(item, " ")
@@ -70,13 +73,14 @@ def normalize(text):
 
 
 def get_status(score):
-    if score >= 95:
+
+    if score >= 90:
         return "EXACT"
 
-    if score >= 85:
+    if score >= 70:
         return "HIGH_CONFIDENCE"
 
-    if score >= 75:
+    if score >= 55:
         return "REVIEW"
 
     return "UNMATCHED"

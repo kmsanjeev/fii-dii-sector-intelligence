@@ -1,16 +1,67 @@
-pandas
-numpy
-requests
+tenacity
+pytz
+xlrd==2.0.2
+
+# Core Data Stack
+pandas>=2.2.0
+numpy>=1.26.0
+pyarrow>=16.0.0
+
+# HTTP / API
+requests>=2.32.0
+
+# Google Sheets & Google API
 gspread
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
 oauth2client
-python-dotenv
-tenacity
-pytz
-beautifulsoup4
+
+# Data Matching & Processing
+rapidfuzz>=3.9.0
+tqdm>=4.66.0
+
+# Excel Support
+openpyxl>=3.1.2
+
+# Database Layer
+duckdb>=1.0.0
+sqlalchemy>=2.0.0
+
+# Analytics / ML
+scikit-learn>=1.5.0
+
+# Technical Analysis
+pandas-ta
+
+# Visualization
+matplotlib>=3.9.0
+plotly>=5.22.0
+
+# HTML Parsing / Scraping
+beautifulsoup4>=4.12.0
+lxml>=5.2.0
+
+# Report Generation
+jinja2>=3.1.0
+
+# Configuration
+python-dotenv>=1.0.1
+
+# Date Utilities
+python-dateutil>=2.9.0
+
+# Future API Framework (Phase-5)
+flask>=3.0.0
+
+# Existing NSE Dependency
+nselib
 yfinance
-nselib==2.5.1
-xlrd==2.0.2
-openpyxl
+
+# Optional: For development and testing add later
+reportlab
+pdfkit
+selenium
+playwright
+fastapi
+uvicorn
