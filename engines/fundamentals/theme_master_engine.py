@@ -125,9 +125,11 @@ def clean_theme(filename):
 
 def main():
 
-    files = sorted(
-        SCREENER_DIR.glob("*.csv")
-    )
+    files = [
+        f
+        for f in SCREENER_DIR.glob("*.csv")
+        if f.name.lower() != "master_screener_universe.csv"
+    ]
 
     records = []
 
