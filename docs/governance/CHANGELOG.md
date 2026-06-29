@@ -27,6 +27,60 @@ Major versions are created when:
 
 ---
 
+# Version 2.7
+
+Phase 4D — NSE Constituents Engine V1
+
+Date:
+
+2026-06-30
+
+Status:
+
+Completed
+
+---
+
+## Summary
+
+Built the NSE index constituent downloader using `nsearchives.nseindia.com/content/indices/`
+(open endpoint, no auth required). Downloads 30 NSE indices in one run — 12 broad-market
+cap-tier indices + 18 sector/theme/strategy indices. Produces one constituent CSV per index
+plus a master `index_membership.csv` mapping each symbol to all its indices with sector hints.
+
+---
+
+## Deliverables
+
+### Engine
+- `engines/foundation/nse_constituents_engine_v1.py` — complete rewrite (class-based, all guardrails)
+
+### Outputs (data/NSE/indices/)
+- `nifty_50_constituents.csv` through `nifty_smallcap_250_constituents.csv` — 30 files, one per index
+- `index_membership.csv` — 506 unique symbols; columns: symbol, index_names, sector_hints, dominant_sector_hint
+- `reports/download_registry.csv` — status per index (30 SUCCESS, 0 FAILED)
+- `reports/constituents_recovery_queue.csv` — empty (all succeeded)
+
+### Index Coverage (30 indices, 2519 constituent rows total)
+Broad market (12): NIFTY 50, NEXT 50, 100, 200, 500, MIDCAP 50/100/150, SMALLCAP 100/250, LARGEMIDCAP 250, MIDSMALLCAP 400
+Sector (14): AUTO, PHARMA, IT, METAL, FMCG, MEDIA, REALTY, BANK, PSU BANK, HEALTHCARE, OIL & GAS, ENERGY, FINANCIAL SERVICES 25/50, CONSUMER DURABLES
+Strategy/PSU (4): COMMODITIES, MNC, CPSE, PSE
+
+### Key Verifications
+- TCS → dominant_sector_hint=IT ✅
+- HDFCBANK → dominant_sector_hint=BANKING ✅
+- MARUTI → dominant_sector_hint=AUTO ✅
+- ONGC → dominant_sector_hint=ENERGY ✅
+- SUNPHARMA → sector_hints=HEALTHCARE|PHARMA ✅
+- All 30 downloads: HTTP 200, schema valid, EQ series filter applied
+
+### Not Available on nsearchives (for future work)
+NIFTY FINANCIAL SERVICES (main), NIFTY PRIVATE BANK, NIFTY CHEMICALS, NIFTY CEMENT,
+NIFTY INFRASTRUCTURE, NIFTY TOTAL MARKET, NIFTY INDIA DEFENCE, NIFTY EV,
+NIFTY INDIA DIGITAL, NIFTY INDIA MANUFACTURING, NIFTY TRANSPORTATION & LOGISTICS
+
+---
+
 # Version 2.6
 
 Phase 4C — Classification Engine V4 Completion

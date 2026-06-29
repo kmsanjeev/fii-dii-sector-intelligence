@@ -213,3 +213,71 @@ These are facility management / staffing / export trading companies with no domi
 
 ### Next (Phase 4D)
 `engines/foundation/nse_constituents_engine_v1.py` — add auto-download of 139 NSE index constituent files from NSE API so sector-level index membership can be used in future classification passes.
+
+---
+
+## Session: 2026-06-30 — Phase 4D: NSE Constituents Engine V1
+
+### Context
+Phase 4D was the NSE Constituents auto-downloader. Goal: download index constituent lists so
+`index_membership.csv` can serve as a sector-confirmation data source for future classification passes.
+
+### Key Technical Discovery
+- `nseindia.com` main API: **blocked** — returns 403 (Akamai bot protection, `_abck` cookie)
+- `nselib` has only 4 hardcoded index list functions (nifty50, next50, midcap150, smallcap250)
+- `nsearchives.nseindia.com/content/indices/` — **open domain, no auth required** — returns CSV
+- This is the same domain nselib uses internally for its 4 hardcoded functions
+- 30 indices confirmed accessible via filename probing (named e.g. `ind_niftyautolist.csv`)
+
+### Index Filename Pattern (on nsearchives)
+```
+ind_nifty50list.csv            → NIFTY 50 (50 stocks)
+ind_niftyautolist.csv          → NIFTY AUTO (15 stocks)
+ind_niftyitlist.csv            → NIFTY IT (10 stocks)
+ind_niftypharmalist.csv        → NIFTY PHARMA (20 stocks)
+ind_niftymidcap150list.csv     → NIFTY MIDCAP 150 (150 stocks)
+ind_niftysmallcap250list.csv   → NIFTY SMALLCAP 250 (250 stocks)
+```
+
+### Engine Design
+- Class `NSEConstituentsEngineV1`, single `run()` method
+- INDEX_REGISTRY: list of (index_name, filename, platform_sector_hint)
+- G-A-01: 1s rate limit between requests
+- G-A-02: 3 retries with exponential backoff
+- G-A-03: failed indices → recovery queue
+- G-D-02: atomic writes (.tmp → shutil.move)
+- G-S-01: EQ series filter on each constituent CSV
+- Index membership master built from combined data
+
+### Results
+- 30/30 indices downloaded (0 failures)
+- 2,519 total constituent rows across all indices
+- 506 unique symbols in index_membership.csv
+- EQ series filter: only equity stocks retained
+
+### Key Verifications (all PASS)
+- TCS → dominant_sector_hint=IT ✅
+- HDFCBANK → sector_hints=BANKING|FINANCIAL_SERVICES ✅
+- MARUTI → dominant_sector_hint=AUTO ✅
+- ONGC → dominant_sector_hint=ENERGY ✅
+- SUNPHARMA → sector_hints=HEALTHCARE|PHARMA ✅
+
+### Output Files
+| File | Path | Rows |
+|------|------|------|
+| nifty_*_constituents.csv (30 files) | `data/NSE/indices/` | varies |
+| index_membership.csv | `data/NSE/indices/` | 506 |
+| download_registry.csv | `data/NSE/indices/reports/` | 30 |
+
+### Indices NOT Available on nsearchives (future work)
+NIFTY FINANCIAL SERVICES (main), NIFTY PRIVATE BANK, NIFTY CHEMICALS, NIFTY CEMENT,
+NIFTY INFRASTRUCTURE, NIFTY TOTAL MARKET, NIFTY INDIA DEFENCE, NIFTY EV,
+NIFTY INDIA DIGITAL, NIFTY INDIA MANUFACTURING, NIFTY TRANSPORTATION & LOGISTICS
+
+### Phase 4 Summary — Fundamentals Layer COMPLETE
+| Phase | Engine | Status |
+|-------|--------|--------|
+| 4A | company_fundamentals_master_engine.py | ✅ 2123 symbols, 100% ISIN |
+| 4B | industry_master_engine.py | ✅ 183 industries mapped, 96.7% → improved |
+| 4C | classification_engine_v4.py | ✅ 99.53% coverage, 10 OTHER remain |
+| 4D | nse_constituents_engine_v1.py | ✅ 30 indices, 506 symbols, 0 failures |

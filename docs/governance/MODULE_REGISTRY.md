@@ -433,7 +433,7 @@ ACTIVE DEVELOPMENT
 
 ## Completion
 
-45%
+55%
 
 ---
 
