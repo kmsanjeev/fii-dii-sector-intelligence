@@ -27,6 +27,176 @@ Major versions are created when:
 
 ---
 
+# Version 2.2
+
+GUI Architecture Planning — React + FastAPI Implementation Plan
+
+Date:
+
+2026-06-29
+
+Status:
+
+Completed
+
+---
+
+## Summary
+
+Designed and documented the full React-based GUI for the Capital Flow Intelligence Platform.
+Created `docs/architecture/GUI_IMPLEMENTATION_PLAN.md` covering technology stack, design system,
+13 pages, 13 build phases, FastAPI backend contract, state management, and IST-aware utilities.
+Module 08 (GUI Platform) advances from 10% to 25%.
+
+---
+
+## Deliverables
+
+### Architecture Document
+- `docs/architecture/GUI_IMPLEMENTATION_PLAN.md` — 15-section complete build specification
+
+### Technology Decisions (Locked)
+- Frontend: React 18 + TypeScript + Vite
+- Styling: Tailwind CSS + CSS Variables (dark terminal theme)
+- Charts: Recharts (heatmaps/flows) + TradingView Lightweight Charts (OHLCV)
+- Server State: TanStack Query v5
+- Client State: Zustand
+- Routing: React Router v6
+- Backend: FastAPI + Uvicorn (already in requirements.txt)
+- Real-time: WebSocket — live flow ticker during market hours only
+
+### Design System (Defined)
+- Dark terminal palette (#0A0D14 background)
+- Participant colors: FII=Blue, DII=Indigo, PRO=Amber, CLIENT=Pink
+- Score gradient: Red (0-30) → Amber (30-60) → Green (60-80) → Emerald (80-100)
+- 3-Second Rule: market regime + FII net + top sector visible on landing
+
+### Pages Designed (13 total)
+Dashboard, Market, Sectors, SectorDetail, Themes, ThemeDetail,
+Stocks (screener), StockDetail, Portfolio, Research, AI Assistant, Reports, Settings
+
+### Build Phases Defined (GUI-1 through GUI-13)
+GUI-1: AppShell → GUI-4: FastAPI data wiring (needs Phase 4A) → GUI-9: AI Assistant → GUI-13: Auth
+
+### Key Components Specified
+- `CapitalFlowCascade` — Sankey: Market → Sector → Theme → Stock
+- `SectorHeatmap` — Recharts Treemap (size=market cap, color=flow score)
+- `FlowCard` — FII/DII/PRO/CLIENT buy/sell/net with 7-day sparkline
+- `OhlcvChart` — TradingView LC with delivery % + FII flow overlay panes
+
+### FastAPI Contract
+- 14 REST endpoints + 1 WebSocket (`/ws/live-flow`)
+- Standard envelope: `{ status, data, meta: { generated_at, data_as_of, cache_hit } }`
+
+### Session Protocol
+- `chat history/session_2026_06_29_gui_plan.md` saved
+- Memory updated in `memory/project_fii_dii.md`
+
+---
+
+# Version 2.1
+
+Phase 3B: Guardrail Utility Library + Complete Test Suite
+
+Date:
+
+2026-06-29
+
+Status:
+
+Completed
+
+---
+
+## Summary
+
+Implemented the complete guardrail utility library (`engines/common/guardrails.py`) with 55
+functions covering all 12 guardrail sections, paired with a full pytest test suite across 16 test
+files (~400 test cases). Introduced phased development protocol: every phase ends with a session
+log saved to `chat history/`, memory update, and CHANGELOG entry.
+
+---
+
+## Deliverables
+
+### Guardrail Library
+- `engines/common/guardrails.py` — 55 utility functions, all logging at DEBUG level
+- All 12 guardrail sections covered (Data, API, Symbol, Price, Classification, Corporate Actions,
+  Intelligence, Financial Results, Trading Calendar, Institutional, System, Performance)
+
+### Test Infrastructure
+- `pytest.ini` — DEBUG logging to `tests/logs/pytest_debug.log`
+- `tests/conftest.py` — 10 shared fixtures + autouse `log_test_boundaries`
+- `requirements.txt` — added pytest>=8.0.0 and pytest-mock>=3.0.0
+
+### Guardrail Test Files (tests/guardrails/)
+12 files covering G-D-01 through G-PERF-04 (all 55 rules)
+
+### Edge Case Test Files (tests/edge_cases/)
+4 files covering India-specific edge cases: mergers/IPOs, circuit breakers,
+PSU/holding co classification, institutional T+1 lag, Budget Day, F&O expiry
+
+### Supporting Files
+- `tests/CLAUDE.md` — test directory context for future sessions
+- `chat history/session_2026_06_29_phase3b_guardrails_and_tests.md` — session log
+- `memory/project_fii_dii.md` — updated with Phase 3B completion + phased dev protocol
+
+### Process Improvements
+- Phased development protocol established (session log + memory update + changelog after every phase)
+
+---
+
+# Version 2.0
+
+Claude AI Development Infrastructure Release
+
+Date:
+
+2026-06-29
+
+Status:
+
+Completed
+
+---
+
+## Summary
+
+Established complete AI-assisted development infrastructure: master Claude guide,
+directory-level skill files (CLAUDE.md), platform guardrails, and edge case registry.
+This release makes Claude a self-sufficient platform architect without re-reading project
+docs on every session.
+
+---
+
+## Deliverables
+
+### Claude Skill Files (CLAUDE.md)
+- `CLAUDE.md` (root) — master project rules, critical path, guardrail summary
+- `engines/CLAUDE.md` — engine directory map, template, compliance checklist
+- `engines/common/CLAUDE.md` — shared utility reference card
+- `engines/fundamentals/CLAUDE.md` — Phase 4 spec, classification edge cases
+- `engines/acquisition/CLAUDE.md` — data download rules, recovery patterns
+- `engines/intelligence/CLAUDE.md` — planned intelligence engine specs
+- `engines/foundation/CLAUDE.md` — index/constituent management
+- `data/CLAUDE.md` — canonical data paths, lifecycle, edge cases
+- `fetchers/CLAUDE.md` — legacy context, migration roadmap
+- `docs/CLAUDE.md` — documentation governance, ADR creation rules
+- `alerts/CLAUDE.md` — Telegram delivery rules
+- `sheets/CLAUDE.md` — Google Sheets integration rules
+- `storage/CLAUDE.md` — atomic write patterns, storage managers
+
+### Governance Documents
+- `docs/CLAUDE_MASTER_DEV_GUIDE.md` — 16-section master reference
+- `docs/governance/GUARDRAILS.md` — 12-section, 55 rules, full edge case registry
+
+### Technical Debt Catalogued
+- 5 files marked for removal (legacy/backup/stubs)
+- Data path discrepancy documented (`data/NSE Data/` → `data/NSE/`)
+- 8 known issues catalogued with root causes
+
+---
+
 # Version 1.0
 
 Documentation Foundation Release

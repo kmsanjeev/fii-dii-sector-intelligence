@@ -547,13 +547,13 @@ Platform
 
 ## Status
 
-FOUNDATION COMPLETE
+ACTIVE DEVELOPMENT
 
 ---
 
 ## Completion
 
-10%
+25%
 
 ---
 
@@ -569,19 +569,37 @@ Provide visualization and user interaction.
 
 ---
 
+## Architecture
+
+Full spec: `docs/architecture/GUI_IMPLEMENTATION_PLAN.md` (2026-06-29)
+
+Stack: React 18 + TypeScript + Vite + Tailwind CSS + TanStack Query + Zustand + React Router v6
+Charts: Recharts + TradingView Lightweight Charts
+Backend: FastAPI + Uvicorn
+Real-time: WebSocket live flow ticker
+
+Build phases: GUI-1 (AppShell) through GUI-13 (Auth). Start with GUI-1.
+Dependency: GUI-4 requires Phase 4A (Company Fundamentals Master Engine) to be complete first.
+
+---
+
 ## Planned Components
 
-Dashboard Framework
+Dashboard Framework (Capital Flow Cascade, Regime Card, Flow Cards)
 
-Heatmap Framework
+Heatmap Framework (Sector Treemap, Theme Heatmap)
 
-Capital Flow Maps
+OHLCV Charts (TradingView Lightweight Charts with overlay panes)
 
-Infographic Engine
+Capital Flow Cascade (Sankey: Market→Sector→Theme→Stock)
 
-AI Interface
+AI Chat Interface (AI Analyst modes)
 
-Mobile Platform
+Mobile Platform (bottom nav, card-based layouts)
+
+Portfolio Dashboard (sector/theme exposure, risk matrix)
+
+Report Center (daily/weekly/monthly reports)
 
 ---
 
