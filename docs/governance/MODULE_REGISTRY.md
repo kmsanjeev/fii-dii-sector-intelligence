@@ -361,13 +361,13 @@ Core Intelligence
 
 ## Status
 
-FOUNDATION COMPLETE
+ACTIVE — PHASE 8 COMPLETE
 
 ---
 
 ## Completion
 
-10%
+40%
 
 ---
 
@@ -383,29 +383,47 @@ Identify stock-level beneficiaries of capital flow.
 
 ---
 
-## Planned Engines
+## Completed Engines (Phase 8 — 2026-06-30)
+
+price_momentum_engine.py — 8A: per-symbol returns (30D/60D/90D/365D), volume ratio, sector-relative strength, percentile-ranked price_score (0-100), 2441 symbols
+
+bull_run_probability_engine.py — 8B: multi-factor bull run score combining price (30%) + sector flow (25%) + institutional deal (25%) + corporate confidence (20%); market regime multiplier; STRONG_CANDIDATE / EMERGING / WATCHLIST / NEUTRAL / AVOID labels
+
+---
+
+## Outputs (Phase 8)
+
+data/intelligence/price_momentum.csv — 2441 symbols, price_score + returns + vol_ratio + sector_rel
+
+data/intelligence/bull_run_probability.csv — 2441 symbols, bull_run_score + component scores + label
+
+data/intelligence/bull_run_watchlist.csv — STRONG_CANDIDATE + EMERGING symbols only
+
+---
+
+## Remaining Engines
 
 Relative Strength Engine
 
-Accumulation Engine
-
-Distribution Engine
+Accumulation / Distribution Engine
 
 Delivery Intelligence Engine
 
 F&O Intelligence Engine
 
-Leadership Engine
-
-Opportunity Engine
+Leadership Engine (within-sector)
 
 ---
 
 ## Dependencies
 
-Theme Intelligence
+Fundamental Intelligence (Phase 4 — complete)
 
-Fundamental Intelligence
+Participant Intelligence (Phase 5 — complete)
+
+Sector Rotation Intelligence (Phase 6 — complete)
+
+Corporate Intelligence (Phase 7 — complete)
 
 ---
 

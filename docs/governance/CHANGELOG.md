@@ -6,6 +6,69 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 3.1
+
+Phase 8 — Bull Run Probability Engine (8A / 8B)
+
+Date:
+
+2026-06-30
+
+Status:
+
+Completed
+
+---
+
+## Summary
+
+Built the Bull Run Probability Engine in `engines/intelligence/` — two engines that combine
+all previously built intelligence layers into a per-stock bull run probability score.
+
+---
+
+## Engines Created
+
+| File | Phase | Output |
+|------|-------|--------|
+| `engines/intelligence/price_momentum_engine.py` | 8A | `data/intelligence/price_momentum.csv` |
+| `engines/intelligence/bull_run_probability_engine.py` | 8B | `data/intelligence/bull_run_probability.csv` + watchlist |
+
+---
+
+## Intelligence Architecture
+
+### Price Momentum Score (Phase 8A)
+- Reads 5 reference bhavcopy dates: latest, 30D, 60D, 90D, 365D ago
+- Reads 22 bhavcopy files for 20D volume average
+- Per-symbol: ret_30d, ret_60d, ret_90d, ret_365d, vol_ratio, sector_rel_30d
+- All metrics percentile-ranked (0-100) across 2441-symbol universe
+- Composite price_score: ret_30d (35%) + ret_90d (25%) + ret_365d (20%) + sector_rel (15%) + vol (5%)
+- Handles dual bhavcopy schema (pre/post-2020 column names)
+- 2441 symbols scored, as_of_date: 2026-06-10
+
+### Bull Run Probability Score (Phase 8B)
+- 4-factor weighted combination:
+  - Price Momentum Score: 30% (from 8A, already 0-100)
+  - Sector Capital Flow Score: 25% (FII_flow_score from sector_rotation_intelligence.csv rescaled 0-100)
+  - Institutional Deal Score: 25% (inst_net_value_cr percentile-ranked; neutral 50 if no deal data)
+  - Corporate Confidence Score: 20% (confidence_score_12m clipped [-3,6] rescaled 0-100)
+- Market Regime Multiplier from institutional_positioning_history.csv:
+  - ACCUMULATION: ×1.10  DISTRIBUTION: ×0.80  others: ×0.90
+- Final score clipped to [0, 100]
+
+### 2026-06-30 Results
+- 2441 symbols scored
+- Regime: DISTRIBUTION (×0.80 multiplier)
+- Score range: 12.3 to 54.9 (DISTRIBUTION caps ceiling below 65)
+- EMERGING: 16 symbols (max possible in DISTRIBUTION regime)
+- WATCHLIST: 1599 symbols
+- NEUTRAL: 824 symbols
+- AVOID: 2 symbols
+- Top candidates: ADANIENSOL (55), ADANIENT (51), GMRAIRPORT (50), CRAFTSMAN (48), EMCURE (48)
+
+---
+
 # Version 3.0
 
 Phase 7 — Corporate Intelligence Layer (7A / 7B / 7C)
