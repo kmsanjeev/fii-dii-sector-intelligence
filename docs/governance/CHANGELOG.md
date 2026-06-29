@@ -6,6 +6,55 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 3.3
+
+Phase 10 — FastAPI Backend
+
+Date: 2026-06-30
+
+Status: Completed
+
+---
+
+## Summary
+
+Built the complete FastAPI Backend (Phase 10) in `backend/` — REST API serving all 11
+intelligence CSVs via 16 endpoints, in-memory data loader with 60min auto-reload,
+and WebSocket live ticker.
+
+---
+
+## Files Created
+
+| File | Purpose |
+|------|---------|
+| `backend/main.py` | FastAPI app entry point, CORS, startup, /health |
+| `backend/services/data_loader.py` | Thread-safe CSV cache, 60min background reload |
+| `backend/routers/market.py` | /api/market/regime + freshness |
+| `backend/routers/participant.py` | /api/participant/latest + history |
+| `backend/routers/sectors.py` | /api/sectors (all 29) + history + detail |
+| `backend/routers/stocks.py` | /api/stocks (2441) + watchlist + detail + momentum |
+| `backend/routers/corporate.py` | /api/corporate/deals + catalysts + confidence + events |
+| `backend/ws/live_ticker.py` | WebSocket /ws/live (regime + sectors every 30s) |
+
+---
+
+## Test Results (2026-06-30)
+
+16/16 endpoints PASS. Key data:
+- NEUTRAL regime | FII +10.91 | DII -4.52
+- 29 sectors | 2441 symbols | 225 EMERGING
+- 12 upcoming catalysts | 1111 corporate confidence scores
+
+---
+
+## Packages Added
+
+- fastapi==0.138.2
+- uvicorn[standard] (watchfiles, httptools)
+
+---
+
 # Version 3.2
 
 Phase 9 — Alert System
