@@ -427,13 +427,13 @@ Core Intelligence
 
 ## Status
 
-FOUNDATION COMPLETE
+ACTIVE DEVELOPMENT
 
 ---
 
 ## Completion
 
-5%
+45%
 
 ---
 
@@ -803,6 +803,334 @@ Manage research, validation, investment theses, and idea tracking.
 
 ---
 
+# Module 14
+
+ML Intelligence Layer
+
+---
+
+## Category
+
+AI / ML
+
+---
+
+## Status
+
+PLANNED
+
+---
+
+## Completion
+
+0%
+
+---
+
+## Priority
+
+High
+
+---
+
+## Purpose
+
+Replace heuristic scoring with trained ML models for accumulation detection, sector rotation prediction, bull run probability, company classification, and anomaly detection.
+
+---
+
+## Planned Models
+
+Accumulation Detection Model (XGBoost + LightGBM ensemble)
+
+Sector Rotation Prediction Model (LightGBM multi-class, 29 sectors)
+
+Bull Run Probability Model (Ensemble: XGBoost + LightGBM + Logistic)
+
+Anomaly Detection Model (Isolation Forest + Z-Score)
+
+Company Classification Model (NLP via sentence-transformers + cosine similarity)
+
+Feature Engineering Pipeline (shared across all models)
+
+---
+
+## Key Features (Accumulation Model)
+
+volume_ratio_20d, delivery_pct, fii_net_5d, dii_net_5d, pro_net_5d, rsi_14, rs_vs_nifty50_20d, oi_change_pct, pcr
+
+Target: price_up_10pct_in_20d (binary)
+
+---
+
+## Planned Engines
+
+engines/ml/accumulation_model.py
+
+engines/ml/sector_rotation_model.py
+
+engines/ml/bull_run_model.py
+
+engines/ml/anomaly_detector.py
+
+engines/ml/classification_model.py
+
+engines/ml/feature_engineering.py
+
+engines/ml/model_registry.py
+
+---
+
+## Build Phases
+
+ML-1: Feature engineering pipeline (after Phase 4A)
+
+ML-2: Accumulation detection model
+
+ML-3: Company classification model (NLP)
+
+ML-4: Sector rotation prediction model
+
+ML-5: Bull run probability model (ensemble)
+
+ML-6: Anomaly detection model
+
+---
+
+## Data Paths
+
+data/intelligence/ml_features/ — pre-computed features (Parquet, date-partitioned)
+
+data/intelligence/ml_models/ — trained model artifacts (.pkl)
+
+data/intelligence/scores/ — daily ML scores per symbol
+
+---
+
+## Dependencies
+
+Fundamental Intelligence (Module 06)
+
+Stock Intelligence (Module 05)
+
+Phase 4A must be complete before ML-1 can start
+
+---
+
+## Architecture Reference
+
+docs/architecture/ML_AI_CHATBOT_ARCHITECTURE.md (Section 2)
+
+---
+
+# Module 15
+
+AI Knowledge Base (RAG)
+
+---
+
+## Category
+
+AI / ML
+
+---
+
+## Status
+
+PLANNED
+
+---
+
+## Completion
+
+0%
+
+---
+
+## Priority
+
+High
+
+---
+
+## Purpose
+
+Index all platform intelligence outputs into a FAISS vector store with hybrid retrieval (dense + BM25) so AI agents can retrieve verified, platform-specific context before generating answers.
+
+---
+
+## Planned Components
+
+FAISS Vector Indexer (6 domain indexes: market, sectors, themes, stocks, fundamentals, research)
+
+Sentence-transformers Embedder
+
+Hybrid Retriever (Dense + BM25 → Reciprocal Rank Fusion)
+
+Context Builder (assembles retrieved chunks into LLM prompts)
+
+Document Chunker (splits intelligence outputs by type and frequency)
+
+---
+
+## Indexed Sources
+
+Daily institutional flow summaries
+
+Sector / theme heatmaps and scores
+
+Stock accumulation scores
+
+Quarterly financial results
+
+Corporate action events
+
+Market regime history (rolling 90-day window)
+
+Research reports
+
+---
+
+## Build Phases
+
+RAG-1: FAISS indexer + embedder
+
+RAG-2: Hybrid retriever (dense + BM25)
+
+RAG-3: Context builder + prompt assembly
+
+---
+
+## Data Paths
+
+data/intelligence/rag/ — FAISS indexes (market.faiss, sectors.faiss, themes.faiss, stocks.faiss, fundamentals.faiss, research.faiss)
+
+---
+
+## Dependencies
+
+All intelligence engines (Modules 01–06)
+
+ML Intelligence (Module 14) — ML scores indexed here
+
+RAG-1 can start after Phase 3B outputs exist (available now)
+
+---
+
+## Engines Directory
+
+engines/ai/knowledge/
+
+---
+
+## Architecture Reference
+
+docs/architecture/ML_AI_CHATBOT_ARCHITECTURE.md (Section 3)
+
+---
+
+# Module 16
+
+Chatbot Platform
+
+---
+
+## Category
+
+AI / ML
+
+---
+
+## Status
+
+PLANNED
+
+---
+
+## Completion
+
+0%
+
+---
+
+## Priority
+
+High
+
+---
+
+## Purpose
+
+Conversational AI interface that routes user queries to 7 specialized agents backed by live data tools, platform RAG, and Claude API (claude-sonnet-4-6).
+
+---
+
+## Planned Components
+
+Intent Router (regex + LLM-based classification → agent mapping)
+
+7 Specialized Agents (Market, Sector, Theme, Stock, Portfolio, Research, Dev CTO)
+
+Tool Registry (live data access mid-conversation: sector flows, stock scores, market regime)
+
+Conversation Memory (short-term: last 20 turns; long-term: user preferences)
+
+WebSocket Session Management (/ws/chat/{session_id})
+
+React Chat UI (GUI-9 in GUI plan)
+
+Claude API Integration (claude-sonnet-4-6 / claude-opus-4-8 for deep analysis)
+
+---
+
+## Example Interactions
+
+"Which sectors are seeing FII accumulation this week?" → sector_agent → RAG + live tool call
+
+"Why is RELIANCE moving up?" → stock_agent → accumulation score + FII flow + corporate events
+
+"Review my portfolio: RELIANCE×100, HDFCBANK×200, TCS×50" → portfolio_agent → exposure analysis
+
+---
+
+## Build Phases
+
+CB-1: Intent router + base agent
+
+CB-2: All 7 specialized agents
+
+CB-3: Tool registry (live data)
+
+CB-4: Conversation memory
+
+CB-5: WebSocket session management
+
+CB-6: React chat UI integration (GUI-9)
+
+---
+
+## Dependencies
+
+AI Knowledge Base (Module 15)
+
+GUI Platform (Module 08, GUI-9)
+
+ANTHROPIC_API_KEY env var (never hardcoded)
+
+---
+
+## Engines Directory
+
+engines/ai/chatbot/
+
+---
+
+## Architecture Reference
+
+docs/architecture/ML_AI_CHATBOT_ARCHITECTURE.md (Section 4)
+
+---
+
 # Current Development Priority
 
 Priority 1
@@ -843,7 +1171,7 @@ Fundamental Intelligence Foundation
 
 Estimated Overall Completion:
 
-25%
+22% (16 modules — 3 new ML/AI modules added 2026-06-29, reducing average)
 
 ---
 

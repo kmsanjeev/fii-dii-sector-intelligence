@@ -1,0 +1,9 @@
+symbol,sector_platform,theme_platform,industry_nse,override_reason
+ADANIPORTS,LOGISTICS,LOGISTICS_MODERNISATION,PORTS AND SHIPPING,Primary business is port operations. Screener classifies as SPECIALTY CHEMICALS — incorrect.
+ONGC,ENERGY,GREEN_ENERGY,OIL AND GAS EXPLORATION,Primary business is oil exploration. Screener classifies as OTHER AGRICULTURAL PRODUCTS — incorrect.
+COALINDIA,ENERGY,PSU_REVIVAL,COAL,COALINDIA is a coal PSU — should be ENERGY/PSU not POWER.
+ITC,FMCG,RURAL_CONSUMPTION,DIVERSIFIED FMCG,Conglomerate but primary revenue is cigarettes/FMCG — FMCG is correct per conglomerate rule.
+RELIANCE,ENERGY,GREEN_ENERGY,REFINERIES AND MARKETING,Primary revenue is O2C (refining). Reliance Jio secondary. Energy is correct primary sector.
+BAJAJHLDNG,FINANCIAL_SERVICES,FINANCIALISATION,INVESTMENT COMPANY,Holding company — classify by underlying business (financial investments).
+SCHAEFFLER,AUTO,EV_TRANSITION,AUTO COMPONENTS AND EQUIPMENTS,Classified as INDUSTRIAL_MANUFACTURING (→CAPITAL_GOODS) but primary is auto components.
+CAMS,FINANCIAL_SERVICES,FINANCIALISATION,COMPUTER AGE MANAGEMENT SERVICES,CAMS is a registrar/transfer agent — FINANCIAL_SERVICES correct.

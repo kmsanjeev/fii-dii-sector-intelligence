@@ -27,6 +27,251 @@ Major versions are created when:
 
 ---
 
+# Version 2.6
+
+Phase 4C — Classification Engine V4 Completion
+
+Date:
+
+2026-06-30
+
+Status:
+
+Completed
+
+---
+
+## Summary
+
+Rewrote `classification_engine_v4.py` as a proper 5-level hierarchical classifier using
+industry_master as primary lookup. Applied symbol-level corrections for all 71 previously
+OTHER symbols, reducing OTHER from 71 to 10 (genuinely miscellaneous businesses).
+Coverage improved from 96.7% → 99.53% non-OTHER. Also writes `company_classification_v4.csv`
+with source tracking (INDUSTRY_MASTER / SYMBOL_CORRECTION / KEYWORD_MATCH / MANUAL_OVERRIDE).
+
+---
+
+## Deliverables
+
+### Engine
+- `engines/fundamentals/classification_engine_v4.py` — complete rewrite (hierarchical, 5 levels, all guardrails)
+
+### Outputs
+- `data/reference/company_classification_v4.csv` — 2123 rows, 7 cols (with SOURCE tracking)
+- `data/NSE/equity_master/company_fundamentals_master.csv` — UPDATED (99.53% coverage)
+- `data/NSE/equity_master/classification_coverage_report.csv` — metrics snapshot
+- `data/NSE/equity_master/classification_review_queue.csv` — 10 symbols needing manual review
+- `data/NSE/equity_master/classification_sector_counts.csv` — per-sector counts
+
+### Key Corrections in SYMBOL_CORRECTIONS Dict (60 symbols reclassified from OTHER)
+- ICICIAMC / NAM-INDIA / UTIAMC → AMC / FINANCIALISATION
+- SUPRAJIT / MAJESAUT / PTL → AUTO / EV_TRANSITION
+- HARSHA / INTLCONV / SANGHVIMOV / DYNAMATECH / OMNI / TEXINFRA → CAPITAL_GOODS
+- INDIQUBE / NESCO / NIRLON / SMARTWORKS / EFCIL / HEMIPROP / WEWORK / MERCANTILE → REALTY
+- CYBERTECH / GENESYS / SASKEN / DSSL / REDINGTON → IT / DIGITAL_INDIA
+- SPCENET → TELECOM / DIGITAL_INDIA
+- DEVYANI / ADVENTHTL → HOSPITALITY / PREMIUMISATION
+- GICL / TARACHAND / TVSSCS → LOGISTICS / LOGISTICS_MODERNISATION
+- DBSTOCKBRO / ALANKIT / CMSINFO / RADIANTCMS / PRUDENT / ICDSLTD → FINANCIAL_SERVICES
+- SOUTHWEST / KOTYARK → ENERGY; SHIVAUM / GOYALALUM / MSTCLTD → METAL
+- RUCHINFRA / ELITECON → INFRASTRUCTURE; VIKASLIFE / FLEXITUFF / RUBFILA / SICAGEN / IWP → CHEMICALS
+- KOTHARIPRO / VINCOFE / GOLDIAM → FMCG; UMAEXPORTS → AGRICULTURE; LAHOTIOV → TEXTILES
+- TOUCHWOOD → MEDIA; ACEINTEG → DEFENCE; CNL → RETAIL; BLUSPRING → POWER
+- STCINDIA / MMTC → DIVERSIFIED / PSU_REVIVAL
+
+### Remaining OTHER (10 — genuinely miscellaneous, no dominant sector)
+AARVI, AKG, DEVX, KAPSTON, KRYSTAL, LANDSMILL, METROGLOBL, QUESS, SIS, UDS
+(staffing / facility management / export trading / startup incubator)
+
+### Final State after Phase 4C
+- Total symbols: 2,123
+- Classified (non-OTHER): 2,113 (99.53%)
+- OTHER: 10 (0.47%)
+- UNCLASSIFIED: 0
+
+---
+
+# Version 2.5
+
+Phase 4B — Industry Master Engine
+
+Date:
+
+2026-06-29
+
+Status:
+
+Completed
+
+---
+
+## Summary
+
+Built the authoritative industry_nse → sector_platform + theme_platform lookup table covering
+all 183 unique NSE industry classifications across 2123 symbols. Immediately applied the master
+back to improve company_fundamentals_master.csv to 96.7% sector coverage and 100% theme coverage.
+
+---
+
+## Deliverables
+
+### Engine
+- `engines/fundamentals/industry_master_engine.py` — complete rewrite (class-based, all guardrails)
+
+### Outputs
+- `data/reference/mapping/industry_master.csv` — 183 rows, 10 columns (authoritative lookup table)
+- `data/NSE/equity_master/company_fundamentals_master.csv` — UPDATED (96.7% sector, 100% theme)
+
+### Bug Fixes (in engine development)
+- `_manual_theme` column NaN propagation — fixed by initializing to "" before loop
+- `float('nan')` is truthy in Python — fixed with `pd.notna()` guard
+
+### Industry Groups (10 groups across 183 industries)
+- MANUFACTURING: 59 industries
+- CONSUMER: 31 industries
+- INFRASTRUCTURE_ENERGY: 30 industries
+- FINANCIAL_SERVICES: 20 industries
+- TECHNOLOGY: 19 industries
+- HEALTHCARE: 10 industries
+- REAL_ESTATE: 6 industries
+- OTHER: 5 industries (DISTRIBUTORS, DIVERSIFIED COMMERCIAL SERVICES, etc.)
+- AGRICULTURE: 2 industries
+- DIVERSIFIED: 1 industry
+
+### Key Corrections Applied
+- DIVERSIFIED COMMERCIAL SERVICES (37 cos): IT → OTHER (staffing/facility mgmt ≠ IT)
+- COAL (3 cos): POWER → ENERGY with PSU_REVIVAL theme
+- PACKAGING (31 cos): OTHER → CHEMICALS with CHINA_PLUS_ONE theme
+- PAPER AND PAPER PRODUCTS (21 cos): OTHER → CHEMICALS
+- FURNITURE HOME FURNISHING (10 cos): OTHER → REALTY
+- HOUSEWARE (4 cos): OTHER → FMCG
+- AMUSEMENT PARKS (3 cos): OTHER → HOSPITALITY
+
+### Final State after Phase 4B
+- ISIN: 100%
+- Sector classified (non-OTHER): 96.7%
+- Theme populated: 96.3% (strings only; 3.7% = OTHER sector → no theme, by design)
+- No industries in review queue (all 183 at high confidence)
+
+---
+
+# Version 2.4
+
+Phase 4A — Company Fundamentals Master Engine
+
+Date:
+
+2026-06-29
+
+Status:
+
+Completed
+
+---
+
+## Summary
+
+Built the authoritative company master for all 2123 EQ active symbols.
+Passes all 4 spec success criteria. Resolves the ADANIPORTS→LOGISTICS classification bug.
+Output at `data/NSE/equity_master/company_fundamentals_master.csv`.
+
+---
+
+## Deliverables
+
+### Engine
+- `engines/fundamentals/company_fundamentals_master_engine.py` — complete rewrite (class-based, all guardrails)
+
+### Outputs
+- `data/NSE/equity_master/company_fundamentals_master.csv` — 2123 rows, 15 columns
+- `data/NSE/equity_master/fundamentals_review_queue.csv` — 103 symbols for manual review
+- `data/NSE/equity_master/fundamentals_coverage_report.csv` — coverage metrics
+
+### Supporting Data
+- `data/reference/mapping/manual_override.csv` — created with 8 known misclassification corrections
+
+### Success Criteria (all PASS)
+- industry_nse populated: 100% (spec: 95%+)
+- ISIN null count: 0 (spec: ZERO)
+- listing_date null count: 0 (spec: ZERO)
+- ADANIPORTS sector: LOGISTICS (spec: LOGISTICS/PORTS not AEROSPACE)
+
+### Coverage
+- ISIN: 100%
+- Sector classified (non-OTHER): 95.1%
+- Theme classified: 94.8%
+- Market cap known: 100%
+
+### Key Fixes Applied
+- ADANIPORTS: CHEMICALS (Screener error) → LOGISTICS via manual_override.csv
+- ONGC: AGRI (Screener error) → ENERGY via manual_override.csv
+- TCS + consulting firms: PROFESSIONAL_SERVICES → IT via SECTOR_NORMALIZE fix
+- Packaging companies: mapped to CHEMICALS (packaging materials)
+- Education companies: mapped to HEALTHCARE (theme alignment)
+
+### Architecture
+- SECTOR_NORMALIZE dict: 44 mappings (28 canonical + 16 legacy/alternate names)
+- SECTOR_TO_THEME dict: 25 sector → theme mappings (basic; Phase 4B refines via industry_master)
+- manual_override.csv applied last — immutable (G-C-02)
+- All guardrails: atomic write, schema validation, empty df guard, universe size check
+
+---
+
+# Version 2.3
+
+ML / AI / Chatbot Architecture — Modules 14, 15, 16 Added
+
+Date:
+
+2026-06-29
+
+Status:
+
+Completed
+
+---
+
+## Summary
+
+Designed and documented ML Intelligence, AI Knowledge Base (RAG), and Chatbot Platform layers.
+Added 3 new modules (14, 15, 16) to MODULE_REGISTRY. Platform now has a clear roadmap from raw
+NSE data through ML scoring → RAG retrieval → conversational AI interface. Claude API
+(claude-sonnet-4-6) selected as the LLM backbone. Chat history restructured to module-wise append files.
+
+---
+
+## Deliverables
+
+### Architecture Document
+- `docs/architecture/ML_AI_CHATBOT_ARCHITECTURE.md` — full ML/AI/Chatbot spec (8 sections)
+
+### New Modules
+- Module 14: ML Intelligence Layer (0%, Planned) — XGBoost/LightGBM accumulation, sector rotation, bull run, anomaly, NLP classification
+- Module 15: AI Knowledge Base / RAG (0%, Planned) — FAISS + BM25 hybrid retrieval over all intelligence outputs
+- Module 16: Chatbot Platform (0%, Planned) — 7 agents, tool registry, WebSocket, React chat UI
+
+### Module Updates
+- Module 07 (AI Platform): Architecture expanded with full Claude API integration spec
+
+### Process Changes
+- Chat history restructured to module-wise append files (`chat history/module_NN_<name>.md`)
+- Old session-based files deprecated — all new entries append to module files
+
+### ADR References
+- ADR-021: ML Intelligence Layer
+- ADR-022: RAG Knowledge Base
+- ADR-023: Chatbot / Conversational AI
+
+---
+
+## Build Dependencies (ML/AI/Chatbot cannot start until)
+
+1. Phase 4A (Company Fundamentals Master Engine) — unblocks ML-1 Feature Engineering
+2. Phase 3B outputs (intelligence CSVs) — unblocks RAG-1 (available now for partial indexing)
+3. Phase 6 (Sector Rotation Engines) — unblocks ML-4 Sector Rotation Model
+
+---
+
 # Version 2.2
 
 GUI Architecture Planning — React + FastAPI Implementation Plan
