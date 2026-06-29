@@ -1,803 +1,118 @@
-# 🚀 FII-DII SECTOR INTELLIGENCE PLATFORM
-
-# MASTER PROJECT STATE HANDOVER
-
-# VERSION 1.0
-
-# JUNE 2026
-
-═══════════════════════════════════════════════════════════════
-
-# 🎯 PROJECT MISSION
-
-Build India's most advanced institutional-grade market intelligence platform capable of identifying:
-
-✅ Sector Rotation
-✅ Theme Rotation
-✅ Leadership Persistence
-✅ Institutional Positioning
-✅ Emerging Bull Runs
-✅ Early Leadership Signals
-✅ Fundamental Strength
-✅ Management Conviction
-✅ Corporate Intelligence
-✅ Multi-factor Stock Discovery
-
-Core Philosophy:
-
-Institutional Money
-↓
-Sector Leadership
-↓
-Theme Leadership
-↓
-Stock Leadership
-↓
-Bull Run Discovery
-
-This project is NOT a screener.
-
-This project IS a decision intelligence platform.
-
-═══════════════════════════════════════════════════════════════
-
-# 🧠 AI OPERATING MODE
-
-Act As:
-
-🏗 Senior System Architect
-
-⚙ Lead Python Developer
-
-📊 Quant Research Engineer
-
-🧩 Data Platform Architect
-
-📈 Financial Intelligence Architect
-
-Never act as:
-
-❌ Python Tutor
-
-❌ Beginner Coding Trainer
-
-❌ Generic Chat Assistant
-
-Focus:
-
-✅ Architecture
-
-✅ Scalability
-
-✅ Data Integrity
-
-✅ Reliability
-
-✅ Automation
-
-✅ Institutional Thinking
-
-═══════════════════════════════════════════════════════════════
-
-# 👤 USER PREFERENCES (MANDATORY)
-
-Always:
-
-✅ Share complete copy-paste files
-
-✅ Share full replacements
-
-✅ Freeze architecture before development
-
-✅ Prefer scalable solutions
-
-✅ Prefer incremental processing
-
-✅ Prefer recovery mechanisms
-
-Avoid:
-
-❌ Partial patches
-
-❌ Small code snippets
-
-❌ Fragmented changes
-
-❌ Tutorial style explanations
-
-After every code change:
-
-✅ Provide Git Commit Commands
-
-═══════════════════════════════════════════════════════════════
-
-# 📁 PROJECT STRUCTURE
-
-data/
-
-├── NSE/
-
-│ ├── bhavcopy/
-
-│ ├── indices/
-
-│ └── reports/
-
-│
-
-├── cache/
-
-│ ├── stock_history/
-
-│ └── reports/
-
-│
-
-├── intelligence/
-
-│ └── history/
-
-│
-
-├── reference/
-
-│
-
-logs/
-
-│
-
-engines/
-
-│
-
-docs/
-
-═══════════════════════════════════════════════════════════════
-
-# 🏛 ARCHITECTURE FLOW
-
-Bhavcopy Import
-↓
-Equity Master
-↓
-Classification Engine
-↓
-Company Fundamentals Engine
-↓
-Sector Mapping
-↓
-Theme Mapping
-↓
-Index Intelligence
-↓
-Snapshot Engine
-↓
-Leadership Persistence
-↓
-Sector Intelligence
-↓
-Theme Intelligence
-↓
-Bull Run Discovery
-
-Future Extension:
-
-Corporate Intelligence
-↓
-Management Intelligence
-↓
-Advanced Conviction Engine
-
-═══════════════════════════════════════════════════════════════
-
-# 📚 APPROVED ADR REGISTER
-
-🟢 ADR-018
-
-Data Integrity & Recovery Architecture
-
-Status:
-APPROVED
-
-Key Principles:
-
-✔ Missing file detection
-
-✔ Corruption detection
-
-✔ Missing date detection
-
-✔ Auto recovery
-
-✔ Incremental repair
-
-────────────────────────────────────────
-
-🟢 ADR-019
-
-Management Intelligence Architecture
-
-Status:
-APPROVED
-
-Modules:
-
-✔ Conference Call Engine
-
-✔ Transcript Engine
-
-✔ Management Intelligence Engine
-
-────────────────────────────────────────
-
-🟢 ADR-020
-
-Fundamentals & Corporate Intelligence Architecture
-
-Status:
-APPROVED
-
-Modules:
-
-✔ Financial Results
-
-✔ Shareholding Pattern
-
-✔ Corporate Announcements
-
-✔ Investor Presentations
-
-✔ Management Commentary
-
-═══════════════════════════════════════════════════════════════
-
-# 💾 BACKUP POLICY
-
-Primary:
-
-Weekly Incremental Backup
-
-Schedule:
-
-Friday 23:59 IST
-
-or
-
-Saturday 00:00 IST
-
-Secondary:
-
-Mandatory Backup Layer
-
-Rule:
-
-Raw Data = Source of Truth
-
-Recovery Order:
-
-Raw Data
-↓
-Backup
-↓
-API Download
-
-═══════════════════════════════════════════════════════════════
-
-# ⚙ CURRENT TECHNOLOGY STACK
-
-Core:
-
-🐍 Python 3.x
-
-🐼 Pandas
-
-📂 Pathlib
-
-📅 Datetime
-
-📄 CSV Storage
-
-💻 PowerShell
-
-Future:
-
-🌐 NSE API
-
-🌐 NSELib
-
-🌐 Requests
-
-🌐 BeautifulSoup
-
-🧠 LLM Intelligence Layer
-
-═══════════════════════════════════════════════════════════════
-
-# 📈 CURRENT PLATFORM STATUS
-
-Overall Completion
-
-████████░░░░░░░░░░░░
-
-≈ 40%
-
-═══════════════════════════════════════════════════════════════
-
-# 🏗 PHASE 1
-
-# FOUNDATION LAYER
-
-Bhavcopy Import Engine          🟢
-Equity Master Engine           🟢
-Cache Manager                  🟢
-Data Integrity Framework       🟢
-Recovery Architecture          🟢
-Backup Architecture            🟢
-
-Progress
-
-████████████████████
-
-100%
-
-═══════════════════════════════════════════════════════════════
-
-# 🏗 PHASE 2
-
-# CLASSIFICATION LAYER
-
-Classification Engine V1       🟢
-Auto Classification V2         🟢
-Sector Mapping                 🟡
-Theme Mapping                  🟡
-NSE Industry Integration       🔴
-Classification Engine V3       ⚪
-
-Progress
-
-██████████████░░░░░░
-
-70%
-
-Current Coverage
-
-783 / 2123
-
-36.9%
-
-Current Bottleneck
-
-❌ Industry Master Missing
-
-═══════════════════════════════════════════════════════════════
-
-# 🏗 PHASE 3
-
-# INDEX INTELLIGENCE LAYER
-
-Index Intelligence Engine      🟢
-Index Taxonomy Engine          🟢
-Sector Rotation Engine         🟢
-Theme Rotation Engine          🟢
-Snapshot Engine                🟢
-Leadership Persistence Engine  🟢
-
-Progress
-
-████████████████████
-
-100%
-
-Current Universe
-
-139 NSE Indices
-
-29 Sector Indices
-
-18 Theme Indices
-
-═══════════════════════════════════════════════════════════════
-
-# 🏗 PHASE 4
-
-# FUNDAMENTALS LAYER
-
-Company Fundamentals Master    🔴
-Industry Master                🔴
-Business Profile Engine        🔴
-Market Cap Intelligence        🔴
-Listing Intelligence           🔴
-
-Progress
-
-░░░░░░░░░░░░░░░░░░░░
-
-0%
-
-Status
-
-🚨 CRITICAL BOTTLENECK
-
-═══════════════════════════════════════════════════════════════
-
-# 🏗 PHASE 5
-
-# CORPORATE INTELLIGENCE
-
-Results Intelligence           ⚪
-Shareholding Intelligence      ⚪
-Corporate Action Intelligence  ⚪
-Corporate Announcement Engine  ⚪
-Investor Presentation Engine   ⚪
-
-Progress
-
-0%
-
-═══════════════════════════════════════════════════════════════
-
-# 🏗 PHASE 6
-
-# MANAGEMENT INTELLIGENCE
-
-Conference Call Engine         ⚪
-Transcript Engine             ⚪
-Management Intelligence        ⚪
-Management Conviction Engine   ⚪
-
-Progress
-
-0%
-
-═══════════════════════════════════════════════════════════════
-
-# 🏗 PHASE 7
-
-# INSTITUTIONAL INTELLIGENCE
-
-FII Intelligence              🟢
-DII Intelligence              🟢
-Flow Regime Engine            🟢
-Positioning Engine            🟢
-Sector Conviction Engine      🟢
-
-Progress
-
-████████████████████
-
-100%
-
-═══════════════════════════════════════════════════════════════
-
-# 🏗 PHASE 8
-
-# BULL RUN DISCOVERY
-
-Sector Leadership             🟢
-Theme Leadership              🟢
-Bull Run Discovery Engine     🔴
-Emerging Momentum Engine      🔴
-Early Leadership Engine       🔴
-
-Progress
-
-████████░░░░░░░░░░░░
-
-40%
-
-═══════════════════════════════════════════════════════════════
-
-# ✅ COMPLETED ENGINES
-
-🟢 Bhavcopy Import Engine
-
-🟢 Equity Master Engine
-
-🟢 Cache Manager
-
-🟢 Classification Engine
-
-🟢 Index Intelligence Engine V1.1
-
-🟢 Index Taxonomy Engine
-
-🟢 Historical Snapshot Engine
-
-🟢 Leadership Persistence Engine V1.1
-
-🟢 Institutional Intelligence Framework
-
-═══════════════════════════════════════════════════════════════
-
-# 📊 CURRENT DATASETS
-
-Equity Universe
-
-2123 EQ Symbols
-
-────────────────────────────
-
-Index Universe
-
-139 Indices
-
-────────────────────────────
-
-Sector Universe
-
-29 Indices
-
-────────────────────────────
-
-Theme Universe
-
-18 Indices
-
-────────────────────────────
-
-Snapshot History
-
-1 Trading Day
-
-139 Records
-
-────────────────────────────
-
-Classification Coverage
-
-783 Classified
-
-1340 Pending
-
-36.9% Coverage
-
-═══════════════════════════════════════════════════════════════
-
-# ⚠ KNOWN ISSUES
-
-Auto Classification V2
-
-Problem:
-
-Only keyword classification active
-
-Layer 1 Industry Classification
-
-Current:
-
-0%
-
-Reason:
-
-Industry Master Missing
-
-Impact:
-
-Incorrect classifications possible
-
-Example:
-
-ADANIPORTS
-→ AEROSPACE
-
-Expected:
-→ LOGISTICS / PORTS
-
-═══════════════════════════════════════════════════════════════
-
-# 🧭 STRATEGIC DECISION
-
-Do NOT use Screener sector exports as primary classification source.
-
-Use:
-
-NSE Fundamentals
-+
-Industry Mapping
-+
-Platform Sector Mapping
-+
-Theme Mapping
-
-Screener
-
-Only as Validation Layer
-
-═══════════════════════════════════════════════════════════════
-
-# 📑 DOCUMENTATION STATUS
-
-Architecture Overview                  🟢
-
-Data Flow Architecture                 🟢
-
-Recovery Architecture                  🟢
-
-Backup Architecture                    🟢
-
-Index Intelligence Documentation       🟢
-
-Leadership Documentation               🟢
-
-Classification Documentation           🟡
-
-Fundamentals Documentation             🟡
-
-Corporate Intelligence Documentation   🔴
-
-Management Intelligence Documentation  🔴
-
-═══════════════════════════════════════════════════════════════
-
-# 🔗 MODULE DEPENDENCY MAP
-
-Bhavcopy Import
-↓
-Equity Master
-↓
-Classification
-↓
-Company Fundamentals
-↓
-Sector Mapping
-↓
-Theme Mapping
-↓
-Index Intelligence
-↓
-Snapshot Engine
-↓
-Leadership Persistence
-↓
-Sector Intelligence
-↓
-Theme Intelligence
-↓
-Bull Run Discovery
-
-═══════════════════════════════════════════════════════════════
-
-# 🎯 NEXT DEVELOPMENT PRIORITIES
-
-🥇 PRIORITY 1
-
-Company Fundamentals Master Engine
-
-Outputs:
-
-company_fundamentals_master.csv
-
-fundamentals_review_queue.csv
-
-fundamentals_coverage_report.csv
-
-────────────────────────────────────────
-
-🥈 PRIORITY 2
-
-Industry Master Engine
-
-Goal:
-
-95%+ Industry Coverage
-
-────────────────────────────────────────
-
-🥉 PRIORITY 3
-
-NSE Constituents Auto Downloader
-
-Replace Manual Downloads
-
-Support:
-
-Nifty Total Market
-
-Nifty 500
-
-Nifty 200
-
-Sector Indices
-
-Theme Indices
-
-────────────────────────────────────────
-
-4️⃣ Classification Engine V3
-
-────────────────────────────────────────
-
-5️⃣ Corporate Intelligence Layer
-
-────────────────────────────────────────
-
-6️⃣ Management Intelligence Layer
-
-────────────────────────────────────────
-
-7️⃣ Bull Run Discovery Engine
-
-═══════════════════════════════════════════════════════════════
-
-# 🚦 PRODUCTION READINESS
-
-Foundation Layer
-
-██████████
-
-100%
-
-Classification Layer
-
-████░░░░░░
-
-37%
-
-Index Intelligence
-
-██████████
-
-100%
-
-Historical Layer
-
-██████████
-
-100%
-
-Leadership Layer
-
-██████████
-
-100%
-
-Fundamentals Layer
-
-░░░░░░░░░░
-
-0%
-
-Corporate Layer
-
-░░░░░░░░░░
-
-0%
-
-Management Layer
-
-░░░░░░░░░░
-
-0%
-
-═══════════════════════════════════════════════════════════════
-
-# 📌 MASTER RULE
-
-DO NOT START NEW INTELLIGENCE ENGINES
-
-UNTIL
-
-COMPANY FUNDAMENTALS MASTER ENGINE
-
-IS COMPLETE.
-
-Current Critical Path:
-
-Company Fundamentals Master
-↓
-Industry Master
-↓
-Classification V3
-↓
-Corporate Intelligence
-↓
-Management Intelligence
-↓
-Bull Run Discovery
-
-═══════════════════════════════════════════════════════════════
-
-END OF MASTER PROJECT STATE
-
-This document is the authoritative project baseline for all future FII-DII Sector Intelligence Platform development sessions.
+# FII-DII SECTOR INTELLIGENCE PLATFORM
+# MASTER PROJECT STATE
+# Version 3.1 | 2026-06-30
+
+---
+
+# PROJECT MISSION
+
+Build India's most advanced institutional-grade market intelligence platform capable of
+identifying capital flow (Participant -> Sector -> Theme -> Stock) before broad market recognition.
+
+Core cascade:
+  FII/DII/PRO/CLIENT -> Sector Attribution -> Corporate Signals -> Stock Scoring -> Alert/Chatbot
+
+This project is NOT a screener. It IS a decision intelligence platform.
+
+---
+
+# CURRENT PLATFORM STATE (2026-06-30)
+
+## Intelligence Cascade: COMPLETE
+All four core intelligence layers are operational and producing daily outputs.
+
+```
+Layer 1: Participant Intelligence  (5A/5B/5C)  LIVE through 2026-06-29
+Layer 2: Sector Rotation           (6A/6B/6C)  LIVE through 2026-06-02
+Layer 3: Corporate Intelligence    (7A/7B/7C)  LIVE through 2026-06-29
+Layer 4: Stock Scoring             (8A/8B)     LIVE through 2026-06-10
+```
+
+## Market Snapshot (as of 2026-06-29)
+- Market Regime: NEUTRAL (x0.90 multiplier)
+- Smart Money Score: -4.7 | FII conviction: 40% (8/20 sessions)
+- DII conviction: 65% | Smart/Retail divergence: -14.0
+- Bull run watchlist: 225 EMERGING symbols
+- Top EMERGING: ADANIENSOL (62), ADANIENT (57), GMRAIRPORT (56)
+- Sector rotation leaders: CAPITAL_GOODS, DEFENCE, HEALTHCARE (EARLY_ROTATION)
+
+---
+
+# PHASE COMPLETION STATUS
+
+## Foundation + Data Layer (COMPLETE)
+| Phase | Engine | Output | Status |
+|-------|--------|--------|--------|
+| 1 | Foundation | equity_master.csv, 7813 bhavcopy files | COMPLETE |
+| 2 | Classification V4 | company_classification_v4.csv (2123 symbols, 99.5%) | COMPLETE |
+| 3 | Index Intelligence | 139 indices, index_momentum.csv | COMPLETE |
+| 3B | Guardrails + Tests | guardrails.py, 400+ tests | COMPLETE |
+| 4A | Fundamentals Master | company_fundamentals_master.csv (2123 symbols) | COMPLETE |
+| 4B | Industry Master | industry_master.csv (183 industries) | COMPLETE |
+| 4C | Classification V4 final | 99.53% sector coverage | COMPLETE |
+| 4D | NSE Constituents | index_membership.csv (30 indices, 506 symbols) | COMPLETE |
+
+## Intelligence Layer (COMPLETE)
+| Phase | Engine | Output | Rows | Status |
+|-------|--------|--------|------|--------|
+| 5A | Participant Acquisition | institutional_positioning_history.csv | 2581 | COMPLETE |
+| 5A | Participant Acquisition | cash_market_flows_history.csv | 609 | COMPLETE |
+| 5B | Participant Flow Engine | participant_flow_scores.csv | 2581 | COMPLETE |
+| 5C | Participant Intelligence | participant_intelligence.csv | 2581 | COMPLETE |
+| 6A | Sector Capital Flow | sector_capital_flows.csv | 74269 | COMPLETE |
+| 6B | Sector Flow Scores | sector_flow_scores.csv | 74269 | COMPLETE |
+| 6C | Sector Rotation Intel | sector_rotation_intelligence.csv | 29 | COMPLETE |
+| 7A | Block/Bulk Deals | institutional_deal_signals.csv | 361 signals | COMPLETE |
+| 7B | Event Calendar | event_calendar.csv + upcoming_catalysts.csv | 33851 | COMPLETE |
+| 7C | Corporate Actions | corporate_confidence_scores.csv | 1111 | COMPLETE |
+| 8A | Price Momentum | price_momentum.csv | 2441 | COMPLETE |
+| 8B | Bull Run Probability | bull_run_probability.csv + watchlist | 2441 | COMPLETE |
+
+## Application Layer (NOT STARTED)
+| Phase | What | Location | Status |
+|-------|------|----------|--------|
+| 9 | Alert System (Telegram) | alerts/ | NOT STARTED |
+| 10 | FastAPI Backend | backend/ | NOT STARTED |
+| 11 | React GUI | frontend/ | NOT STARTED |
+| 12 | ML Intelligence Layer | engines/ml/ | NOT STARTED |
+| 13 | RAG Knowledge Base | engines/ai/knowledge/ | NOT STARTED |
+| 14 | Chatbot (Claude API) | engines/ai/chatbot/ | NOT STARTED |
+| 15 | Financial Results | engines/fundamentals/ | NOT STARTED |
+| 16 | Management Intelligence | engines/management/ | NOT STARTED |
+
+---
+
+# KEY INTELLIGENCE FILES (all in data/intelligence/)
+
+| File | Rows | Key Columns | Freshness |
+|------|------|-------------|-----------|
+| participant_intelligence.csv | 2581 | Market_Regime, Smart_Money_Score, conviction | 2026-06-29 |
+| sector_rotation_intelligence.csv | 29 | rotation_signal, FII_flow_score, combined_score | 2026-06-02 |
+| bull_run_probability.csv | 2441 | bull_run_score, label, 4 component scores | 2026-06-10 |
+| bull_run_watchlist.csv | 225 | EMERGING symbols sorted by score | 2026-06-10 |
+| institutional_deal_signals.csv | 361 | inst_net_value_cr, deal_signal | 2026-06-29 |
+| corporate_confidence_scores.csv | 1111 | confidence_score_12m, confidence_label | 2026-06-29 |
+| upcoming_catalysts.csv | 12 | next 60D events with catalyst_score | 2026-06-29 |
+
+---
+
+# KNOWN ISSUES + TECHNICAL DEBT
+
+| Issue | Severity | Owner | Note |
+|-------|----------|-------|------|
+| ADANIPORTS -> AEROSPACE misclassification | Low | Industry master | Low priority |
+| Cash flows gap: 2026-02-19 | Low | participant_acquisition_engine.py | tz-aware fix needed |
+| Sector rotation intel stale (2026-06-02) | Medium | Run sector_capital_flow_engine.py | bhavcopy latest = 2026-06-10 |
+| XBRL financial results endpoint 404 | Medium | Phase 15 | Use yfinance workaround |
+| stub engines in engines/intelligence/ | Low | Cleanup | v2 stubs, marked for removal |
+
+---
+
+# GOVERNANCE
+
+- CHANGELOG: docs/governance/CHANGELOG.md (v3.1 is latest)
+- Module Registry: docs/governance/MODULE_REGISTRY.md
+- Guardrails: docs/governance/GUARDRAILS.md (55 rules)
+- ADRs: docs/decisions/ (ADR-001 to ADR-020; next = ADR-021)
+- Session logs: chat history/ (module-wise append files)
+- Memory: C:/Users/hp/.claude/projects/*/memory/ (auto-loaded)

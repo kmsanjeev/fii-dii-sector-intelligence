@@ -1,49 +1,20 @@
 # MASTER ROADMAP
-
-## Project
-
-Capital Flow Intelligence Platform
+## Capital Flow Intelligence Platform | Updated 2026-06-30
 
 ---
 
 # Purpose
 
-The Master Roadmap defines the long-term development strategy of the Capital Flow Intelligence Platform.
-
-It provides:
-
-* Development Direction
-* Module Sequencing
-* Priority Framework
-* Strategic Milestones
-* Release Planning
-
-The roadmap ensures that development remains aligned with the core mission of identifying capital movement before broad market recognition.
+Define the long-term development strategy. Ensure development stays aligned with the
+core mission: identify capital flow (Participant -> Sector -> Stock) before broad market recognition.
 
 ---
 
 # Core Mission
 
-Track participant behavior across:
+Track participant behavior (FII / DII / PRO / CLIENT) and identify how capital moves:
 
-* FII
-* DII
-* PRO
-* CLIENT
-
-and identify how capital flows through:
-
-Market
-↓
-Sector
-↓
-Theme
-↓
-Stock
-↓
-Portfolio
-↓
-Execution
+  Market -> Participant -> Sector -> Theme -> Stock -> Portfolio -> Execution
 
 before broad market recognition.
 
@@ -51,704 +22,150 @@ before broad market recognition.
 
 # Development Philosophy
 
-Every feature must support one or more of the following objectives:
-
-1. Detect Capital Flow
-2. Detect Rotation
-3. Detect Accumulation
-4. Explain Opportunity
-5. Improve Decision Making
-6. Improve User Experience
-7. Improve Execution Quality
-
-If a feature does not support these objectives, it should not be prioritized.
+Every feature must support one or more of:
+1. Detect capital flow
+2. Detect rotation
+3. Detect accumulation
+4. Explain opportunity
+5. Improve decision making
+6. Improve user experience
+7. Improve execution quality
 
 ---
 
-# Platform Evolution
+# Platform Generations
+
+## Generation 1 — Institutional Intelligence (COMPLETE)
+FII/DII positioning, regime detection, basic index intelligence.
+Output: institutional_positioning_history.csv, regime engine.
+
+## Generation 2 — Capital Flow Intelligence (COMPLETE 2026-06-30)
+Full participant -> sector -> stock cascade.
+Output: 32 intelligence CSVs, bull run watchlist, 225 EMERGING symbols.
+
+## Generation 3 — Application Layer (CURRENT FOCUS 2026)
+Alert delivery, GUI, ML models, conversational AI.
+Phases 9-16.
+
+## Generation 4 — Investment Operating System (FUTURE)
+Portfolio management, broker execution, research platform, commercial tiers.
 
 ---
 
-## Generation 1
-
-Institutional Intelligence Platform
-
-Focus:
-
-FII/DII Positioning
-
-Outcome:
-
-Institutional Market Understanding
-
-Status:
-
-Largely Complete
+# STRATEGIC PHASES
 
 ---
 
-## Generation 2
+## PHASE 1 — Foundation Layer | COMPLETE
+Bhavcopy import, equity master, project structure, ADR framework.
+Engines: bhavcopy_import_engine.py, equity_master_engine.py, cache_manager.py
 
-Participant Intelligence Platform
+## PHASE 2 — Classification Engine | COMPLETE (99.5%)
+29-sector, 18-theme taxonomy. 2123 symbols classified.
+Engines: classification_engine_v4.py, industry_master_engine.py
+Output: data/reference/company_classification_v4.csv
 
-Focus:
+## PHASE 3 — Index Intelligence | COMPLETE
+139 NSE indices tracked. Index momentum, strength, leadership persistence.
+Engines: index_intelligence_engine.py, sector_leadership_persistence_engine.py
+Output: data/intelligence/index_momentum.csv, index_strength.csv
 
-FII
+## PHASE 3B — Guardrails + Test Suite | COMPLETE
+55 guardrail rules across 12 sections. 400+ automated tests.
+Files: engines/common/guardrails.py, tests/ (16 test files)
 
-DII
+## PHASE 4 — Fundamentals Layer | COMPLETE
+Company fundamentals, industry master, NSE constituents.
+4A: company_fundamentals_master_engine.py -> company_fundamentals_master.csv
+4B: industry_master_engine.py -> industry_master.csv (183 industries)
+4C: classification_engine_v4.py completion -> 99.53% coverage
+4D: nse_constituents_engine_v1.py -> index_membership.csv (30 indices, 506 symbols)
 
-PRO
+## PHASE 5 — Participant Intelligence Layer | COMPLETE
+FII/DII/PRO/CLIENT F&O OI + Volume + Cash market flows. Daily incremental.
+5A: participant_acquisition_engine.py -> institutional_positioning_history.csv (2581 rows)
+5B: participant_flow_engine.py -> participant_flow_scores.csv (2581 rows, 62 cols)
+5C: participant_intelligence_engine.py -> participant_intelligence.csv
+Current regime: NEUTRAL | FII conviction: 40% | Smart Money: -4.7
 
-CLIENT
+## PHASE 6 — Sector Rotation + Capital Flow | COMPLETE
+Turnover-weighted FII/DII attribution across 29 sectors. 2016-2026.
+6A: sector_capital_flow_engine.py -> sector_capital_flows.csv (74269 rows)
+6B: sector_flow_score_engine.py -> sector_flow_scores.csv (74269 rows)
+6C: sector_rotation_intelligence_engine.py -> sector_rotation_intelligence.csv (29 sectors)
 
-Outcome:
+## PHASE 7 — Corporate Intelligence Layer | COMPLETE (per ADR-020)
+Block/bulk deals, event calendar, corporate action confidence scoring.
+7A: block_bulk_deal_engine.py -> institutional_deal_signals.csv (361 symbols)
+7B: corporate_event_calendar_engine.py -> event_calendar.csv (33839 rows)
+7C: corporate_action_intelligence_engine.py -> corporate_confidence_scores.csv (1111 symbols)
 
-Participant Behavior Understanding
-
-Status:
-
-Planned
-
----
-
-## Generation 3
-
-Capital Flow Intelligence Platform
-
-Focus:
-
-Participant
-↓
-Sector
-↓
-Theme
-↓
-Stock
-
-Outcome:
-
-Opportunity Discovery
-
-Status:
-
-Current Vision
-
----
-
-## Generation 4
-
-Investment Operating System
-
-Focus:
-
-Research
-↓
-Intelligence
-↓
-Portfolio
-↓
-Execution
-
-Outcome:
-
-End-to-End Investment Workflow
-
-Status:
-
-Long-Term Vision
+## PHASE 8 — Bull Run Probability Engine | COMPLETE
+Multi-factor per-stock scoring. Price + Sector + Institutional + Corporate signals.
+8A: price_momentum_engine.py -> price_momentum.csv (2441 symbols)
+8B: bull_run_probability_engine.py -> bull_run_probability.csv + watchlist (225 EMERGING)
 
 ---
 
-# Strategic Development Phases
+## PHASE 9 — Alert System | NEXT (Priority 1)
+Telegram bot with 7 alert types: regime change, STRONG_CANDIDATE, block deal,
+sector rotation, upcoming catalyst, smart money divergence, daily digest.
+Location: alerts/
+Stack: python-telegram-bot v21, APScheduler 3
+
+## PHASE 10 — FastAPI Backend | Priority 2
+REST API + WebSocket for all intelligence data. Enables GUI.
+12 routes covering market, sectors, stocks, participant, corporate, chat.
+Location: backend/
+Stack: FastAPI, Uvicorn, Pydantic
+
+## PHASE 11 — React GUI | Priority 3 (needs Phase 10)
+10-page dark terminal UI. Score-first layout.
+Location: frontend/
+Stack: React 18 + TypeScript + Vite, Tailwind, TanStack Query, Recharts
+
+## PHASE 12 — ML Intelligence Layer | Priority 4 (independent)
+4 models: Accumulation Detector (XGBoost), Bull Run Model (LGB+XGB ensemble),
+Sector Rotation Predictor (LightGBM multi-class), Anomaly Detector (Isolation Forest).
+Location: engines/ml/
+Stack: XGBoost, LightGBM, scikit-learn, SHAP, PyArrow
+
+## PHASE 13 — RAG Knowledge Base | Priority 5 (independent)
+FAISS + BM25 hybrid retrieval over 6 domain indexes.
+Location: engines/ai/knowledge/
+Stack: faiss-cpu, sentence-transformers, rank-bm25
+
+## PHASE 14 — Chatbot (Claude API) | Priority 6 (needs Phase 10 + 13)
+5 specialized agents + tool registry for live data access.
+Location: engines/ai/chatbot/
+Stack: anthropic SDK, FastAPI WebSocket
+
+## PHASE 15 — Financial Results Engine | Priority 7 (data enrichment)
+Quarterly revenue, PAT, EPS, P/E via yfinance (XBRL workaround).
+Location: engines/fundamentals/
+Stack: yfinance, pandas
+
+## PHASE 16 — Management Intelligence | Priority 8 (needs Phase 14)
+Promoter/FII/DII holding trends + Claude API tone scoring on announcements.
+Location: engines/management/
+Stack: anthropic SDK, nselib announcements
 
 ---
 
-# PHASE 1
+# LONG-TERM VISION (Generation 4)
 
-Foundation Layer
-
-Status:
-
-Completed
-
----
-
-## Objectives
-
-Build project governance.
-
-Build architecture.
-
-Build documentation.
-
-Build historical institutional datasets.
+After Phases 9-16:
+- Portfolio engine: position sizing, exposure tracking
+- Execution platform: Zerodha / Dhan / Upstox broker adapters
+- Research platform: investment thesis library, validation framework
+- Commercial platform: auth, subscriptions, multi-user
 
 ---
 
-## Deliverables
+# CURRENT SPRINT (2026-06-30)
 
-Governance Framework
+Active target: Phase 9 — Alert System
+Next: Phase 10 — FastAPI Backend
+After: Phase 11 — React GUI
 
-Architecture Framework
-
-ADR Framework
-
-Documentation Framework
-
-Institutional Historical Engine
-
-Institutional Integrity Engine
-
-Institutional Regime Engine
-
-Research Framework
-
----
-
-# PHASE 2
-
-Participant Intelligence
-
-Status:
-
-Next Priority
-
----
-
-## Objectives
-
-Understand participant behavior.
-
----
-
-## Participants
-
-FII
-
-DII
-
-PRO
-
-CLIENT
-
----
-
-## Deliverables
-
-Participant Flow Engine
-
-Participant Conviction Engine
-
-Participant Divergence Engine
-
-Smart Money Engine
-
-Retail Sentiment Engine
-
-Participant Dashboard
-
-AI Participant Analyst
-
-Participant Infographics
-
----
-
-## Success Criteria
-
-Identify:
-
-Who is buying?
-
-Who is selling?
-
-Who is leading?
-
-Who is following?
-
----
-
-# PHASE 3
-
-Sector Intelligence Expansion
-
-Status:
-
-In Progress
-
----
-
-## Objectives
-
-Detect sector rotation.
-
----
-
-## Deliverables
-
-Sector Rotation Engine
-
-Sector Capital Flow Engine
-
-Sector Momentum Engine
-
-Sector Opportunity Engine
-
-Sector Dashboard
-
-Sector Capital Flow Maps
-
-AI Sector Analyst
-
----
-
-## Success Criteria
-
-Identify sector leadership before broad market recognition.
-
----
-
-# PHASE 4
-
-Theme Intelligence Expansion
-
-Status:
-
-Planned
-
----
-
-## Objectives
-
-Detect thematic capital movement.
-
----
-
-## Deliverables
-
-Theme Rotation Engine
-
-Theme Capital Flow Engine
-
-Theme Momentum Engine
-
-Theme Leadership Engine
-
-Theme Opportunity Engine
-
-Theme Dashboard
-
-AI Theme Analyst
-
----
-
-## Success Criteria
-
-Identify emerging themes before sector-wide participation.
-
----
-
-# PHASE 5
-
-Stock Intelligence Foundation
-
-Status:
-
-Planned
-
----
-
-## Objectives
-
-Identify stock-level beneficiaries.
-
----
-
-## Deliverables
-
-Equity Master Engine
-
-Stock Cache Engine
-
-Historical Equity Engine
-
-Relative Strength Engine
-
-Delivery Intelligence Engine
-
-F&O Intelligence Engine
-
-Accumulation Engine
-
-Distribution Engine
-
-Leadership Engine
-
-Opportunity Engine
-
-AI Stock Analyst
-
----
-
-## Success Criteria
-
-Identify accumulation before significant price expansion.
-
----
-
-# PHASE 6
-
-Fundamental Intelligence
-
-Status:
-
-Planned
-
----
-
-## Objectives
-
-Explain capital movement.
-
----
-
-## Deliverables
-
-Results Intelligence
-
-Corporate Actions Intelligence
-
-Management Intelligence
-
-Shareholding Intelligence
-
-Order Book Intelligence
-
-Valuation Intelligence
-
-AI Fundamental Analyst
-
----
-
-## Success Criteria
-
-Answer:
-
-Why is money flowing here?
-
----
-
-# PHASE 7
-
-AI Platform Expansion
-
-Status:
-
-Planned
-
----
-
-## Objectives
-
-Build AI-powered intelligence delivery.
-
----
-
-## Deliverables
-
-AI Market Analyst
-
-AI Participant Analyst
-
-AI Sector Analyst
-
-AI Theme Analyst
-
-AI Stock Analyst
-
-AI Fundamental Analyst
-
-AI Portfolio Manager
-
-AI Research Assistant
-
-AI Development CTO
-
----
-
-## Success Criteria
-
-Users receive actionable intelligence through natural language.
-
----
-
-# PHASE 8
-
-GUI Platform
-
-Status:
-
-Planned
-
----
-
-## Objectives
-
-Create world-class user experience.
-
----
-
-## Deliverables
-
-Home Dashboard
-
-Market Dashboard
-
-Participant Dashboard
-
-Sector Dashboard
-
-Theme Dashboard
-
-Stock Dashboard
-
-Portfolio Dashboard
-
-Heatmaps
-
-Capital Flow Maps
-
-Infographic Engine
-
-AI Interface
-
-Mobile Platform
-
----
-
-## Success Criteria
-
-Users understand market conditions within seconds.
-
----
-
-# PHASE 9
-
-Execution Platform
-
-Status:
-
-Planned
-
----
-
-## Objectives
-
-Transform intelligence into action.
-
----
-
-## Deliverables
-
-Portfolio Engine
-
-Risk Engine
-
-Order Management
-
-Trade Journal
-
-Performance Analytics
-
-Broker Adapter Framework
-
-Zerodha Integration
-
-Dhan Integration
-
-Upstox Integration
-
-Angel One Integration
-
-Fyers Integration
-
----
-
-## Success Criteria
-
-Research-to-execution workflow inside one platform.
-
----
-
-# PHASE 10
-
-Research Platform
-
-Status:
-
-Planned
-
----
-
-## Objectives
-
-Institutionalize research.
-
----
-
-## Deliverables
-
-Research Repository
-
-Research Dashboard
-
-Investment Thesis Library
-
-Validation Framework
-
-AI Research Assistant
-
----
-
-## Success Criteria
-
-Every major investment idea becomes research-driven.
-
----
-
-# PHASE 11
-
-Commercial Platform
-
-Status:
-
-Future
-
----
-
-## Objectives
-
-Prepare platform for public usage.
-
----
-
-## Deliverables
-
-Authentication
-
-Role Management
-
-Subscription Management
-
-Licensing Framework
-
-Free Tier
-
-Premium Tier
-
-Professional Tier
-
-Enterprise Tier
-
----
-
-## Success Criteria
-
-Commercially viable platform.
-
----
-
-# Current Active Sprint
-
-Sprint 1
-
----
-
-Priority 1
-
-ADR-016 Participant Intelligence Framework
-
-Participant Intelligence Module
-
----
-
-Priority 2
-
-Sector Rotation Engine
-
-Sector Capital Flow Engine
-
----
-
-Priority 3
-
-Theme Rotation Engine
-
-Theme Capital Flow Engine
-
----
-
-Priority 4
-
-Equity Master Engine
-
-Stock Cache Engine
-
-Historical Equity Engine
-
----
-
-# Current Strategic Bottleneck
-
-The platform currently understands:
-
-Market
-↓
-Institutional Positioning
-
-but does not yet fully understand:
-
-Participant
-↓
-Sector
-↓
-Theme
-
-capital migration.
-
-The next development focus must address this gap.
-
----
-
-# Long-Term Vision
-
-Create the world's most comprehensive Capital Flow Intelligence Platform capable of:
-
-Tracking Participant Behavior
-
-↓
-
-Detecting Capital Flow
-
-↓
-
-Identifying Opportunities
-
-↓
-
-Explaining Opportunities
-
-↓
-
-Managing Portfolios
-
-↓
-
-Executing Trades
-
-↓
-
-Monitoring Outcomes
-
-through a unified AI-powered investment operating system.
-
-The roadmap shall be reviewed and updated periodically as the platform evolves.
+Intelligence cascade complete. Now building the delivery and interaction layers.
