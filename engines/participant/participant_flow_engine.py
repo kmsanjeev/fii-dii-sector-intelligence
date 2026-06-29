@@ -206,7 +206,7 @@ class ParticipantFlowEngine:
         print("=" * 60)
         print("PARTICIPANT FLOW ENGINE — PHASE 5B COMPLETE")
         print("=" * 60)
-        print(f"Date range  : {df['date'].min()} → {df['date'].max()}")
+        print(f"Date range  : {df['date'].min()} to {df['date'].max()}")
         print(f"Total rows  : {len(df)}")
         print(f"Columns     : {len(df.columns)}")
         for p in PARTICIPANTS:

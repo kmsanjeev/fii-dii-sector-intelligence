@@ -37,12 +37,13 @@ from engines.common.logger import get_logger
 
 logger = get_logger("bull_run_probability")
 
-INTELLIGENCE_DIR    = cfg.INTELLIGENCE_DIR
-PRICE_MOMENTUM      = INTELLIGENCE_DIR / "price_momentum.csv"
-SECTOR_ROTATION     = INTELLIGENCE_DIR / "sector_rotation_intelligence.csv"
-DEAL_SIGNALS        = INTELLIGENCE_DIR / "institutional_deal_signals.csv"
-CORPORATE_SCORES    = INTELLIGENCE_DIR / "corporate_confidence_scores.csv"
-POSITIONING_HISTORY = cfg.DATA_DIR / "historical" / "institutional" / "institutional_positioning_history.csv"
+INTELLIGENCE_DIR      = cfg.INTELLIGENCE_DIR
+PRICE_MOMENTUM        = INTELLIGENCE_DIR / "price_momentum.csv"
+SECTOR_ROTATION       = INTELLIGENCE_DIR / "sector_rotation_intelligence.csv"
+DEAL_SIGNALS          = INTELLIGENCE_DIR / "institutional_deal_signals.csv"
+CORPORATE_SCORES      = INTELLIGENCE_DIR / "corporate_confidence_scores.csv"
+PARTICIPANT_INTEL     = INTELLIGENCE_DIR / "participant_intelligence.csv"       # Phase 5C (preferred)
+POSITIONING_HISTORY   = cfg.DATA_DIR / "historical" / "institutional" / "institutional_positioning_history.csv"
 
 OUTPUT_FULL      = INTELLIGENCE_DIR / "bull_run_probability.csv"
 OUTPUT_WATCHLIST = INTELLIGENCE_DIR / "bull_run_watchlist.csv"
@@ -156,17 +157,33 @@ class BullRunProbabilityEngine:
         return normalised.rename("corporate_score")
 
     def _load_market_regime(self) -> tuple[str, float]:
-        """Returns (regime_label, multiplier). Falls back to DISTRIBUTION if unreadable."""
-        if not POSITIONING_HISTORY.exists():
-            logger.warning("[8B] Positioning history not found — using DISTRIBUTION regime")
-            return "DISTRIBUTION", REGIME_MULTIPLIER["DISTRIBUTION"]
-        df = pd.read_csv(POSITIONING_HISTORY, usecols=["Date", "Regime"])
-        if df.empty or "Regime" not in df.columns:
-            return "DISTRIBUTION", REGIME_MULTIPLIER["DISTRIBUTION"]
-        latest_regime = df.dropna(subset=["Regime"])["Regime"].iloc[-1]
-        multiplier = REGIME_MULTIPLIER.get(latest_regime, DEFAULT_MULTIPLIER)
-        logger.info("[8B] Market regime: %s (multiplier x%.2f)", latest_regime, multiplier)
-        return latest_regime, multiplier
+        """
+        Returns (regime_label, multiplier).
+        Prefers participant_intelligence.csv (Phase 5C ensemble regime — more nuanced),
+        falls back to institutional_positioning_history.csv, then DISTRIBUTION.
+        """
+        # Preferred: 5C ensemble regime
+        if PARTICIPANT_INTEL.exists():
+            df = pd.read_csv(PARTICIPANT_INTEL, usecols=["date", "Market_Regime"])
+            latest = df.dropna(subset=["Market_Regime"])
+            if not latest.empty:
+                regime = latest["Market_Regime"].iloc[-1]
+                multiplier = REGIME_MULTIPLIER.get(regime, DEFAULT_MULTIPLIER)
+                logger.info("[8B] Regime from participant_intelligence: %s (x%.2f)", regime, multiplier)
+                return regime, multiplier
+
+        # Fallback: raw net-position regime
+        if POSITIONING_HISTORY.exists():
+            df = pd.read_csv(POSITIONING_HISTORY, usecols=["Date", "Regime"])
+            latest = df.dropna(subset=["Regime"])
+            if not latest.empty:
+                regime = latest["Regime"].iloc[-1]
+                multiplier = REGIME_MULTIPLIER.get(regime, DEFAULT_MULTIPLIER)
+                logger.info("[8B] Regime from positioning_history: %s (x%.2f)", regime, multiplier)
+                return regime, multiplier
+
+        logger.warning("[8B] No regime data found — defaulting to NEUTRAL")
+        return "NEUTRAL", DEFAULT_MULTIPLIER
 
     # ----------------------------------------------------------------
     # Scoring

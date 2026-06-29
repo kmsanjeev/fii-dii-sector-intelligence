@@ -181,7 +181,7 @@ class ParticipantIntelligenceEngine:
         print("=" * 65)
         print("PARTICIPANT INTELLIGENCE ENGINE — PHASE 5C COMPLETE")
         print("=" * 65)
-        print(f"Date range        : {df['date'].min()} → {df['date'].max()}")
+        print(f"Date range        : {df['date'].min()} to {df['date'].max()}")
         print(f"Total rows        : {len(df)}")
         print()
         print(f"Latest date       : {last['date']}")
@@ -195,7 +195,7 @@ class ParticipantIntelligenceEngine:
         for p in ["FII", "DII", "PRO", "CLIENT"]:
             v = last.get(f"{p}_conviction", float("nan"))
             bar = int(v / 5) if not pd.isna(v) else 0
-            print(f"  {p:8s}: {'█' * bar}{'░' * (20 - bar)} {v:.0f}%")
+            print(f"  {p:8s}: {'#' * bar}{'.' * (20 - bar)} {v:.0f}%")
         print("=" * 65)
 
 
