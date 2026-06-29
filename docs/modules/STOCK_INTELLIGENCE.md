@@ -1,877 +1,101 @@
 # STOCK INTELLIGENCE
-
-## Project
-
-FII/DII Capital Flow Intelligence Platform
+## Capital Flow Intelligence Platform | Updated 2026-06-30
 
 ---
 
 # Module Overview
 
-Stock Intelligence is the final intelligence layer within the Capital Flow framework.
-
-This module identifies individual stocks benefiting from:
-
-* Market Capital Flow
-* Sector Rotation
-* Theme Rotation
-* Institutional Activity
-* Fundamental Improvements
-
-and converts intelligence into actionable opportunities.
+Stock Intelligence is the final intelligence layer of the Capital Flow cascade.
+Identifies individual stocks benefiting from participant flows, sector rotation,
+corporate signals, and price momentum.
 
 ---
 
 # Capital Flow Hierarchy
 
-```text
-Market
-    ↓
-Sector
-    ↓
-Theme
-    ↓
-Stock
-```
+  Market -> Participant -> Sector -> Theme -> Stock -> Portfolio
 
-Stock Intelligence identifies the actual beneficiaries of capital movement.
-
----
-
-# Objective
-
-Answer the following questions:
-
-1. Which stocks are attracting capital?
-2. Which stocks are under accumulation?
-3. Which stocks are under distribution?
-4. Which stocks are leading their sector?
-5. Which stocks are leading their theme?
-6. Which stocks offer the best risk-reward opportunities?
-7. Which stocks are emerging before broad market recognition?
-
----
-
-# Why Stock Intelligence Matters
-
-Institutions do not buy sectors.
-
-Institutions ultimately buy stocks.
-
-The purpose of Stock Intelligence is to identify:
-
-Where capital is actually being deployed.
-
----
-
-# Intelligence Philosophy
-
-Price is the result.
-
-Capital Flow is the cause.
-
-The objective is to identify the cause before the result becomes obvious.
-
----
-
-# Data Sources
-
----
-
-## Institutional Intelligence
-
-Provides:
-
-* Institutional Regime
-* Institutional Trend
-* Institutional Conviction
-
----
-
-## Sector Intelligence
-
-Provides:
-
-* Sector Leadership
-* Sector Conviction
-* Sector Rotation
-
----
-
-## Theme Intelligence
-
-Provides:
-
-* Theme Leadership
-* Theme Rotation
-* Theme Conviction
-
----
-
-## Equity Bhavcopy
-
-Provides:
-
-* Price
-* Volume
-* Delivery
-* Trade Activity
-
----
-
-## F&O Bhavcopy
-
-Provides:
-
-* Open Interest
-* OI Change
-* Futures Activity
-* Options Activity
-
----
-
-## Equity Master
-
-Provides:
-
-* Sector Mapping
-* Theme Mapping
-* Listing Date
-
----
-
-## Future Sources
-
-Corporate Actions
-
-Shareholding Data
-
-Results
-
-Concall Intelligence
-
-Order Books
-
----
-
-# Core Datasets
-
----
-
-## Dataset 01
-
-Stock Cache
-
-Location
-
-```text
-data/cache/stock_history/
-```
-
----
-
-## Examples
-
-```text
-KPIT.csv
-
-BEL.csv
-
-HAL.csv
-
-RELIANCE.csv
-```
-
----
-
-## Purpose
-
-On-demand historical stock dataset.
-
----
-
-## Dataset 02
-
-Stock Intelligence
-
-Location
-
-```text
-data/intelligence/stock_intelligence.csv
-```
-
----
-
-## Purpose
-
-Master stock intelligence dataset.
-
----
-
-# Intelligence Framework
-
-Stock Intelligence combines:
-
-Capital Flow
-
-*
-
-Price Behavior
-
-*
-
-Volume Behavior
-
-*
-
-Delivery Behavior
-
-*
-
-F&O Behavior
-
-*
-
-Fundamental Confirmation
-
----
-
-# Engines
-
----
-
-## Engine 01
-
-Relative Strength Engine
-
----
-
-### Purpose
-
-Measure stock performance relative to market.
-
----
-
-### Questions Answered
-
-Is the stock outperforming?
-
-Is leadership increasing?
-
----
-
-### Outputs
-
-Relative Strength Score
-
-Leadership Score
-
----
-
-### Status
-
-Planned
-
----
-
-## Engine 02
-
-Accumulation Engine
-
----
-
-### Purpose
-
-Identify institutional accumulation.
-
----
-
-### Indicators
-
-Price Strength
-
-Volume Expansion
-
-Delivery Expansion
-
-Capital Flow Confirmation
-
----
-
-### Outputs
-
-Accumulation Score
-
-Accumulation Stage
-
----
-
-### Status
-
-Planned
-
----
-
-## Engine 03
-
-Distribution Engine
-
----
-
-### Purpose
-
-Identify institutional distribution.
-
----
-
-### Indicators
-
-Price Weakness
-
-Volume Expansion
-
-Delivery Changes
-
-Capital Flow Deterioration
-
----
-
-### Outputs
-
-Distribution Score
-
-Distribution Stage
-
----
-
-### Status
-
-Planned
-
----
-
-## Engine 04
-
-Delivery Intelligence Engine
-
----
-
-### Purpose
-
-Analyze delivery participation.
-
----
-
-### Questions Answered
-
-Are investors accumulating?
-
-Is speculative activity increasing?
-
----
-
-### Outputs
-
-Delivery Score
-
-Participation Score
-
----
-
-### Status
-
-Planned
-
----
-
-## Engine 05
-
-F&O Intelligence Engine
-
----
-
-### Purpose
-
-Track derivatives positioning.
-
----
-
-### Inputs
-
-Open Interest
-
-OI Change
-
-Price Change
-
-Volume Change
-
----
-
-### Outputs
-
-Long Build-Up
-
-Short Build-Up
-
-Short Covering
-
-Long Unwinding
-
----
-
-### Status
-
-Planned
-
----
-
-## Engine 06
-
-Leadership Engine
-
----
-
-### Purpose
-
-Identify leaders within:
-
-Sector
-
-Theme
-
-Market
-
----
-
-### Outputs
-
-Leadership Ranking
-
-Sector Rank
-
-Theme Rank
-
----
-
-### Status
-
-Planned
-
----
-
-## Engine 07
-
-Momentum Engine
-
----
-
-### Purpose
-
-Measure trend acceleration.
-
----
-
-### Outputs
-
-Momentum Score
-
-Acceleration Score
-
-Trend Score
-
----
-
-### Status
-
-Planned
-
----
-
-## Engine 08
-
-Opportunity Engine
-
----
-
-### Purpose
-
-Generate actionable opportunities.
-
----
-
-### Inputs
-
-Market
-
-Sector
-
-Theme
-
-Stock
-
-Fundamental
-
----
-
-### Outputs
-
-Opportunity Score
-
-Conviction Score
-
-Watchlist Rank
-
----
-
-### Status
-
-Planned
-
----
-
-# Accumulation Framework
-
----
-
-## Stage 1
-
-Early Accumulation
-
-Characteristics
-
-Price Stabilization
-
-Volume Expansion
-
-Delivery Increase
-
----
-
-## Stage 2
-
-Accumulation
-
-Characteristics
-
-Price Strength
-
-Increasing Participation
-
-Institutional Confirmation
-
----
-
-## Stage 3
-
-Strong Accumulation
-
-Characteristics
-
-Leadership
-
-Momentum Expansion
-
-Sector Alignment
-
-Theme Alignment
-
----
-
-# Distribution Framework
-
----
-
-## Stage 1
-
-Early Distribution
-
----
-
-## Stage 2
-
-Distribution
-
----
-
-## Stage 3
-
-Strong Distribution
-
----
-
-# F&O Intelligence Framework
-
-Future versions shall classify:
-
----
-
-Long Build-Up
-
-Price ↑
-
-OI ↑
-
----
-
-Short Covering
-
-Price ↑
-
-OI ↓
-
----
-
-Long Unwinding
-
-Price ↓
-
-OI ↓
-
----
-
-Short Build-Up
-
-Price ↓
-
-OI ↑
-
----
-
-# Opportunity Framework
-
-Highest Conviction Opportunities:
-
-```text
-Market Alignment
-+
-Sector Alignment
-+
-Theme Alignment
-+
-Stock Alignment
-+
-Fundamental Confirmation
-```
-
----
-
-## Example
-
-Market
-
-Accumulation
-
-↓
-
-Sector
-
-IT Leadership
-
-↓
-
-Theme
-
-Digital Engineering
-
-↓
-
-Stock
-
-KPIT
-
-↓
-
-Fundamentals
-
-Strong
-
-↓
-
-Opportunity
-
-High Conviction
-
----
-
-# Future Outputs
-
----
-
-## Stock Rankings
-
----
-
-## Opportunity Rankings
-
----
-
-## Accumulation Rankings
-
----
-
-## Distribution Rankings
-
----
-
-## Leadership Rankings
-
----
-
-## Smart Money Rankings
-
----
-
-# Dashboard Integration
-
----
-
-## Stock Dashboard
-
-Components
-
-Price
-
-Volume
-
-Delivery
-
-F&O
-
-Accumulation
-
-Fundamentals
-
-Opportunity Score
-
----
-
-# Infographic Integration
-
----
-
-## Stock Leadership Maps
-
----
-
-## Opportunity Maps
-
----
-
-## Capital Flow Maps
-
----
-
-## Accumulation Maps
-
----
-
-# AI Integration
-
----
-
-## AI Stock Analyst
-
-Future Agent
-
----
-
-### Questions Answered
-
-Why is this stock moving?
-
-What changed?
-
-Is accumulation occurring?
-
-What risks exist?
-
----
-
-### Outputs
-
-Stock Reports
-
-Accumulation Reports
-
-Opportunity Reports
-
-Risk Reports
-
 ---
 
-# Relationship To Fundamental Intelligence
+# Completion Status: 40% (Phase 8 complete 2026-06-30)
 
-Stock Intelligence identifies:
-
-What is moving.
-
 ---
-
-Fundamental Intelligence explains:
-
-Why it is moving.
 
----
+# Completed Engines (Phase 8)
 
-# Success Criteria
+## Phase 8A — price_momentum_engine.py (COMPLETE)
 
-The module successfully identifies:
+File: engines/intelligence/price_momentum_engine.py
+Output: data/intelligence/price_momentum.csv
 
-Early Accumulation
+Per-symbol price returns across 5 lookback windows from 7813 bhavcopy files.
+Dual bhavcopy schema (pre/post-2020 column names handled via _load_bhav()).
 
-Strong Accumulation
+Metrics per symbol:
+- ret_30d, ret_60d, ret_90d, ret_365d (price returns in %)
+- vol_ratio (latest volume / 20D average)
+- sector_rel_30d (return minus sector median)
+- ret_30d_pct, ret_90d_pct, ret_365d_pct, vol_ratio_pct, sector_rel_pct (0-100 percentile rank)
+- price_score (composite: 30D 35% + 90D 25% + 365D 20% + sector_rel 15% + vol 5%)
+- as_of_date (latest bhavcopy date)
 
-Leadership Stocks
+Results (2026-06-30):
+- 2441 symbols, as_of_date 2026-06-10
+- 30D return range: -94.3% to +98.0%
+- 1872 symbols with 365D data
+- Price score range: 3 to 98
+- Top: INOXINDIA 98, JNKINDIA 98 (CAPITAL_GOODS)
 
-Emerging Leaders
+## Phase 8B — bull_run_probability_engine.py (COMPLETE)
 
-Capital Flow Beneficiaries
+File: engines/intelligence/bull_run_probability_engine.py
+Outputs: data/intelligence/bull_run_probability.csv (2441 symbols)
+         data/intelligence/bull_run_watchlist.csv (225 EMERGING symbols)
 
-before broad market recognition.
+Multi-factor bull run probability score combining four intelligence layers.
 
----
+Factor weights:
+- price_score: 30% (from 8A, already 0-100)
+- sector_flow_score: 25% (FII_flow_score from sector_rotation_intelligence.csv rescaled 0-100)
+- deal_score: 25% (inst_net_value_cr percentile-ranked; 50=neutral for no-deal symbols)
+- corporate_score: 20% (confidence_score_12m clipped [-3,6] rescaled 0-100; 50=neutral)
 
-# Current Completion
+Market regime from participant_intelligence.csv (Phase 5C preferred):
+- ACCUMULATION: x1.10 | NEUTRAL: x0.90 | DISTRIBUTION: x0.80
 
-Estimated Completion:
+Labels:
+- STRONG_CANDIDATE (>= 65)
+- EMERGING (>= 45)
+- WATCHLIST (>= 30)
+- NEUTRAL (>= 15)
+- AVOID (< 15)
 
-10%
+Results (2026-06-30):
+- 2441 symbols, regime NEUTRAL (x0.90)
+- Score range: 14 to 62 (no STRONG_CANDIDATE in NEUTRAL regime)
+- EMERGING: 225 | WATCHLIST: 1804 | NEUTRAL: 411 | AVOID: 1
+- Top: ADANIENSOL 62, ADANIENT 57, GMRAIRPORT 56, CRAFTSMAN 54, EMCURE 54
 
 ---
-
-# Next Milestones
-
-1. Equity Master Engine
-
-2. Historical Equity Access Engine
-
-3. Delivery Intelligence Engine
-
-4. Relative Strength Engine
 
-5. F&O Intelligence Engine
+# Remaining Engines (Phase 12 — ML Layer)
 
-6. Accumulation Engine
+- Accumulation Detection Model (XGBoost binary, target: price_up_10pct_in_20d)
+- Bull Run ML Model (LightGBM + XGBoost ensemble, replaces rule-based 8B)
+- Relative Strength Engine (within-sector rank)
+- Delivery Intelligence Engine (delivery volume analysis)
+- F&O Intelligence Engine (put/call ratio, OI buildup per symbol)
+- Anomaly Detector (Isolation Forest on flows)
 
-7. Opportunity Engine
-
-8. Stock Dashboard
-
-9. AI Stock Analyst
-
 ---
-
-# Long-Term Vision
-
-Create the most comprehensive stock-level intelligence system capable of identifying:
-
-Where capital is flowing,
-
-Why capital is flowing,
-
-How conviction is changing,
 
-and which stocks are most likely to outperform.
+# Intelligence Cascade Inputs (all LIVE)
 
-Stock Intelligence is the final intelligence layer of the Capital Flow framework and the primary opportunity discovery engine of the platform.
+| Source | File | Key field | Status |
+|--------|------|-----------|--------|
+| Price History | bhavcopy/equity/ (7813 files) | OHLCV | LIVE |
+| Participant flows | participant_flow_scores.csv | FII_flow_score | LIVE 2026-06-29 |
+| Sector attribution | sector_rotation_intelligence.csv | combined_score | LIVE 2026-06-02 |
+| Institutional deals | institutional_deal_signals.csv | inst_net_value_cr | LIVE 2026-06-29 |
+| Corporate confidence | corporate_confidence_scores.csv | confidence_score_12m | LIVE 2026-06-29 |
+| Market regime | participant_intelligence.csv | Market_Regime | LIVE 2026-06-29 |

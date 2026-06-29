@@ -1,43 +1,68 @@
 # ALERTS DIRECTORY — CLAUDE CONTEXT
 
 ## PURPOSE
-Delivery layer for intelligence signals via Telegram and (future) other channels.
+Delivery layer for intelligence signals via Telegram.
 This is a consumer of intelligence — it never generates signals itself.
+Phase 9 of the Capital Flow Intelligence Platform.
+
+## STATUS: PHASE 9 — IN PROGRESS
+
+Build order:
+  9A: alert_engine.py (signal evaluation, 7 alert types)
+  9B: alert_store.py (cooldown, dedup, JSON state)
+  9C: telegram_bot.py (send + format, enhance existing stub)
+  9D: daily_digest.py (18:30 IST market summary)
+  9E: alert_scheduler.py (APScheduler: digest + periodic checks)
 
 ## ACTIVE FILES
+
+| File | Purpose | Status |
+|------|---------|--------|
+| telegram_bot.py | Telegram alert delivery (stub) | EXISTS — needs full implementation in 9C |
+| __init__.py | Package init | EXISTS |
+
+## PHASE 9 TARGET FILES
+
 | File | Purpose |
 |------|---------|
-| `telegram_bot.py` | Telegram alert delivery |
-| `__init__.py` | Package init |
+| alert_engine.py | Evaluate intelligence CSVs, emit alerts by priority |
+| alert_store.py | Track sent alerts, enforce cooldown, dedup by symbol+type |
+| telegram_bot.py | Format + send Telegram messages, /commands |
+| daily_digest.py | Build 18:30 IST daily summary from all intelligence layers |
+| alert_scheduler.py | APScheduler: digest at 18:30, checks every 30 min post-market |
 
-## TELEGRAM BOT CONFIG (from root config.py)
+## TELEGRAM BOT CONFIG (from environment — NEVER hardcode)
+
 ```python
 import os
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID   = os.getenv("TELEGRAM_CHAT_ID")
 ```
-Both values come from environment variables — NEVER hardcode credentials in source.
+
+## 7 ALERT TYPES (priority order)
+
+| Priority | Type | Trigger | Cooldown |
+|----------|------|---------|---------|
+| P1 | REGIME_CHANGE | Market_Regime flips (e.g. NEUTRAL->DISTRIBUTION) | None |
+| P2 | STRONG_CANDIDATE | bull_run_score >= 65 (first time) | 72h |
+| P3 | SECTOR_ROTATION | Sector rotation_signal flips to EARLY_ROTATION | 48h |
+| P4 | INSTITUTIONAL_DEAL | inst_net_value_cr > 50 Cr in 30D | 48h |
+| P5 | CORPORATE_CONFIDENCE | confidence_score_12m crosses +2.0 | 48h |
+| P6 | PARTICIPANT_DIVERGENCE | FII vs CLIENT divergence > 2 sigma | 48h |
+| P7 | DAILY_DIGEST | 18:30 IST scheduled summary | 24h |
 
 ## ALERT DESIGN PRINCIPLES (ADR-010 + ADR-011)
-- Alerts must be concise — one clear signal per message
-- Include: what changed, direction, strength, timestamp
-- Never send duplicate alerts for the same signal on the same day
-- Never alert during market hours on stale data (check data_date vs today)
-- Log every alert sent to `logs/alerts.log` with timestamp
 
-## ALERT CATEGORIES (planned)
-```
-MARKET REGIME CHANGE    → FII/DII regime shifts (accumulation ↔ distribution)
-SECTOR LEADERSHIP       → New sector entering top 3 leadership
-SECTOR EXIT             → Sector dropping out of top 3
-THEME EMERGENCE         → Theme showing accelerating momentum
-INSTITUTIONAL ALERT     → Unusual institutional positioning change
-BULL RUN SIGNAL         → Stock entering high bull_run_probability zone (Phase 8)
-```
+- One clear signal per message
+- Include: what changed, direction, strength, timestamp, data freshness
+- Never send duplicate alerts for the same signal within cooldown window
+- Never alert on stale data (check data_date vs today, max 2 trading days lag)
+- Log every alert sent to logs/alerts.log with timestamp and message_id
 
 ## RATE LIMITING
-Telegram has a 30 messages/second limit per bot.
-For batch alerts (sector heatmap, daily report): use message queuing with 100ms delay.
+
+Telegram limit: 30 messages/second per bot.
+Batch alerts: use 100ms delay between sends.
 ```python
 import time
 for alert in alerts:
@@ -45,11 +70,25 @@ for alert in alerts:
     time.sleep(0.1)
 ```
 
-## FUTURE CHANNELS (planned, do not build yet)
-- Email alerts (Phase 9)
-- Push notifications via mobile app (Phase 9+)
-- Dashboard real-time alerts (Phase 9+)
+## INTELLIGENCE INPUTS (read-only CSVs — never modify)
 
-## GOOGLE SHEETS INTEGRATION
-Separate from alerts — see `sheets/` directory.
-Alert = push notification. Sheet = persistent dashboard.
+| File | Used By | Signal |
+|------|---------|--------|
+| participant_intelligence.csv | alert_engine | Regime change (P1) |
+| bull_run_watchlist.csv | alert_engine | Strong candidates (P2) |
+| sector_rotation_intelligence.csv | alert_engine | Sector rotation (P3) |
+| institutional_deal_signals.csv | alert_engine | Institutional deals (P4) |
+| corporate_confidence_scores.csv | alert_engine | Corporate confidence (P5) |
+| participant_flow_scores.csv | alert_engine | Participant divergence (P6) |
+
+## PACKAGES REQUIRED
+
+py -3.11 -m pip install "python-telegram-bot==21.*" "APScheduler==3.*"
+
+## GUARDRAILS
+
+- G-SYS-01: Check TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID at module startup
+- G-D-03: Never send alert from empty DataFrame
+- G-I-04: Never fillna(0) on financial fields before alert evaluation
+- Alert store must use atomic writes (write .tmp, then rename)
+- Cooldown state file: data/intelligence/alert_state.json

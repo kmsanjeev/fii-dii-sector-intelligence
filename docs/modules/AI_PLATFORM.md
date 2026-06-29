@@ -1,771 +1,114 @@
 # AI PLATFORM
-
-## Project
-
-FII/DII Capital Flow Intelligence Platform
+## Capital Flow Intelligence Platform | Updated 2026-06-30
 
 ---
 
 # Module Overview
 
-The AI Platform serves as the intelligence orchestration layer of the platform.
+The AI Platform transforms intelligence data into conversational, queryable insights.
+Users interact via natural language. Agents access live data via tool calls backed by verified CSVs.
 
-Its purpose is to transform complex market data, intelligence outputs, research documents, and portfolio information into understandable insights, recommendations, explanations, and decision support.
+---
 
-The AI Platform is the primary interface through which users interact with the platform.
+# Status: NOT STARTED (Phase 14, after FastAPI + RAG)
 
 ---
 
 # Vision
 
-Build an AI-powered Investment Operating System capable of answering:
-
-What is happening?
-
-Why is it happening?
-
-What should I monitor?
-
-What should I do next?
-
-using intelligence generated across all platform modules.
+Answer these questions from live data, not training data:
+- "Where is FII putting money this week?"
+- "Which stocks are in EARLY_ROTATION sectors?"
+- "Why is ADANIENSOL on the watchlist?"
+- "What changed in the market today?"
 
 ---
 
-# AI Philosophy
+# Architecture
 
----
-
-## Principle 1
-
-AI Consumes Intelligence
-
-AI should primarily consume:
-
-Intelligence Layer
-
-Signal Layer
-
-Research Layer
-
-rather than raw data.
-
----
-
-## Principle 2
-
-Explainability First
-
-Every recommendation must be explainable.
-
----
-
-## Principle 3
-
-Evidence Driven
-
-Outputs must be supported by:
-
-Capital Flow
-
-Fundamentals
-
-Market Data
-
-Research
-
-Portfolio Context
-
----
-
-## Principle 4
-
-Human Decision Maker
-
-AI assists.
-
-Human decides.
-
----
-
-# AI Responsibilities
-
-The AI Platform is responsible for:
-
-Analysis
-
-Research
-
-Summarization
-
-Explanation
-
-Opportunity Discovery
-
-Risk Assessment
-
-Portfolio Review
-
-Development Governance
-
----
-
-# AI Knowledge Layer
-
-## Purpose
-
-Provide contextual information to AI agents.
-
----
-
-## Sources
-
-Institutional Intelligence
-
-Sector Intelligence
-
-Theme Intelligence
-
-Stock Intelligence
-
-Fundamental Intelligence
-
-Portfolio Intelligence
-
-Research Repository
-
-Documentation Repository
-
-Historical Reports
-
-Project Governance
-
----
-
-# AI Agent Ecosystem
-
----
-
-## Agent 01
-
-AI Market Analyst
-
----
-
-### Purpose
-
-Analyze overall market behavior.
-
----
-
-### Questions Answered
-
-Market Regime?
-
-Risk-On?
-
-Risk-Off?
-
-Accumulation?
-
-Distribution?
-
----
-
-### Outputs
-
-Market Reports
-
-Market Outlook
-
-Market Commentary
-
----
-
-## Agent 02
-
-AI Sector Analyst
-
----
-
-### Purpose
-
-Analyze sector rotation.
-
----
-
-### Questions Answered
-
-Which sectors are leading?
-
-Which sectors are weakening?
-
-Where is capital flowing?
-
----
-
-### Outputs
-
-Sector Reports
-
-Sector Rankings
-
-Sector Opportunities
-
----
-
-## Agent 03
-
-AI Theme Analyst
-
----
-
-### Purpose
-
-Analyze thematic rotation.
-
----
-
-### Questions Answered
-
-Which themes are emerging?
-
-Which themes are accelerating?
-
-Which themes are weakening?
-
----
-
-### Outputs
-
-Theme Reports
-
-Theme Rankings
-
-Theme Opportunities
-
----
-
-## Agent 04
-
-AI Stock Analyst
-
----
-
-### Purpose
-
-Analyze individual stocks.
-
----
-
-### Questions Answered
-
-Why is the stock moving?
-
-Is accumulation occurring?
-
-What changed?
-
-What risks exist?
-
----
-
-### Outputs
-
-Stock Reports
-
-Accumulation Reports
-
-Opportunity Reports
-
-Risk Reports
-
----
-
-## Agent 05
-
-AI Fundamental Analyst
-
----
-
-### Purpose
-
-Analyze business fundamentals.
-
----
-
-### Questions Answered
-
-How strong is growth?
-
-What are management saying?
-
-What changed fundamentally?
-
----
-
-### Outputs
-
-Fundamental Reports
-
-Research Reports
-
-Quality Assessments
-
----
-
-## Agent 06
-
-AI Portfolio Manager
-
----
-
-### Purpose
-
-Analyze portfolios.
-
----
-
-### Questions Answered
-
-Portfolio Strength?
-
-Portfolio Weakness?
-
-Risk Exposure?
-
-Allocation Issues?
-
----
-
-### Outputs
-
-Portfolio Reviews
-
-Risk Reviews
-
-Rebalancing Suggestions
-
----
-
-## Agent 07
-
-AI Research Assistant
-
----
-
-### Purpose
-
-Accelerate research.
-
----
-
-### Questions Answered
-
-What does research suggest?
-
-What opportunities exist?
-
-What risks exist?
-
----
-
-### Outputs
-
-Research Summaries
-
-Research Reports
-
-Idea Generation
-
----
-
-## Agent 08
-
-AI Development CTO
-
----
-
-### Purpose
-
-Project Governance.
-
----
-
-### Questions Answered
-
-What should be built next?
-
-What is pending?
-
-What is blocked?
-
----
-
-### Outputs
-
-Development Reports
-
-Roadmaps
-
-Architecture Reviews
-
----
-
-# AI Memory Architecture
-
----
-
-## Market Memory
-
-Historical market observations.
-
----
-
-## Sector Memory
-
-Historical sector behavior.
-
----
-
-## Theme Memory
-
-Historical theme behavior.
-
----
-
-## Stock Memory
-
-Historical stock observations.
-
----
-
-## Research Memory
-
-Research findings.
-
----
-
-## Portfolio Memory
-
-Portfolio history.
-
----
-
-## Project Memory
-
-Architecture
-
-Documentation
-
-Governance
-
----
-
-# AI Workflow Architecture
-
-```text
+```
 User Query
-      ↓
-Intent Detection
-      ↓
-Relevant Agent
-      ↓
-Knowledge Retrieval
-      ↓
-Analysis
-      ↓
-Explanation
-      ↓
-Visualization
-      ↓
-Response
+    |
+Intent Router (classify: market / sector / stock / corporate / research)
+    |
+RAG Retrieval (hybrid FAISS + BM25, 5-10 context chunks)
+    |
+Agent (Claude API claude-sonnet-4-6)
+    |
+Tool Calls (live data: get_regime, get_sector_flow, get_stock_score, etc.)
+    |
+Grounded Response with citations
 ```
 
 ---
 
-# AI Report Generation
+# 5 Specialized Agents
+
+| Agent | Purpose | Primary Tools |
+|-------|---------|---------------|
+| MarketAgent | Regime, participant flows, macro | get_market_regime, get_participant_intel |
+| SectorAgent | Rotation signals, sector flows | get_sector_flows, get_sector_history |
+| StockAgent | Bull run scores, entry points | get_stock_score, get_watchlist |
+| CorporateAgent | Deal signals, event calendar | get_deals, get_upcoming_events |
+| ResearchAgent | Deep cross-layer analysis (Opus 4.8) | all tools |
 
 ---
 
-## Daily Reports
+# Tool Registry
 
-Market Summary
-
-Sector Summary
-
-Theme Summary
-
-Stock Opportunities
-
----
-
-## Weekly Reports
-
-Capital Flow Report
-
-Sector Rotation Report
-
-Theme Rotation Report
-
-Stock Accumulation Report
-
----
-
-## Monthly Reports
-
-Research Reports
-
-Portfolio Reviews
-
-Market Outlook
-
-Investment Opportunities
-
----
-
-# AI Research Framework
-
----
-
-## Sources
-
-Research Repository
-
-Corporate Filings
-
-Concalls
-
-Announcements
-
-Historical Reports
-
-Market Data
-
----
-
-## Outputs
-
-Research Notes
-
-Research Reports
-
-Opportunity Reports
-
-Risk Reports
-
----
-
-# AI Opportunity Framework
-
-Highest conviction opportunities occur when:
-
-```text
-Market
-+
-Sector
-+
-Theme
-+
-Stock
-+
-Fundamentals
+```python
+get_market_regime()              -> regime, scores, date
+get_sector_flows(sector=None)    -> rotation signals, FII flow scores
+get_stock_score(symbol)          -> bull run components + label
+get_watchlist(label="EMERGING")  -> sorted watchlist
+get_deals(symbol, min_cr=50)     -> institutional deal signals
+get_upcoming_events(days=30)     -> catalyst calendar
 ```
 
-are aligned.
+---
+
+# LLM Configuration
+
+Default: claude-sonnet-4-6 (fast, accurate for structured data)
+Deep analysis (ResearchAgent only): claude-opus-4-8
+API key: ANTHROPIC_API_KEY from os.getenv() — NEVER hardcoded
+
+System prompt injects:
+- Current date + market regime
+- Top 3 EMERGING symbols
+- Last updated timestamps for all data sources
 
 ---
 
-# AI Dashboard Integration
+# Build Phases
 
----
-
-## AI Chat Interface
-
-Primary interaction layer.
-
----
-
-## Suggested Questions
-
-Which sectors are accumulating?
-
-Show emerging themes.
-
-Which stocks are under strong accumulation?
-
-Why is IT outperforming?
-
-Review my portfolio.
-
----
-
-# Infographic Integration
-
-AI shall generate:
-
-Capital Flow Maps
-
-Sector Maps
-
-Theme Maps
-
-Portfolio Maps
-
-Research Maps
-
-Opportunity Maps
-
----
-
-# Future AI Capabilities
-
-Natural Language Search
-
-Voice Assistant
-
-Research Automation
-
-Portfolio Monitoring
-
-Alert Generation
-
-Strategy Assistance
-
-Broker Assistance
-
-Autonomous Research Agents
-
----
-
-# AI Governance
-
-All AI outputs must be:
-
-Explainable
-
-Traceable
-
-Evidence Based
-
-Reproducible
-
----
-
-# AI Restrictions
-
-AI may:
-
-Recommend
-
-Explain
-
-Analyze
-
-Summarize
-
----
-
-AI may not:
-
-Guarantee Returns
-
-Guarantee Outcomes
-
-Replace User Judgment
-
-Execute Trades Without Authorization
+Phase 14A: Intent router + tool registry + MarketAgent + SectorAgent
+Phase 14B: StockAgent + CorporateAgent
+Phase 14C: ResearchAgent (Opus) + conversation memory
+Phase 14D: WebSocket integration (FastAPI /ws/chat)
+Phase 14E: GUI-9 React chat UI
 
 ---
 
 # Dependencies
 
-Institutional Intelligence
-
-Sector Intelligence
-
-Theme Intelligence
-
-Stock Intelligence
-
-Fundamental Intelligence
-
-Portfolio Intelligence
-
-Research Repository
-
-Documentation Repository
+- Phase 10 (FastAPI Backend) — tool data endpoints
+- Phase 13 (RAG Knowledge Base) — context retrieval
+- ANTHROPIC_API_KEY environment variable
 
 ---
 
-# Success Criteria
+# Directory
 
-The AI Platform successfully enables users to answer:
-
-What is happening?
-
-Why is it happening?
-
-What should I watch?
-
-What should I do next?
-
-within seconds.
+engines/ai/chatbot/
+  intent_router.py
+  chat_engine.py
+  agents/
+  tools/
+  memory/
 
 ---
 
-# Current Completion
+# Packages
 
-Estimated Completion:
-
-15%
-
----
-
-# Next Milestones
-
-1. AI Knowledge Layer
-
-2. AI Market Analyst
-
-3. AI Sector Analyst
-
-4. AI Theme Analyst
-
-5. AI Stock Analyst
-
-6. AI Research Assistant
-
-7. AI Portfolio Manager
-
-8. AI Development CTO
-
-9. Voice Interface
-
-10. Autonomous Research Agents
-
----
-
-# Long-Term Vision
-
-Create a complete AI-powered investment operating system capable of functioning as:
-
-Market Analyst
-
-Sector Analyst
-
-Theme Analyst
-
-Stock Analyst
-
-Fundamental Analyst
-
-Portfolio Manager
-
-Research Assistant
-
-Development CTO
-
-within a single unified platform.
-
-The AI Platform becomes the primary interface through which users interact with all intelligence generated by the system.
+anthropic (Claude API SDK)

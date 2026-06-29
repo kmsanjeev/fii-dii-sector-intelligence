@@ -169,13 +169,13 @@ Core Intelligence
 
 ## Status
 
-ADVANCED
+COMPLETE — Phase 5 (2026-06-30)
 
 ---
 
 ## Completion
 
-75%
+100%
 
 ---
 
@@ -229,13 +229,13 @@ Core Intelligence
 
 ## Status
 
-ACTIVE DEVELOPMENT
+COMPLETE — Phase 6 (2026-06-30)
 
 ---
 
 ## Completion
 
-45%
+100%
 
 ---
 
@@ -251,27 +251,19 @@ Identify sector-level capital movement.
 
 ---
 
-## Existing Engines
+## Completed Engines (Phase 6)
 
-Sector Heatmap
+sector_capital_flow_engine.py — 6A: turnover-weighted FII/DII attribution to 29 sectors, 74269 rows 2016-2026
 
-Sector Persistence
+sector_flow_score_engine.py — 6B: rolling 5D/20D/60D scores per sector
 
-Sector Conviction
-
-Leadership Duration
+sector_rotation_intelligence_engine.py — 6C: rotation_signal, combined_score, capital_flow_alignment
 
 ---
 
-## Planned Engines
+## Earlier Engines
 
-Sector Rotation Engine
-
-Sector Capital Flow Engine
-
-Sector Momentum Engine
-
-Sector Opportunity Engine
+Sector Heatmap, Sector Persistence, Sector Conviction, Leadership Duration
 
 ---
 
@@ -1145,39 +1137,23 @@ docs/architecture/ML_AI_CHATBOT_ARCHITECTURE.md (Section 4)
 
 ---
 
-# Current Development Priority
+# Current Development Priority (2026-06-30)
 
-Priority 1
+Priority 1 — Phase 9: Alert System (alerts/)
 
-Participant Intelligence
+Priority 2 — Phase 10: FastAPI Backend (backend/)
 
----
+Priority 3 — Phase 11: React GUI (frontend/)
 
-Priority 2
+Priority 4 — Phase 12: ML Intelligence Layer (engines/ml/)
 
-Sector Rotation Engine
+Priority 5 — Phase 13: RAG Knowledge Base (engines/ai/knowledge/)
 
-Sector Capital Flow Engine
+Priority 6 — Phase 14: Chatbot / Claude API (engines/ai/chatbot/)
 
----
+Priority 7 — Phase 15: Financial Results Engine (engines/fundamentals/)
 
-Priority 3
-
-Theme Rotation Engine
-
-Theme Capital Flow Engine
-
----
-
-Priority 4
-
-Stock Intelligence Foundation
-
----
-
-Priority 5
-
-Fundamental Intelligence Foundation
+Priority 8 — Phase 16: Management Intelligence (engines/management/)
 
 ---
 
@@ -1185,7 +1161,11 @@ Fundamental Intelligence Foundation
 
 Estimated Overall Completion:
 
-22% (16 modules — 3 new ML/AI modules added 2026-06-29, reducing average)
+Intelligence Cascade: 100% (Phases 1-8 all complete)
+
+Application + AI Layer: 0% (Phases 9-16, starting now)
+
+Platform Overall: ~45%
 
 ---
 
@@ -1236,3 +1216,173 @@ Executing Trades
 Monitoring Outcomes
 
 through a unified AI-powered investment operating system.
+
+---
+
+# Module 17
+
+Alert System
+
+---
+
+## Category
+
+Application Layer
+
+---
+
+## Status
+
+PLANNED — Phase 9 (NEXT)
+
+---
+
+## Completion
+
+0%
+
+---
+
+## Priority
+
+Very High
+
+---
+
+## Purpose
+
+Push distilled intelligence to the user as Telegram notifications without requiring app access.
+7 alert types covering regime changes, bull run signals, block deals, sector rotation, catalysts, and daily digest.
+
+---
+
+## Planned Engines
+
+alerts/alert_engine.py — evaluate 7 alert conditions, generate alert objects with priority
+
+alerts/alert_store.py — JSON cooldown tracking, dedup by (symbol, alert_type), 48h cooldown
+
+alerts/telegram_bot.py — send + format messages, handle /mute /watchlist /regime commands
+
+alerts/daily_digest.py — build daily summary at 18:30 IST (regime + sectors + stocks)
+
+alerts/alert_scheduler.py — APScheduler: digest at 18:30, signal checks at 19:00 IST
+
+---
+
+## Alert Types (Priority Order)
+
+P1 CRITICAL: Market regime change (DISTRIBUTION -> NEUTRAL etc.)
+
+P2 HIGH: New STRONG_CANDIDATE (bull_run_score >= 65)
+
+P3 HIGH: Large block/bulk deal (inst_net_value_cr > 100Cr)
+
+P4 MEDIUM: Sector rotation signal (EARLY_ROTATION or STRONG_ACCUMULATION)
+
+P5 MEDIUM: Upcoming catalyst (event within 24h)
+
+P6 MEDIUM: Smart money vs retail divergence (> 40)
+
+P7 LOW: Daily digest (18:30 IST, market days only)
+
+---
+
+## Packages
+
+python-telegram-bot==21.*, APScheduler==3.*
+
+---
+
+## Env Vars
+
+TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+
+---
+
+# Module 18
+
+FastAPI Backend
+
+---
+
+## Category
+
+Application Layer
+
+---
+
+## Status
+
+PLANNED — Phase 10
+
+---
+
+## Completion
+
+0%
+
+---
+
+## Priority
+
+High
+
+---
+
+## Purpose
+
+Serve all intelligence data as REST + WebSocket API. Required before GUI can display real data.
+Also exposes tool endpoints for the Chatbot tool registry.
+
+---
+
+## Planned Routes
+
+GET /api/v1/market/regime — latest regime + participant scores
+
+GET /api/v1/market/history?days=30 — regime time series
+
+GET /api/v1/sectors/ — all 29 sectors + rotation signals
+
+GET /api/v1/sectors/{sector}/flow — sector capital flow history
+
+GET /api/v1/stocks/watchlist?label=EMERGING — filtered watchlist
+
+GET /api/v1/stocks/{symbol} — full intelligence snapshot
+
+GET /api/v1/stocks/{symbol}/history — OHLCV from bhavcopy
+
+GET /api/v1/participant/flows?days=90 — FII/DII/PRO/CLIENT flow scores
+
+GET /api/v1/corporate/deals?min_cr=50 — institutional deal signals
+
+GET /api/v1/corporate/events?days=30 — upcoming catalysts
+
+POST /api/v1/chat/ — proxy to chatbot engine
+
+WS /ws/live — push regime/sector changes, new signals
+
+---
+
+## Architecture
+
+FastAPI app + Uvicorn ASGI
+
+In-memory CSV cache reloaded every 60 min via APScheduler
+
+Pydantic v2 response models
+
+No database — intelligence files are the source of truth
+
+---
+
+## Packages
+
+fastapi, uvicorn[standard], pydantic
+
+---
+
+## Directory
+
+backend/

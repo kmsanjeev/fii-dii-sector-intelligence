@@ -1,534 +1,140 @@
 # PARTICIPANT INTELLIGENCE
-
-## Project
-
-Capital Flow Intelligence Platform
+## Capital Flow Intelligence Platform | Updated 2026-06-30
 
 ---
 
 # Module Overview
 
-Participant Intelligence is the foundational intelligence layer of the platform.
+Participant Intelligence is the foundational intelligence layer of the Capital Flow cascade.
+Tracks capital flow by participant category (FII, DII, PRO, CLIENT) via F&O and cash market data.
+Provides market regime detection, smart money signals, and conviction scoring for all downstream engines.
 
-Its purpose is to analyze the behavior of all major market participants and identify how capital enters, exits, and rotates throughout the market.
+---
 
-This module sits above raw market data and below all other intelligence layers.
+# Status: 100% COMPLETE (Phase 5, completed 2026-06-30)
 
 ---
 
 # Capital Flow Framework
 
-```text
-Participant
-    ↓
-Sector
-    ↓
-Theme
-    ↓
-Stock
-    ↓
-Fundamental Validation
-    ↓
-Portfolio
-    ↓
-Execution
-```
+  Participant -> Sector -> Theme -> Stock -> Portfolio -> Execution
 
-Participant Intelligence serves as the starting point of the entire Capital Flow framework.
+Participant Intelligence is the entry point of the entire cascade.
 
 ---
 
 # Objective
 
-Answer the following questions:
-
-1. Who is buying?
-2. Who is selling?
-3. Who has conviction?
-4. Who is changing positioning?
-5. Who is leading the market?
-6. Who is following the market?
-7. Where is smart money flowing?
-8. Where is retail participation increasing?
+Answer these questions from live data:
+1. Who is buying? Who is selling?
+2. Who has conviction?
+3. Who is changing positioning?
+4. Where is smart money flowing?
+5. What is the current market regime?
 
 ---
 
 # Participants Covered
 
----
-
-## FII
-
-Foreign Institutional Investors
-
-Purpose:
-
-Track global capital allocation.
+| Label | Type | Signal |
+|-------|------|--------|
+| FII | Foreign Institutional Investors | Global capital allocation |
+| DII | Domestic Institutional Investors | MF + Insurance deployment |
+| PRO | Proprietary/Professional traders | Tactical positioning |
+| CLIENT | Retail / non-institutional | Crowd behavior, sentiment |
 
 ---
 
-## DII
+# Completed Engines
 
-Domestic Institutional Investors
+## Phase 5A — participant_acquisition_engine.py (COMPLETE)
 
-Purpose:
+File: engines/participant/participant_acquisition_engine.py
+Outputs:
+- data/historical/institutional/institutional_positioning_history.csv (F&O OI + volume, 2016-present)
+- data/historical/institutional/cash_market_flows_history.csv (cash flows, 2024-present)
+- data/NSE/participant_recovery_queue.csv (failed dates for retry)
 
-Track domestic capital allocation.
+Data sources (nselib):
+- derivatives.participant_wise_open_interest(date) — F&O OI by participant
+- derivatives.participant_wise_trading_volume(date) — F&O volume by participant
+- derivatives.fii_derivatives_statistics(date) — FII futures contracts
+- capital_market.category_turnover_cash(date) — cash market by category
 
----
+Results (2026-06-30):
+- institutional_positioning_history.csv: 2581 rows, 2016-01-01 through 2026-06-29
+- cash_market_flows_history.csv: 609 rows, through 2026-06-24
+- 1 recovery entry (2026-02-19 cash market TZ error — non-critical)
 
-## PRO
+## Phase 5B — participant_flow_engine.py (COMPLETE)
 
-Professional / Proprietary Participants
+File: engines/participant/participant_flow_engine.py
+Output: data/intelligence/participant_flow_scores.csv (2581 rows, 62 cols)
 
-Purpose:
+Computes rolling z-scores and normalized flow scores per participant category.
+Key metrics: {P}_net_futs, {P}_flow_score, {P}_net_oi, {P}_flow_strength, {P}_flow_direction
 
-Track professional trading activity and tactical positioning.
+Latest scores (2026-06-29):
+- FII_flow_score: +10.9
+- DII_flow_score: -4.5
+- PRO_flow_score: -20.2
+- CLIENT_flow_score: +9.4
 
----
+## Phase 5C — participant_intelligence_engine.py (COMPLETE)
 
-## CLIENT
+File: engines/participant/participant_intelligence_engine.py
+Output: data/intelligence/participant_intelligence.csv (2581 rows, 21 cols)
 
-Retail and Non-Institutional Participants
+Produces ensemble regime classification, conviction scores, smart money signals,
+FII/DII divergence, and retail sentiment.
 
-Purpose:
-
-Track crowd behavior and sentiment.
-
----
-
-# Why Participant Intelligence Matters
-
-Markets are driven by participants.
-
-Price movement is often the result of participant behavior.
-
-Understanding participant behavior allows the platform to detect:
-
-Capital Flow
-
-↓
-
-Sector Rotation
-
-↓
-
-Theme Rotation
-
-↓
-
-Stock Leadership
-
-before broad market recognition.
+Latest results (2026-06-29):
+- Market_Regime: NEUTRAL
+- Smart_Money_Score: -4.7
+- FII_conviction: 40%
+- Regime source used by bull_run_probability_engine.py (Phase 8B)
 
 ---
 
-# Data Sources
+# Key Formulas
+
+F&O net position:
+  Net = Future_Index_Long + Future_Stock_Long - Future_Index_Short - Future_Stock_Short
+  (Options excluded — futures give cleaner directional signal)
+
+Flow score (rolling z-score, clipped to [-3, +3]):
+  z = (net_position - rolling_mean) / rolling_std
+
+Market regime thresholds:
+  STRONG_ACCUMULATION: FII z > 1.5 + DII z > 0.5
+  ACCUMULATION: FII z > 0.5
+  NEUTRAL: -0.5 < FII z < 0.5
+  DISTRIBUTION: FII z < -0.5
+  STRONG_DISTRIBUTION: FII z < -1.5
 
 ---
 
-## NSE Participant Data
+# Known Issues
 
-Provides:
-
-FII Activity
-
-DII Activity
-
-PRO Activity
-
-CLIENT Activity
+- Cash market 2026-02-19: "Cannot mix tz-aware with tz-naive values" from NSE API
+  Status: 1 entry in recovery_queue.csv, non-critical, fix in next incremental run
 
 ---
 
-## F&O Participant Statistics
+# Data Files
 
-Provides:
-
-Long Positions
-
-Short Positions
-
-Open Interest
-
-Volume Activity
+| File | Path | Status |
+|------|------|--------|
+| institutional_positioning_history.csv | data/historical/institutional/ | LIVE 2026-06-29 |
+| cash_market_flows_history.csv | data/historical/institutional/ | LIVE 2026-06-24 |
+| participant_flow_scores.csv | data/intelligence/ | LIVE 2026-06-29 |
+| participant_intelligence.csv | data/intelligence/ | LIVE 2026-06-29 |
 
 ---
 
-## Cash Market Activity
-
-Provides:
-
-Participant Participation
-
-Capital Flow
-
-Volume Analysis
-
----
-
-# Core Datasets
-
----
-
-## Dataset 01
-
-Participant History
-
-Location
-
-```text
-data/intelligence/participant_history.csv
-```
-
----
-
-## Dataset 02
-
-Participant Intelligence
-
-Location
-
-```text
-data/intelligence/participant_intelligence.csv
-```
-
----
-
-## Dataset 03
-
-Participant Divergence
-
-Location
-
-```text
-data/intelligence/participant_divergence.csv
-```
-
----
-
-# Engines
-
----
-
-## Engine 01
-
-Participant Flow Engine
-
----
-
-### Purpose
-
-Measure capital movement by participant category.
-
----
-
-### Outputs
-
-Flow Score
-
-Flow Direction
-
-Flow Strength
-
----
-
-### Status
-
-Planned
-
----
-
-## Engine 02
-
-Participant Conviction Engine
-
----
-
-### Purpose
-
-Measure participant conviction.
-
----
-
-### Inputs
-
-Volume
-
-Open Interest
-
-Position Changes
-
-Flow Changes
-
----
-
-### Outputs
-
-Conviction Score
-
-Confidence Score
-
-Participation Score
-
----
-
-### Status
-
-Planned
-
----
-
-## Engine 03
-
-Participant Divergence Engine
-
----
-
-### Purpose
-
-Measure disagreement between participant groups.
-
----
-
-### Examples
-
-FII vs CLIENT
-
-PRO vs CLIENT
-
-FII vs DII
-
-Institutional vs Retail
-
----
-
-### Outputs
-
-Divergence Score
-
-Conflict Score
-
-Consensus Score
-
----
-
-### Status
-
-Planned
-
----
-
-## Engine 04
-
-Smart Money Engine
-
----
-
-### Purpose
-
-Identify informed capital.
-
----
-
-### Inputs
-
-FII
-
-DII
-
-PRO
-
----
-
-### Outputs
-
-Smart Money Score
-
-Accumulation Score
-
-Distribution Score
-
----
-
-### Status
-
-Planned
-
----
-
-## Engine 05
-
-Retail Sentiment Engine
-
----
-
-### Purpose
-
-Measure retail participation.
-
----
-
-### Inputs
-
-CLIENT Data
-
----
-
-### Outputs
-
-Retail Sentiment Score
-
-Retail Conviction Score
-
-Crowding Score
-
----
-
-### Status
-
-Planned
-
----
-
-# Opportunity Framework
-
-Highest conviction opportunities occur when:
-
-```text
-Smart Money Accumulation
-+
-Positive Sector Rotation
-+
-Positive Theme Rotation
-+
-Stock Leadership
-```
-
----
-
-# Outputs
-
-Participant Scores
-
-Flow Scores
-
-Conviction Scores
-
-Divergence Scores
-
-Smart Money Scores
-
-Retail Sentiment Scores
-
----
-
-# Dashboard Integration
-
----
-
-## Participant Dashboard
-
-Components
-
-Participant Flows
-
-Conviction
-
-Divergence
-
-Smart Money
-
-Retail Sentiment
-
-Historical Trends
-
----
-
-# AI Integration
-
----
-
-## AI Participant Analyst
-
-Questions Answered
-
-Who is buying?
-
-Who is selling?
-
-Where is conviction increasing?
-
-Where is smart money flowing?
-
-Is retail chasing momentum?
-
----
-
-# Relationship To Sector Intelligence
-
-Participant Intelligence answers:
-
-Who is moving capital?
-
----
-
-Sector Intelligence answers:
-
-Where is capital moving?
-
----
-
-# Success Criteria
-
-The module successfully identifies:
-
-Participant Leadership
-
-Participant Conviction
-
-Participant Divergence
-
-Smart Money Activity
-
-Retail Behavior
-
-before capital movement becomes obvious in sectors and stocks.
-
----
-
-# Current Completion
-
-0%
-
----
-
-# Next Milestones
-
-1. Participant Flow Engine
-
-2. Participant Conviction Engine
-
-3. Participant Divergence Engine
-
-4. Smart Money Engine
-
-5. Retail Sentiment Engine
-
-6. Participant Dashboard
-
-7. AI Participant Analyst
-
----
-
-# Long-Term Vision
-
-Create a participant-level intelligence system capable of identifying:
-
-Who is moving capital,
-
-Who is leading market behavior,
-
-and where future opportunities are most likely to emerge.
-
-Participant Intelligence becomes the foundation of the Capital Flow Intelligence Platform.
+# Downstream Consumers
+
+- sector_capital_flow_engine.py (6A) — uses participant flow scores
+- bull_run_probability_engine.py (8B) — reads Market_Regime for regime multiplier
+- alert_engine.py (Phase 9) — monitors regime changes for alerts
+- MarketAgent (Phase 14) — get_market_regime() tool
