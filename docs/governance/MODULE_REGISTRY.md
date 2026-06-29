@@ -88,13 +88,13 @@ Core Intelligence
 
 ## Status
 
-ACTIVE — PHASE 5 COMPLETE
+ACTIVE — PHASE 6 COMPLETE
 
 ---
 
 ## Completion
 
-85%
+100%
 
 ---
 
@@ -133,13 +133,19 @@ Cash Market Flows History (data/historical/institutional/cash_market_flows_histo
 
 ---
 
-## Engines (Phase 5 — COMPLETE)
+## Engines (Phase 5 + Phase 6 — COMPLETE)
 
 participant_acquisition_engine.py — 5A: incremental downloader for F&O + cash market data
 
 participant_flow_engine.py — 5B: OI delta, rolling 5D/20D/60D sums, z-score flow scores
 
 participant_intelligence_engine.py — 5C: conviction, smart money, divergence, market opportunity, regime
+
+sector_capital_flow_engine.py — 6A: weight-allocate FII/DII/PRO/CLIENT flows to 29 sectors via bhavcopy turnover weights
+
+sector_flow_score_engine.py — 6B: rolling 5D/20D/60D sums + z-score scores per sector per participant
+
+sector_rotation_intelligence_engine.py — 6C: rotation signal, capital flow alignment, combined rank (snapshot + history)
 
 ---
 

@@ -6,6 +6,60 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 2.9
+
+Phase 6 — Sector Rotation + Capital Flow Engines (6A / 6B / 6C)
+
+Date:
+
+2026-06-30
+
+Status:
+
+Completed
+
+---
+
+## Summary
+
+Built three sector-level capital flow engines that weight-allocate total participant F&O flows
+to each of the 29 platform sectors using daily bhavcopy turnover weights, then derive rolling
+flow scores, z-score normalisation, rotation signals, and a combined price + flow intelligence snapshot.
+
+---
+
+## Deliverables
+
+### Engines (engines/participant/)
+- `sector_capital_flow_engine.py` (6A) — reads 7813 bhavcopy files (2016-2026, dual schema support
+  for pre-2020 and post-2020 column formats), weight-allocates FII/DII/PRO/CLIENT OI and Volume flows
+  to 29 platform sectors by daily turnover weight. Incremental.
+- `sector_flow_score_engine.py` (6B) — OI delta, rolling 5D/20D/60D sums, z-score flow scores
+  (-100..+100) per sector per participant. Full rebuild.
+- `sector_rotation_intelligence_engine.py` (6C) — combines flow scores + NSE index price momentum
+  (from Phase 3 index_strength.csv) into rotation signal, capital flow alignment, and combined rank.
+  Outputs both a latest snapshot and a full time-series.
+
+### New Data Files
+- `data/intelligence/sector_capital_flows.csv` — 74,269 rows, 29 sectors x 2561 dates (2016-2026)
+- `data/intelligence/sector_flow_scores.csv` — 74,269 rows, 35 cols per sector per date
+- `data/intelligence/sector_rotation_intelligence.csv` — 29-row snapshot (latest date)
+- `data/intelligence/sector_rotation_history.csv` — full time-series for GUI charting
+
+---
+
+## Design Decisions
+
+- Turnover weight allocation: `sector_weight = sector_turnover / total_market_turnover` (close x qty / 1e7 crores)
+- Dual bhavcopy schema: pre-2020 uses CLOSE/TOTTRDQTY columns; post-2020 uses CLOSE_PRICE/TTL_TRD_QNTY
+- Z-score: 252-day rolling window, clipped to +/-3, scaled to +/-100 (consistent with Phase 5B)
+- Combined score: 60% participant flow score (leading) + 40% price momentum (confirming)
+- Rotation quadrants: STRONG_ACCUMULATION (flow+, price+), EARLY_ROTATION (flow+, price-),
+  PRICE_LED (flow-, price+), DISTRIBUTION (flow-, price-)
+- NSE index -> platform sector: static mapping covering 32 NSE indices to 29 platform sectors
+
+---
+
 # Version 2.8
 
 Phase 5 — Participant Intelligence Layer (5A / 5B / 5C)
