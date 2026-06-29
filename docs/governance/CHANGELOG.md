@@ -6,6 +6,61 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 2.8
+
+Phase 5 — Participant Intelligence Layer (5A / 5B / 5C)
+
+Date:
+
+2026-06-30
+
+Status:
+
+Completed
+
+---
+
+## Summary
+
+Built the Participant Intelligence Layer (`engines/participant/`) per ADR-016.
+Three engines track capital flow by participant category (FII, DII, PRO, CLIENT)
+across F&O and cash market channels.
+
+---
+
+## Deliverables
+
+### Engines (engines/participant/)
+- `participant_acquisition_engine.py` (5A) — incremental downloader for F&O OI/Volume +
+  new cash market flows history; fills gap 2026-06-03 to today; extends cash history from 2024-01-01
+- `participant_flow_engine.py` (5B) — OI delta, rolling sums (5D/20D/60D), normalized
+  z-score flow scores (−100..+100) per participant; full rebuild on run
+- `participant_intelligence_engine.py` (5C) — conviction (% positive days in 20D window),
+  Smart Money Score, Retail Score, divergence signals, Market Opportunity, ensemble Market Regime
+
+### New Data Files
+- `data/historical/institutional/cash_market_flows_history.csv` — cash flows by FPI/MF/Insurance/Retail (2024+)
+- `data/intelligence/participant_flow_scores.csv` — rolling metrics + normalized scores
+- `data/intelligence/participant_intelligence.csv` — conviction, divergence, smart money, regime
+
+### Module Context
+- `engines/participant/CLAUDE.md` — data sources, schemas, F&O net formula, column quirks
+- `engines/participant/__init__.py` — package init
+
+---
+
+## Design Decisions
+
+- F&O net position = futures only (Index + Stock Long − Short); options excluded for cleaner signal
+- Score normalisation: rolling z-score over 252-day window, clipped ±3, scaled to ±100
+- Market Regime ensemble: Smart Money 50%, DII 25%, Cash Institutional 25%
+- Market Opportunity = max(0, Smart) × max(0, −Retail) / 100 — fires when smart money accumulates AND retail sells
+- Backward compatible with Phase 7 institutional_positioning_history.csv (21-column schema preserved)
+
+---
+
+---
+
 # Purpose
 
 This document records all major project milestones, architecture decisions, strategic changes, documentation updates, and development achievements.

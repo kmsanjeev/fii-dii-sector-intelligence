@@ -88,13 +88,13 @@ Core Intelligence
 
 ## Status
 
-PLANNED
+ACTIVE — PHASE 5 COMPLETE
 
 ---
 
 ## Completion
 
-0%
+85%
 
 ---
 
@@ -123,33 +123,23 @@ and identify:
 
 ---
 
-## Future Outputs
+## Outputs
 
-Participant Scores
+Participant Flow Scores (data/intelligence/participant_flow_scores.csv)
 
-Conviction Scores
+Participant Intelligence (data/intelligence/participant_intelligence.csv)
 
-Participation Scores
-
-Divergence Scores
-
-Smart Money Scores
-
-Retail Sentiment Scores
+Cash Market Flows History (data/historical/institutional/cash_market_flows_history.csv)
 
 ---
 
-## Planned Engines
+## Engines (Phase 5 — COMPLETE)
 
-Participant Flow Engine
+participant_acquisition_engine.py — 5A: incremental downloader for F&O + cash market data
 
-Participant Conviction Engine
+participant_flow_engine.py — 5B: OI delta, rolling 5D/20D/60D sums, z-score flow scores
 
-Participant Divergence Engine
-
-Smart Money Engine
-
-Retail Sentiment Engine
+participant_intelligence_engine.py — 5C: conviction, smart money, divergence, market opportunity, regime
 
 ---
 
