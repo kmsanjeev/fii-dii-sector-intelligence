@@ -6,6 +6,62 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 3.0
+
+Phase 7 — Corporate Intelligence Layer (7A / 7B / 7C)
+
+Date:
+
+2026-06-30
+
+Status:
+
+Completed
+
+---
+
+## Summary
+
+Built the Corporate Intelligence Layer (`engines/corporate/`) per ADR-020 Domain 3+4.
+Three engines provide stock-level intelligence that feeds into the Bull Run Probability
+engine (Phase 8): institutional deal signals, upcoming catalysts, and corporate confidence scores.
+
+---
+
+## Deliverables
+
+### Engines (engines/corporate/)
+- `block_bulk_deal_engine.py` (7A) — incremental downloader for NSE block/bulk deals.
+  Classifies each client as FII/MF/INSURANCE/PROMOTER/RETAIL via keyword matching.
+  Computes 30D net institutional buying per symbol → deal_signal.
+- `corporate_event_calendar_engine.py` (7B) — downloads event calendar (board meetings,
+  results dates) from 2023-01-01 to present. Identifies upcoming catalysts in next 60D,
+  prioritized by event type × sector_rotation_intelligence combined score.
+- `corporate_action_intelligence_engine.py` (7C) — processes all 40,517 existing corporate
+  actions (1999-2026). Classifies DIVIDEND/BONUS/SPLIT/BUYBACK/RIGHTS/MERGER/AGM_EGM.
+  Extracts amounts/ratios. Computes rolling 12M corporate confidence score per symbol.
+
+### New Data Files
+- `data/intelligence/block_bulk_deals.csv` — 12,467 rows (6M block/bulk deal history)
+- `data/intelligence/institutional_deal_signals.csv` — 361 symbols, 30D net signals
+- `data/intelligence/event_calendar.csv` — 33,839 rows (2023-2026)
+- `data/intelligence/upcoming_catalysts.csv` — next 60D events, priority scored
+- `data/intelligence/corporate_action_signals.csv` — 40,517 classified actions (1999-2026)
+- `data/intelligence/corporate_confidence_scores.csv` — 1,111 symbols, 12M rolling score
+
+---
+
+## Design Decisions
+
+- Financial results via nselib XBRL endpoint returns 404 — skipped for this phase
+- Management Intelligence (NLP, transcripts) — deferred to Phase 8+ (requires AI pipeline)
+- Shareholding patterns — deferred (data not yet acquired)
+- Participant classification: keyword matching on client name (heuristic, good enough for FII/MF detection)
+- Corporate confidence weights: BUYBACK +3 > BONUS +2 > SPLIT +1 > DIVIDEND +0.5 > RIGHTS -0.5
+- Catalyst score = purpose_priority × 10 + sector_combined_score / 10 (blends event type + sector flow)
+
+---
+
 # Version 2.9
 
 Phase 6 — Sector Rotation + Capital Flow Engines (6A / 6B / 6C)
