@@ -6,6 +6,66 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 3.2
+
+Phase 9 — Alert System
+
+Date: 2026-06-30
+
+Status: Completed
+
+---
+
+## Summary
+
+Built the complete Alert System (Phase 9) in `alerts/` — five files covering signal
+evaluation, cooldown tracking, Telegram delivery, daily digest, and APScheduler orchestration.
+
+---
+
+## Files Created
+
+| File | Phase | Purpose |
+|------|-------|---------|
+| `alerts/alert_engine.py` | 9A | Evaluates 6 intelligence CSVs, emits 7 alert types |
+| `alerts/alert_store.py` | 9B | Cooldown tracking, dedup, atomic JSON state |
+| `alerts/telegram_bot.py` | 9C | Telegram Bot API delivery, HTML formatting |
+| `alerts/daily_digest.py` | 9D | 18:30 IST daily intelligence summary |
+| `alerts/alert_scheduler.py` | 9E | APScheduler: digest + post-market checks |
+| `docs/decisions/ADR-021-Alert-System-Architecture.md` | — | Architecture decision record |
+
+---
+
+## Alert Types (Priority Order)
+
+| Priority | Type | Cooldown | Source |
+|----------|------|---------|--------|
+| P1 | REGIME_CHANGE | None | participant_intelligence.csv |
+| P2 | STRONG_CANDIDATE | 72h | bull_run_probability.csv |
+| P3 | SECTOR_ROTATION | 48h | sector_rotation_intelligence.csv |
+| P4 | INSTITUTIONAL_DEAL | 48h | institutional_deal_signals.csv |
+| P5 | CORPORATE_CONFIDENCE | 48h | corporate_confidence_scores.csv |
+| P6 | PARTICIPANT_DIVERGENCE | 48h | participant_intelligence.csv |
+| P7 | DAILY_DIGEST | 24h | all layers |
+
+---
+
+## Test Results (2026-06-30)
+
+- alert_engine: 118 alerts on first run (P1 regime change + P3/P4/P5/P6)
+- alert_store: cooldown filter verified
+- daily_digest: 690-char HTML digest with 5 sections
+- alert_scheduler: APScheduler imports and jobs verified
+
+---
+
+## Packages Added
+
+- APScheduler==3.11.3
+- python-telegram-bot==21.11.1
+
+---
+
 # Version 3.1
 
 Phase 8 — Bull Run Probability Engine (8A / 8B)
