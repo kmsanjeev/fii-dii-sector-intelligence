@@ -13,6 +13,29 @@ type ModuleInfo = {
   as_of_date?: string | null
 }
 
+type ProgressInfo = {
+  label: string
+  pct: number
+  n: number
+  total: number
+  elapsed?: string
+  eta?: string
+}
+
+function parseProgress(data: Record<string, unknown>): ProgressInfo | null {
+  if (data.type !== 'progress') return null
+  const line = (data.line as string) ?? ''
+  const labelMatch = line.match(/^(.+?):\s+\d+%\|/)
+  return {
+    label: labelMatch ? labelMatch[1].trim() : 'Progress',
+    pct:     (data.pct   as number) ?? 0,
+    n:       (data.n     as number) ?? 0,
+    total:   (data.total as number) ?? 0,
+    elapsed: data.elapsed as string | undefined,
+    eta:     data.eta     as string | undefined,
+  }
+}
+
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
     OK:      '#22C55E',
@@ -20,93 +43,172 @@ function StatusBadge({ status }: { status: string }) {
     PARTIAL: '#F59E0B',
     UNKNOWN: '#64748B',
   }
+  const c = colors[status] ?? '#64748B'
   return (
     <span style={{
-      backgroundColor: colors[status] + '22',
-      color: colors[status],
-      border: `1px solid ${colors[status]}`,
-      padding: '1px 8px',
-      borderRadius: 4,
-      fontSize: 10,
-      fontWeight: 700,
+      backgroundColor: c + '22', color: c,
+      border: `1px solid ${c}`,
+      padding: '1px 8px', borderRadius: 4,
+      fontSize: 10, fontWeight: 700,
     }}>
       {status}
     </span>
   )
 }
 
-function ModuleTable({ title, modules }: { title: string; modules: Record<string, ModuleInfo>; }) {
-  const [running, setRunning] = useState<string | null>(null)
-  const [logs, setLogs] = useState<Record<string, string[]>>({})
-  const [openLog, setOpenLog] = useState<string | null>(null)
-  const logRef = useRef<HTMLDivElement>(null)
+function ProgressBar({ info }: { info: ProgressInfo }) {
+  const done = info.pct === 100
+  return (
+    <div style={{ padding: '6px 0' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#94A3B8', marginBottom: 3 }}>
+        <span style={{ color: '#F59E0B', fontWeight: 600 }}>{info.label}</span>
+        <span style={{ color: '#64748B' }}>
+          {info.n}/{info.total}
+          {info.elapsed ? ` | ${info.elapsed} elapsed` : ''}
+          {info.eta && !done ? ` | ETA: ${info.eta}` : ''}
+          {done ? ' | complete' : ''}
+        </span>
+      </div>
+      <div style={{ height: 6, backgroundColor: '#1E2332', borderRadius: 3 }}>
+        <div style={{
+          width: `${info.pct}%`, height: 6,
+          backgroundColor: done ? '#22C55E' : '#F59E0B',
+          borderRadius: 3, transition: 'width 0.4s',
+        }} />
+      </div>
+      <div style={{ fontSize: 9, color: '#64748B', marginTop: 2 }}>{info.pct}%</div>
+    </div>
+  )
+}
+
+// Engine key lookup by module key
+const ENGINE_MAP: Record<string, string> = {
+  bhavcopy_equity:              'bhavcopy_equity',
+  bhavcopy_fno:                 'bhavcopy_fno',
+  corporate_actions:            'corporate_actions',
+  equity_master:                'equity_master',
+  stock_history_cache:          'stock_history_build',
+  participant_flows:            'participant_5a',
+  participant_flow_scores:      'participant_5b',
+  participant_intelligence:     'participant_5c',
+  sector_flow_scores:           'sector_6b',
+  sector_rotation_intelligence: 'sector_6c',
+  price_momentum:               'momentum_8a',
+  bull_run_probability:         'bull_run_8b',
+  ml_scores_combined:           'ml_12',
+  block_bulk_deals:             'deals_7a',
+  deal_signals:                 'deals_7a',
+  event_calendar:               'events_7b',
+  upcoming_catalysts:           'events_7b',
+  corporate_action_signals:     'corp_actions_7c',
+  corporate_confidence:         'corp_actions_7c',
+}
+
+function ModuleTable({
+  title,
+  modules,
+  pipelineKey,
+}: {
+  title: string
+  modules: Record<string, ModuleInfo>
+  pipelineKey: string
+}) {
+  const [running, setRunning]             = useState<string | null>(null)
+  const [logs, setLogs]                   = useState<Record<string, string[]>>({})
+  const [engProgress, setEngProgress]     = useState<Record<string, ProgressInfo | null>>({})
+  const [openLog, setOpenLog]             = useState<string | null>(null)
+  const [pipeRunning, setPipeRunning]     = useState(false)
+  const [pipeLogs, setPipeLogs]           = useState<string[]>([])
+  const [pipeProgress, setPipeProgress]   = useState<ProgressInfo | null>(null)
+  const logRef  = useRef<HTMLDivElement>(null)
+  const pipeRef = useRef<HTMLDivElement>(null)
+
+  function streamEngine(key: string, onLine: (line: string) => void, onProgress: (p: ProgressInfo) => void, onDone: () => void) {
+    const es = new EventSource(`${BASE}/api/data/run/${key}`)
+    es.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data)
+        if (data.type === 'progress') {
+          const p = parseProgress(data)
+          if (p) onProgress(p)
+        } else if (data.line !== undefined) {
+          onLine(data.line as string)
+        }
+        if (data.done || data.all_done) { es.close(); onDone() }
+      } catch {}
+    }
+    es.onerror = () => { es.close(); onDone() }
+  }
 
   function runEngine(engineKey: string) {
     setRunning(engineKey)
     setLogs(prev => ({ ...prev, [engineKey]: [`Starting ${engineKey}...`] }))
+    setEngProgress(prev => ({ ...prev, [engineKey]: null }))
     setOpenLog(engineKey)
-
-    const es = new EventSource(`${BASE}/api/data/run/${engineKey}`)
-    es.onmessage = (e) => {
-      try {
-        const data = JSON.parse(e.data)
-        if (data.line !== undefined) {
-          setLogs(prev => ({
-            ...prev,
-            [engineKey]: [...(prev[engineKey] || []), data.line],
-          }))
-          if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight
-        }
-        if (data.done || data.all_done) {
-          es.close()
-          setRunning(null)
-        }
-      } catch {}
-    }
-    es.onerror = () => {
-      setLogs(prev => ({ ...prev, [engineKey]: [...(prev[engineKey] || []), '--- Connection closed ---'] }))
-      es.close()
-      setRunning(null)
-    }
+    streamEngine(
+      engineKey,
+      (line) => {
+        setLogs(prev => ({ ...prev, [engineKey]: [...(prev[engineKey] ?? []), line] }))
+        if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight
+      },
+      (p) => setEngProgress(prev => ({ ...prev, [engineKey]: p })),
+      () => setRunning(null),
+    )
   }
 
-  // Map module key to engine key
-  const ENGINE_MAP: Record<string, string> = {
-    bhavcopy_equity:      'bhavcopy_equity',
-    bhavcopy_fno:         'bhavcopy_fno',
-    corporate_actions:    'corporate_actions',
-    equity_master:        'equity_master',
-    stock_history_cache:  'stock_history_build',
-    participant_flows:    'participant_5a',
-    participant_intelligence: 'participant_5c',
-    sector_rotation_intelligence: 'sector_6c',
-    bull_run_probability: 'bull_run_8b',
-    price_momentum:       'momentum_8a',
-    ml_scores_combined:   'ml_12',
-    block_bulk_deals:     'deals_7a',
-    event_calendar:       'events_7b',
-    corporate_action_signals: 'corp_actions_7c',
-    upcoming_catalysts:   'events_7b',
-    deal_signals:         'deals_7a',
-    corporate_confidence: 'corp_actions_7c',
-    sector_flow_scores:   'sector_6b',
-    participant_flow_scores: 'participant_5b',
+  function runSectionPipeline() {
+    setPipeRunning(true)
+    setPipeLogs([`Starting ${title} pipeline...`])
+    setPipeProgress(null)
+    streamEngine(
+      pipelineKey,
+      (line) => {
+        setPipeLogs(prev => [...prev, line])
+        if (pipeRef.current) pipeRef.current.scrollTop = pipeRef.current.scrollHeight
+      },
+      (p) => setPipeProgress(p),
+      () => setPipeRunning(false),
+    )
   }
 
   const okCount = Object.values(modules).filter(m => m.status === 'OK').length
-  const total = Object.keys(modules).length
-  const pct = total > 0 ? Math.round((okCount / total) * 100) : 0
+  const total   = Object.keys(modules).length
+  const pct     = total > 0 ? Math.round((okCount / total) * 100) : 0
+  const busy    = running !== null || pipeRunning
 
   return (
     <div style={{ marginBottom: 32 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
-        <h2 style={{ color: '#E2E8F0', fontSize: 13, fontWeight: 700, letterSpacing: 2, margin: 0 }}>{title}</h2>
+
+      {/* Section header + health bar + pipeline button */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
+        <h2 style={{ color: '#E2E8F0', fontSize: 13, fontWeight: 700, letterSpacing: 2, margin: 0, whiteSpace: 'nowrap' }}>
+          {title}
+        </h2>
         <div style={{ flex: 1, height: 6, backgroundColor: '#1E2332', borderRadius: 3 }}>
-          <div style={{ width: `${pct}%`, height: 6, backgroundColor: pct === 100 ? '#22C55E' : pct > 50 ? '#F59E0B' : '#EF4444', borderRadius: 3, transition: 'width 0.5s' }} />
+          <div style={{
+            width: `${pct}%`, height: 6, borderRadius: 3,
+            backgroundColor: pct === 100 ? '#22C55E' : pct > 50 ? '#F59E0B' : '#EF4444',
+            transition: 'width 0.5s',
+          }} />
         </div>
-        <span style={{ color: '#64748B', fontSize: 11 }}>{okCount}/{total} ({pct}%)</span>
+        <span style={{ color: '#64748B', fontSize: 11, whiteSpace: 'nowrap' }}>{okCount}/{total} ({pct}%)</span>
+        <button
+          onClick={runSectionPipeline}
+          disabled={busy}
+          style={{
+            padding: '3px 14px', borderRadius: 4,
+            border: '1px solid #22C55E',
+            backgroundColor: pipeRunning ? '#22C55E22' : 'transparent',
+            color: '#22C55E',
+            cursor: busy ? 'not-allowed' : 'pointer',
+            fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap',
+          }}
+        >
+          {pipeRunning ? 'Running...' : 'Run Pipeline'}
+        </button>
       </div>
 
+      {/* Module table */}
       <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ borderBottom: '1px solid #1E2332', color: '#64748B' }}>
@@ -122,30 +224,30 @@ function ModuleTable({ title, modules }: { title: string; modules: Record<string
           {Object.entries(modules).map(([key, m]) => {
             const engineKey = ENGINE_MAP[key]
             const isRunning = running === engineKey
-            const hasLogs = (logs[engineKey] || []).length > 0
+            const hasLogs   = (logs[engineKey] ?? []).length > 0
+            const progress  = engProgress[engineKey] ?? null
+
             return (
               <>
-                <tr key={key} style={{ borderBottom: '1px solid #1E233240' }}>
+                <tr key={key} style={{ borderBottom: '1px solid #1E233230' }}>
                   <td style={{ padding: '6px 8px', color: '#E2E8F0', fontWeight: 600 }}>{m.label}</td>
                   <td style={{ padding: '6px 8px', textAlign: 'center' }}><StatusBadge status={m.status} /></td>
                   <td style={{ padding: '6px 8px', color: '#94A3B8' }}>{m.records}</td>
-                  <td style={{ padding: '6px 8px', color: '#64748B' }}>{m.as_of_date || m.coverage || '-'}</td>
-                  <td style={{ padding: '6px 8px', color: '#64748B' }}>{m.last_modified || '-'}</td>
+                  <td style={{ padding: '6px 8px', color: '#64748B' }}>{m.as_of_date ?? m.coverage ?? '-'}</td>
+                  <td style={{ padding: '6px 8px', color: '#64748B' }}>{m.last_modified ?? '-'}</td>
                   <td style={{ padding: '6px 8px', textAlign: 'center' }}>
                     <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
                       {engineKey && (
                         <button
                           onClick={() => runEngine(engineKey)}
-                          disabled={running !== null}
+                          disabled={busy}
                           style={{
-                            padding: '2px 10px',
-                            borderRadius: 4,
+                            padding: '2px 10px', borderRadius: 4,
                             border: '1px solid #22C55E',
                             backgroundColor: isRunning ? '#22C55E22' : 'transparent',
                             color: '#22C55E',
-                            cursor: running ? 'not-allowed' : 'pointer',
-                            fontSize: 10,
-                            fontWeight: 700,
+                            cursor: busy ? 'not-allowed' : 'pointer',
+                            fontSize: 10, fontWeight: 700,
                           }}
                         >
                           {isRunning ? 'Running...' : 'Run'}
@@ -154,35 +256,50 @@ function ModuleTable({ title, modules }: { title: string; modules: Record<string
                       {hasLogs && (
                         <button
                           onClick={() => setOpenLog(openLog === engineKey ? null : engineKey)}
-                          style={{ padding: '2px 8px', borderRadius: 4, border: '1px solid #334155', backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer', fontSize: 10 }}
+                          style={{
+                            padding: '2px 8px', borderRadius: 4,
+                            border: '1px solid #334155',
+                            backgroundColor: 'transparent', color: '#64748B',
+                            cursor: 'pointer', fontSize: 10,
+                          }}
                         >
-                          {openLog === engineKey ? 'Hide Log' : 'Log'}
+                          {openLog === engineKey ? 'Hide' : 'Log'}
                         </button>
                       )}
                     </div>
                   </td>
                 </tr>
+
+                {/* Inline progress bar while running */}
+                {isRunning && progress && (
+                  <tr key={`${key}_prog`}>
+                    <td colSpan={6} style={{ padding: '0 8px 4px 8px' }}>
+                      <ProgressBar info={progress} />
+                    </td>
+                  </tr>
+                )}
+
+                {/* Log panel */}
                 {openLog === engineKey && hasLogs && (
                   <tr key={`${key}_log`}>
                     <td colSpan={6} style={{ padding: '0 8px 8px 8px' }}>
                       <div
                         ref={logRef}
                         style={{
-                          backgroundColor: '#0A0D14',
-                          border: '1px solid #1E2332',
-                          borderRadius: 4,
-                          padding: 8,
-                          maxHeight: 200,
-                          overflowY: 'auto',
-                          fontFamily: 'monospace',
-                          fontSize: 10,
-                          color: '#94A3B8',
-                          whiteSpace: 'pre-wrap',
+                          backgroundColor: '#0A0D14', border: '1px solid #1E2332',
+                          borderRadius: 4, padding: 8,
+                          maxHeight: 180, overflowY: 'auto',
+                          fontFamily: 'monospace', fontSize: 10,
+                          color: '#94A3B8', whiteSpace: 'pre-wrap',
                         }}
                       >
-                        {(logs[engineKey] || []).map((line, i) => (
-                          <div key={i} style={{ color: line.startsWith('ERROR') ? '#EF4444' : line.startsWith('---') ? '#22C55E' : '#94A3B8' }}>
-                            {line || ' '}
+                        {(logs[engineKey] ?? []).map((line, i) => (
+                          <div key={i} style={{
+                            color: line.startsWith('ERROR') ? '#EF4444'
+                                 : line.startsWith('---')   ? '#22C55E'
+                                 : '#94A3B8',
+                          }}>
+                            {line || ' '}
                           </div>
                         ))}
                         {isRunning && <div style={{ color: '#F59E0B' }}>... running ...</div>}
@@ -195,6 +312,38 @@ function ModuleTable({ title, modules }: { title: string; modules: Record<string
           })}
         </tbody>
       </table>
+
+      {/* Section pipeline log */}
+      {pipeLogs.length > 0 && (
+        <div style={{ marginTop: 10 }}>
+          <div style={{ color: '#64748B', fontSize: 10, marginBottom: 4, letterSpacing: 1 }}>
+            {title} PIPELINE LOG
+          </div>
+          {pipeProgress && <ProgressBar info={pipeProgress} />}
+          <div
+            ref={pipeRef}
+            style={{
+              backgroundColor: '#0A0D14', border: '1px solid #1E2332',
+              borderRadius: 4, padding: 8,
+              maxHeight: 220, overflowY: 'auto',
+              fontFamily: 'monospace', fontSize: 10,
+              color: '#94A3B8', whiteSpace: 'pre-wrap',
+              marginTop: pipeProgress ? 4 : 0,
+            }}
+          >
+            {pipeLogs.map((line, i) => (
+              <div key={i} style={{
+                color: line.startsWith('ERROR') ? '#EF4444'
+                     : line.startsWith('---')   ? '#22C55E'
+                     : '#94A3B8',
+              }}>
+                {line || ' '}
+              </div>
+            ))}
+            {pipeRunning && <div style={{ color: '#F59E0B' }}>... running ...</div>}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -206,41 +355,49 @@ export function DataControlPage() {
     staleTime: 30000,
   })
 
-  const [pipelineRunning, setPipelineRunning] = useState(false)
-  const [pipelineLogs, setPipelineLogs] = useState<string[]>([])
-  const pipelineRef = useRef<HTMLDivElement>(null)
+  const [pipeRunning, setPipeRunning]   = useState(false)
+  const [pipeLogs, setPipeLogs]         = useState<string[]>([])
+  const [pipeProgress, setPipeProgress] = useState<ProgressInfo | null>(null)
+  const pipeRef = useRef<HTMLDivElement>(null)
 
-  function runPipeline() {
-    setPipelineRunning(true)
-    setPipelineLogs(['Starting full intelligence pipeline...'])
+  function runFullPipeline() {
+    setPipeRunning(true)
+    setPipeLogs(['Starting full intelligence pipeline...'])
+    setPipeProgress(null)
     const es = new EventSource(`${BASE}/api/data/run/pipeline_all`)
     es.onmessage = (e) => {
       try {
         const data = JSON.parse(e.data)
-        if (data.line !== undefined) {
-          setPipelineLogs(prev => [...prev, data.line])
-          if (pipelineRef.current) pipelineRef.current.scrollTop = pipelineRef.current.scrollHeight
+        if (data.type === 'progress') {
+          const p = parseProgress(data)
+          if (p) setPipeProgress(p)
+        } else if (data.line !== undefined) {
+          setPipeLogs(prev => [...prev, data.line as string])
+          if (pipeRef.current) pipeRef.current.scrollTop = pipeRef.current.scrollHeight
         }
-        if (data.all_done) { es.close(); setPipelineRunning(false); refetch() }
+        if (data.all_done) { es.close(); setPipeRunning(false); refetch() }
       } catch {}
     }
-    es.onerror = () => { es.close(); setPipelineRunning(false) }
+    es.onerror = () => { es.close(); setPipeRunning(false) }
   }
 
-  if (isLoading) return <div style={{ color: '#64748B', padding: 40, textAlign: 'center' }}>Scanning data modules...</div>
+  if (isLoading) return (
+    <div style={{ color: '#64748B', padding: 40, textAlign: 'center' }}>Scanning data modules...</div>
+  )
 
-  const acquisition = status?.acquisition || {}
-  const intelligence = status?.intelligence || {}
+  const acquisition  = (status?.acquisition  ?? {}) as Record<string, ModuleInfo>
+  const intelligence = (status?.intelligence ?? {}) as Record<string, ModuleInfo>
 
-  // Summary counts
-  const acqOk = Object.values(acquisition).filter((m: any) => m.status === 'OK').length
-  const intOk = Object.values(intelligence).filter((m: any) => m.status === 'OK').length
-  const total = Object.keys(acquisition).length + Object.keys(intelligence).length
+  const acqOk   = Object.values(acquisition).filter(m => m.status === 'OK').length
+  const intOk   = Object.values(intelligence).filter(m => m.status === 'OK').length
+  const total   = Object.keys(acquisition).length + Object.keys(intelligence).length
   const totalOk = acqOk + intOk
-  const overallPct = total > 0 ? Math.round((totalOk / total) * 100) : 0
+  const pct     = total > 0 ? Math.round((totalOk / total) * 100) : 0
 
   return (
     <div style={{ maxWidth: 1100 }}>
+
+      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <h1 style={{ color: '#E2E8F0', fontSize: 16, fontWeight: 700, letterSpacing: 3, margin: 0 }}>
           DATA CONTROL
@@ -248,29 +405,52 @@ export function DataControlPage() {
         <div style={{ display: 'flex', gap: 8 }}>
           <button
             onClick={() => refetch()}
-            style={{ padding: '4px 14px', borderRadius: 4, border: '1px solid #334155', backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer', fontSize: 11 }}
+            style={{
+              padding: '4px 14px', borderRadius: 4,
+              border: '1px solid #334155', backgroundColor: 'transparent',
+              color: '#64748B', cursor: 'pointer', fontSize: 11,
+            }}
           >
             Refresh Status
           </button>
           <button
-            onClick={runPipeline}
-            disabled={pipelineRunning}
-            style={{ padding: '4px 14px', borderRadius: 4, border: '1px solid #22C55E', backgroundColor: pipelineRunning ? '#22C55E22' : 'transparent', color: '#22C55E', cursor: pipelineRunning ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 700 }}
+            onClick={runFullPipeline}
+            disabled={pipeRunning}
+            style={{
+              padding: '4px 14px', borderRadius: 4,
+              border: '1px solid #22C55E',
+              backgroundColor: pipeRunning ? '#22C55E22' : 'transparent',
+              color: '#22C55E',
+              cursor: pipeRunning ? 'not-allowed' : 'pointer',
+              fontSize: 11, fontWeight: 700,
+            }}
           >
-            {pipelineRunning ? 'Pipeline Running...' : 'Run Full Pipeline'}
+            {pipeRunning ? 'Full Pipeline Running...' : 'Run Full Pipeline'}
           </button>
         </div>
       </div>
 
-      {/* Overall health bar */}
-      <div style={{ backgroundColor: '#141720', border: '1px solid #1E2332', borderRadius: 6, padding: 16, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16 }}>
-        <div style={{ fontSize: 28, fontWeight: 700, color: overallPct === 100 ? '#22C55E' : overallPct > 70 ? '#F59E0B' : '#EF4444' }}>
-          {overallPct}%
+      {/* Overall health */}
+      <div style={{
+        backgroundColor: '#141720', border: '1px solid #1E2332',
+        borderRadius: 6, padding: 16, marginBottom: 24,
+        display: 'flex', alignItems: 'center', gap: 16,
+      }}>
+        <div style={{
+          fontSize: 28, fontWeight: 700,
+          color: pct === 100 ? '#22C55E' : pct > 70 ? '#F59E0B' : '#EF4444',
+        }}>
+          {pct}%
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ color: '#94A3B8', fontSize: 12, marginBottom: 6 }}>Platform Health — {totalOk}/{total} modules operational</div>
+          <div style={{ color: '#94A3B8', fontSize: 12, marginBottom: 6 }}>
+            Platform Health — {totalOk}/{total} modules operational
+          </div>
           <div style={{ height: 8, backgroundColor: '#1E2332', borderRadius: 4 }}>
-            <div style={{ width: `${overallPct}%`, height: 8, backgroundColor: overallPct === 100 ? '#22C55E' : overallPct > 70 ? '#F59E0B' : '#EF4444', borderRadius: 4 }} />
+            <div style={{
+              width: `${pct}%`, height: 8, borderRadius: 4,
+              backgroundColor: pct === 100 ? '#22C55E' : pct > 70 ? '#F59E0B' : '#EF4444',
+            }} />
           </div>
         </div>
         <div style={{ fontSize: 11, color: '#64748B', textAlign: 'right' }}>
@@ -279,23 +459,35 @@ export function DataControlPage() {
         </div>
       </div>
 
-      <ModuleTable title="DATA ACQUISITION" modules={acquisition as any} />
-      <ModuleTable title="INTELLIGENCE OUTPUTS" modules={intelligence as any} />
+      <ModuleTable title="DATA ACQUISITION"   modules={acquisition}  pipelineKey="pipeline_acquisition"  />
+      <ModuleTable title="INTELLIGENCE OUTPUTS" modules={intelligence} pipelineKey="pipeline_intelligence" />
 
-      {/* Pipeline log */}
-      {pipelineLogs.length > 0 && (
+      {/* Full pipeline log */}
+      {pipeLogs.length > 0 && (
         <div style={{ marginTop: 16 }}>
-          <div style={{ color: '#64748B', fontSize: 11, marginBottom: 6 }}>PIPELINE LOG</div>
+          <div style={{ color: '#64748B', fontSize: 11, marginBottom: 6 }}>FULL PIPELINE LOG</div>
+          {pipeProgress && <ProgressBar info={pipeProgress} />}
           <div
-            ref={pipelineRef}
-            style={{ backgroundColor: '#0A0D14', border: '1px solid #1E2332', borderRadius: 4, padding: 12, height: 300, overflowY: 'auto', fontFamily: 'monospace', fontSize: 10, color: '#94A3B8', whiteSpace: 'pre-wrap' }}
+            ref={pipeRef}
+            style={{
+              backgroundColor: '#0A0D14', border: '1px solid #1E2332',
+              borderRadius: 4, padding: 12,
+              height: 280, overflowY: 'auto',
+              fontFamily: 'monospace', fontSize: 10,
+              color: '#94A3B8', whiteSpace: 'pre-wrap',
+              marginTop: pipeProgress ? 4 : 0,
+            }}
           >
-            {pipelineLogs.map((line, i) => (
-              <div key={i} style={{ color: line.startsWith('ERROR') ? '#EF4444' : line.startsWith('---') ? '#22C55E' : '#94A3B8' }}>
-                {line || ' '}
+            {pipeLogs.map((line, i) => (
+              <div key={i} style={{
+                color: line.startsWith('ERROR') ? '#EF4444'
+                     : line.startsWith('---')   ? '#22C55E'
+                     : '#94A3B8',
+              }}>
+                {line || ' '}
               </div>
             ))}
-            {pipelineRunning && <div style={{ color: '#F59E0B' }}>... running ...</div>}
+            {pipeRunning && <div style={{ color: '#F59E0B' }}>... running ...</div>}
           </div>
         </div>
       )}

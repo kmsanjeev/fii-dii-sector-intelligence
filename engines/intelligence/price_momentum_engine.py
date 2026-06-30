@@ -2,7 +2,7 @@
 Price Momentum Engine
 Phase 8A — Per-symbol price returns and volume trend across all lookback windows
 
-Reads bhavcopy files (legacy path data/bhavcopy/equity/) for 5 reference dates:
+Reads bhavcopy files (data/NSE/bhavcopy/equity/) for 5 reference dates:
   now, 30D ago, 60D ago, 90D ago, 365D ago
 
 Computes per symbol:
@@ -33,7 +33,7 @@ from engines.common.logger import get_logger
 
 logger = get_logger("price_momentum")
 
-LEGACY_BHAV_ROOT = cfg.DATA_DIR / "bhavcopy" / "equity"
+BHAV_ROOT = cfg.NSE_EQUITY_BHAVCOPY_DIR
 CLASSIFICATION   = cfg.DATA_DIR / "reference" / "company_classification_v4.csv"
 INTELLIGENCE_DIR = cfg.INTELLIGENCE_DIR
 OUTPUT_FILE      = INTELLIGENCE_DIR / "price_momentum.csv"
@@ -85,7 +85,7 @@ class PriceMomentumEngine:
         logger.info("[PriceMomentum] Starting Phase 8A")
         INTELLIGENCE_DIR.mkdir(parents=True, exist_ok=True)
 
-        all_files = sorted(LEGACY_BHAV_ROOT.rglob("*.csv"))
+        all_files = sorted(BHAV_ROOT.rglob("*.csv"))
         if len(all_files) < VOLUME_WINDOW + max(LOOKBACKS.values()):
             logger.error("[8A] Insufficient bhavcopy history")
             return False

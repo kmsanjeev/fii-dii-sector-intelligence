@@ -25,7 +25,7 @@ DATA_DIR = PROJECT_ROOT / "data"
 NSE_DIR = DATA_DIR / "NSE"
 BSE_DIR = DATA_DIR / "BSE"
 
-CACHE_DIR = DATA_DIR / "cache"
+CACHE_DIR = NSE_DIR / "nsecache"
 
 REFERENCE_DIR = DATA_DIR / "reference"
 INTELLIGENCE_DIR = DATA_DIR / "intelligence"

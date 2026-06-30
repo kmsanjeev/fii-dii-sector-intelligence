@@ -2,8 +2,8 @@
 Stock History Builder
 Reads raw bhavcopy files (READ-ONLY) and builds per-symbol OHLCV parquet files.
 
-Raw source (immutable):  data/bhavcopy/equity/**/*.csv  (7813 files, 1995-2026)
-Output (cache/derived):  data/cache/stock_history/<SYMBOL>.parquet
+Raw source (immutable):  data/NSE/bhavcopy/equity/**/*.csv  (7813 files, 1995-2026)
+Output (cache/derived):  data/NSE/nsecache/stock_history/<SYMBOL>.parquet
 
 Run modes:
   py -3.11 engines/acquisition/stock_history_builder.py          <- incremental (new dates only)
@@ -28,7 +28,7 @@ from engines.common.progress import progress
 
 logger = get_logger("stock_history_builder")
 
-BHAVCOPY_DIR = cfg.DATA_DIR / "bhavcopy" / "equity"
+BHAVCOPY_DIR = cfg.NSE_EQUITY_BHAVCOPY_DIR
 OUTPUT_DIR   = cfg.STOCK_HISTORY_CACHE
 MANIFEST     = OUTPUT_DIR / "manifest.json"
 

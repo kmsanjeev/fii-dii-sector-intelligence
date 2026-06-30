@@ -31,7 +31,8 @@ REVIEW_QUEUE_FILE = (
 REPORT_FILE = (
     PROJECT_ROOT
     / "data"
-    / "cache"
+    / "NSE"
+    / "nsecache"
     / "reports"
     / "classification_coverage_report.csv"
 )

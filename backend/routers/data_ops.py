@@ -8,11 +8,14 @@ GET  /api/data/engines         -- list available engines + descriptions
 import json
 import os
 import queue
+import re
 import subprocess
 import sys
 import threading
 from pathlib import Path
 from typing import Generator
+
+_TQDM_RE = re.compile(r'^\s*\S.*:\s+\d+%\|')
 
 import pandas as pd
 from fastapi import APIRouter
@@ -128,12 +131,17 @@ ENGINES = {
     },
 }
 
-PIPELINE_SEQUENCE = [
+ACQUISITION_PIPELINE = [
+    "bhavcopy_equity", "bhavcopy_fno", "corporate_actions",
+    "equity_master", "stock_history_build",
+]
+INTELLIGENCE_PIPELINE = [
     "participant_5a", "participant_5b", "participant_5c",
     "sector_6a", "sector_6b", "sector_6c",
     "deals_7a", "events_7b", "corp_actions_7c",
     "momentum_8a", "bull_run_8b", "ml_12",
 ]
+PIPELINE_SEQUENCE = ACQUISITION_PIPELINE + INTELLIGENCE_PIPELINE
 
 
 # ── Status scan ───────────────────────────────────────────────────────────────
@@ -168,19 +176,16 @@ def _file_info(path: Path) -> dict:
 def get_data_status():
     status = {}
 
-    # ── Bhavcopy equity (legacy + NSE) ────────────────────────────────────────
-    legacy_eq = cfg.DATA_DIR / "bhavcopy" / "equity"
-    nse_eq = cfg.NSE_EQUITY_BHAVCOPY_DIR
-    eq_count = _count_files(legacy_eq, "*.csv") + _count_files(legacy_eq, "*.gz")
-    nse_eq_count = _count_files(nse_eq, "*.csv") + _count_files(nse_eq, "*.gz")
-
-    # Get date range from file names or mtime
-    eq_files = sorted(list(legacy_eq.rglob("*.csv")) + list(legacy_eq.rglob("*.gz")))
+    # ── Bhavcopy equity (canonical NSE path) ─────────────────────────────────
+    eq_files = sorted(
+        list(cfg.NSE_EQUITY_BHAVCOPY_DIR.rglob("*.csv")) +
+        list(cfg.NSE_EQUITY_BHAVCOPY_DIR.rglob("*.gz"))
+    )
     status["bhavcopy_equity"] = {
         "label": "Bhavcopy Equity",
-        "status": "OK" if eq_count > 0 else "EMPTY",
-        "records": f"{eq_count + nse_eq_count} files",
-        "coverage": f"{eq_files[0].parent.name if eq_files else '-'} → latest",
+        "status": "OK" if eq_files else "EMPTY",
+        "records": f"{len(eq_files)} files",
+        "coverage": f"{eq_files[0].parent.name if eq_files else '-'} → {eq_files[-1].parent.name if eq_files else '-'}",
         "last_modified": (
             pd.Timestamp(max(eq_files, key=lambda f: f.stat().st_mtime).stat().st_mtime, unit="s").strftime("%Y-%m-%d")
             if eq_files else None
@@ -336,6 +341,10 @@ def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
     """Spawn engine subprocess and yield SSE lines from its stdout/stderr."""
     if engine_name == "pipeline_all":
         engines_to_run = PIPELINE_SEQUENCE
+    elif engine_name == "pipeline_acquisition":
+        engines_to_run = ACQUISITION_PIPELINE
+    elif engine_name == "pipeline_intelligence":
+        engines_to_run = INTELLIGENCE_PIPELINE
     else:
         engines_to_run = [engine_name]
 
@@ -353,8 +362,7 @@ def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
             yield f"data: {json.dumps({'line': msg})}\n\n"
             continue
 
-        cmd = [sys.executable.replace("python.exe", "py.exe") if "python.exe" in sys.executable else sys.executable,
-               str(script_path)] + extra_args
+        cmd = [sys.executable, str(script_path)] + extra_args
 
         start_msg = f"--- Starting {cfg_eng['label']} ---"
         yield f"data: {json.dumps({'line': start_msg, 'engine': eng})}\n\n"
@@ -364,7 +372,23 @@ def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
         def _reader(proc, q=q):
             try:
                 for line in proc.stdout:
-                    q.put({"line": line.rstrip()})
+                    stripped = line.rstrip()
+                    if _TQDM_RE.match(stripped):
+                        item: dict = {"line": stripped, "type": "progress"}
+                        m_pct = re.search(r'(\d+)%\|', stripped)
+                        if m_pct:
+                            item["pct"] = int(m_pct.group(1))
+                        m_nd = re.search(r'\|\s*(\d+)/(\d+)\s*\[', stripped)
+                        if m_nd:
+                            item["n"] = int(m_nd.group(1))
+                            item["total"] = int(m_nd.group(2))
+                        m_time = re.search(r'\[(\d+:\d+)<(\d+:\d+)', stripped)
+                        if m_time:
+                            item["elapsed"] = m_time.group(1)
+                            item["eta"] = m_time.group(2)
+                        q.put(item)
+                    else:
+                        q.put({"line": stripped})
             finally:
                 proc.wait()
                 q.put({"done": True, "exit_code": proc.returncode})
@@ -401,7 +425,7 @@ def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
 @router.get("/run/{engine_name}")
 def run_engine(engine_name: str):
     """SSE endpoint — stream live output from an engine subprocess."""
-    valid = list(ENGINES.keys()) + ["pipeline_all"]
+    valid = list(ENGINES.keys()) + ["pipeline_all", "pipeline_acquisition", "pipeline_intelligence"]
     if engine_name not in valid:
         return {"error": f"Unknown engine '{engine_name}'. Valid: {valid}"}
 

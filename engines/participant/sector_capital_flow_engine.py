@@ -36,7 +36,7 @@ logger = get_logger("sector_capital_flow")
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-LEGACY_BHAV_ROOT = cfg.DATA_DIR / "bhavcopy" / "equity"
+BHAV_ROOT = cfg.NSE_EQUITY_BHAVCOPY_DIR
 CLASSIFICATION   = cfg.DATA_DIR / "reference" / "company_classification_v4.csv"
 FNO_HISTORY      = cfg.DATA_DIR / "historical" / "institutional" / "institutional_positioning_history.csv"
 INTELLIGENCE_DIR = cfg.INTELLIGENCE_DIR
@@ -150,7 +150,7 @@ class SectorCapitalFlowEngine:
     # Bhavcopy file collection
     # ------------------------------------------------------------------
     def _collect_bhavcopy_files(self, after_date: str) -> list[Path]:
-        all_files = sorted(LEGACY_BHAV_ROOT.rglob("*.csv"))
+        all_files = sorted(BHAV_ROOT.rglob("*.csv"))
         result = []
         for f in all_files:
             # Filename: bhavcopy_YYYYMMDD.csv
