@@ -6,6 +6,34 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 3.8.1
+
+Phase 16B Fix -- AnnouncementFetcher bulk API rewrite
+
+Date: 2026-06-30
+
+Status: Completed
+
+---
+
+## Summary
+
+Fixed `announcement_fetcher.py` to use nselib bulk `corporate_actions_for_equity(period='6M')`
+instead of the non-existent `shareholding_patterns()` method. Added `_fetch_bulk()` and
+`_parse_bulk()` methods. Fixed date normalization bug (premature truncation before regex).
+
+## Results
+
+- `board_announcements.csv`: 527 records, 471 symbols (DIVIDEND 446, BONUS 24, BUYBACK 19)
+- `management_sentiment.csv`: 471 symbols scored (POSITIVE 435, NEUTRAL 36)
+- Note: HoldingTrendEngine still defaults to STABLE (no nselib shareholding API available)
+
+## Commit
+
+`da5623f` -- Fix announcement_fetcher.py: add _fetch_bulk() using nselib bulk corporate_actions
+
+---
+
 # Version 3.8
 
 Phase 16 -- Management Intelligence Layer
