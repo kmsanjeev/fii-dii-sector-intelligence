@@ -6,6 +6,107 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 3.8
+
+Phase 16 -- Management Intelligence Layer
+
+Date: 2026-06-30
+
+Status: Completed
+
+---
+
+## Summary
+
+Built the Management Intelligence Layer (Phase 16) in `engines/management/` -- 3 engines:
+holding trend, announcement fetcher, and management sentiment scorer with optional Claude AI tone.
+
+## Engines Built
+
+| File | Purpose |
+|------|---------|
+| engines/management/holding_trend_engine.py | QoQ promoter/FII/DII delta + 7 conviction signals |
+| engines/management/announcement_fetcher.py | Board meeting fetch + 8-type keyword classification |
+| engines/management/management_sentiment_engine.py | Rule-based + Claude AI tone score (0-100) |
+
+## Output Files
+
+data/NSE/shareholding/holding_trends.csv -- promoter/FII/DII QoQ deltas, conviction_signal
+data/NSE/shareholding/board_announcements.csv -- classified board announcements
+data/NSE/shareholding/management_sentiment.csv -- management_score, management_label
+
+---
+
+# Version 3.7
+
+Phase 15 -- Financial Results + Valuation Engine
+
+Date: 2026-06-30
+
+Status: Completed
+
+---
+
+## Summary
+
+Built two financial fundamentals engines (Phase 15): quarterly results fetcher and
+valuation scorer with P/E + ROE + growth composite.
+
+## Engines Built
+
+| File | Purpose |
+|------|---------|
+| engines/fundamentals/financial_results_engine.py | Quarterly P&L via nselib bulk + yfinance fallback |
+| engines/fundamentals/valuation_engine.py | P/E, ROE, growth scoring -> valuation_label |
+
+## Notes
+
+NSE XBRL archive endpoint returns 404 intermittently. Engine handles gracefully.
+Valuation scores compute from available data and skip missing symbols.
+
+---
+
+# Version 3.6
+
+Phase 13-14 -- RAG Knowledge Base + AI Chatbot
+
+Date: 2026-06-30
+
+Status: Completed
+
+---
+
+## Summary
+
+Built the complete AI intelligence layer: RAG knowledge base (Phase 13) with hybrid
+BM25 + FAISS retrieval, and the AI chatbot (Phase 14) with Claude tool use + RAG context.
+
+## Phase 13 -- RAG Knowledge Base
+
+| File | Purpose |
+|------|---------|
+| engines/ai/knowledge/document_builder.py | 1091 text documents from 6 intelligence CSVs |
+| engines/ai/knowledge/bm25_indexer.py | BM25Okapi sparse keyword index |
+| engines/ai/knowledge/faiss_indexer.py | sentence-transformers dense index, 6 domain indexes |
+| engines/ai/knowledge/retriever.py | RRF hybrid fusion, domain auto-detection |
+| engines/ai/knowledge/index_updater.py | Daily rebuild pipeline |
+
+## Phase 14 -- AI Chatbot
+
+| File | Purpose |
+|------|---------|
+| engines/ai/chatbot/intent_router.py | Keyword intent detection (MARKET/SECTOR/STOCK/CORPORATE) |
+| engines/ai/chatbot/tools/data_tools.py | 11 data access functions over intelligence CSVs |
+| engines/ai/chatbot/tools/tool_registry.py | Anthropic API tool schemas + dispatch |
+| engines/ai/chatbot/chat_engine.py | Multi-turn agentic loop with RAG injection |
+| backend/routers/chat.py | POST /api/chat, in-memory session management |
+
+## Packages Installed
+
+sentence-transformers==5.6.0, faiss-cpu==1.14.3, rank-bm25==0.2.2, anthropic==0.113.0
+
+---
+
 # Version 3.5
 
 Phase 12 -- ML Intelligence Layer
