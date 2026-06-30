@@ -21,7 +21,6 @@ import argparse
 import asyncio
 import io
 import os
-import shutil
 import sys
 import zipfile
 from datetime import date, datetime
@@ -121,6 +120,16 @@ async def fetch_from_archive(
         return pd.DataFrame()
 
 
+def _write_csv(df: pd.DataFrame, path: Path) -> None:
+    """Write DataFrame to CSV with an explicit context manager.
+
+    Using `with open(...)` guarantees the OS file handle is released before
+    this function returns, which prevents WinError 32 on the subsequent rename.
+    """
+    with open(path, "w", newline="", encoding="utf-8") as fh:
+        df.to_csv(fh, index=False)
+
+
 async def process_day(
     semaphore: asyncio.Semaphore,
     session: aiohttp.ClientSession,
@@ -146,12 +155,26 @@ async def process_day(
 
         tmp = out.with_suffix(".tmp")
         try:
-            await asyncio.to_thread(lambda: df.to_csv(tmp, index=False))
-            shutil.move(str(tmp), str(out))
+            # Explicit with-open ensures the file handle is closed before rename.
+            # asyncio.to_thread keeps the CSV write off the event loop.
+            await asyncio.to_thread(_write_csv, df, tmp)
+
+            # Path.replace() is atomic on Windows; retry for antivirus lock window.
+            for attempt in range(3):
+                try:
+                    tmp.replace(out)
+                    break
+                except PermissionError:
+                    if attempt == 2:
+                        raise
+                    await asyncio.sleep(0.5)
+
         except Exception as e:
             logger.warning(f"Write failed {trade_date}: {e}")
-            if tmp.exists():
-                tmp.unlink()
+            try:
+                tmp.unlink(missing_ok=True)
+            except Exception:
+                pass
             return "FAILED"
 
         logger.info(f"{trade_date} | {source}")
