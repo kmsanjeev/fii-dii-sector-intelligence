@@ -37,7 +37,6 @@ if str(_ROOT) not in sys.path:
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
-from engines.common.progress import progress
 
 logger = get_logger("nse_fno_acquisition")
 
@@ -159,38 +158,30 @@ async def process_day(
         return "DOWNLOADED"
 
 
-_PRINT_EVERY = 25   # emit a log line every N completed dates within a year
-
-
 async def _download_dates(trade_dates: list, year: int) -> dict:
+    from tqdm import tqdm as _tqdm
+
     WORKERS = get_optimal_workers()
     total = len(trade_dates)
-
     semaphore = asyncio.Semaphore(WORKERS)
-    downloaded = skipped = failed = completed = 0
+    downloaded = skipped = failed = 0
 
-    async with aiohttp.ClientSession(headers=HEADERS) as session:
-        tasks = [
-            process_day(semaphore, session, td)
-            for td in trade_dates
-        ]
-        for task in asyncio.as_completed(tasks):
-            result = await task
-            completed += 1
-            if result == "DOWNLOADED":
-                downloaded += 1
-            elif result == "SKIPPED":
-                skipped += 1
-            else:
-                failed += 1
-
-            if completed % _PRINT_EVERY == 0 or completed == total:
-                pct = int(completed / total * 100) if total else 100
-                print(
-                    f"  {year}: {pct:3d}% | {completed}/{total} dates"
-                    f" | D:{downloaded} S:{skipped} F:{failed}",
-                    flush=True,
-                )
+    with _tqdm(total=total, desc=f"  {year}", ncols=100, leave=True, ascii=True) as pbar:
+        async with aiohttp.ClientSession(headers=HEADERS) as session:
+            tasks = [
+                process_day(semaphore, session, td)
+                for td in trade_dates
+            ]
+            for task in asyncio.as_completed(tasks):
+                result = await task
+                if result == "DOWNLOADED":
+                    downloaded += 1
+                elif result == "SKIPPED":
+                    skipped += 1
+                else:
+                    failed += 1
+                pbar.set_postfix(D=downloaded, S=skipped, F=failed, refresh=False)
+                pbar.update(1)
 
     return {"downloaded": downloaded, "skipped": skipped, "failed": failed}
 
@@ -211,15 +202,16 @@ def download_year_range(start_year: int, end_year: int) -> dict:
     total_downloaded = total_skipped = total_failed = 0
     total_years = end_year - start_year + 1
 
-    for idx, year in enumerate(
-        progress(range(start_year, end_year + 1), desc="F&O Backfill"),
-        start=1,
-    ):
+    for idx, year in enumerate(range(start_year, end_year + 1), start=1):
         print(f"Year {year} ({idx}/{total_years}) ...", flush=True)
         result = download_year(year)
         total_downloaded += result["downloaded"]
         total_skipped    += result["skipped"]
         total_failed     += result["failed"]
+        print(
+            f"  {year} done: D={result['downloaded']} S={result['skipped']} F={result['failed']}",
+            flush=True,
+        )
         logger.info(
             f"{year} | "
             f"D:{result['downloaded']} "
