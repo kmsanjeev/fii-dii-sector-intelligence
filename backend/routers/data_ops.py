@@ -193,12 +193,15 @@ def get_data_status():
     }
 
     # ── Bhavcopy F&O ─────────────────────────────────────────────────────────
-    fno_files = sorted(list(cfg.NSE_FNO_BHAVCOPY_DIR.rglob("*.csv")) + list(cfg.NSE_FNO_BHAVCOPY_DIR.rglob("*.zip")))
+    # Count only actual bhavcopy files (fo_YYYYMMDD.csv), not registry/coverage CSVs
+    fno_files = sorted(cfg.NSE_FNO_BHAVCOPY_DIR.rglob("fo_*.csv"))
+    fno_years = sorted({f.parent.name for f in fno_files if f.parent.name.isdigit()})
+    fno_coverage = f"{fno_years[0]} - {fno_years[-1]}" if fno_years else "-"
     status["bhavcopy_fno"] = {
         "label": "Bhavcopy F&O",
         "status": "OK" if fno_files else "EMPTY",
-        "records": f"{len(fno_files)} files",
-        "coverage": "-",
+        "records": f"{len(fno_files):,} files",
+        "coverage": fno_coverage,
         "last_modified": (
             pd.Timestamp(max(fno_files, key=lambda f: f.stat().st_mtime).stat().st_mtime, unit="s").strftime("%Y-%m-%d")
             if fno_files else None
@@ -387,7 +390,7 @@ def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
                             item["elapsed"] = m_time.group(1)
                             item["eta"] = m_time.group(2)
                         q.put(item)
-                    else:
+                    elif stripped:
                         q.put({"line": stripped})
             finally:
                 proc.wait()

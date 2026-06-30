@@ -7,5 +7,6 @@ def progress(iterable, total=None, desc="Processing"):
         total=total,
         desc=desc,
         ncols=100,
-        leave=True
+        leave=True,
+        ascii=True,       # Windows cp1252 safe -- no Unicode bar chars
     )
