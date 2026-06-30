@@ -36,6 +36,7 @@ import pandas as pd
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
+from engines.common.progress import progress
 
 logger = get_logger(__name__)
 
@@ -93,7 +94,7 @@ class ManagementSentimentEngine:
 
         symbols = self._get_symbols(holding_df, ann_df)
         rows = []
-        for symbol in symbols:
+        for symbol in progress(symbols, desc="Scoring symbols"):
             row = self._score_symbol(symbol, holding_df, ann_df)
             rows.append(row)
 

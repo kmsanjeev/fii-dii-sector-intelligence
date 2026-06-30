@@ -92,7 +92,7 @@ NSE_FNO_VALIDATION_YEARS = 5
 # WORKERS
 # ============================================================
 
-MIN_CONCURRENCY = 3
+MIN_CONCURRENCY = 4
 MAX_CONCURRENCY = 6
 
 # ============================================================

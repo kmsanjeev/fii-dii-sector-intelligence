@@ -26,12 +26,14 @@ Guardrails:
 
 import time
 import shutil
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional
 import pandas as pd
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
+from engines.common.progress import progress
 
 logger = get_logger(__name__)
 
@@ -73,21 +75,22 @@ class HoldingTrendEngine:
         existing = self._load_existing()
         processed = set(existing["symbol"].unique()) if not existing.empty else set()
 
+        pending = [sym for sym in symbols if sym not in processed]
+        n_workers = min(cfg.MAX_CONCURRENCY, max(cfg.MIN_CONCURRENCY, len(pending)))
         new_rows: list[dict] = []
-        for i, symbol in enumerate(symbols):
-            if symbol in processed:
-                continue
 
-            rows = self._fetch_symbol(symbol)
-            if rows:
-                new_rows.extend(rows)
-            else:
-                self.recovery.append({"symbol": symbol, "reason": "no_shareholding"})
-
-            if i % 100 == 0 and i > 0:
-                logger.info(f"[HoldingTrend] {i}/{len(symbols)}, new rows: {len(new_rows)}")
-
-            time.sleep(cfg.API_DELAY)
+        with ThreadPoolExecutor(max_workers=n_workers) as ex:
+            futures = {ex.submit(self._fetch_symbol, sym): sym for sym in pending}
+            for fut in progress(as_completed(futures), total=len(futures), desc="Shareholding fetch"):
+                sym = futures[fut]
+                try:
+                    rows = fut.result()
+                    if rows:
+                        new_rows.extend(rows)
+                    else:
+                        self.recovery.append({"symbol": sym, "reason": "no_shareholding"})
+                except Exception as e:
+                    self.recovery.append({"symbol": sym, "reason": str(e)})
 
         if not new_rows and existing.empty:
             logger.warning("[HoldingTrend] No shareholding data fetched")
@@ -123,6 +126,7 @@ class HoldingTrendEngine:
             try:
                 from nselib import capital_market as cm
                 raw = cm.shareholding_patterns(symbol=symbol)
+                time.sleep(max(0.2, cfg.API_DELAY / cfg.MAX_CONCURRENCY))
                 if raw is None or (isinstance(raw, pd.DataFrame) and raw.empty):
                     return []
                 return self._parse(symbol, raw)

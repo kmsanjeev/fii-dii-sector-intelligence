@@ -24,12 +24,14 @@ Guardrails:
 
 import time
 import shutil
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional
 import pandas as pd
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
+from engines.common.progress import progress
 
 logger = get_logger(__name__)
 
@@ -55,10 +57,18 @@ class FinancialResultsEngine:
     Falls back to per-symbol yfinance if bulk endpoint unavailable.
     """
 
-    def __init__(self, max_symbols: Optional[int] = None, use_yfinance: bool = True):
+    # Hard cap: yfinance fallback never iterates more than this many symbols
+    # Full universe (2373) at 1s/symbol = 40+ min; use batch_size for production runs
+    YFINANCE_BATCH_CAP = 100
+
+    def __init__(self, max_symbols: Optional[int] = None, use_yfinance: bool = True,
+                 yfinance_cap: Optional[int] = None):
         RESULTS_DIR.mkdir(parents=True, exist_ok=True)
         self.max_symbols = max_symbols
         self.use_yfinance = use_yfinance
+        # yfinance_cap: max symbols for fallback; defaults to YFINANCE_BATCH_CAP
+        # set to None only when explicitly running full batch overnight
+        self.yfinance_cap = yfinance_cap if yfinance_cap is not None else self.YFINANCE_BATCH_CAP
         self.recovery: list[dict] = []
 
     def run(self) -> bool:
@@ -67,9 +77,12 @@ class FinancialResultsEngine:
         # Try bulk nselib fetch first
         rows = self._fetch_bulk_nselib()
 
-        # If bulk fails, fallback to per-symbol yfinance
+        # If bulk fails, fallback to per-symbol yfinance (capped to avoid multi-hour runs)
         if not rows and self.use_yfinance:
-            logger.info("[FinancialResults] nselib bulk unavailable, falling back to yfinance")
+            logger.info(
+                f"[FinancialResults] nselib bulk unavailable, falling back to yfinance "
+                f"(cap={self.yfinance_cap} symbols)"
+            )
             rows = self._fetch_yfinance_all()
 
         if not rows:
@@ -181,18 +194,29 @@ class FinancialResultsEngine:
         symbols = self._load_symbols()
         if self.max_symbols:
             symbols = symbols[:self.max_symbols]
+        # Never iterate full universe uncapped — use yfinance_cap as hard ceiling
+        if self.yfinance_cap and len(symbols) > self.yfinance_cap:
+            logger.warning(
+                f"[FinancialResults] yfinance cap applied: {self.yfinance_cap}/{len(symbols)} symbols. "
+                f"Pass yfinance_cap=None only for overnight full-batch runs."
+            )
+            symbols = symbols[:self.yfinance_cap]
 
+        n_workers = min(cfg.MAX_CONCURRENCY, max(cfg.MIN_CONCURRENCY, len(symbols)))
         all_rows: list[dict] = []
-        for i, symbol in enumerate(symbols):
-            rows = self._fetch_yfinance_symbol(symbol)
-            if rows:
-                all_rows.extend(rows)
-            else:
-                self.recovery.append({"symbol": symbol, "reason": "no_yfinance_data"})
 
-            if i % 50 == 0 and i > 0:
-                logger.info(f"[FinancialResults] yfinance progress: {i}/{len(symbols)}")
-            time.sleep(max(0.5, cfg.API_DELAY))
+        with ThreadPoolExecutor(max_workers=n_workers) as ex:
+            futures = {ex.submit(self._fetch_yfinance_symbol, sym): sym for sym in symbols}
+            for fut in progress(as_completed(futures), total=len(futures), desc="yfinance fetch"):
+                sym = futures[fut]
+                try:
+                    rows = fut.result()
+                    if rows:
+                        all_rows.extend(rows)
+                    else:
+                        self.recovery.append({"symbol": sym, "reason": "no_yfinance_data"})
+                except Exception as e:
+                    self.recovery.append({"symbol": sym, "reason": str(e)})
 
         if self.recovery:
             self._save_recovery()
@@ -203,6 +227,8 @@ class FinancialResultsEngine:
             import yfinance as yf
             ticker = yf.Ticker(f"{symbol}.NS")
             income = ticker.quarterly_income_stmt
+            # Per-worker rate limit: total rate ≈ n_workers / sleep_per_worker
+            time.sleep(max(0.3, cfg.API_DELAY / cfg.MAX_CONCURRENCY))
             if income is None or income.empty:
                 return []
 
@@ -270,7 +296,13 @@ class FinancialResultsEngine:
 
 
 if __name__ == "__main__":
-    engine = FinancialResultsEngine(max_symbols=None)
+    import sys as _sys
+    # Pass --full to run full yfinance batch (overnight only)
+    full_run = "--full" in _sys.argv
+    engine = FinancialResultsEngine(
+        max_symbols=None,
+        yfinance_cap=None if full_run else 100,
+    )
     success = engine.run()
     if OUTPUT_PATH.exists():
         df = pd.read_csv(OUTPUT_PATH)

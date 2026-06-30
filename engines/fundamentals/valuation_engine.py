@@ -19,6 +19,7 @@ Guardrails:
 
 import shutil
 import math
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional
 import pandas as pd
@@ -26,6 +27,7 @@ import numpy as np
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
+from engines.common.progress import progress
 
 logger = get_logger(__name__)
 
@@ -86,8 +88,9 @@ class ValuationEngine:
         """Compute trailing 12-month (TTM) revenue and profit per symbol."""
         results = results.sort_values(["symbol", "date"])
         ttm_rows = []
+        groups = list(results.groupby("symbol"))
 
-        for symbol, grp in results.groupby("symbol"):
+        for symbol, grp in progress(groups, desc="Computing TTM"):
             last4 = grp.tail(4)
             revenue_ttm = last4["revenue_cr"].sum() if "revenue_cr" in last4.columns else None
             profit_ttm  = last4["net_profit_cr"].sum() if "net_profit_cr" in last4.columns else None
@@ -117,27 +120,31 @@ class ValuationEngine:
         return pd.DataFrame(ttm_rows)
 
     def _load_prices(self, symbols: list[str]) -> pd.DataFrame:
-        """Load latest close price from stock history cache."""
-        rows = []
-        for symbol in symbols:
+        """Load latest close price from stock history cache using parallel file reads."""
+        def _read_one(symbol: str) -> dict:
             cache_file = STOCK_CACHE / f"{symbol}.csv"
             if not cache_file.exists():
-                rows.append({"symbol": symbol, "latest_close": None})
-                continue
+                return {"symbol": symbol, "latest_close": None}
             try:
                 df = pd.read_csv(cache_file, usecols=["close", "date"] if True else ["Close", "Date"])
                 close_col = "close" if "close" in df.columns else "Close"
                 if close_col not in df.columns or df.empty:
-                    rows.append({"symbol": symbol, "latest_close": None})
-                    continue
+                    return {"symbol": symbol, "latest_close": None}
                 latest_close = df[close_col].iloc[-1]
-                # G-P-01: no negative prices
-                if latest_close <= 0:
-                    rows.append({"symbol": symbol, "latest_close": None})
-                else:
-                    rows.append({"symbol": symbol, "latest_close": float(latest_close)})
+                if latest_close <= 0:  # G-P-01
+                    return {"symbol": symbol, "latest_close": None}
+                return {"symbol": symbol, "latest_close": float(latest_close)}
             except Exception:
-                rows.append({"symbol": symbol, "latest_close": None})
+                return {"symbol": symbol, "latest_close": None}
+
+        n_workers = min(cfg.MAX_CONCURRENCY, max(cfg.MIN_CONCURRENCY, len(symbols)))
+        rows = [None] * len(symbols)
+
+        with ThreadPoolExecutor(max_workers=n_workers) as ex:
+            futures = {ex.submit(_read_one, sym): i for i, sym in enumerate(symbols)}
+            for fut in progress(as_completed(futures), total=len(futures), desc="Loading prices"):
+                rows[futures[fut]] = fut.result()
+
         return pd.DataFrame(rows)
 
     def _compute_ratios(self, df: pd.DataFrame) -> pd.DataFrame:
