@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #0A0D14;
+  --bg-surface: #141720;
+  --bg-border: #1E2332;
+  --text-primary: #E2E8F0;
+  --text-muted: #64748B;
+  --score-avoid: #EF4444;
+  --score-neutral: #F59E0B;
+  --score-watchlist: #3B82F6;
+  --score-emerging: #22C55E;
+  --score-strong: #10B981;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: ui-monospace, 'Cascadia Code', 'Fira Code', Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.score-avoid     { color: var(--score-avoid); }
+.score-neutral   { color: var(--score-neutral); }
+.score-watchlist { color: var(--score-watchlist); }
+.score-emerging  { color: var(--score-emerging); }
+.score-strong    { color: var(--score-strong); }
+
+.bg-surface { background-color: var(--bg-surface); }
+.border-platform { border-color: var(--bg-border); }
