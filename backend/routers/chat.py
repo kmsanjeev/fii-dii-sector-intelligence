@@ -20,7 +20,7 @@ from pydantic import BaseModel
 from engines.common.logger import get_logger
 
 logger = get_logger(__name__)
-router = APIRouter()
+router = APIRouter(prefix="/api")
 
 # In-memory session store: {session_id: (ChatEngine, last_used_ts)}
 _sessions: dict[str, tuple] = {}

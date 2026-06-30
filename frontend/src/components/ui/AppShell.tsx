@@ -12,6 +12,7 @@ const NAV = [
   { path: '/participant',label: 'Participant' },
   { path: '/corporate',  label: 'Corporate' },
   { path: '/chat',       label: 'AI Chat' },
+  { path: '/data',       label: 'Data Control' },
   { path: '/settings',   label: 'Settings' },
 ]
 

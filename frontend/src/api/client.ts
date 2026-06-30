@@ -73,3 +73,5 @@ export const fetchCatalysts = () =>
 export const fetchAllStocks = (page = 1, per_page = 100) =>
   api.get<{ stocks: Stock[]; total: number; page: number }>(`/stocks?page=${page}&per_page=${per_page}`).then(r => r.data)
 export const fetchHealth = () => api.get('/health').then(r => r.data)
+export const fetchDataStatus = () => api.get('/data/status').then(r => r.data)
+export const fetchEngineList = () => api.get('/data/engines').then(r => r.data)
