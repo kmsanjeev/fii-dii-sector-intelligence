@@ -4,6 +4,11 @@ Single source of truth for paths and runtime settings.
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env from project root — makes TELEGRAM_BOT_TOKEN, ANTHROPIC_API_KEY etc.
+# available via os.getenv() in every engine without manual shell export.
+load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=False)
 
 # ==========================================================
 # PROJECT ROOT
