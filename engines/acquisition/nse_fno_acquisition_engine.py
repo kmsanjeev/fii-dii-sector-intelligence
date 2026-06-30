@@ -133,11 +133,11 @@ async def process_day(
         if out.exists():
             return "SKIPPED"
 
-        # Primary: nselib
-        df = fetch_from_nselib(trade_date)
+        # Primary: nselib — run in thread so it doesn't block the event loop
+        df = await asyncio.to_thread(fetch_from_nselib, trade_date)
         source = "NSELIB"
 
-        # Fallback: NSE archive
+        # Fallback: NSE archive (truly async via aiohttp)
         if df.empty:
             df = await fetch_from_archive(session, trade_date)
             source = "ARCHIVE"
@@ -147,7 +147,7 @@ async def process_day(
 
         tmp = out.with_suffix(".tmp")
         try:
-            df.to_csv(tmp, index=False)
+            await asyncio.to_thread(lambda: df.to_csv(tmp, index=False))
             shutil.move(str(tmp), str(out))
         except Exception as e:
             logger.warning(f"Write failed {trade_date}: {e}")
@@ -159,12 +159,15 @@ async def process_day(
         return "DOWNLOADED"
 
 
-async def _download_dates(trade_dates: list) -> dict:
+_PRINT_EVERY = 25   # emit a log line every N completed dates within a year
+
+
+async def _download_dates(trade_dates: list, year: int) -> dict:
     WORKERS = get_optimal_workers()
-    logger.info(f"Using {WORKERS} workers")
+    total = len(trade_dates)
 
     semaphore = asyncio.Semaphore(WORKERS)
-    downloaded = skipped = failed = 0
+    downloaded = skipped = failed = completed = 0
 
     async with aiohttp.ClientSession(headers=HEADERS) as session:
         tasks = [
@@ -173,12 +176,21 @@ async def _download_dates(trade_dates: list) -> dict:
         ]
         for task in asyncio.as_completed(tasks):
             result = await task
+            completed += 1
             if result == "DOWNLOADED":
                 downloaded += 1
             elif result == "SKIPPED":
                 skipped += 1
             else:
                 failed += 1
+
+            if completed % _PRINT_EVERY == 0 or completed == total:
+                pct = int(completed / total * 100) if total else 100
+                print(
+                    f"  {year}: {pct:3d}% | {completed}/{total} dates"
+                    f" | D:{downloaded} S:{skipped} F:{failed}",
+                    flush=True,
+                )
 
     return {"downloaded": downloaded, "skipped": skipped, "failed": failed}
 
@@ -192,16 +204,18 @@ def download_year(year: int) -> dict:
             freq="B",
         )
     ]
-    return asyncio.run(_download_dates(dates))
+    return asyncio.run(_download_dates(dates, year))
 
 
 def download_year_range(start_year: int, end_year: int) -> dict:
     total_downloaded = total_skipped = total_failed = 0
+    total_years = end_year - start_year + 1
 
-    for year in progress(
-        range(start_year, end_year + 1),
-        desc="F&O Backfill",
+    for idx, year in enumerate(
+        progress(range(start_year, end_year + 1), desc="F&O Backfill"),
+        start=1,
     ):
+        print(f"Year {year} ({idx}/{total_years}) ...", flush=True)
         result = download_year(year)
         total_downloaded += result["downloaded"]
         total_skipped    += result["skipped"]
