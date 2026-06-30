@@ -7,12 +7,17 @@ Output: data/NSE/equity_master/company_fundamentals_master.csv
         data/NSE/equity_master/fundamentals_coverage_report.csv
 """
 
+import sys
 import shutil
 import time
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
+
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger

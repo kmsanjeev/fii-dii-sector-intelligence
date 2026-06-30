@@ -22,12 +22,17 @@ Guardrails:
   - Failed symbols -> recovery_queue.csv (G-A-03)
 """
 
+import sys
 import time
 import shutil
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional
 import pandas as pd
+
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger

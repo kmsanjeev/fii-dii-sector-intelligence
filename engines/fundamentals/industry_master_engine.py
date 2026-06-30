@@ -12,11 +12,16 @@ Outputs:
     data/NSE/equity_master/company_fundamentals_master.csv  ← UPDATED in-place
 """
 
+import sys
 import shutil
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
+
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger

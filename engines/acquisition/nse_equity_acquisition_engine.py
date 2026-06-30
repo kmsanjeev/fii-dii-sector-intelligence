@@ -26,9 +26,15 @@ from io import StringIO
 from pathlib import Path
 from nselib import capital_market
 
+import sys
+
 import aiohttp
 import os
 import pandas as pd
+
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 from engines.common.config import (
     NSE_EQUITY_BHAVCOPY_DIR,

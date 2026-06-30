@@ -20,6 +20,7 @@ Derived:
         nse_corporate_actions_derived.parquet
 """
 
+import sys
 from datetime import date
 from datetime import datetime
 from pathlib import Path
@@ -27,6 +28,10 @@ from pathlib import Path
 import pandas as pd
 
 from nselib import capital_market
+
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 from engines.common.config import (
     CORPORATE_ACTION_START_YEAR,
