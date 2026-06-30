@@ -1,8 +1,12 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchDataStatus } from '../api/client'
 
 const BASE = 'http://localhost:8000'
+
+async function killBackend(): Promise<void> {
+  try { await fetch(`${BASE}/api/data/kill`, { method: 'POST' }) } catch {}
+}
 
 type ModuleInfo = {
   label: string
@@ -108,10 +112,12 @@ function ModuleTable({
   title,
   modules,
   pipelineKey,
+  onBusyChange,
 }: {
   title: string
   modules: Record<string, ModuleInfo>
   pipelineKey: string
+  onBusyChange?: (busy: boolean) => void
 }) {
   const [running, setRunning]             = useState<string | null>(null)
   const [logs, setLogs]                   = useState<Record<string, string[]>>({})
@@ -120,24 +126,40 @@ function ModuleTable({
   const [pipeRunning, setPipeRunning]     = useState(false)
   const [pipeLogs, setPipeLogs]           = useState<string[]>([])
   const [pipeProgress, setPipeProgress]   = useState<ProgressInfo | null>(null)
-  const logRef  = useRef<HTMLDivElement>(null)
-  const pipeRef = useRef<HTMLDivElement>(null)
+  const logRef   = useRef<HTMLDivElement>(null)
+  const pipeRef  = useRef<HTMLDivElement>(null)
+  const activeEs = useRef<EventSource | null>(null)
+
+  const busy = running !== null || pipeRunning
+
+  useEffect(() => { onBusyChange?.(busy) }, [busy])
 
   function streamEngine(key: string, onLine: (line: string) => void, onProgress: (p: ProgressInfo) => void, onDone: () => void) {
+    activeEs.current?.close()
     const es = new EventSource(`${BASE}/api/data/run/${key}`)
+    activeEs.current = es
     es.onmessage = (e) => {
       try {
         const data = JSON.parse(e.data)
+        if (data.ping) return                          // keepalive — ignore
         if (data.type === 'progress') {
           const p = parseProgress(data)
           if (p) onProgress(p)
         } else if (data.line !== undefined) {
           onLine(data.line as string)
         }
-        if (data.done || data.all_done) { es.close(); onDone() }
+        if (data.done || data.all_done) { es.close(); activeEs.current = null; onDone() }
       } catch {}
     }
-    es.onerror = () => { es.close(); onDone() }
+    es.onerror = () => { es.close(); activeEs.current = null; onDone() }
+  }
+
+  function stopAll() {
+    activeEs.current?.close()
+    activeEs.current = null
+    killBackend()
+    setRunning(null)
+    setPipeRunning(false)
   }
 
   function runEngine(engineKey: string) {
@@ -174,7 +196,6 @@ function ModuleTable({
   const okCount = Object.values(modules).filter(m => m.status === 'OK').length
   const total   = Object.keys(modules).length
   const pct     = total > 0 ? Math.round((okCount / total) * 100) : 0
-  const busy    = running !== null || pipeRunning
 
   return (
     <div style={{ marginBottom: 32 }}>
@@ -192,20 +213,35 @@ function ModuleTable({
           }} />
         </div>
         <span style={{ color: '#64748B', fontSize: 11, whiteSpace: 'nowrap' }}>{okCount}/{total} ({pct}%)</span>
-        <button
-          onClick={runSectionPipeline}
-          disabled={busy}
-          style={{
-            padding: '3px 14px', borderRadius: 4,
-            border: '1px solid #22C55E',
-            backgroundColor: pipeRunning ? '#22C55E22' : 'transparent',
-            color: '#22C55E',
-            cursor: busy ? 'not-allowed' : 'pointer',
-            fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap',
-          }}
-        >
-          {pipeRunning ? 'Running...' : 'Run Pipeline'}
-        </button>
+        {busy ? (
+          <button
+            onClick={stopAll}
+            style={{
+              padding: '3px 14px', borderRadius: 4,
+              border: '1px solid #EF4444',
+              backgroundColor: '#EF444422',
+              color: '#EF4444',
+              cursor: 'pointer',
+              fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap',
+            }}
+          >
+            Stop
+          </button>
+        ) : (
+          <button
+            onClick={runSectionPipeline}
+            style={{
+              padding: '3px 14px', borderRadius: 4,
+              border: '1px solid #22C55E',
+              backgroundColor: 'transparent',
+              color: '#22C55E',
+              cursor: 'pointer',
+              fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap',
+            }}
+          >
+            Run Pipeline
+          </button>
+        )}
       </div>
 
       {/* Module table */}
@@ -355,19 +391,41 @@ export function DataControlPage() {
     staleTime: 30000,
   })
 
-  const [pipeRunning, setPipeRunning]   = useState(false)
-  const [pipeLogs, setPipeLogs]         = useState<string[]>([])
-  const [pipeProgress, setPipeProgress] = useState<ProgressInfo | null>(null)
-  const pipeRef = useRef<HTMLDivElement>(null)
+  const [pipeRunning, setPipeRunning]     = useState(false)
+  const [pipeLogs, setPipeLogs]           = useState<string[]>([])
+  const [pipeProgress, setPipeProgress]   = useState<ProgressInfo | null>(null)
+  const [sectionBusy, setSectionBusy]     = useState<Record<string, boolean>>({})
+  const pipeRef  = useRef<HTMLDivElement>(null)
+  const activeEs = useRef<EventSource | null>(null)
+
+  // Kill any stale subprocess from a previous session on page load
+  useEffect(() => { killBackend() }, [])
+
+  const anythingRunning = pipeRunning || Object.values(sectionBusy).some(Boolean)
+
+  const handleSectionBusy = useCallback((section: string) => (busy: boolean) => {
+    setSectionBusy(prev => ({ ...prev, [section]: busy }))
+  }, [])
+
+  function stopAll() {
+    activeEs.current?.close()
+    activeEs.current = null
+    killBackend()
+    setPipeRunning(false)
+  }
 
   function runFullPipeline() {
+    killBackend()          // clear any stale process before starting
     setPipeRunning(true)
     setPipeLogs(['Starting full intelligence pipeline...'])
     setPipeProgress(null)
+    activeEs.current?.close()
     const es = new EventSource(`${BASE}/api/data/run/pipeline_all`)
+    activeEs.current = es
     es.onmessage = (e) => {
       try {
         const data = JSON.parse(e.data)
+        if (data.ping) return                        // keepalive — ignore
         if (data.type === 'progress') {
           const p = parseProgress(data)
           if (p) setPipeProgress(p)
@@ -375,10 +433,10 @@ export function DataControlPage() {
           setPipeLogs(prev => [...prev, data.line as string])
           if (pipeRef.current) pipeRef.current.scrollTop = pipeRef.current.scrollHeight
         }
-        if (data.all_done) { es.close(); setPipeRunning(false); refetch() }
+        if (data.all_done) { es.close(); activeEs.current = null; setPipeRunning(false); refetch() }
       } catch {}
     }
-    es.onerror = () => { es.close(); setPipeRunning(false) }
+    es.onerror = () => { es.close(); activeEs.current = null; setPipeRunning(false) }
   }
 
   if (isLoading) return (
@@ -413,15 +471,30 @@ export function DataControlPage() {
           >
             Refresh Status
           </button>
+          {anythingRunning && (
+            <button
+              onClick={stopAll}
+              style={{
+                padding: '4px 18px', borderRadius: 4,
+                border: '1px solid #EF4444',
+                backgroundColor: '#EF444433',
+                color: '#EF4444',
+                cursor: 'pointer',
+                fontSize: 11, fontWeight: 700, letterSpacing: 1,
+              }}
+            >
+              STOP
+            </button>
+          )}
           <button
             onClick={runFullPipeline}
-            disabled={pipeRunning}
+            disabled={anythingRunning}
             style={{
               padding: '4px 14px', borderRadius: 4,
               border: '1px solid #22C55E',
               backgroundColor: pipeRunning ? '#22C55E22' : 'transparent',
               color: '#22C55E',
-              cursor: pipeRunning ? 'not-allowed' : 'pointer',
+              cursor: anythingRunning ? 'not-allowed' : 'pointer',
               fontSize: 11, fontWeight: 700,
             }}
           >
@@ -459,8 +532,8 @@ export function DataControlPage() {
         </div>
       </div>
 
-      <ModuleTable title="DATA ACQUISITION"   modules={acquisition}  pipelineKey="pipeline_acquisition"  />
-      <ModuleTable title="INTELLIGENCE OUTPUTS" modules={intelligence} pipelineKey="pipeline_intelligence" />
+      <ModuleTable title="DATA ACQUISITION"     modules={acquisition}  pipelineKey="pipeline_acquisition"  onBusyChange={handleSectionBusy('acquisition')} />
+      <ModuleTable title="INTELLIGENCE OUTPUTS" modules={intelligence} pipelineKey="pipeline_intelligence" onBusyChange={handleSectionBusy('intelligence')} />
 
       {/* Full pipeline log */}
       {pipeLogs.length > 0 && (

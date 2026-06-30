@@ -30,6 +30,52 @@ from engines.common.logger import get_logger
 logger = get_logger("data_ops")
 router = APIRouter(prefix="/api/data", tags=["data_ops"])
 
+# ── Process lifecycle management ──────────────────────────────────────────────
+# Only one engine subprocess runs at a time.  _current_run_id is incremented on
+# every kill so that orphaned SSE generators detect they are stale and exit.
+
+_running_proc: "subprocess.Popen | None" = None
+_proc_lock    = threading.Lock()
+_current_run_id: int = 0
+
+
+def _kill_running() -> bool:
+    """Terminate the current subprocess (if any). Returns True if something was killed."""
+    global _running_proc, _current_run_id
+    _current_run_id += 1          # invalidates all active SSE generators
+    killed = False
+    with _proc_lock:
+        if _running_proc is not None and _running_proc.poll() is None:
+            try:
+                _running_proc.kill()
+                _running_proc.wait(timeout=5)
+            except Exception:
+                pass
+            killed = True
+        _running_proc = None
+    return killed
+
+
+def _register_proc(proc: "subprocess.Popen") -> None:
+    global _running_proc
+    with _proc_lock:
+        _running_proc = proc
+
+
+@router.post("/kill")
+def kill_engine():
+    """Stop any currently running engine subprocess."""
+    killed = _kill_running()
+    return {"status": "killed" if killed else "nothing_running"}
+
+
+@router.get("/running")
+def get_running_status():
+    """Returns whether an engine subprocess is currently active."""
+    with _proc_lock:
+        active = _running_proc is not None and _running_proc.poll() is None
+    return {"running": active, "run_id": _current_run_id}
+
 # ── Engine registry ───────────────────────────────────────────────────────────
 
 ENGINES = {
@@ -341,7 +387,17 @@ def list_engines():
 # ── SSE engine runner ─────────────────────────────────────────────────────────
 
 def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
-    """Spawn engine subprocess and yield SSE lines from its stdout/stderr."""
+    """Spawn engine subprocess and yield SSE lines from its stdout/stderr.
+
+    Calls _kill_running() first so any stale subprocess is terminated before
+    the new one starts.  Each generator captures its run_id at creation time
+    and exits immediately if _current_run_id advances (i.e. a newer run or a
+    manual kill arrived while this generator was mid-stream).
+    """
+    # Kill any stale process and capture our run-slot id
+    _kill_running()
+    my_run_id = _current_run_id
+
     if engine_name == "pipeline_all":
         engines_to_run = PIPELINE_SEQUENCE
     elif engine_name == "pipeline_acquisition":
@@ -352,6 +408,11 @@ def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
         engines_to_run = [engine_name]
 
     for eng in engines_to_run:
+        # Bail out if a newer run or kill arrived
+        if _current_run_id != my_run_id:
+            yield f"data: {json.dumps({'line': 'Stopped.', 'done': True})}\n\n"
+            return
+
         if eng not in ENGINES:
             yield f"data: {json.dumps({'line': f'ERROR: Unknown engine {eng}'})}\n\n"
             continue
@@ -408,17 +469,22 @@ def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
                 env={**os.environ, "PYTHONUNBUFFERED": "1"},
                 bufsize=1,
             )
+            _register_proc(proc)
             t = threading.Thread(target=_reader, args=(proc,), daemon=True)
             t.start()
 
             while True:
+                # Check for external kill / newer run before blocking
+                if _current_run_id != my_run_id:
+                    yield f"data: {json.dumps({'line': 'Stopped by user.', 'done': True})}\n\n"
+                    return
                 try:
-                    item = q.get(timeout=120)
+                    item = q.get(timeout=2)
                     yield f"data: {json.dumps(item)}\n\n"
                     if item.get("done"):
                         break
                 except queue.Empty:
-                    yield f"data: {json.dumps({'line': '... still running ...'})}\n\n"
+                    yield f"data: {json.dumps({'ping': True})}\n\n"
         except Exception as exc:
             yield f"data: {json.dumps({'line': f'ERROR launching process: {exc}', 'done': True, 'exit_code': -1})}\n\n"
 
