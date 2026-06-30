@@ -18,7 +18,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from backend.services import data_loader
-from backend.routers import market, sectors, stocks, participant, corporate
+from backend.routers import market, sectors, stocks, participant, corporate, chat
 from backend.ws.live_ticker import live_ticker_endpoint
 
 # ── App ───────────────────────────────────────────────────────────────────────
@@ -37,7 +37,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"],
     allow_credentials=True,
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["*"],
 )
 
@@ -55,6 +55,7 @@ app.include_router(sectors.router)
 app.include_router(stocks.router)
 app.include_router(participant.router)
 app.include_router(corporate.router)
+app.include_router(chat.router)
 
 
 # ── WebSocket ─────────────────────────────────────────────────────────────────
