@@ -6,6 +6,109 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 3.5
+
+Phase 12 -- ML Intelligence Layer
+
+Date: 2026-06-30
+
+Status: Completed
+
+---
+
+## Summary
+
+Built the complete ML Intelligence Layer (Phase 12) in `engines/ml/` -- 4 engines:
+feature engineering, accumulation model (XGBoost), bull run ensemble (LightGBM+XGBoost),
+and daily inference scorer. Produces 2 new intelligence CSVs and saves trained model files.
+
+---
+
+## Engines Built
+
+| File | Purpose |
+|------|---------|
+| engines/ml/feature_engineering.py | Builds 24-feature snapshot matrix from 6 intelligence CSVs |
+| engines/ml/accumulation_model.py | XGBoost binary classifier, target: label_enc >= 3 |
+| engines/ml/bull_run_model.py | LightGBM (0.6) + XGBoost (0.4) ensemble, multi-class |
+| engines/ml/ml_scorer.py | Daily orchestrator: rebuild features + load models + score all |
+
+## Output Files
+
+| Output | Description |
+|--------|-------------|
+| data/intelligence/ml_features/feature_matrix.parquet | 2441 symbols x 24 features |
+| data/intelligence/ml_accumulation_scores.csv | XGBoost binary scores (0-100) |
+| data/intelligence/ml_bull_run_scores.csv | Ensemble scores + per-class probabilities |
+| data/intelligence/ml_shap_values.csv | SHAP feature importance for top 100 symbols |
+| data/intelligence/ml_scores_combined.csv | Daily combined output |
+| data/intelligence/ml_features/models/ | Saved model files (XGBoost .json, LightGBM .txt) |
+
+## Feature Groups (24 features)
+
+Phase 8B scores: bull_run_score, price_score, sector_flow_score, deal_score,
+                 corporate_score, regime_multiplier
+Price:           ret_30d, ret_90d, ret_365d, vol_ratio
+Sector:          sector_FII_flow, sector_combined_score, rotation_signal_enc (ordinal 0-5)
+Participant:     part_FII_flow, part_DII_flow, part_smart_money, regime_enc (ordinal 0-4)
+Corporate:       corp_confidence, deal_net_cr
+
+## Packages Installed
+
+xgboost==3.2.0, lightgbm==4.6.0, scikit-learn==1.9.0, shap==0.51.0
+pyarrow upgraded 15.0.0 -> 24.0.0 (numpy 2.x compatibility)
+pandas upgraded 2.2.0 -> 3.0.3 (sklearn dependency)
+
+## Known Limitations (by design)
+
+- Target is score-based proxy (not actual forward price return) until bhavcopy
+  time-series target generation is available in a future phase
+- TimeSeriesSplit CV on snapshot data is artificial; true CV requires time-series features
+- ML scores are correlated with rule-based scores (same underlying features)
+
+---
+
+# Version 3.4
+
+Phase 11 — React GUI
+
+Date: 2026-06-30
+
+Status: Completed
+
+---
+
+## Summary
+
+Built the complete React GUI (Phase 11) in `frontend/` — 10 pages, 5 platform components,
+TypeScript build clean, Vite proxy to FastAPI backend.
+
+---
+
+## Pages Built
+
+| Page | Route | Purpose |
+|------|-------|---------|
+| Dashboard | / | Regime, flows, top sectors, EMERGING watchlist |
+| Sectors | /sectors | All 29 sectors grouped by rotation_signal |
+| Sector Detail | /sectors/:sector | Sector scores + top 10 stocks |
+| Watchlist | /watchlist | Paginated 2441 symbols table with label filter |
+| Stock Detail | /stocks/:symbol | 4-factor gauges, price performance, deal signals |
+| Participant | /participant | FII/DII/PRO/CLIENT cards + 90D area chart |
+| Corporate | /corporate | Deals table + upcoming catalysts |
+| AI Chat | /chat | Phase 14 placeholder |
+| Settings | /settings | Freshness, alert config, platform info |
+
+## Platform Components
+
+ScoreGauge, CapFlowBadge, FlowCard, RegimeBanner, SectorTile, AppShell
+
+## Tech Stack
+
+React 18 + TypeScript + Vite + Tailwind CSS + Zustand + TanStack Query + Recharts
+
+---
+
 # Version 3.3
 
 Phase 10 — FastAPI Backend

@@ -221,3 +221,14 @@ __marimo__/
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
+
+# Data files (G-SYS-02: never commit raw or derived data)
+data/**/*.csv
+data/**/*.parquet
+data/**/*.json
+data/**/*.pkl
+data/**/*.npy
+data/**/*.npz
+data/intelligence/ml_features/models/
+logs/
+*.log
