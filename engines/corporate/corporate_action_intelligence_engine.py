@@ -40,6 +40,7 @@ sys.path.insert(0, str(ROOT))
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
+from engines.common.progress import progress
 
 logger = get_logger("corporate_action_intelligence")
 
@@ -167,7 +168,8 @@ class CorporateActionIntelligenceEngine:
         if not CORP_ACTIONS_DIR.exists():
             return pd.DataFrame()
         all_dfs = []
-        for f in sorted(CORP_ACTIONS_DIR.glob("*.csv")):
+        files = sorted(CORP_ACTIONS_DIR.glob("*.csv"))
+        for f in progress(files, desc="Loading action files"):
             if not f.stem.isdigit():
                 continue
             try:

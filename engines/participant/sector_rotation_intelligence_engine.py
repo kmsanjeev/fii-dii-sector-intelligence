@@ -285,7 +285,8 @@ class SectorRotationIntelligenceEngine:
               f"{'Combined':>9} {'Signal':<22} {'Align'}")
         print("-" * 90)
         for _, r in snap.iterrows():
-            print(f"{int(r.get('combined_rank', 0)):<5} "
+            _rank = r.get('combined_rank')
+            print(f"{0 if pd.isna(_rank) else int(_rank):<5} "
                   f"{r['sector']:<22} "
                   f"{r.get('FII_flow_score', 0):>+7.1f} "
                   f"{r.get('Smart_Money_Score', 0):>+7.1f} "

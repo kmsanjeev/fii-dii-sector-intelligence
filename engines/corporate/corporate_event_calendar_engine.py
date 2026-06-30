@@ -31,6 +31,7 @@ sys.path.insert(0, str(ROOT))
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
+from engines.common.progress import progress
 
 logger = get_logger("corporate_event_calendar")
 
@@ -154,16 +155,20 @@ class CorporateEventCalendarEngine:
     def _download_range(self, start: datetime, end: datetime) -> list[dict]:
         from nselib import capital_market
 
-        rows = []
+        chunks = []
         cursor = start
         while cursor <= end:
             chunk_end = min(cursor + timedelta(days=30), end)
-            from_str  = _to_nse_fmt(cursor)
-            to_str    = _to_nse_fmt(chunk_end)
+            chunks.append((cursor, chunk_end))
+            cursor = chunk_end + timedelta(days=1)
+
+        rows = []
+        for i, (chunk_start, chunk_end) in enumerate(progress(chunks, desc="Event calendar chunks")):
+            from_str = _to_nse_fmt(chunk_start)
+            to_str   = _to_nse_fmt(chunk_end)
             chunk_rows = self._fetch_chunk(capital_market, from_str, to_str)
             rows.extend(chunk_rows)
-            cursor = chunk_end + timedelta(days=1)
-            if cursor <= end:
+            if i < len(chunks) - 1:
                 time.sleep(cfg.API_DELAY)
         return rows
 

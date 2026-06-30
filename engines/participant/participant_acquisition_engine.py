@@ -28,6 +28,7 @@ sys.path.insert(0, str(ROOT))
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
+from engines.common.progress import progress
 
 logger = get_logger("participant_acquisition")
 
@@ -175,7 +176,7 @@ class ParticipantAcquisitionEngine:
                     len(missing_dates), missing_dates[0], missing_dates[-1])
 
         new_rows = []
-        for date_str in missing_dates:
+        for date_str in progress(missing_dates, desc="F&O dates"):
             nse_fmt = _to_nse_fmt(date_str)
             row = self._fetch_fno_day(derivatives, date_str, nse_fmt)
             if row:
@@ -291,7 +292,7 @@ class ParticipantAcquisitionEngine:
                     len(missing_dates), missing_dates[0], missing_dates[-1])
 
         new_rows = []
-        for date_str in missing_dates:
+        for date_str in progress(missing_dates, desc="Cash dates"):
             nse_fmt = _to_nse_fmt(date_str)
             row = self._fetch_cash_day(capital_market, date_str, nse_fmt)
             if row:
