@@ -6,6 +6,40 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 3.8.2
+
+Progress bars + Phase 6C pd.NA crash fix
+
+Date: 2026-06-30
+
+Status: Completed
+
+---
+
+## Summary
+
+Added `tqdm` progress bars to engines that process large loops (Phases 5A, 7B, 7C)
+and fixed a `TypeError` crash in Phase 6C when printing the sector rotation table.
+
+## Changes
+
+- `participant_acquisition_engine.py` (5A): progress bars on F&O and cash date loops
+- `corporate_action_intelligence_engine.py` (7C): progress bar on 28-file CSV loading loop
+- `corporate_event_calendar_engine.py` (7B): progress bar on chunked 30-day download loop
+- `sector_rotation_intelligence_engine.py` (6C): fixed `int(pd.NA)` TypeError in
+  `_print_summary()` -- replaced `or 0` chain with explicit `pd.isna()` guard
+
+## Verification
+
+Full stack run (Phases 5–14) completed successfully with all phases PASS.
+Phase 6C no longer crashes when combined_rank contains pd.NA (nullable Int64).
+
+## Commit
+
+`768c662` -- Add progress bars to Phases 5A/7B/7C and fix Phase 6C pd.NA crash
+
+---
+
 # Version 3.8.1
 
 Phase 16B Fix -- AnnouncementFetcher bulk API rewrite
