@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, Component, type ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   createChart,
@@ -12,6 +12,48 @@ import {
   type Time,
 } from 'lightweight-charts'
 import { api } from '../api/client'
+
+// ── Error boundary (prevents blank page on chart crash) ───────────────────────
+
+class ChartErrorBoundary extends Component<
+  { children: ReactNode },
+  { error: string | null }
+> {
+  constructor(props: { children: ReactNode }) {
+    super(props)
+    this.state = { error: null }
+  }
+  static getDerivedStateFromError(e: unknown) {
+    return { error: e instanceof Error ? e.message : String(e) }
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          justifyContent: 'center', height: 400, gap: 12,
+          color: '#EF4444', fontSize: 13,
+        }}>
+          <span style={{ fontSize: 20 }}>Chart Error</span>
+          <span style={{ color: '#64748B', fontSize: 11, maxWidth: 400, textAlign: 'center' }}>
+            {this.state.error}
+          </span>
+          <button
+            onClick={() => this.setState({ error: null })}
+            style={{
+              marginTop: 8, padding: '6px 18px', borderRadius: 4,
+              border: '1px solid #EF4444', background: 'transparent',
+              color: '#EF4444', cursor: 'pointer', fontSize: 12,
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -144,8 +186,8 @@ export function ChartsPage() {
 
   const chartRef   = useRef<HTMLDivElement>(null)
   const chartApi   = useRef<IChartApi | null>(null)
-  const candleRef  = useRef<ISeriesApi<'Candlestick'> | null>(null)
-  const volumeRef  = useRef<ISeriesApi<'Histogram'> | null>(null)
+  const candleRef  = useRef<ISeriesApi<'Candlestick', Time> | null>(null)
+  const volumeRef  = useRef<ISeriesApi<'Histogram', Time> | null>(null)
 
   // Symbol autocomplete
   const { data: symbolData } = useQuery({
@@ -205,17 +247,18 @@ export function ChartsPage() {
     })
 
     const volume = chart.addSeries(HistogramSeries, {
-      priceFormat: { type: 'volume' },
+      priceFormat:  { type: 'volume' },
       priceScaleId: 'vol',
-    } as Parameters<typeof chart.addSeries<'Histogram'>>[1])
+    })
 
-    chart.priceScale('vol').applyOptions({
+    // v5: apply scale margins via the series's own priceScale(), not chart.priceScale()
+    volume.priceScale().applyOptions({
       scaleMargins: { top: 0.82, bottom: 0 },
     })
 
     chartApi.current  = chart
-    candleRef.current = candles as unknown as ISeriesApi<'Candlestick'>
-    volumeRef.current = volume as unknown as ISeriesApi<'Histogram'>
+    candleRef.current = candles
+    volumeRef.current = volume
 
     const ro = new ResizeObserver(() => {
       if (chartRef.current) chart.applyOptions({ width: chartRef.current.clientWidth })
@@ -283,6 +326,7 @@ export function ChartsPage() {
   const priceChange = latestBar && prevBar ? ((latestBar.close - prevBar.close) / prevBar.close) * 100 : null
 
   return (
+  <ChartErrorBoundary>
     <div style={{ display: 'flex', gap: 16, height: 'calc(100vh - 120px)' }}>
 
       {/* ── Left: chart area ── */}
@@ -497,5 +541,6 @@ export function ChartsPage() {
         )}
       </div>
     </div>
+  </ChartErrorBoundary>
   )
 }
