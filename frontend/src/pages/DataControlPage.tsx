@@ -150,7 +150,7 @@ function ModuleTable({
         } else if (data.line !== undefined) {
           onLine(data.line as string)
         }
-        if (data.done || data.all_done) { es.close(); activeEs.current = null; onDone() }
+        if (data.all_done) { es.close(); activeEs.current = null; onDone() }
       } catch {}
     }
     es.onerror = () => { es.close(); activeEs.current = null; onDone() }

@@ -424,7 +424,7 @@ def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
     for eng in engines_to_run:
         # Bail out if a newer run or kill arrived
         if _current_run_id != my_run_id:
-            yield f"data: {json.dumps({'line': 'Stopped.', 'done': True})}\n\n"
+            yield f"data: {json.dumps({'line': 'Stopped.', 'all_done': True})}\n\n"
             return
 
         if eng not in ENGINES:
@@ -469,7 +469,7 @@ def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
                         q.put({"line": stripped})
             finally:
                 proc.wait()
-                q.put({"done": True, "exit_code": proc.returncode})
+                q.put({"_done": True, "exit_code": proc.returncode})
 
         try:
             proc = subprocess.Popen(
@@ -490,17 +490,17 @@ def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
             while True:
                 # Check for external kill / newer run before blocking
                 if _current_run_id != my_run_id:
-                    yield f"data: {json.dumps({'line': 'Stopped by user.', 'done': True})}\n\n"
+                    yield f"data: {json.dumps({'line': 'Stopped by user.', 'all_done': True})}\n\n"
                     return
                 try:
                     item = q.get(timeout=2)
+                    if item.get("_done"):
+                        break          # internal sentinel — do not forward to client
                     yield f"data: {json.dumps(item)}\n\n"
-                    if item.get("done"):
-                        break
                 except queue.Empty:
                     yield f"data: {json.dumps({'ping': True})}\n\n"
         except Exception as exc:
-            yield f"data: {json.dumps({'line': f'ERROR launching process: {exc}', 'done': True, 'exit_code': -1})}\n\n"
+            yield f"data: {json.dumps({'line': f'ERROR launching process: {exc}', 'all_done': True, 'exit_code': -1})}\n\n"
 
     yield f"data: {json.dumps({'all_done': True})}\n\n"
 
