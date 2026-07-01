@@ -5,12 +5,13 @@ GET /api/charts/signals  -- intelligence overlays for chart panel
 GET /api/charts/symbols  -- symbol autocomplete list
 GET /api/charts/movers   -- top gainers / losers (live)
 
-Timeframe semantics:
+Data strategy (hybrid):
   5M / 15M / 1H  -- intraday candles via yfinance (max available history)
-  1D             -- daily candles, 1Y history from nselib (~255 bars)
-  1W             -- weekly candles, resampled from 5Y daily data
-  1M             -- monthly candles, resampled from 5Y daily data
-  3M             -- quarterly candles, resampled from 5Y daily data
+  1D / 1W / 1M / 3M -- PRIMARY: bhavcopy parquet cache (full history, 1995+)
+                        TOP-UP:  nselib live bar for today if cache is stale
+                        FALLBACK: nselib 5Y fetch if symbol not in cache
+
+Timeframe = candle resolution, not date range. Max available history always returned.
 """
 
 import sys
@@ -33,33 +34,27 @@ logger = get_logger("charts")
 router = APIRouter(prefix="/api/charts", tags=["charts"])
 
 # ---------------------------------------------------------------------------
-# Paths for intelligence overlays
+# Paths
 # ---------------------------------------------------------------------------
-BULL_RUN   = cfg.INTELLIGENCE_DIR / "bull_run_probability.csv"
-ML_SCORES  = cfg.INTELLIGENCE_DIR / "ml_scores_combined.csv"
-SECTOR_ROT = cfg.INTELLIGENCE_DIR / "sector_rotation_intelligence.csv"
-SHP_CSV    = cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv"
+BULL_RUN      = cfg.INTELLIGENCE_DIR / "bull_run_probability.csv"
+ML_SCORES     = cfg.INTELLIGENCE_DIR / "ml_scores_combined.csv"
+SECTOR_ROT    = cfg.INTELLIGENCE_DIR / "sector_rotation_intelligence.csv"
+SHP_CSV       = cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv"
 EQUITY_MASTER = cfg.NSE_DIR / "equity_master" / "equity_master.csv"
 
 VALID_TIMEFRAMES = {"5M", "15M", "1H", "1D", "1W", "1M", "3M"}
 
-# Intraday timeframes served by yfinance; daily+ served by nselib
-_INTRADAY = {"5M", "15M", "1H"}
-
-# yfinance intervals and max-available periods per intraday timeframe
+_INTRADAY    = {"5M", "15M", "1H"}
 _YF_INTERVAL = {"5M": "5m", "15M": "15m", "1H": "1h"}
 _YF_PERIOD   = {"5M": "7d", "15M": "60d", "1H": "730d"}
 
-# nselib years of history to fetch for resampled timeframes
-_DAILY_YEARS = {"1D": 1, "1W": 5, "1M": 5, "3M": 5}
-
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Shared helpers
 # ---------------------------------------------------------------------------
 
 def _parse_nse_date(d: str) -> str:
-    """Convert NSE date '30-Jun-2026' -> '2026-06-30' for lightweight-charts."""
+    """'30-Jun-2026' -> '2026-06-30'"""
     try:
         return pd.to_datetime(d, format="%d-%b-%Y").strftime("%Y-%m-%d")
     except Exception:
@@ -67,7 +62,7 @@ def _parse_nse_date(d: str) -> str:
 
 
 def _normalize_daily_df(df: pd.DataFrame) -> pd.DataFrame:
-    """Strip rupee columns, rename, numeric-parse, add 'time' string column."""
+    """Strip rupee cols, rename, numeric-parse, produce 'time' col (YYYY-MM-DD)."""
     df = df[[c for c in df.columns if "₹" not in c]]
     col_map = {
         "OpenPrice":           "open",
@@ -89,19 +84,128 @@ def _normalize_daily_df(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def _fetch_daily_data(symbol: str, years: int = 1) -> pd.DataFrame:
-    """Fetch daily OHLCV from nselib for up to `years` years and return normalized df."""
+def _to_bars(df: pd.DataFrame) -> list[dict]:
+    """Convert df with time/open/high/low/close/volume to records list."""
+    cols = ["time", "open", "high", "low", "close", "volume"]
+    return df[cols].to_dict(orient="records")
+
+
+def _resample_bars(df: pd.DataFrame, timeframe: str) -> list[dict]:
+    """Resample daily OHLCV to weekly / monthly / quarterly candles."""
+    df2 = df.copy()
+    df2["_dt"] = pd.to_datetime(df2["time"])
+    df2 = df2.sort_values("_dt").set_index("_dt")
+
+    freq_map = {"1W": "W-FRI", "1M": "ME", "3M": "QE"}
+    freq = freq_map[timeframe]
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        r = df2[["open", "high", "low", "close", "volume"]].resample(freq).agg(
+            open=("open",   "first"),
+            high=("high",   "max"),
+            low=("low",    "min"),
+            close=("close", "last"),
+            volume=("volume", "sum"),
+        ).dropna(subset=["close"])
+
+    r = r[r["open"].notna()].reset_index()
+    r["time"] = r["_dt"].dt.strftime("%Y-%m-%d")
+    return _to_bars(r)
+
+
+# ---------------------------------------------------------------------------
+# Cache read (primary source for 1D+)
+# ---------------------------------------------------------------------------
+
+def _read_cache(symbol: str) -> pd.DataFrame | None:
+    """
+    Read per-symbol parquet from stock_history cache.
+    Returns df with columns [time, open, high, low, close, volume] sorted asc.
+    Returns None if symbol not in cache.
+    """
+    cache_path = cfg.STOCK_HISTORY_CACHE / f"{symbol.upper()}.parquet"
+    if not cache_path.exists():
+        return None
+
+    try:
+        df = pd.read_parquet(cache_path)
+    except Exception as e:
+        logger.warning(f"[cache] Failed to read {symbol}: {e}")
+        return None
+
+    # Keep only needed columns; 'date' is string 'YYYY-MM-DD' in the cache
+    df = df[["date", "open", "high", "low", "close", "volume"]].copy()
+    df = df.dropna(subset=["open", "close"])
+    df = df.sort_values("date")
+    df = df.drop_duplicates(subset=["date"], keep="last")
+    df = df.rename(columns={"date": "time"})
+
+    # Numeric safety
+    for col in ["open", "high", "low", "close"]:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+    df["volume"] = pd.to_numeric(df["volume"], errors="coerce").fillna(0).astype(int)
+    df = df.dropna(subset=["open", "close"])
+
+    return df
+
+
+# ---------------------------------------------------------------------------
+# nselib live top-up (fills today's bar when cache is stale by 1 day)
+# ---------------------------------------------------------------------------
+
+def _topup_live(symbol: str, df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Append today's bar from nselib if the cache doesn't have it yet.
+    Best-effort: returns df unchanged on any error.
+    """
+    today_str = date.today().strftime("%Y-%m-%d")
+    if today_str in df["time"].values:
+        return df  # cache already current
+
+    # Skip weekends — NSE closed
+    if date.today().weekday() >= 5:
+        return df
+
+    try:
+        from nselib import capital_market
+        fmt = "%d-%m-%Y"
+        from_dt = (date.today() - timedelta(days=7)).strftime(fmt)
+        to_dt   = date.today().strftime(fmt)
+        live_df = capital_market.price_volume_data(
+            symbol.upper(), from_date=from_dt, to_date=to_dt
+        )
+        if live_df is None or live_df.empty:
+            return df
+
+        live_df = _normalize_daily_df(live_df)
+        live_df = live_df[["time", "open", "high", "low", "close", "volume"]]
+
+        combined = pd.concat([df, live_df], ignore_index=True)
+        combined = combined.drop_duplicates(subset=["time"], keep="last")
+        combined = combined.sort_values("time").reset_index(drop=True)
+        logger.info(f"[charts] Live top-up for {symbol}: +{len(live_df)} bars")
+        return combined
+
+    except Exception as e:
+        logger.debug(f"[charts] Top-up skipped for {symbol}: {e}")
+        return df
+
+
+# ---------------------------------------------------------------------------
+# nselib fallback (when symbol not in cache)
+# ---------------------------------------------------------------------------
+
+def _fetch_nselib(symbol: str, years: int = 5) -> pd.DataFrame:
+    """Fetch N years of daily OHLCV from nselib. Used when cache is absent."""
     from nselib import capital_market
 
-    if years <= 1:
-        kwargs: dict = {"period": "1Y"}
-    else:
-        today = date.today()
-        fmt = "%d-%m-%Y"
-        kwargs = {
-            "from_date": (today - timedelta(days=years * 365 + 2)).strftime(fmt),
-            "to_date":   today.strftime(fmt),
-        }
+    today = date.today()
+    fmt   = "%d-%m-%Y"
+    kwargs: dict = {
+        "from_date": (today - timedelta(days=years * 365 + 2)).strftime(fmt),
+        "to_date":   today.strftime(fmt),
+    }
 
     df = None
     for attempt in range(3):
@@ -116,32 +220,13 @@ def _fetch_daily_data(symbol: str, years: int = 1) -> pd.DataFrame:
     if df is None or df.empty:
         raise HTTPException(status_code=404, detail=f"No data for {symbol}")
 
-    return _normalize_daily_df(df)
+    df = _normalize_daily_df(df)
+    return df[["time", "open", "high", "low", "close", "volume"]]
 
 
-def _resample_bars(df: pd.DataFrame, timeframe: str) -> list[dict]:
-    """Resample daily OHLCV bars to weekly / monthly / quarterly candles."""
-    df2 = df.copy()
-    df2["_dt"] = pd.to_datetime(df2["time"])
-    df2 = df2.sort_values("_dt").set_index("_dt")
-
-    freq_map = {"1W": "W-FRI", "1M": "ME", "3M": "QE"}
-    freq = freq_map[timeframe]
-
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        r = df2[["open", "high", "low", "close", "volume"]].resample(freq).agg(
-            open=("open", "first"),
-            high=("high", "max"),
-            low=("low",  "min"),
-            close=("close", "last"),
-            volume=("volume", "sum"),
-        ).dropna(subset=["close"])
-
-    r = r[r["open"].notna()].reset_index()
-    r["time"] = r["_dt"].dt.strftime("%Y-%m-%d")
-    return r[["time", "open", "high", "low", "close", "volume"]].to_dict(orient="records")
-
+# ---------------------------------------------------------------------------
+# Intraday via yfinance
+# ---------------------------------------------------------------------------
 
 def _fetch_intraday(symbol: str, timeframe: str) -> list[dict]:
     """Fetch intraday bars via yfinance for 5M / 15M / 1H timeframes."""
@@ -173,25 +258,21 @@ def _fetch_intraday(symbol: str, timeframe: str) -> list[dict]:
     if df is None or df.empty:
         raise HTTPException(status_code=404, detail=f"No intraday data for {symbol}")
 
-    # Flatten MultiIndex columns that some yfinance versions produce
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = df.columns.get_level_values(0)
 
     df = df.reset_index()
 
-    # Rename: Datetime / Date -> dt; OHLCV -> lowercase
     col_map: dict = {}
     for c in df.columns:
         cl = str(c).lower()
-        if cl in ("datetime", "date", "index"):
-            col_map[c] = "dt"
-        elif cl == "open":    col_map[c] = "open"
-        elif cl == "high":    col_map[c] = "high"
-        elif cl == "low":     col_map[c] = "low"
-        elif cl == "close":   col_map[c] = "close"
-        elif cl == "volume":  col_map[c] = "volume"
-    df = df.rename(columns=col_map)
-    df = df.dropna(subset=["close"])
+        if cl in ("datetime", "date", "index"): col_map[c] = "dt"
+        elif cl == "open":   col_map[c] = "open"
+        elif cl == "high":   col_map[c] = "high"
+        elif cl == "low":    col_map[c] = "low"
+        elif cl == "close":  col_map[c] = "close"
+        elif cl == "volume": col_map[c] = "volume"
+    df = df.rename(columns=col_map).dropna(subset=["close"])
 
     bars: list[dict] = []
     seen: set = set()
@@ -212,16 +293,34 @@ def _fetch_intraday(symbol: str, timeframe: str) -> list[dict]:
     return sorted(bars, key=lambda x: x["time"])
 
 
+# ---------------------------------------------------------------------------
+# Main dispatcher
+# ---------------------------------------------------------------------------
+
 def _fetch_ohlcv(symbol: str, timeframe: str) -> list[dict]:
-    """Main dispatcher: returns OHLCV bars for the given candle timeframe."""
+    """
+    Return OHLCV bars for the requested candle timeframe.
+
+    Intraday (5M/15M/1H)  -> yfinance
+    Daily+  (1D/1W/1M/3M) -> bhavcopy parquet cache (primary)
+                              + nselib live top-up (if today missing)
+                              + nselib 5Y fallback (if not in cache)
+    """
     if timeframe in _INTRADAY:
         return _fetch_intraday(symbol, timeframe)
 
-    years = _DAILY_YEARS.get(timeframe, 1)
-    df = _fetch_daily_data(symbol, years=years)
+    # --- Daily+ path ---
+    df = _read_cache(symbol)
+
+    if df is not None:
+        logger.info(f"[charts] Cache hit: {symbol} ({len(df)} bars)")
+        df = _topup_live(symbol, df)
+    else:
+        logger.info(f"[charts] Cache miss: {symbol} -> nselib fallback")
+        df = _fetch_nselib(symbol, years=5)
 
     if timeframe == "1D":
-        return df[["time", "open", "high", "low", "close", "volume"]].to_dict(orient="records")
+        return _to_bars(df)
 
     return _resample_bars(df, timeframe)
 
@@ -232,14 +331,14 @@ def _fetch_ohlcv(symbol: str, timeframe: str) -> list[dict]:
 
 @router.get("/ohlcv")
 def get_ohlcv(
-    symbol:    str = Query(...,  description="NSE equity symbol e.g. RELIANCE"),
+    symbol:    str = Query(...,   description="NSE equity symbol e.g. RELIANCE"),
     timeframe: str = Query("1D", description="5M | 15M | 1H | 1D | 1W | 1M | 3M"),
 ):
-    """OHLCV candlestick bars for a symbol.
+    """
+    OHLCV candlestick bars for a symbol.
 
-    Timeframe = candle resolution (not date range). Max available history is
-    always returned -- 1Y for daily, 5Y resampled for weekly/monthly/quarterly,
-    7-730 days for intraday via yfinance.
+    Daily+ timeframes use the full bhavcopy parquet cache (1995+) with a live
+    nselib top-up for today's bar. Intraday uses yfinance.
     """
     tf = timeframe.upper()
     if tf not in VALID_TIMEFRAMES:
@@ -266,7 +365,6 @@ def get_signals(symbol: str = Query(..., description="NSE equity symbol")):
     sym = symbol.upper().strip()
     result: dict = {"symbol": sym}
 
-    # Bull run probability
     if BULL_RUN.exists():
         br = pd.read_csv(BULL_RUN)
         br["symbol"] = br["symbol"].str.strip().str.upper()
@@ -284,7 +382,6 @@ def get_signals(symbol: str = Query(..., description="NSE equity symbol")):
             result["sector"]            = str(r.get("sector", ""))
             result["as_of_date"]        = str(r.get("as_of_date", ""))
 
-    # ML scores
     if ML_SCORES.exists():
         ml = pd.read_csv(ML_SCORES)
         ml["symbol"] = ml["symbol"].str.strip().str.upper()
@@ -294,7 +391,6 @@ def get_signals(symbol: str = Query(..., description="NSE equity symbol")):
             result["ml_bull_run_score"]  = float(r["ml_bull_run_score"])  if pd.notna(r.get("ml_bull_run_score"))  else None
             result["accumulation_score"] = float(r["accumulation_score"]) if pd.notna(r.get("accumulation_score")) else None
 
-    # Sector rotation signal
     if SECTOR_ROT.exists() and result.get("sector"):
         sec = pd.read_csv(SECTOR_ROT)
         row = sec[sec["sector"] == result["sector"]]
@@ -303,7 +399,6 @@ def get_signals(symbol: str = Query(..., description="NSE equity symbol")):
             result["rotation_signal"] = str(r.get("rotation_signal", ""))
             result["sector_combined"] = float(r.get("combined_score", 0))
 
-    # Shareholding (latest quarter)
     if SHP_CSV.exists():
         shp = pd.read_csv(SHP_CSV)
         shp["symbol"] = shp["symbol"].str.strip().str.upper()
