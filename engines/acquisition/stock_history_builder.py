@@ -2,7 +2,7 @@
 Stock History Builder
 Reads raw bhavcopy files (READ-ONLY) and builds per-symbol OHLCV parquet files.
 
-Raw source (immutable):  data/NSE/bhavcopy/equity/**/*.csv  (7813 files, 1995-2026)
+Raw source (immutable):  data/NSE/bhavcopy/equity/**/*.csv
 Output (cache/derived):  data/NSE/nsecache/stock_history/<SYMBOL>.parquet
 
 Run modes:
@@ -15,6 +15,7 @@ import json
 import os
 import shutil
 import sys
+from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -50,6 +51,23 @@ KEEP = ["date", "symbol", "open", "high", "low", "close",
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+
+def _date_from_filename(path: Path) -> str | None:
+    """Extract 'YYYY-MM-DD' from bhavcopy_YYYYMMDD.csv[.gz].
+    Returns None if the name doesn't follow the standard pattern.
+    This is used for accurate incremental filtering — mtime is wrong
+    because all files were downloaded recently and have 2026 mtime.
+    """
+    name = path.name
+    if name.endswith(".gz"):
+        name = name[:-3]
+    stem = Path(name).stem          # strips .csv
+    if stem.startswith("bhavcopy_"):
+        date_part = stem[len("bhavcopy_"):]
+        if len(date_part) == 8 and date_part.isdigit():
+            return f"{date_part[:4]}-{date_part[4:6]}-{date_part[6:]}"
+    return None
+
 
 def _read_bhavcopy(path: Path) -> pd.DataFrame:
     try:
@@ -97,16 +115,20 @@ def _save_manifest(last_date: str, symbol_count: int):
     shutil.move(str(tmp), str(MANIFEST))
 
 
-def _write_symbol_parquet(symbol: str, df: pd.DataFrame):
+def _write_symbol_parquet(symbol: str, new_df: pd.DataFrame):
+    """Append new_df to existing symbol parquet. New data is deduplicated by date."""
     path = OUTPUT_DIR / f"{symbol}.parquet"
     if path.exists():
         existing = pd.read_parquet(path)
-        df = pd.concat([existing, df], ignore_index=True)
-    df = (df.drop_duplicates(subset=["date"])
-            .sort_values("date")
-            .reset_index(drop=True))
+        combined = pd.concat([existing, new_df], ignore_index=True)
+    else:
+        combined = new_df
+    combined = (combined
+                .drop_duplicates(subset=["date"])
+                .sort_values("date")
+                .reset_index(drop=True))
     tmp = path.with_suffix(".tmp")
-    df.to_parquet(tmp, index=False)
+    combined.to_parquet(tmp, index=False)
     shutil.move(str(tmp), str(path))
 
 
@@ -127,38 +149,54 @@ class StockHistoryBuilder:
             print("ERROR: No bhavcopy files found in", BHAVCOPY_DIR)
             return False
 
-        manifest = _load_manifest()
+        manifest  = _load_manifest()
         last_date = None if self.full_rebuild else manifest.get("last_processed_date")
 
         if last_date:
-            # Filter to only files that may contain newer data
-            # Bhavcopy filenames often embed date; fall back to mtime
-            cutoff = pd.Timestamp(last_date)
-            pending = [f for f in all_files if pd.Timestamp(f.stat().st_mtime, unit="s") > cutoff]
+            # Filter by DATA DATE embedded in filename (bhavcopy_YYYYMMDD.csv).
+            # DO NOT use mtime — all files were downloaded recently so their mtime
+            # is always newer than any last_processed_date, causing every run to
+            # process all 1400+ files instead of only the new ones.
+            pending = []
+            for f in all_files:
+                file_date = _date_from_filename(f)
+                if file_date is not None:
+                    if file_date > last_date:
+                        pending.append(f)
+                else:
+                    # Non-standard filename: fall back to mtime as last resort
+                    if pd.Timestamp(f.stat().st_mtime, unit="s") > pd.Timestamp(last_date):
+                        pending.append(f)
+
             if not pending:
-                print("Stock history cache is already up to date.")
+                print(f"Stock history cache is up to date (last date: {last_date}).")
                 return True
-            print(f"Incremental mode: {len(pending)} new files to process (after {last_date})")
+            print(f"Incremental mode : {len(pending)} new files to process (after {last_date})", flush=True)
         else:
             pending = all_files
             if self.full_rebuild and OUTPUT_DIR.exists():
                 for p in OUTPUT_DIR.glob("*.parquet"):
                     p.unlink()
-                print("Full rebuild: cleared existing cache")
-            print(f"Full build: {len(pending)} bhavcopy files to process")
+                print("Full rebuild: cleared existing cache", flush=True)
+            print(f"Full build       : {len(pending)} bhavcopy files to process", flush=True)
 
-        # Process in batches to limit memory usage
+        print(f"Workers          : {WORKERS}", flush=True)
+
+        # ── Phase 1: Read all pending files, accumulate per-symbol ────────────
+        # We read in batches for memory safety but accumulate across ALL batches.
+        # This means each symbol parquet is written exactly ONCE in Phase 2,
+        # not once per batch (old behaviour caused N_batches × N_symbols writes).
+
         batches = [pending[i:i+BATCH_SIZE] for i in range(0, len(pending), BATCH_SIZE)]
-        print(f"Workers    : {WORKERS}", flush=True)
-        print(f"Batches    : {len(batches)}", flush=True)
+        print(f"Read batches     : {len(batches)}", flush=True)
 
-        all_dates = []
+        symbol_frames: dict[str, list] = defaultdict(list)
+        all_dates: list[str] = []
 
         for batch_idx, batch in enumerate(batches):
-            print(f"Batch {batch_idx + 1}/{len(batches)}  ({len(batch)} files) ...", flush=True)
+            print(f"Reading batch {batch_idx + 1}/{len(batches)}  ({len(batch)} files) ...", flush=True)
 
-            # Read phase — per-file tqdm bar drives the GUI ProgressBar component
-            dfs = []
+            dfs: list[pd.DataFrame] = []
             with _tqdm(total=len(batch), desc="  Reading", ncols=100, leave=True, ascii=True) as pbar:
                 with ThreadPoolExecutor(max_workers=WORKERS) as ex:
                     futures = {ex.submit(_read_bhavcopy, f): f for f in batch}
@@ -177,30 +215,40 @@ class StockHistoryBuilder:
 
             all_dates.extend(batch_df["date"].dropna().tolist())
 
-            # Write phase — per-symbol tqdm bar (4500+ symbols visible in GUI)
-            groups = list(batch_df.groupby("symbol"))
-            with _tqdm(total=len(groups), desc="  Writing", ncols=100, leave=True, ascii=True) as pbar:
-                with ThreadPoolExecutor(max_workers=WORKERS) as ex:
-                    futures = [
-                        ex.submit(_write_symbol_parquet, sym, grp.drop(columns=["symbol"]))
-                        for sym, grp in groups
-                    ]
-                    for fut in as_completed(futures):
-                        try:
-                            fut.result()
-                        except Exception as exc:
-                            logger.warning("[Builder] Write error: %s", exc)
-                        pbar.update(1)
+            for sym, grp in batch_df.groupby("symbol"):
+                symbol_frames[sym].append(grp.drop(columns=["symbol"]).copy())
 
-            logger.info("[Builder] Batch %d/%d done", batch_idx + 1, len(batches))
+        if not symbol_frames:
+            print("No new data found in pending files.", flush=True)
+            return True
 
-        # Summary
-        symbol_files = list(OUTPUT_DIR.glob("*.parquet"))
-        symbol_count = len(symbol_files)
+        # ── Phase 2: Write each symbol exactly once ───────────────────────────
+        # Merge all batches into one DataFrame per symbol before writing.
+        # This is the key fix: old code wrote once per batch per symbol.
+
+        print(f"Writing {len(symbol_frames)} symbols (one pass) ...", flush=True)
+
+        def _merge_and_write(sym: str, frames: list) -> None:
+            new_df = pd.concat(frames, ignore_index=True) if len(frames) > 1 else frames[0]
+            _write_symbol_parquet(sym, new_df)
+
+        items = list(symbol_frames.items())
+        with _tqdm(total=len(items), desc="  Writing", ncols=100, leave=True, ascii=True) as pbar:
+            with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+                futures = [ex.submit(_merge_and_write, sym, frames) for sym, frames in items]
+                for fut in as_completed(futures):
+                    try:
+                        fut.result()
+                    except Exception as exc:
+                        logger.warning("[Builder] Write error: %s", exc)
+                    pbar.update(1)
+
+        # ── Manifest ──────────────────────────────────────────────────────────
+        symbol_count   = len(list(OUTPUT_DIR.glob("*.parquet")))
         last_processed = max(all_dates) if all_dates else (last_date or "")
         _save_manifest(last_processed, symbol_count)
 
-        print(f"Stock history cache built: {symbol_count} symbols, last date {last_processed}")
+        print(f"Done: {symbol_count} symbols | last date: {last_processed}", flush=True)
         logger.info("[Builder] Complete: %d symbols, last_date=%s", symbol_count, last_processed)
         return True
 
