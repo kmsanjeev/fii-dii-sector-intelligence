@@ -1,27 +1,38 @@
 """
-Feature Engineering Engine — Phase 12A
-Builds the historical feature matrix from all intelligence layers.
+Feature Engineering Engine -- Phase 12A
+Builds the feature matrix from all intelligence + raw data layers.
 Output: data/intelligence/ml_features/feature_matrix.parquet
 
-Features per symbol per date:
-  Price:       ret_30d, ret_90d, ret_365d, vol_ratio, price_score
-  Sector:      sector_FII_flow_score, sector_combined_score, rotation_signal_encoded
-  Participant: FII_flow_score, DII_flow_score, Smart_Money_Score, Market_Regime_encoded
-  Corporate:   deal_score (neutral=50), corporate_score (confidence, neutral=50)
-  Derived:     bull_run_score (phase 8B), label_encoded
+Features per symbol (~44 total):
+  Phase 8B scores:  bull_run_score, price_score, sector_flow_score, deal_score,
+                    corporate_score, regime_multiplier
+  Price:            ret_30d, ret_90d, ret_365d, vol_ratio, sector_rel_30d
+  Sector snapshot:  sector_combined_score, rotation_signal_enc
+  Sector rolling:   sec_FII_5d, sec_FII_20d, sec_FII_60d,
+                    sec_DII_5d, sec_DII_20d, sec_DII_60d,
+                    sec_smart_money, sec_retail_score
+  Participant:      part_FII_flow, part_DII_flow, part_smart_money, regime_enc
+  Fundamentals:     mkt_cap_enc, fund_promoter_pct, fund_fii_pct, fund_dii_pct
+  Ownership (SHP):  shp_promoter_pct, shp_fii_pct, shp_dii_pct
+  Index:            index_count
+  Corporate acts:   div_count_12m, has_buyback_12m, has_bonus_12m
+  Deals:            deal_net_cr, corp_confidence
+  Label:            label_enc (from Phase 8B rule-based scoring)
 
-Target (for accumulation model):
-  is_up_10pct_in_20d — computed from bhavcopy price 20 trading days forward
-  is_up_5pct_in_10d  — shorter-term variant
+Note on labels:
+  label_enc is derived from Phase 8B rule-based bull_run_probability.csv.
+  This creates a circular dependency where ML replicates rules rather than
+  predicting forward returns. True forward-return labels (is_up_10pct_in_20d)
+  require accumulated daily scoring history (Phase 12B, 3-6 months of runs).
 
 Look-ahead bias prevention:
-  Features at date T, target from price at T+20 (or T+60 for bull run).
-  TimeSeriesSplit CV only — no random shuffle.
+  All features are point-in-time (as_of_date). No future data leaks in.
+  TimeSeriesSplit CV only when training -- no random shuffle.
 """
 
-import os
 import sys
 import shutil
+from datetime import date, timedelta
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[2]
@@ -30,26 +41,35 @@ if str(_ROOT) not in sys.path:
 
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import LabelEncoder
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
 
 logger = get_logger(__name__)
 
-# ── Paths ─────────────────────────────────────────────────────────────────────
-
-ML_DIR = cfg.INTELLIGENCE_DIR / "ml_features"
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
+ML_DIR      = cfg.INTELLIGENCE_DIR / "ml_features"
 OUTPUT_PATH = ML_DIR / "feature_matrix.parquet"
-OUTPUT_CSV   = ML_DIR / "feature_matrix.csv"  # also write CSV for inspection
+OUTPUT_CSV  = ML_DIR / "feature_matrix.csv"
 
-BULL_RUN   = cfg.INTELLIGENCE_DIR / "bull_run_probability.csv"
-PRICE_MOM  = cfg.INTELLIGENCE_DIR / "price_momentum.csv"
-SECTOR_ROT = cfg.INTELLIGENCE_DIR / "sector_rotation_intelligence.csv"
-PART_INTEL = cfg.INTELLIGENCE_DIR / "participant_intelligence.csv"
-DEAL_SIG   = cfg.INTELLIGENCE_DIR / "institutional_deal_signals.csv"
-CORP_CONF  = cfg.INTELLIGENCE_DIR / "corporate_confidence_scores.csv"
+BULL_RUN    = cfg.INTELLIGENCE_DIR / "bull_run_probability.csv"
+PRICE_MOM   = cfg.INTELLIGENCE_DIR / "price_momentum.csv"
+SECTOR_ROT  = cfg.INTELLIGENCE_DIR / "sector_rotation_intelligence.csv"
+SECTOR_FLOW = cfg.INTELLIGENCE_DIR / "sector_flow_scores.csv"
+PART_INTEL  = cfg.INTELLIGENCE_DIR / "participant_intelligence.csv"
+DEAL_SIG    = cfg.INTELLIGENCE_DIR / "institutional_deal_signals.csv"
+CORP_CONF   = cfg.INTELLIGENCE_DIR / "corporate_confidence_scores.csv"
+CORP_ACT    = cfg.INTELLIGENCE_DIR / "corporate_action_signals.csv"
 
+FUND_MASTER  = cfg.NSE_DIR / "equity_master" / "company_fundamentals_master.csv"
+INDEX_MEMB   = cfg.NSE_DIR / "indices" / "index_membership.csv"
+SHP_CSV      = cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv"
+
+# ---------------------------------------------------------------------------
+# Encoding maps
+# ---------------------------------------------------------------------------
 LABEL_MAP = {
     "STRONG_CANDIDATE": 4,
     "EMERGING":         3,
@@ -72,13 +92,19 @@ REGIME_MAP = {
     "DISTRIBUTION":        1,
     "STRONG_DISTRIBUTION": 0,
 }
+MKTCAP_MAP = {
+    "LARGE": 3,
+    "MID":   2,
+    "SMALL": 1,
+    "MICRO": 0,
+}
 
 
 class FeatureEngineeringEngine:
     """
-    Assembles a static snapshot feature matrix from the current intelligence outputs.
-    This is a point-in-time snapshot (not time-series) suitable for initial model training.
-    The full time-series version will be built in Phase 12B.
+    Assembles a point-in-time feature matrix from all available data layers.
+    Joins intelligence outputs, fundamentals, ownership, index membership,
+    and corporate action history onto the Phase 8B symbol universe.
     """
 
     def run(self) -> bool:
@@ -88,100 +114,242 @@ class FeatureEngineeringEngine:
         try:
             df = self._build_matrix()
             if df.empty:
-                logger.error("[FeatureEng] Empty feature matrix — aborting")
+                logger.error("[FeatureEng] Empty feature matrix -- aborting")
                 return False
 
             self._validate(df)
             self._save(df)
-            logger.info(f"[FeatureEng] Complete: {len(df)} symbols, {len(df.columns)} features")
+            logger.info("[FeatureEng] Complete: %d symbols, %d features", len(df), len(df.columns))
             return True
 
         except Exception as e:
-            logger.error(f"[FeatureEng] Failed: {e}", exc_info=True)
+            logger.error("[FeatureEng] Failed: %s", e, exc_info=True)
             raise
 
+    # ------------------------------------------------------------------
+    # Master builder
+    # ------------------------------------------------------------------
     def _build_matrix(self) -> pd.DataFrame:
-        # Base: bull run probability (has all 4 component scores)
         if not BULL_RUN.exists():
             raise FileNotFoundError(f"Required: {BULL_RUN}")
 
         bull = pd.read_csv(BULL_RUN)
         bull = bull.rename(columns={"market_regime": "regime_raw"})
+        bull["symbol"] = bull["symbol"].str.strip().str.upper()
 
-        # Price momentum (sector_rel and raw returns)
-        price_cols = ["symbol", "ret_30d", "ret_90d", "ret_365d", "vol_ratio",
-                      "price_score", "sector_rel_30d"]
-        if PRICE_MOM.exists():
-            price = pd.read_csv(PRICE_MOM, usecols=[c for c in price_cols if c in
-                                                     pd.read_csv(PRICE_MOM, nrows=0).columns])
-            bull = bull.merge(price, on="symbol", how="left", suffixes=("", "_pm"))
+        bull = self._add_price_momentum(bull)
+        bull = self._add_sector_snapshot(bull)
+        bull = self._add_sector_rolling(bull)
+        bull = self._add_participant(bull)
+        bull = self._add_fundamentals(bull)
+        bull = self._add_shareholding(bull)
+        bull = self._add_index_membership(bull)
+        bull = self._add_corporate_actions(bull)
+        bull = self._add_corporate_confidence(bull)
+        bull = self._add_deal_signals(bull)
 
-        # Sector features
-        if SECTOR_ROT.exists():
-            sec = pd.read_csv(SECTOR_ROT, usecols=[
-                "sector", "FII_flow_score", "combined_score", "rotation_signal"
-            ]).rename(columns={
-                "FII_flow_score": "sector_FII_flow",
-                "combined_score": "sector_combined_score",
-            })
-            bull = bull.merge(sec, on="sector", how="left")
-            bull["rotation_signal_enc"] = bull["rotation_signal"].map(ROTATION_MAP).fillna(2)
-
-        # Participant regime (latest snapshot, same for all symbols)
-        if PART_INTEL.exists():
-            part = pd.read_csv(PART_INTEL, usecols=[
-                "date", "FII_flow_score", "DII_flow_score",
-                "Smart_Money_Score", "Market_Regime"
-            ]).sort_values("date").iloc[-1]
-            bull["part_FII_flow"] = float(part.get("FII_flow_score", 0) or 0)
-            bull["part_DII_flow"] = float(part.get("DII_flow_score", 0) or 0)
-            bull["part_smart_money"] = float(part.get("Smart_Money_Score", 0) or 0)
-            bull["regime_enc"] = REGIME_MAP.get(str(part.get("Market_Regime", "NEUTRAL")), 2)
-
-        # Corporate confidence
-        if CORP_CONF.exists():
-            corp = pd.read_csv(CORP_CONF, usecols=["symbol", "confidence_score_12m"])
-            corp = corp.rename(columns={"confidence_score_12m": "corp_confidence"})
-            bull = bull.merge(corp, on="symbol", how="left")
-
-        # Deal signals
-        if DEAL_SIG.exists():
-            deals = pd.read_csv(DEAL_SIG, usecols=["symbol", "inst_net_value_cr"])
-            deals = deals.rename(columns={"inst_net_value_cr": "deal_net_cr"})
-            bull = bull.merge(deals, on="symbol", how="left")
-
-        # Encode label
         bull["label_enc"] = bull["label"].map(LABEL_MAP).fillna(1)
 
-        # Select final feature columns
         feature_cols = [
             "symbol", "sector", "as_of_date",
-            # Scores from 8B
+            # Phase 8B component scores
             "bull_run_score", "label", "label_enc",
-            "price_score", "sector_flow_score", "deal_score", "corporate_score",
-            "regime_multiplier",
-            # Price
-            "ret_30d", "ret_90d", "ret_365d", "vol_ratio",
-            # Sector
-            "sector_FII_flow", "sector_combined_score", "rotation_signal_enc",
-            # Participant
+            "price_score", "sector_flow_score", "deal_score",
+            "corporate_score", "regime_multiplier",
+            # Price momentum
+            "ret_30d", "ret_90d", "ret_365d", "vol_ratio", "sector_rel_30d",
+            # Sector snapshot
+            "sector_combined_score", "rotation_signal_enc",
+            # Sector rolling (5D/20D/60D)
+            "sec_FII_5d", "sec_FII_20d", "sec_FII_60d",
+            "sec_DII_5d", "sec_DII_20d", "sec_DII_60d",
+            "sec_smart_money", "sec_retail_score",
+            # Participant (market-wide latest snapshot)
             "part_FII_flow", "part_DII_flow", "part_smart_money", "regime_enc",
-            # Corporate
+            # Fundamentals master
+            "mkt_cap_enc", "fund_promoter_pct", "fund_fii_pct", "fund_dii_pct",
+            # Shareholding pattern (latest quarter)
+            "shp_promoter_pct", "shp_fii_pct", "shp_dii_pct",
+            # Index membership
+            "index_count",
+            # Corporate actions (12M)
+            "div_count_12m", "has_buyback_12m", "has_bonus_12m",
+            # Institutional signals
             "corp_confidence", "deal_net_cr",
         ]
         available = [c for c in feature_cols if c in bull.columns]
+        missing = [c for c in feature_cols if c not in bull.columns]
+        if missing:
+            logger.warning("[FeatureEng] Features not available (source missing): %s", missing)
         return bull[available].copy()
 
+    # ------------------------------------------------------------------
+    # Data source methods
+    # ------------------------------------------------------------------
+    def _add_price_momentum(self, df: pd.DataFrame) -> pd.DataFrame:
+        if not PRICE_MOM.exists():
+            logger.warning("[FeatureEng] price_momentum.csv missing -- skipping price features")
+            return df
+        cols_wanted = ["symbol", "ret_30d", "ret_90d", "ret_365d", "vol_ratio", "sector_rel_30d"]
+        peek = pd.read_csv(PRICE_MOM, nrows=0).columns.tolist()
+        usecols = [c for c in cols_wanted if c in peek]
+        price = pd.read_csv(PRICE_MOM, usecols=usecols)
+        price["symbol"] = price["symbol"].str.strip().str.upper()
+        return df.merge(price, on="symbol", how="left", suffixes=("", "_pm"))
+
+    def _add_sector_snapshot(self, df: pd.DataFrame) -> pd.DataFrame:
+        if not SECTOR_ROT.exists():
+            return df
+        sec = pd.read_csv(SECTOR_ROT, usecols=["sector", "combined_score", "rotation_signal"])
+        sec = sec.rename(columns={"combined_score": "sector_combined_score"})
+        sec["rotation_signal_enc"] = sec["rotation_signal"].map(ROTATION_MAP).fillna(2)
+        df = df.merge(sec[["sector", "sector_combined_score", "rotation_signal_enc"]],
+                      on="sector", how="left")
+        return df
+
+    def _add_sector_rolling(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Add per-sector rolling 5D/20D/60D flow scores from the latest date in sector_flow_scores."""
+        if not SECTOR_FLOW.exists():
+            logger.warning("[FeatureEng] sector_flow_scores.csv missing -- skipping rolling sector features")
+            return df
+        flows = pd.read_csv(SECTOR_FLOW)
+        latest_date = flows["date"].max()
+        latest = flows[flows["date"] == latest_date].copy()
+
+        rename = {
+            "FII_OI_5D":        "sec_FII_5d",
+            "FII_OI_20D":       "sec_FII_20d",
+            "FII_OI_60D":       "sec_FII_60d",
+            "DII_OI_5D":        "sec_DII_5d",
+            "DII_OI_20D":       "sec_DII_20d",
+            "DII_OI_60D":       "sec_DII_60d",
+            "Smart_Money_Score": "sec_smart_money",
+            "Retail_Score":      "sec_retail_score",
+        }
+        avail = {k: v for k, v in rename.items() if k in latest.columns}
+        sec_cols = list(avail.keys())
+        latest = latest[["sector"] + sec_cols].rename(columns=avail)
+        logger.info("[FeatureEng] Sector rolling flows from %s (%d sectors)", latest_date, len(latest))
+        return df.merge(latest, on="sector", how="left")
+
+    def _add_participant(self, df: pd.DataFrame) -> pd.DataFrame:
+        if not PART_INTEL.exists():
+            return df
+        usecols = ["date", "FII_flow_score", "DII_flow_score", "Smart_Money_Score", "Market_Regime"]
+        peek = pd.read_csv(PART_INTEL, nrows=0).columns.tolist()
+        usecols = [c for c in usecols if c in peek]
+        part = pd.read_csv(PART_INTEL, usecols=usecols).sort_values("date").iloc[-1]
+        df["part_FII_flow"]   = float(part.get("FII_flow_score",   0) or 0)
+        df["part_DII_flow"]   = float(part.get("DII_flow_score",   0) or 0)
+        df["part_smart_money"] = float(part.get("Smart_Money_Score", 0) or 0)
+        df["regime_enc"]      = REGIME_MAP.get(str(part.get("Market_Regime", "NEUTRAL")), 2)
+        return df
+
+    def _add_fundamentals(self, df: pd.DataFrame) -> pd.DataFrame:
+        if not FUND_MASTER.exists():
+            logger.warning("[FeatureEng] company_fundamentals_master.csv missing -- skipping fundamentals")
+            return df
+        fund = pd.read_csv(FUND_MASTER)
+        fund["symbol"] = fund["symbol"].str.strip().str.upper()
+        fund["mkt_cap_enc"] = fund["market_cap_category"].str.upper().map(MKTCAP_MAP)
+
+        keep = ["symbol", "mkt_cap_enc"]
+        for col, out in [("promoter_holding_pct", "fund_promoter_pct"),
+                         ("fii_holding_pct",      "fund_fii_pct"),
+                         ("dii_holding_pct",      "fund_dii_pct")]:
+            if col in fund.columns:
+                fund[out] = pd.to_numeric(fund[col], errors="coerce")
+                keep.append(out)
+
+        logger.info("[FeatureEng] Fundamentals master: %d symbols", fund["symbol"].nunique())
+        return df.merge(fund[keep], on="symbol", how="left")
+
+    def _add_shareholding(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Latest quarterly SHP per symbol -> promoter/FII/DII %."""
+        if not SHP_CSV.exists():
+            logger.warning("[FeatureEng] quarterly_shp.csv missing -- skipping SHP features")
+            return df
+        shp = pd.read_csv(SHP_CSV)
+        shp["symbol"] = shp["symbol"].str.strip().str.upper()
+        # Keep only the latest quarter per symbol (sort by quarter_end_date desc)
+        shp["quarter_end_date"] = pd.to_datetime(shp["quarter_end_date"], format="%d-%b-%Y", errors="coerce")
+        shp = (shp.sort_values("quarter_end_date", ascending=False)
+                   .drop_duplicates(subset=["symbol"], keep="first"))
+        rename = {
+            "promoter_pct": "shp_promoter_pct",
+            "fii_pct":      "shp_fii_pct",
+            "dii_pct":      "shp_dii_pct",
+        }
+        shp = shp.rename(columns=rename)
+        keep = ["symbol"] + [v for v in rename.values() if v in shp.columns]
+        for col in keep[1:]:
+            shp[col] = pd.to_numeric(shp[col], errors="coerce")
+        logger.info("[FeatureEng] SHP: %d symbols (latest quarter each)", len(shp))
+        return df.merge(shp[keep], on="symbol", how="left")
+
+    def _add_index_membership(self, df: pd.DataFrame) -> pd.DataFrame:
+        if not INDEX_MEMB.exists():
+            return df
+        idx = pd.read_csv(INDEX_MEMB, usecols=["symbol", "index_count"])
+        idx["symbol"] = idx["symbol"].str.strip().str.upper()
+        idx["index_count"] = pd.to_numeric(idx["index_count"], errors="coerce").fillna(0)
+        logger.info("[FeatureEng] Index membership: %d symbols", len(idx))
+        return df.merge(idx, on="symbol", how="left")
+
+    def _add_corporate_actions(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Aggregate corporate actions over the last 12 months per symbol."""
+        if not CORP_ACT.exists():
+            return df
+        acts = pd.read_csv(CORP_ACT, usecols=["symbol", "ex_date", "action_type"])
+        acts["symbol"]  = acts["symbol"].str.strip().str.upper()
+        acts["ex_date"] = pd.to_datetime(acts["ex_date"], errors="coerce")
+        cutoff = pd.Timestamp(date.today() - timedelta(days=365))
+        acts = acts[acts["ex_date"] >= cutoff]
+
+        div  = acts[acts["action_type"] == "DIVIDEND"].groupby("symbol").size().rename("div_count_12m")
+        buy  = acts[acts["action_type"] == "BUYBACK"].groupby("symbol").size().rename("buyback_count")
+        bon  = acts[acts["action_type"] == "BONUS"].groupby("symbol").size().rename("bonus_count")
+
+        agg = pd.concat([div, buy, bon], axis=1).fillna(0).reset_index()
+        agg["has_buyback_12m"] = (agg["buyback_count"] > 0).astype(int)
+        agg["has_bonus_12m"]   = (agg["bonus_count"]   > 0).astype(int)
+        keep = ["symbol", "div_count_12m", "has_buyback_12m", "has_bonus_12m"]
+        logger.info("[FeatureEng] Corporate actions 12M: %d symbols with activity", len(agg))
+        return df.merge(agg[keep], on="symbol", how="left")
+
+    def _add_corporate_confidence(self, df: pd.DataFrame) -> pd.DataFrame:
+        if not CORP_CONF.exists():
+            return df
+        corp = pd.read_csv(CORP_CONF, usecols=["symbol", "confidence_score_12m"])
+        corp["symbol"] = corp["symbol"].str.strip().str.upper()
+        corp = corp.rename(columns={"confidence_score_12m": "corp_confidence"})
+        return df.merge(corp, on="symbol", how="left")
+
+    def _add_deal_signals(self, df: pd.DataFrame) -> pd.DataFrame:
+        if not DEAL_SIG.exists():
+            return df
+        deals = pd.read_csv(DEAL_SIG, usecols=["symbol", "inst_net_value_cr"])
+        deals["symbol"] = deals["symbol"].str.strip().str.upper()
+        deals = deals.rename(columns={"inst_net_value_cr": "deal_net_cr"})
+        return df.merge(deals, on="symbol", how="left")
+
+    # ------------------------------------------------------------------
+    # Validation + save
+    # ------------------------------------------------------------------
     def _validate(self, df: pd.DataFrame):
         assert not df.empty, "Feature matrix is empty"
         assert "symbol" in df.columns, "Missing symbol column"
-        assert "bull_run_score" in df.columns, "Missing target column"
-        numeric_cols = df.select_dtypes(include=[np.number]).columns
-        inf_count = np.isinf(df[numeric_cols]).sum().sum()
+        numeric = df.select_dtypes(include=[np.number]).columns
+        inf_count = np.isinf(df[numeric]).sum().sum()
         if inf_count > 0:
-            logger.warning(f"[FeatureEng] {inf_count} Inf values — replacing with NaN")
+            logger.warning("[FeatureEng] %d Inf values -- replacing with NaN", inf_count)
             df.replace([np.inf, -np.inf], np.nan, inplace=True)
-        logger.info(f"[FeatureEng] Validated: {len(df)} rows, {df.isnull().sum().sum()} nulls")
+        null_pct = df[numeric].isnull().mean().sort_values(ascending=False)
+        high_null = null_pct[null_pct > 0.5]
+        if not high_null.empty:
+            logger.warning("[FeatureEng] Features with >50%% nulls: %s", high_null.index.tolist())
+        logger.info("[FeatureEng] Validated: %d rows, %d cols, %d total nulls",
+                    len(df), len(df.columns), df.isnull().sum().sum())
 
     def _save(self, df: pd.DataFrame):
         tmp = OUTPUT_PATH.with_suffix(".tmp.parquet")
@@ -191,15 +359,25 @@ class FeatureEngineeringEngine:
         tmp_csv = OUTPUT_CSV.with_suffix(".tmp.csv")
         df.to_csv(tmp_csv, index=False)
         shutil.move(str(tmp_csv), str(OUTPUT_CSV))
-
-        logger.info(f"[FeatureEng] Saved: {OUTPUT_PATH}")
+        logger.info("[FeatureEng] Saved: %s", OUTPUT_PATH)
 
 
 if __name__ == "__main__":
     engine = FeatureEngineeringEngine()
     engine.run()
-    import pandas as pd
+
     df = pd.read_parquet(OUTPUT_PATH)
-    print(f"Feature matrix: {len(df)} symbols x {len(df.columns)} features")
-    print(f"Columns: {list(df.columns)}")
-    print(df[["symbol", "bull_run_score", "label", "price_score"]].head(10))
+    print(f"\nFeature matrix: {len(df)} symbols x {len(df.columns)} features")
+    print(f"Columns ({len(df.columns)}): {list(df.columns)}")
+    print()
+
+    numeric = df.select_dtypes(include=[np.number]).columns.tolist()
+    null_pct = df[numeric].isnull().mean().sort_values(ascending=False)
+    print("Null % per feature:")
+    for col, pct in null_pct.items():
+        bar = "#" * int(pct * 20)
+        print(f"  {col:30s} {pct*100:5.1f}%  {bar}")
+
+    print()
+    print(df[["symbol", "sector", "bull_run_score", "label",
+              "shp_fii_pct", "mkt_cap_enc", "index_count"]].head(10).to_string())
