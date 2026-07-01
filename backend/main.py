@@ -2,8 +2,8 @@
 FastAPI Backend — Phase 10
 Capital Flow Intelligence Platform API
 
-Start:  py -3.11 -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
-Docs:   http://localhost:8000/docs
+Start:  py -3.11 -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8001
+Docs:   http://localhost:8001/docs
 """
 
 import sys
