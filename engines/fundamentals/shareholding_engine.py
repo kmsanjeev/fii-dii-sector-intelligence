@@ -182,8 +182,10 @@ class ShareholdingEngine:
         pending = pending[:limit]
         logger.info(f"[ShareholdingEngine] Processing {len(pending)} windows: {[lbl for _,_,lbl in pending]}")
 
-        all_rows = [] if existing.empty else [existing]
+        # Working copy starts from existing data; saved incrementally after each window
+        accumulated = existing.copy() if not existing.empty else pd.DataFrame()
         recovery = []
+        windows_done = 0
 
         for from_date, to_date, label in pending:
             logger.info(f"[ShareholdingEngine] Fetching master for {label} ({from_date} to {to_date})")
@@ -223,33 +225,26 @@ class ShareholdingEngine:
             df_window = pd.DataFrame(rows)
             df_window = self._validate_window(df_window, label)
             if df_window is not None:
-                all_rows.append(df_window)
-                logger.info(f"[ShareholdingEngine] {label}: {len(df_window)} rows validated and saved")
+                # Merge into accumulated and save after every window (crash recovery)
+                accumulated = pd.concat([accumulated, df_window], ignore_index=True)
+                accumulated = accumulated.drop_duplicates(subset=["symbol", "window_label"], keep="last")
+                self._save_csv(accumulated, SHP_CSV)
+                windows_done += 1
+                logger.info(f"[ShareholdingEngine] {label}: {len(df_window)} rows — total {len(accumulated)} rows saved")
 
-        if not all_rows:
+        if accumulated.empty:
             logger.error("[ShareholdingEngine] No data fetched across any window")
             return False
 
-        combined = pd.concat(all_rows, ignore_index=True)
-        # Deduplicate: keep latest entry per symbol+window
-        combined = combined.drop_duplicates(subset=["symbol", "window_label"], keep="last")
-
-        if combined.empty:
-            logger.error("[ShareholdingEngine] Combined DataFrame is empty")
-            return False
-
-        # G-D-02: atomic write
-        self._save_csv(combined, SHP_CSV)
-
         # Update company_fundamentals_master.csv with latest values
-        self._update_fundamentals(combined)
+        self._update_fundamentals(accumulated)
 
         # G-A-03: write recovery queue
         if recovery:
             self._append_recovery(recovery)
             logger.warning(f"[ShareholdingEngine] {len(recovery)} symbols in recovery queue")
 
-        logger.info(f"[ShareholdingEngine] Complete: {len(combined)} rows, {combined['symbol'].nunique()} symbols")
+        logger.info(f"[ShareholdingEngine] Complete: {windows_done} windows, {len(accumulated)} rows, {accumulated['symbol'].nunique()} symbols")
         return True
 
     def _fetch_master(self, from_date: str, to_date: str) -> Optional[pd.DataFrame]:
