@@ -6,6 +6,50 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 3.10.0
+
+Phase 15C -- Shareholding Engine: full historical backfill + data validation + moved to Acquisition section
+
+Date: 2026-07-01
+
+Status: Completed
+
+---
+
+## Summary
+
+Shareholding Engine upgraded with full historical backfill (FY2008 to present), incremental processing,
+per-window data validation, and pipeline moved from Fundamentals to Data Acquisition section
+in both backend and frontend.
+
+## Changes
+
+- `engines/fundamentals/shareholding_engine.py`: major upgrade
+  - Added `_generate_all_windows()`: dynamically generates all quarterly windows from Q1FY09 to current
+  - Added `--backfill` flag: fetches all historical quarters oldest-first (incremental: skips done labels)
+  - Added `--windows N` flag: fetch N most-recent quarters (default: 1 for incremental mode)
+  - Added `--validate` flag: prints per-window data quality report (FII coverage %, symbol count, sum sanity)
+  - Per-window validation: min 50 symbols guard, promoter+public sum check, schema validation
+  - Historical coverage: NSE SHP API has meaningful data from Q4FY08 (1,264 symbols); pre-FY08 skipped
+  - Incremental by default: loads existing quarterly_shp.csv and skips already-fetched windows
+- `backend/routers/data_ops.py`:
+  - Renamed `fundamentals_15c` → `shp_acquisition` (incremental, --windows 1)
+  - Renamed `fundamentals_15c_full` → `shp_acquisition_full` (--backfill, full history)
+  - Added `shp_acquisition` to `ACQUISITION_PIPELINE`
+  - Moved shareholding status from `fundamentals` dict to `acquisition` dict in /api/data/status
+- `frontend/src/pages/DataControlPage.tsx`:
+  - Updated ENGINE_MAP: `shareholding: 'shp_acquisition'`
+  - Shareholding now appears in DATA ACQUISITION section table (not FUNDAMENTALS)
+  - Health bar counts updated to use named variables (acqLen, intLen, funLen)
+
+## Data Availability Note
+
+NSE SHP API returns 0 records before FY05, 10 records for Q4FY05, ~1,264 for Q4FY08.
+Practical historical start: Q1FY09 (Apr-Jun 2008). Pre-XBRL era (before 2008) not parseable.
+"Since 1995" backfill is not feasible from NSE electronic filings; engine auto-skips those windows.
+
+---
+
 # Version 3.9.0
 
 Phase 15A/15B -- Financial Results + Valuation Engine

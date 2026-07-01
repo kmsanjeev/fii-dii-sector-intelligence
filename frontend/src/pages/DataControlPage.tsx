@@ -108,7 +108,7 @@ const ENGINE_MAP: Record<string, string> = {
   corporate_confidence:         'corp_actions_7c',
   quarterly_results:            'fundamentals_15a',
   valuation_scores:             'fundamentals_15b',
-  shareholding:                 'fundamentals_15c',
+  shareholding:                 'shp_acquisition',
 }
 
 function ModuleTable({
@@ -456,7 +456,10 @@ export function DataControlPage() {
   const acqOk   = Object.values(acquisition).filter(m => m.status === 'OK').length
   const intOk   = Object.values(intelligence).filter(m => m.status === 'OK').length
   const funOk   = Object.values(fundamentals).filter(m => m.status === 'OK').length
-  const total   = Object.keys(acquisition).length + Object.keys(intelligence).length + Object.keys(fundamentals).length
+  const acqLen  = Object.keys(acquisition).length
+  const intLen  = Object.keys(intelligence).length
+  const funLen  = Object.keys(fundamentals).length
+  const total   = acqLen + intLen + funLen
   const totalOk = acqOk + intOk + funOk
   const pct     = total > 0 ? Math.round((totalOk / total) * 100) : 0
 
@@ -539,9 +542,9 @@ export function DataControlPage() {
           </div>
         </div>
         <div style={{ fontSize: 11, color: '#64748B', textAlign: 'right' }}>
-          <div>Acquisition: {acqOk}/{Object.keys(acquisition).length}</div>
-          <div>Intelligence: {intOk}/{Object.keys(intelligence).length}</div>
-          <div>Fundamentals: {funOk}/{Object.keys(fundamentals).length}</div>
+          <div>Acquisition: {acqOk}/{acqLen}</div>
+          <div>Intelligence: {intOk}/{intLen}</div>
+          <div>Fundamentals: {funOk}/{funLen}</div>
         </div>
       </div>
 

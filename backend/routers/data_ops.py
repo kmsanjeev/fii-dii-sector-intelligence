@@ -182,16 +182,16 @@ ENGINES = {
         "script": "engines/fundamentals/valuation_engine.py",
         "phase": "15B",
     },
-    "fundamentals_15c": {
-        "label": "Shareholding Engine (15C)",
+    "shp_acquisition": {
+        "label": "Shareholding Acquisition — latest quarter (15C)",
         "script": "engines/fundamentals/shareholding_engine.py",
         "args": ["--windows", "1"],
         "phase": "15C",
     },
-    "fundamentals_15c_full": {
-        "label": "Shareholding Engine Full History (15C)",
+    "shp_acquisition_full": {
+        "label": "Shareholding Acquisition — full backfill FY2008+ (15C)",
         "script": "engines/fundamentals/shareholding_engine.py",
-        "args": ["--full"],
+        "args": ["--backfill"],
         "phase": "15C",
     },
     "ml_12": {
@@ -208,7 +208,7 @@ ENGINES = {
 
 ACQUISITION_PIPELINE = [
     "bhavcopy_equity", "bhavcopy_fno", "corporate_actions",
-    "equity_master", "stock_history_build",
+    "equity_master", "stock_history_build", "shp_acquisition",
 ]
 INTELLIGENCE_PIPELINE = [
     "participant_5a", "participant_5b", "participant_5c",
@@ -353,6 +353,24 @@ def get_data_status():
         "last_modified": fno_hist["last_modified"],
     }
 
+    # ── Shareholding patterns (acquisition, not fundamentals) ─────────────────
+    shp_path = cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv"
+    shp_info = _file_info(shp_path)
+    shp_windows = ""
+    if shp_info["exists"] and shp_info["rows"] > 0:
+        try:
+            _sdf = pd.read_csv(shp_path, usecols=["symbol", "window_label"])
+            shp_windows = ", ".join(sorted(_sdf["window_label"].dropna().unique()))
+        except Exception:
+            pass
+    status["shareholding"] = {
+        "label": "Shareholding Patterns (15C)",
+        "status": "OK" if shp_info["exists"] and shp_info["rows"] > 0 else "EMPTY",
+        "records": f"{shp_info['rows']:,} rows" if shp_info["exists"] else "0 rows",
+        "coverage": shp_windows or "-",
+        "last_modified": shp_info["last_modified"],
+    }
+
     # ── Stock history cache ────────────────────────────────────────────────────
     cache_files = list(cfg.STOCK_HISTORY_CACHE.glob("*.parquet"))
     manifest_path = cfg.STOCK_HISTORY_CACHE / "manifest.json"
@@ -445,24 +463,6 @@ def get_data_status():
             "coverage": "-",
             "last_modified": valuation_info["last_modified"],
         },
-    }
-
-    # Shareholding (Phase 15C)
-    shp_path = cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv"
-    shp_info = _file_info(shp_path)
-    shp_windows = ""
-    if shp_info["exists"] and shp_info["rows"] > 0:
-        try:
-            _sdf = pd.read_csv(shp_path, usecols=["symbol", "window_label"])
-            shp_windows = ", ".join(sorted(_sdf["window_label"].dropna().unique()))
-        except Exception:
-            pass
-    fundamentals["shareholding"] = {
-        "label": "Shareholding Patterns (15C)",
-        "status": "OK" if shp_info["exists"] and shp_info["rows"] > 0 else "EMPTY",
-        "records": f"{shp_info['rows']:,} rows" if shp_info["exists"] else "0 rows",
-        "coverage": shp_windows or "-",
-        "last_modified": shp_info["last_modified"],
     }
 
     return {
