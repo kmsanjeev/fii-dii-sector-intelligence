@@ -183,6 +183,7 @@ export function ChartsPage() {
   const [period, setPeriod]       = useState<Period>('1Y')
   const [showDropdown, setShowDropdown] = useState(false)
   const [searchQ, setSearchQ]     = useState('')
+  const [chartError, setChartError] = useState<string | null>(null)
 
   const chartRef   = useRef<HTMLDivElement>(null)
   const chartApi   = useRef<IChartApi | null>(null)
@@ -212,62 +213,64 @@ export function ChartsPage() {
     staleTime: 5 * 60_000,
   })
 
-  // Create chart once
+  // Create chart once — errors caught via state (useEffect errors bypass ErrorBoundary)
   useEffect(() => {
     if (!chartRef.current) return
+    setChartError(null)
 
-    const chart = createChart(chartRef.current, {
-      layout: {
-        background: { type: ColorType.Solid, color: COLORS.bg },
-        textColor: COLORS.text,
-        fontSize: 11,
-        fontFamily: 'monospace',
-      },
-      grid: {
-        vertLines: { color: COLORS.border },
-        horzLines: { color: COLORS.border },
-      },
-      crosshair: { vertLine: { labelBackgroundColor: '#1E2332' }, horzLine: { labelBackgroundColor: '#1E2332' } },
-      rightPriceScale: { borderColor: COLORS.border },
-      timeScale: {
-        borderColor: COLORS.border,
-        timeVisible: true,
-        secondsVisible: false,
-      },
-      handleScroll: true,
-      handleScale: true,
-    })
+    let chart: IChartApi | null = null
+    try {
+      chart = createChart(chartRef.current, {
+        autoSize: true,
+        layout: {
+          background: { type: ColorType.Solid, color: COLORS.bg },
+          textColor: COLORS.text,
+          fontSize: 11,
+          fontFamily: 'monospace',
+        },
+        grid: {
+          vertLines: { color: COLORS.border },
+          horzLines: { color: COLORS.border },
+        },
+        crosshair: {
+          vertLine: { labelBackgroundColor: '#1E2332' },
+          horzLine: { labelBackgroundColor: '#1E2332' },
+        },
+        rightPriceScale: { borderColor: COLORS.border },
+        timeScale: {
+          borderColor: COLORS.border,
+          timeVisible: true,
+          secondsVisible: false,
+        },
+        handleScroll: true,
+        handleScale: true,
+      })
 
-    const candles = chart.addSeries(CandlestickSeries, {
-      upColor:       COLORS.green,
-      downColor:     COLORS.red,
-      borderVisible: false,
-      wickUpColor:   COLORS.green,
-      wickDownColor: COLORS.red,
-    })
+      const candles = chart.addSeries(CandlestickSeries, {
+        upColor:       COLORS.green,
+        downColor:     COLORS.red,
+        borderVisible: false,
+        wickUpColor:   COLORS.green,
+        wickDownColor: COLORS.red,
+      })
 
-    const volume = chart.addSeries(HistogramSeries, {
-      priceFormat:  { type: 'volume' },
-      priceScaleId: 'vol',
-    })
+      const volume = chart.addSeries(HistogramSeries, {
+        priceScaleId: 'vol',
+      })
+      volume.priceScale().applyOptions({
+        scaleMargins: { top: 0.82, bottom: 0 },
+      })
 
-    // v5: apply scale margins via the series's own priceScale(), not chart.priceScale()
-    volume.priceScale().applyOptions({
-      scaleMargins: { top: 0.82, bottom: 0 },
-    })
-
-    chartApi.current  = chart
-    candleRef.current = candles
-    volumeRef.current = volume
-
-    const ro = new ResizeObserver(() => {
-      if (chartRef.current) chart.applyOptions({ width: chartRef.current.clientWidth })
-    })
-    ro.observe(chartRef.current)
+      chartApi.current  = chart
+      candleRef.current = candles
+      volumeRef.current = volume
+    } catch (e) {
+      setChartError(e instanceof Error ? e.message : String(e))
+      chart?.remove()
+    }
 
     return () => {
-      ro.disconnect()
-      chart.remove()
+      chartApi.current?.remove()
       chartApi.current  = null
       candleRef.current = null
       volumeRef.current = null
@@ -277,26 +280,29 @@ export function ChartsPage() {
   // Update data when ohlcv changes
   useEffect(() => {
     if (!ohlcv || !candleRef.current || !volumeRef.current) return
+    try {
+      const bars = ohlcv.bars
 
-    const bars = ohlcv.bars
+      const candles: CandlestickData<Time>[] = bars.map(b => ({
+        time:  b.time as Time,
+        open:  b.open,
+        high:  b.high,
+        low:   b.low,
+        close: b.close,
+      }))
 
-    const candles: CandlestickData<Time>[] = bars.map(b => ({
-      time:  b.time as Time,
-      open:  b.open,
-      high:  b.high,
-      low:   b.low,
-      close: b.close,
-    }))
+      const volumes: HistogramData<Time>[] = bars.map(b => ({
+        time:  b.time as Time,
+        value: b.volume ?? 0,
+        color: b.close >= b.open ? COLORS.green + '66' : COLORS.red + '66',
+      }))
 
-    const volumes: HistogramData<Time>[] = bars.map(b => ({
-      time:  b.time as Time,
-      value: b.volume,
-      color: b.close >= b.open ? COLORS.green + '66' : COLORS.red + '66',
-    }))
-
-    candleRef.current.setData(candles)
-    volumeRef.current.setData(volumes)
-    chartApi.current?.timeScale().fitContent()
+      candleRef.current.setData(candles)
+      volumeRef.current.setData(volumes)
+      chartApi.current?.timeScale().fitContent()
+    } catch (e) {
+      setChartError(e instanceof Error ? e.message : String(e))
+    }
   }, [ohlcv])
 
   const handleSymbolSelect = useCallback((sym: string) => {
@@ -419,7 +425,28 @@ export function ChartsPage() {
             position: 'relative', minHeight: 300,
           }}
         >
-          {isLoading && (
+          {chartError && (
+            <div style={{
+              position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center', gap: 8, zIndex: 20, backgroundColor: COLORS.bg,
+            }}>
+              <span style={{ color: COLORS.red, fontSize: 14, fontWeight: 700 }}>Chart Init Error</span>
+              <span style={{ color: COLORS.textDim, fontSize: 11, maxWidth: 360, textAlign: 'center' }}>
+                {chartError}
+              </span>
+              <button
+                onClick={() => { setChartError(null); window.location.reload() }}
+                style={{
+                  marginTop: 8, padding: '5px 16px', borderRadius: 4,
+                  border: `1px solid ${COLORS.red}`, background: 'transparent',
+                  color: COLORS.red, cursor: 'pointer', fontSize: 11,
+                }}
+              >
+                Reload page
+              </button>
+            </div>
+          )}
+          {!chartError && isLoading && (
             <div style={{
               position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
               justifyContent: 'center', color: COLORS.textDim, zIndex: 10, backgroundColor: COLORS.bg,
@@ -427,7 +454,7 @@ export function ChartsPage() {
               Loading {symbol}...
             </div>
           )}
-          {isError && (
+          {!chartError && isError && (
             <div style={{
               position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center', gap: 8, zIndex: 10, backgroundColor: COLORS.bg,
@@ -436,7 +463,7 @@ export function ChartsPage() {
                 Failed to load {symbol}
               </span>
               <span style={{ color: COLORS.textDim, fontSize: 11 }}>
-                {(error as Error)?.message ?? 'NSE API error — try again'}
+                {(error as Error)?.message ?? 'NSE API error -- try again'}
               </span>
             </div>
           )}
