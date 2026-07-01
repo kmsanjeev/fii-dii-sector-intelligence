@@ -115,11 +115,20 @@ data/NSE/shareholding/
 - Startup: Run `./start.ps1` to launch both servers as detached background processes
 - Telegram bot: Live and tested (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` in `.env`)
 
-**Next focus areas (Generation 4):**
-- Portfolio engine (position sizing, exposure tracking)
-- Execution platform (Zerodha/Dhan broker adapters)
-- Daily data refresh automation (cron/APScheduler for incremental engine runs)
-- Shareholding backfill expansion (pre-2024 quarters have limited XBRL coverage)
+**Generation 4 — Investment Operating System (phases 17-23, strict order):**
+| Phase | Name                    | Location                  | Status      |
+|-------|-------------------------|---------------------------|-------------|
+| 17    | Daily Intelligence Refresh | engines/orchestration/ | NOT STARTED |
+| 18    | Portfolio Engine        | engines/portfolio/        | NOT STARTED |
+| 19    | Backtesting Framework   | engines/backtest/         | NOT STARTED |
+| 20    | Broker Adapter (R/O)    | engines/broker/           | NOT STARTED |
+| 21    | Research Platform       | engines/research/         | NOT STARTED |
+| 22    | Execution Platform      | engines/execution/        | NOT STARTED |
+| 23    | Commercial Platform     | backend/auth/             | NOT STARTED |
+
+**NEXT BUILD: Phase 17 — Daily Intelligence Refresh**
+- File: `engines/orchestration/daily_refresh.py`
+- Intelligence is currently stale at 2026-06-30. Everything downstream needs fresh data first.
 
 ## COMPLETED FULL STACK
 ```

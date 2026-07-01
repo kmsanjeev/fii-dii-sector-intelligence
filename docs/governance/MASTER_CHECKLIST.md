@@ -255,13 +255,79 @@ Legend:  [x] Completed  [-] In Progress  [ ] Not Started
 
 ---
 
-# SECTION 17 — Execution Platform [FUTURE]
+# SECTION 17 — Daily Intelligence Refresh [NOT STARTED] <- NEXT BUILD
 
-[ ] Portfolio engine
-[ ] Risk engine
-[ ] Order management
-[ ] Trade journal
-[ ] Broker adapter framework (Zerodha, Dhan, Upstox, Angel One)
+[ ] engines/orchestration/daily_refresh.py (ordered engine pipeline, per-stage error isolation)
+[ ] engines/orchestration/refresh_scheduler.py (APScheduler: 18:00 IST weekdays trigger)
+[ ] engines/orchestration/refresh_monitor.py (staleness checker, refresh_log.csv output)
+[ ] data/intelligence/refresh_log.csv (per-run: stage, status, duration, rows_updated)
+[ ] Integration test: confirm full pipeline runs end-to-end without manual intervention
+[ ] Verify: alert_engine fires on fresh data after each successful refresh
+
+---
+
+# SECTION 18 — Portfolio Engine [NOT STARTED] <- after Phase 17
+
+[ ] engines/portfolio/position_engine.py (add/close/update positions, atomic CSV writes)
+[ ] engines/portfolio/exposure_engine.py (sector/theme exposure %, vs rotation_signal)
+[ ] engines/portfolio/pnl_engine.py (unrealised P&L from bhavcopy parquet cache prices)
+[ ] backend/routers/portfolio.py (/api/portfolio/positions + /exposure + /pnl endpoints)
+[ ] data/portfolio/positions.csv (symbol, qty, entry_price, entry_date, sector, status)
+[ ] data/portfolio/portfolio_snapshot.csv (daily sector exposure + P&L snapshot)
+[ ] Frontend Portfolio page (holdings table, exposure bar, signal alignment gauge)
+
+---
+
+# SECTION 19 — Backtesting Framework [NOT STARTED] <- after Phase 18
+
+[ ] engines/backtest/signal_backtester.py (replay EMERGING signals, compute forward returns)
+[ ] engines/backtest/strategy_engine.py (entry/exit rules: N-day hold, stop-loss, target)
+[ ] engines/backtest/performance_engine.py (Sharpe, max drawdown, win rate, hit rate by sector)
+[ ] data/intelligence/backtest_results.csv (per-signal: score, entry_date, fwd_ret_20d, outcome)
+[ ] data/intelligence/strategy_performance.csv (aggregate: Sharpe, win%, avg_return, drawdown)
+[ ] Frontend Backtest page (equity curve, performance table, signal accuracy by label)
+
+---
+
+# SECTION 20 — Broker Adapter (Read-Only) [NOT STARTED] <- after Phase 18
+
+[ ] engines/broker/base_adapter.py (abstract BrokerAdapter interface, broker-independence)
+[ ] engines/broker/zerodha_adapter.py (Kite Connect: holdings, positions, margins)
+[ ] engines/broker/position_sync.py (map broker positions -> portfolio engine schema)
+[ ] ZERODHA_API_KEY, ZERODHA_API_SECRET, ZERODHA_ACCESS_TOKEN in .env
+[ ] Verify: live Zerodha holdings auto-populate positions.csv on sync
+
+---
+
+# SECTION 21 — Research Platform [NOT STARTED] <- after Phase 18 + 19
+
+[ ] engines/research/thesis_engine.py (write/read/archive per-symbol investment theses)
+[ ] engines/research/thesis_validator.py (quarterly validation vs results + SHP + management)
+[ ] engines/research/report_engine.py (weekly Telegram digest + PDF export)
+[ ] data/research/theses.csv (symbol, thesis_text, written_date, target_price, target_date)
+[ ] data/research/thesis_scores.csv (quarterly validation: score, evidence, verdict)
+[ ] Frontend Research page (thesis list, quarterly validation history)
+
+---
+
+# SECTION 22 — Execution Platform [NOT STARTED] <- after Phase 19 + 20
+
+[ ] engines/execution/paper_trader.py (simulate orders vs live prices, no real money)
+[ ] engines/execution/order_manager.py (order queue, state machine: PENDING/PLACED/FILLED)
+[ ] engines/execution/risk_engine.py (position limits, concentration cap, max drawdown stop)
+[ ] engines/execution/live_trader.py (real orders — only enabled by LIVE_TRADE_MODE=true)
+[ ] Gate: paper mode must run 4 weeks with Sharpe > 0.8 before live_trader is enabled
+[ ] Frontend Execution page (order blotter, risk dashboard, paper vs live toggle)
+
+---
+
+# SECTION 23 — Commercial Platform [NOT STARTED] <- after Phases 17-22 stable
+
+[ ] backend/auth/ (JWT login/refresh, user CRUD, bcrypt passwords)
+[ ] backend/subscriptions/ (plan tiers: Free/Pro/Institutional, feature gates)
+[ ] frontend/auth/ (login page, subscription management page)
+[ ] Per-user data isolation (portfolio, research, alert preferences)
+[ ] Stripe payment integration (or equivalent)
 
 ---
 
@@ -273,16 +339,22 @@ Participant Intelligence  100%  (Phase 5)
 Sector Intelligence       100%  (Phase 6)
 Corporate Intelligence    100%  (Phase 7)
 Stock Scoring             100%  (Phase 8)
-Alert System              100%  (Phase 9   COMPLETE)
-FastAPI Backend           100%  (Phase 10  COMPLETE)
-React GUI + Charts        100%  (Phase 11  COMPLETE)
-ML Layer                  100%  (Phase 12  COMPLETE)
-RAG Knowledge Base        100%  (Phase 13  COMPLETE)
-Chatbot                   100%  (Phase 14  COMPLETE)
-Financial Results + SHP   100%  (Phase 15  COMPLETE)
-Management Intelligence   100%  (Phase 16  COMPLETE)
-Execution Platform          0%  (Future -- Generation 4)
+Alert System              100%  (Phase 9)
+FastAPI Backend           100%  (Phase 10)
+React GUI + Charts        100%  (Phase 11)
+ML Layer                  100%  (Phase 12)
+RAG Knowledge Base        100%  (Phase 13)
+Chatbot                   100%  (Phase 14)
+Financial Results + SHP   100%  (Phase 15)
+Management Intelligence   100%  (Phase 16)
+Daily Refresh             0%    (Phase 17 <- NEXT)
+Portfolio Engine          0%    (Phase 18)
+Backtesting Framework     0%    (Phase 19)
+Broker Adapter            0%    (Phase 20)
+Research Platform         0%    (Phase 21)
+Execution Platform        0%    (Phase 22)
+Commercial Platform       0%    (Phase 23)
 
-Overall: ~75% of full vision complete (Phases 1-16 done; Gen4 portfolio/execution/commercial pending)
-All intelligence + application + AI phases complete and producing live outputs
+Overall: ~55% of full vision complete
+Intelligence + Application + AI: 100%. Investment Operating System: 0%.
 ```

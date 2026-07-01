@@ -80,6 +80,17 @@ Layer 4: Stock Scoring             (8A/8B)     LIVE through 2026-06-10
 | 15 | Financial Results + SHP    | engines/fundamentals/ | COMPLETE (4181 XBRL rows, 4 quarters shareholding) |
 | 16 | Management Intelligence    | engines/management/   | COMPLETE (holding trends, announcements, Claude sentiment) |
 
+## Generation 4 — Investment Operating System (CURRENT FOCUS)
+| Phase | What | Location | Depends On | Status |
+|-------|------|----------|------------|--------|
+| 17 | Daily Intelligence Refresh | engines/orchestration/ | Phases 1-16 | NOT STARTED <- NEXT |
+| 18 | Portfolio Engine           | engines/portfolio/     | Phase 17   | NOT STARTED |
+| 19 | Backtesting Framework      | engines/backtest/      | Phase 18   | NOT STARTED |
+| 20 | Broker Adapter (R/O)       | engines/broker/        | Phase 18   | NOT STARTED |
+| 21 | Research Platform          | engines/research/      | 18 + 19    | NOT STARTED |
+| 22 | Execution Platform         | engines/execution/     | 19 + 20    | NOT STARTED |
+| 23 | Commercial Platform        | backend/auth/          | 17-22 done | NOT STARTED |
+
 ---
 
 # KEY INTELLIGENCE FILES (all in data/intelligence/)

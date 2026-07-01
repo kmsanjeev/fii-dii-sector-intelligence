@@ -141,23 +141,179 @@ Valuation: P/E + ROE scores, 2084 symbols.
 
 ---
 
-# LONG-TERM VISION (Generation 4)
+---
 
-After Phases 9-16:
-- Portfolio engine: position sizing, exposure tracking
-- Execution platform: Zerodha / Dhan / Upstox broker adapters
-- Research platform: investment thesis library, validation framework
-- Commercial platform: auth, subscriptions, multi-user
+# GENERATION 4 — Investment Operating System (CURRENT FOCUS)
+
+Phases 17-23. Each phase is independently deliverable and testable.
+Dependency chain is strictly linear — no phase can be skipped.
+
+---
+
+## PHASE 17 — Daily Intelligence Refresh | Priority 1 (NEXT)
+
+**Why first:** Every downstream phase (portfolio, execution, research) depends on fresh
+intelligence. Without this, the platform is a static historical report, not a live radar.
+The alert system exists and the Telegram bot is live — but they fire on stale data.
+
+Location: `engines/orchestration/`
+Stack: APScheduler (already installed), existing engines 5A/6A/8A/8B/12/13/9
+
+Engine pipeline (18:00 IST, market days only):
+```
+5A participant_acquisition (incremental F&O + cash)
+  -> 6A sector_capital_flow (rebuild)
+  -> 6B sector_flow_scores (rebuild)
+  -> 6C sector_rotation_intelligence (rebuild)
+  -> 7A block_bulk_deal (incremental 1-day)
+  -> 8A price_momentum (rebuild)
+  -> 8B bull_run_probability (rebuild)
+  -> 12  ml_scorer (daily inference, no retraining)
+  -> 13  RAG index_updater (rebuild from fresh CSVs)
+  -> 9   alert_engine (evaluate fresh signals, push Telegram)
+```
+
+Files:
+- `engines/orchestration/daily_refresh.py` — ordered pipeline with per-stage error isolation
+- `engines/orchestration/refresh_scheduler.py` — APScheduler trigger (18:00 IST weekdays)
+- `engines/orchestration/refresh_monitor.py` — staleness checker, logs to refresh_log.csv
+
+Success criteria: Platform runs without manual intervention every market day.
+
+---
+
+## PHASE 18 — Portfolio Engine | Priority 2 (needs Phase 17)
+
+Track real positions against the intelligence signals the platform generates.
+
+Location: `engines/portfolio/`, `backend/routers/portfolio.py`, `frontend/` Portfolio page
+Stack: pandas, FastAPI (existing), React (existing)
+
+Files:
+- `engines/portfolio/position_engine.py` — CRUD: add/close/update positions
+- `engines/portfolio/exposure_engine.py` — sector/theme exposure vs rotation signal
+- `engines/portfolio/pnl_engine.py` — unrealised P&L from bhavcopy cache prices
+- `backend/routers/portfolio.py` — REST endpoints: /api/portfolio/positions + /exposure + /pnl
+- Frontend Portfolio page: holdings table, sector exposure bar, signal alignment gauge
+
+Data:
+- `data/portfolio/positions.csv` — symbol, qty, entry_price, entry_date, sector, status
+- `data/portfolio/portfolio_snapshot.csv` — daily exposure + P&L snapshot
+
+Success criteria: Can enter positions and see live sector exposure vs sector_rotation_intelligence.
+
+---
+
+## PHASE 19 — Backtesting Framework | Priority 3 (needs Phase 18)
+
+Validate whether intelligence signals actually predict price moves before risking real money.
+Replay historical bull_run_probability signals against actual subsequent price returns.
+
+Location: `engines/backtest/`
+Stack: pandas, bhavcopy parquet cache (existing), pyarrow (existing)
+
+Files:
+- `engines/backtest/signal_backtester.py` — replay past EMERGING signals, compute forward returns
+- `engines/backtest/strategy_engine.py` — entry/exit rules (entry on signal, exit after N days or stop)
+- `engines/backtest/performance_engine.py` — Sharpe, max drawdown, win rate, hit rate by sector
+- Frontend Backtest page (new): equity curve, performance table, signal accuracy by label
+
+Data:
+- `data/intelligence/backtest_results.csv` — per-signal actual return vs signal score
+- `data/intelligence/strategy_performance.csv` — aggregate strategy metrics
+
+Success criteria: Can quantify historical signal quality. Basis for deciding what score threshold to act on.
+
+---
+
+## PHASE 20 — Broker Adapter (Read-Only) | Priority 4 (needs Phase 18)
+
+Sync live broker positions into the portfolio engine. Read-only first — no order placement.
+
+Location: `engines/broker/`
+Stack: kiteconnect (Zerodha), abstract adapter interface for broker independence
+
+Files:
+- `engines/broker/base_adapter.py` — abstract BrokerAdapter interface (ADR-013 compliant)
+- `engines/broker/zerodha_adapter.py` — Kite Connect API: holdings, positions, margins
+- `engines/broker/position_sync.py` — map broker positions to portfolio engine schema
+
+Env vars:
+- `ZERODHA_API_KEY`, `ZERODHA_API_SECRET`, `ZERODHA_ACCESS_TOKEN` (in .env, never hardcoded)
+
+Success criteria: Live Zerodha holdings auto-import into portfolio engine without manual entry.
+
+---
+
+## PHASE 21 — Research Platform | Priority 5 (needs Phase 18 + 19)
+
+Investment thesis library: record the reasoning behind each position and validate it
+automatically each quarter against financial results, shareholding changes, and management signals.
+
+Location: `engines/research/`
+Stack: pandas, anthropic SDK (existing for Claude API), Telegram (existing)
+
+Files:
+- `engines/research/thesis_engine.py` — write/read/archive investment theses per symbol
+- `engines/research/thesis_validator.py` — score thesis quarterly vs results + SHP changes
+- `engines/research/report_engine.py` — weekly intelligence digest (Telegram + PDF)
+
+Data:
+- `data/research/theses.csv` — symbol, thesis_text, written_date, target_price, target_date
+- `data/research/thesis_scores.csv` — quarterly validation scores per thesis
+
+Success criteria: Theses auto-validate each quarter; weekly digest Telegram message includes thesis status.
+
+---
+
+## PHASE 22 — Execution Platform | Priority 6 (needs Phase 19 + 20)
+
+Paper trading first. Live orders only after backtesting proves signal quality.
+Hard gate: live_mode flag off by default, enabled only by explicit env var.
+
+Location: `engines/execution/`
+Stack: kiteconnect (existing from Phase 20)
+
+Files:
+- `engines/execution/paper_trader.py` — simulate orders against live prices, no money at risk
+- `engines/execution/order_manager.py` — order queue, state machine (PENDING/PLACED/FILLED/FAILED)
+- `engines/execution/risk_engine.py` — position limits, sector concentration, max drawdown stop
+- `engines/execution/live_trader.py` — real order placement (requires `LIVE_TRADE_MODE=true` in .env)
+
+Success criteria:
+- Paper mode: place 20 simulated trades over 2 weeks, verify P&L tracking correct
+- Live mode: only enable after paper mode Sharpe > 0.8 over minimum 4-week window
+
+---
+
+## PHASE 23 — Commercial Platform | Priority 7 (needs Phases 17-22 stable)
+
+Productize the platform for multiple users. Last phase — never before the core is stable.
+
+Location: `backend/auth/`, `backend/subscriptions/`, `frontend/auth/`
+Stack: JWT (python-jose), bcrypt, Stripe (payment), PostgreSQL or SQLite
+
+Files:
+- `backend/auth/` — JWT login/refresh, user CRUD, role-based access
+- `backend/subscriptions/` — plan tiers (Free/Pro/Institutional), feature gates
+- `frontend/auth/` — login page, subscription management page
+- Multi-user data isolation: per-user portfolio, research, and alert preferences
+
+Success criteria: Two users can log in simultaneously with separate portfolios and alert configs.
 
 ---
 
 # CURRENT STATUS (2026-07-02)
 
-All Phases 1-16 COMPLETE. Full intelligence-to-UI stack operational.
+Phases 1-16 COMPLETE. Generation 3 (intelligence + application + AI) fully operational.
+Generation 4 active. Build order is strict — Phase 17 first, no exceptions.
 
-Generation 3 done. Generation 4 is the next focus:
-- Portfolio engine (position sizing, exposure tracking, P&L)
-- Execution platform (Zerodha/Dhan/Upstox broker adapters)
-- Daily data refresh automation (scheduled incremental engine runs)
-- Research platform (investment thesis library, validation framework)
-- Commercial platform (auth, subscriptions, multi-user)
+```
+Phase 17  Daily Refresh       engines/orchestration/   <- BUILD NOW
+Phase 18  Portfolio Engine    engines/portfolio/        <- after 17
+Phase 19  Backtesting         engines/backtest/         <- after 18
+Phase 20  Broker Adapter      engines/broker/           <- after 18
+Phase 21  Research Platform   engines/research/         <- after 18 + 19
+Phase 22  Execution Platform  engines/execution/        <- after 19 + 20
+Phase 23  Commercial Platform backend/auth/             <- after 17-22 stable
+```

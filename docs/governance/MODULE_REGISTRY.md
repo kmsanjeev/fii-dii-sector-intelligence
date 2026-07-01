@@ -611,183 +611,74 @@ Report Center (daily/weekly/monthly reports)
 
 # Module 09
 
-Execution Platform
+Daily Intelligence Refresh (Phase 17)
 
 ---
 
 ## Category
 
-Platform
+Platform — Orchestration
 
 ---
 
 ## Status
 
-FOUNDATION COMPLETE
+PLANNED — Phase 17 (NEXT BUILD)
 
 ---
 
 ## Completion
 
-5%
+0%
 
 ---
 
 ## Priority
 
-Medium
+Very High (blocker for all Gen4 modules)
 
 ---
 
 ## Purpose
 
-Portfolio management and broker-independent execution.
+Run all intelligence engines automatically every market day after 18:00 IST.
+Transforms the platform from a static report into a live capital flow radar.
 
 ---
 
-## Planned Components
+## Engine Pipeline (in order)
 
-Portfolio Engine
+5A participant_acquisition -> 6A/6B/6C sector flows -> 7A block/bulk deals
+-> 8A price_momentum -> 8B bull_run_probability -> 12 ml_scorer
+-> 13 RAG index_updater -> 9 alert_engine
 
-Risk Engine
+## Files
 
-Order Management
-
-Trade Journal
-
-Performance Analytics
-
-Broker Adapter Framework
+engines/orchestration/daily_refresh.py -- ordered pipeline, per-stage error isolation
+engines/orchestration/refresh_scheduler.py -- APScheduler 18:00 IST weekday trigger
+engines/orchestration/refresh_monitor.py -- staleness checker, refresh_log.csv output
 
 ---
 
-# Future Intelligence Modules
+# Generation 4 Modules
 
 ---
 
 # Module 10
 
-Portfolio Intelligence
+Portfolio Engine (Phase 18)
 
 ---
 
 ## Category
 
-Future Intelligence
+Platform — Investment
 
 ---
 
 ## Status
 
-PLANNED
-
----
-
-## Completion
-
-0%
-
----
-
-## Priority
-
-Medium
-
----
-
-## Purpose
-
-Analyze portfolio construction, allocation, exposure, and performance.
-
----
-
-# Module 11
-
-Risk Intelligence
-
----
-
-## Category
-
-Future Intelligence
-
----
-
-## Status
-
-PLANNED
-
----
-
-## Completion
-
-0%
-
----
-
-## Priority
-
-Medium
-
----
-
-## Purpose
-
-Monitor portfolio and market risk.
-
----
-
-# Module 12
-
-Options Intelligence
-
----
-
-## Category
-
-Future Intelligence
-
----
-
-## Status
-
-PLANNED
-
----
-
-## Completion
-
-0%
-
----
-
-## Priority
-
-Medium
-
----
-
-## Purpose
-
-Advanced derivatives and options analytics.
-
----
-
-# Module 13
-
-Research Platform
-
----
-
-## Category
-
-Research
-
----
-
-## Status
-
-PLANNED
+PLANNED — Phase 18 (after Phase 17)
 
 ---
 
@@ -805,7 +696,251 @@ High
 
 ## Purpose
 
-Manage research, validation, investment theses, and idea tracking.
+Track real positions against intelligence signals. Sector/theme exposure analysis
+and unrealised P&L from bhavcopy parquet cache prices.
+
+---
+
+## Files
+
+engines/portfolio/position_engine.py
+engines/portfolio/exposure_engine.py
+engines/portfolio/pnl_engine.py
+backend/routers/portfolio.py
+data/portfolio/positions.csv, portfolio_snapshot.csv
+Frontend Portfolio page
+
+---
+
+# Module 11
+
+Backtesting Framework (Phase 19)
+
+---
+
+## Category
+
+Platform — Validation
+
+---
+
+## Status
+
+PLANNED — Phase 19 (after Phase 18)
+
+---
+
+## Completion
+
+0%
+
+---
+
+## Priority
+
+High (gate before live execution)
+
+---
+
+## Purpose
+
+Replay historical bull_run signals against actual returns. Quantify signal quality
+before any real capital is deployed. Hard prerequisite for Phase 22.
+
+---
+
+## Files
+
+engines/backtest/signal_backtester.py
+engines/backtest/strategy_engine.py
+engines/backtest/performance_engine.py
+data/intelligence/backtest_results.csv, strategy_performance.csv
+Frontend Backtest page
+
+---
+
+# Module 12
+
+Broker Adapter — Read-Only (Phase 20)
+
+---
+
+## Category
+
+Platform — Integration
+
+---
+
+## Status
+
+PLANNED — Phase 20 (after Phase 18)
+
+---
+
+## Completion
+
+0%
+
+---
+
+## Priority
+
+High
+
+---
+
+## Purpose
+
+Sync live Zerodha positions into portfolio engine. Abstract adapter interface
+(BrokerAdapter base class) ensures Dhan/Upstox can plug in later.
+
+---
+
+## Files
+
+engines/broker/base_adapter.py
+engines/broker/zerodha_adapter.py (Kite Connect)
+engines/broker/position_sync.py
+Env: ZERODHA_API_KEY, ZERODHA_API_SECRET, ZERODHA_ACCESS_TOKEN
+
+---
+
+# Module 13
+
+Research Platform (Phase 21)
+
+---
+
+## Category
+
+Platform — Research
+
+---
+
+## Status
+
+PLANNED — Phase 21 (after Phase 18 + 19)
+
+---
+
+## Completion
+
+0%
+
+---
+
+## Priority
+
+Medium
+
+---
+
+## Purpose
+
+Investment thesis library. Record reasoning per position, auto-validate quarterly
+against financial results, shareholding changes, and management signals.
+
+---
+
+## Files
+
+engines/research/thesis_engine.py
+engines/research/thesis_validator.py
+engines/research/report_engine.py (weekly Telegram digest + PDF)
+data/research/theses.csv, thesis_scores.csv
+Frontend Research page
+
+---
+
+# Module 14 (was Execution Platform — renamed for Gen4)
+
+Execution Platform — Live Trading (Phase 22)
+
+---
+
+## Category
+
+Platform — Execution
+
+---
+
+## Status
+
+PLANNED — Phase 22 (after Phase 19 + 20, paper-trade gate required)
+
+---
+
+## Completion
+
+0%
+
+---
+
+## Priority
+
+Medium
+
+---
+
+## Purpose
+
+Place real orders via broker adapter. Paper mode must run 4 weeks (Sharpe > 0.8)
+before live_trader.py is enabled by LIVE_TRADE_MODE=true.
+
+---
+
+## Files
+
+engines/execution/paper_trader.py
+engines/execution/order_manager.py (state machine)
+engines/execution/risk_engine.py (limits, concentration, drawdown stop)
+engines/execution/live_trader.py (gate: LIVE_TRADE_MODE=true)
+Frontend Execution page (order blotter, risk dashboard)
+
+---
+
+# Module 15 (was Commercial Platform — renumbered for Gen4)
+
+Commercial Platform (Phase 23)
+
+---
+
+## Category
+
+Platform — Commercial
+
+---
+
+## Status
+
+PLANNED — Phase 23 (after Phases 17-22 stable)
+
+---
+
+## Completion
+
+0%
+
+---
+
+## Priority
+
+Low (last phase)
+
+---
+
+## Purpose
+
+Multi-user productization: JWT auth, plan tiers, per-user data isolation, payments.
+
+---
+
+## Files
+
+backend/auth/ (JWT, bcrypt, user CRUD)
+backend/subscriptions/ (Free/Pro/Institutional tiers, feature gates)
+frontend/auth/ (login, subscription management)
+Stripe or equivalent payment integration
 
 ---
 
@@ -1139,21 +1274,18 @@ docs/architecture/ML_AI_CHATBOT_ARCHITECTURE.md (Section 4)
 
 # Current Development Priority (2026-07-02)
 
-ALL PHASES 9-16 COMPLETE. Platform operational.
+Phase 17 (Daily Intelligence Refresh) — engines/orchestration/ — BUILD NOW
 
-Next focus: Generation 4 (portfolio engine, execution platform, research platform).
+Strict build order: 17 -> 18 -> 19 -> 20 -> 21 -> 22 -> 23
 
 ---
 
 # Current Platform Completion
 
-Estimated Overall Completion:
-
-Intelligence Cascade: 100% (Phases 1-8 all complete)
-
-Application + AI Layer: 100% (Phases 9-16 all complete)
-
-Platform Overall: ~75% (Generation 4 portfolio/execution/commercial pending)
+Intelligence Cascade (Phases 1-8):          100%
+Application + AI Layer (Phases 9-16):       100%
+Investment Operating System (Phases 17-23):   0%
+Platform Overall: ~55% of full vision complete
 
 ---
 
