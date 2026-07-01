@@ -1,0 +1,37 @@
+Phase,Name,Completion,Verdict,Key Output,Location
+1,Foundation Layer,100%,COMPLETE,equity_master.csv + 7813 bhavcopy files,engines/foundation/
+2,Classification Engine,99.5%,COMPLETE,company_classification_v4.csv (2123 symbols),engines/classification_engine_v4.py
+3,Index Intelligence,100%,COMPLETE,index_momentum.csv + 139 indices,engines/intelligence/
+3B,Guardrails + Test Suite,100%,COMPLETE,guardrails.py + 400+ tests,engines/common/ + tests/
+4A,Company Fundamentals Master,100%,COMPLETE,company_fundamentals_master.csv (2123 symbols),engines/fundamentals/
+4B,Industry Master Engine,100%,COMPLETE,industry_master.csv (183 industries),engines/fundamentals/
+4C,Classification V4 Final,100%,COMPLETE,99.53% sector coverage locked,engines/classification_engine_v4.py
+4D,NSE Constituents Downloader,100%,COMPLETE,index_membership.csv (30 indices + 506 symbols),engines/foundation/
+5A,Participant Acquisition,100%,COMPLETE,institutional_positioning_history.csv (2581 rows),engines/participant/
+5B,Participant Flow Engine,100%,COMPLETE,participant_flow_scores.csv (2581 rows 62 cols),engines/participant/
+5C,Participant Intelligence,100%,COMPLETE,participant_intelligence.csv -- regime=NEUTRAL Smart Money=-4.7,engines/participant/
+6A,Sector Capital Flow,100%,COMPLETE,sector_capital_flows.csv (74269 rows 2016-2026),engines/sector/
+6B,Sector Flow Scores,100%,COMPLETE,sector_flow_scores.csv (rolling 5D/20D/60D z-scores),engines/sector/
+6C,Sector Rotation Intelligence,100%,COMPLETE,sector_rotation_intelligence.csv (29 sectors),engines/sector/
+7A,Block/Bulk Deal Engine,100%,COMPLETE,institutional_deal_signals.csv (361 signals 12467 deals),engines/corporate/
+7B,Event Calendar Engine,100%,COMPLETE,event_calendar.csv (33839 events) + upcoming_catalysts.csv (12),engines/corporate/
+7C,Corporate Action Intelligence,100%,COMPLETE,corporate_confidence_scores.csv (1111 symbols 40517 actions),engines/corporate/
+8A,Price Momentum Engine,100%,COMPLETE,price_momentum.csv (2441 symbols 5 lookbacks),engines/intelligence/
+8B,Bull Run Probability Engine,100%,COMPLETE,bull_run_probability.csv (2441) + watchlist (225 EMERGING),engines/intelligence/
+9,Alert System (Telegram),100%,COMPLETE,7 alert types + APScheduler -- 118 alerts on first run,alerts/
+10,FastAPI Backend,100%,COMPLETE,16 endpoints + WebSocket live ticker -- port 8001,backend/
+11,React GUI + Charts,100%,COMPLETE,11 pages + TradingView OHLCV -- IST timestamps -- 9 timeframes -- port 5173,frontend/
+12,ML Intelligence Layer,95%,NEAR-COMPLETE,ml_scores_combined.csv (2441) -- ml_shap_values.csv missing (minor),engines/ml/
+13,RAG Knowledge Base,60%,INCOMPLETE,engines built -- FAISS+BM25 indexes never generated (data/intelligence/rag/ missing),engines/ai/knowledge/
+14,Chatbot (Claude API),70%,INCOMPLETE,4 agents + tool registry built -- RAG context broken (Phase 13 gap),engines/ai/chatbot/
+15,Financial Results + Shareholding,85%,INCOMPLETE,4181 XBRL rows + 7228 SHP rows -- valuation_scores.csv never generated,engines/fundamentals/
+16,Management Intelligence,80%,INCOMPLETE,527 announcements + 471 sentiment scores -- holding_trends.csv never generated,engines/management/
+17,Symbol Change History,0%,NOT STARTED,data/NSE/equity_master/symbol_change_history.csv (1038 renames unincorporated),engines/foundation/
+18,Corporate Announcements Intelligence,0%,NOT STARTED,company_announcements.csv + announcement_signals.csv (50000+ rows expected),engines/corporate/
+19,Daily Intelligence Refresh,0%,NOT STARTED,refresh_log.csv -- automated 18:00 IST pipeline,engines/orchestration/
+20,Portfolio Engine,0%,NOT STARTED,positions.csv + portfolio_snapshot.csv,engines/portfolio/
+21,Backtesting Framework,0%,NOT STARTED,backtest_results.csv + strategy_performance.csv,engines/backtest/
+22,Broker Adapter (Read-Only),0%,NOT STARTED,Zerodha Kite Connect -- positions auto-sync,engines/broker/
+23,Research Platform,0%,NOT STARTED,theses.csv + thesis_scores.csv,engines/research/
+24,Execution Platform,0%,NOT STARTED,paper_trader.py + order_manager.py + risk_engine.py,engines/execution/
+25,Commercial Platform,0%,NOT STARTED,backend/auth/ + subscriptions/ + frontend/auth/,backend/auth/

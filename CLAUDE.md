@@ -115,20 +115,24 @@ data/NSE/shareholding/
 - Startup: Run `./start.ps1` to launch both servers as detached background processes
 - Telegram bot: Live and tested (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` in `.env`)
 
-**Generation 4 — Investment Operating System (phases 17-23, strict order):**
-| Phase | Name                    | Location                  | Status      |
-|-------|-------------------------|---------------------------|-------------|
-| 17    | Daily Intelligence Refresh | engines/orchestration/ | NOT STARTED |
-| 18    | Portfolio Engine        | engines/portfolio/        | NOT STARTED |
-| 19    | Backtesting Framework   | engines/backtest/         | NOT STARTED |
-| 20    | Broker Adapter (R/O)    | engines/broker/           | NOT STARTED |
-| 21    | Research Platform       | engines/research/         | NOT STARTED |
-| 22    | Execution Platform      | engines/execution/        | NOT STARTED |
-| 23    | Commercial Platform     | backend/auth/             | NOT STARTED |
+**Generation 4 — Investment Operating System (phases 17-25, strict order):**
+| Phase | Name                        | Location                  | Depends On | Status      |
+|-------|-----------------------------|---------------------------|------------|-------------|
+| 17    | Symbol Change History       | engines/foundation/       | Phase 1    | NOT STARTED |
+| 18    | Corporate Announcements     | engines/corporate/        | Phase 5A   | NOT STARTED |
+| 19    | Daily Intelligence Refresh  | engines/orchestration/    | 1-18       | NOT STARTED |
+| 20    | Portfolio Engine            | engines/portfolio/        | Phase 19   | NOT STARTED |
+| 21    | Backtesting Framework       | engines/backtest/         | Phase 20   | NOT STARTED |
+| 22    | Broker Adapter (R/O)        | engines/broker/           | Phase 20   | NOT STARTED |
+| 23    | Research Platform           | engines/research/         | 20 + 21    | NOT STARTED |
+| 24    | Execution Platform          | engines/execution/        | 21 + 22    | NOT STARTED |
+| 25    | Commercial Platform         | backend/auth/             | 19-24 done | NOT STARTED |
 
-**NEXT BUILD: Phase 17 — Daily Intelligence Refresh**
-- File: `engines/orchestration/daily_refresh.py`
-- Intelligence is currently stale at 2026-06-30. Everything downstream needs fresh data first.
+**NEXT BUILD: Phase 17 — Symbol Change History**
+- Source: `https://nsearchives.nseindia.com/content/equities/symbolchange.csv` (1038 records, live)
+- Output: `data/NSE/equity_master/symbol_change_history.csv`
+- Engine: `engines/foundation/symbol_change_engine.py`
+- Without this, Phase 21 backtesting returns wrong results for renamed companies (e.g., IIFLWAM→360ONE)
 
 ## COMPLETED FULL STACK
 ```
