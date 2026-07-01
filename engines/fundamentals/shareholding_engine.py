@@ -140,12 +140,21 @@ RECENT_WINDOWS = [
 ]
 
 
+def _is_null_xbrl(xbrl_url) -> bool:
+    """Detect NSE's sentinel null-archive URL returned for pre-2024 quarters."""
+    if not xbrl_url:
+        return True
+    s = str(xbrl_url).strip()
+    return s in ("null", "None", "") or s.endswith("/xbrl/null") or s.endswith("/xbrl/-")
+
+
 class ShareholdingEngine:
     def __init__(self, windows: int = 1, backfill: bool = False,
                  use_screener_fallback: bool = True, from_quarter: str | None = None):
         self.windows = windows
         self.backfill = backfill
-        self.use_screener_fallback = use_screener_fallback
+        # Screener only has CURRENT data — disable for historical backfill
+        self.use_screener_fallback = use_screener_fallback and not backfill
         self.from_quarter = from_quarter
         SHAREHOLDING_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -306,7 +315,7 @@ class ShareholdingEngine:
                 "source":           "nse_xbrl",
             }
 
-            if not xbrl_url or str(xbrl_url).endswith("/xbrl/-"):
+            if _is_null_xbrl(xbrl_url):
                 base["source"] = "master_only"
                 return base
 
