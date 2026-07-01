@@ -182,6 +182,18 @@ ENGINES = {
         "script": "engines/fundamentals/valuation_engine.py",
         "phase": "15B",
     },
+    "fundamentals_15c": {
+        "label": "Shareholding Engine (15C)",
+        "script": "engines/fundamentals/shareholding_engine.py",
+        "args": ["--windows", "1"],
+        "phase": "15C",
+    },
+    "fundamentals_15c_full": {
+        "label": "Shareholding Engine Full History (15C)",
+        "script": "engines/fundamentals/shareholding_engine.py",
+        "args": ["--full"],
+        "phase": "15C",
+    },
     "ml_12": {
         "label": "ML Intelligence (12)",
         "script": "engines/ml/feature_engineering.py",
@@ -433,6 +445,24 @@ def get_data_status():
             "coverage": "-",
             "last_modified": valuation_info["last_modified"],
         },
+    }
+
+    # Shareholding (Phase 15C)
+    shp_path = cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv"
+    shp_info = _file_info(shp_path)
+    shp_windows = ""
+    if shp_info["exists"] and shp_info["rows"] > 0:
+        try:
+            _sdf = pd.read_csv(shp_path, usecols=["symbol", "window_label"])
+            shp_windows = ", ".join(sorted(_sdf["window_label"].dropna().unique()))
+        except Exception:
+            pass
+    fundamentals["shareholding"] = {
+        "label": "Shareholding Patterns (15C)",
+        "status": "OK" if shp_info["exists"] and shp_info["rows"] > 0 else "EMPTY",
+        "records": f"{shp_info['rows']:,} rows" if shp_info["exists"] else "0 rows",
+        "coverage": shp_windows or "-",
+        "last_modified": shp_info["last_modified"],
     }
 
     return {

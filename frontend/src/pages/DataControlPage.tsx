@@ -108,6 +108,7 @@ const ENGINE_MAP: Record<string, string> = {
   corporate_confidence:         'corp_actions_7c',
   quarterly_results:            'fundamentals_15a',
   valuation_scores:             'fundamentals_15b',
+  shareholding:                 'fundamentals_15c',
 }
 
 function ModuleTable({
