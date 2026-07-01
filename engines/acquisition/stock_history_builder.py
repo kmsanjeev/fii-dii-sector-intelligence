@@ -1,9 +1,9 @@
 """
 Stock History Builder
-Reads raw bhavcopy files (READ-ONLY) and builds per-symbol OHLCV parquet files.
+Reads corporate-action-adjusted bhavcopy files and builds per-symbol OHLCV parquet files.
 
-Raw source (immutable):  data/NSE/bhavcopy/equity/**/*.csv
-Output (cache/derived):  data/NSE/nsecache/stock_history/<SYMBOL>.parquet
+Source (adjusted, derived):  data/NSE/adjusted_equity/**/*.csv   <- run price_adjustment_engine first
+Output (cache):              data/NSE/nsecache/stock_history/<SYMBOL>.parquet
 
 Run modes:
   py -3.11 engines/acquisition/stock_history_builder.py          <- incremental (new dates only)
@@ -29,7 +29,9 @@ from engines.common.progress import progress
 
 logger = get_logger("stock_history_builder")
 
-BHAVCOPY_DIR = cfg.NSE_EQUITY_BHAVCOPY_DIR
+# Reads from ADJUSTED equity (corporate-action-adjusted prices), not raw bhavcopy.
+# Run price_adjustment_engine.py --full first to populate adjusted_equity/.
+BHAVCOPY_DIR = cfg.ADJUSTED_EQUITY_DIR
 OUTPUT_DIR   = cfg.STOCK_HISTORY_CACHE
 MANIFEST     = OUTPUT_DIR / "manifest.json"
 
@@ -67,6 +69,39 @@ KEEP = ["date", "symbol", "open", "high", "low", "close",
         "prev_close", "volume", "turnover", "trades", "isin"]
 
 
+# ── Corporate-action lookup ───────────────────────────────────────────────────
+# Loaded once at startup; provides ca_info string keyed by (symbol, date).
+
+def _load_ca_lookup() -> dict[str, dict[str, str]]:
+    """Returns {SYMBOL: {YYYY-MM-DD: ca_info_string}}"""
+    ca_file = cfg.EQUITY_MASTER_DIR / "nse_corporate_actions_derived.csv"
+    if not ca_file.exists():
+        logger.warning("[Builder] CA derived file not found — ca_info column will be empty")
+        return {}
+    try:
+        ca = pd.read_csv(ca_file, low_memory=False)
+        ca = ca.dropna(subset=["symbol", "exDate"])
+        lookup: dict[str, dict[str, str]] = {}
+        for _, row in ca.iterrows():
+            sym = str(row["symbol"]).strip().upper()
+            try:
+                dt = pd.to_datetime(row["exDate"], dayfirst=True).strftime("%Y-%m-%d")
+            except Exception:
+                continue
+            subject = str(row.get("subject", "")).strip()
+            adj_type = str(row.get("adjustment_type", "")).strip()
+            label = subject if subject and subject != "nan" else adj_type
+            if label and label != "nan":
+                lookup.setdefault(sym, {})[dt] = label
+        logger.info("[Builder] CA lookup loaded: %d symbols", len(lookup))
+        return lookup
+    except Exception as exc:
+        logger.warning("[Builder] Could not load CA lookup: %s", exc)
+        return {}
+
+CA_LOOKUP: dict[str, dict[str, str]] = _load_ca_lookup()
+
+
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _date_from_filename(path: Path) -> str | None:
@@ -100,11 +135,16 @@ def _read_bhavcopy(path: Path) -> pd.DataFrame:
             df = df[df["series"].str.strip().str.upper() == "EQ"].copy()
         if df.empty:
             return pd.DataFrame()
+        # Prefer TRADE_DATE (YYYY-MM-DD) over TIMESTAMP (DD-MON-YYYY).
+        # Adjusted files have both; renaming both to "date" creates a duplicate
+        # column that breaks pd.to_datetime().dt.strftime() with a silent error.
+        if "TRADE_DATE" in df.columns and "TIMESTAMP" in df.columns:
+            df = df.drop(columns=["TIMESTAMP"])
         df = df.rename(columns={k: v for k, v in RENAME.items() if k in df.columns})
         df.columns = [c.lower() for c in df.columns]
         if "date" not in df.columns:
             return pd.DataFrame()
-        df["date"] = pd.to_datetime(df["date"], dayfirst=True, errors="coerce").dt.strftime("%Y-%m-%d")
+        df["date"] = pd.to_datetime(df["date"], dayfirst=False, errors="coerce").dt.strftime("%Y-%m-%d")
         df = df.dropna(subset=["date", "symbol"])
         df["symbol"] = df["symbol"].str.strip().str.upper()
         keep = [c for c in KEEP if c in df.columns]
@@ -137,13 +177,18 @@ def _write_symbol_parquet(symbol: str, new_df: pd.DataFrame):
     path = OUTPUT_DIR / f"{symbol}.parquet"
     if path.exists():
         existing = pd.read_parquet(path)
+        # Drop stale ca_info before concat so it gets recalculated cleanly
+        existing = existing.drop(columns=["ca_info"], errors="ignore")
         combined = pd.concat([existing, new_df], ignore_index=True)
     else:
         combined = new_df
     combined = (combined
-                .drop_duplicates(subset=["date"])
+                .drop_duplicates(subset=["date"], keep="last")
                 .sort_values("date")
                 .reset_index(drop=True))
+    # Attach corporate action info as the final column
+    ca_dates = CA_LOOKUP.get(symbol.upper(), {})
+    combined["ca_info"] = combined["date"].map(lambda d: ca_dates.get(str(d), ""))
     tmp = path.with_suffix(".tmp")
     combined.to_parquet(tmp, index=False)
     shutil.move(str(tmp), str(path))

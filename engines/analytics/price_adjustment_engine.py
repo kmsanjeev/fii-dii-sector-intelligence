@@ -20,7 +20,10 @@ Features:
     Sanity Validation
 """
 
+import argparse
+import shutil
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import pandas as pd
@@ -35,6 +38,7 @@ from engines.common.config import (
     ADJUSTED_EQUITY_DIR,
     WRITE_PARQUET,
     WRITE_CSV,
+    MAX_CONCURRENCY,
 )
 
 from engines.common.logger import (
@@ -998,117 +1002,64 @@ def validate_adjusted_storage():
 # ============================================================
 
 def adjust_year(
-    year: int
+    year: int,
+    lookup: pd.DataFrame,
+    workers: int = MAX_CONCURRENCY,
 ):
-
-    files = get_year_files(
-        year
-    )
+    files = get_year_files(year)
 
     if not files:
-
-        logger.warning(
-            f"{year}: "
-            f"no files found"
-        )
-
-        return {
-
-            "year": year,
-            "adjusted": 0,
-            "skipped": 0,
-            "errors": 0,
-
-        }
-
-    lookup = (
-        build_adjustment_lookup()
-    )
+        logger.warning(f"{year}: no files found")
+        return {"year": year, "adjusted": 0, "skipped": 0, "errors": 0}
 
     adjusted = 0
     skipped = 0
     errors = 0
 
-    for file in progress(
-        files,
-        desc=f"Adjust {year}"
-    ):
+    with progress(total=len(files), desc=f"Adjust {year}") as pbar:
+        with ThreadPoolExecutor(max_workers=workers) as ex:
+            futures = {ex.submit(adjust_bhavcopy_file, f, lookup): f for f in files}
+            for fut in as_completed(futures):
+                result = fut.result()
+                if result == "adjusted":
+                    adjusted += 1
+                elif result == "skip":
+                    skipped += 1
+                else:
+                    errors += 1
+                pbar.update(1)
 
-        result = (
-            adjust_bhavcopy_file(
-                file,
-                lookup
-            )
-        )
-
-        if result == "adjusted":
-
-            adjusted += 1
-
-        elif result == "skip":
-
-            skipped += 1
-
-        else:
-
-            errors += 1
-
-    return {
-
-        "year": year,
-
-        "adjusted":
-            adjusted,
-
-        "skipped":
-            skipped,
-
-        "errors":
-            errors,
-
-    }
+    return {"year": year, "adjusted": adjusted, "skipped": skipped, "errors": errors}
 
 
 # ============================================================
 # FULL REBUILD
 # ============================================================
 
-def adjust_all():
-
+def adjust_all(full_rebuild: bool = False):
     years = sorted(
-
-        int(
-            p.name
-        )
-
-        for p in
-        NSE_EQUITY_BHAVCOPY_DIR.glob(
-            "*"
-        )
-
-        if (
-            p.is_dir()
-            and
-            p.name.isdigit()
-        )
-
+        int(p.name)
+        for p in NSE_EQUITY_BHAVCOPY_DIR.glob("*")
+        if p.is_dir() and p.name.isdigit()
     )
 
+    if full_rebuild and ADJUSTED_EQUITY_DIR.exists():
+        shutil.rmtree(ADJUSTED_EQUITY_DIR)
+        print("Full rebuild: cleared adjusted_equity/", flush=True)
+    ADJUSTED_EQUITY_DIR.mkdir(parents=True, exist_ok=True)
+    SANITY_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Build lookup once — shared across all years
+    lookup = build_adjustment_lookup()
+    print(f"Processing {len(years)} years with {MAX_CONCURRENCY} workers per year ...", flush=True)
+
     results = []
-
-    for year in progress(
-        years,
-        desc="All Years"
-    ):
-
-        results.append(
-            adjust_year(
-                year
-            )
-        )
+    for year in years:
+        r = adjust_year(year, lookup)
+        results.append(r)
+        print(f"  {year}: adjusted={r['adjusted']} skipped={r['skipped']} errors={r['errors']}", flush=True)
 
     validate_adjusted_storage()
-
     return results
 
 
@@ -1117,42 +1068,19 @@ def adjust_all():
 # ============================================================
 
 def adjust_incremental():
-
     years = sorted(
-
-        int(
-            p.name
-        )
-
-        for p in
-        NSE_EQUITY_BHAVCOPY_DIR.glob(
-            "*"
-        )
-
-        if (
-            p.is_dir()
-            and
-            p.name.isdigit()
-        )
-
+        int(p.name)
+        for p in NSE_EQUITY_BHAVCOPY_DIR.glob("*")
+        if p.is_dir() and p.name.isdigit()
     )
 
     if not years:
-
         return None
 
-    latest_year = max(
-        years
-    )
-
-    result = (
-        adjust_year(
-            latest_year
-        )
-    )
-
+    lookup = build_adjustment_lookup()
+    latest_year = max(years)
+    result = adjust_year(latest_year, lookup)
     validate_adjusted_storage()
-
     return result
 
 
@@ -1249,34 +1177,27 @@ def print_summary():
 # ============================================================
 
 def main():
+    parser = argparse.ArgumentParser(description="Price Adjustment Engine")
+    parser.add_argument("--full", action="store_true",
+                        help="Full rebuild: clear adjusted_equity/ and reprocess all years")
+    args = parser.parse_args()
 
     print()
+    print("=" * 70)
+    print("PRICE ADJUSTMENT ENGINE" + (" -- FULL REBUILD" if args.full else " -- INCREMENTAL"))
+    print("=" * 70)
 
-    print(
-        "=" * 70
-    )
-
-    print(
-        "PRICE ADJUSTMENT ENGINE"
-    )
-
-    print(
-        "=" * 70
-    )
-
-    result = (
-        adjust_incremental()
-    )
-
-    print()
-
-    print(
-        result
-    )
+    if args.full:
+        results = adjust_all(full_rebuild=True)
+        total_adj = sum(r["adjusted"] for r in results)
+        total_err = sum(r["errors"] for r in results)
+        print(f"\nTotal: {total_adj} files adjusted, {total_err} errors")
+    else:
+        result = adjust_incremental()
+        print(f"\n{result}")
 
     print_summary()
 
 
 if __name__ == "__main__":
-
     main()

@@ -96,6 +96,8 @@ def _resample_bars(df: pd.DataFrame, timeframe: str) -> list[dict]:
     df2["_dt"] = pd.to_datetime(df2["time"])
     df2 = df2.sort_values("_dt").set_index("_dt")
 
+    # Group by period-END anchor (correct OHLCV aggregation boundaries).
+    # After aggregation, convert the END label → START date for candle display.
     freq_map = {"1W": "W-FRI", "1M": "ME", "3M": "QE"}
     freq = freq_map[timeframe]
 
@@ -110,7 +112,17 @@ def _resample_bars(df: pd.DataFrame, timeframe: str) -> list[dict]:
         ).dropna(subset=["close"])
 
     r = r[r["open"].notna()].reset_index()
-    r["time"] = r["_dt"].dt.strftime("%Y-%m-%d")
+
+    # Convert period-END label → period-START date (first day of the candle)
+    if timeframe == "1W":
+        # W-FRI gives Friday; subtract 4 days → Monday (first trading day of week)
+        r["time"] = (r["_dt"] - pd.Timedelta(days=4)).dt.strftime("%Y-%m-%d")
+    elif timeframe == "1M":
+        # ME gives last day of month → convert to 1st of that month
+        r["time"] = r["_dt"].dt.to_period("M").dt.start_time.dt.strftime("%Y-%m-%d")
+    elif timeframe == "3M":
+        # QE gives last day of quarter → convert to 1st of that quarter
+        r["time"] = r["_dt"].dt.to_period("Q").dt.start_time.dt.strftime("%Y-%m-%d")
     return _to_bars(r)
 
 
@@ -274,10 +286,19 @@ def _fetch_intraday(symbol: str, timeframe: str) -> list[dict]:
         elif cl == "volume": col_map[c] = "volume"
     df = df.rename(columns=col_map).dropna(subset=["close"])
 
+    IST_OFFSET = 19800  # UTC+5:30 in seconds
+
     bars: list[dict] = []
     seen: set = set()
     for _, row in df.iterrows():
-        unix = int(pd.Timestamp(row["dt"]).timestamp())
+        ts = pd.Timestamp(row["dt"])
+        # Ensure tz-aware in IST so .timestamp() always returns correct UTC epoch
+        if ts.tzinfo is None:
+            ts = ts.tz_localize("Asia/Kolkata")
+        else:
+            ts = ts.tz_convert("Asia/Kolkata")
+        # Add IST offset so lightweight-charts (which renders unix as UTC) shows IST time
+        unix = int(ts.timestamp()) + IST_OFFSET
         if unix in seen:
             continue
         seen.add(unix)

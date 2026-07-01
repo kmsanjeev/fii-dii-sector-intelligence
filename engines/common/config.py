@@ -54,6 +54,7 @@ EQUITY_MASTER_DIR = NSE_DIR / "equity_master"
 CORPORATE_ACTIONS_DIR = NSE_DIR / "corporate_actions"
 RESULTS_DIR = NSE_DIR / "results"
 SHAREHOLDING_DIR = NSE_DIR / "shareholding"
+ADJUSTED_EQUITY_DIR = NSE_DIR / "adjusted_equity"
 
 # ==========================================================
 # BSE PATHS (Future)
@@ -134,6 +135,7 @@ DIRECTORIES = [
 
     EQUITY_MASTER_DIR,
     CORPORATE_ACTIONS_DIR,
+    ADJUSTED_EQUITY_DIR,
 ]
 
 for directory in DIRECTORIES:

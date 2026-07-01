@@ -34,3 +34,9 @@ body {
 
 .bg-surface { background-color: var(--bg-surface); }
 .border-platform { border-color: var(--bg-border); }
+
+/* Hide TradingView attribution logo from lightweight-charts */
+.tv-lightweight-charts a[href*="tradingview"],
+.tv-lightweight-charts a[href*="TradingView"] {
+  display: none !important;
+}

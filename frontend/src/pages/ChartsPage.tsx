@@ -151,6 +151,31 @@ const fetchSymbols = (q: string): Promise<{ symbols: SymbolResult[] }> =>
 
 // -- Utility ------------------------------------------------------------------
 
+/**
+ * Convert the period-END date returned by the backend resample into the
+ * period-START date (first day of the candle) for display on the chart.
+ *
+ *  1W: backend returns Friday  → convert to Monday of that week
+ *  1M: backend returns last day of month → convert to 1st of that month
+ *  3M: backend returns last day of quarter → convert to 1st of that quarter
+ *  All other timeframes: return as-is
+ */
+function toPeriodStart(dateStr: string, timeframe: Timeframe): string {
+  if (timeframe === '1D' || INTRADAY_TF.has(timeframe)) return dateStr
+  const d = new Date(dateStr + 'T00:00:00Z')
+  if (timeframe === '1W') {
+    // getUTCDay(): 0=Sun,1=Mon,...,5=Fri,6=Sat  →  offset back to Monday
+    const offset = d.getUTCDay() === 0 ? 6 : d.getUTCDay() - 1
+    d.setUTCDate(d.getUTCDate() - offset)
+  } else if (timeframe === '1M') {
+    d.setUTCDate(1)
+  } else if (timeframe === '3M') {
+    const qStartMonth = Math.floor(d.getUTCMonth() / 3) * 3
+    d.setUTCMonth(qStartMonth, 1)
+  }
+  return d.toISOString().slice(0, 10)
+}
+
 function fmtBarTime(t: string | number | null | undefined): string {
   if (t == null) return ''
   if (typeof t === 'number') {
@@ -204,10 +229,11 @@ export function ChartsPage() {
   const [searchQ, setSearchQ]       = useState('')
   const [chartError, setChartError] = useState<string | null>(null)
 
-  const chartRef  = useRef<HTMLDivElement>(null)
-  const chartApi  = useRef<IChartApi | null>(null)
-  const candleRef = useRef<ISeriesApi<'Candlestick', Time> | null>(null)
-  const volumeRef = useRef<ISeriesApi<'Histogram', Time> | null>(null)
+  const chartRef   = useRef<HTMLDivElement>(null)
+  const chartApi   = useRef<IChartApi | null>(null)
+  const candleRef  = useRef<ISeriesApi<'Candlestick', Time> | null>(null)
+  const volumeRef  = useRef<ISeriesApi<'Histogram', Time> | null>(null)
+  const barCountRef = useRef<number>(0)
 
   // Symbol autocomplete
   const { data: symbolData } = useQuery({
@@ -259,7 +285,7 @@ export function ChartsPage() {
         rightPriceScale: { borderColor: COLORS.border },
         timeScale: {
           borderColor: COLORS.border,
-          timeVisible: true,
+          timeVisible: false,
           secondsVisible: false,
         },
         handleScroll: true,
@@ -297,6 +323,22 @@ export function ChartsPage() {
     }
   }, [])
 
+  // Default bars to show per timeframe so recent data fills the screen on load
+  const DEFAULT_BARS: Record<Timeframe, number> = {
+    '5M': 200, '15M': 200, '1H': 180,
+    '1D': 180, '1W': 52, '1M': 24, '3M': 16,
+  }
+
+  // Toggle time visibility: show HH:MM only for intraday candles
+  useEffect(() => {
+    chartApi.current?.applyOptions({
+      timeScale: {
+        timeVisible:    INTRADAY_TF.has(timeframe),
+        secondsVisible: false,
+      },
+    })
+  }, [timeframe])
+
   // Update chart data when ohlcv response changes
   useEffect(() => {
     if (!ohlcv || !candleRef.current || !volumeRef.current) return
@@ -304,7 +346,9 @@ export function ChartsPage() {
       const bars = ohlcv.bars
 
       const candles: CandlestickData<Time>[] = bars.map(b => ({
-        time:  b.time as Time,
+        time:  (typeof b.time === 'string'
+          ? toPeriodStart(b.time, timeframe)
+          : b.time) as Time,
         open:  b.open,
         high:  b.high,
         low:   b.low,
@@ -312,22 +356,41 @@ export function ChartsPage() {
       }))
 
       const volumes: HistogramData<Time>[] = bars.map(b => ({
-        time:  b.time as Time,
+        time:  (typeof b.time === 'string'
+          ? toPeriodStart(b.time, timeframe)
+          : b.time) as Time,
         value: b.volume ?? 0,
         color: b.close >= b.open ? COLORS.green + '66' : COLORS.red + '66',
       }))
 
       candleRef.current.setData(candles)
       volumeRef.current.setData(volumes)
-      chartApi.current?.timeScale().fitContent()
+
+      // Scroll to the last bar and show a sensible default window
+      // so candles fill the screen rather than showing 30 years compressed
+      const n = candles.length
+      barCountRef.current = n
+      const show = DEFAULT_BARS[timeframe] ?? 180
+      if (n > 0 && chartApi.current) {
+        chartApi.current.timeScale().setVisibleLogicalRange({
+          from: Math.max(0, n - show),
+          to:   n + 3,   // small right margin after last candle
+        })
+      }
     } catch (e) {
       setChartError(e instanceof Error ? e.message : String(e))
     }
-  }, [ohlcv])
+  }, [ohlcv, timeframe])
 
   const resetChart = useCallback(() => {
-    chartApi.current?.timeScale().fitContent()
-  }, [])
+    if (!chartApi.current) return
+    const n = barCountRef.current
+    const show = DEFAULT_BARS[timeframe] ?? 180
+    chartApi.current.timeScale().setVisibleLogicalRange({
+      from: Math.max(0, n - show),
+      to:   n + 3,
+    })
+  }, [timeframe])
 
   const handleSymbolSelect = useCallback((sym: string) => {
     setSymbol(sym)
