@@ -40,6 +40,8 @@ export type Stock = {
   as_of_date: string
   deal_signals?: Record<string, unknown>
   corporate_confidence?: Record<string, unknown>
+  fundamentals?: Record<string, number | string | null>
+  shareholding?: Record<string, number | string | null>
 }
 
 export type ParticipantLatest = {

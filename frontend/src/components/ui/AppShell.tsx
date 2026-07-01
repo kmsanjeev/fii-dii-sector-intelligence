@@ -11,6 +11,7 @@ const NAV = [
   { path: '/watchlist',  label: 'Watchlist' },
   { path: '/participant',label: 'Participant' },
   { path: '/corporate',  label: 'Corporate' },
+  { path: '/charts',     label: 'Charts' },
   { path: '/chat',       label: 'AI Chat' },
   { path: '/data',       label: 'Data Control' },
   { path: '/settings',   label: 'Settings' },

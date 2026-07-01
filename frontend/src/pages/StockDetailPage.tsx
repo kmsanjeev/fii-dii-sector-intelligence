@@ -139,7 +139,7 @@ export function StockDetailPage() {
                          data.fundamentals.valuation_label === 'FAIR_VALUE'    ? '#60A5FA' :
                          data.fundamentals.valuation_label === 'MODERATE'      ? '#FB923C' : '#F87171',
                 }}>
-                  {data.fundamentals.valuation_label.replace(/_/g, ' ')}
+                  {String(data.fundamentals.valuation_label).replace(/_/g, ' ')}
                 </div>
               )}
             </div>

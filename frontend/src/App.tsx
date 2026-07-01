@@ -11,6 +11,7 @@ import { CorporatePage } from './pages/CorporatePage'
 import { ChatPage } from './pages/ChatPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { DataControlPage } from './pages/DataControlPage'
+import { ChartsPage } from './pages/ChartsPage'
 import './index.css'
 
 const queryClient = new QueryClient({
@@ -37,6 +38,7 @@ export default function App() {
             <Route path="/corporate" element={<CorporatePage />} />
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/charts" element={<ChartsPage />} />
             <Route path="/data" element={<DataControlPage />} />
           </Routes>
         </AppShell>
