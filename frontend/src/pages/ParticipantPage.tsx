@@ -2,8 +2,10 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchParticipantLatest, fetchParticipantHistory } from '../api/client'
 import { FlowCard } from '../components/platform/FlowCard'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { useNavigate } from 'react-router-dom'
 
 export function ParticipantPage() {
+  const navigate = useNavigate()
   const { data: latest } = useQuery({ queryKey: ['participant_latest'], queryFn: fetchParticipantLatest, refetchInterval: 300000 })
   const { data: history } = useQuery({ queryKey: ['participant_history', 252], queryFn: () => fetchParticipantHistory(252), refetchInterval: 300000 })
 
@@ -11,6 +13,15 @@ export function ParticipantPage() {
 
   return (
     <div className="space-y-6">
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          background: 'none', border: '1px solid #1E2332',
+          color: '#64748B', cursor: 'pointer',
+          padding: '4px 12px', borderRadius: 4, fontSize: 11,
+        }}
+      >&larr; Back</button>
       <h1 className="text-lg font-bold tracking-widest" style={{ color: '#E2E8F0' }}>PARTICIPANT INTELLIGENCE</h1>
 
       {latest && (

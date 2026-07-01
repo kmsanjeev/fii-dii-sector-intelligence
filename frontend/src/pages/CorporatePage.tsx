@@ -1,12 +1,23 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchDeals, fetchCatalysts } from '../api/client'
+import { useNavigate } from 'react-router-dom'
 
 export function CorporatePage() {
+  const navigate = useNavigate()
   const { data: deals } = useQuery({ queryKey: ['deals'], queryFn: () => fetchDeals(25, 30), refetchInterval: 300000 })
   const { data: catalysts } = useQuery({ queryKey: ['catalysts'], queryFn: fetchCatalysts, refetchInterval: 300000 })
 
   return (
     <div className="space-y-6">
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          background: 'none', border: '1px solid #1E2332',
+          color: '#64748B', cursor: 'pointer',
+          padding: '4px 12px', borderRadius: 4, fontSize: 11,
+        }}
+      >&larr; Back</button>
       <h1 className="text-lg font-bold tracking-widest" style={{ color: '#E2E8F0' }}>CORPORATE INTELLIGENCE</h1>
 
       {/* Deals */}
