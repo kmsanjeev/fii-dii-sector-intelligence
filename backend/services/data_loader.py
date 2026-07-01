@@ -35,6 +35,9 @@ SOURCES = {
     # Phase 15 — Fundamentals
     "valuation_scores":     cfg.NSE_DIR / "results" / "valuation_scores.csv",
     "shareholding":         cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv",
+    # Phase 16 — Management Intelligence
+    "holding_trends":       cfg.NSE_DIR / "shareholding" / "holding_trends.csv",
+    "management_sentiment": cfg.NSE_DIR / "shareholding" / "management_sentiment.csv",
 }
 
 _lock = threading.Lock()

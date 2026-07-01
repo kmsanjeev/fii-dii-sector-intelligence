@@ -7,6 +7,7 @@ GET /api/stocks                       — all 2441 symbols (paginated)
 """
 
 import math
+import pandas as pd
 from fastapi import APIRouter, HTTPException, Query
 from backend.services import data_loader
 
@@ -139,6 +140,46 @@ def get_stock_detail(symbol: str):
                 "window_label":     str(r.get("window_label", "")),
             }
 
+    # Phase 16 — Holding Trends (all quarters, sorted oldest first)
+    holding_trends: list = []
+    ht_df = data_loader.get("holding_trends")
+    if ht_df is not None:
+        ht_rows = ht_df[ht_df["symbol"].str.upper() == sym].copy()
+        if not ht_rows.empty:
+            ht_rows["_sort"] = pd.to_datetime(ht_rows["quarter_end_date"], format="%d-%b-%Y", errors="coerce")
+            ht_rows = ht_rows.sort_values("_sort").drop(columns=["_sort"])
+            for _, r in ht_rows.iterrows():
+                holding_trends.append({
+                    "period":           str(r.get("period", "")),
+                    "quarter_end_date": str(r.get("quarter_end_date", "")),
+                    "promoter_pct":     _safe(r.get("promoter_pct")),
+                    "fii_pct":          _safe(r.get("fii_pct")),
+                    "dii_pct":          _safe(r.get("dii_pct")),
+                    "public_pct":       _safe(r.get("public_pct")),
+                    "promoter_delta":   _safe(r.get("promoter_delta")),
+                    "fii_delta":        _safe(r.get("fii_delta")),
+                    "dii_delta":        _safe(r.get("dii_delta")),
+                    "conviction_signal": str(r.get("conviction_signal", "")),
+                })
+
+    # Phase 16 — Management Sentiment
+    management: dict = {}
+    ms_df = data_loader.get("management_sentiment")
+    if ms_df is not None:
+        ms_row = ms_df[ms_df["symbol"].str.upper() == sym]
+        if not ms_row.empty:
+            r = ms_row.iloc[0]
+            management = {
+                "holding_signal":      str(r.get("holding_signal", "")),
+                "holding_score":       _safe(r.get("holding_score")),
+                "announcement_score":  _safe(r.get("announcement_score")),
+                "ai_tone_score":       _safe(r.get("ai_tone_score")),
+                "management_score":    _safe(r.get("management_score")),
+                "management_label":    str(r.get("management_label", "")),
+                "announcement_types":  str(r.get("announcement_types", "")),
+                "as_of_date":          str(r.get("as_of_date", "")),
+            }
+
     return {
         "symbol":             str(row.get("symbol", "")),
         "sector":             str(row.get("sector", "")),
@@ -163,6 +204,8 @@ def get_stock_detail(symbol: str):
         "corporate_confidence": corp_info,
         "fundamentals":         fundamentals,
         "shareholding":         shareholding,
+        "holding_trends":       holding_trends,
+        "management":           management,
     }
 
 

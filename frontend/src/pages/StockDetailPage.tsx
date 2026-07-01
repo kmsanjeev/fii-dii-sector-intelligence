@@ -179,6 +179,153 @@ export function StockDetailPage() {
         </section>
       )}
 
+      {/* Holding Trends (Phase 16) */}
+      {data.holding_trends && (data.holding_trends as any[]).length > 0 && (
+        <section>
+          <h2 className="text-xs tracking-widest mb-3" style={{ color: '#64748B' }}>
+            HOLDING TRENDS — QoQ DELTA
+          </h2>
+          <div className="rounded border overflow-hidden" style={{ borderColor: '#1E2332' }}>
+            <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#0A0D14', borderBottom: '1px solid #1E2332' }}>
+                  {['Quarter', 'Promoter %', 'FII %', 'DII %', 'Signal'].map(h => (
+                    <th key={h} style={{ padding: '6px 10px', textAlign: h === 'Quarter' || h === 'Signal' ? 'left' : 'right', color: '#64748B', fontWeight: 600 }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {(data.holding_trends as any[]).map((q: any, i: number, arr: any[]) => {
+                  const isLatest = i === arr.length - 1
+                  const deltaColor = (v: number | null) =>
+                    v == null ? '#64748B' : v > 0 ? '#22C55E' : v < 0 ? '#EF4444' : '#64748B'
+                  const fmt = (pct: number | null, delta: number | null) => {
+                    if (pct == null) return '-'
+                    const d = delta != null ? ` (${delta >= 0 ? '+' : ''}${delta.toFixed(2)})` : ''
+                    return (
+                      <span>
+                        <span style={{ color: '#E2E8F0' }}>{pct.toFixed(2)}%</span>
+                        {delta != null && <span style={{ fontSize: 10, color: deltaColor(delta) }}>{d}</span>}
+                      </span>
+                    )
+                  }
+                  const signalColors: Record<string, string> = {
+                    STRONG_PROMOTER_FII_BUY: '#22C55E',
+                    FII_DII_ACCUMULATION:    '#3B82F6',
+                    FII_ACCUMULATION:        '#60A5FA',
+                    DII_ACCUMULATION:        '#818CF8',
+                    STRONG_PROMOTER_BUY:     '#A78BFA',
+                    STABLE:                  '#475569',
+                    PROMOTER_SELLING:        '#EF4444',
+                    FII_DII_DIVERGENCE:      '#F59E0B',
+                  }
+                  const sigCol = signalColors[q.conviction_signal] ?? '#475569'
+                  return (
+                    <tr key={q.period} style={{
+                      borderBottom: '1px solid #1E233230',
+                      backgroundColor: isLatest ? '#1E233218' : 'transparent',
+                    }}>
+                      <td style={{ padding: '6px 10px', color: isLatest ? '#E2E8F0' : '#94A3B8', fontWeight: isLatest ? 700 : 400 }}>
+                        {q.period}
+                        {isLatest && <span style={{ fontSize: 9, color: '#22C55E', marginLeft: 6 }}>LATEST</span>}
+                      </td>
+                      <td style={{ padding: '6px 10px', textAlign: 'right' }}>{fmt(q.promoter_pct, i > 0 ? q.promoter_delta : null)}</td>
+                      <td style={{ padding: '6px 10px', textAlign: 'right' }}>{fmt(q.fii_pct, i > 0 ? q.fii_delta : null)}</td>
+                      <td style={{ padding: '6px 10px', textAlign: 'right' }}>{fmt(q.dii_pct, i > 0 ? q.dii_delta : null)}</td>
+                      <td style={{ padding: '6px 10px' }}>
+                        {i > 0 && q.conviction_signal && (
+                          <span style={{
+                            fontSize: 9, fontWeight: 700, padding: '1px 6px',
+                            borderRadius: 3, border: `1px solid ${sigCol}`,
+                            color: sigCol, whiteSpace: 'nowrap',
+                          }}>
+                            {q.conviction_signal.replace(/_/g, ' ')}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {/* Management Sentiment (Phase 16) */}
+      {data.management && (data.management as any).management_score != null && (
+        <section>
+          <h2 className="text-xs tracking-widest mb-3" style={{ color: '#64748B' }}>
+            MANAGEMENT INTELLIGENCE
+            {(data.management as any).as_of_date
+              ? <span className="ml-2 font-normal">({(data.management as any).as_of_date})</span>
+              : null}
+          </h2>
+          <div className="p-3 rounded border" style={{ backgroundColor: '#141720', borderColor: '#1E2332' }}>
+            {(() => {
+              const m = data.management as any
+              const labelColors: Record<string, { bg: string; fg: string }> = {
+                POSITIVE:  { bg: '#14532D', fg: '#4ADE80' },
+                NEUTRAL:   { bg: '#1E293B', fg: '#94A3B8' },
+                NEGATIVE:  { bg: '#450A0A', fg: '#F87171' },
+              }
+              const lc = labelColors[m.management_label] ?? labelColors.NEUTRAL
+              const scoreBarColor = (m.management_score ?? 0) >= 65 ? '#22C55E'
+                                  : (m.management_score ?? 0) >= 45 ? '#F59E0B' : '#EF4444'
+              return (
+                <div className="space-y-3">
+                  {/* Score + label row */}
+                  <div className="flex items-center gap-4">
+                    <div style={{ minWidth: 80 }}>
+                      <div style={{ fontSize: 10, color: '#64748B', marginBottom: 2 }}>Management Score</div>
+                      <div style={{ fontSize: 22, fontWeight: 700, color: scoreBarColor }}>
+                        {m.management_score != null ? Number(m.management_score).toFixed(0) : '--'}
+                        <span style={{ fontSize: 11, color: '#475569' }}>/100</span>
+                      </div>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ height: 6, backgroundColor: '#1E2332', borderRadius: 3, marginBottom: 6 }}>
+                        <div style={{ width: `${Math.min(100, m.management_score ?? 0)}%`, height: '100%', backgroundColor: scoreBarColor, borderRadius: 3 }} />
+                      </div>
+                      {m.management_label && (
+                        <span style={{
+                          fontSize: 10, fontWeight: 700, padding: '2px 10px',
+                          borderRadius: 4, backgroundColor: lc.bg, color: lc.fg,
+                        }}>
+                          {m.management_label}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {/* Sub-scores */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, fontSize: 11 }}>
+                    {[
+                      { label: 'Holding Signal', value: m.holding_signal || '-' },
+                      { label: 'Holding Score', value: m.holding_score != null ? `${Number(m.holding_score).toFixed(0)}/100` : '-' },
+                      { label: 'Announcement Score', value: m.announcement_score != null ? `${Number(m.announcement_score).toFixed(0)}/100` : '-' },
+                    ].map(({ label, value }) => (
+                      <div key={label} style={{ padding: '6px 8px', borderRadius: 4, backgroundColor: '#0A0D14', border: '1px solid #1E2332' }}>
+                        <div style={{ color: '#64748B', fontSize: 10, marginBottom: 2 }}>{label}</div>
+                        <div style={{ color: '#E2E8F0', fontWeight: 600 }}>{value}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* AI tone + announcement types */}
+                  <div style={{ fontSize: 11, color: '#64748B', display: 'flex', gap: 16 }}>
+                    {m.ai_tone_score != null && (
+                      <span>AI Tone Score: <span style={{ color: '#94A3B8' }}>{Number(m.ai_tone_score).toFixed(0)}/100</span></span>
+                    )}
+                    {m.announcement_types && (
+                      <span>Types: <span style={{ color: '#94A3B8' }}>{m.announcement_types}</span></span>
+                    )}
+                  </div>
+                </div>
+              )
+            })()}
+          </div>
+        </section>
+      )}
+
       {/* Deal signals */}
       {data.deal_signals && Object.keys(data.deal_signals).length > 0 && (
         <section>
