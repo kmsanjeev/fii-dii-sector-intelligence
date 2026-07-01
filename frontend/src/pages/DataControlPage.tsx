@@ -2,7 +2,8 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchDataStatus } from '../api/client'
 
-const BASE = 'http://localhost:8000'
+const BASE     = 'http://localhost:8000'
+const API_BASE = 'http://localhost:8001'
 
 async function killBackend(): Promise<void> {
   try { await fetch(`${BASE}/api/data/kill`, { method: 'POST' }) } catch {}
@@ -81,6 +82,316 @@ function ProgressBar({ info }: { info: ProgressInfo }) {
         }} />
       </div>
       <div style={{ fontSize: 9, color: '#64748B', marginTop: 2 }}>{info.pct}%</div>
+    </div>
+  )
+}
+
+// ── Daily Pipeline Panel ──────────────────────────────────────────────────────
+
+type StageInfo = {
+  label:       string
+  status:      string   // RUNNING | DONE | FAILED | TIMEOUT | STOPPED
+  started_at?: string
+  finished_at?: string
+  duration_s?: number
+  error?:      string
+}
+
+type PipelineStatus = {
+  state:         string  // IDLE | RUNNING | DONE | FAILED | STOPPED
+  run_id:        string | null
+  started_at:    string | null
+  last_run_at:   string | null
+  current_stage: string | null
+  current_label: string | null
+  next_run_ist:  string | null
+  stages:        Record<string, StageInfo>
+}
+
+const STAGE_ORDER = [
+  '5A_participant_acquisition',
+  '5B_participant_flow',
+  '5C_participant_intelligence',
+  '6A_sector_capital_flow',
+  '6B_sector_flow_scores',
+  '6C_sector_rotation',
+  '7A_block_bulk_deals',
+  '8A_price_momentum',
+  '8B_bull_run_probability',
+  '12_ml_scorer',
+  '13A_document_builder',
+  '13B_faiss_indexer',
+  '13C_bm25_indexer',
+  '9_alert_engine',
+]
+
+const STAGE_LABELS: Record<string, string> = {
+  '5A_participant_acquisition':  'Participant Acquisition (NSE API)',
+  '5B_participant_flow':         'Participant Flow Scores',
+  '5C_participant_intelligence': 'Participant Intelligence',
+  '6A_sector_capital_flow':      'Sector Capital Flow',
+  '6B_sector_flow_scores':       'Sector Flow Scores',
+  '6C_sector_rotation':          'Sector Rotation Intelligence',
+  '7A_block_bulk_deals':         'Block/Bulk Deals (NSE API)',
+  '8A_price_momentum':           'Price Momentum',
+  '8B_bull_run_probability':     'Bull Run Probability',
+  '12_ml_scorer':                'ML Scorer (inference)',
+  '13A_document_builder':        'RAG Document Builder',
+  '13B_faiss_indexer':           'FAISS Indexer (embedding)',
+  '13C_bm25_indexer':            'BM25 Indexer',
+  '9_alert_engine':              'Alert Engine (Telegram push)',
+}
+
+function stageColor(status: string): string {
+  if (status === 'DONE')    return '#22C55E'
+  if (status === 'RUNNING') return '#F59E0B'
+  if (status === 'FAILED' || status === 'TIMEOUT') return '#EF4444'
+  if (status === 'STOPPED') return '#64748B'
+  return '#334155'
+}
+
+function stateColor(state: string): string {
+  if (state === 'RUNNING') return '#F59E0B'
+  if (state === 'DONE')    return '#22C55E'
+  if (state === 'FAILED')  return '#EF4444'
+  if (state === 'STOPPED') return '#64748B'
+  return '#334155'
+}
+
+function DailyPipelinePanel() {
+  const [ps, setPs]             = useState<PipelineStatus | null>(null)
+  const [log, setLog]           = useState<Record<string, unknown>[]>([])
+  const [showLog, setShowLog]   = useState(false)
+  const [actionMsg, setActionMsg] = useState('')
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const fetchStatus = useCallback(async () => {
+    try {
+      const r = await fetch(`${API_BASE}/api/pipeline/status`)
+      if (r.ok) setPs(await r.json())
+    } catch {}
+  }, [])
+
+  const fetchLog = useCallback(async () => {
+    try {
+      const r = await fetch(`${API_BASE}/api/pipeline/log?n=50`)
+      if (r.ok) setLog(await r.json())
+    } catch {}
+  }, [])
+
+  // Poll every 5s while running, every 30s otherwise
+  useEffect(() => {
+    fetchStatus()
+    const tick = () => {
+      fetchStatus()
+      if (showLog) fetchLog()
+    }
+    pollRef.current = setInterval(tick, ps?.state === 'RUNNING' ? 5000 : 30000)
+    return () => { if (pollRef.current) clearInterval(pollRef.current) }
+  }, [ps?.state, showLog, fetchStatus, fetchLog])
+
+  async function runNow() {
+    setActionMsg('')
+    try {
+      const r = await fetch(`${API_BASE}/api/pipeline/run`, { method: 'POST' })
+      const body = await r.json()
+      setActionMsg(r.ok ? 'Pipeline started.' : body.detail ?? 'Already running.')
+      fetchStatus()
+    } catch { setActionMsg('Could not reach backend.') }
+  }
+
+  async function killPipeline() {
+    setActionMsg('')
+    try {
+      const r = await fetch(`${API_BASE}/api/pipeline/stop`, { method: 'POST' })
+      const body = await r.json()
+      setActionMsg(body.message ?? 'Stop signal sent.')
+      fetchStatus()
+    } catch { setActionMsg('Could not reach backend.') }
+  }
+
+  const isRunning = ps?.state === 'RUNNING'
+  const doneCount = STAGE_ORDER.filter(id => ps?.stages?.[id]?.status === 'DONE').length
+
+  return (
+    <div style={{
+      backgroundColor: '#141720', border: '1px solid #1E2332',
+      borderRadius: 6, padding: 16, marginBottom: 28,
+    }}>
+
+      {/* Header row */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+        <h2 style={{ color: '#E2E8F0', fontSize: 13, fontWeight: 700, letterSpacing: 2, margin: 0 }}>
+          DAILY PIPELINE
+        </h2>
+        <span style={{
+          fontSize: 10, fontWeight: 700, letterSpacing: 1,
+          color: stateColor(ps?.state ?? 'IDLE'),
+          border: `1px solid ${stateColor(ps?.state ?? 'IDLE')}`,
+          padding: '1px 8px', borderRadius: 4,
+        }}>
+          {ps?.state ?? 'IDLE'}
+        </span>
+        <div style={{ flex: 1 }} />
+        {/* Action message */}
+        {actionMsg && (
+          <span style={{ fontSize: 10, color: '#94A3B8' }}>{actionMsg}</span>
+        )}
+        {/* Kill button — only when running */}
+        {isRunning && (
+          <button
+            onClick={killPipeline}
+            style={{
+              padding: '3px 14px', borderRadius: 4,
+              border: '1px solid #EF4444', backgroundColor: '#EF444422',
+              color: '#EF4444', cursor: 'pointer', fontSize: 10, fontWeight: 700,
+            }}
+          >
+            KILL
+          </button>
+        )}
+        {/* Run Now button */}
+        <button
+          onClick={runNow}
+          disabled={isRunning}
+          style={{
+            padding: '3px 14px', borderRadius: 4,
+            border: `1px solid ${isRunning ? '#334155' : '#22C55E'}`,
+            backgroundColor: 'transparent',
+            color: isRunning ? '#334155' : '#22C55E',
+            cursor: isRunning ? 'not-allowed' : 'pointer',
+            fontSize: 10, fontWeight: 700,
+          }}
+        >
+          {isRunning ? 'Running...' : 'Run Now'}
+        </button>
+      </div>
+
+      {/* Meta row */}
+      <div style={{ display: 'flex', gap: 24, fontSize: 10, color: '#64748B', marginBottom: 14 }}>
+        <span>Schedule: <span style={{ color: '#94A3B8' }}>Mon-Fri 18:00 IST</span></span>
+        <span>Next run: <span style={{ color: '#94A3B8' }}>{ps?.next_run_ist ?? '--'}</span></span>
+        <span>Last run: <span style={{ color: '#94A3B8' }}>{ps?.last_run_at ?? 'never'}</span></span>
+        {isRunning && ps?.current_label && (
+          <span style={{ color: '#F59E0B' }}>Running: {ps.current_label}</span>
+        )}
+      </div>
+
+      {/* Stage progress bar */}
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ display: 'flex', gap: 2 }}>
+          {STAGE_ORDER.map(id => {
+            const s = ps?.stages?.[id]
+            const col = s ? stageColor(s.status) : (
+              ps?.state === 'RUNNING' && id === ps?.current_stage ? '#F59E0B' : '#1E2332'
+            )
+            return (
+              <div
+                key={id}
+                title={`${STAGE_LABELS[id]}: ${s?.status ?? 'PENDING'}`}
+                style={{
+                  flex: 1, height: 8, borderRadius: 2,
+                  backgroundColor: col,
+                  opacity: s ? 1 : 0.4,
+                  transition: 'background-color 0.4s',
+                }}
+              />
+            )
+          })}
+        </div>
+        <div style={{ fontSize: 9, color: '#64748B', marginTop: 4 }}>
+          {doneCount}/{STAGE_ORDER.length} stages complete
+        </div>
+      </div>
+
+      {/* Stage table */}
+      <table style={{ width: '100%', fontSize: 10, borderCollapse: 'collapse' }}>
+        <thead>
+          <tr style={{ borderBottom: '1px solid #1E2332', color: '#64748B' }}>
+            <th style={{ textAlign: 'left',  padding: '4px 6px' }}>Stage</th>
+            <th style={{ textAlign: 'center', padding: '4px 6px' }}>Status</th>
+            <th style={{ textAlign: 'right', padding: '4px 6px' }}>Duration</th>
+            <th style={{ textAlign: 'left',  padding: '4px 6px' }}>Finished</th>
+          </tr>
+        </thead>
+        <tbody>
+          {STAGE_ORDER.map(id => {
+            const s      = ps?.stages?.[id]
+            const isCurr = isRunning && ps?.current_stage === id
+            const col    = isCurr ? '#F59E0B' : (s ? stageColor(s.status) : '#334155')
+            return (
+              <tr key={id} style={{ borderBottom: '1px solid #1E233218' }}>
+                <td style={{ padding: '4px 6px', color: col, fontWeight: isCurr ? 700 : 400 }}>
+                  {isCurr ? '> ' : ''}{STAGE_LABELS[id]}
+                  {s?.error ? <span style={{ color: '#EF4444', marginLeft: 6 }}>{s.error.slice(0, 60)}</span> : null}
+                </td>
+                <td style={{ padding: '4px 6px', textAlign: 'center' }}>
+                  <span style={{
+                    color: col, border: `1px solid ${col}`,
+                    padding: '0 6px', borderRadius: 3,
+                    fontSize: 9, fontWeight: 700,
+                  }}>
+                    {isCurr ? 'RUNNING' : (s?.status ?? 'PENDING')}
+                  </span>
+                </td>
+                <td style={{ padding: '4px 6px', textAlign: 'right', color: '#64748B' }}>
+                  {s?.duration_s != null ? `${s.duration_s}s` : '--'}
+                </td>
+                <td style={{ padding: '4px 6px', color: '#64748B' }}>
+                  {s?.finished_at ?? '--'}
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+
+      {/* Log toggle */}
+      <div style={{ marginTop: 10, display: 'flex', gap: 8, alignItems: 'center' }}>
+        <button
+          onClick={() => { setShowLog(v => !v); if (!showLog) fetchLog() }}
+          style={{
+            padding: '2px 10px', borderRadius: 4,
+            border: '1px solid #334155', backgroundColor: 'transparent',
+            color: '#64748B', cursor: 'pointer', fontSize: 10,
+          }}
+        >
+          {showLog ? 'Hide Log' : 'Show Log'}
+        </button>
+        <span style={{ fontSize: 9, color: '#475569' }}>Last 50 stage entries from refresh_log.csv</span>
+      </div>
+
+      {showLog && log.length > 0 && (
+        <div style={{
+          marginTop: 8, backgroundColor: '#0A0D14',
+          border: '1px solid #1E2332', borderRadius: 4,
+          padding: 8, maxHeight: 220, overflowY: 'auto',
+          fontFamily: 'monospace', fontSize: 10, color: '#94A3B8',
+        }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 60px 50px 80px',
+            gap: '0 8px', color: '#475569', marginBottom: 4, fontWeight: 700,
+          }}>
+            <span>Stage</span><span>Status</span><span>Dur(s)</span><span>Finished</span>
+          </div>
+          {log.slice().reverse().map((row, i) => {
+            const st = String(row.status ?? '')
+            const col = st === 'DONE' ? '#22C55E' : st === 'FAILED' || st === 'TIMEOUT' ? '#EF4444' : '#64748B'
+            return (
+              <div key={i} style={{
+                display: 'grid', gridTemplateColumns: '1fr 60px 50px 80px',
+                gap: '0 8px', borderBottom: '1px solid #1E233220', padding: '2px 0',
+              }}>
+                <span style={{ color: '#94A3B8' }}>{String(row.label ?? row.stage_id ?? '')}</span>
+                <span style={{ color: col }}>{st}</span>
+                <span style={{ color: '#64748B' }}>{String(row.duration_s ?? '--')}</span>
+                <span style={{ color: '#64748B' }}>{String(row.finished_at ?? '--').slice(0, 19)}</span>
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
@@ -557,6 +868,8 @@ export function DataControlPage() {
           <div>Intelligence: {intOk}/{intLen}</div>
         </div>
       </div>
+
+      <DailyPipelinePanel />
 
       <ModuleTable title="DATA ACQUISITION"     modules={acquisition}  pipelineKey="pipeline_acquisition"  onBusyChange={handleSectionBusy('acquisition')}  onRunComplete={refetch} />
       <ModuleTable title="INTELLIGENCE OUTPUTS" modules={intelligence} pipelineKey="pipeline_intelligence" onBusyChange={handleSectionBusy('intelligence')} onRunComplete={refetch} />
