@@ -13,7 +13,7 @@ import {
 } from 'lightweight-charts'
 import { api } from '../api/client'
 
-// ── Error boundary (prevents blank page on chart crash) ───────────────────────
+// -- Error boundary (prevents blank page on chart crash) ----------------------
 
 class ChartErrorBoundary extends Component<
   { children: ReactNode },
@@ -55,10 +55,10 @@ class ChartErrorBoundary extends Component<
   }
 }
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+// -- Types --------------------------------------------------------------------
 
 type Bar = {
-  time: string
+  time: string | number   // string 'YYYY-MM-DD' for daily/weekly/monthly; unix seconds for intraday
   open: number
   high: number
   low: number
@@ -68,11 +68,11 @@ type Bar = {
 
 type OhlcvResponse = {
   symbol: string
-  period: string
+  timeframe: string
   bars: Bar[]
   count: number
-  from: string | null
-  to: string | null
+  from: string | number | null
+  to: string | number | null
 }
 
 type Signal = {
@@ -99,21 +99,26 @@ type Signal = {
 
 type SymbolResult = { SYMBOL: string; COMPANY_NAME: string }
 
-// ── Constants ─────────────────────────────────────────────────────────────────
+// -- Constants ----------------------------------------------------------------
 
-const PERIODS = ['1D', '1W', '1M', '3M', '6M', '1Y', '3Y', '5Y'] as const
-type Period = typeof PERIODS[number]
+// Buttons are CANDLE TIMEFRAME selectors, not date-range selectors.
+// Intraday (5M/15M/1H): served by yfinance, max available history.
+// Daily+ (1D/1W/1M/3M): served by nselib daily data, resampled where needed.
+const TIMEFRAMES = ['5M', '15M', '1H', '1D', '1W', '1M', '3M'] as const
+type Timeframe = typeof TIMEFRAMES[number]
+
+const INTRADAY_TF = new Set<Timeframe>(['5M', '15M', '1H'])
 
 const COLORS = {
-  bg:       '#0A0D14',
-  panel:    '#141720',
-  border:   '#1E2332',
-  text:     '#94A3B8',
-  textDim:  '#64748B',
-  green:    '#22C55E',
-  red:      '#EF4444',
-  amber:    '#F59E0B',
-  blue:     '#3B82F6',
+  bg:      '#0A0D14',
+  panel:   '#141720',
+  border:  '#1E2332',
+  text:    '#94A3B8',
+  textDim: '#64748B',
+  green:   '#22C55E',
+  red:     '#EF4444',
+  amber:   '#F59E0B',
+  blue:    '#3B82F6',
 }
 
 const LABEL_COLOR: Record<string, string> = {
@@ -133,10 +138,10 @@ const ROTATION_COLOR: Record<string, string> = {
   DECLINING:      '#EF4444',
 }
 
-// ── API helpers ───────────────────────────────────────────────────────────────
+// -- API helpers --------------------------------------------------------------
 
-const fetchOhlcv = (symbol: string, period: Period): Promise<OhlcvResponse> =>
-  api.get('/charts/ohlcv', { params: { symbol, period } }).then(r => r.data)
+const fetchOhlcv = (symbol: string, timeframe: Timeframe): Promise<OhlcvResponse> =>
+  api.get('/charts/ohlcv', { params: { symbol, timeframe } }).then(r => r.data)
 
 const fetchSignals = (symbol: string): Promise<Signal> =>
   api.get('/charts/signals', { params: { symbol } }).then(r => r.data)
@@ -144,7 +149,21 @@ const fetchSignals = (symbol: string): Promise<Signal> =>
 const fetchSymbols = (q: string): Promise<{ symbols: SymbolResult[] }> =>
   api.get('/charts/symbols', { params: { q } }).then(r => r.data)
 
-// ── Score bar ─────────────────────────────────────────────────────────────────
+// -- Utility ------------------------------------------------------------------
+
+function fmtBarTime(t: string | number | null | undefined): string {
+  if (t == null) return ''
+  if (typeof t === 'number') {
+    return new Date(t * 1000).toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit', month: 'short', year: '2-digit',
+      hour: '2-digit', minute: '2-digit',
+    })
+  }
+  return t
+}
+
+// -- Score bar ----------------------------------------------------------------
 
 function ScoreBar({ label, value, max = 100 }: { label: string; value: number | undefined | null; max?: number }) {
   if (value == null) return null
@@ -175,20 +194,20 @@ function Pill({ label, color }: { label: string; color: string }) {
   )
 }
 
-// ── Main page ─────────────────────────────────────────────────────────────────
+// -- Main page ----------------------------------------------------------------
 
 export function ChartsPage() {
-  const [symbol, setSymbol]       = useState('RELIANCE')
-  const [inputVal, setInputVal]   = useState('RELIANCE')
-  const [period, setPeriod]       = useState<Period>('1Y')
+  const [symbol, setSymbol]         = useState('RELIANCE')
+  const [inputVal, setInputVal]     = useState('RELIANCE')
+  const [timeframe, setTimeframe]   = useState<Timeframe>('1D')
   const [showDropdown, setShowDropdown] = useState(false)
-  const [searchQ, setSearchQ]     = useState('')
+  const [searchQ, setSearchQ]       = useState('')
   const [chartError, setChartError] = useState<string | null>(null)
 
-  const chartRef   = useRef<HTMLDivElement>(null)
-  const chartApi   = useRef<IChartApi | null>(null)
-  const candleRef  = useRef<ISeriesApi<'Candlestick', Time> | null>(null)
-  const volumeRef  = useRef<ISeriesApi<'Histogram', Time> | null>(null)
+  const chartRef  = useRef<HTMLDivElement>(null)
+  const chartApi  = useRef<IChartApi | null>(null)
+  const candleRef = useRef<ISeriesApi<'Candlestick', Time> | null>(null)
+  const volumeRef = useRef<ISeriesApi<'Histogram', Time> | null>(null)
 
   // Symbol autocomplete
   const { data: symbolData } = useQuery({
@@ -200,8 +219,8 @@ export function ChartsPage() {
 
   // OHLCV data
   const { data: ohlcv, isLoading, isError, error } = useQuery({
-    queryKey: ['chart-ohlcv', symbol, period],
-    queryFn: () => fetchOhlcv(symbol, period),
+    queryKey: ['chart-ohlcv', symbol, timeframe],
+    queryFn: () => fetchOhlcv(symbol, timeframe),
     staleTime: 5 * 60_000,
     retry: 1,
   })
@@ -213,7 +232,7 @@ export function ChartsPage() {
     staleTime: 5 * 60_000,
   })
 
-  // Create chart once — errors caught via state (useEffect errors bypass ErrorBoundary)
+  // Create chart once -- errors caught via state (useEffect errors bypass ErrorBoundary)
   useEffect(() => {
     if (!chartRef.current) return
     setChartError(null)
@@ -278,7 +297,7 @@ export function ChartsPage() {
     }
   }, [])
 
-  // Update data when ohlcv changes
+  // Update chart data when ohlcv response changes
   useEffect(() => {
     if (!ohlcv || !candleRef.current || !volumeRef.current) return
     try {
@@ -306,6 +325,10 @@ export function ChartsPage() {
     }
   }, [ohlcv])
 
+  const resetChart = useCallback(() => {
+    chartApi.current?.timeScale().fitContent()
+  }, [])
+
   const handleSymbolSelect = useCallback((sym: string) => {
     setSymbol(sym)
     setInputVal(sym)
@@ -328,15 +351,19 @@ export function ChartsPage() {
     if (e.key === 'Escape') setShowDropdown(false)
   }
 
-  const latestBar = ohlcv?.bars.at(-1)
-  const prevBar   = ohlcv?.bars.at(-2)
-  const priceChange = latestBar && prevBar ? ((latestBar.close - prevBar.close) / prevBar.close) * 100 : null
+  const latestBar  = ohlcv?.bars.at(-1)
+  const prevBar    = ohlcv?.bars.at(-2)
+  const priceChange = latestBar && prevBar
+    ? ((latestBar.close - prevBar.close) / prevBar.close) * 100
+    : null
+
+  const isIntraday = INTRADAY_TF.has(timeframe)
 
   return (
   <ChartErrorBoundary>
     <div style={{ display: 'flex', gap: 16, height: 'calc(100vh - 120px)' }}>
 
-      {/* ── Left: chart area ── */}
+      {/* -- Left: chart area -- */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 }}>
 
         {/* Toolbar */}
@@ -397,23 +424,58 @@ export function ChartsPage() {
             </div>
           )}
 
-          {/* Period selector */}
-          <div style={{ display: 'flex', gap: 4, marginLeft: 'auto' }}>
-            {PERIODS.map(p => (
+          {/* Timeframe selector + Reset */}
+          <div style={{ display: 'flex', gap: 4, marginLeft: 'auto', alignItems: 'center' }}>
+            {/* Intraday candle timeframes */}
+            {(['5M', '15M', '1H'] as Timeframe[]).map(tf => (
               <button
-                key={p}
-                onClick={() => setPeriod(p)}
+                key={tf}
+                onClick={() => setTimeframe(tf)}
                 style={{
                   padding: '4px 10px', borderRadius: 4, fontSize: 11, cursor: 'pointer',
-                  border: `1px solid ${period === p ? COLORS.green : COLORS.border}`,
-                  backgroundColor: period === p ? COLORS.green + '22' : 'transparent',
-                  color: period === p ? COLORS.green : COLORS.textDim,
-                  fontWeight: period === p ? 700 : 400,
+                  border: `1px solid ${timeframe === tf ? COLORS.blue : COLORS.border}`,
+                  backgroundColor: timeframe === tf ? COLORS.blue + '22' : 'transparent',
+                  color: timeframe === tf ? COLORS.blue : COLORS.textDim,
+                  fontWeight: timeframe === tf ? 700 : 400,
                 }}
               >
-                {p}
+                {tf}
               </button>
             ))}
+
+            {/* Separator: intraday vs daily+ */}
+            <div style={{ width: 1, height: 18, backgroundColor: COLORS.border, margin: '0 2px' }} />
+
+            {/* Daily+ candle timeframes */}
+            {(['1D', '1W', '1M', '3M'] as Timeframe[]).map(tf => (
+              <button
+                key={tf}
+                onClick={() => setTimeframe(tf)}
+                style={{
+                  padding: '4px 10px', borderRadius: 4, fontSize: 11, cursor: 'pointer',
+                  border: `1px solid ${timeframe === tf ? COLORS.green : COLORS.border}`,
+                  backgroundColor: timeframe === tf ? COLORS.green + '22' : 'transparent',
+                  color: timeframe === tf ? COLORS.green : COLORS.textDim,
+                  fontWeight: timeframe === tf ? 700 : 400,
+                }}
+              >
+                {tf}
+              </button>
+            ))}
+
+            {/* Reset: restores chart to fit-all view */}
+            <button
+              onClick={resetChart}
+              title="Reset chart to default view"
+              style={{
+                marginLeft: 6, padding: '4px 10px', borderRadius: 4, fontSize: 11, cursor: 'pointer',
+                border: `1px solid ${COLORS.border}`,
+                backgroundColor: 'transparent',
+                color: COLORS.textDim,
+              }}
+            >
+              Reset
+            </button>
           </div>
         </div>
 
@@ -431,7 +493,7 @@ export function ChartsPage() {
               position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center', gap: 8, zIndex: 20, backgroundColor: COLORS.bg,
             }}>
-              <span style={{ color: COLORS.red, fontSize: 14, fontWeight: 700 }}>Chart Init Error</span>
+              <span style={{ color: COLORS.red, fontSize: 14, fontWeight: 700 }}>Chart Error</span>
               <span style={{ color: COLORS.textDim, fontSize: 11, maxWidth: 360, textAlign: 'center' }}>
                 {chartError}
               </span>
@@ -452,7 +514,7 @@ export function ChartsPage() {
               position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
               justifyContent: 'center', color: COLORS.textDim, zIndex: 10, backgroundColor: COLORS.bg,
             }}>
-              Loading {symbol}...
+              Loading {symbol} ({timeframe})...
             </div>
           )}
           {!chartError && isError && (
@@ -461,10 +523,12 @@ export function ChartsPage() {
               alignItems: 'center', justifyContent: 'center', gap: 8, zIndex: 10, backgroundColor: COLORS.bg,
             }}>
               <span style={{ color: COLORS.red, fontSize: 13 }}>
-                Failed to load {symbol}
+                Failed to load {symbol} ({timeframe})
               </span>
               <span style={{ color: COLORS.textDim, fontSize: 11 }}>
-                {(error as Error)?.message ?? 'NSE API error -- try again'}
+                {isIntraday
+                  ? 'Intraday data may not be available for this symbol'
+                  : (error as Error)?.message ?? 'NSE API error -- try again'}
               </span>
             </div>
           )}
@@ -479,12 +543,16 @@ export function ChartsPage() {
             <span>L <span style={{ color: COLORS.red }}>{latestBar.low.toFixed(2)}</span></span>
             <span>C <span style={{ color: '#E2E8F0' }}>{latestBar.close.toFixed(2)}</span></span>
             <span>Vol <span style={{ color: '#E2E8F0' }}>{(latestBar.volume / 1e6).toFixed(2)}M</span></span>
-            {ohlcv && <span style={{ marginLeft: 'auto' }}>{ohlcv.count} bars | {ohlcv.from} to {ohlcv.to}</span>}
+            {ohlcv && (
+              <span style={{ marginLeft: 'auto' }}>
+                {ohlcv.count} bars | {fmtBarTime(ohlcv.from)} to {fmtBarTime(ohlcv.to)}
+              </span>
+            )}
           </div>
         )}
       </div>
 
-      {/* ── Right: Intelligence panel ── */}
+      {/* -- Right: Intelligence panel -- */}
       <div style={{
         width: 220, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 10, overflowY: 'auto',
       }}>

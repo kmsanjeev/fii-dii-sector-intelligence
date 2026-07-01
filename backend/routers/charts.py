@@ -1,13 +1,21 @@
 """
-Charts Router — Phase 11
-GET /api/charts/ohlcv    -- OHLCV bars for a symbol via nselib (live NSE API)
+Charts Router -- Phase 11
+GET /api/charts/ohlcv    -- OHLCV bars for a symbol (timeframe-based candles)
 GET /api/charts/signals  -- intelligence overlays for chart panel
 GET /api/charts/symbols  -- symbol autocomplete list
 GET /api/charts/movers   -- top gainers / losers (live)
+
+Timeframe semantics:
+  5M / 15M / 1H  -- intraday candles via yfinance (max available history)
+  1D             -- daily candles, 1Y history from nselib (~255 bars)
+  1W             -- weekly candles, resampled from 5Y daily data
+  1M             -- monthly candles, resampled from 5Y daily data
+  3M             -- quarterly candles, resampled from 5Y daily data
 """
 
 import sys
 import time
+import warnings
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -33,31 +41,23 @@ SECTOR_ROT = cfg.INTELLIGENCE_DIR / "sector_rotation_intelligence.csv"
 SHP_CSV    = cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv"
 EQUITY_MASTER = cfg.NSE_DIR / "equity_master" / "equity_master.csv"
 
-VALID_PERIODS = {"1D", "1W", "1M", "3M", "6M", "1Y", "3Y", "5Y"}
+VALID_TIMEFRAMES = {"5M", "15M", "1H", "1D", "1W", "1M", "3M"}
 
-# nselib accepts these as period= directly; others need from_date/to_date
-_NSELIB_NATIVE = {"1D", "1W", "1M", "6M", "1Y"}
+# Intraday timeframes served by yfinance; daily+ served by nselib
+_INTRADAY = {"5M", "15M", "1H"}
 
-# Approximate day counts for periods nselib doesn't support natively
-_PERIOD_DAYS = {"3M": 92, "3Y": 365 * 3 + 1, "5Y": 365 * 5 + 2}
+# yfinance intervals and max-available periods per intraday timeframe
+_YF_INTERVAL = {"5M": "5m", "15M": "15m", "1H": "1h"}
+_YF_PERIOD   = {"5M": "7d", "15M": "60d", "1H": "730d"}
 
-
-def _nselib_kwargs(period: str) -> dict:
-    """Return the correct kwargs for capital_market.price_volume_data."""
-    if period in _NSELIB_NATIVE:
-        return {"period": period}
-    days = _PERIOD_DAYS.get(period, 365)
-    fmt = "%d-%m-%Y"
-    today = date.today()
-    return {
-        "from_date": (today - timedelta(days=days)).strftime(fmt),
-        "to_date":   today.strftime(fmt),
-    }
+# nselib years of history to fetch for resampled timeframes
+_DAILY_YEARS = {"1D": 1, "1W": 5, "1M": 5, "3M": 5}
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 def _parse_nse_date(d: str) -> str:
     """Convert NSE date '30-Jun-2026' -> '2026-06-30' for lightweight-charts."""
     try:
@@ -66,11 +66,44 @@ def _parse_nse_date(d: str) -> str:
         return d
 
 
-def _fetch_ohlcv(symbol: str, period: str) -> list[dict]:
-    """Fetch OHLCV from NSE via nselib and return normalized bars list."""
+def _normalize_daily_df(df: pd.DataFrame) -> pd.DataFrame:
+    """Strip rupee columns, rename, numeric-parse, add 'time' string column."""
+    df = df[[c for c in df.columns if "₹" not in c]]
+    col_map = {
+        "OpenPrice":           "open",
+        "HighPrice":           "high",
+        "LowPrice":            "low",
+        "ClosePrice":          "close",
+        "TotalTradedQuantity": "volume",
+        "Date":                "date",
+    }
+    df = df.rename(columns={k: v for k, v in col_map.items() if k in df.columns})
+    for col in ["open", "high", "low", "close", "volume"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(
+                df[col].astype(str).str.replace(",", ""), errors="coerce"
+            )
+    df["time"] = df["date"].apply(_parse_nse_date)
+    df = df.dropna(subset=["time", "open", "high", "low", "close"])
+    df = df.sort_values("time").drop_duplicates(subset=["time"], keep="last")
+    return df
+
+
+def _fetch_daily_data(symbol: str, years: int = 1) -> pd.DataFrame:
+    """Fetch daily OHLCV from nselib for up to `years` years and return normalized df."""
     from nselib import capital_market
 
-    kwargs = _nselib_kwargs(period)
+    if years <= 1:
+        kwargs: dict = {"period": "1Y"}
+    else:
+        today = date.today()
+        fmt = "%d-%m-%Y"
+        kwargs = {
+            "from_date": (today - timedelta(days=years * 365 + 2)).strftime(fmt),
+            "to_date":   today.strftime(fmt),
+        }
+
+    df = None
     for attempt in range(3):
         try:
             df = capital_market.price_volume_data(symbol.upper(), **kwargs)
@@ -83,30 +116,114 @@ def _fetch_ohlcv(symbol: str, period: str) -> list[dict]:
     if df is None or df.empty:
         raise HTTPException(status_code=404, detail=f"No data for {symbol}")
 
-    # Normalize columns — drop rupee symbol column to avoid cp1252 issues
-    df = df[[c for c in df.columns if "₹" not in c]]
+    return _normalize_daily_df(df)
 
-    col_map = {
-        "OpenPrice":           "open",
-        "HighPrice":           "high",
-        "LowPrice":            "low",
-        "ClosePrice":          "close",
-        "TotalTradedQuantity": "volume",
-        "Date":                "date",
-    }
-    df = df.rename(columns={k: v for k, v in col_map.items() if k in df.columns})
 
-    for col in ["open", "high", "low", "close", "volume"]:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col].astype(str).str.replace(",", ""), errors="coerce")
+def _resample_bars(df: pd.DataFrame, timeframe: str) -> list[dict]:
+    """Resample daily OHLCV bars to weekly / monthly / quarterly candles."""
+    df2 = df.copy()
+    df2["_dt"] = pd.to_datetime(df2["time"])
+    df2 = df2.sort_values("_dt").set_index("_dt")
 
-    df["time"] = df["date"].apply(_parse_nse_date)
-    df = df.dropna(subset=["time", "open", "high", "low", "close"])
-    df = df.sort_values("time")
-    df = df.drop_duplicates(subset=["time"], keep="last")  # nselib occasionally returns dup dates
+    freq_map = {"1W": "W-FRI", "1M": "ME", "3M": "QE"}
+    freq = freq_map[timeframe]
 
-    bars = df[["time", "open", "high", "low", "close", "volume"]].to_dict(orient="records")
-    return bars
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        r = df2[["open", "high", "low", "close", "volume"]].resample(freq).agg(
+            open=("open", "first"),
+            high=("high", "max"),
+            low=("low",  "min"),
+            close=("close", "last"),
+            volume=("volume", "sum"),
+        ).dropna(subset=["close"])
+
+    r = r[r["open"].notna()].reset_index()
+    r["time"] = r["_dt"].dt.strftime("%Y-%m-%d")
+    return r[["time", "open", "high", "low", "close", "volume"]].to_dict(orient="records")
+
+
+def _fetch_intraday(symbol: str, timeframe: str) -> list[dict]:
+    """Fetch intraday bars via yfinance for 5M / 15M / 1H timeframes."""
+    try:
+        import yfinance as yf
+    except ImportError:
+        raise HTTPException(
+            status_code=501,
+            detail="yfinance not installed -- run: py -3.11 -m pip install yfinance",
+        )
+
+    iv  = _YF_INTERVAL[timeframe]
+    prd = _YF_PERIOD[timeframe]
+    ticker = symbol.upper() + ".NS"
+
+    df = None
+    for attempt in range(3):
+        try:
+            df = yf.download(
+                ticker, period=prd, interval=iv,
+                auto_adjust=True, progress=False,
+            )
+            break
+        except Exception as e:
+            if attempt == 2:
+                raise HTTPException(status_code=502, detail=f"yfinance error: {e}")
+            time.sleep(2 ** attempt)
+
+    if df is None or df.empty:
+        raise HTTPException(status_code=404, detail=f"No intraday data for {symbol}")
+
+    # Flatten MultiIndex columns that some yfinance versions produce
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
+
+    df = df.reset_index()
+
+    # Rename: Datetime / Date -> dt; OHLCV -> lowercase
+    col_map: dict = {}
+    for c in df.columns:
+        cl = str(c).lower()
+        if cl in ("datetime", "date", "index"):
+            col_map[c] = "dt"
+        elif cl == "open":    col_map[c] = "open"
+        elif cl == "high":    col_map[c] = "high"
+        elif cl == "low":     col_map[c] = "low"
+        elif cl == "close":   col_map[c] = "close"
+        elif cl == "volume":  col_map[c] = "volume"
+    df = df.rename(columns=col_map)
+    df = df.dropna(subset=["close"])
+
+    bars: list[dict] = []
+    seen: set = set()
+    for _, row in df.iterrows():
+        unix = int(pd.Timestamp(row["dt"]).timestamp())
+        if unix in seen:
+            continue
+        seen.add(unix)
+        bars.append({
+            "time":   unix,
+            "open":   round(float(row["open"]),  2),
+            "high":   round(float(row["high"]),  2),
+            "low":    round(float(row["low"]),   2),
+            "close":  round(float(row["close"]), 2),
+            "volume": int(row["volume"]) if pd.notna(row.get("volume")) else 0,
+        })
+
+    return sorted(bars, key=lambda x: x["time"])
+
+
+def _fetch_ohlcv(symbol: str, timeframe: str) -> list[dict]:
+    """Main dispatcher: returns OHLCV bars for the given candle timeframe."""
+    if timeframe in _INTRADAY:
+        return _fetch_intraday(symbol, timeframe)
+
+    years = _DAILY_YEARS.get(timeframe, 1)
+    df = _fetch_daily_data(symbol, years=years)
+
+    if timeframe == "1D":
+        return df[["time", "open", "high", "low", "close", "volume"]].to_dict(orient="records")
+
+    return _resample_bars(df, timeframe)
 
 
 # ---------------------------------------------------------------------------
@@ -115,22 +232,31 @@ def _fetch_ohlcv(symbol: str, period: str) -> list[dict]:
 
 @router.get("/ohlcv")
 def get_ohlcv(
-    symbol: str = Query(..., description="NSE equity symbol e.g. RELIANCE"),
-    period: str = Query("1Y", description="1M | 3M | 6M | 1Y | 3Y | 5Y"),
+    symbol:    str = Query(...,  description="NSE equity symbol e.g. RELIANCE"),
+    timeframe: str = Query("1D", description="5M | 15M | 1H | 1D | 1W | 1M | 3M"),
 ):
-    """OHLCV candlestick bars for a symbol from NSE API."""
-    if period not in VALID_PERIODS:
-        raise HTTPException(status_code=400, detail=f"period must be one of {VALID_PERIODS}")
+    """OHLCV candlestick bars for a symbol.
 
-    bars = _fetch_ohlcv(symbol, period)
+    Timeframe = candle resolution (not date range). Max available history is
+    always returned -- 1Y for daily, 5Y resampled for weekly/monthly/quarterly,
+    7-730 days for intraday via yfinance.
+    """
+    tf = timeframe.upper()
+    if tf not in VALID_TIMEFRAMES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"timeframe must be one of {sorted(VALID_TIMEFRAMES)}",
+        )
+
+    bars = _fetch_ohlcv(symbol, tf)
 
     return {
-        "symbol":  symbol.upper(),
-        "period":  period,
-        "bars":    bars,
-        "count":   len(bars),
-        "from":    bars[0]["time"]  if bars else None,
-        "to":      bars[-1]["time"] if bars else None,
+        "symbol":    symbol.upper(),
+        "timeframe": tf,
+        "bars":      bars,
+        "count":     len(bars),
+        "from":      bars[0]["time"]  if bars else None,
+        "to":        bars[-1]["time"] if bars else None,
     }
 
 
@@ -147,16 +273,16 @@ def get_signals(symbol: str = Query(..., description="NSE equity symbol")):
         row = br[br["symbol"] == sym]
         if not row.empty:
             r = row.iloc[0]
-            result["bull_run_score"]   = float(r.get("bull_run_score", 0))
-            result["label"]            = str(r.get("label", "NEUTRAL"))
-            result["price_score"]      = float(r.get("price_score", 0))
+            result["bull_run_score"]    = float(r.get("bull_run_score", 0))
+            result["label"]             = str(r.get("label", "NEUTRAL"))
+            result["price_score"]       = float(r.get("price_score", 0))
             result["sector_flow_score"] = float(r.get("sector_flow_score", 0))
-            result["deal_score"]       = float(r.get("deal_score", 0))
-            result["corporate_score"]  = float(r.get("corporate_score", 0))
-            result["market_regime"]    = str(r.get("market_regime", ""))
+            result["deal_score"]        = float(r.get("deal_score", 0))
+            result["corporate_score"]   = float(r.get("corporate_score", 0))
+            result["market_regime"]     = str(r.get("market_regime", ""))
             result["regime_multiplier"] = float(r.get("regime_multiplier", 1))
-            result["sector"]           = str(r.get("sector", ""))
-            result["as_of_date"]       = str(r.get("as_of_date", ""))
+            result["sector"]            = str(r.get("sector", ""))
+            result["as_of_date"]        = str(r.get("as_of_date", ""))
 
     # ML scores
     if ML_SCORES.exists():
@@ -165,7 +291,7 @@ def get_signals(symbol: str = Query(..., description="NSE equity symbol")):
         row = ml[ml["symbol"] == sym]
         if not row.empty:
             r = row.iloc[0]
-            result["ml_bull_run_score"]  = float(r["ml_bull_run_score"]) if pd.notna(r.get("ml_bull_run_score")) else None
+            result["ml_bull_run_score"]  = float(r["ml_bull_run_score"])  if pd.notna(r.get("ml_bull_run_score"))  else None
             result["accumulation_score"] = float(r["accumulation_score"]) if pd.notna(r.get("accumulation_score")) else None
 
     # Sector rotation signal
@@ -174,8 +300,8 @@ def get_signals(symbol: str = Query(..., description="NSE equity symbol")):
         row = sec[sec["sector"] == result["sector"]]
         if not row.empty:
             r = row.iloc[0]
-            result["rotation_signal"]   = str(r.get("rotation_signal", ""))
-            result["sector_combined"]   = float(r.get("combined_score", 0))
+            result["rotation_signal"] = str(r.get("rotation_signal", ""))
+            result["sector_combined"] = float(r.get("combined_score", 0))
 
     # Shareholding (latest quarter)
     if SHP_CSV.exists():
@@ -205,7 +331,10 @@ def get_symbols(q: str = Query("", description="Search prefix")):
     eq["SYMBOL"] = eq["SYMBOL"].str.strip().str.upper()
     if q:
         q_up = q.upper()
-        eq = eq[eq["SYMBOL"].str.startswith(q_up) | eq["COMPANY_NAME"].str.upper().str.contains(q_up, na=False)]
+        eq = eq[
+            eq["SYMBOL"].str.startswith(q_up) |
+            eq["COMPANY_NAME"].str.upper().str.contains(q_up, na=False)
+        ]
     eq = eq.sort_values("SYMBOL").head(50)
     return {"symbols": eq.to_dict(orient="records")}
 
@@ -218,7 +347,6 @@ def get_movers(type: str = Query("gainers", description="gainers | losers")):
         to_get = "gainers" if type != "losers" else "losers"
         df = capital_market.top_gainers_or_losers(to_get=to_get)
         df = df[[c for c in df.columns if "₹" not in c]]
-        # Keep EQ series only
         if "series" in df.columns:
             df = df[df["series"] == "EQ"]
         rows = df.head(10).to_dict(orient="records")
