@@ -1008,7 +1008,7 @@ def backfill_missing_dates():
         return {"downloaded": 0, "skipped": 0, "failed": 0}
 
     trade_dates = [
-        pd.to_datetime(d).date()
+        pd.to_datetime(str(d), format="%Y%m%d").date()
         for d in missing_df["TRADE_DATE"]
     ]
 
