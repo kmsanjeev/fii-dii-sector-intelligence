@@ -165,19 +165,19 @@ ENGINES = {
         "script": "engines/intelligence/bull_run_probability_engine.py",
         "phase": "8B",
     },
-    "fundamentals_15a": {
-        "label": "Financial Results Engine (15A)",
+    "results_acquisition": {
+        "label": "Financial Results Acquisition — recent windows (15A)",
         "script": "engines/fundamentals/financial_results_engine.py",
         "args": ["--windows", "2"],
         "phase": "15A",
     },
-    "fundamentals_15a_full": {
-        "label": "Financial Results Engine Full History (15A)",
+    "results_acquisition_full": {
+        "label": "Financial Results Acquisition — full history (15A)",
         "script": "engines/fundamentals/financial_results_engine.py",
         "args": ["--full"],
         "phase": "15A",
     },
-    "fundamentals_15b": {
+    "valuation_15b": {
         "label": "Valuation Engine (15B)",
         "script": "engines/fundamentals/valuation_engine.py",
         "phase": "15B",
@@ -208,7 +208,8 @@ ENGINES = {
 
 ACQUISITION_PIPELINE = [
     "bhavcopy_equity", "bhavcopy_fno", "corporate_actions",
-    "equity_master", "stock_history_build", "shp_acquisition",
+    "equity_master", "stock_history_build",
+    "results_acquisition", "shp_acquisition",
 ]
 INTELLIGENCE_PIPELINE = [
     "participant_5a", "participant_5b", "participant_5c",
@@ -353,7 +354,25 @@ def get_data_status():
         "last_modified": fno_hist["last_modified"],
     }
 
-    # ── Shareholding patterns (acquisition, not fundamentals) ─────────────────
+    # ── Quarterly results (Phase 15A — external NSE XBRL fetch) ─────────────
+    results_path = cfg.NSE_DIR / "results" / "quarterly_results.csv"
+    results_info = _file_info(results_path)
+    results_windows = ""
+    if results_info["exists"] and results_info["rows"] > 0:
+        try:
+            _rdf = pd.read_csv(results_path, usecols=["symbol", "window_label"])
+            results_windows = ", ".join(sorted(_rdf["window_label"].dropna().unique()))
+        except Exception:
+            pass
+    status["quarterly_results"] = {
+        "label": "Quarterly Results (15A)",
+        "status": "OK" if results_info["exists"] and results_info["rows"] > 0 else "EMPTY",
+        "records": f"{results_info['rows']:,} rows" if results_info["exists"] else "0 rows",
+        "coverage": results_windows or "-",
+        "last_modified": results_info["last_modified"],
+    }
+
+    # ── Shareholding patterns (Phase 15C — external NSE XBRL fetch) ──────────
     shp_path = cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv"
     shp_info = _file_info(shp_path)
     shp_windows = ""
@@ -421,54 +440,31 @@ def get_data_status():
         "corporate_action_signals":       "corporate_action_signals.csv",
         "price_momentum":                 "price_momentum.csv",
         "ml_scores_combined":             "ml_scores_combined.csv",
+        # Phase 15B — valuation is computed (not fetched) → belongs in intelligence
+        "valuation_scores":               "valuation_scores.csv",
     }
     intelligence = {}
+    _intel_alt_paths = {
+        "valuation_scores": cfg.NSE_DIR / "results" / "valuation_scores.csv",
+    }
+    _intel_labels = {
+        "valuation_scores": "Valuation Scores (15B)",
+    }
     for key, fname in intel_files.items():
-        info = _file_info(cfg.INTELLIGENCE_DIR / fname)
+        path  = _intel_alt_paths.get(key, cfg.INTELLIGENCE_DIR / fname)
+        label = _intel_labels.get(key, fname.replace(".csv", "").replace("_", " ").title())
+        info  = _file_info(path)
         intelligence[key] = {
-            "label": fname.replace(".csv", "").replace("_", " ").title(),
+            "label": label,
             "status": "OK" if info["exists"] and info["rows"] > 0 else "EMPTY",
             "records": f"{info['rows']:,} rows" if info["exists"] else "0 rows",
             "as_of_date": info["as_of_date"],
             "last_modified": info["last_modified"],
         }
 
-    # ── Fundamentals (Phase 15) ───────────────────────────────────────────────
-    results_path = cfg.NSE_DIR / "results" / "quarterly_results.csv"
-    results_info = _file_info(results_path)
-    valuation_path = cfg.NSE_DIR / "results" / "valuation_scores.csv"
-    valuation_info = _file_info(valuation_path)
-
-    # Count distinct symbols + windows in quarterly results
-    results_windows = ""
-    if results_info["exists"] and results_info["rows"] > 0:
-        try:
-            _rdf = pd.read_csv(results_path, usecols=["symbol", "window_label"])
-            results_windows = ", ".join(sorted(_rdf["window_label"].dropna().unique()))
-        except Exception:
-            pass
-
-    fundamentals = {
-        "quarterly_results": {
-            "label": "Quarterly Results (15A)",
-            "status": "OK" if results_info["exists"] and results_info["rows"] > 0 else "EMPTY",
-            "records": f"{results_info['rows']:,} rows" if results_info["exists"] else "0 rows",
-            "coverage": results_windows or "-",
-            "last_modified": results_info["last_modified"],
-        },
-        "valuation_scores": {
-            "label": "Valuation Scores (15B)",
-            "status": "OK" if valuation_info["exists"] and valuation_info["rows"] > 0 else "EMPTY",
-            "records": f"{valuation_info['rows']:,} rows" if valuation_info["exists"] else "0 rows",
-            "coverage": "-",
-            "last_modified": valuation_info["last_modified"],
-        },
-    }
-
     return {
         "acquisition": status,
         "intelligence": intelligence,
-        "fundamentals": fundamentals,
         "engines": list(ENGINES.keys()),
     }
 
@@ -529,24 +525,49 @@ def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
 
         def _reader(proc, q=q):
             try:
-                for line in proc.stdout:
-                    stripped = line.rstrip()
-                    if _TQDM_RE.match(stripped):
-                        item: dict = {"line": stripped, "type": "progress"}
-                        m_pct = re.search(r'(\d+)%\|', stripped)
-                        if m_pct:
-                            item["pct"] = int(m_pct.group(1))
-                        m_nd = re.search(r'\|\s*(\d+)/(\d+)\s*\[', stripped)
-                        if m_nd:
-                            item["n"] = int(m_nd.group(1))
-                            item["total"] = int(m_nd.group(2))
-                        m_time = re.search(r'\[(\d+:\d+)<(\d+:\d+)', stripped)
-                        if m_time:
-                            item["elapsed"] = m_time.group(1)
-                            item["eta"] = m_time.group(2)
-                        q.put(item)
-                    elif stripped:
-                        q.put({"line": stripped})
+                buf = ""
+                while True:
+                    chunk = proc.stdout.read(256)
+                    if not chunk:
+                        break
+                    buf += chunk
+                    # Split on both \n and \r (tqdm uses \r over pipes on Windows)
+                    while True:
+                        nl = buf.find("\n")
+                        cr = buf.find("\r")
+                        if nl == -1 and cr == -1:
+                            break
+                        if nl == -1:
+                            sep = cr
+                        elif cr == -1:
+                            sep = nl
+                        else:
+                            sep = min(nl, cr)
+                        raw  = buf[:sep]
+                        buf  = buf[sep + 1:]
+                        # Skip empty segments (e.g. \r\n emits two splits)
+                        stripped = raw.rstrip()
+                        if not stripped:
+                            continue
+                        if _TQDM_RE.match(stripped):
+                            item: dict = {"line": stripped, "type": "progress"}
+                            m_pct = re.search(r'(\d+)%\|', stripped)
+                            if m_pct:
+                                item["pct"] = int(m_pct.group(1))
+                            m_nd = re.search(r'\|\s*(\d+)/(\d+)\s*\[', stripped)
+                            if m_nd:
+                                item["n"] = int(m_nd.group(1))
+                                item["total"] = int(m_nd.group(2))
+                            m_time = re.search(r'\[(\d+:\d+)<(\d+:\d+)', stripped)
+                            if m_time:
+                                item["elapsed"] = m_time.group(1)
+                                item["eta"] = m_time.group(2)
+                            q.put(item)
+                        else:
+                            q.put({"line": stripped})
+                # flush any remaining buffer
+                if buf.strip():
+                    q.put({"line": buf.strip()})
             finally:
                 proc.wait()
                 q.put({"_done": True, "exit_code": proc.returncode})

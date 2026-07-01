@@ -182,14 +182,14 @@ async def process_day(
 
 
 async def _download_dates(trade_dates: list, year: int) -> dict:
-    from tqdm import tqdm as _tqdm
+    from engines.common.progress import progress
 
     WORKERS = get_optimal_workers()
     total = len(trade_dates)
     semaphore = asyncio.Semaphore(WORKERS)
     downloaded = skipped = failed = 0
 
-    with _tqdm(total=total, desc=f"  {year}", ncols=100, leave=True, ascii=True) as pbar:
+    with progress(total=total, desc=f"  {year}") as pbar:
         async with aiohttp.ClientSession(headers=HEADERS) as session:
             tasks = [
                 process_day(semaphore, session, td)

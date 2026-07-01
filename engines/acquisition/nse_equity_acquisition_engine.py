@@ -457,8 +457,6 @@ async def _download_dates(
     trade_dates,
     year: int = 0,
 ):
-    from tqdm import tqdm as _tqdm
-
     WORKERS = get_optimal_workers()
     semaphore = asyncio.Semaphore(WORKERS)
     total = len(trade_dates)
@@ -466,7 +464,7 @@ async def _download_dates(
 
     desc = f"  {year}" if year else "  Equity"
 
-    with _tqdm(total=total, desc=desc, ncols=100, leave=True, ascii=True) as pbar:
+    with progress(total=total, desc=desc) as pbar:
         async with aiohttp.ClientSession(headers=HEADERS) as session:
             tasks = [
                 process_day(semaphore, session, td)

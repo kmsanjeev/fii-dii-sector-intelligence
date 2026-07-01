@@ -20,13 +20,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import pandas as pd
-from tqdm import tqdm as _tqdm
-
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
+from engines.common.progress import progress
 
 logger = get_logger("stock_history_builder")
 
@@ -215,7 +214,7 @@ class StockHistoryBuilder:
             print(f"Reading batch {batch_idx + 1}/{len(batches)}  ({len(batch)} files) ...", flush=True)
 
             dfs: list[pd.DataFrame] = []
-            with _tqdm(total=len(batch), desc="  Reading", ncols=100, leave=True, ascii=True) as pbar:
+            with progress(total=len(batch), desc="  Reading") as pbar:
                 with ThreadPoolExecutor(max_workers=WORKERS) as ex:
                     futures = {ex.submit(_read_bhavcopy, f): f for f in batch}
                     for fut in as_completed(futures):
@@ -251,7 +250,7 @@ class StockHistoryBuilder:
             _write_symbol_parquet(sym, new_df)
 
         items = list(symbol_frames.items())
-        with _tqdm(total=len(items), desc="  Writing", ncols=100, leave=True, ascii=True) as pbar:
+        with progress(total=len(items), desc="  Writing") as pbar:
             with ThreadPoolExecutor(max_workers=WORKERS) as ex:
                 futures = [ex.submit(_merge_and_write, sym, frames) for sym, frames in items]
                 for fut in as_completed(futures):

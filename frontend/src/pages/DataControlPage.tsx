@@ -106,8 +106,8 @@ const ENGINE_MAP: Record<string, string> = {
   upcoming_catalysts:           'events_7b',
   corporate_action_signals:     'corp_actions_7c',
   corporate_confidence:         'corp_actions_7c',
-  quarterly_results:            'fundamentals_15a',
-  valuation_scores:             'fundamentals_15b',
+  quarterly_results:            'results_acquisition',
+  valuation_scores:             'valuation_15b',
   shareholding:                 'shp_acquisition',
 }
 
@@ -127,6 +127,7 @@ function ModuleTable({
   const [running, setRunning]             = useState<string | null>(null)
   const [logs, setLogs]                   = useState<Record<string, string[]>>({})
   const [engProgress, setEngProgress]     = useState<Record<string, ProgressInfo | null>>({})
+  const [lastProgress, setLastProgress]   = useState<Record<string, ProgressInfo | null>>({})
   const [openLog, setOpenLog]             = useState<string | null>(null)
   const [pipeRunning, setPipeRunning]     = useState(false)
   const [pipeLogs, setPipeLogs]           = useState<string[]>([])
@@ -178,8 +179,20 @@ function ModuleTable({
         setLogs(prev => ({ ...prev, [engineKey]: [...(prev[engineKey] ?? []), line] }))
         if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight
       },
-      (p) => setEngProgress(prev => ({ ...prev, [engineKey]: p })),
-      () => { setRunning(null); onRunComplete?.() },
+      (p) => {
+        setEngProgress(prev => ({ ...prev, [engineKey]: p }))
+        setLastProgress(prev => ({ ...prev, [engineKey]: p }))
+      },
+      () => {
+        // Persist the last progress state at 100% so the bar stays visible
+        setEngProgress(prev => {
+          const last = prev[engineKey]
+          if (last) setLastProgress(lp => ({ ...lp, [engineKey]: { ...last, pct: 100 } }))
+          return { ...prev, [engineKey]: null }
+        })
+        setRunning(null)
+        onRunComplete?.()
+      },
     )
   }
 
@@ -263,10 +276,11 @@ function ModuleTable({
         </thead>
         <tbody>
           {Object.entries(modules).map(([key, m]) => {
-            const engineKey = ENGINE_MAP[key]
-            const isRunning = running === engineKey
-            const hasLogs   = (logs[engineKey] ?? []).length > 0
-            const progress  = engProgress[engineKey] ?? null
+            const engineKey   = ENGINE_MAP[key]
+            const isRunning   = running === engineKey
+            const hasLogs     = (logs[engineKey] ?? []).length > 0
+            const progress    = engProgress[engineKey] ?? null
+            const prevProgress = lastProgress[engineKey] ?? null
 
             return (
               <>
@@ -311,11 +325,11 @@ function ModuleTable({
                   </td>
                 </tr>
 
-                {/* Inline progress bar while running */}
-                {isRunning && progress && (
+                {/* Progress bar — live while running, last-state persisted after done */}
+                {(isRunning ? progress : prevProgress) && (
                   <tr key={`${key}_prog`}>
                     <td colSpan={6} style={{ padding: '0 8px 4px 8px' }}>
-                      <ProgressBar info={progress} />
+                      <ProgressBar info={(isRunning ? progress : prevProgress)!} />
                     </td>
                   </tr>
                 )}
@@ -449,18 +463,15 @@ export function DataControlPage() {
     <div style={{ color: '#64748B', padding: 40, textAlign: 'center' }}>Scanning data modules...</div>
   )
 
-  const acquisition    = (status?.acquisition    ?? {}) as Record<string, ModuleInfo>
-  const intelligence   = (status?.intelligence   ?? {}) as Record<string, ModuleInfo>
-  const fundamentals   = (status?.fundamentals   ?? {}) as Record<string, ModuleInfo>
+  const acquisition  = (status?.acquisition  ?? {}) as Record<string, ModuleInfo>
+  const intelligence = (status?.intelligence ?? {}) as Record<string, ModuleInfo>
 
-  const acqOk   = Object.values(acquisition).filter(m => m.status === 'OK').length
-  const intOk   = Object.values(intelligence).filter(m => m.status === 'OK').length
-  const funOk   = Object.values(fundamentals).filter(m => m.status === 'OK').length
-  const acqLen  = Object.keys(acquisition).length
-  const intLen  = Object.keys(intelligence).length
-  const funLen  = Object.keys(fundamentals).length
-  const total   = acqLen + intLen + funLen
-  const totalOk = acqOk + intOk + funOk
+  const acqOk  = Object.values(acquisition).filter(m => m.status === 'OK').length
+  const intOk  = Object.values(intelligence).filter(m => m.status === 'OK').length
+  const acqLen = Object.keys(acquisition).length
+  const intLen = Object.keys(intelligence).length
+  const total   = acqLen + intLen
+  const totalOk = acqOk + intOk
   const pct     = total > 0 ? Math.round((totalOk / total) * 100) : 0
 
   return (
@@ -544,15 +555,11 @@ export function DataControlPage() {
         <div style={{ fontSize: 11, color: '#64748B', textAlign: 'right' }}>
           <div>Acquisition: {acqOk}/{acqLen}</div>
           <div>Intelligence: {intOk}/{intLen}</div>
-          <div>Fundamentals: {funOk}/{funLen}</div>
         </div>
       </div>
 
       <ModuleTable title="DATA ACQUISITION"     modules={acquisition}  pipelineKey="pipeline_acquisition"  onBusyChange={handleSectionBusy('acquisition')}  onRunComplete={refetch} />
       <ModuleTable title="INTELLIGENCE OUTPUTS" modules={intelligence} pipelineKey="pipeline_intelligence" onBusyChange={handleSectionBusy('intelligence')} onRunComplete={refetch} />
-      {Object.keys(fundamentals).length > 0 && (
-        <ModuleTable title="FUNDAMENTALS (Phase 15)" modules={fundamentals} pipelineKey="fundamentals_15a" onBusyChange={handleSectionBusy('fundamentals')} onRunComplete={refetch} />
-      )}
 
       {/* Full pipeline log */}
       {pipeLogs.length > 0 && (

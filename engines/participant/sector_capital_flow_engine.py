@@ -30,6 +30,7 @@ sys.path.insert(0, str(ROOT))
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
+from engines.common.progress import progress
 
 logger = get_logger("sector_capital_flow")
 
@@ -94,11 +95,9 @@ class SectorCapitalFlowEngine:
                     bhavcopy_files[0].stem)
 
         new_rows = []
-        for i, bfile in enumerate(bhavcopy_files, 1):
+        for bfile in progress(bhavcopy_files, desc="Sector flows"):
             rows = self._process_one_file(bfile)
             new_rows.extend(rows)
-            if i % 100 == 0:
-                logger.info("[6A] Progress: %d / %d files", i, len(bhavcopy_files))
 
         if not new_rows:
             logger.info("[6A] No new rows produced")
