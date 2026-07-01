@@ -81,7 +81,8 @@ def _fetch_ohlcv(symbol: str, period: str) -> list[dict]:
 
     df["time"] = df["date"].apply(_parse_nse_date)
     df = df.dropna(subset=["time", "open", "high", "low", "close"])
-    df = df.sort_values("time")  # chronological for lightweight-charts
+    df = df.sort_values("time")
+    df = df.drop_duplicates(subset=["time"], keep="last")  # nselib occasionally returns dup dates
 
     bars = df[["time", "open", "high", "low", "close", "volume"]].to_dict(orient="records")
     return bars

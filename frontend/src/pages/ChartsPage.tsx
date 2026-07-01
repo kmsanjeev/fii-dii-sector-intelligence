@@ -222,6 +222,7 @@ export function ChartsPage() {
     try {
       chart = createChart(chartRef.current, {
         autoSize: true,
+        attributionLogo: false,
         layout: {
           background: { type: ColorType.Solid, color: COLORS.bg },
           textColor: COLORS.text,
