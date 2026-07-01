@@ -349,6 +349,10 @@ def save_year(
 
     if WRITE_PARQUET:
 
+        # faceVal arrives as mixed int/str after CSV round-trip + concat.
+        # PyArrow infers int64 but fails on str values -> coerce to float64.
+        df["faceVal"] = pd.to_numeric(df["faceVal"], errors="coerce")
+
         df.to_parquet(
             parquet_file,
             index=False
