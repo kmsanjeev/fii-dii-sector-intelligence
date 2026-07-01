@@ -86,7 +86,8 @@ class ValuationEngine:
 
     def _compute_ttm(self, results: pd.DataFrame) -> pd.DataFrame:
         """Compute trailing 12-month (TTM) revenue and profit per symbol."""
-        results = results.sort_values(["symbol", "date"])
+        date_col = "date_end" if "date_end" in results.columns else "date"
+        results = results.sort_values(["symbol", date_col])
         ttm_rows = []
         groups = list(results.groupby("symbol"))
 
@@ -95,7 +96,7 @@ class ValuationEngine:
             revenue_ttm = last4["revenue_cr"].sum() if "revenue_cr" in last4.columns else None
             profit_ttm  = last4["net_profit_cr"].sum() if "net_profit_cr" in last4.columns else None
             latest_eps  = last4["eps"].iloc[-1] if "eps" in last4.columns and not last4["eps"].isnull().all() else None
-            as_of = last4["date"].max()
+            as_of = last4[date_col].max()
 
             # YoY growth (if 8 quarters available)
             if len(grp) >= 8:
@@ -122,11 +123,16 @@ class ValuationEngine:
     def _load_prices(self, symbols: list[str]) -> pd.DataFrame:
         """Load latest close price from stock history cache using parallel file reads."""
         def _read_one(symbol: str) -> dict:
-            cache_file = STOCK_CACHE / f"{symbol}.csv"
+            cache_file = STOCK_CACHE / f"{symbol}.parquet"
             if not cache_file.exists():
-                return {"symbol": symbol, "latest_close": None}
+                cache_file = STOCK_CACHE / f"{symbol}.csv"
+                if not cache_file.exists():
+                    return {"symbol": symbol, "latest_close": None}
             try:
-                df = pd.read_csv(cache_file, usecols=["close", "date"] if True else ["Close", "Date"])
+                if cache_file.suffix == ".parquet":
+                    df = pd.read_parquet(cache_file, columns=["close"])
+                else:
+                    df = pd.read_csv(cache_file)
                 close_col = "close" if "close" in df.columns else "Close"
                 if close_col not in df.columns or df.empty:
                     return {"symbol": symbol, "latest_close": None}
