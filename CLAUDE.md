@@ -33,11 +33,11 @@ data/
 |   |-- equity_master/            <- equity_master.csv + company_fundamentals_master.csv
 |   |-- indices/                  <- index constituent CSVs + index_membership.csv
 |   |-- corporate_actions/        <- 1999-2026, 28 YYYY.csv files (COMPLETE)
-|   |-- results/                  <- quarterly results (Phase 15, empty)
-|   `-- shareholding/             <- shareholding patterns (Phase 15, empty)
+|   |-- results/                  <- quarterly_results.csv (Phase 15 COMPLETE: 4181 rows)
+|   `-- shareholding/             <- quarterly_shp.csv (4 quarters Q2FY25-Q1FY26, 7228 rows)
 |-- bhavcopy/equity/1995-2026/    <- LEGACY location, 7813 files (USE FOR ML + momentum)
 |-- BSE/                          <- Future, no engines yet
-|-- cache/stock_history/          <- Per-symbol OHLCV (config: STOCK_HISTORY_CACHE)
+|-- cache/stock_history/          <- Per-symbol OHLCV parquet (config: STOCK_HISTORY_CACHE)
 |-- historical/institutional/     <- positioning history + cash flows (LIVE)
 |-- intelligence/                 <- Derived outputs — all rebuilt by engines (REBUILDABLE)
 `-- reference/                    <- sector/theme/classification CSVs
@@ -45,28 +45,39 @@ data/
 **WARNING:** `data/NSE Data/` (with space) does NOT exist — fix any engine referencing it.
 **WARNING:** `data/bhavcopy/` is the LEGACY location. New engines write to `data/NSE/bhavcopy/` via config.
 
-## INTELLIGENCE OUTPUTS (all current as of 2026-06-30)
+## INTELLIGENCE OUTPUTS (current as of 2026-07-02)
 ```
 data/intelligence/
-|-- participant_flow_scores.csv      2581 rows  FII/DII/PRO/CLIENT OI+Volume z-scores
-|-- participant_intelligence.csv     2581 rows  regime, conviction, smart money, divergence
-|-- sector_capital_flows.csv        74269 rows  sector turnover-weighted participant attribution
-|-- sector_flow_scores.csv          74269 rows  rolling flow scores + sector weights
-|-- sector_rotation_intelligence.csv   29 rows  snapshot: rotation_signal, combined_score
-|-- sector_rotation_history.csv     74269 rows  time-series of above
-|-- price_momentum.csv               2441 rows  ret_30d/60d/90d/365d, vol_ratio, price_score
-|-- bull_run_probability.csv         2441 rows  4-factor score, label, regime-adjusted
-|-- bull_run_watchlist.csv            225 rows  EMERGING symbols only
-|-- block_bulk_deals.csv            12467 rows  institutional deal history (6M)
-|-- institutional_deal_signals.csv    361 rows  30D net institutional flow per symbol
-|-- corporate_action_signals.csv    40517 rows  classified actions 1999-2026
-|-- corporate_confidence_scores.csv  1111 rows  12M rolling confidence per symbol
-|-- event_calendar.csv              33839 rows  board meetings + results 2023-2026
-|-- upcoming_catalysts.csv             12 rows  next 60D events with catalyst score
-`-- index_momentum.csv + others          various index intelligence outputs
+|-- participant_flow_scores.csv          2581 rows  FII/DII/PRO/CLIENT OI+Volume z-scores
+|-- participant_intelligence.csv         2581 rows  regime, conviction, smart money, divergence
+|-- sector_capital_flows.csv            74269 rows  sector turnover-weighted participant attribution
+|-- sector_flow_scores.csv              74269 rows  rolling flow scores + sector weights
+|-- sector_rotation_intelligence.csv       29 rows  snapshot: rotation_signal, combined_score
+|-- sector_rotation_history.csv         74269 rows  time-series of above
+|-- price_momentum.csv                   2441 rows  ret_30d/60d/90d/365d, vol_ratio, price_score
+|-- bull_run_probability.csv             2441 rows  4-factor score, label, regime-adjusted
+|-- bull_run_watchlist.csv                225 rows  EMERGING symbols only
+|-- block_bulk_deals.csv                12467 rows  institutional deal history (6M)
+|-- institutional_deal_signals.csv        361 rows  30D net institutional flow per symbol
+|-- corporate_action_signals.csv        40517 rows  classified actions 1999-2026
+|-- corporate_confidence_scores.csv      1111 rows  12M rolling confidence per symbol
+|-- event_calendar.csv                  33839 rows  board meetings + results 2023-2026
+|-- upcoming_catalysts.csv                 12 rows  next 60D events with catalyst score
+|-- index_momentum.csv + others                     various index intelligence outputs
+|-- ml_features/feature_matrix.parquet   2441 rows  24 ML features (Phase 12)
+|-- ml_accumulation_scores.csv           2441 rows  XGBoost binary scores (Phase 12)
+|-- ml_bull_run_scores.csv               2441 rows  LGB+XGB ensemble scores (Phase 12)
+|-- ml_scores_combined.csv               2441 rows  daily combined ML output (Phase 12)
+|-- quarterly_results.csv                4181 rows  NSE XBRL P&L, 2084 symbols (Phase 15)
+|-- valuation_scores.csv                 2084 rows  P/E, ROE, valuation_label (Phase 15)
+`-- management_sentiment.csv              471 rows  Claude tone score, label (Phase 16)
+data/NSE/shareholding/
+|-- quarterly_shp.csv                    7228 rows  Q2FY25-Q1FY26 FII/DII/promoter % (Phase 15C)
+|-- holding_trends.csv                              QoQ promoter/FII/DII deltas (Phase 16)
+`-- board_announcements.csv               527 rows  classified board announcements (Phase 16)
 ```
 
-## PHASE STATUS (2026-06-30)
+## PHASE STATUS (2026-07-02)
 | Phase | Name                          | Status           | Notes |
 |-------|-------------------------------|------------------|-------|
 | 1     | Foundation Layer              | COMPLETE 100%    | bhavcopy import, equity master |
@@ -88,38 +99,35 @@ data/intelligence/
 | 7C    | Corporate Action Intelligence | COMPLETE 100%    | 40517 actions, 1111 confidence scores |
 | 8A    | Price Momentum Engine         | COMPLETE 100%    | 2441 symbols, 5 lookbacks |
 | 8B    | Bull Run Probability Engine   | COMPLETE 100%    | 225 EMERGING, regime NEUTRAL x0.90 |
-| 9     | Alert System (Telegram)       | NOT STARTED      | 7 alert types, APScheduler |
-| 10    | FastAPI Backend               | NOT STARTED      | REST + WebSocket, 12 routes |
-| 11    | React GUI                     | NOT STARTED      | 10 pages, dark terminal |
-| 12    | ML Intelligence Layer         | NOT STARTED      | XGBoost + LightGBM, 4 models |
-| 13    | RAG Knowledge Base            | NOT STARTED      | FAISS + BM25, 6 indexes |
-| 14    | Chatbot (Claude API)          | NOT STARTED      | 5 agents + tool registry |
-| 15    | Financial Results             | NOT STARTED      | yfinance quarterly data |
-| 16    | Management Intelligence       | NOT STARTED      | holding trends + Claude tone scoring |
+| 9     | Alert System (Telegram)       | COMPLETE 100%    | 7 alert types, APScheduler, 118 alerts on first run |
+| 10    | FastAPI Backend               | COMPLETE 100%    | 16 endpoints, port 8001, WebSocket live ticker |
+| 11    | React GUI                     | COMPLETE 100%    | 10 pages + Charts page, TradingView OHLCV, IST timestamps |
+| 12    | ML Intelligence Layer         | COMPLETE 100%    | XGBoost+LightGBM, 24 features, 4 model outputs |
+| 13    | RAG Knowledge Base            | COMPLETE 100%    | FAISS+BM25, 6 domain indexes, hybrid RRF retrieval |
+| 14    | Chatbot (Claude API)          | COMPLETE 100%    | 4 agents, tool registry, /api/chat endpoint |
+| 15    | Financial Results + SHP       | COMPLETE 100%    | 4181 XBRL rows, 2084 symbols; 4 quarters shareholding |
+| 16    | Management Intelligence       | COMPLETE 100%    | 3 engines: holding trends, announcements, sentiment |
 
-## CURRENT BUILD TARGET: Phase 9 — Alert System
-**Next file:** `alerts/alert_engine.py`
-**Then:** `alerts/alert_store.py`, `alerts/telegram_bot.py`, `alerts/daily_digest.py`, `alerts/alert_scheduler.py`
-**Packages needed:** `py -3.11 -m pip install python-telegram-bot==21.* APScheduler==3.*`
-**Env vars required:** `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`
+## CURRENT PLATFORM STATUS (2026-07-02)
+**ALL 16 PHASES COMPLETE.** Full intelligence-to-UI stack is live.
+- Backend: `py -3.11 -m uvicorn backend.main:app --port 8001 --reload`
+- Frontend: `npm run dev` in `frontend/` (Vite at http://localhost:5173)
+- Startup: Run `./start.ps1` to launch both servers as detached background processes
+- Telegram bot: Live and tested (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` in `.env`)
 
-## CRITICAL PATH (Phases 9-16)
-```
-Phase 9  Alert System      alerts/           <- START HERE
-Phase 10 FastAPI Backend   backend/
-Phase 11 React GUI         frontend/         <- needs Phase 10
-Phase 12 ML Layer          engines/ml/       <- independent
-Phase 13 RAG               engines/ai/knowledge/  <- independent
-Phase 14 Chatbot           engines/ai/chatbot/    <- needs Phase 10 + 13
-Phase 15 Financial Results engines/fundamentals/  <- data enrichment
-Phase 16 Mgmt Intelligence engines/management/   <- needs Phase 14
-```
+**Next focus areas (Generation 4):**
+- Portfolio engine (position sizing, exposure tracking)
+- Execution platform (Zerodha/Dhan broker adapters)
+- Daily data refresh automation (cron/APScheduler for incremental engine runs)
+- Shareholding backfill expansion (pre-2024 quarters have limited XBRL coverage)
 
-## COMPLETED INTELLIGENCE STACK
+## COMPLETED FULL STACK
 ```
-Participant (5A/5B/5C) -> Sector (6A/6B/6C) -> Corporate (7A/7B/7C) -> Stock (8A/8B)
+Intelligence:  Participant (5A/5B/5C) -> Sector (6A/6B/6C) -> Corporate (7A/7B/7C) -> Stock (8A/8B)
+Application:   Alert System (9) -> FastAPI Backend (10) -> React GUI (11)
+AI/ML:         ML Models (12) -> RAG Knowledge Base (13) -> Claude Chatbot (14)
+Fundamentals:  Financial Results (15) -> Shareholding (15C) -> Management Intel (16)
 ```
-Full cascade is operational. All intelligence CSVs current as of 2026-06-29 to 2026-06-30.
 
 ## FILES MARKED FOR REMOVAL (confirm before deleting)
 - `engines/index_intelligence_engine_v1_backup.py` — backup copy, redundant
@@ -173,31 +181,33 @@ Full spec: `docs/governance/GUARDRAILS.md`
 - **ETFs/REITs in bhavcopy:** Filter out using EXCLUDE_KEYWORDS before classification
 - **Windows terminal:** Never use Unicode arrows/boxes in print() — cp1252 will crash
 
-## NEW MODULE LOCATIONS (Phases 9-16)
+## MODULE LOCATIONS (ALL BUILT)
 ```
-alerts/                <- Phase 9:  Alert engine + Telegram bot
-backend/               <- Phase 10: FastAPI REST + WebSocket
-frontend/              <- Phase 11: React 18 + TypeScript + Vite
-engines/ml/            <- Phase 12: XGBoost + LightGBM + Isolation Forest
-engines/ai/knowledge/  <- Phase 13: FAISS + BM25 RAG indexes
-engines/ai/chatbot/    <- Phase 14: Claude API agents + tool registry
-engines/fundamentals/  <- Phase 15: yfinance quarterly results
-engines/management/    <- Phase 16: holding trends + Claude tone scoring
+alerts/                <- Phase 9:  alert_engine.py, alert_store.py, telegram_bot.py, daily_digest.py, alert_scheduler.py
+backend/               <- Phase 10: main.py (port 8001), routers/, services/, ws/
+frontend/              <- Phase 11: React 18 + TypeScript + Vite (port 5173), TradingView charts
+engines/ml/            <- Phase 12: feature_engineering.py, accumulation_model.py, bull_run_model.py, ml_scorer.py
+engines/ai/knowledge/  <- Phase 13: document_builder.py, faiss_indexer.py, bm25_indexer.py, retriever.py
+engines/ai/chatbot/    <- Phase 14: intent_router.py, chat_engine.py, tools/
+engines/fundamentals/  <- Phase 15: financial_results_engine.py, valuation_engine.py, shareholding_engine.py
+engines/management/    <- Phase 16: holding_trend_engine.py, announcement_fetcher.py, management_sentiment_engine.py
+start.ps1              <- Launch both servers as detached background processes (idempotent)
+stop.ps1               <- Kill both servers by port (8001 + 5173)
 ```
 
-## PACKAGES TO INSTALL (Phases 9-16)
+## PACKAGES INSTALLED
 ```bash
-py -3.11 -m pip install python-telegram-bot==21.* APScheduler==3.*   # Phase 9
-py -3.11 -m pip install fastapi uvicorn[standard] pydantic            # Phase 10
-py -3.11 -m pip install xgboost lightgbm scikit-learn shap pyarrow   # Phase 12
-py -3.11 -m pip install faiss-cpu sentence-transformers rank-bm25     # Phase 13
-py -3.11 -m pip install anthropic                                      # Phase 14
+python-telegram-bot==21.11.1, APScheduler==3.11.3     # Phase 9
+fastapi==0.138.2, uvicorn[standard]                   # Phase 10
+xgboost==3.2.0, lightgbm==4.6.0, scikit-learn==1.9.0 # Phase 12
+faiss-cpu==1.14.3, sentence-transformers==5.6.0       # Phase 13
+anthropic==0.113.0                                     # Phase 14
 ```
 
-## ENV VARS REQUIRED (never hardcode)
+## ENV VARS (in .env — never hardcode)
 ```
-TELEGRAM_BOT_TOKEN    Phase 9
-TELEGRAM_CHAT_ID      Phase 9
+TELEGRAM_BOT_TOKEN    Phase 9  (live and tested)
+TELEGRAM_CHAT_ID      Phase 9  (live and tested)
 ANTHROPIC_API_KEY     Phase 14, 16
 ```
 

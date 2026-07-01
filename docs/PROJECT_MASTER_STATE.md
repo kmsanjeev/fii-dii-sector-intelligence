@@ -1,6 +1,6 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 3.1 | 2026-06-30
+# Version 3.12 | 2026-07-02
 
 ---
 
@@ -68,17 +68,17 @@ Layer 4: Stock Scoring             (8A/8B)     LIVE through 2026-06-10
 | 8A | Price Momentum | price_momentum.csv | 2441 | COMPLETE |
 | 8B | Bull Run Probability | bull_run_probability.csv + watchlist | 2441 | COMPLETE |
 
-## Application Layer (NOT STARTED)
+## Application Layer (COMPLETE)
 | Phase | What | Location | Status |
 |-------|------|----------|--------|
-| 9 | Alert System (Telegram) | alerts/ | NOT STARTED |
-| 10 | FastAPI Backend | backend/ | NOT STARTED |
-| 11 | React GUI | frontend/ | NOT STARTED |
-| 12 | ML Intelligence Layer | engines/ml/ | NOT STARTED |
-| 13 | RAG Knowledge Base | engines/ai/knowledge/ | NOT STARTED |
-| 14 | Chatbot (Claude API) | engines/ai/chatbot/ | NOT STARTED |
-| 15 | Financial Results | engines/fundamentals/ | NOT STARTED |
-| 16 | Management Intelligence | engines/management/ | NOT STARTED |
+| 9  | Alert System (Telegram)    | alerts/               | COMPLETE (7 alert types, APScheduler, 118 alerts on first run) |
+| 10 | FastAPI Backend            | backend/              | COMPLETE (16 endpoints, port 8001, WebSocket live ticker) |
+| 11 | React GUI + Charts         | frontend/             | COMPLETE (10 pages + Charts page, TradingView OHLCV, IST timestamps) |
+| 12 | ML Intelligence Layer      | engines/ml/           | COMPLETE (XGBoost+LightGBM, 24 features, 4 model outputs) |
+| 13 | RAG Knowledge Base         | engines/ai/knowledge/ | COMPLETE (FAISS+BM25, 6 domain indexes, hybrid RRF) |
+| 14 | Chatbot (Claude API)       | engines/ai/chatbot/   | COMPLETE (4 agents, tool registry, /api/chat) |
+| 15 | Financial Results + SHP    | engines/fundamentals/ | COMPLETE (4181 XBRL rows, 4 quarters shareholding) |
+| 16 | Management Intelligence    | engines/management/   | COMPLETE (holding trends, announcements, Claude sentiment) |
 
 ---
 
@@ -108,11 +108,28 @@ Layer 4: Stock Scoring             (8A/8B)     LIVE through 2026-06-10
 
 ---
 
+# PLATFORM RUNTIME
+
+- Backend: `py -3.11 -m uvicorn backend.main:app --port 8001 --reload`
+- Frontend: `cd frontend && npm run dev` (http://localhost:5173)
+- Startup script: `./start.ps1` (detached background processes, idempotent)
+- Stop script: `./stop.ps1` (kills ports 8001 + 5173)
+- Telegram bot: live (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` in .env)
+
+# KNOWN ISSUES + TECHNICAL DEBT
+
+| Issue | Severity | Note |
+|-------|----------|------|
+| ADANIPORTS -> AEROSPACE misclassification | Low | industry_master override coverage |
+| Cash flows gap: 2026-02-19 | Low | tz-aware/naive mixing in NSE API response |
+| Shareholding pre-2024 quarters | Low | NSE XBRL archive has no FII/DII before 2024 |
+| Major banks missing from XBRL results | Low | HDFCBANK/ICICIBANK/SBIN use different schema |
+
 # GOVERNANCE
 
-- CHANGELOG: docs/governance/CHANGELOG.md (v3.1 is latest)
+- CHANGELOG: docs/governance/CHANGELOG.md (v3.12 is latest)
 - Module Registry: docs/governance/MODULE_REGISTRY.md
 - Guardrails: docs/governance/GUARDRAILS.md (55 rules)
-- ADRs: docs/decisions/ (ADR-001 to ADR-020; next = ADR-021)
+- ADRs: docs/decisions/ (ADR-001 to ADR-021; next = ADR-022)
 - Session logs: chat history/ (module-wise append files)
 - Memory: C:/Users/hp/.claude/projects/*/memory/ (auto-loaded)

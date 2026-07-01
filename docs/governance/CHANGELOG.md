@@ -6,6 +6,89 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 3.12.0
+
+Charts Page: OHLCV candlestick + intraday + IST timestamps + bhavcopy parquet cache
+
+Date: 2026-07-02
+
+Status: Completed
+
+---
+
+## Summary
+
+Built a full-featured Charts page within the React GUI (Phase 11 enhancement) with
+TradingView Lightweight Charts v5.2.0, multiple timeframe selectors (5M/15M/1H intraday
+and 1D/1W/3M/1Y/3Y/5Y daily), bhavcopy parquet as primary OHLCV source with IST timestamp
+correction, and a stock intelligence panel. Fixed multiple v5 API compatibility bugs.
+
+## Changes
+
+- `backend/routers/charts.py` (new router):
+  - `GET /api/charts/{symbol}/ohlcv` -- bhavcopy parquet primary + price adjustment pipeline
+  - `GET /api/charts/{symbol}/intraday` -- nselib 5M/15M/1H candles with IST offset correction
+  - IST_OFFSET = 19800 seconds: lightweight-charts renders unix as UTC; adding offset makes
+    IST times display correctly (09:15 IST open shows as 09:15, not 03:45)
+  - Deduplication of timestamps in intraday responses (seen set)
+- `frontend/src/pages/ChartsPage.tsx` (new page):
+  - Timeframe selector: 5M, 15M, 1H (intraday) | 1D, 1W, 3M, 1Y, 3Y, 5Y (daily)
+  - TradingView Lightweight Charts v5.2.0 candlestick + volume histogram
+  - Reset button; errors caught via useState (ErrorBoundary cannot catch useEffect errors)
+  - Removed TradingView attribution watermark logo
+  - Stock intelligence panel: bull_run_score, sector, label, price_score
+- `frontend/src/App.tsx`: added /charts route
+- `backend/main.py`: included charts router
+
+## Bug Fixes
+
+- `chart.priceScale('vol')` -> `volume.priceScale()` (v5 API naming change)
+- `useEffect` errors caught via state flag -- ErrorBoundary cannot intercept hook errors
+- Duplicate timestamps from nselib response deduplicated server-side
+- `from_date`/`to_date` date math corrected for 3M/3Y/5Y ranges
+- Volume histogram uses `createHistogramSeries` (not `createVolumeSeries`) in v5
+
+## Commits
+
+`48c6bcf` `93cc755` `31dfb18` `19953ae` `456fcd9` `da40bec` `9e2d389`
+
+---
+
+# Version 3.11.0
+
+Server startup scripts + backend port fix
+
+Date: 2026-07-01
+
+Status: Completed
+
+---
+
+## Summary
+
+Created permanent server startup/shutdown scripts and fixed backend port mismatch (Vite proxy
+targets port 8001 but backend was starting on 8000 by default) that caused blank frontend data.
+
+## Changes
+
+- `start.ps1` (new): launches backend (port 8001) and frontend dev server (port 5173) as
+  detached OS-level processes via `Start-Process -WindowStyle Hidden`. Survives Claude session
+  termination. Idempotent -- checks if port already occupied before starting.
+- `stop.ps1` (new): kills both servers by port using netstat PID lookup and Stop-Process.
+- `backend/main.py`: startup docstring corrected to show `--port 8001` command.
+
+## Root Cause
+
+Vite proxy in `frontend/vite.config.ts` targets `http://localhost:8001` but backend was
+being launched with default `--port 8000`. All API calls silently returned ECONNREFUSED,
+causing blank data on every frontend page.
+
+## Commit
+
+`87e252f` -- chore: add start/stop scripts + fix backend port to 8001
+
+---
+
 # Version 3.10.0
 
 Phase 15C -- Shareholding Engine: full historical backfill + data validation + moved to Acquisition section

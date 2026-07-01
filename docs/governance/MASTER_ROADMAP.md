@@ -1,5 +1,5 @@
 # MASTER ROADMAP
-## Capital Flow Intelligence Platform | Updated 2026-06-30
+## Capital Flow Intelligence Platform | Updated 2026-07-02
 
 ---
 
@@ -43,9 +43,9 @@ Output: institutional_positioning_history.csv, regime engine.
 Full participant -> sector -> stock cascade.
 Output: 32 intelligence CSVs, bull run watchlist, 225 EMERGING symbols.
 
-## Generation 3 — Application Layer (CURRENT FOCUS 2026)
+## Generation 3 — Application Layer (COMPLETE 2026-07-02)
 Alert delivery, GUI, ML models, conversational AI.
-Phases 9-16.
+Phases 9-16. All complete.
 
 ## Generation 4 — Investment Operating System (FUTURE)
 Portfolio management, broker execution, research platform, commercial tiers.
@@ -107,48 +107,37 @@ Multi-factor per-stock scoring. Price + Sector + Institutional + Corporate signa
 
 ---
 
-## PHASE 9 — Alert System | NEXT (Priority 1)
-Telegram bot with 7 alert types: regime change, STRONG_CANDIDATE, block deal,
-sector rotation, upcoming catalyst, smart money divergence, daily digest.
-Location: alerts/
-Stack: python-telegram-bot v21, APScheduler 3
+## PHASE 9 — Alert System | COMPLETE (2026-06-30)
+7 alert types: regime change, STRONG_CANDIDATE, block deal, sector rotation, catalyst, divergence, daily digest.
+118 alerts on first run. APScheduler: digest at 18:30 IST, signal checks at 19:00 IST.
+Telegram bot live and tested.
 
-## PHASE 10 — FastAPI Backend | Priority 2
-REST API + WebSocket for all intelligence data. Enables GUI.
-12 routes covering market, sectors, stocks, participant, corporate, chat.
-Location: backend/
-Stack: FastAPI, Uvicorn, Pydantic
+## PHASE 10 — FastAPI Backend | COMPLETE (2026-06-30)
+16 endpoints + WebSocket. Port 8001. 60min in-memory CSV reload. start.ps1/stop.ps1 for persistent launch.
 
-## PHASE 11 — React GUI | Priority 3 (needs Phase 10)
-10-page dark terminal UI. Score-first layout.
-Location: frontend/
-Stack: React 18 + TypeScript + Vite, Tailwind, TanStack Query, Recharts
+## PHASE 11 — React GUI | COMPLETE (2026-07-02)
+10 pages + Charts page. TradingView OHLCV with IST timestamp correction. 5M/15M/1H intraday + 9 daily timeframes.
+Dark terminal theme. Port 5173.
 
-## PHASE 12 — ML Intelligence Layer | Priority 4 (independent)
-4 models: Accumulation Detector (XGBoost), Bull Run Model (LGB+XGB ensemble),
-Sector Rotation Predictor (LightGBM multi-class), Anomaly Detector (Isolation Forest).
-Location: engines/ml/
-Stack: XGBoost, LightGBM, scikit-learn, SHAP, PyArrow
+## PHASE 12 — ML Intelligence Layer | COMPLETE (2026-06-30)
+4 engines: feature engineering (24 features), XGBoost accumulation, LGB+XGB bull run ensemble, daily scorer.
+2441 symbols scored. SHAP values for top 100.
 
-## PHASE 13 — RAG Knowledge Base | Priority 5 (independent)
-FAISS + BM25 hybrid retrieval over 6 domain indexes.
-Location: engines/ai/knowledge/
-Stack: faiss-cpu, sentence-transformers, rank-bm25
+## PHASE 13 — RAG Knowledge Base | COMPLETE (2026-06-30)
+5 engines: document builder (1091 docs), BM25 indexer, FAISS indexer (6 domains), hybrid RRF retriever, daily updater.
 
-## PHASE 14 — Chatbot (Claude API) | Priority 6 (needs Phase 10 + 13)
-5 specialized agents + tool registry for live data access.
-Location: engines/ai/chatbot/
-Stack: anthropic SDK, FastAPI WebSocket
+## PHASE 14 — Chatbot (Claude API) | COMPLETE (2026-06-30)
+Intent router + agentic chat engine + tool registry (11 data access functions) + /api/chat endpoint.
+claude-sonnet-4-6 with RAG context injection.
 
-## PHASE 15 — Financial Results Engine | Priority 7 (data enrichment)
-Quarterly revenue, PAT, EPS, P/E via yfinance (XBRL workaround).
-Location: engines/fundamentals/
-Stack: yfinance, pandas
+## PHASE 15 — Financial Results + Shareholding | COMPLETE (2026-07-01)
+NSE XBRL P&L: 4181 rows, 2084 symbols (Q2FY25+Q3FY25, 99% EQ universe).
+Shareholding: quarterly_shp.csv (7228 rows, Q2FY25-Q1FY26, 98.9% FII coverage).
+Valuation: P/E + ROE scores, 2084 symbols.
 
-## PHASE 16 — Management Intelligence | Priority 8 (needs Phase 14)
-Promoter/FII/DII holding trends + Claude API tone scoring on announcements.
-Location: engines/management/
-Stack: anthropic SDK, nselib announcements
+## PHASE 16 — Management Intelligence | COMPLETE (2026-06-30)
+3 engines: holding_trend_engine.py, announcement_fetcher.py, management_sentiment_engine.py.
+527 board announcements classified; 471 symbols scored; Claude API tone scoring.
 
 ---
 
@@ -162,10 +151,13 @@ After Phases 9-16:
 
 ---
 
-# CURRENT SPRINT (2026-06-30)
+# CURRENT STATUS (2026-07-02)
 
-Active target: Phase 9 — Alert System
-Next: Phase 10 — FastAPI Backend
-After: Phase 11 — React GUI
+All Phases 1-16 COMPLETE. Full intelligence-to-UI stack operational.
 
-Intelligence cascade complete. Now building the delivery and interaction layers.
+Generation 3 done. Generation 4 is the next focus:
+- Portfolio engine (position sizing, exposure tracking, P&L)
+- Execution platform (Zerodha/Dhan/Upstox broker adapters)
+- Daily data refresh automation (scheduled incremental engine runs)
+- Research platform (investment thesis library, validation framework)
+- Commercial platform (auth, subscriptions, multi-user)

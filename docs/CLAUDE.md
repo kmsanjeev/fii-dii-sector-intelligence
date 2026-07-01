@@ -35,15 +35,15 @@ docs/
 │   └── CHANGELOG.md             ← Change history (update every session)
 │
 ├── modules/                      ← Per-module specs (update when module changes)
-│   ├── INSTITUTIONAL_INTELLIGENCE.md   ← 75% complete
-│   ├── PARTICIPANT_INTELLIGENCE.md     ← 0% (ADR-016 approved)
-│   ├── SECTOR_INTELLIGENCE.md          ← 45% complete
-│   ├── THEME_INTELLIGENCE.md           ← 35% complete
-│   ├── STOCK_INTELLIGENCE.md           ← 10% complete
-│   ├── FUNDAMENTAL_INTELLIGENCE.md     ← 5% complete
-│   ├── AI_PLATFORM.md
-│   ├── GUI_PLATFORM.md
-│   └── EXECUTION_PLATFORM.md
+│   ├── INSTITUTIONAL_INTELLIGENCE.md   ← 100% complete (Phase 5 done)
+│   ├── PARTICIPANT_INTELLIGENCE.md     ← 100% complete (Phase 5+6 done)
+│   ├── SECTOR_INTELLIGENCE.md          ← 100% complete (Phase 6 done)
+│   ├── THEME_INTELLIGENCE.md           ← 35% (engines planned but not built)
+│   ├── STOCK_INTELLIGENCE.md           ← 100% complete (Phase 8 done)
+│   ├── FUNDAMENTAL_INTELLIGENCE.md     ← 85% complete (Phase 15+16 done)
+│   ├── AI_PLATFORM.md                  ← 100% complete (Phase 12-14 done)
+│   ├── GUI_PLATFORM.md                 ← 100% complete (Phase 10+11 done)
+│   └── EXECUTION_PLATFORM.md          ← 5% (Generation 4, not started)
 │
 ├── decisions/                    ← ADR register (never delete, only supersede)
 │   └── ADR-001 through ADR-020
@@ -59,7 +59,7 @@ Create a new ADR whenever:
 - A major technology decision is made
 
 ADR naming: `ADR-0NN-Title-With-Hyphens.md`
-Next ADR number: ADR-021
+Next ADR number: ADR-022
 
 ADR template:
 ```markdown
