@@ -8,6 +8,7 @@ GET /api/charts/movers   -- top gainers / losers (live)
 
 import sys
 import time
+from datetime import date, timedelta
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[2]
@@ -32,7 +33,26 @@ SECTOR_ROT = cfg.INTELLIGENCE_DIR / "sector_rotation_intelligence.csv"
 SHP_CSV    = cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv"
 EQUITY_MASTER = cfg.NSE_DIR / "equity_master" / "equity_master.csv"
 
-VALID_PERIODS = {"1M", "3M", "6M", "1Y", "3Y", "5Y"}
+VALID_PERIODS = {"1D", "1W", "1M", "3M", "6M", "1Y", "3Y", "5Y"}
+
+# nselib accepts these as period= directly; others need from_date/to_date
+_NSELIB_NATIVE = {"1D", "1W", "1M", "6M", "1Y"}
+
+# Approximate day counts for periods nselib doesn't support natively
+_PERIOD_DAYS = {"3M": 92, "3Y": 365 * 3 + 1, "5Y": 365 * 5 + 2}
+
+
+def _nselib_kwargs(period: str) -> dict:
+    """Return the correct kwargs for capital_market.price_volume_data."""
+    if period in _NSELIB_NATIVE:
+        return {"period": period}
+    days = _PERIOD_DAYS.get(period, 365)
+    fmt = "%d-%m-%Y"
+    today = date.today()
+    return {
+        "from_date": (today - timedelta(days=days)).strftime(fmt),
+        "to_date":   today.strftime(fmt),
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -50,9 +70,10 @@ def _fetch_ohlcv(symbol: str, period: str) -> list[dict]:
     """Fetch OHLCV from NSE via nselib and return normalized bars list."""
     from nselib import capital_market
 
+    kwargs = _nselib_kwargs(period)
     for attempt in range(3):
         try:
-            df = capital_market.price_volume_data(symbol.upper(), period=period)
+            df = capital_market.price_volume_data(symbol.upper(), **kwargs)
             break
         except Exception as e:
             if attempt == 2:

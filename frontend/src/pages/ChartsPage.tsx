@@ -101,7 +101,7 @@ type SymbolResult = { SYMBOL: string; COMPANY_NAME: string }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const PERIODS = ['1M', '3M', '6M', '1Y', '3Y', '5Y'] as const
+const PERIODS = ['1D', '1W', '1M', '3M', '6M', '1Y', '3Y', '5Y'] as const
 type Period = typeof PERIODS[number]
 
 const COLORS = {
