@@ -18,12 +18,16 @@ Look-ahead bias note:
   until bhavcopy time-series target generation is available (Phase 12D).
 """
 
-import os
 import shutil
 import json
 from pathlib import Path
+import sys
 import numpy as np
 import pandas as pd
+
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
@@ -36,10 +40,27 @@ MODEL_DIR = ML_DIR / "models"
 SCORES_PATH = cfg.INTELLIGENCE_DIR / "ml_accumulation_scores.csv"
 
 FEATURE_COLS = [
-    "price_score", "sector_flow_score", "deal_score", "corporate_score",
-    "ret_30d", "ret_90d", "ret_365d", "vol_ratio",
-    "sector_FII_flow", "sector_combined_score", "rotation_signal_enc",
+    # Phase 8B component scores (composite bull_run_score excluded -- circular)
+    "price_score", "sector_flow_score", "deal_score", "corporate_score", "regime_multiplier",
+    # Price momentum
+    "ret_30d", "ret_90d", "ret_365d", "vol_ratio", "sector_rel_30d",
+    # Sector snapshot
+    "sector_combined_score", "rotation_signal_enc",
+    # Sector rolling flows (5D/20D/60D)
+    "sec_FII_5d", "sec_FII_20d", "sec_FII_60d",
+    "sec_DII_5d", "sec_DII_20d", "sec_DII_60d",
+    "sec_smart_money", "sec_retail_score",
+    # Participant regime (market-wide)
     "part_FII_flow", "part_DII_flow", "part_smart_money", "regime_enc",
+    # Fundamentals
+    "mkt_cap_enc", "fund_promoter_pct", "fund_fii_pct", "fund_dii_pct",
+    # Shareholding pattern (latest quarter)
+    "shp_promoter_pct", "shp_fii_pct", "shp_dii_pct",
+    # Index membership
+    "index_count",
+    # Corporate actions 12M
+    "div_count_12m", "has_buyback_12m", "has_bonus_12m",
+    # Institutional signals
     "corp_confidence", "deal_net_cr",
 ]
 
@@ -105,16 +126,16 @@ class AccumulationModel:
 
     def _prepare(self, df: pd.DataFrame):
         available = [c for c in FEATURE_COLS if c in df.columns]
+        missing = set(FEATURE_COLS) - set(available)
+        if missing:
+            logger.warning("[AccumulationModel] Features not in matrix: %s", sorted(missing))
         X = df[available].copy()
-
-        # Fill NaN with median per column (not 0 — per G-I-04)
-        for col in X.columns:
-            median = X[col].median()
-            X[col] = X[col].fillna(median)
-
+        # NaN passed directly -- XGBoost learns the missing-value branch natively (per G-I-04:
+        # never fillna(0); fillna(median) also wrong here as absence IS signal for sparse features).
         y = (df["label_enc"] >= 3).astype(int)  # EMERGING or STRONG_CANDIDATE
         symbols = df["symbol"]
-        logger.info(f"[AccumulationModel] Features: {len(available)}, Positives: {y.sum()}/{len(y)}")
+        logger.info("[AccumulationModel] Features: %d, Positives: %d/%d, NaN cells: %d",
+                    len(available), y.sum(), len(y), X.isnull().sum().sum())
         return X, y, symbols
 
     def _save_model(self, model, cv_scores, feature_names):
@@ -144,7 +165,7 @@ class AccumulationModel:
         model = xgb.XGBClassifier()
         model.load_model(str(self.model_path))
         available = [c for c in FEATURE_COLS if c in df_features.columns]
-        X = df_features[available].fillna(df_features[available].median())
+        X = df_features[available].copy()  # NaN passed natively -- consistent with training
         return pd.Series(model.predict_proba(X)[:, 1] * 100, name="accumulation_score")
 
 

@@ -14,8 +14,13 @@ SHAP: computed for top 100 predictions to explain what drove the score.
 import shutil
 import json
 from pathlib import Path
+import sys
 import numpy as np
 import pandas as pd
+
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
@@ -29,10 +34,27 @@ SCORES_PATH = cfg.INTELLIGENCE_DIR / "ml_bull_run_scores.csv"
 SHAP_PATH   = cfg.INTELLIGENCE_DIR / "ml_shap_values.csv"
 
 FEATURE_COLS = [
-    "price_score", "sector_flow_score", "deal_score", "corporate_score",
-    "ret_30d", "ret_90d", "ret_365d", "vol_ratio",
-    "sector_FII_flow", "sector_combined_score", "rotation_signal_enc",
+    # Phase 8B component scores (composite bull_run_score excluded -- circular)
+    "price_score", "sector_flow_score", "deal_score", "corporate_score", "regime_multiplier",
+    # Price momentum
+    "ret_30d", "ret_90d", "ret_365d", "vol_ratio", "sector_rel_30d",
+    # Sector snapshot
+    "sector_combined_score", "rotation_signal_enc",
+    # Sector rolling flows (5D/20D/60D)
+    "sec_FII_5d", "sec_FII_20d", "sec_FII_60d",
+    "sec_DII_5d", "sec_DII_20d", "sec_DII_60d",
+    "sec_smart_money", "sec_retail_score",
+    # Participant regime (market-wide)
     "part_FII_flow", "part_DII_flow", "part_smart_money", "regime_enc",
+    # Fundamentals
+    "mkt_cap_enc", "fund_promoter_pct", "fund_fii_pct", "fund_dii_pct",
+    # Shareholding pattern (latest quarter)
+    "shp_promoter_pct", "shp_fii_pct", "shp_dii_pct",
+    # Index membership
+    "index_count",
+    # Corporate actions 12M
+    "div_count_12m", "has_buyback_12m", "has_bonus_12m",
+    # Institutional signals
     "corp_confidence", "deal_net_cr",
 ]
 
@@ -152,13 +174,17 @@ class BullRunMLModel:
 
     def _prepare(self, df: pd.DataFrame):
         available = [c for c in FEATURE_COLS if c in df.columns]
+        missing = set(FEATURE_COLS) - set(available)
+        if missing:
+            logger.warning("[BullRunML] Features not in matrix (source not yet available): %s", sorted(missing))
         X = df[available].copy()
-        for col in X.columns:
-            X[col] = X[col].fillna(X[col].median())
-
+        # NaN passed directly -- LightGBM and XGBoost both learn the missing-value branch natively.
+        # Do NOT fillna(median) as it would destroy the signal in sparse features (index_count 79% null,
+        # deal_net_cr 90% null) where absence IS the information.
         y = df["label_enc"].fillna(1).astype(int).values
         symbols = df["symbol"]
-        logger.info(f"[BullRunML] {len(available)} features, {len(y)} samples")
+        logger.info("[BullRunML] %d features, %d samples, %d NaN cells",
+                    len(available), len(y), X.isnull().sum().sum())
         return X, y, symbols
 
     def _save_models(self, lgbm, xgb, feature_names, n_classes):

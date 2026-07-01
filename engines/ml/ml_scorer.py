@@ -66,9 +66,7 @@ def run_daily_scoring():
             xgb_model.load_model(str(xgb_path))
 
             available = [c for c in FEATURE_COLS if c in df.columns]
-            X = df[available].copy()
-            for col in X.columns:
-                X[col] = X[col].fillna(X[col].median())
+            X = df[available].copy()  # NaN passed natively -- consistent with training
 
             lgbm_p = lgbm_model.predict(X, num_iteration=lgbm_model.best_iteration)
             xgb_p  = xgb_model.predict_proba(X)
