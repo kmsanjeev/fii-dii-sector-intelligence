@@ -12,19 +12,20 @@ Run modes:
 
 import argparse
 import json
+import os
 import shutil
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import pandas as pd
+from tqdm import tqdm as _tqdm
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
-from engines.common.progress import progress
 
 logger = get_logger("stock_history_builder")
 
@@ -32,7 +33,8 @@ BHAVCOPY_DIR = cfg.NSE_EQUITY_BHAVCOPY_DIR
 OUTPUT_DIR   = cfg.STOCK_HISTORY_CACHE
 MANIFEST     = OUTPUT_DIR / "manifest.json"
 
-BATCH_SIZE   = 300   # files processed per memory batch
+BATCH_SIZE = 300                                             # files per memory batch
+WORKERS    = min(cfg.MAX_CONCURRENCY, os.cpu_count() or 4)  # thread workers for I/O
 
 RENAME = {
     "TIMESTAMP":    "date",
@@ -147,19 +149,24 @@ class StockHistoryBuilder:
 
         # Process in batches to limit memory usage
         batches = [pending[i:i+BATCH_SIZE] for i in range(0, len(pending), BATCH_SIZE)]
-        n_workers = min(cfg.MAX_CONCURRENCY, max(cfg.MIN_CONCURRENCY, len(pending)))
+        print(f"Workers    : {WORKERS}", flush=True)
+        print(f"Batches    : {len(batches)}", flush=True)
 
         all_dates = []
 
-        for batch_idx, batch in enumerate(progress(batches, desc="Bhavcopy batches")):
-            # Read batch files in parallel
+        for batch_idx, batch in enumerate(batches):
+            print(f"Batch {batch_idx + 1}/{len(batches)}  ({len(batch)} files) ...", flush=True)
+
+            # Read phase — per-file tqdm bar drives the GUI ProgressBar component
             dfs = []
-            with ThreadPoolExecutor(max_workers=n_workers) as ex:
-                futures = {ex.submit(_read_bhavcopy, f): f for f in batch}
-                for fut in as_completed(futures):
-                    df = fut.result()
-                    if not df.empty:
-                        dfs.append(df)
+            with _tqdm(total=len(batch), desc="  Reading", ncols=100, leave=True, ascii=True) as pbar:
+                with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+                    futures = {ex.submit(_read_bhavcopy, f): f for f in batch}
+                    for fut in as_completed(futures):
+                        df = fut.result()
+                        if not df.empty:
+                            dfs.append(df)
+                        pbar.update(1)
 
             if not dfs:
                 continue
@@ -170,18 +177,22 @@ class StockHistoryBuilder:
 
             all_dates.extend(batch_df["date"].dropna().tolist())
 
-            # Group by symbol and write parquet files in parallel
+            # Write phase — per-symbol tqdm bar (4500+ symbols visible in GUI)
             groups = list(batch_df.groupby("symbol"))
-            with ThreadPoolExecutor(max_workers=n_workers) as ex:
-                futures = [ex.submit(_write_symbol_parquet, sym, grp.drop(columns=["symbol"])) for sym, grp in groups]
-                for fut in as_completed(futures):
-                    try:
-                        fut.result()
-                    except Exception as exc:
-                        logger.warning("[Builder] Write error: %s", exc)
+            with _tqdm(total=len(groups), desc="  Writing", ncols=100, leave=True, ascii=True) as pbar:
+                with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+                    futures = [
+                        ex.submit(_write_symbol_parquet, sym, grp.drop(columns=["symbol"]))
+                        for sym, grp in groups
+                    ]
+                    for fut in as_completed(futures):
+                        try:
+                            fut.result()
+                        except Exception as exc:
+                            logger.warning("[Builder] Write error: %s", exc)
+                        pbar.update(1)
 
-            if (batch_idx + 1) % 5 == 0:
-                logger.info("[Builder] Processed %d/%d batches", batch_idx + 1, len(batches))
+            logger.info("[Builder] Batch %d/%d done", batch_idx + 1, len(batches))
 
         # Summary
         symbol_files = list(OUTPUT_DIR.glob("*.parquet"))

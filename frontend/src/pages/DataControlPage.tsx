@@ -113,11 +113,13 @@ function ModuleTable({
   modules,
   pipelineKey,
   onBusyChange,
+  onRunComplete,
 }: {
   title: string
   modules: Record<string, ModuleInfo>
   pipelineKey: string
   onBusyChange?: (busy: boolean) => void
+  onRunComplete?: () => void
 }) {
   const [running, setRunning]             = useState<string | null>(null)
   const [logs, setLogs]                   = useState<Record<string, string[]>>({})
@@ -174,7 +176,7 @@ function ModuleTable({
         if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight
       },
       (p) => setEngProgress(prev => ({ ...prev, [engineKey]: p })),
-      () => setRunning(null),
+      () => { setRunning(null); onRunComplete?.() },
     )
   }
 
@@ -189,7 +191,7 @@ function ModuleTable({
         if (pipeRef.current) pipeRef.current.scrollTop = pipeRef.current.scrollHeight
       },
       (p) => setPipeProgress(p),
-      () => setPipeRunning(false),
+      () => { setPipeRunning(false); onRunComplete?.() },
     )
   }
 
@@ -385,10 +387,11 @@ function ModuleTable({
 }
 
 export function DataControlPage() {
-  const { data: status, isLoading, refetch } = useQuery({
+  const { data: status, isLoading, isFetching, refetch } = useQuery({
     queryKey: ['data_status'],
     queryFn: fetchDataStatus,
-    staleTime: 30000,
+    staleTime: 0,           // always consider stale so manual refetch hits the network
+    refetchOnWindowFocus: false,
   })
 
   const [pipeRunning, setPipeRunning]     = useState(false)
@@ -436,7 +439,7 @@ export function DataControlPage() {
         if (data.all_done) { es.close(); activeEs.current = null; setPipeRunning(false); refetch() }
       } catch {}
     }
-    es.onerror = () => { es.close(); activeEs.current = null; setPipeRunning(false) }
+    es.onerror = () => { es.close(); activeEs.current = null; setPipeRunning(false); refetch() }
   }
 
   if (isLoading) return (
@@ -463,13 +466,17 @@ export function DataControlPage() {
         <div style={{ display: 'flex', gap: 8 }}>
           <button
             onClick={() => refetch()}
+            disabled={isFetching}
             style={{
               padding: '4px 14px', borderRadius: 4,
               border: '1px solid #334155', backgroundColor: 'transparent',
-              color: '#64748B', cursor: 'pointer', fontSize: 11,
+              color: isFetching ? '#22C55E' : '#64748B',
+              cursor: isFetching ? 'not-allowed' : 'pointer',
+              fontSize: 11,
+              transition: 'color 0.2s',
             }}
           >
-            Refresh Status
+            {isFetching ? 'Refreshing...' : 'Refresh Status'}
           </button>
           {anythingRunning && (
             <button
@@ -532,8 +539,8 @@ export function DataControlPage() {
         </div>
       </div>
 
-      <ModuleTable title="DATA ACQUISITION"     modules={acquisition}  pipelineKey="pipeline_acquisition"  onBusyChange={handleSectionBusy('acquisition')} />
-      <ModuleTable title="INTELLIGENCE OUTPUTS" modules={intelligence} pipelineKey="pipeline_intelligence" onBusyChange={handleSectionBusy('intelligence')} />
+      <ModuleTable title="DATA ACQUISITION"     modules={acquisition}  pipelineKey="pipeline_acquisition"  onBusyChange={handleSectionBusy('acquisition')}  onRunComplete={refetch} />
+      <ModuleTable title="INTELLIGENCE OUTPUTS" modules={intelligence} pipelineKey="pipeline_intelligence" onBusyChange={handleSectionBusy('intelligence')} onRunComplete={refetch} />
 
       {/* Full pipeline log */}
       {pipeLogs.length > 0 && (
