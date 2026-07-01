@@ -20,6 +20,13 @@ def _clean(records):
         })
     return cleaned
 
+
+def _safe(v):
+    """Return None for NaN floats so JSON serialization never fails."""
+    if isinstance(v, float) and math.isnan(v):
+        return None
+    return v
+
 router = APIRouter(prefix="/api/stocks", tags=["stocks"])
 
 
@@ -110,10 +117,10 @@ def get_stock_detail(symbol: str):
             "corporate_score":    round(float(row.get("corporate_score",    0) or 0), 2),
         },
         "price": {
-            "ret_30d":   row.get("ret_30d"),
-            "ret_90d":   row.get("ret_90d"),
-            "ret_365d":  row.get("ret_365d"),
-            "vol_ratio": row.get("vol_ratio"),
+            "ret_30d":   _safe(row.get("ret_30d")),
+            "ret_90d":   _safe(row.get("ret_90d")),
+            "ret_365d":  _safe(row.get("ret_365d")),
+            "vol_ratio": _safe(row.get("vol_ratio")),
         },
         "as_of_date": str(row.get("as_of_date", "")),
         "deal_signals":         deal_info,

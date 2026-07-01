@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { fetchStockDetail } from '../api/client'
 import { ScoreGauge } from '../components/platform/ScoreGauge'
@@ -11,18 +11,40 @@ function pct(v: number | null | undefined) {
 
 export function StockDetailPage() {
   const { symbol } = useParams<{ symbol: string }>()
+  const navigate = useNavigate()
   const { data, isLoading, isError } = useQuery({
     queryKey: ['stock', symbol],
     queryFn: () => fetchStockDetail(symbol!),
   })
 
+  const BackBtn = () => (
+    <button
+      onClick={() => navigate(-1)}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 6,
+        background: 'none', border: '1px solid #1E2332',
+        color: '#64748B', cursor: 'pointer',
+        padding: '4px 12px', borderRadius: 4, fontSize: 11,
+        marginBottom: 16,
+      }}
+    >
+      &larr; Back
+    </button>
+  )
+
   if (isLoading) return <div className="text-center py-20" style={{ color: '#64748B' }}>Loading {symbol}...</div>
-  if (isError || !data) return <div className="text-center py-20" style={{ color: '#EF4444' }}>Symbol {symbol} not found</div>
+  if (isError || !data) return (
+    <div>
+      <BackBtn />
+      <div className="text-center py-20" style={{ color: '#EF4444' }}>Symbol {symbol} not found</div>
+    </div>
+  )
 
   const c = data.components
 
   return (
     <div className="max-w-3xl space-y-6">
+      <BackBtn />
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>

@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { fetchSectorDetail } from '../api/client'
 import { ScoreGauge } from '../components/platform/ScoreGauge'
@@ -6,16 +6,38 @@ import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 
 export function SectorDetailPage() {
   const { sector } = useParams<{ sector: string }>()
+  const navigate = useNavigate()
   const { data, isLoading } = useQuery({
     queryKey: ['sector', sector],
     queryFn: () => fetchSectorDetail(sector!),
   })
 
+  const BackBtn = () => (
+    <button
+      onClick={() => navigate(-1)}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 6,
+        background: 'none', border: '1px solid #1E2332',
+        color: '#64748B', cursor: 'pointer',
+        padding: '4px 12px', borderRadius: 4, fontSize: 11,
+        marginBottom: 16,
+      }}
+    >
+      &larr; Back
+    </button>
+  )
+
   if (isLoading) return <div className="text-center py-20" style={{ color: '#64748B' }}>Loading {sector}...</div>
-  if (!data) return <div className="text-center py-20" style={{ color: '#EF4444' }}>Sector {sector} not found</div>
+  if (!data) return (
+    <div>
+      <BackBtn />
+      <div className="text-center py-20" style={{ color: '#EF4444' }}>Sector {sector} not found</div>
+    </div>
+  )
 
   return (
     <div className="max-w-3xl space-y-6">
+      <BackBtn />
       <div>
         <h1 className="text-2xl font-bold" style={{ color: '#E2E8F0' }}>{data.sector}</h1>
         <div className="text-sm mt-1" style={{ color: '#64748B' }}>{data.rotation_signal} | Score: {data.combined_score.toFixed(1)}</div>

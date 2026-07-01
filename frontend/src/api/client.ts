@@ -70,8 +70,11 @@ export const fetchDeals = (min_cr = 50, limit = 50) =>
   api.get<{ deals: Record<string, unknown>[]; count: number }>(`/corporate/deals?min_cr=${min_cr}&limit=${limit}`).then(r => r.data)
 export const fetchCatalysts = () =>
   api.get<{ catalysts: Record<string, unknown>[]; count: number }>('/corporate/catalysts').then(r => r.data)
-export const fetchAllStocks = (page = 1, per_page = 100) =>
-  api.get<{ stocks: Stock[]; total: number; page: number }>(`/stocks?page=${page}&per_page=${per_page}`).then(r => r.data)
+export const fetchAllStocks = (page = 1, per_page = 100, label?: string) => {
+  const params = new URLSearchParams({ page: String(page), per_page: String(per_page) })
+  if (label && label !== 'ALL') params.set('label', label)
+  return api.get<{ stocks: Stock[]; total: number; page: number }>(`/stocks?${params}`).then(r => r.data)
+}
 export const fetchHealth = () => api.get('/health').then(r => r.data)
 export const fetchDataStatus = () => api.get('/data/status').then(r => r.data)
 export const fetchEngineList = () => api.get('/data/engines').then(r => r.data)

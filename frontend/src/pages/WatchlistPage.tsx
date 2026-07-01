@@ -13,7 +13,7 @@ export function WatchlistPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['all_stocks', page, labelFilter],
-    queryFn: () => fetchAllStocks(page, 50),
+    queryFn: () => fetchAllStocks(page, 50, labelFilter),
     refetchInterval: 300000,
   })
 
