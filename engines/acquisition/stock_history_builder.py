@@ -38,12 +38,30 @@ BATCH_SIZE = 300                                             # files per memory 
 WORKERS    = min(cfg.MAX_CONCURRENCY, os.cpu_count() or 4)  # thread workers for I/O
 
 RENAME = {
-    "TIMESTAMP":    "date",
-    "TOTTRDQTY":    "volume",
-    "TOTTRDVAL":    "turnover",
-    "PREVCLOSE":    "prev_close",
-    "TOTALTRADES":  "trades",
-    "LAST":         "last_price",
+    # ── Legacy schema (≤2019) — sec_bhavdata_full format ─────────────────────
+    # Columns: SYMBOL SERIES OPEN HIGH LOW CLOSE LAST PREVCLOSE
+    #          TOTTRDQTY TOTTRDVAL TIMESTAMP TOTALTRADES ISIN
+    "TIMESTAMP":     "date",
+    "TOTTRDQTY":     "volume",
+    "TOTTRDVAL":     "turnover",
+    "PREVCLOSE":     "prev_close",
+    "TOTALTRADES":   "trades",
+    "LAST":          "last_price",
+    # OPEN/HIGH/LOW/CLOSE are already lowercase-correct after df.columns.lower()
+    # ── New NSE schema (2020+) — bhavcopy_YYYYMMDD format ────────────────────
+    # Columns: SYMBOL SERIES DATE1 PREV_CLOSE OPEN_PRICE HIGH_PRICE LOW_PRICE
+    #          LAST_PRICE CLOSE_PRICE AVG_PRICE TTL_TRD_QNTY TURNOVER_LACS
+    #          NO_OF_TRADES DELIV_QTY DELIV_PER TRADE_DATE
+    "TRADE_DATE":    "date",       # preferred — already YYYY-MM-DD
+    "OPEN_PRICE":    "open",
+    "HIGH_PRICE":    "high",
+    "LOW_PRICE":     "low",
+    "CLOSE_PRICE":   "close",
+    "LAST_PRICE":    "last_price",
+    "PREV_CLOSE":    "prev_close",
+    "TTL_TRD_QNTY":  "volume",
+    "TURNOVER_LACS": "turnover",
+    "NO_OF_TRADES":  "trades",
 }
 
 KEEP = ["date", "symbol", "open", "high", "low", "close",
