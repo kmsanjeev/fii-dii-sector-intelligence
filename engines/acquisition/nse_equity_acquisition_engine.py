@@ -454,107 +454,59 @@ async def process_day(
             
 
 async def _download_dates(
-    trade_dates
+    trade_dates,
+    year: int = 0,
 ):
+    from tqdm import tqdm as _tqdm
 
     WORKERS = get_optimal_workers()
+    semaphore = asyncio.Semaphore(WORKERS)
+    total = len(trade_dates)
+    downloaded = skipped = failed = 0
 
-    logger.info(
-        f"Using {WORKERS} workers"
-    )
+    desc = f"  {year}" if year else "  Equity"
 
-    semaphore = asyncio.Semaphore(
-        WORKERS
-    )
-
-    downloaded = 0
-    skipped = 0
-    failed = 0
-
-    async with aiohttp.ClientSession(
-        headers=HEADERS
-    ) as session:
-
-        tasks = [
-
-            process_day(
-                semaphore,
-                session,
-                trade_date
-            )
-
-            for trade_date
-            in trade_dates
-        ]
-
-        for task in asyncio.as_completed(
-            tasks
-        ):
-
-            result = await task
-
-            if result == "DOWNLOADED":
-
-                downloaded += 1
-
-            elif result == "SKIPPED":
-
-                skipped += 1
-
-            else:
-
-                failed += 1
+    with _tqdm(total=total, desc=desc, ncols=100, leave=True, ascii=True) as pbar:
+        async with aiohttp.ClientSession(headers=HEADERS) as session:
+            tasks = [
+                process_day(semaphore, session, td)
+                for td in trade_dates
+            ]
+            for task in asyncio.as_completed(tasks):
+                result = await task
+                if result == "DOWNLOADED":
+                    downloaded += 1
+                elif result == "SKIPPED":
+                    skipped += 1
+                else:
+                    failed += 1
+                pbar.set_postfix(D=downloaded, S=skipped, F=failed, refresh=False)
+                pbar.update(1)
 
     return {
-
-        "downloaded":
-            downloaded,
-
-        "skipped":
-            skipped,
-
-        "failed":
-            failed,
-
+        "downloaded": downloaded,
+        "skipped":    skipped,
+        "failed":     failed,
     }
 
 
 def download_date(
     trade_date
 ):
-
     return asyncio.run(
-
-        _download_dates(
-            [trade_date]
-        )
-
+        _download_dates([trade_date], year=trade_date.year)
     )
 
 
-def download_year(
-    year
-):
-
-    logger.info(
-        f"Downloading {year}"
-    )
-
+def download_year(year):
+    logger.info(f"Downloading {year}")
     dates = pd.date_range(
         start=f"{year}-01-01",
         end=f"{year}-12-31",
-        freq="B"
+        freq="B",
     )
-
     return asyncio.run(
-
-        _download_dates(
-            [
-                d.date()
-                for d in dates
-            ]
-        )
-
+        _download_dates([d.date() for d in dates], year=year)
     )
     
 def download_year_range(
@@ -565,31 +517,20 @@ def download_year_range(
     total_downloaded = 0
     total_skipped = 0
     total_failed = 0
+    total_years = end_year - start_year + 1
 
-    for year in progress(
-        range(
-            start_year,
-            end_year + 1
-        ),
-        desc="NSE Equity Backfill"
-    ):
+    for idx, year in enumerate(range(start_year, end_year + 1), start=1):
+        print(f"Year {year} ({idx}/{total_years}) ...", flush=True)
+        result = download_year(year)
 
-        result = download_year(
-            year
+        total_downloaded += result["downloaded"]
+        total_skipped    += result["skipped"]
+        total_failed     += result["failed"]
+
+        print(
+            f"  {year} done: D={result['downloaded']} S={result['skipped']} F={result['failed']}",
+            flush=True,
         )
-
-        total_downloaded += (
-            result["downloaded"]
-        )
-
-        total_skipped += (
-            result["skipped"]
-        )
-
-        total_failed += (
-            result["failed"]
-        )
-
         logger.info(
             f"{year} | "
             f"D:{result['downloaded']} "
@@ -1054,59 +995,48 @@ def incremental_update():
 
 def backfill_missing_dates():
 
-    missing_file = (
-
-        BHAVCOPY_DIR /
-        "missing_dates_report.csv"
-
-    )
+    missing_file = BHAVCOPY_DIR / "missing_dates_report.csv"
 
     if not missing_file.exists():
-
         refresh_missing_dates()
 
-    missing_df = pd.read_csv(
-        missing_file
-    )
+    missing_df = pd.read_csv(missing_file)
 
     if missing_df.empty:
-
-        logger.info(
-            "No Missing Dates"
-        )
-
-        return
+        logger.info("No Missing Dates")
+        print("No missing dates to backfill.", flush=True)
+        return {"downloaded": 0, "skipped": 0, "failed": 0}
 
     trade_dates = [
-
-        pd.to_datetime(
-            d
-        ).date()
-
-        for d in
-        missing_df["TRADE_DATE"]
-
+        pd.to_datetime(d).date()
+        for d in missing_df["TRADE_DATE"]
     ]
 
-    logger.info(
+    logger.info(f"Backfilling {len(trade_dates)} dates")
+    print(f"Backfilling {len(trade_dates)} missing dates ...", flush=True)
 
-        f"Backfilling "
-        f"{len(trade_dates)} "
-        f"dates"
+    # Group by year so each year gets its own tqdm bar (matches GUI progress regex)
+    from collections import defaultdict
+    by_year = defaultdict(list)
+    for td in trade_dates:
+        by_year[td.year].append(td)
 
-    )
-
-    result = asyncio.run(
-
-        _download_dates(
-            trade_dates
+    total_downloaded = total_skipped = total_failed = 0
+    for year in sorted(by_year):
+        result = asyncio.run(_download_dates(by_year[year], year=year))
+        total_downloaded += result["downloaded"]
+        total_skipped    += result["skipped"]
+        total_failed     += result["failed"]
+        print(
+            f"  {year} done: D={result['downloaded']} S={result['skipped']} F={result['failed']}",
+            flush=True,
         )
 
-    )
-
-    validate_archive()
-
-    return result
+    return {
+        "downloaded": total_downloaded,
+        "skipped":    total_skipped,
+        "failed":     total_failed,
+    }
 
 
 def print_summary():
@@ -1185,7 +1115,19 @@ def print_summary():
 
 def main():
 
+    print("=" * 60, flush=True)
+    print("NSE EQUITY BHAVCOPY ACQUISITION ENGINE", flush=True)
+    print("=" * 60, flush=True)
+
+    # Step 1: validate and find missing dates
     validate_archive()
+
+    # Step 2: download all missing dates (grouped by year for progress bars)
+    result = backfill_missing_dates()
+
+    # Step 3: re-validate so reports reflect freshly downloaded files
+    if result and result.get("downloaded", 0) > 0:
+        validate_archive()
 
     print_summary()
 
