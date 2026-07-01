@@ -38,6 +38,9 @@ SOURCES = {
     # Phase 16 — Management Intelligence
     "holding_trends":       cfg.NSE_DIR / "shareholding" / "holding_trends.csv",
     "management_sentiment": cfg.NSE_DIR / "shareholding" / "management_sentiment.csv",
+    # Phase 18 — Corporate Announcements Intelligence
+    "announcements":        cfg.INTELLIGENCE_DIR / "company_announcements.csv",
+    "announcement_signals": cfg.INTELLIGENCE_DIR / "announcement_signals.csv",
 }
 
 _lock = threading.Lock()
