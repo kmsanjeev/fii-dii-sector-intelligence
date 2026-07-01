@@ -6,6 +6,49 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 3.9.0
+
+Phase 15A/15B -- Financial Results + Valuation Engine
+
+Date: 2026-07-01
+
+Status: Completed
+
+---
+
+## Summary
+
+Rewrote Phase 15A financial results engine to fetch real NSE XBRL data using
+filing-season date windows. Phase 15B valuation engine fixed to read parquet cache.
+Backend upgraded to 22 engines with fundamentals status section.
+
+## Changes
+
+- `engines/fundamentals/financial_results_engine.py`: complete rewrite
+  - Replaced FETCH_PERIODS (financial period dates) with FILING_WINDOWS (filing-season dates)
+  - Calls get_financial_results_master() directly; skips entries where xbrl ends in /xbrl/-
+  - Concurrent XBRL parsing via ThreadPoolExecutor
+  - Output: 4,181 rows, 2,084 symbols, Q2FY25 + Q3FY25 coverage (99% EQ universe)
+  - Validated: RELIANCE 128,260cr, TCS 63,973cr, INFY 41,764cr match NSE actuals
+- `engines/fundamentals/valuation_engine.py`: two fixes
+  - _load_prices: reads .parquet from STOCK_HISTORY_CACHE (not .csv)
+  - _compute_ttm: uses date_end column (quarterly_results schema)
+  - Output: 2,084 symbols, 1,685 PE ratios, 2,034 ROE values, 4 valuation labels
+- `backend/routers/data_ops.py`: added 3 Phase 15 engines + fundamentals status section
+- `frontend/src/pages/DataControlPage.tsx`: added FUNDAMENTALS section + ENGINE_MAP entries
+
+## Known Gaps
+
+- Major banks (HDFCBANK, ICICIBANK, SBIN) missing from XBRL -- different schema (~5/2083 = 0.24% miss)
+- yfinance disabled by default -- empty quarterly_income_stmt for all NSE.NS tickers
+
+## Commit
+
+`228902d` -- fix: valuation engine parquet cache + date_end column
+`ec09e7c` -- feat: Phase 15A financial results engine + backend + frontend
+
+---
+
 # Version 3.8.2
 
 Progress bars + Phase 6C pd.NA crash fix
