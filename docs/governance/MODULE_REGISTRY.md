@@ -609,15 +609,15 @@ Report Center (daily/weekly/monthly reports)
 
 ---
 
-# Module 09
+# Module 09A
 
-Daily Intelligence Refresh (Phase 17)
+Symbol Change History (Phase 17)
 
 ---
 
 ## Category
 
-Platform — Orchestration
+Platform — Foundation
 
 ---
 
@@ -635,7 +635,107 @@ PLANNED — Phase 17 (NEXT BUILD)
 
 ## Priority
 
-Very High (blocker for all Gen4 modules)
+Very High (data integrity prerequisite for all backtesting)
+
+---
+
+## Purpose
+
+Download and maintain NSE historical symbol rename records. 1038 renames on file
+(e.g., IIFLWAM -> 360ONE, BIRLA3M -> 3MINDIA). Without this, historical bhavcopy
+lookups for renamed symbols return empty data, causing silent errors in backtesting.
+
+---
+
+## Files
+
+engines/foundation/symbol_change_engine.py
+data/NSE/equity_master/symbol_change_history.csv (company_name, old_symbol, new_symbol, change_date)
+
+## Source
+
+NSE archives open endpoint — no auth required. ~1038 records.
+
+---
+
+# Module 09B
+
+Corporate Announcements Intelligence (Phase 18)
+
+---
+
+## Category
+
+Platform — Corporate Intelligence
+
+---
+
+## Status
+
+PLANNED — Phase 18 (after Phase 17)
+
+---
+
+## Completion
+
+0%
+
+---
+
+## Priority
+
+Very High
+
+---
+
+## Purpose
+
+Download and classify NSE corporate announcements (entirely separate from corporate actions).
+Provides qualitative management signals: Press Releases, Analyst/FII Meet outcomes,
+Board Meeting outcomes, SEBI Takeover + Insider Trading disclosures, Trading Window closures.
+Scale: RELIANCE=3313, TCS=3321, HDFCBANK=2306 announcements each.
+
+---
+
+## Files
+
+engines/corporate/announcement_intelligence_engine.py
+data/intelligence/company_announcements.csv (50,000+ rows expected)
+data/intelligence/announcement_signals.csv (per-symbol scores)
+
+## Source
+
+NSE API: GET /api/corporate-announcements?index=equities&symbol={symbol}
+
+---
+
+# Module 09
+
+Daily Intelligence Refresh (Phase 19)
+
+---
+
+## Category
+
+Platform — Orchestration
+
+---
+
+## Status
+
+PLANNED — Phase 19 (after Phases 1-18)
+
+---
+
+## Completion
+
+0%
+
+---
+
+## Priority
+
+Very High (blocker for all Gen4 portfolio/backtest modules)
 
 ---
 
@@ -649,8 +749,8 @@ Transforms the platform from a static report into a live capital flow radar.
 ## Engine Pipeline (in order)
 
 5A participant_acquisition -> 6A/6B/6C sector flows -> 7A block/bulk deals
--> 8A price_momentum -> 8B bull_run_probability -> 12 ml_scorer
--> 13 RAG index_updater -> 9 alert_engine
+-> 18 announcement_intelligence -> 8A price_momentum -> 8B bull_run_probability
+-> 12 ml_scorer -> 13 RAG index_updater -> 9 alert_engine
 
 ## Files
 
@@ -666,7 +766,7 @@ engines/orchestration/refresh_monitor.py -- staleness checker, refresh_log.csv o
 
 # Module 10
 
-Portfolio Engine (Phase 18)
+Portfolio Engine (Phase 20)
 
 ---
 
@@ -678,7 +778,7 @@ Platform — Investment
 
 ## Status
 
-PLANNED — Phase 18 (after Phase 17)
+PLANNED — Phase 20 (after Phase 19)
 
 ---
 
@@ -714,7 +814,7 @@ Frontend Portfolio page
 
 # Module 11
 
-Backtesting Framework (Phase 19)
+Backtesting Framework (Phase 21)
 
 ---
 
@@ -726,7 +826,7 @@ Platform — Validation
 
 ## Status
 
-PLANNED — Phase 19 (after Phase 18)
+PLANNED — Phase 21 (after Phase 20)
 
 ---
 
@@ -761,7 +861,7 @@ Frontend Backtest page
 
 # Module 12
 
-Broker Adapter — Read-Only (Phase 20)
+Broker Adapter — Read-Only (Phase 22)
 
 ---
 
@@ -773,7 +873,7 @@ Platform — Integration
 
 ## Status
 
-PLANNED — Phase 20 (after Phase 18)
+PLANNED — Phase 22 (after Phase 20)
 
 ---
 
@@ -807,7 +907,7 @@ Env: ZERODHA_API_KEY, ZERODHA_API_SECRET, ZERODHA_ACCESS_TOKEN
 
 # Module 13
 
-Research Platform (Phase 21)
+Research Platform (Phase 23)
 
 ---
 
@@ -819,7 +919,7 @@ Platform — Research
 
 ## Status
 
-PLANNED — Phase 21 (after Phase 18 + 19)
+PLANNED — Phase 23 (after Phase 20 + 21)
 
 ---
 
@@ -854,7 +954,7 @@ Frontend Research page
 
 # Module 14 (was Execution Platform — renamed for Gen4)
 
-Execution Platform — Live Trading (Phase 22)
+Execution Platform — Live Trading (Phase 24)
 
 ---
 
@@ -866,7 +966,7 @@ Platform — Execution
 
 ## Status
 
-PLANNED — Phase 22 (after Phase 19 + 20, paper-trade gate required)
+PLANNED — Phase 24 (after Phase 21 + 22, paper-trade gate required)
 
 ---
 
@@ -901,7 +1001,7 @@ Frontend Execution page (order blotter, risk dashboard)
 
 # Module 15 (was Commercial Platform — renumbered for Gen4)
 
-Commercial Platform (Phase 23)
+Commercial Platform (Phase 25)
 
 ---
 
@@ -913,7 +1013,7 @@ Platform — Commercial
 
 ## Status
 
-PLANNED — Phase 23 (after Phases 17-22 stable)
+PLANNED — Phase 25 (after Phases 19-24 stable)
 
 ---
 
@@ -1274,18 +1374,18 @@ docs/architecture/ML_AI_CHATBOT_ARCHITECTURE.md (Section 4)
 
 # Current Development Priority (2026-07-02)
 
-Phase 17 (Daily Intelligence Refresh) — engines/orchestration/ — BUILD NOW
+Phase 17 (Symbol Change History) — engines/foundation/ — BUILD NOW
 
-Strict build order: 17 -> 18 -> 19 -> 20 -> 21 -> 22 -> 23
+Strict build order: 17 -> 18 -> 19 -> 20 -> 21 -> 22 -> 23 -> 24 -> 25
 
 ---
 
 # Current Platform Completion
 
-Intelligence Cascade (Phases 1-8):          100%
-Application + AI Layer (Phases 9-16):       100%
-Investment Operating System (Phases 17-23):   0%
-Platform Overall: ~55% of full vision complete
+Intelligence Cascade (Phases 1-8):           100%
+Application + AI Layer (Phases 9-16):         88%  (Phases 13/14/15/16 have output gaps)
+Investment Operating System (Phases 17-25):    0%
+Platform Overall: ~48% of full vision complete
 
 ---
 

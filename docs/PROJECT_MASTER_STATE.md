@@ -83,13 +83,15 @@ Layer 4: Stock Scoring             (8A/8B)     LIVE through 2026-06-10
 ## Generation 4 — Investment Operating System (CURRENT FOCUS)
 | Phase | What | Location | Depends On | Status |
 |-------|------|----------|------------|--------|
-| 17 | Daily Intelligence Refresh | engines/orchestration/ | Phases 1-16 | NOT STARTED <- NEXT |
-| 18 | Portfolio Engine           | engines/portfolio/     | Phase 17   | NOT STARTED |
-| 19 | Backtesting Framework      | engines/backtest/      | Phase 18   | NOT STARTED |
-| 20 | Broker Adapter (R/O)       | engines/broker/        | Phase 18   | NOT STARTED |
-| 21 | Research Platform          | engines/research/      | 18 + 19    | NOT STARTED |
-| 22 | Execution Platform         | engines/execution/     | 19 + 20    | NOT STARTED |
-| 23 | Commercial Platform        | backend/auth/          | 17-22 done | NOT STARTED |
+| 17 | Symbol Change History       | engines/foundation/    | Phase 1    | NOT STARTED <- NEXT |
+| 18 | Corporate Announcements     | engines/corporate/     | Phase 5A   | NOT STARTED |
+| 19 | Daily Intelligence Refresh  | engines/orchestration/ | Phases 1-18| NOT STARTED |
+| 20 | Portfolio Engine            | engines/portfolio/     | Phase 19   | NOT STARTED |
+| 21 | Backtesting Framework       | engines/backtest/      | Phase 20   | NOT STARTED |
+| 22 | Broker Adapter (R/O)        | engines/broker/        | Phase 20   | NOT STARTED |
+| 23 | Research Platform           | engines/research/      | 20 + 21    | NOT STARTED |
+| 24 | Execution Platform          | engines/execution/     | 21 + 22    | NOT STARTED |
+| 25 | Commercial Platform         | backend/auth/          | 19-24 done | NOT STARTED |
 
 ---
 

@@ -255,41 +255,64 @@ Legend:  [x] Completed  [-] In Progress  [ ] Not Started
 
 ---
 
-# SECTION 17 — Daily Intelligence Refresh [NOT STARTED] <- NEXT BUILD
+# SECTION 17 — Symbol Change History [NOT STARTED] <- NEXT BUILD
 
-[ ] engines/orchestration/daily_refresh.py (ordered engine pipeline, per-stage error isolation)
-[ ] engines/orchestration/refresh_scheduler.py (APScheduler: 18:00 IST weekdays trigger)
-[ ] engines/orchestration/refresh_monitor.py (staleness checker, refresh_log.csv output)
-[ ] data/intelligence/refresh_log.csv (per-run: stage, status, duration, rows_updated)
-[ ] Integration test: confirm full pipeline runs end-to-end without manual intervention
-[ ] Verify: alert_engine fires on fresh data after each successful refresh
+[ ] engines/foundation/symbol_change_engine.py (download, clean, deduplicate 1038 NSE records)
+[ ] data/NSE/equity_master/symbol_change_history.csv (company_name, old_symbol, new_symbol, change_date)
+[ ] Verify known renames present: IIFLWAM->360ONE, BIRLA3M->3MINDIA, TATAMOTORS->TATAMOTORS (check)
+[ ] Update bhavcopy lookup logic to resolve old_symbol -> new_symbol before loading history
 
 ---
 
-# SECTION 18 — Portfolio Engine [NOT STARTED] <- after Phase 17
+# SECTION 18 — Corporate Announcements Intelligence [NOT STARTED] <- after Phase 17
+
+[ ] engines/corporate/announcement_intelligence_engine.py
+    - incremental download from NSE /api/corporate-announcements per symbol
+    - classify `desc` into 12 types (Press Release, Analyst Meet, Board Outcome, etc.)
+    - score each type by intelligence signal value (0-100)
+[ ] data/intelligence/company_announcements.csv (symbol, date, type, signal_score, title_snippet)
+[ ] data/intelligence/announcement_signals.csv (symbol, latest_date, dominant_type, score_30d)
+[ ] Verify: 50,000+ rows covering last 2 years for 2441-symbol universe
+[ ] Feeds into: management_sentiment (Phase 16), daily refresh (Phase 19), research (Phase 23)
+
+---
+
+# SECTION 19 — Daily Intelligence Refresh [NOT STARTED] <- after Phases 1-18
+
+[ ] engines/orchestration/daily_refresh.py (ordered pipeline, per-stage error isolation)
+[ ] engines/orchestration/refresh_scheduler.py (APScheduler: 18:00 IST weekdays trigger)
+[ ] engines/orchestration/refresh_monitor.py (staleness checker, refresh_log.csv output)
+[ ] data/intelligence/refresh_log.csv (per-run: stage, status, duration, rows_updated)
+[ ] Pipeline order: 5A -> 6A/B/C -> 7A -> 18 -> 8A -> 8B -> 12 -> 13 -> 9 (alert)
+[ ] Verify: full pipeline runs end-to-end; Telegram alert fires on fresh signals
+
+---
+
+# SECTION 20 — Portfolio Engine [NOT STARTED] <- after Phase 19
 
 [ ] engines/portfolio/position_engine.py (add/close/update positions, atomic CSV writes)
 [ ] engines/portfolio/exposure_engine.py (sector/theme exposure %, vs rotation_signal)
-[ ] engines/portfolio/pnl_engine.py (unrealised P&L from bhavcopy parquet cache prices)
-[ ] backend/routers/portfolio.py (/api/portfolio/positions + /exposure + /pnl endpoints)
+[ ] engines/portfolio/pnl_engine.py (unrealised P&L from bhavcopy parquet cache)
+[ ] backend/routers/portfolio.py (/api/portfolio/positions + /exposure + /pnl)
 [ ] data/portfolio/positions.csv (symbol, qty, entry_price, entry_date, sector, status)
 [ ] data/portfolio/portfolio_snapshot.csv (daily sector exposure + P&L snapshot)
 [ ] Frontend Portfolio page (holdings table, exposure bar, signal alignment gauge)
 
 ---
 
-# SECTION 19 — Backtesting Framework [NOT STARTED] <- after Phase 18
+# SECTION 21 — Backtesting Framework [NOT STARTED] <- after Phase 20
 
 [ ] engines/backtest/signal_backtester.py (replay EMERGING signals, compute forward returns)
 [ ] engines/backtest/strategy_engine.py (entry/exit rules: N-day hold, stop-loss, target)
 [ ] engines/backtest/performance_engine.py (Sharpe, max drawdown, win rate, hit rate by sector)
-[ ] data/intelligence/backtest_results.csv (per-signal: score, entry_date, fwd_ret_20d, outcome)
-[ ] data/intelligence/strategy_performance.csv (aggregate: Sharpe, win%, avg_return, drawdown)
+[ ] data/intelligence/backtest_results.csv (per-signal: score, entry_date, fwd_ret_20d)
+[ ] data/intelligence/strategy_performance.csv (Sharpe, win%, drawdown by label + sector)
 [ ] Frontend Backtest page (equity curve, performance table, signal accuracy by label)
+[ ] Uses Phase 17 symbol_change_history.csv for correct bhavcopy lookups
 
 ---
 
-# SECTION 20 — Broker Adapter (Read-Only) [NOT STARTED] <- after Phase 18
+# SECTION 22 — Broker Adapter (Read-Only) [NOT STARTED] <- after Phase 20
 
 [ ] engines/broker/base_adapter.py (abstract BrokerAdapter interface, broker-independence)
 [ ] engines/broker/zerodha_adapter.py (Kite Connect: holdings, positions, margins)
@@ -299,33 +322,33 @@ Legend:  [x] Completed  [-] In Progress  [ ] Not Started
 
 ---
 
-# SECTION 21 — Research Platform [NOT STARTED] <- after Phase 18 + 19
+# SECTION 23 — Research Platform [NOT STARTED] <- after Phases 20 + 21
 
 [ ] engines/research/thesis_engine.py (write/read/archive per-symbol investment theses)
-[ ] engines/research/thesis_validator.py (quarterly validation vs results + SHP + management)
+[ ] engines/research/thesis_validator.py (quarterly validation vs results + SHP + announcements)
 [ ] engines/research/report_engine.py (weekly Telegram digest + PDF export)
 [ ] data/research/theses.csv (symbol, thesis_text, written_date, target_price, target_date)
 [ ] data/research/thesis_scores.csv (quarterly validation: score, evidence, verdict)
-[ ] Frontend Research page (thesis list, quarterly validation history)
+[ ] Frontend Research page (thesis list, validation history)
 
 ---
 
-# SECTION 22 — Execution Platform [NOT STARTED] <- after Phase 19 + 20
+# SECTION 24 — Execution Platform [NOT STARTED] <- after Phases 21 + 22
 
-[ ] engines/execution/paper_trader.py (simulate orders vs live prices, no real money)
-[ ] engines/execution/order_manager.py (order queue, state machine: PENDING/PLACED/FILLED)
-[ ] engines/execution/risk_engine.py (position limits, concentration cap, max drawdown stop)
-[ ] engines/execution/live_trader.py (real orders — only enabled by LIVE_TRADE_MODE=true)
-[ ] Gate: paper mode must run 4 weeks with Sharpe > 0.8 before live_trader is enabled
+[ ] engines/execution/paper_trader.py (simulate orders, no real money)
+[ ] engines/execution/order_manager.py (state machine: PENDING/PLACED/FILLED/FAILED)
+[ ] engines/execution/risk_engine.py (position limits, concentration cap, drawdown stop)
+[ ] engines/execution/live_trader.py (real orders — gate: LIVE_TRADE_MODE=true in .env)
+[ ] Gate: paper mode must achieve Sharpe > 0.8 over 4 weeks before live_trader enabled
 [ ] Frontend Execution page (order blotter, risk dashboard, paper vs live toggle)
 
 ---
 
-# SECTION 23 — Commercial Platform [NOT STARTED] <- after Phases 17-22 stable
+# SECTION 25 — Commercial Platform [NOT STARTED] <- after Phases 19-24 stable
 
 [ ] backend/auth/ (JWT login/refresh, user CRUD, bcrypt passwords)
 [ ] backend/subscriptions/ (plan tiers: Free/Pro/Institutional, feature gates)
-[ ] frontend/auth/ (login page, subscription management page)
+[ ] frontend/auth/ (login page, subscription management)
 [ ] Per-user data isolation (portfolio, research, alert preferences)
 [ ] Stripe payment integration (or equivalent)
 
@@ -342,19 +365,20 @@ Stock Scoring             100%  (Phase 8)
 Alert System              100%  (Phase 9)
 FastAPI Backend           100%  (Phase 10)
 React GUI + Charts        100%  (Phase 11)
-ML Layer                  100%  (Phase 12)
-RAG Knowledge Base        100%  (Phase 13)
-Chatbot                   100%  (Phase 14)
-Financial Results + SHP   100%  (Phase 15)
-Management Intelligence   100%  (Phase 16)
-Daily Refresh             0%    (Phase 17 <- NEXT)
-Portfolio Engine          0%    (Phase 18)
-Backtesting Framework     0%    (Phase 19)
-Broker Adapter            0%    (Phase 20)
-Research Platform         0%    (Phase 21)
-Execution Platform        0%    (Phase 22)
-Commercial Platform       0%    (Phase 23)
+ML Layer                   95%  (Phase 12 -- ml_shap_values.csv missing, minor)
+RAG Knowledge Base         60%  (Phase 13 -- indexes never built)
+Chatbot                    70%  (Phase 14 -- RAG context broken)
+Financial Results + SHP    85%  (Phase 15 -- valuation_scores.csv missing)
+Management Intelligence    80%  (Phase 16 -- holding_trends.csv missing)
+Symbol Change History       0%  (Phase 17 <- NEXT)
+Corporate Announcements     0%  (Phase 18)
+Daily Intelligence Refresh  0%  (Phase 19)
+Portfolio Engine            0%  (Phase 20)
+Backtesting Framework       0%  (Phase 21)
+Broker Adapter              0%  (Phase 22)
+Research Platform           0%  (Phase 23)
+Execution Platform          0%  (Phase 24)
+Commercial Platform         0%  (Phase 25)
 
-Overall: ~55% of full vision complete
-Intelligence + Application + AI: 100%. Investment Operating System: 0%.
+Overall: ~48% of full vision complete
 ```
