@@ -333,15 +333,29 @@ def get_data_status():
             manifest_data = json.loads(manifest_path.read_text())
         except Exception:
             pass
+    cache_last_date = manifest_data.get("last_processed_date")   # data date
+    cache_mtime     = (
+        pd.Timestamp(manifest_path.stat().st_mtime, unit="s").strftime("%Y-%m-%d %H:%M")
+        if manifest_path.exists() else None
+    )
+    # PARTIAL if data date is more than 30 days behind today
+    import datetime as _dt
+    cache_status = "EMPTY"
+    if cache_files:
+        if cache_last_date:
+            days_behind = (_dt.date.today() - _dt.date.fromisoformat(cache_last_date)).days
+            cache_status = "OK" if days_behind <= 30 else "PARTIAL"
+        else:
+            cache_status = "OK"
     status["stock_history_cache"] = {
         "label": "Stock History Cache",
-        "status": "OK" if cache_files else "EMPTY",
-        "records": f"{len(cache_files)} symbol files",
-        "coverage": f"up to {manifest_data.get('last_processed_date', '-')}",
-        "last_modified": (
-            manifest_data.get("last_processed_date")
-            if manifest_data else None
+        "status": cache_status,
+        "records": (
+            f"{len(cache_files):,} symbols | data to {cache_last_date}"
+            if cache_last_date else f"{len(cache_files):,} symbol files"
         ),
+        "coverage": f"up to {cache_last_date or '-'}",
+        "last_modified": cache_mtime,   # file system time, not data date
     }
 
     # ── Intelligence outputs ──────────────────────────────────────────────────
