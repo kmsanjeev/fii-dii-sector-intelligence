@@ -233,7 +233,7 @@ def get_data_status():
         "records": f"{len(eq_files)} files",
         "coverage": f"{eq_files[0].parent.name if eq_files else '-'} → {eq_files[-1].parent.name if eq_files else '-'}",
         "last_modified": (
-            pd.Timestamp(max(eq_files, key=lambda f: f.stat().st_mtime).stat().st_mtime, unit="s").strftime("%Y-%m-%d")
+            pd.Timestamp(max(eq_files, key=lambda f: f.stat().st_mtime).stat().st_mtime, unit="s").strftime("%Y-%m-%d %H:%M")
             if eq_files else None
         ),
     }
@@ -249,7 +249,7 @@ def get_data_status():
         "records": f"{len(fno_files):,} files",
         "coverage": fno_coverage,
         "last_modified": (
-            pd.Timestamp(max(fno_files, key=lambda f: f.stat().st_mtime).stat().st_mtime, unit="s").strftime("%Y-%m-%d")
+            pd.Timestamp(max(fno_files, key=lambda f: f.stat().st_mtime).stat().st_mtime, unit="s").strftime("%Y-%m-%d %H:%M")
             if fno_files else None
         ),
     }
@@ -268,7 +268,7 @@ def get_data_status():
         "records": f"{ca_rows:,} rows / {len(ca_files)} year files",
         "coverage": f"{ca_files[0].stem if ca_files else '-'} → {ca_files[-1].stem if ca_files else '-'}",
         "last_modified": (
-            pd.Timestamp(max(ca_files, key=lambda f: f.stat().st_mtime).stat().st_mtime, unit="s").strftime("%Y-%m-%d")
+            pd.Timestamp(max(ca_files, key=lambda f: f.stat().st_mtime).stat().st_mtime, unit="s").strftime("%Y-%m-%d %H:%M")
             if ca_files else None
         ),
     }
