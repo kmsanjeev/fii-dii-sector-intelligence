@@ -96,6 +96,89 @@ export function StockDetailPage() {
         </div>
       </section>
 
+      {/* Fundamentals (Phase 15B) */}
+      {data.fundamentals && data.fundamentals.valuation_score != null && (
+        <section>
+          <h2 className="text-xs tracking-widest mb-3" style={{ color: '#64748B' }}>
+            FUNDAMENTALS
+            {data.fundamentals.as_of_date ? <span className="ml-2 font-normal">({data.fundamentals.as_of_date})</span> : null}
+          </h2>
+          <div className="grid grid-cols-2 gap-3">
+            {/* Left: financials */}
+            <div className="p-3 rounded border text-xs space-y-2" style={{ backgroundColor: '#141720', borderColor: '#1E2332' }}>
+              {[
+                { label: 'Revenue TTM', value: data.fundamentals.revenue_ttm_cr != null ? `₹${Number(data.fundamentals.revenue_ttm_cr).toLocaleString('en-IN')} Cr` : '-' },
+                { label: 'Net Profit TTM', value: data.fundamentals.profit_ttm_cr != null ? `₹${Number(data.fundamentals.profit_ttm_cr).toLocaleString('en-IN')} Cr` : '-' },
+                { label: 'YoY Revenue', value: data.fundamentals.yoy_revenue_pct != null ? `${Number(data.fundamentals.yoy_revenue_pct) >= 0 ? '+' : ''}${Number(data.fundamentals.yoy_revenue_pct).toFixed(1)}%` : '-' },
+                { label: 'YoY Profit', value: data.fundamentals.yoy_profit_pct != null ? `${Number(data.fundamentals.yoy_profit_pct) >= 0 ? '+' : ''}${Number(data.fundamentals.yoy_profit_pct).toFixed(1)}%` : '-' },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex justify-between">
+                  <span style={{ color: '#64748B' }}>{label}</span>
+                  <span style={{ color: '#E2E8F0' }}>{value}</span>
+                </div>
+              ))}
+            </div>
+            {/* Right: ratios + valuation */}
+            <div className="p-3 rounded border text-xs space-y-2" style={{ backgroundColor: '#141720', borderColor: '#1E2332' }}>
+              {[
+                { label: 'P/E Ratio', value: data.fundamentals.pe_ratio != null ? Number(data.fundamentals.pe_ratio).toFixed(1) : '-' },
+                { label: 'ROE', value: data.fundamentals.roe_pct != null ? `${Number(data.fundamentals.roe_pct).toFixed(1)}%` : '-' },
+                { label: 'Valuation Score', value: data.fundamentals.valuation_score != null ? Number(data.fundamentals.valuation_score).toFixed(1) : '-' },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex justify-between">
+                  <span style={{ color: '#64748B' }}>{label}</span>
+                  <span style={{ color: '#E2E8F0' }}>{value}</span>
+                </div>
+              ))}
+              {data.fundamentals.valuation_label && (
+                <div className="mt-2 text-center font-bold text-xs py-1 rounded" style={{
+                  backgroundColor: data.fundamentals.valuation_label === 'CHEAP_QUALITY' ? '#14532D' :
+                                   data.fundamentals.valuation_label === 'FAIR_VALUE'    ? '#1E3A5F' :
+                                   data.fundamentals.valuation_label === 'MODERATE'      ? '#422006' : '#450A0A',
+                  color: data.fundamentals.valuation_label === 'CHEAP_QUALITY' ? '#4ADE80' :
+                         data.fundamentals.valuation_label === 'FAIR_VALUE'    ? '#60A5FA' :
+                         data.fundamentals.valuation_label === 'MODERATE'      ? '#FB923C' : '#F87171',
+                }}>
+                  {data.fundamentals.valuation_label.replace(/_/g, ' ')}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Shareholding (Phase 15C) */}
+      {data.shareholding && data.shareholding.promoter_pct != null && (
+        <section>
+          <h2 className="text-xs tracking-widest mb-3" style={{ color: '#64748B' }}>
+            SHAREHOLDING PATTERN
+            {data.shareholding.window_label ? <span className="ml-2 font-normal">({data.shareholding.window_label})</span> : null}
+          </h2>
+          <div className="p-3 rounded border" style={{ backgroundColor: '#141720', borderColor: '#1E2332' }}>
+            {[
+              { label: 'Promoters', value: data.shareholding.promoter_pct, color: '#A78BFA' },
+              { label: 'FII',       value: data.shareholding.fii_pct,      color: '#22C55E' },
+              { label: 'DII',       value: data.shareholding.dii_pct,      color: '#3B82F6' },
+              { label: 'Public',    value: data.shareholding.public_pct,   color: '#64748B' },
+            ].map(({ label, value, color }) => {
+              const pctVal = value != null ? Number(value) : null
+              const barW = pctVal != null ? Math.min(100, pctVal) : 0
+              return (
+                <div key={label} className="mb-3">
+                  <div className="flex justify-between text-xs mb-1">
+                    <span style={{ color: '#94A3B8' }}>{label}</span>
+                    <span style={{ color }}>{pctVal != null ? `${pctVal.toFixed(2)}%` : '-'}</span>
+                  </div>
+                  <div style={{ height: 4, backgroundColor: '#1E2332', borderRadius: 2 }}>
+                    <div style={{ width: `${barW}%`, height: '100%', backgroundColor: color, borderRadius: 2 }} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </section>
+      )}
+
       {/* Deal signals */}
       {data.deal_signals && Object.keys(data.deal_signals).length > 0 && (
         <section>

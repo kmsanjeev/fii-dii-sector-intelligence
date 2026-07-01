@@ -103,6 +103,42 @@ def get_stock_detail(symbol: str):
         if not corp_row.empty:
             corp_info = corp_row.iloc[0].to_dict()
 
+    # Phase 15B — Valuation
+    fundamentals: dict = {}
+    val_df = data_loader.get("valuation_scores")
+    if val_df is not None:
+        val_row = val_df[val_df["symbol"].str.upper() == sym]
+        if not val_row.empty:
+            r = val_row.iloc[0]
+            fundamentals = {
+                "pe_ratio":         _safe(r.get("pe_ratio")),
+                "roe_pct":          _safe(r.get("roe_pct")),
+                "valuation_score":  _safe(r.get("valuation_score")),
+                "valuation_label":  str(r.get("valuation_label", "")),
+                "revenue_ttm_cr":   _safe(r.get("revenue_ttm_cr")),
+                "profit_ttm_cr":    _safe(r.get("profit_ttm_cr")),
+                "yoy_revenue_pct":  _safe(r.get("yoy_revenue_pct")),
+                "yoy_profit_pct":   _safe(r.get("yoy_profit_pct")),
+                "as_of_date":       str(r.get("as_of_date", "")),
+            }
+
+    # Phase 15C — Shareholding (latest quarter per symbol)
+    shareholding: dict = {}
+    shp_df = data_loader.get("shareholding")
+    if shp_df is not None:
+        shp_rows = shp_df[shp_df["symbol"].str.upper() == sym]
+        if not shp_rows.empty:
+            shp_rows = shp_rows.sort_values("quarter_end_date")
+            r = shp_rows.iloc[-1]
+            shareholding = {
+                "promoter_pct":     _safe(r.get("promoter_pct")),
+                "fii_pct":          _safe(r.get("fii_pct")),
+                "dii_pct":          _safe(r.get("dii_pct")),
+                "public_pct":       _safe(r.get("public_pct")),
+                "quarter_end_date": str(r.get("quarter_end_date", "")),
+                "window_label":     str(r.get("window_label", "")),
+            }
+
     return {
         "symbol":             str(row.get("symbol", "")),
         "sector":             str(row.get("sector", "")),
@@ -122,9 +158,11 @@ def get_stock_detail(symbol: str):
             "ret_365d":  _safe(row.get("ret_365d")),
             "vol_ratio": _safe(row.get("vol_ratio")),
         },
-        "as_of_date": str(row.get("as_of_date", "")),
+        "as_of_date":           str(row.get("as_of_date", "")),
         "deal_signals":         deal_info,
         "corporate_confidence": corp_info,
+        "fundamentals":         fundamentals,
+        "shareholding":         shareholding,
     }
 
 

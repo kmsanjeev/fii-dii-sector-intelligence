@@ -32,6 +32,9 @@ SOURCES = {
     "upcoming_catalysts":   cfg.INTELLIGENCE_DIR / "upcoming_catalysts.csv",
     "corporate_confidence": cfg.INTELLIGENCE_DIR / "corporate_confidence_scores.csv",
     "price_momentum":       cfg.INTELLIGENCE_DIR / "price_momentum.csv",
+    # Phase 15 — Fundamentals
+    "valuation_scores":     cfg.NSE_DIR / "results" / "valuation_scores.csv",
+    "shareholding":         cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv",
 }
 
 _lock = threading.Lock()
