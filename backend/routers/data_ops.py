@@ -165,6 +165,23 @@ ENGINES = {
         "script": "engines/intelligence/bull_run_probability_engine.py",
         "phase": "8B",
     },
+    "fundamentals_15a": {
+        "label": "Financial Results Engine (15A)",
+        "script": "engines/fundamentals/financial_results_engine.py",
+        "args": ["--windows", "2"],
+        "phase": "15A",
+    },
+    "fundamentals_15a_full": {
+        "label": "Financial Results Engine Full History (15A)",
+        "script": "engines/fundamentals/financial_results_engine.py",
+        "args": ["--full"],
+        "phase": "15A",
+    },
+    "fundamentals_15b": {
+        "label": "Valuation Engine (15B)",
+        "script": "engines/fundamentals/valuation_engine.py",
+        "phase": "15B",
+    },
     "ml_12": {
         "label": "ML Intelligence (12)",
         "script": "engines/ml/feature_engineering.py",
@@ -386,9 +403,42 @@ def get_data_status():
             "last_modified": info["last_modified"],
         }
 
+    # ── Fundamentals (Phase 15) ───────────────────────────────────────────────
+    results_path = cfg.NSE_DIR / "results" / "quarterly_results.csv"
+    results_info = _file_info(results_path)
+    valuation_path = cfg.NSE_DIR / "results" / "valuation_scores.csv"
+    valuation_info = _file_info(valuation_path)
+
+    # Count distinct symbols + windows in quarterly results
+    results_windows = ""
+    if results_info["exists"] and results_info["rows"] > 0:
+        try:
+            _rdf = pd.read_csv(results_path, usecols=["symbol", "window_label"])
+            results_windows = ", ".join(sorted(_rdf["window_label"].dropna().unique()))
+        except Exception:
+            pass
+
+    fundamentals = {
+        "quarterly_results": {
+            "label": "Quarterly Results (15A)",
+            "status": "OK" if results_info["exists"] and results_info["rows"] > 0 else "EMPTY",
+            "records": f"{results_info['rows']:,} rows" if results_info["exists"] else "0 rows",
+            "coverage": results_windows or "-",
+            "last_modified": results_info["last_modified"],
+        },
+        "valuation_scores": {
+            "label": "Valuation Scores (15B)",
+            "status": "OK" if valuation_info["exists"] and valuation_info["rows"] > 0 else "EMPTY",
+            "records": f"{valuation_info['rows']:,} rows" if valuation_info["exists"] else "0 rows",
+            "coverage": "-",
+            "last_modified": valuation_info["last_modified"],
+        },
+    }
+
     return {
         "acquisition": status,
         "intelligence": intelligence,
+        "fundamentals": fundamentals,
         "engines": list(ENGINES.keys()),
     }
 

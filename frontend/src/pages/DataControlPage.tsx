@@ -106,6 +106,8 @@ const ENGINE_MAP: Record<string, string> = {
   upcoming_catalysts:           'events_7b',
   corporate_action_signals:     'corp_actions_7c',
   corporate_confidence:         'corp_actions_7c',
+  quarterly_results:            'fundamentals_15a',
+  valuation_scores:             'fundamentals_15b',
 }
 
 function ModuleTable({
@@ -446,13 +448,15 @@ export function DataControlPage() {
     <div style={{ color: '#64748B', padding: 40, textAlign: 'center' }}>Scanning data modules...</div>
   )
 
-  const acquisition  = (status?.acquisition  ?? {}) as Record<string, ModuleInfo>
-  const intelligence = (status?.intelligence ?? {}) as Record<string, ModuleInfo>
+  const acquisition    = (status?.acquisition    ?? {}) as Record<string, ModuleInfo>
+  const intelligence   = (status?.intelligence   ?? {}) as Record<string, ModuleInfo>
+  const fundamentals   = (status?.fundamentals   ?? {}) as Record<string, ModuleInfo>
 
   const acqOk   = Object.values(acquisition).filter(m => m.status === 'OK').length
   const intOk   = Object.values(intelligence).filter(m => m.status === 'OK').length
-  const total   = Object.keys(acquisition).length + Object.keys(intelligence).length
-  const totalOk = acqOk + intOk
+  const funOk   = Object.values(fundamentals).filter(m => m.status === 'OK').length
+  const total   = Object.keys(acquisition).length + Object.keys(intelligence).length + Object.keys(fundamentals).length
+  const totalOk = acqOk + intOk + funOk
   const pct     = total > 0 ? Math.round((totalOk / total) * 100) : 0
 
   return (
@@ -536,11 +540,15 @@ export function DataControlPage() {
         <div style={{ fontSize: 11, color: '#64748B', textAlign: 'right' }}>
           <div>Acquisition: {acqOk}/{Object.keys(acquisition).length}</div>
           <div>Intelligence: {intOk}/{Object.keys(intelligence).length}</div>
+          <div>Fundamentals: {funOk}/{Object.keys(fundamentals).length}</div>
         </div>
       </div>
 
       <ModuleTable title="DATA ACQUISITION"     modules={acquisition}  pipelineKey="pipeline_acquisition"  onBusyChange={handleSectionBusy('acquisition')}  onRunComplete={refetch} />
       <ModuleTable title="INTELLIGENCE OUTPUTS" modules={intelligence} pipelineKey="pipeline_intelligence" onBusyChange={handleSectionBusy('intelligence')} onRunComplete={refetch} />
+      {Object.keys(fundamentals).length > 0 && (
+        <ModuleTable title="FUNDAMENTALS (Phase 15)" modules={fundamentals} pipelineKey="fundamentals_15a" onBusyChange={handleSectionBusy('fundamentals')} onRunComplete={refetch} />
+      )}
 
       {/* Full pipeline log */}
       {pipeLogs.length > 0 && (
