@@ -172,9 +172,9 @@ ENGINES = {
         "phase": "15A",
     },
     "results_acquisition_full": {
-        "label": "Financial Results Acquisition — full history (15A)",
+        "label": "Financial Results Acquisition — full backfill FY2018+ (15A)",
         "script": "engines/fundamentals/financial_results_engine.py",
-        "args": ["--full"],
+        "args": ["--backfill"],
         "phase": "15A",
     },
     "valuation_15b": {

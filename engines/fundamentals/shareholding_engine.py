@@ -35,11 +35,17 @@ Guardrails:
 import argparse
 import math
 import shutil
+import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date
 from pathlib import Path
 from typing import Optional
+
+# Ensure project root is on sys.path before importing engines.common
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 import pandas as pd
 import requests

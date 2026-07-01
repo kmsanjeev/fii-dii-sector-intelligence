@@ -58,17 +58,53 @@ OUTPUT_PATH = RESULTS_DIR / "quarterly_results.csv"
 EQUITY_MASTER = cfg.EQUITY_MASTER_DIR / "equity_master.csv"
 RECOVERY_QUEUE = cfg.NSE_DIR / "recovery_queue.csv"
 
-# Filing season windows: (from_date, to_date, label)
-# These are FILING dates (when results appear on NSE), NOT the financial period dates.
-# Each window captures ~3,500-3,900 quarterly filings from nearly the full EQ universe.
+# Recent windows used when --windows N is passed (most recent first)
 FILING_WINDOWS = [
-    ("01-01-2025", "31-03-2025", "Q3FY25"),   # Oct-Dec 2024 quarter results
-    ("01-10-2024", "31-12-2024", "Q2FY25"),   # Jul-Sep 2024 quarter results
-    ("01-07-2024", "30-09-2024", "Q1FY25"),   # Apr-Jun 2024 quarter results
-    ("01-04-2024", "31-07-2024", "Q4FY24"),   # Jan-Mar 2024 quarter (extended window)
-    ("01-01-2024", "31-03-2024", "Q3FY24"),   # Oct-Dec 2023 quarter results
-    ("01-10-2023", "31-12-2023", "Q2FY24"),   # Jul-Sep 2023 quarter results
+    ("01-01-2025", "31-03-2025", "Q3FY25"),
+    ("01-10-2024", "31-12-2024", "Q2FY25"),
+    ("01-07-2024", "30-09-2024", "Q1FY25"),
+    ("01-04-2024", "31-07-2024", "Q4FY24"),
+    ("01-01-2024", "31-03-2024", "Q3FY24"),
+    ("01-10-2023", "31-12-2023", "Q2FY24"),
 ]
+
+
+def _generate_all_filing_windows() -> list[tuple[str, str, str]]:
+    """Generate all filing-season windows from Q1FY18 (earliest reliable NSE XBRL) to today.
+
+    NSE mandated XBRL filing for listed companies from 2017-18 onwards.
+    Filing-season dates are the dates the results appear on NSE (not the financial period dates):
+      Q1 (Apr-Jun) → filed Jul-Sep   same cal year
+      Q2 (Jul-Sep) → filed Oct-Dec   same cal year
+      Q3 (Oct-Dec) → filed Jan-Mar   next cal year
+      Q4 (Jan-Mar) → filed Apr-Jul   next cal year (extended: annuals take longer)
+    """
+    from datetime import date as _date
+    today = _date.today()
+    windows = []
+
+    for fy in range(18, 100):           # FY18 = Apr2017-Mar2018, FY99 is far future
+        base_cal = 2000 + fy - 1        # FY18 base calendar year = 2017
+        quarters = [
+            # (label, filing_from_m, filing_from_d, filing_to_m, filing_to_d, yr_offset)
+            (f"Q1FY{fy:02d}", 7,  1,  9, 30, 0),
+            (f"Q2FY{fy:02d}", 10, 1, 12, 31, 0),
+            (f"Q3FY{fy:02d}", 1,  1,  3, 31, 1),
+            (f"Q4FY{fy:02d}", 4,  1,  7, 31, 1),
+        ]
+        for label, fm, fd, tm, td, yr_off in quarters:
+            filing_year = base_cal + yr_off
+            try:
+                window_end = _date(filing_year, tm, td)
+            except ValueError:
+                continue
+            if window_end > today:
+                return windows          # stop once we pass today
+            from_str = f"{fd:02d}-{fm:02d}-{filing_year}"
+            to_str   = f"{td:02d}-{tm:02d}-{filing_year}"
+            windows.append((from_str, to_str, label))
+
+    return windows
 
 # XBRL namespace map
 _NS = {
@@ -105,11 +141,13 @@ class FinancialResultsEngine:
     def __init__(
         self,
         max_windows: Optional[int] = None,
+        backfill: bool = False,
         use_yfinance: bool = True,
         yfinance_cap: int = YFINANCE_BATCH_CAP,
     ):
         RESULTS_DIR.mkdir(parents=True, exist_ok=True)
         self.max_windows = max_windows
+        self.backfill = backfill
         self.use_yfinance = use_yfinance
         self.yfinance_cap = yfinance_cap
         self.recovery: list[dict] = []
@@ -171,7 +209,11 @@ class FinancialResultsEngine:
             logger.warning("[FinancialResults] nselib not installed")
             return []
 
-        windows = FILING_WINDOWS
+        if self.backfill:
+            # Dynamic: all quarters from Q1FY18 to today, oldest first (incremental)
+            windows = _generate_all_filing_windows()
+        else:
+            windows = FILING_WINDOWS
         if self.max_windows:
             windows = windows[: self.max_windows]
 
@@ -445,22 +487,24 @@ class FinancialResultsEngine:
 
 
 if __name__ == "__main__":
-    import sys as _sys
+    import argparse as _ap
+    _parser = _ap.ArgumentParser(description="Financial Results Engine -- Phase 15A")
+    _parser.add_argument("--windows", type=int, default=None,
+                         help="Fetch N most recent filing windows (default: 2)")
+    _parser.add_argument("--backfill", action="store_true",
+                         help="Fetch ALL quarters from Q1FY18 to present (incremental)")
+    _parser.add_argument("--full", action="store_true",
+                         help="Alias for --backfill (backwards compat)")
+    _args = _parser.parse_args()
 
-    # Flags:
-    #   --full       : fetch all 6 historical windows (~18 months, up to 2 hours)
-    #   --windows N  : fetch N most recent windows only
-    full_run  = "--full" in _sys.argv
-    n_windows = None
-    if "--windows" in _sys.argv:
-        idx = _sys.argv.index("--windows")
-        if idx + 1 < len(_sys.argv):
-            n_windows = int(_sys.argv[idx + 1])
-    if not full_run and n_windows is None:
-        n_windows = 2   # default: 2 most recent quarters (~30-45 min)
+    backfill  = _args.backfill or _args.full
+    n_windows = _args.windows
+    if not backfill and n_windows is None:
+        n_windows = 2   # default: 2 most recent quarters
 
     engine = FinancialResultsEngine(
         max_windows=n_windows,
+        backfill=backfill,
         use_yfinance=False,
         yfinance_cap=YFINANCE_BATCH_CAP,
     )
