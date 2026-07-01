@@ -141,10 +141,12 @@ RECENT_WINDOWS = [
 
 
 class ShareholdingEngine:
-    def __init__(self, windows: int = 1, backfill: bool = False, use_screener_fallback: bool = True):
+    def __init__(self, windows: int = 1, backfill: bool = False,
+                 use_screener_fallback: bool = True, from_quarter: str | None = None):
         self.windows = windows
         self.backfill = backfill
         self.use_screener_fallback = use_screener_fallback
+        self.from_quarter = from_quarter
         SHAREHOLDING_DIR.mkdir(parents=True, exist_ok=True)
 
     def run(self) -> bool:
@@ -169,6 +171,14 @@ class ShareholdingEngine:
         # Decide which windows to process
         if self.backfill:
             candidate_windows = _generate_all_windows()  # oldest first
+            if self.from_quarter:
+                labels = [lbl for _, _, lbl in candidate_windows]
+                if self.from_quarter in labels:
+                    start_idx = labels.index(self.from_quarter)
+                    candidate_windows = candidate_windows[start_idx:]
+                    logger.info(f"[ShareholdingEngine] --from-quarter: skipping to {self.from_quarter} (dropped {start_idx} earlier windows)")
+                else:
+                    logger.warning(f"[ShareholdingEngine] --from-quarter '{self.from_quarter}' not found; processing all windows")
         else:
             candidate_windows = RECENT_WINDOWS  # most recent first
 
@@ -487,9 +497,11 @@ def validate_report(path: Path = SHP_CSV):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Shareholding Engine -- Phase 15C")
     parser.add_argument("--windows",    type=int, default=1, help="Fetch N most recent windows (default: 1)")
-    parser.add_argument("--backfill",   action="store_true", help="Fetch all historical windows from FY2008 to present (incremental)")
-    parser.add_argument("--validate",   action="store_true", help="Print data quality report for existing data")
-    parser.add_argument("--no-screener", action="store_true", help="Disable Screener.in fallback")
+    parser.add_argument("--backfill",      action="store_true", help="Fetch all historical windows from FY2008 to present (incremental)")
+    parser.add_argument("--from-quarter",  type=str, default=None, metavar="LABEL",
+                        help="With --backfill: start from this quarter label, e.g. Q1FY13")
+    parser.add_argument("--validate",      action="store_true", help="Print data quality report for existing data")
+    parser.add_argument("--no-screener",   action="store_true", help="Disable Screener.in fallback")
     args = parser.parse_args()
 
     if args.validate:
@@ -499,6 +511,7 @@ if __name__ == "__main__":
             windows=args.windows,
             backfill=args.backfill,
             use_screener_fallback=not args.no_screener,
+            from_quarter=args.from_quarter,
         )
         ok = engine.run()
 
