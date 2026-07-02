@@ -1,12 +1,173 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { fetchStockDetail } from '../api/client'
+import { fetchStockDetail, type TechnicalIndicators, type FnoData } from '../api/client'
 import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 
 function pct(v: number | null | undefined) {
   if (v == null) return '-'
   return `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`
+}
+
+const S: React.CSSProperties = { color: '#64748B', fontSize: 9, letterSpacing: 1 }
+
+function DMABar({ label, value, current, color }: { label: string; value: number | null; current: number; color: string }) {
+  if (value == null) return null
+  const above = current > value
+  const diff  = ((current - value) / value * 100)
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+      <span style={{ color: '#64748B', fontSize: 10, minWidth: 52 }}>{label}</span>
+      <span style={{ color: '#94A3B8', fontSize: 11, minWidth: 64, textAlign: 'right' }}>
+        &#8377;{value.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+      </span>
+      <span style={{ color: above ? '#22C55E' : '#EF4444', fontSize: 10, minWidth: 56 }}>
+        {diff >= 0 ? '+' : ''}{diff.toFixed(1)}%
+      </span>
+      <div style={{ flex: 1, height: 4, background: '#1E2332', borderRadius: 2, maxWidth: 120 }}>
+        <div style={{
+          width: `${Math.min(100, Math.abs(diff) / 15 * 100)}%`,
+          height: '100%', borderRadius: 2, background: color,
+          opacity: above ? 1 : 0.5,
+        }} />
+      </div>
+      <span style={{ color, fontSize: 9, fontWeight: 700 }}>{above ? 'ABOVE' : 'BELOW'}</span>
+    </div>
+  )
+}
+
+function TechSection({ t, close }: { t: TechnicalIndicators; close: number }) {
+  const TREND_STYLES: Record<string, { color: string; bg: string; label: string }> = {
+    STRONG_UPTREND:    { color: '#22C55E', bg: '#14532D', label: 'STRONG UPTREND'  },
+    UPTREND:           { color: '#10B981', bg: '#064E3B', label: 'UPTREND'         },
+    CONSOLIDATING:     { color: '#F59E0B', bg: '#451A03', label: 'CONSOLIDATING'   },
+    DOWNTREND:         { color: '#EF4444', bg: '#450A0A', label: 'DOWNTREND'       },
+    INSUFFICIENT_DATA: { color: '#64748B', bg: '#1E2332', label: 'INSUFFICIENT DATA'},
+  }
+  const ts = TREND_STYLES[t.trend_signal] ?? TREND_STYLES['INSUFFICIENT_DATA']
+  const prox = t.prox_52w_high
+
+  return (
+    <section>
+      <h2 className="text-xs tracking-widest mb-3" style={{ color: '#64748B' }}>TECHNICAL ANALYSIS</h2>
+      <div style={{ background: '#141720', border: '1px solid #1E2332', borderRadius: 6, padding: 16 }}>
+
+        {/* Trend + 52W */}
+        <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginBottom: 16 }}>
+          <div>
+            <div style={S}>TREND SIGNAL</div>
+            <span style={{
+              fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 4, marginTop: 4, display: 'inline-block',
+              background: ts.bg, color: ts.color,
+            }}>
+              {ts.label}
+            </span>
+          </div>
+          <div>
+            <div style={S}>52W HIGH</div>
+            <div style={{ color: '#E2E8F0', fontSize: 14, fontWeight: 700 }}>
+              &#8377;{t.high_52w?.toLocaleString('en-IN', { maximumFractionDigits: 2 }) ?? '--'}
+            </div>
+            {prox != null && (
+              <div style={{ fontSize: 10, color: prox >= -5 ? '#22C55E' : prox >= -15 ? '#F59E0B' : '#64748B' }}>
+                {prox >= 0 ? '+' : ''}{prox.toFixed(1)}% from 52W high
+              </div>
+            )}
+          </div>
+          <div>
+            <div style={S}>52W LOW</div>
+            <div style={{ color: '#E2E8F0', fontSize: 14, fontWeight: 700 }}>
+              &#8377;{t.low_52w?.toLocaleString('en-IN', { maximumFractionDigits: 2 }) ?? '--'}
+            </div>
+            {t.prox_52w_low != null && (
+              <div style={{ fontSize: 10, color: '#22C55E' }}>
+                +{t.prox_52w_low.toFixed(1)}% above 52W low
+              </div>
+            )}
+          </div>
+          {t.vol_20d_avg != null && (
+            <div>
+              <div style={S}>20D AVG VOL</div>
+              <div style={{ color: '#94A3B8', fontSize: 12, fontWeight: 600 }}>
+                {(t.vol_20d_avg / 1000).toFixed(0)}K shares
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* DMA positions */}
+        <div style={{ color: '#64748B', fontSize: 9, letterSpacing: 1, marginBottom: 8 }}>POSITION vs MOVING AVERAGES</div>
+        <DMABar label="20 DMA"  value={t.dma_20}  current={close} color="#60A5FA" />
+        <DMABar label="50 DMA"  value={t.dma_50}  current={close} color="#A78BFA" />
+        <DMABar label="200 DMA" value={t.dma_200} current={close} color="#F59E0B" />
+
+        <div style={{ marginTop: 8, fontSize: 10, color: '#334155' }}>
+          As of {t.as_of_date} &nbsp;|&nbsp; 200 DMA is the key institutional benchmark — below it = high risk zone
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function FnoSection({ fno }: { fno: FnoData }) {
+  const OI_STYLES: Record<string, { color: string; bg: string; desc: string }> = {
+    LONG_BUILDUP:  { color: '#22C55E', bg: '#14532D', desc: 'OI rising + price rising — fresh longs building. Bullish.' },
+    SHORT_BUILDUP: { color: '#EF4444', bg: '#450A0A', desc: 'OI rising + price falling — shorts building. Bearish.' },
+    LONG_UNWINDING:{ color: '#F59E0B', bg: '#451A03', desc: 'OI falling + price falling — longs exiting. Weak.' },
+    SHORT_COVERING:{ color: '#10B981', bg: '#064E3B', desc: 'OI falling + price rising — shorts covering. Temporary bounce.' },
+  }
+  const st = OI_STYLES[fno.oi_signal] ?? { color: '#64748B', bg: '#1E2332', desc: '' }
+
+  const fmt = (v: number | null) => v == null ? '--' : (v >= 0 ? '+' : '') + v.toLocaleString('en-IN', { maximumFractionDigits: 0 })
+
+  return (
+    <section>
+      <h2 className="text-xs tracking-widest mb-3" style={{ color: '#64748B' }}>F&amp;O INTELLIGENCE</h2>
+      <div style={{ background: '#141720', border: '1px solid #1E2332', borderRadius: 6, padding: 16 }}>
+        <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginBottom: 12 }}>
+          <div>
+            <div style={S}>OI SIGNAL</div>
+            <span style={{
+              fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 4, marginTop: 4, display: 'inline-block',
+              background: st.bg, color: st.color,
+            }}>
+              {fno.oi_signal.replace(/_/g, ' ')}
+            </span>
+          </div>
+          <div>
+            <div style={S}>FUTURES OI</div>
+            <div style={{ color: '#E2E8F0', fontSize: 13, fontWeight: 700 }}>
+              {fno.futures_oi != null ? (fno.futures_oi / 1e6).toFixed(2) + 'M' : '--'}
+            </div>
+          </div>
+          <div>
+            <div style={S}>OI CHANGE (1D)</div>
+            <div style={{ color: (fno.oi_1d ?? 0) >= 0 ? '#22C55E' : '#EF4444', fontSize: 13, fontWeight: 700 }}>
+              {fmt(fno.oi_1d)}
+            </div>
+          </div>
+          <div>
+            <div style={S}>OI CHANGE (5D)</div>
+            <div style={{ color: (fno.oi_5d ?? 0) >= 0 ? '#22C55E' : '#EF4444', fontSize: 13, fontWeight: 700 }}>
+              {fmt(fno.oi_5d)}
+            </div>
+          </div>
+          <div>
+            <div style={S}>EXPIRY</div>
+            <div style={{ color: '#64748B', fontSize: 12 }}>{fno.expiry}</div>
+          </div>
+        </div>
+        {st.desc && (
+          <div style={{ fontSize: 11, color: st.color, background: st.bg, padding: '6px 10px', borderRadius: 4 }}>
+            {st.desc}
+          </div>
+        )}
+        <div style={{ marginTop: 8, fontSize: 10, color: '#334155' }}>
+          As of {fno.as_of_date} &nbsp;|&nbsp; Near-month contract (highest OI)
+        </div>
+      </div>
+    </section>
+  )
 }
 
 export function StockDetailPage() {
@@ -50,10 +211,96 @@ export function StockDetailPage() {
         <div>
           <h1 className="text-2xl font-bold" style={{ color: '#E2E8F0' }}>{data.symbol}</h1>
           <div className="text-sm mt-1" style={{ color: '#64748B' }}>{data.sector}</div>
-          <div className="mt-2"><CapFlowBadge label={data.label} /></div>
+          {data.close_now != null && (
+            <div style={{ color: '#E2E8F0', fontSize: 22, fontWeight: 700, marginTop: 6 }}>
+              &#8377;{data.close_now.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+              <span style={{ color: '#64748B', fontSize: 11, fontWeight: 400, marginLeft: 8 }}>LTP</span>
+            </div>
+          )}
+          <div className="mt-2 flex gap-2 flex-wrap">
+            <CapFlowBadge label={data.label} />
+            {data.technical?.trend_signal && data.technical.trend_signal !== 'INSUFFICIENT_DATA' && (() => {
+              const c = data.technical!.trend_signal === 'STRONG_UPTREND' ? '#22C55E'
+                      : data.technical!.trend_signal === 'UPTREND' ? '#10B981'
+                      : data.technical!.trend_signal === 'CONSOLIDATING' ? '#F59E0B' : '#EF4444'
+              return (
+                <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 3, border: `1px solid ${c}44`, color: c, background: `${c}18` }}>
+                  {data.technical!.trend_signal.replace(/_/g, ' ')}
+                </span>
+              )
+            })()}
+            {data.fno?.oi_signal && (() => {
+              const c = data.fno!.oi_signal === 'LONG_BUILDUP' ? '#22C55E'
+                      : data.fno!.oi_signal === 'SHORT_COVERING' ? '#10B981'
+                      : data.fno!.oi_signal === 'LONG_UNWINDING' ? '#F59E0B' : '#EF4444'
+              return (
+                <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 3, border: `1px solid ${c}44`, color: c, background: `${c}18` }}>
+                  {data.fno!.oi_signal.replace(/_/g, ' ')}
+                </span>
+              )
+            })()}
+          </div>
+          {/* NSE / BSE quick links */}
+          <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
+            <a
+              href={`https://www.nseindia.com/get-quotes/equity?symbol=${data.symbol}`}
+              target="_blank" rel="noopener noreferrer"
+              style={{ fontSize: 10, color: '#3B82F6', textDecoration: 'none', border: '1px solid #1E3A5F', padding: '2px 8px', borderRadius: 4 }}
+            >
+              NSE Quote
+            </a>
+            <a
+              href={`https://www.bseindia.com/stock-share-price/${data.symbol.toLowerCase()}/`}
+              target="_blank" rel="noopener noreferrer"
+              style={{ fontSize: 10, color: '#3B82F6', textDecoration: 'none', border: '1px solid #1E3A5F', padding: '2px 8px', borderRadius: 4 }}
+            >
+              BSE
+            </a>
+            <a
+              href={`/charts?symbol=${data.symbol}`}
+              style={{ fontSize: 10, color: '#10B981', textDecoration: 'none', border: '1px solid #064E3B', padding: '2px 8px', borderRadius: 4 }}
+            >
+              Chart
+            </a>
+          </div>
         </div>
-        <ScoreGauge score={data.bull_run_score} size={90} label="Bull Run" />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+          <ScoreGauge score={data.bull_run_score} size={90} label="Bull Run" />
+          {data.ml_scores?.ml_bull_run_score != null && (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ color: '#64748B', fontSize: 9, letterSpacing: 1 }}>ML SCORE</div>
+              <div style={{ color: '#8B5CF6', fontSize: 16, fontWeight: 700 }}>
+                {data.ml_scores.ml_bull_run_score.toFixed(0)}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Catalyst countdown */}
+      {data.catalyst?.event_date && (
+        <div style={{
+          padding: '10px 16px', borderRadius: 6, background: '#1A1D2E',
+          border: '1px solid #2D3348', display: 'flex', gap: 16, alignItems: 'center',
+        }}>
+          <span style={{ color: '#64748B', fontSize: 10, letterSpacing: 1 }}>NEXT CATALYST</span>
+          <span style={{ color: '#F59E0B', fontWeight: 700, fontSize: 12 }}>{data.catalyst.event_date}</span>
+          <span style={{ color: '#94A3B8', fontSize: 11 }}>{data.catalyst.purpose_type}</span>
+          {data.catalyst.catalyst_score != null && (
+            <span style={{ color: '#64748B', fontSize: 10 }}>Score: {data.catalyst.catalyst_score.toFixed(0)}</span>
+          )}
+        </div>
+      )}
+
+      {/* Technical Analysis */}
+      {data.technical && data.technical.dma_200 != null && data.close_now != null && (
+        <TechSection t={data.technical} close={data.close_now} />
+      )}
+
+      {/* F&O Intelligence */}
+      {data.fno && data.fno.oi_signal && (
+        <FnoSection fno={data.fno} />
+      )}
 
       {/* Factor breakdown */}
       <section>
@@ -76,24 +323,40 @@ export function StockDetailPage() {
         </div>
       </section>
 
-      {/* Price returns */}
+      {/* Price returns + ML */}
       <section>
         <h2 className="text-xs tracking-widest mb-3" style={{ color: '#64748B' }}>PRICE PERFORMANCE</h2>
         <div className="grid grid-cols-4 gap-3">
           {[
-            { label: '30D Return', value: data.price.ret_30d },
-            { label: '90D Return', value: data.price.ret_90d },
-            { label: '365D Return', value: data.price.ret_365d },
-            { label: 'Vol Ratio', value: data.price.vol_ratio },
-          ].map(({ label, value }) => (
+            { label: '30D Return',  value: data.price.ret_30d,  fmt: pct },
+            { label: '90D Return',  value: data.price.ret_90d,  fmt: pct },
+            { label: '365D Return', value: data.price.ret_365d, fmt: pct },
+            { label: 'Vol Ratio',   value: data.price.vol_ratio, fmt: (v: number | null | undefined) => v != null ? `${v.toFixed(1)}x` : '-' },
+          ].map(({ label, value, fmt }) => (
             <div key={label} className="p-3 rounded border" style={{ backgroundColor: '#141720', borderColor: '#1E2332' }}>
               <div className="text-xs mb-1" style={{ color: '#64748B' }}>{label}</div>
               <div className="text-lg font-bold" style={{ color: (value ?? 0) >= 0 ? '#22C55E' : '#EF4444' }}>
-                {label === 'Vol Ratio' ? (value != null ? `${value.toFixed(1)}x` : '-') : pct(value)}
+                {fmt(value)}
               </div>
             </div>
           ))}
         </div>
+        {data.ml_scores && (
+          <div className="grid grid-cols-2 gap-3 mt-3">
+            {[
+              { label: 'ML Bull Run Score',    value: data.ml_scores.ml_bull_run_score,  color: '#8B5CF6' },
+              { label: 'Accumulation Score',   value: data.ml_scores.accumulation_score, color: '#3B82F6' },
+            ].map(({ label, value, color }) => (
+              <div key={label} className="p-3 rounded border" style={{ backgroundColor: '#141720', borderColor: '#1E2332' }}>
+                <div className="text-xs mb-1" style={{ color: '#64748B' }}>{label}</div>
+                <div style={{ color, fontSize: 18, fontWeight: 700 }}>
+                  {value != null ? value.toFixed(1) : '--'}
+                  <span style={{ color: '#475569', fontSize: 10, fontWeight: 400, marginLeft: 4 }}>/100</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Fundamentals (Phase 15B) */}

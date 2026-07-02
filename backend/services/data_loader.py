@@ -5,6 +5,7 @@ Auto-reloads every 60 minutes via background thread.
 Thread-safe reads via a shared state dict + lock.
 """
 
+import json
 import threading
 import time
 from pathlib import Path
@@ -41,7 +42,13 @@ SOURCES = {
     # Phase 18 — Corporate Announcements Intelligence
     "announcements":        cfg.INTELLIGENCE_DIR / "company_announcements.csv",
     "announcement_signals": cfg.INTELLIGENCE_DIR / "announcement_signals.csv",
+    # Phase A — Technical + F&O Intelligence
+    "ml_scores":            cfg.INTELLIGENCE_DIR / "ml_scores_combined.csv",
+    "technical":            cfg.INTELLIGENCE_DIR / "technical_indicators.csv",
+    "fno_intel":            cfg.INTELLIGENCE_DIR / "fno_intelligence.csv",
 }
+
+_MARKET_CONTEXT_PATH = cfg.INTELLIGENCE_DIR / "market_context.json"
 
 _lock = threading.Lock()
 _data: dict[str, Optional[pd.DataFrame]] = {k: None for k in SOURCES}
@@ -86,6 +93,17 @@ def get(key: str) -> Optional[pd.DataFrame]:
     """Thread-safe getter for a loaded DataFrame. Returns None if not available."""
     with _lock:
         return _data.get(key)
+
+
+def get_market_context() -> dict:
+    """Load market_context.json (PCR, date). Returns empty dict if missing."""
+    try:
+        if _MARKET_CONTEXT_PATH.exists():
+            with open(_MARKET_CONTEXT_PATH, encoding="utf-8") as fh:
+                return json.load(fh)
+    except Exception:
+        pass
+    return {}
 
 
 def freshness() -> dict:

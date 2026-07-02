@@ -44,6 +44,58 @@ def get_market_regime():
     }
 
 
+@router.get("/context")
+def get_market_context():
+    """
+    Single endpoint for the dashboard pulse strip.
+    Returns regime + PCR + FII/DII/MF cash flows + data date.
+    """
+    regime_data = get_market_regime()
+
+    # PCR from market_context.json (written by fno_engine)
+    ctx = data_loader.get_market_context()
+
+    # Latest cash flows from participant_flows
+    flows_df = data_loader.get("participant_flows")
+    cash = {}
+    if flows_df is not None and not flows_df.empty:
+        fl = flows_df.sort_values("date").iloc[-1]
+        def _f(v, d=0):
+            try:
+                return round(float(v or 0), d)
+            except (TypeError, ValueError):
+                return 0.0
+        cash = {
+            "fpi_5d_cr":       _f(fl.get("FPI_flow_5D")),
+            "mf_5d_cr":        _f(fl.get("MF_flow_5D")),
+            "insurance_5d_cr": _f(fl.get("INSURANCE_flow_5D")),
+            "fpi_20d_cr":      _f(fl.get("FPI_flow_20D")),
+            "mf_20d_cr":       _f(fl.get("MF_flow_20D")),
+        }
+
+    # Breadth: label counts across bull_run universe
+    bull_df = data_loader.get("bull_run")
+    breadth = {}
+    if bull_df is not None and not bull_df.empty and "label" in bull_df.columns:
+        vc = bull_df["label"].value_counts().to_dict()
+        breadth = {
+            "strong_candidate": int(vc.get("STRONG_CANDIDATE", 0)),
+            "emerging":         int(vc.get("EMERGING", 0)),
+            "watchlist":        int(vc.get("WATCHLIST", 0)),
+            "neutral":          int(vc.get("NEUTRAL", 0)),
+            "avoid":            int(vc.get("AVOID", 0)),
+        }
+
+    return {
+        **regime_data,
+        "pcr":        ctx.get("pcr"),
+        "pcr_signal": ctx.get("pcr_signal", "UNKNOWN"),
+        "pcr_date":   ctx.get("trade_date", ""),
+        "cash_flows": cash,
+        "breadth":    breadth,
+    }
+
+
 @router.get("/freshness")
 def get_freshness():
     return data_loader.freshness()

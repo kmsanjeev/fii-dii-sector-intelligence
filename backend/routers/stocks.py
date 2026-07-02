@@ -180,9 +180,76 @@ def get_stock_detail(symbol: str):
                 "as_of_date":          str(r.get("as_of_date", "")),
             }
 
+    # ML scores
+    ml_scores: dict = {}
+    ml_df = data_loader.get("ml_scores")
+    if ml_df is not None:
+        ml_row = ml_df[ml_df["symbol"].str.upper() == sym]
+        if not ml_row.empty:
+            r = ml_row.iloc[0]
+            ml_scores = {
+                "accumulation_score": _safe(r.get("accumulation_score")),
+                "ml_bull_run_score":  _safe(r.get("ml_bull_run_score")),
+            }
+
+    # Technical indicators
+    technical: dict = {}
+    tech_df = data_loader.get("technical")
+    if tech_df is not None:
+        tech_row = tech_df[tech_df["symbol"].str.upper() == sym]
+        if not tech_row.empty:
+            r = tech_row.iloc[0]
+            technical = {
+                "close_now":      _safe(r.get("close_now")),
+                "high_52w":       _safe(r.get("high_52w")),
+                "low_52w":        _safe(r.get("low_52w")),
+                "prox_52w_high":  _safe(r.get("prox_52w_high")),
+                "prox_52w_low":   _safe(r.get("prox_52w_low")),
+                "dma_20":         _safe(r.get("dma_20")),
+                "dma_50":         _safe(r.get("dma_50")),
+                "dma_200":        _safe(r.get("dma_200")),
+                "vs_dma_20":      _safe(r.get("vs_dma_20")),
+                "vs_dma_50":      _safe(r.get("vs_dma_50")),
+                "vs_dma_200":     _safe(r.get("vs_dma_200")),
+                "trend_signal":   str(r.get("trend_signal", "")),
+                "vol_20d_avg":    _safe(r.get("vol_20d_avg")),
+                "as_of_date":     str(r.get("as_of_date", "")),
+            }
+
+    # F&O intelligence
+    fno: dict = {}
+    fno_df = data_loader.get("fno_intel")
+    if fno_df is not None:
+        fno_row = fno_df[fno_df["symbol"].str.upper() == sym]
+        if not fno_row.empty:
+            r = fno_row.iloc[0]
+            fno = {
+                "futures_oi":  _safe(r.get("futures_oi")),
+                "oi_1d":       _safe(r.get("oi_1d")),
+                "oi_5d":       _safe(r.get("oi_5d")),
+                "oi_signal":   str(r.get("oi_signal", "")),
+                "fut_close":   _safe(r.get("fut_close")),
+                "expiry":      str(r.get("expiry", "")),
+                "as_of_date":  str(r.get("as_of_date", "")),
+            }
+
+    # Next catalyst
+    catalyst: dict = {}
+    cat_df = data_loader.get("upcoming_catalysts")
+    if cat_df is not None:
+        cat_row = cat_df[cat_df["symbol"].str.upper() == sym] if "symbol" in cat_df.columns else pd.DataFrame()
+        if not cat_row.empty:
+            r = cat_row.iloc[0]
+            catalyst = {
+                "event_date":    str(r.get("event_date", "")),
+                "purpose_type":  str(r.get("purpose_type", "")),
+                "catalyst_score": _safe(r.get("catalyst_score")),
+            }
+
     return {
         "symbol":             str(row.get("symbol", "")),
         "sector":             str(row.get("sector", "")),
+        "close_now":          _safe(row.get("close_now")),
         "bull_run_score":     round(float(row.get("bull_run_score", 0) or 0), 2),
         "label":              str(row.get("label", "")),
         "market_regime":      str(row.get("market_regime", "")),
@@ -206,6 +273,10 @@ def get_stock_detail(symbol: str):
         "shareholding":         shareholding,
         "holding_trends":       holding_trends,
         "management":           management,
+        "ml_scores":            ml_scores,
+        "technical":            technical,
+        "fno":                  fno,
+        "catalyst":             catalyst,
     }
 
 
