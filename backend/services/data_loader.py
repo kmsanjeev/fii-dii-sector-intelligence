@@ -42,10 +42,11 @@ SOURCES = {
     # Phase 18 — Corporate Announcements Intelligence
     "announcements":        cfg.INTELLIGENCE_DIR / "company_announcements.csv",
     "announcement_signals": cfg.INTELLIGENCE_DIR / "announcement_signals.csv",
-    # Phase A — Technical + F&O Intelligence
-    "ml_scores":            cfg.INTELLIGENCE_DIR / "ml_scores_combined.csv",
-    "technical":            cfg.INTELLIGENCE_DIR / "technical_indicators.csv",
-    "fno_intel":            cfg.INTELLIGENCE_DIR / "fno_intelligence.csv",
+    # Phase A/C — Technical + F&O + Trade Conviction Intelligence
+    "ml_scores":              cfg.INTELLIGENCE_DIR / "ml_scores_combined.csv",
+    "technical":              cfg.INTELLIGENCE_DIR / "technical_indicators.csv",
+    "fno_intel":              cfg.INTELLIGENCE_DIR / "fno_intelligence.csv",
+    "trade_conviction":       cfg.INTELLIGENCE_DIR / "trade_conviction_scores.csv",
 }
 
 _MARKET_CONTEXT_PATH = cfg.INTELLIGENCE_DIR / "market_context.json"

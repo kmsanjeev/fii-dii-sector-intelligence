@@ -32,7 +32,7 @@ router = APIRouter(prefix="/api/stocks", tags=["stocks"])
 
 
 def _enrich_bulk(df: pd.DataFrame) -> pd.DataFrame:
-    """Merge technical / F&O / ML columns into a bulk stock dataframe."""
+    """Merge technical / F&O / ML / conviction columns into a bulk stock dataframe."""
     tech_df = data_loader.get("technical")
     if tech_df is not None:
         cols = [c for c in ["symbol", "trend_signal", "vs_dma_200", "prox_52w_high"] if c in tech_df.columns]
@@ -47,16 +47,28 @@ def _enrich_bulk(df: pd.DataFrame) -> pd.DataFrame:
         ml_cols = [c for c in ["symbol", "ml_bull_run_score", "accumulation_score"] if c in ml_df.columns]
         df = df.merge(ml_df[ml_cols], on="symbol", how="left")
 
+    conv_df = data_loader.get("trade_conviction")
+    if conv_df is not None:
+        conv_cols = [c for c in ["symbol", "conviction_score", "action"] if c in conv_df.columns]
+        df = df.merge(conv_df[conv_cols], on="symbol", how="left")
+
     return df
 
 
 @router.get("/watchlist")
 def get_watchlist(label: str = "EMERGING", limit: int = 50):
-    df = data_loader.get("bull_run_watchlist")
-    if df is None or df.empty:
-        raise HTTPException(status_code=503, detail="bull_run_watchlist not loaded")
+    # EMERGING label: use pre-filtered watchlist CSV (faster); other labels: full bull_run dataset
+    if label == "EMERGING":
+        df = data_loader.get("bull_run_watchlist")
+        if df is None or df.empty:
+            raise HTTPException(status_code=503, detail="bull_run_watchlist not loaded")
+        filtered = df if label == "ALL" else df[df["label"] == label]
+    else:
+        df = data_loader.get("bull_run")
+        if df is None or df.empty:
+            raise HTTPException(status_code=503, detail="bull_run_probability not loaded")
+        filtered = df if label == "ALL" else df[df["label"] == label]
 
-    filtered = df[df["label"] == label] if label != "ALL" else df
     filtered = filtered.nlargest(limit, "bull_run_score")
     filtered = _enrich_bulk(filtered)
     return {
