@@ -67,10 +67,10 @@ async def chat(req: ChatRequest):
     AI chat endpoint. Accepts a message and optional session_id.
     Returns the assistant reply and session_id for follow-up turns.
     """
-    if not os.getenv("ANTHROPIC_API_KEY"):
+    if not os.getenv("GROQ_API_KEY"):
         raise HTTPException(
             status_code=503,
-            detail="AI chat unavailable: ANTHROPIC_API_KEY not configured."
+            detail="AI chat unavailable: GROQ_API_KEY not configured. Get a free key at console.groq.com"
         )
 
     from engines.ai.chatbot.intent_router import detect_intent

@@ -1,24 +1,23 @@
 """
-Chat Engine -- Phase 14C
-Orchestrates Claude API calls with tool use and RAG context injection.
+Chat Engine -- Phase 14C (Groq backend)
+Orchestrates Groq API calls with function calling and RAG context injection.
 
 Flow:
   1. Detect intent (intent_router)
   2. Retrieve RAG context (engines/ai/knowledge/retriever)
   3. Build system prompt (domain-specific from intent_router)
-  4. Call Claude claude-sonnet-4-6 with tools + RAG context
-  5. Handle tool_use blocks (call data_tools functions)
+  4. Call Groq llama-3.3-70b-versatile with tools + RAG context
+  5. Handle tool_calls (call data_tools functions)
   6. Return final assistant text
 
 Security:
-  ANTHROPIC_API_KEY is ALWAYS read from os.getenv() -- NEVER hardcoded.
+  GROQ_API_KEY is ALWAYS read from os.getenv() -- NEVER hardcoded.
   If not set, ChatEngine raises EnvironmentError at init time.
 """
 
 from __future__ import annotations
 import json
 import os
-from typing import Optional
 
 from engines.common.logger import get_logger
 from engines.ai.chatbot.intent_router import detect_intent, get_system_prompt
@@ -26,29 +25,47 @@ from engines.ai.chatbot.tools.tool_registry import TOOLS, TOOL_FUNCTIONS
 
 logger = get_logger(__name__)
 
-MODEL = "claude-sonnet-4-6"
+MODEL = "llama-3.3-70b-versatile"
 MAX_TOKENS = 1024
 MAX_TOOL_ROUNDS = 5  # prevent infinite tool loops
 
 
+def _to_groq_tools(anthropic_tools: list[dict]) -> list[dict]:
+    """Convert Anthropic tool schema format to OpenAI/Groq function calling format."""
+    groq_tools = []
+    for t in anthropic_tools:
+        groq_tools.append({
+            "type": "function",
+            "function": {
+                "name": t["name"],
+                "description": t["description"],
+                "parameters": t.get("input_schema", {"type": "object", "properties": {}, "required": []}),
+            },
+        })
+    return groq_tools
+
+
+GROQ_TOOLS = _to_groq_tools(TOOLS)
+
+
 class ChatEngine:
     """
-    Single-session chat engine that handles multi-turn conversations.
-    Each ChatEngine instance maintains message history for one session.
+    Single-session chat engine backed by Groq (Llama 3.3 70B).
+    Each instance maintains OpenAI-format message history for one session.
     """
 
     def __init__(self):
-        api_key = os.getenv("ANTHROPIC_API_KEY")
+        api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
             raise EnvironmentError(
-                "ANTHROPIC_API_KEY environment variable not set. "
-                "Set it before starting the chatbot."
+                "GROQ_API_KEY environment variable not set. "
+                "Get a free key at console.groq.com and add it to .env"
             )
         try:
-            import anthropic
-            self.client = anthropic.Anthropic(api_key=api_key)
+            from groq import Groq
+            self.client = Groq(api_key=api_key)
         except ImportError:
-            raise ImportError("anthropic package not installed. Run: py -3.11 -m pip install anthropic")
+            raise ImportError("groq package not installed. Run: py -3.11 -m pip install groq")
 
         self.history: list[dict] = []
         self._retriever = None
@@ -70,54 +87,69 @@ class ChatEngine:
         intent = detect_intent(user_message)
         system_prompt = get_system_prompt(intent)
 
-        # Inject RAG context as first-turn system context
+        # Inject RAG context into system prompt
         rag_context = self._get_rag_context(user_message, intent)
         if rag_context:
             system_prompt += f"\n\nRelevant intelligence context:\n{rag_context}"
 
         self.history.append({"role": "user", "content": user_message})
 
-        # Agentic loop: Claude may call tools multiple times
-        for round_num in range(MAX_TOOL_ROUNDS):
-            response = self.client.messages.create(
+        # Build full message list: system + history
+        messages = [{"role": "system", "content": system_prompt}] + self.history
+
+        # Agentic loop: model may call tools multiple times
+        for _ in range(MAX_TOOL_ROUNDS):
+            response = self.client.chat.completions.create(
                 model=MODEL,
                 max_tokens=MAX_TOKENS,
-                system=system_prompt,
-                tools=TOOLS,
-                messages=self.history,
+                messages=messages,
+                tools=GROQ_TOOLS,
+                tool_choice="auto",
             )
 
-            # Check stop reason
-            if response.stop_reason == "end_turn":
-                text = _extract_text(response)
-                self.history.append({"role": "assistant", "content": response.content})
-                return text
+            msg = response.choices[0].message
 
-            if response.stop_reason == "tool_use":
-                # Process all tool calls in this response
-                tool_results = []
-                for block in response.content:
-                    if block.type == "tool_use":
-                        result = self._call_tool(block.name, block.input)
-                        tool_results.append({
-                            "type": "tool_result",
-                            "tool_use_id": block.id,
-                            "content": json.dumps(result, default=str),
-                        })
+            if msg.tool_calls:
+                # Append assistant message with tool_calls to history
+                messages.append({
+                    "role": "assistant",
+                    "content": msg.content,
+                    "tool_calls": [
+                        {
+                            "id": tc.id,
+                            "type": "function",
+                            "function": {
+                                "name": tc.function.name,
+                                "arguments": tc.function.arguments,
+                            },
+                        }
+                        for tc in msg.tool_calls
+                    ],
+                })
 
-                # Add assistant response + tool results to history
-                self.history.append({"role": "assistant", "content": response.content})
-                self.history.append({"role": "user", "content": tool_results})
+                # Execute each tool and append results
+                for tc in msg.tool_calls:
+                    try:
+                        args = json.loads(tc.function.arguments)
+                    except json.JSONDecodeError:
+                        args = {}
+                    result = self._call_tool(tc.function.name, args)
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tc.id,
+                        "content": json.dumps(result, default=str),
+                    })
                 continue
 
-            # Unexpected stop reason
-            logger.warning(f"[ChatEngine] Unexpected stop_reason: {response.stop_reason}")
-            break
+            # No tool calls — final text response
+            reply = msg.content or ""
+            self.history.append({"role": "assistant", "content": reply})
+            return reply.strip()
 
         return "I was unable to complete this request. Please try again."
 
     def _call_tool(self, tool_name: str, tool_input: dict):
-        """Execute a tool and return the result."""
+        """Execute a registered tool and return its result."""
         fn = TOOL_FUNCTIONS.get(tool_name)
         if fn is None:
             logger.error(f"[ChatEngine] Unknown tool: {tool_name}")
@@ -130,7 +162,7 @@ class ChatEngine:
             return {"error": str(e)}
 
     def _get_rag_context(self, query: str, intent) -> str:
-        """Fetch RAG context for the query (max 3 docs to stay within context budget)."""
+        """Fetch RAG context for the query (max 3 docs)."""
         retriever = self._get_retriever()
         if retriever is None:
             return ""
@@ -144,14 +176,5 @@ class ChatEngine:
             return ""
 
     def reset(self):
-        """Clear conversation history (start new session)."""
+        """Clear conversation history."""
         self.history = []
-
-
-def _extract_text(response) -> str:
-    """Extract plain text from Claude API response content blocks."""
-    parts = []
-    for block in response.content:
-        if hasattr(block, "text"):
-            parts.append(block.text)
-    return "\n".join(parts).strip()

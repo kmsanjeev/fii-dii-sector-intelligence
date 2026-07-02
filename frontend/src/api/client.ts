@@ -160,3 +160,10 @@ export const fetchAllStocks     = (page = 1, per_page = 100, label?: string, sec
 export const fetchHealth        = () => api.get('/health').then(r => r.data)
 export const fetchDataStatus    = () => api.get('/data/status').then(r => r.data)
 export const fetchEngineList    = () => api.get('/data/engines').then(r => r.data)
+
+// Phase 14 — AI Chat
+export type ChatResponseData = { reply: string; session_id: string; intent: string }
+export const sendChat         = (message: string, session_id?: string) =>
+  api.post<ChatResponseData>('/chat', { message, session_id }).then(r => r.data)
+export const resetChatSession = (session_id: string) =>
+  api.delete(`/chat/session/${session_id}`).then(r => r.data)
