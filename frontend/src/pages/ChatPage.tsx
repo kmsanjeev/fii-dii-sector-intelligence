@@ -296,12 +296,12 @@ export function ChatPage() {
       )}
 
       {/* ── API error banner ───────────────────────────────────────────────── */}
-      {apiError && apiError.includes('ANTHROPIC_API_KEY') && (
+      {apiError && (apiError.includes('GROQ_API_KEY') || apiError.includes('not configured')) && (
         <div style={{
           padding: '8px 14px', borderRadius: 4, marginBottom: 8, flexShrink: 0,
           background: '#1c0000', border: '1px solid #EF444444', color: '#EF4444', fontSize: 11,
         }}>
-          ANTHROPIC_API_KEY is not set in .env — restart the backend after adding it.
+          GROQ_API_KEY is not set in .env — get a free key at console.groq.com then restart the backend.
         </div>
       )}
 
