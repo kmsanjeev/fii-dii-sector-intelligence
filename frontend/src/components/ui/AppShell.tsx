@@ -16,6 +16,7 @@ const NAV = [
   { path: '/backtest',   label: 'Backtest' },
   { path: '/broker',     label: 'Broker' },
   { path: '/research',   label: 'Research' },
+  { path: '/execution',  label: 'Execution' },
   { path: '/chat',       label: 'AI Chat' },
   { path: '/data',       label: 'Data Control' },
   { path: '/settings',   label: 'Settings' },
