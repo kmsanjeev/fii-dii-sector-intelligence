@@ -9,6 +9,7 @@ import { usePlatformStore } from '../../store/platformStore'
 const NAV = [
   { path: '/',           label: 'Dashboard' },
   { path: '/sectors',    label: 'Sectors' },
+  { path: '/themes',     label: 'Themes' },
   { path: '/watchlist',  label: 'Watchlist' },
   { path: '/participant',label: 'Participant' },
   { path: '/corporate',  label: 'Corporate' },

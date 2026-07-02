@@ -49,6 +49,7 @@ SOURCES = {
     "trade_conviction":       cfg.INTELLIGENCE_DIR / "trade_conviction_scores.csv",
     "index_momentum":         cfg.INTELLIGENCE_DIR / "index_momentum.csv",
     "quarterly_results":      cfg.NSE_DIR / "results" / "quarterly_results.csv",
+    "theme_intelligence":     cfg.INTELLIGENCE_DIR / "theme_intelligence.csv",
 }
 
 _MARKET_CONTEXT_PATH = cfg.INTELLIGENCE_DIR / "market_context.json"

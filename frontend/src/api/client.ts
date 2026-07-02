@@ -34,13 +34,15 @@ export type MarketContext = MarketRegime & {
 }
 
 export type Sector = {
-  sector: string
-  rotation_signal: string
-  combined_score: number
-  FII_flow_score: number
-  DII_flow_score: number
-  Smart_Money_Score: number
-  last_date: string
+  sector:            string
+  rotation_signal:   string
+  combined_score:    number | null
+  FII_flow_score:    number | null
+  DII_flow_score:    number | null
+  Smart_Money_Score: number | null
+  price_momentum_score?: number | null
+  nse_index?:        string
+  last_date:         string
 }
 
 export type TechnicalIndicators = {
