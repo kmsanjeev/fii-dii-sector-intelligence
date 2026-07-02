@@ -6,6 +6,55 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.9.0
+
+Theme Intelligence Phases E-H Complete
+
+Date: 2026-07-03
+
+Status: Completed
+
+---
+
+## Summary
+
+Extended the theme intelligence layer with 4 new phases covering alt-data signals,
+purity refinement, multi-signal consensus, Google Trends, AGM governance intelligence,
+and daily theme momentum tracking.
+
+## Changes
+
+### Phase E (50-Theme Taxonomy)
+- `engines/intelligence/theme_intelligence_engine.py`: extended to 50 themes across 10 categories
+- `data/reference/theme_tagging.csv`: 3000+ symbol-theme-purity tags with multi-theme support
+- Commit: 0b96a43
+
+### Phase F (Alt-Data Engines)
+- `engines/intelligence/news_sentiment_engine.py`: RSS (Mint + MoneyControl) -> Claude Haiku -> news_signals.csv
+- `engines/intelligence/insider_trade_engine.py`: NSE PIT API, 211 F&O symbols, 30D insider_signals.csv
+- `engines/intelligence/concall_signal_engine.py`: XBRL analyst meets -> Claude Haiku -> concall_summary.csv
+- `engines/ml/feature_engineering.py`: 7 new ML features (theme_score_max, news_sentiment_7d, insider_score, etc.)
+- `backend/routers/stocks.py`: /api/stocks/{symbol} now returns news/insider/concall blocks
+- `frontend/src/pages/StockDetailPage.tsx`: NewsCard, InsiderCard, ConcallCard, ConsensusCard components
+
+### Phase G (Purity Refinement + Consensus)
+- `engines/intelligence/purity_engine.py`: 4-signal purity boosters (NSE index, concall, news, insider)
+- `engines/intelligence/consensus_engine.py`: 4-factor weighted consensus score (concall 35%, insider 25%, news 20%, deals 20%)
+- `backend/routers/stocks.py`: consensus block added to stock detail endpoint
+- `frontend/src/pages/StockDetailPage.tsx`: ConsensusCard with 4 sub-signal mini-bars
+
+### Phase H (Google Trends + AGM + Theme Momentum)
+- `engines/intelligence/trend_intelligence_engine.py`: 50-theme pytrends keyword map, weekly cache, RISING/FALLING/STABLE
+- `engines/intelligence/agm_intelligence_engine.py`: Claude Haiku extracts governance_risk/dividend/capex/mgmt signals
+- `engines/intelligence/theme_momentum_engine.py`: daily snapshots, delta + phase_transition detection, P11 Telegram alert
+- `alerts/alert_engine.py`: P11_THEME_ROTATION type + _check_theme_rotation()
+- `backend/services/data_loader.py`: 3 new sources (trend_scores, agm_signals, theme_momentum)
+- `backend/routers/themes.py`: _build_trend_map() + _build_momentum_map() enriching theme API responses
+- `frontend/src/pages/ThemesPage.tsx`: trend direction badge (TREND UP/DN), phase transition badge, MomDelta column
+- Commit: 41cbb50
+
+---
+
 # Version 4.6.0
 
 Chat Engine Robustness + Project Migration to D:\Projects
