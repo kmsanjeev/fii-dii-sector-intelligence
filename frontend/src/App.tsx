@@ -14,6 +14,7 @@ import { DataControlPage } from './pages/DataControlPage'
 import { ChartsPage } from './pages/ChartsPage'
 import { PortfolioPage } from './pages/PortfolioPage'
 import { BacktestPage } from './pages/BacktestPage'
+import { BrokerPage } from './pages/BrokerPage'
 import './index.css'
 
 const queryClient = new QueryClient({
@@ -44,6 +45,7 @@ export default function App() {
             <Route path="/data" element={<DataControlPage />} />
             <Route path="/portfolio" element={<PortfolioPage />} />
             <Route path="/backtest" element={<BacktestPage />} />
+            <Route path="/broker" element={<BrokerPage />} />
           </Routes>
         </AppShell>
       </BrowserRouter>
