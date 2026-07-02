@@ -50,28 +50,28 @@ _PROVIDERS = [
         "name":         "Groq",
         "env_var":      "GROQ_API_KEY",
         "base_url":     "https://api.groq.com/openai/v1",
-        "model":        "llama-3.1-8b-instant",
+        "model":        "llama-3.1-8b-instant",   # confirmed working
         "extra_headers": {},
     },
     {
         "name":         "Cerebras",
         "env_var":      "CEREBRAS_API_KEY",
         "base_url":     "https://api.cerebras.ai/v1",
-        "model":        "llama3.1-8b",
+        "model":        "gemma-4-31b",             # confirmed working (llama models not on free tier)
         "extra_headers": {},
     },
     {
         "name":         "Gemini",
         "env_var":      "GEMINI_API_KEY",
         "base_url":     "https://generativelanguage.googleapis.com/v1beta/openai/",
-        "model":        "gemini-2.0-flash-lite",
+        "model":        "gemini-2.0-flash",        # valid model; 429 = daily quota reset at midnight
         "extra_headers": {},
     },
     {
         "name":         "OpenRouter",
         "env_var":      "OPENROUTER_API_KEY",
         "base_url":     "https://openrouter.ai/api/v1",
-        "model":        "meta-llama/llama-3.1-8b-instruct:free",
+        "model":        "meta-llama/llama-3.3-70b-instruct:free",  # most reliable free model
         "extra_headers": {"HTTP-Referer": "https://github.com/kmsanjeev/fii-dii-sector-intelligence"},
     },
     {
