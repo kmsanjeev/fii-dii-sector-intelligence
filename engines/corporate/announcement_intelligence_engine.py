@@ -72,36 +72,62 @@ REQUIRED_SIGNAL_COLS = ["symbol", "latest_date", "dominant_type", "score_30d"]
 # Higher = stronger forward-looking signal for stock move / institutional interest.
 
 CLASSIFICATION: list[tuple[list[str], str, int]] = [
-    # pattern list, type, signal_score
-    (["financial result", "board meeting outcome", "financial results", "unaudited financial"],
+    # ── Tier 1: Highest intelligence value (90-80) ─────────────────────────────
+    (["financial result", "board meeting outcome", "financial results", "unaudited financial",
+      "clarification - financial", "integrated filing- financial"],
      "RESULT_UPDATE",   90),
     (["analysts/institutional", "analyst meet", "investor meet", "investor presentation",
       "con. call", "concall"],
      "ANALYST_MEET",    85),
-    (["acquisition", "merger", "amalgamat", "takeover", "scheme of arrangement"],
+    (["acquisition", "merger", "amalgamat", "takeover", "scheme of arrangement",
+      "diversification", "disinvestment"],
      "ACQUISITION",     85),
+    (["bagging/receiving of orders", "awarding of order", "orders/contracts",
+      "arrangements for strategic", "memorandum of understanding"],
+     "ORDER_WIN",       82),
+    (["spurt in volume", "price movement"],
+     "VOLUME_ALERT",    78),
     (["qip", "rights issue", "preferential allot", "ncd", "allotment of securities",
-      "fundrais", "public issue", "ipo", "fpo"],
+      "fundrais", "public issue", "ipo", "fpo", "qualified institutional placement",
+      "offer for sale", "open offer", "options to purchase", "issue of securities"],
      "FUNDRAISE",       80),
+    # ── Tier 2: High signal (75-65) ────────────────────────────────────────────
     (["buy back", "buyback", "buy-back"],
      "BUYBACK",         75),
     (["board meeting", "board of director"],
      "BOARD_OUTCOME",   70),
     (["dividend"],
      "DIVIDEND",        70),
+    (["capacity addition", "commencement of commercial production", "product launch",
+      "adoption of new line", "commencement of operations"],
+     "CAPEX_EXPANSION", 72),
+    (["credit rating"],
+     "CREDIT_RATING",   62),
     (["bonus share", "bonus issue", "issuance of bonus"],
      "BONUS",           65),
+    # ── Tier 3: Moderate signal (60-45) ────────────────────────────────────────
     (["stock split", "sub-division of share", "face value split", "subdivision"],
      "STOCK_SPLIT",     50),
     (["press release", "media release", "news clarif", "news verif",
-      "general updates", "update"],
+      "general updates", "update", "copy of newspaper"],
      "PRESS_RELEASE",   55),
     (["esop", "esos", "esps", "sweat equity", "employee stock"],
      "ESOP",            45),
+    (["appointment", "change in management", "change in director", "change in auditor",
+      "resignation", "cessation", "retirement", "demise", "change in company secretary"],
+     "MANAGEMENT_CHANGE", 55),
+    # ── Tier 4: Low / compliance signal (30-15) ────────────────────────────────
     (["disclosure under insider", "sebi takeover", "trading window",
       "sebi regulation", "sebi (sast)", "insider trading",
-      "disclosure under sebi"],
+      "disclosure under sebi", "shareholders meeting", "book closure",
+      "record date", "certificate under sebi", "structural digital",
+      "monitoring agency", "statement of deviation"],
      "REGULATORY",      25),
+    (["corporate insolvency resolution", "default in payment", "defaults on payment",
+      "fraud/default", "suspension of trading", "strikes/lockout", "closure of operations",
+      "disruption of operations", "delisting", "forensic audit", "one time settlement",
+      "corporate debt restructuring"],
+     "DISTRESS",        15),
 ]
 DEFAULT_TYPE  = "OTHER"
 DEFAULT_SCORE = 10
@@ -320,6 +346,47 @@ def _determine_start_date() -> date:
     return full_start
 
 
+# ── Reclassifier (no API calls) ───────────────────────────────────────────────
+
+def reclassify() -> bool:
+    """
+    Re-apply the current CLASSIFICATION map to all rows in company_announcements.csv.
+    No API calls. Used after updating the classification rules (Phase 18B).
+    Also rebuilds announcement_signals.csv.
+    """
+    if not ANNOUNCEMENTS_FILE.exists():
+        logger.error("[Ann] reclassify: %s not found -- run full download first", ANNOUNCEMENTS_FILE)
+        return False
+
+    df = pd.read_csv(ANNOUNCEMENTS_FILE, dtype=str)
+    before_counts = df["announcement_type"].value_counts().to_dict()
+
+    logger.info("[Ann] reclassify: %d rows, re-applying classifier...", len(df))
+    results = df["desc_raw"].fillna("").apply(_classify)
+    df["announcement_type"] = [r[0] for r in results]
+    df["signal_score"]      = [r[1] for r in results]
+
+    after_counts = df["announcement_type"].value_counts().to_dict()
+
+    # Log what changed
+    all_types = sorted(set(list(before_counts.keys()) + list(after_counts.keys())))
+    for t in all_types:
+        b = before_counts.get(t, 0)
+        a = after_counts.get(t, 0)
+        if a != b:
+            logger.info("[Ann] reclassify:  %-22s  %6d -> %6d  (%+d)", t, b, a, a - b)
+
+    _validate(df, REQUIRED_ANN_COLS, MIN_ROWS_CHECK, "company_announcements (reclassify)")
+    _atomic_save(df, ANNOUNCEMENTS_FILE)
+
+    signals = _build_signals(df)
+    _validate(signals, REQUIRED_SIGNAL_COLS, 100, "announcement_signals (reclassify)")
+    _atomic_save(signals, SIGNALS_FILE)
+
+    logger.info("[Ann] reclassify: complete -- %d rows, %d symbols", len(df), df["symbol"].nunique())
+    return True
+
+
 # ── Main engine ───────────────────────────────────────────────────────────────
 
 def run(lookback_months: int = LOOKBACK_MONTHS) -> bool:
@@ -388,8 +455,11 @@ def run(lookback_months: int = LOOKBACK_MONTHS) -> bool:
 
 if __name__ == "__main__":
     import time as _time
+
+    reclassify_only = "--reclassify" in sys.argv
+
     t0 = _time.monotonic()
-    ok = run()
+    ok = reclassify() if reclassify_only else run()
     elapsed = _time.monotonic() - t0
 
     if ok and ANNOUNCEMENTS_FILE.exists():
@@ -400,7 +470,11 @@ if __name__ == "__main__":
         print(f"Date range    : {df['date'].min()} to {df['date'].max()}")
         print(f"Elapsed       : {elapsed:.0f}s")
         print("\nAnnouncement type breakdown:")
-        print(df["announcement_type"].value_counts().to_string())
+        tc = df["announcement_type"].value_counts()
+        scores = df.groupby("announcement_type")["signal_score"].first()
+        for t, cnt in tc.items():
+            pct = cnt / len(df) * 100
+            print(f"  {t:<22s}  {cnt:>7,}  ({pct:4.1f}%)  score={int(scores[t])}")
         print("\nTop 10 by score_30d:")
         print(sig.head(10)[["symbol", "dominant_type", "score_30d", "count_30d", "high_signal_30d"]].to_string(index=False))
     else:
