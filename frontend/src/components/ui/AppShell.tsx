@@ -15,6 +15,7 @@ const NAV = [
   { path: '/portfolio',  label: 'Portfolio' },
   { path: '/backtest',   label: 'Backtest' },
   { path: '/broker',     label: 'Broker' },
+  { path: '/research',   label: 'Research' },
   { path: '/chat',       label: 'AI Chat' },
   { path: '/data',       label: 'Data Control' },
   { path: '/settings',   label: 'Settings' },
