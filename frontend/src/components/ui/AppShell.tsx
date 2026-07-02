@@ -13,6 +13,7 @@ const NAV = [
   { path: '/corporate',  label: 'Corporate' },
   { path: '/charts',     label: 'Charts' },
   { path: '/portfolio',  label: 'Portfolio' },
+  { path: '/backtest',   label: 'Backtest' },
   { path: '/chat',       label: 'AI Chat' },
   { path: '/data',       label: 'Data Control' },
   { path: '/settings',   label: 'Settings' },

@@ -18,7 +18,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from backend.services import data_loader
-from backend.routers import market, sectors, stocks, participant, corporate, chat, data_ops, charts, pipeline, portfolio
+from backend.routers import market, sectors, stocks, participant, corporate, chat, data_ops, charts, pipeline, portfolio, backtest
 from backend.ws.live_ticker import live_ticker_endpoint
 
 # ── App ───────────────────────────────────────────────────────────────────────
@@ -62,6 +62,7 @@ app.include_router(data_ops.router)
 app.include_router(charts.router)
 app.include_router(pipeline.router)
 app.include_router(portfolio.router)
+app.include_router(backtest.router)
 
 
 # ── WebSocket ─────────────────────────────────────────────────────────────────
