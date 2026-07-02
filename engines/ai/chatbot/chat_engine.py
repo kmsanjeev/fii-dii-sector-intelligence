@@ -27,7 +27,7 @@ logger = get_logger(__name__)
 
 MODEL = "llama-3.3-70b-versatile"
 MAX_TOKENS = 1024
-MAX_TOOL_ROUNDS = 5  # prevent infinite tool loops
+MAX_TOOL_ROUNDS = 3  # keep token budget low on Groq free tier (100k/day)
 
 
 def _to_groq_tools(anthropic_tools: list[dict]) -> list[dict]:
@@ -97,7 +97,8 @@ class ChatEngine:
         # Build full message list: system + history
         messages = [{"role": "system", "content": system_prompt}] + self.history
 
-        # Agentic loop: model may call tools multiple times
+        # Agentic tool loop — model gathers data via tools before answering
+        tool_use_failed = False
         for _ in range(MAX_TOOL_ROUNDS):
             try:
                 response = self.client.chat.completions.create(
@@ -109,58 +110,100 @@ class ChatEngine:
                     parallel_tool_calls=False,  # prevents Llama 3.3 XML-style malformed calls
                 )
             except Exception as e:
-                # Llama 3.3 occasionally generates XML-style function calls (not JSON).
-                # Groq returns 400 'tool_use_failed' in that case — answer from RAG context instead.
-                if "tool_use_failed" in str(e):
-                    logger.warning("[ChatEngine] tool_use_failed from Groq — retrying without tools")
-                    response = self.client.chat.completions.create(
-                        model=MODEL,
-                        max_tokens=MAX_TOKENS,
-                        messages=messages,
+                err_str = str(e)
+                if "tool_use_failed" in err_str:
+                    # Llama 3.3 generated XML-style function call — break to final text call
+                    logger.warning("[ChatEngine] tool_use_failed from Groq — forcing text response")
+                    tool_use_failed = True
+                    break
+                if "rate_limit_exceeded" in err_str or "429" in err_str:
+                    # Groq daily token limit hit — surface it to the user immediately
+                    reply = (
+                        "The AI API daily token limit has been reached. "
+                        "Please wait a few minutes and try again, or upgrade at console.groq.com."
                     )
-                else:
-                    raise
+                    self.history.append({"role": "assistant", "content": reply})
+                    return reply
+                raise
 
             msg = response.choices[0].message
 
-            if msg.tool_calls:
-                # Append assistant message with tool_calls to history
+            if not msg.tool_calls:
+                # Model produced a final text response — we're done
+                reply = msg.content or ""
+                self.history.append({"role": "assistant", "content": reply})
+                return reply.strip()
+
+            # Append assistant message with tool_calls
+            messages.append({
+                "role": "assistant",
+                "content": msg.content,
+                "tool_calls": [
+                    {
+                        "id": tc.id,
+                        "type": "function",
+                        "function": {
+                            "name": tc.function.name,
+                            "arguments": tc.function.arguments,
+                        },
+                    }
+                    for tc in msg.tool_calls
+                ],
+            })
+
+            # Execute each tool and append results
+            for tc in msg.tool_calls:
+                try:
+                    args = json.loads(tc.function.arguments)
+                except json.JSONDecodeError:
+                    args = {}
+                result = self._call_tool(tc.function.name, args)
                 messages.append({
-                    "role": "assistant",
-                    "content": msg.content,
-                    "tool_calls": [
-                        {
-                            "id": tc.id,
-                            "type": "function",
-                            "function": {
-                                "name": tc.function.name,
-                                "arguments": tc.function.arguments,
-                            },
-                        }
-                        for tc in msg.tool_calls
-                    ],
+                    "role": "tool",
+                    "tool_call_id": tc.id,
+                    "content": json.dumps(result, default=str),
                 })
 
-                # Execute each tool and append results
-                for tc in msg.tool_calls:
-                    try:
-                        args = json.loads(tc.function.arguments)
-                    except json.JSONDecodeError:
-                        args = {}
-                    result = self._call_tool(tc.function.name, args)
-                    messages.append({
-                        "role": "tool",
-                        "tool_call_id": tc.id,
-                        "content": json.dumps(result, default=str),
-                    })
-                continue
+        # Tool loop exhausted or tool_use_failed — force one final text-only call.
+        # Build a clean prompt from the tool results gathered so far rather than
+        # passing the full messy tool-call history, which confuses the model.
+        logger.warning(
+            "[ChatEngine] %s — forcing final text response",
+            "tool_use_failed" if tool_use_failed else "MAX_TOOL_ROUNDS exhausted",
+        )
+        tool_results = [m["content"] for m in messages if m.get("role") == "tool"]
+        if tool_results:
+            data_block = "\n".join(tool_results[:6])
+            final_messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": (
+                    f"Using this live market data:\n{data_block}\n\n"
+                    f"Answer the question: {user_message}"
+                )},
+            ]
+        else:
+            final_messages = [{"role": "system", "content": system_prompt}] + self.history
 
-            # No tool calls — final text response
-            reply = msg.content or ""
-            self.history.append({"role": "assistant", "content": reply})
-            return reply.strip()
+        try:
+            final = self.client.chat.completions.create(
+                model=MODEL,
+                max_tokens=MAX_TOKENS,
+                messages=final_messages,
+            )
+            reply = final.choices[0].message.content or ""
+        except Exception as e:
+            err_str = str(e)
+            if "rate_limit_exceeded" in err_str or "429" in err_str:
+                reply = (
+                    "The AI API daily token limit has been reached. "
+                    "Please wait a few minutes and try again, or upgrade at console.groq.com."
+                )
+            else:
+                logger.error(f"[ChatEngine] Final text call failed: {e}")
+                reply = ""
 
-        return "I was unable to complete this request. Please try again."
+        self.history.append({"role": "assistant", "content": reply})
+        return reply.strip() or "I was unable to complete this request. Please try again."
 
     def _call_tool(self, tool_name: str, tool_input: dict):
         """Execute a registered tool and return its result."""
