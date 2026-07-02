@@ -246,7 +246,7 @@ function ConnectionPanel({ status, onRefresh }: { status: BrokerStatus; onRefres
         <div>
           <div style={{ color: '#64748B', fontSize: 10, marginBottom: 14 }}>
             Enter your Dhan credentials. Client ID is your Dhan User ID.
-            Access token: Dhan app > My Profile > Generate Access Token (valid 30 days).
+            Access token: Dhan app &gt; My Profile &gt; Generate Access Token (valid 30 days).
             Credentials are stored locally in data/portfolio/broker_auth.json and never committed to git.
           </div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
