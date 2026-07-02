@@ -17,6 +17,8 @@ import { BacktestPage } from './pages/BacktestPage'
 import { BrokerPage } from './pages/BrokerPage'
 import { ResearchPage } from './pages/ResearchPage'
 import { ExecutionPage } from './pages/ExecutionPage'
+import { LoginPage } from './pages/LoginPage'
+import { AdminPage } from './pages/AdminPage'
 import './index.css'
 
 const queryClient = new QueryClient({
@@ -50,6 +52,8 @@ export default function App() {
             <Route path="/broker" element={<BrokerPage />} />
             <Route path="/research" element={<ResearchPage />} />
             <Route path="/execution" element={<ExecutionPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/admin" element={<AdminPage />} />
           </Routes>
         </AppShell>
       </BrowserRouter>

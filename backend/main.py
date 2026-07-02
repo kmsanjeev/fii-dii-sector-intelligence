@@ -19,6 +19,9 @@ if str(_ROOT) not in sys.path:
 
 from backend.services import data_loader
 from backend.routers import market, sectors, stocks, participant, corporate, chat, data_ops, charts, pipeline, portfolio, backtest, broker, research, execution
+from backend.auth import router as auth_router
+from backend.auth.middleware import AuthMiddleware
+from backend.auth.store import init_db, bootstrap_admin
 from backend.ws.live_ticker import live_ticker_endpoint
 
 # ── App ───────────────────────────────────────────────────────────────────────
@@ -37,14 +40,17 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "DELETE"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
+app.add_middleware(AuthMiddleware)
 
 # ── Lifespan (startup / shutdown) ─────────────────────────────────────────────
 
 @app.on_event("startup")
 async def on_startup():
+    init_db()
+    bootstrap_admin()
     data_loader.startup()
     from engines.orchestration.refresh_scheduler import start_scheduler
     start_scheduler()
@@ -66,6 +72,7 @@ app.include_router(backtest.router)
 app.include_router(broker.router)
 app.include_router(research.router)
 app.include_router(execution.router)
+app.include_router(auth_router.router)
 
 
 # ── WebSocket ─────────────────────────────────────────────────────────────────
