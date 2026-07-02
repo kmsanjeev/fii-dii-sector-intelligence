@@ -100,39 +100,30 @@ data/NSE/shareholding/
 | 8A    | Price Momentum Engine         | COMPLETE 100%    | 2441 symbols, 5 lookbacks |
 | 8B    | Bull Run Probability Engine   | COMPLETE 100%    | 225 EMERGING, regime NEUTRAL x0.90 |
 | 9     | Alert System (Telegram)       | COMPLETE 100%    | 7 alert types, APScheduler, 118 alerts on first run |
-| 10    | FastAPI Backend               | COMPLETE 100%    | 16 endpoints, port 8001, WebSocket live ticker |
-| 11    | React GUI                     | COMPLETE 100%    | 10 pages + Charts page, TradingView OHLCV, IST timestamps |
+| 10    | FastAPI Backend               | COMPLETE 100%    | 20 endpoints, port 8001, WebSocket live ticker |
+| 11    | React GUI                     | COMPLETE 100%    | 14 pages incl. Charts, Portfolio, Backtest, Broker, Research, Execution, Admin |
 | 12    | ML Intelligence Layer         | COMPLETE 100%    | XGBoost+LightGBM, 24 features, 4 model outputs |
 | 13    | RAG Knowledge Base            | COMPLETE 100%    | FAISS+BM25, 6 domain indexes, hybrid RRF retrieval |
 | 14    | Chatbot (Claude API)          | COMPLETE 100%    | 4 agents, tool registry, /api/chat endpoint |
 | 15    | Financial Results + SHP       | COMPLETE 100%    | 4181 XBRL rows, 2084 symbols; 4 quarters shareholding |
 | 16    | Management Intelligence       | COMPLETE 100%    | 3 engines: holding trends, announcements, sentiment |
+| 17    | Symbol Change History         | COMPLETE 100%    | 1038 symbol renames; engines/foundation/symbol_change_engine.py |
+| 18    | Corporate Announcements       | COMPLETE 100%    | engines/corporate/; NSE XBRL announcement fetcher |
+| 19    | Daily Intelligence Refresh    | COMPLETE 100%    | engines/orchestration/refresh_scheduler.py; APScheduler |
+| 20    | Portfolio Engine              | COMPLETE 100%    | engines/portfolio/; transactions.csv, P&L, allocation |
+| 21    | Backtesting Framework         | COMPLETE 100%    | engines/backtest/; 3 strategies, 5 horizons, Sharpe metrics |
+| 22    | Broker Adapter (R/O)          | COMPLETE 100%    | engines/broker/; Dhan + CSV adapters; broker sync engine |
+| 23    | Research Platform             | COMPLETE 100%    | engines/research/; 2406-symbol screener, comparator, notes |
+| 24    | Execution Platform            | COMPLETE 100%    | engines/execution/; risk engine, paper/live orders, signal recommender |
+| 25    | Commercial Platform           | COMPLETE 100%    | backend/auth/; SQLite sessions, roles, API keys; auth off by default |
 
 ## CURRENT PLATFORM STATUS (2026-07-02)
-**ALL 16 PHASES COMPLETE.** Full intelligence-to-UI stack is live.
+**ALL 25 PHASES COMPLETE.** Full investment operating system is live.
 - Backend: `py -3.11 -m uvicorn backend.main:app --port 8001 --reload`
 - Frontend: `npm run dev` in `frontend/` (Vite at http://localhost:5173)
 - Startup: Run `./start.ps1` to launch both servers as detached background processes
 - Telegram bot: Live and tested (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` in `.env`)
-
-**Generation 4 — Investment Operating System (phases 17-25, strict order):**
-| Phase | Name                        | Location                  | Depends On | Status      |
-|-------|-----------------------------|---------------------------|------------|-------------|
-| 17    | Symbol Change History       | engines/foundation/       | Phase 1    | NOT STARTED |
-| 18    | Corporate Announcements     | engines/corporate/        | Phase 5A   | NOT STARTED |
-| 19    | Daily Intelligence Refresh  | engines/orchestration/    | 1-18       | NOT STARTED |
-| 20    | Portfolio Engine            | engines/portfolio/        | Phase 19   | NOT STARTED |
-| 21    | Backtesting Framework       | engines/backtest/         | Phase 20   | NOT STARTED |
-| 22    | Broker Adapter (R/O)        | engines/broker/           | Phase 20   | NOT STARTED |
-| 23    | Research Platform           | engines/research/         | 20 + 21    | NOT STARTED |
-| 24    | Execution Platform          | engines/execution/        | 21 + 22    | NOT STARTED |
-| 25    | Commercial Platform         | backend/auth/             | 19-24 done | NOT STARTED |
-
-**NEXT BUILD: Phase 17 — Symbol Change History**
-- Source: `https://nsearchives.nseindia.com/content/equities/symbolchange.csv` (1038 records, live)
-- Output: `data/NSE/equity_master/symbol_change_history.csv`
-- Engine: `engines/foundation/symbol_change_engine.py`
-- Without this, Phase 21 backtesting returns wrong results for renamed companies (e.g., IIFLWAM→360ONE)
+- Auth: disabled by default; enable via `POST /api/auth/setup` or Admin -> Auth Config
 
 ## COMPLETED FULL STACK
 ```
@@ -140,6 +131,8 @@ Intelligence:  Participant (5A/5B/5C) -> Sector (6A/6B/6C) -> Corporate (7A/7B/7
 Application:   Alert System (9) -> FastAPI Backend (10) -> React GUI (11)
 AI/ML:         ML Models (12) -> RAG Knowledge Base (13) -> Claude Chatbot (14)
 Fundamentals:  Financial Results (15) -> Shareholding (15C) -> Management Intel (16)
+Gen4 Ops:      Symbol History (17) -> Announcements (18) -> Refresh (19) -> Portfolio (20)
+Gen4 Trade:    Backtesting (21) -> Broker R/O (22) -> Research (23) -> Execution (24) -> Auth (25)
 ```
 
 ## FILES MARKED FOR REMOVAL (confirm before deleting)
@@ -196,16 +189,25 @@ Full spec: `docs/governance/GUARDRAILS.md`
 
 ## MODULE LOCATIONS (ALL BUILT)
 ```
-alerts/                <- Phase 9:  alert_engine.py, alert_store.py, telegram_bot.py, daily_digest.py, alert_scheduler.py
-backend/               <- Phase 10: main.py (port 8001), routers/, services/, ws/
-frontend/              <- Phase 11: React 18 + TypeScript + Vite (port 5173), TradingView charts
-engines/ml/            <- Phase 12: feature_engineering.py, accumulation_model.py, bull_run_model.py, ml_scorer.py
-engines/ai/knowledge/  <- Phase 13: document_builder.py, faiss_indexer.py, bm25_indexer.py, retriever.py
-engines/ai/chatbot/    <- Phase 14: intent_router.py, chat_engine.py, tools/
-engines/fundamentals/  <- Phase 15: financial_results_engine.py, valuation_engine.py, shareholding_engine.py
-engines/management/    <- Phase 16: holding_trend_engine.py, announcement_fetcher.py, management_sentiment_engine.py
-start.ps1              <- Launch both servers as detached background processes (idempotent)
-stop.ps1               <- Kill both servers by port (8001 + 5173)
+alerts/                  <- Phase 9:  alert_engine.py, alert_store.py, telegram_bot.py, daily_digest.py, alert_scheduler.py
+backend/                 <- Phase 10: main.py (port 8001), routers/, services/, ws/
+backend/auth/            <- Phase 25: store.py, middleware.py, router.py (SQLite sessions + API keys)
+frontend/                <- Phase 11: React 18 + TypeScript + Vite (port 5173), 14 pages
+engines/ml/              <- Phase 12: feature_engineering.py, accumulation_model.py, bull_run_model.py, ml_scorer.py
+engines/ai/knowledge/    <- Phase 13: document_builder.py, faiss_indexer.py, bm25_indexer.py, retriever.py
+engines/ai/chatbot/      <- Phase 14: intent_router.py, chat_engine.py, tools/
+engines/fundamentals/    <- Phase 15: financial_results_engine.py, valuation_engine.py, shareholding_engine.py
+engines/management/      <- Phase 16: holding_trend_engine.py, announcement_fetcher.py, management_sentiment_engine.py
+engines/foundation/      <- Phase 17: symbol_change_engine.py (1038 symbol renames)
+engines/corporate/       <- Phase 18: announcement_fetcher.py, corporate_announcements_engine.py
+engines/orchestration/   <- Phase 19: refresh_scheduler.py (APScheduler daily pipeline)
+engines/portfolio/       <- Phase 20: portfolio_engine.py, transaction_loader.py
+engines/backtest/        <- Phase 21: backtest_engine.py, metrics.py (3 strategies, 5 horizons)
+engines/broker/          <- Phase 22: base.py, dhan_adapter.py, csv_adapter.py, sync_engine.py
+engines/research/        <- Phase 23: screener_engine.py (2406 symbols, 15 filters), notes_engine.py
+engines/execution/       <- Phase 24: risk_engine.py, order_manager.py, signal_recommender.py, dhan_order_adapter.py
+start.ps1                <- Launch both servers as detached background processes (idempotent)
+stop.ps1                 <- Kill both servers by port (8001 + 5173)
 ```
 
 ## PACKAGES INSTALLED
@@ -222,6 +224,8 @@ anthropic==0.113.0                                     # Phase 14
 TELEGRAM_BOT_TOKEN    Phase 9  (live and tested)
 TELEGRAM_CHAT_ID      Phase 9  (live and tested)
 ANTHROPIC_API_KEY     Phase 14, 16
+ADMIN_EMAIL           Phase 25 (optional; default: admin@localhost)
+ADMIN_PASSWORD        Phase 25 (optional; default: admin123 — change before enabling auth in prod)
 ```
 
 ## ARCHITECTURE REFERENCE
