@@ -172,9 +172,9 @@ export function Dashboard() {
           {part && (
             <div style={{ minWidth: 120 }}>
               <div style={{ ...LABEL, marginBottom: 6 }}>CONVICTION</div>
-              <ConvictionBar label="FII" pct={part.FII_conviction * 100} />
+              <ConvictionBar label="FII" pct={part.FII_conviction} />
               <div style={{ marginTop: 5 }}>
-                <ConvictionBar label="DII" pct={part.DII_conviction * 100} />
+                <ConvictionBar label="DII" pct={part.DII_conviction} />
               </div>
             </div>
           )}

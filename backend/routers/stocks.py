@@ -48,9 +48,16 @@ def _enrich_bulk(df: pd.DataFrame) -> pd.DataFrame:
         df = df.merge(ml_df[ml_cols], on="symbol", how="left")
 
     conv_df = data_loader.get("trade_conviction")
-    if conv_df is not None:
-        conv_cols = [c for c in ["symbol", "conviction_score", "action"] if c in conv_df.columns]
-        df = df.merge(conv_df[conv_cols], on="symbol", how="left")
+    if conv_df is not None and "symbol" in conv_df.columns:
+        conv_cols = ["symbol"]
+        if "score" in conv_df.columns:
+            conv_cols.append("score")
+        if "action" in conv_df.columns:
+            conv_cols.append("action")
+        merged = df.merge(conv_df[conv_cols], on="symbol", how="left")
+        if "score" in conv_df.columns:
+            merged = merged.rename(columns={"score": "conviction_score"})
+        df = merged
 
     return df
 
