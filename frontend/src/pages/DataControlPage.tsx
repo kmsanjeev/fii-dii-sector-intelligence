@@ -126,6 +126,7 @@ const STAGE_ORDER = [
   '13A_document_builder',
   '13B_faiss_indexer',
   '13C_bm25_indexer',
+  '20_portfolio',
   '9_alert_engine',
 ]
 
@@ -147,6 +148,7 @@ const STAGE_LABELS: Record<string, string> = {
   '13A_document_builder':        'RAG Document Builder',
   '13B_faiss_indexer':           'FAISS Indexer (embedding)',
   '13C_bm25_indexer':            'BM25 Indexer',
+  '20_portfolio':                'Portfolio Intelligence Rebuild',
   '9_alert_engine':              'Alert Engine (Telegram push)',
 }
 

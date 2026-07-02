@@ -59,6 +59,8 @@ STAGES = [
     ("13A_document_builder",        "engines.ai.knowledge.document_builder",                  "RAG Document Builder",                 30),
     ("13B_faiss_indexer",           "engines.ai.knowledge.faiss_indexer",                     "FAISS Indexer (embedding)",            180),
     ("13C_bm25_indexer",            "engines.ai.knowledge.bm25_indexer",                      "BM25 Indexer",                        30),
+    # Phase 20 — Portfolio (rebuild intelligence overlay with today's fresh data)
+    ("20_portfolio",                "engines.portfolio.portfolio_engine",                     "Portfolio Intelligence Rebuild",       30),
     # Phase 9 — Alerts (always last — fires on fresh intelligence)
     ("9_alert_engine",              "alerts.alert_engine",                                    "Alert Engine (Telegram push)",         60),
 ]
