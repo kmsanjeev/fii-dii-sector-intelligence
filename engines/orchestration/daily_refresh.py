@@ -33,20 +33,34 @@ REFRESH_LOG = cfg.INTELLIGENCE_DIR / "refresh_log.csv"
 # (stage_id, module_path, label, timeout_seconds)
 
 STAGES = [
+    # Phase 17 — Symbol Change (foundational; check daily, NSE updates infrequently)
+    ("17_symbol_change",            "engines.foundation.symbol_change_engine",                 "Symbol Change History",                120),
+    # Phase 5 — Participant flows (critical path: if 5A fails, nothing downstream is fresh)
     ("5A_participant_acquisition",  "engines.participant.participant_acquisition_engine",       "Participant Acquisition (NSE API)",     600),
-    ("5B_participant_flow",         "engines.participant.participant_flow_engine",               "Participant Flow Scores",               60),
-    ("5C_participant_intelligence", "engines.participant.participant_intelligence_engine",       "Participant Intelligence",              60),
-    ("6A_sector_capital_flow",      "engines.participant.sector_capital_flow_engine",            "Sector Capital Flow",                  300),
-    ("6B_sector_flow_scores",       "engines.participant.sector_flow_score_engine",              "Sector Flow Scores",                   30),
-    ("6C_sector_rotation",          "engines.participant.sector_rotation_intelligence_engine",   "Sector Rotation Intelligence",         30),
-    ("7A_block_bulk_deals",         "engines.corporate.block_bulk_deal_engine",                 "Block/Bulk Deals (NSE API)",            300),
-    ("8A_price_momentum",           "engines.intelligence.price_momentum_engine",               "Price Momentum",                       60),
-    ("8B_bull_run_probability",     "engines.intelligence.bull_run_probability_engine",         "Bull Run Probability",                 60),
-    ("12_ml_scorer",                "engines.ml.ml_scorer",                                    "ML Scorer (inference)",                 60),
-    ("13A_document_builder",        "engines.ai.knowledge.document_builder",                   "RAG Document Builder",                  30),
-    ("13B_faiss_indexer",           "engines.ai.knowledge.faiss_indexer",                      "FAISS Indexer (embedding)",            180),
-    ("13C_bm25_indexer",            "engines.ai.knowledge.bm25_indexer",                       "BM25 Indexer",                         30),
-    ("9_alert_engine",              "alerts.alert_engine",                                     "Alert Engine (Telegram push)",          60),
+    ("5B_participant_flow",         "engines.participant.participant_flow_engine",              "Participant Flow Scores",               60),
+    ("5C_participant_intelligence", "engines.participant.participant_intelligence_engine",      "Participant Intelligence",              60),
+    # Phase 6 — Sector flows
+    ("6A_sector_capital_flow",      "engines.participant.sector_capital_flow_engine",           "Sector Capital Flow",                  300),
+    ("6B_sector_flow_scores",       "engines.participant.sector_flow_score_engine",             "Sector Flow Scores",                   30),
+    ("6C_sector_rotation",          "engines.participant.sector_rotation_intelligence_engine",  "Sector Rotation Intelligence",         30),
+    # Phase 7 — Corporate data
+    ("7A_block_bulk_deals",         "engines.corporate.block_bulk_deal_engine",                "Block/Bulk Deals (NSE API)",            300),
+    ("7C_corp_action_intel",        "engines.corporate.corporate_action_intelligence_engine",  "Corporate Action Intelligence",        120),
+    # Phase 18 — Corporate Announcements (incremental: re-fetches last 3 months + dedup)
+    ("18A_announcements",           "engines.corporate.announcement_intelligence_engine",      "Corporate Announcements (incremental)", 600),
+    # Phase 16 — Management Intelligence (uses Anthropic API — non-critical, failures tolerated)
+    ("16A_management_sentiment",    "engines.management.management_sentiment_engine",          "Management Sentiment (Claude AI)",     300),
+    # Phase 8 — Price & Bull Run (depends on fresh participant + corporate data above)
+    ("8A_price_momentum",           "engines.intelligence.price_momentum_engine",              "Price Momentum",                       60),
+    ("8B_bull_run_probability",     "engines.intelligence.bull_run_probability_engine",        "Bull Run Probability",                 60),
+    # Phase 12 — ML inference only (no retrain; reads fresh feature matrix + pre-trained model)
+    ("12_ml_scorer",                "engines.ml.ml_scorer",                                   "ML Scorer (inference)",                60),
+    # Phase 13 — RAG (rebuild indexes from fresh intelligence CSVs)
+    ("13A_document_builder",        "engines.ai.knowledge.document_builder",                  "RAG Document Builder",                 30),
+    ("13B_faiss_indexer",           "engines.ai.knowledge.faiss_indexer",                     "FAISS Indexer (embedding)",            180),
+    ("13C_bm25_indexer",            "engines.ai.knowledge.bm25_indexer",                      "BM25 Indexer",                        30),
+    # Phase 9 — Alerts (always last — fires on fresh intelligence)
+    ("9_alert_engine",              "alerts.alert_engine",                                    "Alert Engine (Telegram push)",         60),
 ]
 
 # ── Shared state (guarded by _lock) ──────────────────────────────────────────
@@ -118,10 +132,10 @@ def read_log(n: int = 100) -> list[dict]:
 
 # ── Stage runner ──────────────────────────────────────────────────────────────
 
-def _run_stage(stage_id: str, module: str, label: str, timeout: int) -> tuple[str, str]:
+def _run_stage(run_id: str, stage_id: str, module: str, label: str, timeout: int) -> tuple[str, str]:
     """
     Run one stage as a subprocess.
-    Returns (status, error_msg): status is DONE | FAILED | TIMEOUT.
+    Returns (status, error_msg): status is DONE | FAILED | TIMEOUT | STOPPED.
     Subprocess is killed if stop_event is set mid-run.
     """
     started_at = _now_ist()
@@ -138,9 +152,7 @@ def _run_stage(stage_id: str, module: str, label: str, timeout: int) -> tuple[st
 
     output_lines: list[str] = []
 
-    # Read output line-by-line, checking stop flag
     while True:
-        # Check stop flag every 0.5s
         try:
             line = proc.stdout.readline()  # type: ignore[union-attr]
         except Exception:
@@ -155,14 +167,14 @@ def _run_stage(stage_id: str, module: str, label: str, timeout: int) -> tuple[st
             proc.kill()
             elapsed = time.monotonic() - t0
             finished_at = _now_ist()
-            _append_log("", stage_id, label, "STOPPED", started_at, finished_at, elapsed)
+            _append_log(run_id, stage_id, label, "STOPPED", started_at, finished_at, elapsed)
             return "STOPPED", "Stop flag set by user"
 
         elapsed = time.monotonic() - t0
         if elapsed > timeout:
             proc.kill()
             finished_at = _now_ist()
-            _append_log("", stage_id, label, "TIMEOUT", started_at, finished_at, elapsed,
+            _append_log(run_id, stage_id, label, "TIMEOUT", started_at, finished_at, elapsed,
                         f"Exceeded {timeout}s timeout")
             return "TIMEOUT", f"Exceeded {timeout}s timeout"
 
@@ -171,7 +183,7 @@ def _run_stage(stage_id: str, module: str, label: str, timeout: int) -> tuple[st
     finished_at = _now_ist()
     status = "DONE" if rc == 0 else "FAILED"
     error  = "" if rc == 0 else f"exit code {rc}. Last output: {output_lines[-3:] if output_lines else ''}"
-    _append_log("", stage_id, label, status, started_at, finished_at, elapsed, error)
+    _append_log(run_id, stage_id, label, status, started_at, finished_at, elapsed, error)
     return status, error
 
 
@@ -223,7 +235,7 @@ def _pipeline_body() -> None:
 
         logger.info("[Pipeline] Starting stage: %s (%s)", stage_id, label)
         t0 = time.monotonic()
-        status, error = _run_stage(stage_id, module, label, timeout)
+        status, error = _run_stage(run_id, stage_id, module, label, timeout)
         elapsed = time.monotonic() - t0
 
         stage_statuses[stage_id].update({
@@ -235,9 +247,10 @@ def _pipeline_body() -> None:
 
         if status in ("FAILED", "TIMEOUT"):
             logger.error("[Pipeline] Stage %s %s: %s", stage_id, status, error)
-            # Non-fatal: log and continue (unless it's a critical data stage)
-            if stage_id.startswith("5A"):
-                # If participant acquisition fails, nothing downstream makes sense
+            # Critical gates: abort the entire run if these fail.
+            # 5A: participant data is the spine — everything downstream is stale without it.
+            # All others are non-critical: log and continue.
+            if stage_id == "5A_participant_acquisition":
                 final_state = "FAILED"
                 break
         elif status == "STOPPED":

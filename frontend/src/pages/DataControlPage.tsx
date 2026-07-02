@@ -109,6 +109,7 @@ type PipelineStatus = {
 }
 
 const STAGE_ORDER = [
+  '17_symbol_change',
   '5A_participant_acquisition',
   '5B_participant_flow',
   '5C_participant_intelligence',
@@ -116,6 +117,9 @@ const STAGE_ORDER = [
   '6B_sector_flow_scores',
   '6C_sector_rotation',
   '7A_block_bulk_deals',
+  '7C_corp_action_intel',
+  '18A_announcements',
+  '16A_management_sentiment',
   '8A_price_momentum',
   '8B_bull_run_probability',
   '12_ml_scorer',
@@ -126,6 +130,7 @@ const STAGE_ORDER = [
 ]
 
 const STAGE_LABELS: Record<string, string> = {
+  '17_symbol_change':            'Symbol Change History',
   '5A_participant_acquisition':  'Participant Acquisition (NSE API)',
   '5B_participant_flow':         'Participant Flow Scores',
   '5C_participant_intelligence': 'Participant Intelligence',
@@ -133,6 +138,9 @@ const STAGE_LABELS: Record<string, string> = {
   '6B_sector_flow_scores':       'Sector Flow Scores',
   '6C_sector_rotation':          'Sector Rotation Intelligence',
   '7A_block_bulk_deals':         'Block/Bulk Deals (NSE API)',
+  '7C_corp_action_intel':        'Corporate Action Intelligence',
+  '18A_announcements':           'Corporate Announcements (incremental)',
+  '16A_management_sentiment':    'Management Sentiment (Claude AI)',
   '8A_price_momentum':           'Price Momentum',
   '8B_bull_run_probability':     'Bull Run Probability',
   '12_ml_scorer':                'ML Scorer (inference)',
