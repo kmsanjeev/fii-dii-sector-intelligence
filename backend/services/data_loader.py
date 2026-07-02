@@ -47,6 +47,7 @@ SOURCES = {
     "technical":              cfg.INTELLIGENCE_DIR / "technical_indicators.csv",
     "fno_intel":              cfg.INTELLIGENCE_DIR / "fno_intelligence.csv",
     "trade_conviction":       cfg.INTELLIGENCE_DIR / "trade_conviction_scores.csv",
+    "index_momentum":         cfg.INTELLIGENCE_DIR / "index_momentum.csv",
 }
 
 _MARKET_CONTEXT_PATH = cfg.INTELLIGENCE_DIR / "market_context.json"

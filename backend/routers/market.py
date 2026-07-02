@@ -96,6 +96,36 @@ def get_market_context():
     }
 
 
+@router.get("/indices")
+def get_indices_ticker():
+    """Snapshot of key index 30D returns for the ticker tape."""
+    df = data_loader.get("index_momentum")
+    if df is None or df.empty:
+        return {"indices": [], "count": 0}
+
+    KEY = [
+        "NIFTY 50", "NIFTY BANK", "NIFTY IT", "NIFTY PHARMA",
+        "NIFTY AUTO", "NIFTY FMCG", "NIFTY REALTY", "NIFTY METAL",
+        "NIFTY MIDCAP 150", "NIFTY SMALLCAP 100", "NIFTY NEXT 50",
+        "NIFTY INFRASTRUCTURE", "NIFTY MIDCAP 50",
+    ]
+    result = []
+    for name in KEY:
+        rows = df[df["INDEX_NAME"] == name]
+        if rows.empty:
+            continue
+        r = rows.iloc[0]
+        try:
+            ret30  = round(float(r.get("RETURN_30D",  0) or 0), 2)
+            ret365 = round(float(r.get("RETURN_365D", 0) or 0), 2)
+            mom    = round(float(r.get("MOMENTUM_SCORE", 0) or 0), 2)
+        except (TypeError, ValueError):
+            ret30 = ret365 = mom = 0.0
+        result.append({"name": name, "ret_30d": ret30, "ret_365d": ret365, "momentum_score": mom})
+
+    return {"indices": result, "count": len(result)}
+
+
 @router.get("/freshness")
 def get_freshness():
     return data_loader.freshness()

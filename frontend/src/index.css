@@ -35,6 +35,20 @@ body {
 .bg-surface { background-color: var(--bg-surface); }
 .border-platform { border-color: var(--bg-border); }
 
+/* Indices ticker tape */
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-inner {
+  display: inline-flex;
+  animation: ticker-scroll 55s linear infinite;
+  white-space: nowrap;
+}
+.ticker-inner:hover {
+  animation-play-state: paused;
+}
+
 /* Hide TradingView attribution logo from lightweight-charts */
 .tv-lightweight-charts a[href*="tradingview"],
 .tv-lightweight-charts a[href*="TradingView"] {

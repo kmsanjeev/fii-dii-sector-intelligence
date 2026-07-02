@@ -157,6 +157,10 @@ export const fetchAllStocks     = (page = 1, per_page = 100, label?: string, sec
   if (sector && sector !== 'ALL') params.set('sector', sector)
   return api.get<{ stocks: Stock[]; total: number; page: number }>(`/stocks?${params}`).then(r => r.data)
 }
+export type IndexTick = { name: string; ret_30d: number; ret_365d: number; momentum_score: number }
+export const fetchIndicesTicker = () =>
+  api.get<{ indices: IndexTick[]; count: number }>('/market/indices').then(r => r.data)
+
 export const fetchHealth        = () => api.get('/health').then(r => r.data)
 export const fetchDataStatus    = () => api.get('/data/status').then(r => r.data)
 export const fetchEngineList    = () => api.get('/data/engines').then(r => r.data)

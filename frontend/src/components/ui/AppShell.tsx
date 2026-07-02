@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { fetchRegime, type MarketRegime } from '../../api/client'
 import { RegimeBanner } from '../platform/RegimeBanner'
+import { IndicesTicker } from '../platform/IndicesTicker'
 import { usePlatformStore } from '../../store/platformStore'
 
 const NAV = [
@@ -80,6 +81,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           fiiConviction={regime.fii_conviction_pct}
         />
       )}
+      <IndicesTicker />
       <header className="px-6 py-3 border-b flex items-center gap-6" style={{ borderColor: '#1E2332', backgroundColor: '#141720' }}>
         <span className="font-bold text-sm tracking-widest" style={{ color: '#22C55E', whiteSpace: 'nowrap' }}>CAPITAL FLOW</span>
         <nav className="flex gap-3 flex-wrap flex-1">

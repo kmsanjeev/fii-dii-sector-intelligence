@@ -1,509 +1,640 @@
 /**
- * Dashboard — enhanced with full intelligence panel coverage
- * Fetches: market context, participant latest, sectors, watchlists, catalysts, deals
+ * Dashboard — Infographic-first redesign
+ * Visual instruments: Regime Dial, Breadth Donut, Flow Bars, Sector Heatmap
  */
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import {
   fetchMarketContext, fetchParticipantLatest, fetchSectors,
   fetchWatchlist, fetchCatalysts, fetchDeals,
+  type MarketContext, type ParticipantLatest, type Sector,
 } from '../api/client'
-import { ScoreGauge }  from '../components/platform/ScoreGauge'
-import { FlowCard }    from '../components/platform/FlowCard'
+import { ScoreGauge }   from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 
-// ─── Style helpers ────────────────────────────────────────────────────────────
+// ─── Tiny helpers ─────────────────────────────────────────────────────────────
 
-const LABEL  = { color: '#64748B', fontSize: 9, letterSpacing: 1 } as const
-const CARD   = { background: '#141720', border: '1px solid #1E2332', borderRadius: 6 } as const
-const DIV    = { width: 1, height: 36, background: '#1E2332', flexShrink: 0 } as const
+const CARD = { background: '#141720', border: '1px solid #1E2332', borderRadius: 8 } as const
+const S9   = { color: '#475569', fontSize: 9, letterSpacing: 1.5 } as const
+const signed = (n: number | null | undefined, d = 1) =>
+  n == null ? '--' : `${n >= 0 ? '+' : ''}${n.toFixed(d)}`
 
-const SIGNAL_COLOR: Record<string, string> = {
-  STRONG_ACCUMULATION: '#22C55E',
-  EARLY_ROTATION:      '#10B981',
-  PRICE_LED:           '#3B82F6',
-  NEUTRAL:             '#64748B',
-  DISTRIBUTION:        '#EF4444',
-}
+// ─── SVG: Regime Speedometer ──────────────────────────────────────────────────
 
-function signed(n: number | null | undefined, decimals = 1) {
-  if (n == null) return '--'
-  return `${n >= 0 ? '+' : ''}${n.toFixed(decimals)}`
-}
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-function PulseCell({ label, children, width }: {
-  label: string; children: React.ReactNode; width?: number
+function RegimeDial({ score, regime, pcr, pcrSignal }: {
+  score: number; regime: string; pcr: number | null; pcrSignal: string
 }) {
-  return (
-    <div style={{ minWidth: width }}>
-      <div style={LABEL}>{label}</div>
-      <div style={{ marginTop: 4 }}>{children}</div>
-    </div>
-  )
-}
+  const cx = 110, cy = 100, R = 72, Rneedle = 58
+  const clamped = Math.max(-100, Math.min(100, score))
+  const ratio   = (clamped + 100) / 200
+  const theta   = Math.PI - ratio * Math.PI
+  const nx      = cx + Rneedle * Math.cos(theta)
+  const ny      = cy - Rneedle * Math.sin(theta)
 
-function MetricChip({ label, value, color, to }: {
-  label: string; value: string | number; color?: string; to?: string
-}) {
-  const inner = (
-    <div style={{
-      ...CARD, padding: '8px 12px', cursor: to ? 'pointer' : 'default',
-      display: 'flex', flexDirection: 'column', gap: 2, flex: 1,
-    }}>
-      <div style={{ color: '#475569', fontSize: 9, letterSpacing: 1 }}>{label}</div>
-      <div style={{ color: color ?? '#E2E8F0', fontSize: 16, fontWeight: 700 }}>{value}</div>
-    </div>
-  )
-  return to ? <Link to={to} style={{ flex: 1, textDecoration: 'none' }}>{inner}</Link> : inner
-}
+  const arc = (t: number, r = R) => {
+    const a = Math.PI - t * Math.PI
+    return { x: cx + r * Math.cos(a), y: cy - r * Math.sin(a) }
+  }
 
-function CashBar({ label, value, color }: { label: string; value: number; color: string }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11 }}>
-      <span style={{ color: '#64748B', minWidth: 60 }}>{label}</span>
-      <span style={{ color, fontWeight: 700, minWidth: 80 }}>
-        {value >= 0 ? '+' : ''}{value.toLocaleString('en-IN', { maximumFractionDigits: 0 })} Cr
-      </span>
-      <div style={{ flex: 1, height: 3, background: '#1E2332', borderRadius: 2, maxWidth: 70 }}>
-        <div style={{ height: '100%', borderRadius: 2, background: color,
-          width: `${Math.min(100, Math.abs(value) / 3000 * 100)}%` }} />
-      </div>
-    </div>
-  )
-}
+  // 3 arc segments: BEAR [0→1/3], NEUTRAL [1/3→2/3], BULL [2/3→1]
+  const segs = [
+    { from: 0, to: 1 / 3, color: '#EF4444', label: 'BEAR' },
+    { from: 1 / 3, to: 2 / 3, color: '#F59E0B', label: 'NEUTRAL' },
+    { from: 2 / 3, to: 1, color: '#22C55E', label: 'BULL' },
+  ]
 
-function ConvictionBar({ label, pct }: { label: string; pct: number }) {
-  const color = pct >= 60 ? '#22C55E' : pct >= 40 ? '#F59E0B' : '#EF4444'
-  return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-        <span style={{ color: '#64748B', fontSize: 10 }}>{label}</span>
-        <span style={{ color, fontSize: 11, fontWeight: 700 }}>{pct.toFixed(0)}%</span>
-      </div>
-      <div style={{ height: 4, background: '#1E2332', borderRadius: 2 }}>
-        <div style={{ height: '100%', borderRadius: 2, background: color, width: `${pct}%`, transition: 'width 0.5s' }} />
-      </div>
-    </div>
-  )
-}
-
-function SectionHeader({ title, link, linkLabel }: { title: string; link?: string; linkLabel?: string }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-      <h2 style={{ color: '#64748B', fontSize: 9, letterSpacing: 2, margin: 0 }}>{title}</h2>
-      {link && <Link to={link} style={{ color: '#3B82F6', fontSize: 11 }}>{linkLabel ?? 'View all'}</Link>}
-    </div>
-  )
-}
-
-// ─── Dashboard ────────────────────────────────────────────────────────────────
-
-export function Dashboard() {
-  const { data: ctx }        = useQuery({ queryKey: ['market-context'],     queryFn: fetchMarketContext,     refetchInterval: 300000 })
-  const { data: part }       = useQuery({ queryKey: ['participant-latest'],  queryFn: fetchParticipantLatest, refetchInterval: 300000 })
-  const { data: sectors }    = useQuery({ queryKey: ['sectors'],             queryFn: fetchSectors,           refetchInterval: 300000 })
-  const { data: emerging }   = useQuery({ queryKey: ['watchlist','EMRG'],   queryFn: () => fetchWatchlist('EMERGING', 12),          refetchInterval: 300000 })
-  const { data: strong }     = useQuery({ queryKey: ['watchlist','STRONG'],  queryFn: () => fetchWatchlist('STRONG_CANDIDATE', 5),  refetchInterval: 300000 })
-  const { data: catalysts }  = useQuery({ queryKey: ['catalysts'],           queryFn: fetchCatalysts,         refetchInterval: 600000 })
-  const { data: deals }      = useQuery({ queryKey: ['deals-dash'],          queryFn: () => fetchDeals(10, 6), refetchInterval: 600000 })
-
-  const flows   = ctx?.flow_scores
-  const cash    = ctx?.cash_flows
-  const breadth = ctx?.breadth
-
-  // Sector signal counts
-  const allSectors   = sectors?.sectors ?? []
-  const earlyRot     = allSectors.filter(s => s.rotation_signal === 'EARLY_ROTATION').length
-  const strongAccum  = allSectors.filter(s => s.rotation_signal === 'STRONG_ACCUMULATION').length
-
-  // Conviction counts
-  const strongBuyCount = strong?.count ?? 0
-
-  // F&O signal
-  const uptrends = (emerging?.stocks ?? []).filter(s => s.trend_signal === 'STRONG_UPTREND' || s.trend_signal === 'UPTREND').length
+  const regimeColor = regime === 'BULL' ? '#22C55E' : regime === 'BEAR' ? '#EF4444' : '#F59E0B'
+  const pcrColor    = pcrSignal === 'BULLISH' ? '#22C55E' : pcrSignal === 'BEARISH' ? '#EF4444' : '#F59E0B'
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-
-      {/* ── Row 1: Market Pulse ──────────────────────────────────────────── */}
-      {ctx && (
-        <div style={{ ...CARD, padding: '12px 20px', display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'flex-start' }}>
-
-          {/* Regime */}
-          <PulseCell label="REGIME" width={80}>
-            <span style={{
-              fontSize: 14, fontWeight: 700,
-              color: ctx.regime === 'BULL' ? '#22C55E' : ctx.regime === 'BEAR' ? '#EF4444' : '#F59E0B',
-            }}>{ctx.regime}</span>
-            <div style={{ color: '#475569', fontSize: 9, marginTop: 2 }}>market</div>
-          </PulseCell>
-
-          <div style={DIV} />
-
-          {/* PCR */}
-          <PulseCell label="PCR" width={72}>
-            <span style={{
-              fontSize: 16, fontWeight: 700,
-              color: ctx.pcr_signal === 'BULLISH' ? '#22C55E' : ctx.pcr_signal === 'BEARISH' ? '#EF4444' : '#F59E0B',
-            }}>{ctx.pcr?.toFixed(2) ?? '--'}</span>
-            <div style={{ fontSize: 9, color: '#475569', marginTop: 2 }}>{ctx.pcr_signal}</div>
-          </PulseCell>
-
-          <div style={DIV} />
-
-          {/* Smart Money + Market Opportunity */}
-          <PulseCell label="SMART MONEY" width={90}>
-            <span style={{ fontSize: 16, fontWeight: 700,
-              color: (ctx.smart_money_score ?? 0) >= 0 ? '#22C55E' : '#EF4444' }}>
-              {signed(ctx.smart_money_score)}
-            </span>
-            {part && (
-              <div style={{ fontSize: 9, color: '#475569', marginTop: 2 }}>
-                Opp: {signed(part.Market_Opportunity)}
-              </div>
-            )}
-          </PulseCell>
-
-          <div style={DIV} />
-
-          {/* Conviction bars */}
-          {part && (
-            <div style={{ minWidth: 120 }}>
-              <div style={{ ...LABEL, marginBottom: 6 }}>CONVICTION</div>
-              <ConvictionBar label="FII" pct={part.FII_conviction} />
-              <div style={{ marginTop: 5 }}>
-                <ConvictionBar label="DII" pct={part.DII_conviction} />
-              </div>
-            </div>
-          )}
-
-          <div style={DIV} />
-
-          {/* Divergence */}
-          {part && (
-            <PulseCell label="DIVERGENCE" width={100}>
-              <div style={{ fontSize: 11 }}>
-                <div>
-                  <span style={{ color: '#64748B', fontSize: 9 }}>FII/DII</span>
-                  {' '}
-                  <span style={{ fontWeight: 700, color: part.FII_DII_Divergence >= 0 ? '#22C55E' : '#EF4444' }}>
-                    {signed(part.FII_DII_Divergence)}
-                  </span>
-                </div>
-                <div style={{ marginTop: 3 }}>
-                  <span style={{ color: '#64748B', fontSize: 9 }}>Sm/Ret</span>
-                  {' '}
-                  <span style={{ fontWeight: 700, color: part.Smart_Retail_Divergence >= 0 ? '#22C55E' : '#EF4444' }}>
-                    {signed(part.Smart_Retail_Divergence)}
-                  </span>
-                </div>
-              </div>
-            </PulseCell>
-          )}
-
-          <div style={DIV} />
-
-          {/* Cash flows */}
-          {cash && (
-            <div>
-              <div style={{ ...LABEL, marginBottom: 6 }}>CASH FLOWS (5D NET)</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <CashBar label="FII/FPI"  value={cash.fpi_5d_cr}      color={cash.fpi_5d_cr >= 0 ? '#22C55E' : '#EF4444'} />
-                <CashBar label="MF/DII"   value={cash.mf_5d_cr}       color={cash.mf_5d_cr >= 0 ? '#3B82F6' : '#EF4444'} />
-                <CashBar label="Insurance" value={cash.insurance_5d_cr} color={cash.insurance_5d_cr >= 0 ? '#8B5CF6' : '#EF4444'} />
-              </div>
-            </div>
-          )}
-
-          <div style={DIV} />
-
-          {/* Universe Breadth */}
-          {breadth && (
-            <div>
-              <div style={{ ...LABEL, marginBottom: 6 }}>UNIVERSE BREADTH</div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                {([
-                  { label: 'STRONG', count: breadth.strong_candidate, color: '#22C55E' },
-                  { label: 'EMRG',   count: breadth.emerging,         color: '#10B981' },
-                  { label: 'WATCH',  count: breadth.watchlist,        color: '#F59E0B' },
-                  { label: 'AVOID',  count: breadth.avoid,            color: '#EF4444' },
-                ] as const).map(({ label, count, color }) => (
-                  <div key={label} style={{ textAlign: 'center', minWidth: 42 }}>
-                    <div style={{ color, fontSize: 15, fontWeight: 700 }}>{count}</div>
-                    <div style={{ color: '#475569', fontSize: 8 }}>{label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div style={{ marginLeft: 'auto', textAlign: 'right', alignSelf: 'center' }}>
-            <div style={LABEL}>DATA AS OF</div>
-            <div style={{ color: '#475569', fontSize: 11, marginTop: 4 }}>
-              {new Date(ctx.data_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: '2-digit' })}
-            </div>
+    <div style={{ ...CARD, padding: '16px 20px' }}>
+      <div style={S9}>SMART MONEY REGIME</div>
+      <svg viewBox="0 0 220 115" width="100%" style={{ display: 'block', maxWidth: 260, margin: '0 auto' }}>
+        {/* Track */}
+        {(() => {
+          const s = arc(0); const e = arc(1)
+          return <path d={`M ${s.x},${s.y} A ${R},${R} 0 0,1 ${e.x},${e.y}`} stroke="#1E2332" strokeWidth="16" fill="none" strokeLinecap="round" />
+        })()}
+        {/* Colored segments */}
+        {segs.map(({ from, to, color }) => {
+          const s = arc(from); const e = arc(to)
+          return (
+            <path
+              key={from}
+              d={`M ${s.x},${s.y} A ${R},${R} 0 0,1 ${e.x},${e.y}`}
+              stroke={color} strokeWidth="14" fill="none" strokeLinecap="round" strokeOpacity="0.8"
+            />
+          )
+        })}
+        {/* Needle */}
+        <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
+        <circle cx={cx} cy={cy} r="5" fill="#0A0D14" stroke="#E2E8F0" strokeWidth="2" />
+        {/* Labels */}
+        <text x="24" y="112" fill="#EF4444" fontSize="8" textAnchor="middle" fontFamily="monospace">BEAR</text>
+        <text x={cx} y="112" fill="#F59E0B" fontSize="8" textAnchor="middle" fontFamily="monospace">NEUTRAL</text>
+        <text x="198" y="112" fill="#22C55E" fontSize="8" textAnchor="middle" fontFamily="monospace">BULL</text>
+        {/* Center score */}
+        <text x={cx} y="78" fill={regimeColor} fontSize="18" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
+          {clamped >= 0 ? '+' : ''}{clamped.toFixed(1)}
+        </text>
+        <text x={cx} y="91" fill="#475569" fontSize="9" textAnchor="middle" fontFamily="monospace">{regime}</text>
+      </svg>
+      {/* PCR row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, borderTop: '1px solid #1E2332', paddingTop: 8 }}>
+        <div>
+          <div style={S9}>PCR</div>
+          <div style={{ color: pcrColor, fontWeight: 700, fontSize: 14, marginTop: 2 }}>
+            {pcr?.toFixed(2) ?? '--'}
           </div>
         </div>
-      )}
+        <div style={{ textAlign: 'right' }}>
+          <div style={S9}>SIGNAL</div>
+          <div style={{ color: pcrColor, fontWeight: 700, fontSize: 11, marginTop: 2 }}>{pcrSignal}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
-      {/* ── Row 2: Intelligence Signal Chips ──────────────────────────────── */}
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-        <MetricChip label="STRONG BUY STOCKS"  value={strongBuyCount}  color="#22C55E" to="/watchlist" />
-        <MetricChip label="EARLY ROTATION SECTORS" value={earlyRot}   color="#10B981" to="/sectors" />
-        <MetricChip label="ACCUMULATION SECTORS"   value={strongAccum} color="#22C55E" to="/sectors" />
-        <MetricChip label="UPTREND STOCKS (EMRG)"  value={uptrends}   color="#3B82F6" to="/watchlist" />
-        <MetricChip label="UPCOMING CATALYSTS"     value={catalysts?.count ?? '--'} color="#F59E0B" to="/corporate" />
-        <MetricChip label="RECENT BLOCK DEALS"     value={deals?.count ?? '--'}     color="#8B5CF6" to="/corporate" />
+// ─── SVG: Universe Breadth Donut ──────────────────────────────────────────────
+
+function BreadthDonut({ breadth }: { breadth: MarketContext['breadth'] }) {
+  if (!breadth) return null
+
+  const total   = Object.values(breadth).reduce((a, b) => a + b, 0)
+  const R = 45, cx = 70, cy = 70
+  const circ = 2 * Math.PI * R
+
+  const segments = [
+    { key: 'strong_candidate', label: 'STRONG',    color: '#22C55E' },
+    { key: 'emerging',         label: 'EMERGING',  color: '#10B981' },
+    { key: 'watchlist',        label: 'WATCHLIST', color: '#3B82F6' },
+    { key: 'neutral',          label: 'NEUTRAL',   color: '#475569' },
+    { key: 'avoid',            label: 'AVOID',     color: '#EF4444' },
+  ] as const
+
+  let offset = 0
+  const gap = 2
+
+  return (
+    <div style={{ ...CARD, padding: '16px 20px' }}>
+      <div style={S9}>UNIVERSE BREADTH</div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginTop: 10 }}>
+        <svg viewBox="0 0 140 140" width={140} height={140} style={{ flexShrink: 0 }}>
+          {segments.map(({ key, color }) => {
+            const count = breadth[key as keyof typeof breadth] ?? 0
+            const pct   = total > 0 ? count / total : 0
+            const dash  = circ * pct - (pct > 0 ? gap : 0)
+            const space = circ - dash
+            const thisDash = `${Math.max(0, dash)} ${space}`
+            const thisDashOffset = circ * (1 - offset)
+            offset += pct
+            return (
+              <circle key={key}
+                cx={cx} cy={cy} r={R} fill="none"
+                stroke={color} strokeWidth="22"
+                strokeDasharray={thisDash}
+                strokeDashoffset={thisDashOffset}
+                transform={`rotate(-90 ${cx} ${cy})`}
+              />
+            )
+          })}
+          {/* Center */}
+          <text x={cx} y={cy - 5} textAnchor="middle" fill="#E2E8F0" fontSize="16" fontWeight="bold" fontFamily="monospace">{total}</text>
+          <text x={cx} y={cy + 10} textAnchor="middle" fill="#475569" fontSize="8" fontFamily="monospace">STOCKS</text>
+        </svg>
+        {/* Legend */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+          {segments.map(({ key, label, color }) => {
+            const count = breadth[key as keyof typeof breadth] ?? 0
+            const pct   = total > 0 ? (count / total * 100).toFixed(0) : '0'
+            return (
+              <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ width: 8, height: 8, borderRadius: 2, background: color, flexShrink: 0 }} />
+                <span style={{ color: '#64748B', fontSize: 9, flex: 1 }}>{label}</span>
+                <span style={{ color, fontSize: 11, fontWeight: 700, minWidth: 28, textAlign: 'right' }}>{count}</span>
+                <span style={{ color: '#334155', fontSize: 9, minWidth: 28, textAlign: 'right' }}>{pct}%</span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Conviction + Divergence Panel ────────────────────────────────────────────
+
+function ConvictionPanel({ part, cash }: { part: ParticipantLatest; cash: MarketContext['cash_flows'] }) {
+  const bars = [
+    { label: 'FII Conviction',  value: part.FII_conviction, color: '#22C55E', track: '#0F2D1A' },
+    { label: 'DII Conviction',  value: part.DII_conviction, color: '#3B82F6', track: '#0C1E3A' },
+  ]
+  const div = [
+    { label: 'FII vs DII',      value: part.FII_DII_Divergence,    help: 'positive = FII > DII' },
+    { label: 'Smart vs Retail', value: part.Smart_Retail_Divergence, help: 'positive = institutions > retail' },
+  ]
+
+  const flowBars = cash ? [
+    { label: 'FPI/FII', value: cash.fpi_5d_cr,       color: cash.fpi_5d_cr >= 0 ? '#22C55E' : '#EF4444' },
+    { label: 'MF/DII',  value: cash.mf_5d_cr,        color: cash.mf_5d_cr >= 0 ? '#3B82F6' : '#EF4444' },
+    { label: 'Insurance', value: cash.insurance_5d_cr, color: cash.insurance_5d_cr >= 0 ? '#8B5CF6' : '#EF4444' },
+  ] : []
+
+  const maxCash = Math.max(...flowBars.map(f => Math.abs(f.value)), 1000)
+
+  return (
+    <div style={{ ...CARD, padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={S9}>CONVICTION & CASH FLOWS</div>
+
+      {/* Conviction bars */}
+      {bars.map(({ label, value, color, track }) => (
+        <div key={label}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+            <span style={{ color: '#64748B', fontSize: 10 }}>{label}</span>
+            <span style={{ color, fontWeight: 700, fontSize: 12 }}>{value.toFixed(0)}%</span>
+          </div>
+          <div style={{ height: 8, background: track, borderRadius: 4, overflow: 'hidden' }}>
+            <div style={{
+              height: '100%', width: `${Math.min(100, value)}%`,
+              background: `linear-gradient(90deg, ${color}88, ${color})`,
+              borderRadius: 4, transition: 'width 1s',
+            }} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+            <span style={{ color: '#334155', fontSize: 8 }}>0%</span>
+            <span style={{ color: '#334155', fontSize: 8 }}>50%</span>
+            <span style={{ color: '#334155', fontSize: 8 }}>100%</span>
+          </div>
+        </div>
+      ))}
+
+      {/* Divergence scores */}
+      <div style={{ borderTop: '1px solid #1E2332', paddingTop: 10 }}>
+        <div style={{ ...S9, marginBottom: 6 }}>DIVERGENCE SCORES</div>
+        {div.map(({ label, value }) => (
+          <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+            <span style={{ color: '#64748B', fontSize: 9 }}>{label}</span>
+            <span style={{
+              fontWeight: 700, fontSize: 12, fontFamily: 'monospace',
+              color: value >= 0 ? '#22C55E' : '#EF4444',
+            }}>{signed(value)}</span>
+          </div>
+        ))}
       </div>
 
-      {/* ── Row 3: Participant Flows ──────────────────────────────────────── */}
-      {flows && (
-        <section>
-          <SectionHeader title="PARTICIPANT FLOWS (F&O)" link="/participant" linkLabel="Full Analysis" />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-            <FlowCard participant="FII"    score={flows.FII}    conviction={ctx?.fii_conviction_pct} />
-            <FlowCard participant="DII"    score={flows.DII} />
-            <FlowCard participant="PRO"    score={flows.PRO} />
-            <FlowCard participant="CLIENT" score={flows.CLIENT} />
-          </div>
-        </section>
-      )}
-
-      {/* ── Row 4: 3-column — Sectors | Top Conviction | Events ──────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, alignItems: 'start' }}>
-
-        {/* Col 1: Sector Rotation */}
-        <section>
-          <SectionHeader title="SECTOR ROTATION" link="/sectors" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {allSectors.slice(0, 10).map(s => {
-              const sigColor = SIGNAL_COLOR[s.rotation_signal] ?? '#64748B'
-              const isHot = s.rotation_signal === 'EARLY_ROTATION' || s.rotation_signal === 'STRONG_ACCUMULATION'
-              return (
-                <Link key={s.sector} to={`/sectors/${s.sector}`} style={{ textDecoration: 'none' }}>
+      {/* 5D Cash flows */}
+      {flowBars.length > 0 && (
+        <div style={{ borderTop: '1px solid #1E2332', paddingTop: 10 }}>
+          <div style={{ ...S9, marginBottom: 8 }}>5D NET CASH FLOWS</div>
+          {flowBars.map(({ label, value, color }) => {
+            const pct = Math.min(100, Math.abs(value) / maxCash * 100)
+            const pos = value >= 0
+            return (
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                <span style={{ color: '#475569', fontSize: 9, minWidth: 52 }}>{label}</span>
+                <div style={{ flex: 1, height: 5, background: '#1E2332', borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{
-                    ...CARD, padding: '8px 10px',
-                    borderColor: isHot ? `${sigColor}55` : '#1E2332',
-                    background: isHot ? `${sigColor}08` : '#141720',
-                    display: 'flex', alignItems: 'center', gap: 8,
-                  }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ color: '#E2E8F0', fontSize: 11, fontWeight: 600, textOverflow: 'ellipsis',overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                        {s.sector}
-                      </div>
-                      <div style={{ fontSize: 8, color: sigColor, fontWeight: 700, marginTop: 1 }}>
-                        {s.rotation_signal.replace(/_/g, ' ')}
-                      </div>
-                    </div>
-                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: s.combined_score >= 0 ? '#22C55E' : '#EF4444' }}>
-                        {signed(s.combined_score, 0)}
-                      </div>
-                      <div style={{ fontSize: 8, color: '#475569' }}>score</div>
-                    </div>
-                  </div>
-                </Link>
-              )
-            })}
-            {allSectors.length > 10 && (
-              <Link to="/sectors" style={{ color: '#3B82F6', fontSize: 10, textAlign: 'center', padding: '4px 0' }}>
-                +{allSectors.length - 10} more sectors
-              </Link>
-            )}
-          </div>
-        </section>
-
-        {/* Col 2: Top Conviction Picks */}
-        <section>
-          <SectionHeader title="TOP CONVICTION PICKS" link="/watchlist" linkLabel="Full Watchlist" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {(strong?.stocks ?? []).map(stock => (
-              <Link key={stock.symbol} to={`/stocks/${stock.symbol}`} style={{ textDecoration: 'none' }}>
-                <div style={{ ...CARD, padding: '10px 12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ color: '#E2E8F0', fontSize: 13, fontWeight: 700 }}>{stock.symbol}</div>
-                      <div style={{ color: '#64748B', fontSize: 10, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                        {stock.sector}
-                      </div>
-                      {stock.close_now != null && (
-                        <div style={{ color: '#94A3B8', fontSize: 11, marginTop: 2 }}>
-                          &#8377;{stock.close_now.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
-                        </div>
-                      )}
-                    </div>
-                    <ScoreGauge score={stock.bull_run_score} size={48} />
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
-                    <CapFlowBadge label={stock.label} />
-                    {stock.trend_signal && (
-                      <span style={{
-                        fontSize: 8, fontWeight: 700, padding: '1px 5px', borderRadius: 2,
-                        background: stock.trend_signal.includes('UP') ? '#052e1688' : '#1a000088',
-                        color: stock.trend_signal.includes('UP') ? '#22C55E' : '#EF4444',
-                        border: `1px solid ${stock.trend_signal.includes('UP') ? '#22C55E44' : '#EF444444'}`,
-                      }}>
-                        {stock.trend_signal?.replace(/_/g, ' ')}
-                      </span>
-                    )}
-                    {stock.price?.ret_30d != null && (
-                      <span style={{
-                        fontSize: 10, marginLeft: 'auto', fontWeight: 600,
-                        color: stock.price.ret_30d >= 0 ? '#22C55E' : '#EF4444',
-                      }}>
-                        {stock.price.ret_30d >= 0 ? '+' : ''}{stock.price.ret_30d.toFixed(1)}% 30D
-                      </span>
-                    )}
-                  </div>
+                    height: '100%', width: `${pct}%`, borderRadius: 3,
+                    background: color, float: pos ? 'left' : 'right',
+                  }} />
                 </div>
-              </Link>
-            ))}
-            {(strong?.stocks ?? []).length === 0 && (
-              <div style={{ ...CARD, padding: 16, color: '#475569', fontSize: 11, textAlign: 'center' }}>
-                No STRONG_CANDIDATE stocks currently
+                <span style={{ color, fontSize: 9, fontWeight: 700, minWidth: 70, textAlign: 'right' }}>
+                  {value >= 0 ? '+' : ''}{value.toLocaleString('en-IN', { maximumFractionDigits: 0 })} Cr
+                </span>
               </div>
-            )}
-          </div>
-        </section>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
 
-        {/* Col 3: Market Events */}
-        <section>
-          <SectionHeader title="UPCOMING CATALYSTS" link="/corporate" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
-            {(catalysts?.catalysts ?? []).slice(0, 4).map((c, i) => {
-              const cat = c as Record<string, unknown>
-              return (
-                <div key={i} style={{ ...CARD, padding: '8px 10px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 6 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ color: '#E2E8F0', fontSize: 12, fontWeight: 600 }}>{cat.symbol as string}</div>
-                      <div style={{ color: '#64748B', fontSize: 9, marginTop: 2, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                        {String(cat.purpose_type ?? cat.purpose ?? '').replace(/_/g, ' ')}
-                      </div>
-                    </div>
-                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ color: '#F59E0B', fontSize: 10, fontWeight: 700 }}>
-                        {String(cat.event_date ?? '').slice(5)}
-                      </div>
-                      {cat.catalyst_score != null && (
-                        <div style={{ color: '#475569', fontSize: 8 }}>
-                          score {Number(cat.catalyst_score).toFixed(0)}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-            {(catalysts?.catalysts ?? []).length === 0 && (
-              <div style={{ ...CARD, padding: 12, color: '#475569', fontSize: 11, textAlign: 'center' }}>
-                No upcoming catalysts
-              </div>
-            )}
-          </div>
+// ─── Participant Flow Bars ─────────────────────────────────────────────────────
 
-          {/* Recent block deals */}
-          <SectionHeader title="RECENT BLOCK DEALS" link="/corporate" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {(deals?.deals ?? []).slice(0, 4).map((d, i) => {
-              const deal = d as Record<string, unknown>
-              const cr = Number(deal.net_value_cr ?? deal.value_cr ?? 0)
-              return (
-                <div key={i} style={{ ...CARD, padding: '8px 10px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 6 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ color: '#E2E8F0', fontSize: 12, fontWeight: 600 }}>
-                        {String(deal.symbol ?? deal.SYMBOL ?? '')}
-                      </div>
-                      <div style={{ color: '#64748B', fontSize: 9, marginTop: 2, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                        {String(deal.client_name ?? deal.CLIENT_NAME ?? '').slice(0, 28)}
-                      </div>
-                    </div>
-                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: '#8B5CF6' }}>
-                        {cr !== 0 ? `${cr >= 0 ? '+' : ''}${cr.toFixed(0)} Cr` : '--'}
-                      </div>
-                      <div style={{ color: '#475569', fontSize: 8 }}>
-                        {String(deal.trade_date ?? deal.TRADE_DATE ?? '').slice(5)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </section>
+function FlowBars({ flows, part }: {
+  flows: { FII: number; DII: number; PRO: number; CLIENT: number };
+  part: ParticipantLatest
+}) {
+  const maxAbs  = Math.max(...Object.values(flows).map(Math.abs), 10)
+  const entries = [
+    { key: 'FII',    score: flows.FII,    color: '#22C55E', conv: part.FII_conviction, label: 'FII/FPI', desc: 'Foreign Institutional' },
+    { key: 'DII',    score: flows.DII,    color: '#3B82F6', conv: part.DII_conviction, label: 'DII/MF',  desc: 'Domestic Institutional' },
+    { key: 'PRO',    score: flows.PRO,    color: '#F59E0B', conv: null,                label: 'PRO',     desc: 'Proprietary Desks' },
+    { key: 'CLIENT', score: flows.CLIENT, color: '#8B5CF6', conv: null,                label: 'CLIENT',  desc: 'Retail/HNI' },
+  ]
+
+  return (
+    <div style={{ ...CARD, padding: '16px 20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <div style={S9}>F&O PARTICIPANT FLOWS</div>
+        <Link to="/participant" style={{ color: '#3B82F6', fontSize: 10, textDecoration: 'none' }}>Full Analysis</Link>
       </div>
-
-      {/* ── Row 5: Emerging Watchlist ─────────────────────────────────────── */}
-      <section>
-        <SectionHeader
-          title="EMERGING WATCHLIST"
-          link="/watchlist"
-          linkLabel={`View all (${emerging?.count ?? 0})`}
-        />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
-          {(emerging?.stocks ?? []).map(stock => (
-            <Link
-              key={stock.symbol}
-              to={`/stocks/${stock.symbol}`}
-              style={{ textDecoration: 'none' }}
-            >
-              <div style={{
-                ...CARD, padding: 12,
-                transition: 'border-color 0.15s',
-              }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = '#3B82F644')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = '#1E2332')}
-              >
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ color: '#E2E8F0', fontWeight: 700, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {stock.symbol}
-                    </div>
-                    <div style={{ color: '#64748B', fontSize: 10, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {stock.sector}
-                    </div>
-                    {stock.close_now != null && (
-                      <div style={{ color: '#94A3B8', fontSize: 11, marginTop: 3 }}>
-                        &#8377;{stock.close_now.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
-                      </div>
-                    )}
-                  </div>
-                  <ScoreGauge score={stock.bull_run_score} size={44} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {entries.map(({ key, score, color, conv, label, desc }) => {
+          const pct = Math.abs(score) / maxAbs * 100
+          const pos = score >= 0
+          return (
+            <div key={key}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <div style={{ minWidth: 70 }}>
+                  <div style={{ color: '#E2E8F0', fontSize: 11, fontWeight: 700 }}>{label}</div>
+                  <div style={{ color: '#334155', fontSize: 8 }}>{desc}</div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 8, flexWrap: 'wrap' }}>
-                  <CapFlowBadge label={stock.label} />
-                  {(stock.trend_signal === 'STRONG_UPTREND' || stock.trend_signal === 'UPTREND') && (
-                    <span style={{
-                      fontSize: 8, fontWeight: 700, padding: '1px 5px', borderRadius: 2,
-                      border: '1px solid #22C55E44', color: '#22C55E', background: '#052e1688',
-                    }}>
-                      {stock.trend_signal === 'STRONG_UPTREND' ? 'STR BUY' : 'BUY'}
-                    </span>
+                {/* Centered bar */}
+                <div style={{ flex: 1, position: 'relative', height: 20, display: 'flex', alignItems: 'center' }}>
+                  {/* Center line */}
+                  <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1, background: '#1E2332' }} />
+                  {/* Bar */}
+                  <div style={{
+                    position: 'absolute',
+                    [pos ? 'left' : 'right']: '50%',
+                    width: `${pct / 2}%`,
+                    height: 14,
+                    top: 3,
+                    background: `linear-gradient(${pos ? '90deg' : '270deg'}, ${color}44, ${color})`,
+                    borderRadius: pos ? '0 4px 4px 0' : '4px 0 0 4px',
+                  }} />
+                  {/* Conviction overlay bar (thinner) */}
+                  {conv != null && (
+                    <div style={{
+                      position: 'absolute',
+                      [pos ? 'left' : 'right']: '50%',
+                      width: `${Math.min(conv / 2, pct / 2)}%`,
+                      height: 4,
+                      top: 8,
+                      background: color,
+                      borderRadius: pos ? '0 2px 2px 0' : '2px 0 0 2px',
+                      opacity: 0.9,
+                    }} />
                   )}
-                  {stock.oi_signal === 'LONG_BUILDUP' && (
-                    <span style={{
-                      fontSize: 8, fontWeight: 700, padding: '1px 5px', borderRadius: 2,
-                      border: '1px solid #3B82F644', color: '#3B82F6', background: '#0f1f3d88',
-                    }}>F&amp;O LB</span>
+                </div>
+                <div style={{ minWidth: 60, textAlign: 'right' }}>
+                  <div style={{ color, fontSize: 13, fontWeight: 700, fontFamily: 'monospace' }}>
+                    {score >= 0 ? '+' : ''}{score.toFixed(1)}
+                  </div>
+                  {conv != null && (
+                    <div style={{ color: '#475569', fontSize: 9 }}>{conv.toFixed(0)}% conv.</div>
                   )}
-                  {stock.price?.ret_30d != null && (
-                    <span style={{
-                      fontSize: 10, marginLeft: 'auto', fontWeight: 600,
-                      color: stock.price.ret_30d >= 0 ? '#22C55E' : '#EF4444',
-                    }}>
-                      {stock.price.ret_30d >= 0 ? '+' : ''}{stock.price.ret_30d.toFixed(1)}%
-                    </span>
-                  )}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+        {/* Scale labels */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: 78 }}>
+          <span style={{ color: '#1E2332', fontSize: 8 }}>{(-maxAbs).toFixed(0)}</span>
+          <span style={{ color: '#334155', fontSize: 8 }}>0</span>
+          <span style={{ color: '#1E2332', fontSize: 8 }}>+{maxAbs.toFixed(0)}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Sector Heatmap ───────────────────────────────────────────────────────────
+
+const SIG_STYLE: Record<string, { bg: string; text: string; border: string }> = {
+  STRONG_ACCUMULATION: { bg: '#052e16', text: '#22C55E', border: '#22C55E44' },
+  EARLY_ROTATION:      { bg: '#064e3b', text: '#10B981', border: '#10B98144' },
+  PRICE_LED:           { bg: '#1e3a5f', text: '#60A5FA', border: '#60A5FA44' },
+  NEUTRAL:             { bg: '#141720', text: '#475569', border: '#1E2332' },
+  DISTRIBUTION:        { bg: '#450a0a', text: '#EF4444', border: '#EF444444' },
+}
+
+function SectorHeatmap({ sectors }: { sectors: Sector[] }) {
+  return (
+    <div style={{ ...CARD, padding: '16px 20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <div style={S9}>SECTOR CAPITAL ROTATION</div>
+        <Link to="/sectors" style={{ color: '#3B82F6', fontSize: 10, textDecoration: 'none' }}>Full View</Link>
+      </div>
+      {/* Legend */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
+        {Object.entries(SIG_STYLE).map(([sig, style]) => (
+          <div key={sig} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div style={{ width: 8, height: 8, borderRadius: 2, background: style.text, opacity: 0.8 }} />
+            <span style={{ color: '#475569', fontSize: 8 }}>{sig.replace(/_/g, ' ')}</span>
+          </div>
+        ))}
+      </div>
+      {/* Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>
+        {sectors.map(s => {
+          const st = SIG_STYLE[s.rotation_signal] ?? SIG_STYLE['NEUTRAL']
+          return (
+            <Link key={s.sector} to={`/sectors/${s.sector}`} style={{ textDecoration: 'none' }}>
+              <div style={{
+                background: st.bg, border: `1px solid ${st.border}`, borderRadius: 5,
+                padding: '8px 10px', cursor: 'pointer', transition: 'opacity 0.15s',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+              >
+                <div style={{ color: st.text, fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {s.sector}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 3, alignItems: 'center' }}>
+                  <span style={{ fontSize: 7, color: st.text, opacity: 0.7 }}>
+                    {s.rotation_signal.replace(/_/g, ' ').slice(0, 10)}
+                  </span>
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, fontFamily: 'monospace',
+                    color: s.combined_score >= 0 ? '#22C55E' : '#EF4444',
+                  }}>
+                    {s.combined_score >= 0 ? '+' : ''}{s.combined_score.toFixed(0)}
+                  </span>
                 </div>
               </div>
             </Link>
-          ))}
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// ─── Top Picks + Events column ────────────────────────────────────────────────
+
+function SidePanel({ strong, catalysts, deals }: {
+  strong:    { stocks: import('../api/client').Stock[]; count: number } | undefined
+  catalysts: { catalysts: Record<string, unknown>[]; count: number }   | undefined
+  deals:     { deals:    Record<string, unknown>[]; count: number }    | undefined
+}) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+      {/* Top Conviction Picks */}
+      <div style={{ ...CARD, padding: '14px 16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <div style={S9}>TOP CONVICTION</div>
+          <Link to="/watchlist" style={{ color: '#3B82F6', fontSize: 10, textDecoration: 'none' }}>All</Link>
         </div>
-      </section>
+        {(strong?.stocks ?? []).length === 0 ? (
+          <div style={{ color: '#334155', fontSize: 11, textAlign: 'center', padding: '10px 0' }}>None currently</div>
+        ) : (
+          (strong?.stocks ?? []).map(s => (
+            <Link key={s.symbol} to={`/stocks/${s.symbol}`} style={{ textDecoration: 'none' }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 8, padding: '7px 0',
+                borderBottom: '1px solid #1E2332',
+              }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ color: '#E2E8F0', fontWeight: 700, fontSize: 12 }}>{s.symbol}</div>
+                  <div style={{ color: '#475569', fontSize: 9, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                    {s.sector}
+                    {s.price?.ret_30d != null && (
+                      <span style={{ color: (s.price.ret_30d ?? 0) >= 0 ? '#22C55E' : '#EF4444', marginLeft: 6 }}>
+                        {s.price.ret_30d >= 0 ? '+' : ''}{s.price.ret_30d.toFixed(1)}%
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <ScoreGauge score={s.bull_run_score} size={38} />
+              </div>
+            </Link>
+          ))
+        )}
+      </div>
+
+      {/* Upcoming Catalysts */}
+      <div style={{ ...CARD, padding: '14px 16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <div style={S9}>UPCOMING CATALYSTS</div>
+          <Link to="/corporate" style={{ color: '#3B82F6', fontSize: 10, textDecoration: 'none' }}>All</Link>
+        </div>
+        {(catalysts?.catalysts ?? []).slice(0, 5).map((c, i) => {
+          const cat = c as Record<string, unknown>
+          return (
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '6px 0', borderBottom: '1px solid #1E2332' }}>
+              <div style={{
+                background: '#1A1A08', border: '1px solid #F59E0B44', borderRadius: 4,
+                padding: '3px 6px', flexShrink: 0, textAlign: 'center',
+              }}>
+                <div style={{ color: '#F59E0B', fontSize: 10, fontWeight: 700 }}>
+                  {String(cat.event_date ?? '').slice(5, 7)}
+                </div>
+                <div style={{ color: '#64748B', fontSize: 8 }}>
+                  {String(cat.event_date ?? '').slice(8)}
+                </div>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ color: '#E2E8F0', fontSize: 11, fontWeight: 700 }}>{String(cat.symbol ?? '')}</div>
+                <div style={{ color: '#64748B', fontSize: 9, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {String(cat.purpose_type ?? cat.purpose ?? '').replace(/_/g, ' ')}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Recent Block Deals */}
+      <div style={{ ...CARD, padding: '14px 16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <div style={S9}>BLOCK DEALS</div>
+          <Link to="/corporate" style={{ color: '#3B82F6', fontSize: 10, textDecoration: 'none' }}>All</Link>
+        </div>
+        {(deals?.deals ?? []).slice(0, 4).map((d, i) => {
+          const deal = d as Record<string, unknown>
+          const cr = Number(deal.net_value_cr ?? deal.value_cr ?? 0)
+          return (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid #1E2332' }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ color: '#E2E8F0', fontSize: 11, fontWeight: 700 }}>{String(deal.symbol ?? deal.SYMBOL ?? '')}</div>
+                <div style={{ color: '#475569', fontSize: 9, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {String(deal.client_name ?? deal.CLIENT_NAME ?? '').slice(0, 22)}
+                </div>
+              </div>
+              <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                <div style={{ color: '#8B5CF6', fontSize: 11, fontWeight: 700 }}>
+                  {cr !== 0 ? `${cr >= 0 ? '+' : ''}${cr.toFixed(0)} Cr` : '--'}
+                </div>
+                <div style={{ color: '#334155', fontSize: 8 }}>
+                  {String(deal.trade_date ?? deal.TRADE_DATE ?? '').slice(5)}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// ─── Emerging Watchlist mini-cards ────────────────────────────────────────────
+
+function EmergeCard({ stock }: { stock: import('../api/client').Stock }) {
+  const ret = stock.price?.ret_30d
+  const pos = (ret ?? 0) >= 0
+  return (
+    <Link to={`/stocks/${stock.symbol}`} style={{ textDecoration: 'none' }}>
+      <div style={{
+        ...CARD, padding: '10px 12px', height: '100%',
+        display: 'flex', flexDirection: 'column', gap: 6,
+        transition: 'border-color 0.15s',
+      }}
+        onMouseEnter={e => (e.currentTarget.style.borderColor = '#22C55E44')}
+        onMouseLeave={e => (e.currentTarget.style.borderColor = '#1E2332')}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{ color: '#E2E8F0', fontWeight: 700, fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {stock.symbol}
+            </div>
+            <div style={{ color: '#475569', fontSize: 9, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {stock.sector}
+            </div>
+          </div>
+          <ScoreGauge score={stock.bull_run_score} size={38} />
+        </div>
+        {/* Price & return */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {stock.close_now != null && (
+            <span style={{ color: '#94A3B8', fontSize: 10 }}>
+              &#8377;{stock.close_now.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+            </span>
+          )}
+          {ret != null && (
+            <span style={{ fontSize: 10, fontWeight: 700, color: pos ? '#22C55E' : '#EF4444' }}>
+              {pos ? '+' : ''}{ret.toFixed(1)}%
+            </span>
+          )}
+        </div>
+        {/* Badges */}
+        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+          <CapFlowBadge label={stock.label} />
+          {stock.trend_signal && (stock.trend_signal === 'STRONG_UPTREND' || stock.trend_signal === 'UPTREND') && (
+            <span style={{
+              fontSize: 7, fontWeight: 700, padding: '1px 4px', borderRadius: 2,
+              border: '1px solid #22C55E44', color: '#22C55E', background: '#052e1688',
+            }}>
+              {stock.trend_signal === 'STRONG_UPTREND' ? 'STR UP' : 'UPTRD'}
+            </span>
+          )}
+          {stock.oi_signal === 'LONG_BUILDUP' && (
+            <span style={{
+              fontSize: 7, fontWeight: 700, padding: '1px 4px', borderRadius: 2,
+              border: '1px solid #3B82F644', color: '#3B82F6', background: '#0f1f3d88',
+            }}>LB</span>
+          )}
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+// ─── Main Dashboard ───────────────────────────────────────────────────────────
+
+export function Dashboard() {
+  const { data: ctx }       = useQuery({ queryKey: ['market-context'],    queryFn: fetchMarketContext,    refetchInterval: 300_000 })
+  const { data: part }      = useQuery({ queryKey: ['participant-latest'], queryFn: fetchParticipantLatest, refetchInterval: 300_000 })
+  const { data: sectors }   = useQuery({ queryKey: ['sectors'],            queryFn: fetchSectors,           refetchInterval: 300_000 })
+  const { data: emerging }  = useQuery({ queryKey: ['watchlist','EMRG'],  queryFn: () => fetchWatchlist('EMERGING', 15),         refetchInterval: 300_000 })
+  const { data: strong }    = useQuery({ queryKey: ['watchlist','STR'],   queryFn: () => fetchWatchlist('STRONG_CANDIDATE', 6), refetchInterval: 300_000 })
+  const { data: catalysts } = useQuery({ queryKey: ['catalysts'],          queryFn: fetchCatalysts,         refetchInterval: 600_000 })
+  const { data: deals }     = useQuery({ queryKey: ['deals-dash'],         queryFn: () => fetchDeals(10, 6), refetchInterval: 600_000 })
+
+  const allSectors = sectors?.sectors ?? []
+  const flows      = ctx?.flow_scores
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+      {/* ── Row 1: Command Center ─────────────────────────────────────────── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+        {ctx ? (
+          <RegimeDial
+            score={ctx.smart_money_score ?? 0}
+            regime={ctx.regime}
+            pcr={ctx.pcr ?? null}
+            pcrSignal={ctx.pcr_signal ?? ''}
+          />
+        ) : (
+          <div style={{ ...CARD, padding: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: '#334155', fontSize: 11 }}>Loading...</span>
+          </div>
+        )}
+        <BreadthDonut breadth={ctx?.breadth} />
+        {part && ctx ? (
+          <ConvictionPanel part={part} cash={ctx.cash_flows} />
+        ) : (
+          <div style={{ ...CARD, padding: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: '#334155', fontSize: 11 }}>Loading...</span>
+          </div>
+        )}
+      </div>
+
+      {/* ── Row 2: Participant Flow Bars ──────────────────────────────────── */}
+      {flows && part && (
+        <FlowBars flows={flows} part={part} />
+      )}
+
+      {/* ── Row 3: Sector Heatmap + Side Panel ───────────────────────────── */}
+      {allSectors.length > 0 && (
+        <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.4fr', gap: 14, alignItems: 'start' }}>
+          <SectorHeatmap sectors={allSectors} />
+          <SidePanel strong={strong} catalysts={catalysts} deals={deals} />
+        </div>
+      )}
+
+      {/* ── Row 4: Emerging Watchlist ─────────────────────────────────────── */}
+      {(emerging?.stocks ?? []).length > 0 && (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <div style={S9}>EMERGING WATCHLIST</div>
+            <Link to="/watchlist" style={{ color: '#3B82F6', fontSize: 10, textDecoration: 'none' }}>
+              View all ({emerging?.count ?? 0})
+            </Link>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+            {(emerging?.stocks ?? []).map(stock => (
+              <EmergeCard key={stock.symbol} stock={stock} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
