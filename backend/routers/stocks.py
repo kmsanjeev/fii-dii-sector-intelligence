@@ -420,6 +420,63 @@ def get_stock_detail(symbol: str):
                 "catalyst_score": _safe(r.get("catalyst_score")),
             }
 
+    # Phase F — News sentiment (7-day rolling)
+    news_signal: dict = {}
+    news_df = data_loader.get("news_signals")
+    if news_df is not None and "symbol" in news_df.columns:
+        news_row = news_df[news_df["symbol"].str.upper() == sym]
+        if not news_row.empty:
+            r = news_row.iloc[0]
+            news_signal = {
+                "news_count_7d":   _safe(r.get("news_count_7d")),
+                "sentiment_7d":    _safe(r.get("sentiment_7d")),
+                "sentiment_label": str(r.get("sentiment_label", "")),
+                "bullish_count":   _safe(r.get("bullish_count")),
+                "bearish_count":   _safe(r.get("bearish_count")),
+                "top_theme":       str(r.get("top_theme", "")),
+                "latest_headline": str(r.get("latest_headline", "")),
+                "latest_date":     str(r.get("latest_date", "")),
+            }
+
+    # Phase F — Insider trade signals (30-day)
+    insider_signal: dict = {}
+    ins_df = data_loader.get("insider_signals")
+    if ins_df is not None and "symbol" in ins_df.columns:
+        ins_row = ins_df[ins_df["symbol"].str.upper() == sym]
+        if not ins_row.empty:
+            r = ins_row.iloc[0]
+            insider_signal = {
+                "buy_value_30d_cr":   _safe(r.get("buy_value_30d_cr")),
+                "sell_value_30d_cr":  _safe(r.get("sell_value_30d_cr")),
+                "net_value_30d_cr":   _safe(r.get("net_value_30d_cr")),
+                "buy_count_30d":      _safe(r.get("buy_count_30d")),
+                "sell_count_30d":     _safe(r.get("sell_count_30d")),
+                "insider_conviction": str(r.get("insider_conviction", "")),
+                "insider_score":      _safe(r.get("insider_score")),
+                "acquirers":          str(r.get("acquirers", "")),
+                "latest_date":        str(r.get("latest_date", "")),
+            }
+
+    # Phase F — Concall / earnings call signals
+    concall_signal: dict = {}
+    cc_df = data_loader.get("concall_summary")
+    if cc_df is not None and "symbol" in cc_df.columns:
+        cc_row = cc_df[cc_df["symbol"].str.upper() == sym]
+        if not cc_row.empty:
+            r = cc_row.iloc[0]
+            concall_signal = {
+                "date":               str(r.get("date", "")),
+                "sentiment":          str(r.get("sentiment", "")),
+                "sentiment_score":    _safe(r.get("sentiment_score")),
+                "guidance_direction": str(r.get("guidance_direction", "")),
+                "guidance_score":     _safe(r.get("guidance_score")),
+                "capex_signal":       str(r.get("capex_signal", "")),
+                "capex_amount_cr":    _safe(r.get("capex_amount_cr")),
+                "themes":             str(r.get("themes", "")),
+                "key_statement":      str(r.get("key_statement", "")),
+                "concall_score":      _safe(r.get("concall_score")),
+            }
+
     return {
         "symbol":             str(row.get("symbol", "")),
         "sector":             str(row.get("sector", "")),
@@ -454,6 +511,10 @@ def get_stock_detail(symbol: str):
         "sector_rotation_signal":  sector_rotation_signal,
         "quarterly_results":       quarterly_results,
         "analyst_insights":        _generate_insights(sym, row, fundamentals, technical, shareholding, holding_trends, fno),
+        # Phase F alt-data
+        "news":    news_signal,
+        "insider": insider_signal,
+        "concall": concall_signal,
     }
 
 

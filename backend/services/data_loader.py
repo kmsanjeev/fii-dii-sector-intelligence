@@ -51,6 +51,10 @@ SOURCES = {
     "quarterly_results":      cfg.NSE_DIR / "results" / "quarterly_results.csv",
     "theme_intelligence":     cfg.INTELLIGENCE_DIR / "theme_intelligence.csv",
     "theme_tagging":          cfg.REFERENCE_DIR / "theme_tagging.csv",
+    # Phase F — Alt-data intelligence
+    "news_signals":           cfg.INTELLIGENCE_DIR / "news_signals.csv",
+    "insider_signals":        cfg.INTELLIGENCE_DIR / "insider_signals.csv",
+    "concall_summary":        cfg.INTELLIGENCE_DIR / "concall_summary.csv",
 }
 
 _MARKET_CONTEXT_PATH = cfg.INTELLIGENCE_DIR / "market_context.json"

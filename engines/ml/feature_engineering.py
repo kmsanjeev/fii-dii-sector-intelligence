@@ -1,9 +1,9 @@
 """
-Feature Engineering Engine -- Phase 12A
+Feature Engineering Engine -- Phase 12A + Phase F extension
 Builds the feature matrix from all intelligence + raw data layers.
 Output: data/intelligence/ml_features/feature_matrix.parquet
 
-Features per symbol (~44 total):
+Features per symbol (~50 total):
   Phase 8B scores:  bull_run_score, price_score, sector_flow_score, deal_score,
                     corporate_score, regime_multiplier
   Price:            ret_30d, ret_90d, ret_365d, vol_ratio, sector_rel_30d
@@ -17,6 +17,9 @@ Features per symbol (~44 total):
   Index:            index_count
   Corporate acts:   div_count_12m, has_buyback_12m, has_bonus_12m
   Deals:            deal_net_cr, corp_confidence
+  Phase F alt-data: theme_score_max, theme_purity_max,
+                    news_sentiment_7d, insider_score,
+                    concall_guidance_score, concall_sentiment_score
   Label:            label_enc (from Phase 8B rule-based scoring)
 
 Note on labels:
@@ -67,6 +70,13 @@ FUND_MASTER  = cfg.NSE_DIR / "equity_master" / "company_fundamentals_master.csv"
 INDEX_MEMB   = cfg.NSE_DIR / "indices" / "index_membership.csv"
 SHP_CSV      = cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv"
 ANN_CSV      = cfg.INTELLIGENCE_DIR / "company_announcements.csv"
+
+# Phase F alt-data sources
+THEME_TAG      = cfg.REFERENCE_DIR / "theme_tagging.csv"
+THEME_INTEL    = cfg.INTELLIGENCE_DIR / "theme_intelligence.csv"
+NEWS_SIGNALS   = cfg.INTELLIGENCE_DIR / "news_signals.csv"
+INSIDER_SIGS   = cfg.INTELLIGENCE_DIR / "insider_signals.csv"
+CONCALL_SUM    = cfg.INTELLIGENCE_DIR / "concall_summary.csv"
 
 # ---------------------------------------------------------------------------
 # Encoding maps
@@ -150,6 +160,12 @@ class FeatureEngineeringEngine:
         bull = self._add_deal_signals(bull)
         bull = self._add_announcement_features(bull)
 
+        # Phase F alt-data features
+        bull = self._add_theme_features(bull)
+        bull = self._add_news_sentiment(bull)
+        bull = self._add_insider_signals(bull)
+        bull = self._add_concall_signals(bull)
+
         bull["label_enc"] = bull["label"].map(LABEL_MAP).fillna(1)
 
         feature_cols = [
@@ -181,6 +197,10 @@ class FeatureEngineeringEngine:
             # Phase 18C — Announcement intelligence
             "ann_score_30d", "high_signal_30d", "distinct_types_30d",
             "ann_velocity_30d", "order_wins_6m", "spurt_count_30d", "distress_30d",
+            # Phase F — Alt-data intelligence
+            "theme_score_max", "theme_purity_max",
+            "news_sentiment_7d", "insider_score",
+            "concall_guidance_score", "concall_sentiment_score",
         ]
         available = [c for c in feature_cols if c in bull.columns]
         missing = [c for c in feature_cols if c not in bull.columns]
@@ -390,6 +410,121 @@ class FeatureEngineeringEngine:
 
         logger.info("[FeatureEng] Announcement features: %d symbols with data", len(agg))
         return df.merge(agg, on="symbol", how="left")
+
+    # ------------------------------------------------------------------
+    # Phase F alt-data feature methods
+    # ------------------------------------------------------------------
+    def _add_theme_features(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Per-symbol max theme score (from theme_intelligence) and max purity score
+        (from theme_tagging). Pure-play stocks rank higher in their theme.
+        """
+        added = False
+
+        if THEME_INTEL.exists() and THEME_TAG.exists():
+            try:
+                intel = pd.read_csv(THEME_INTEL, usecols=["theme", "theme_score"])
+                tag   = pd.read_csv(THEME_TAG)
+                tag["SYMBOL"] = tag["SYMBOL"].str.strip().str.upper()
+                tag["THEME"]  = tag["THEME"].str.strip().str.upper()
+                tag["PURITY_SCORE"] = pd.to_numeric(tag["PURITY_SCORE"], errors="coerce")
+
+                # Join theme score into tagging table
+                intel["theme"] = intel["theme"].str.strip().str.upper()
+                intel["theme_score"] = pd.to_numeric(intel["theme_score"], errors="coerce")
+                tag = tag.merge(intel, left_on="THEME", right_on="theme", how="left")
+
+                # Max theme_score per symbol (best performing theme the stock belongs to)
+                ts_max = (tag.groupby("SYMBOL")["theme_score"].max().rename("theme_score_max")
+                            .reset_index().rename(columns={"SYMBOL": "symbol"}))
+                # Max purity across all themes for the symbol
+                tp_max = (tag.groupby("SYMBOL")["PURITY_SCORE"].max().rename("theme_purity_max")
+                            .reset_index().rename(columns={"SYMBOL": "symbol"}))
+
+                df = df.merge(ts_max, on="symbol", how="left")
+                df = df.merge(tp_max, on="symbol", how="left")
+                added = True
+                logger.info("[FeatureEng] Theme features: %d symbols tagged", ts_max["symbol"].nunique())
+            except Exception as e:
+                logger.warning("[FeatureEng] Theme features failed: %s", e)
+        elif THEME_TAG.exists():
+            # Fallback: just purity scores without theme score
+            try:
+                tag = pd.read_csv(THEME_TAG)
+                tag["SYMBOL"] = tag["SYMBOL"].str.strip().str.upper()
+                tag["PURITY_SCORE"] = pd.to_numeric(tag["PURITY_SCORE"], errors="coerce")
+                tp_max = (tag.groupby("SYMBOL")["PURITY_SCORE"].max().rename("theme_purity_max")
+                            .reset_index().rename(columns={"SYMBOL": "symbol"}))
+                df = df.merge(tp_max, on="symbol", how="left")
+                added = True
+            except Exception as e:
+                logger.warning("[FeatureEng] Theme purity fallback failed: %s", e)
+
+        if not added:
+            logger.warning("[FeatureEng] theme_tagging.csv / theme_intelligence.csv missing -- skipping theme features")
+
+        return df
+
+    def _add_news_sentiment(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Rolling 7-day news sentiment per symbol from news_signals.csv (Phase F)."""
+        if not NEWS_SIGNALS.exists():
+            logger.warning("[FeatureEng] news_signals.csv missing -- skipping news sentiment feature")
+            return df
+        try:
+            news = pd.read_csv(NEWS_SIGNALS, usecols=["symbol", "sentiment_7d"])
+            news["symbol"] = news["symbol"].str.strip().str.upper()
+            news["sentiment_7d"] = pd.to_numeric(news["sentiment_7d"], errors="coerce")
+            news = news.rename(columns={"sentiment_7d": "news_sentiment_7d"})
+            # Dedup: if multiple rows per symbol take mean
+            news = news.groupby("symbol")["news_sentiment_7d"].mean().reset_index()
+            logger.info("[FeatureEng] News sentiment: %d symbols", len(news))
+            return df.merge(news, on="symbol", how="left")
+        except Exception as e:
+            logger.warning("[FeatureEng] News sentiment failed: %s", e)
+            return df
+
+    def _add_insider_signals(self, df: pd.DataFrame) -> pd.DataFrame:
+        """30-day insider net-buy score per symbol from insider_signals.csv (Phase F).
+        insider_score = net_value_30d_cr.clip(-20, 20) — ML-ready numeric."""
+        if not INSIDER_SIGS.exists():
+            logger.warning("[FeatureEng] insider_signals.csv missing -- skipping insider feature")
+            return df
+        try:
+            ins = pd.read_csv(INSIDER_SIGS, usecols=["symbol", "insider_score"])
+            ins["symbol"] = ins["symbol"].str.strip().str.upper()
+            ins["insider_score"] = pd.to_numeric(ins["insider_score"], errors="coerce")
+            logger.info("[FeatureEng] Insider signals: %d symbols", len(ins))
+            return df.merge(ins, on="symbol", how="left")
+        except Exception as e:
+            logger.warning("[FeatureEng] Insider signals failed: %s", e)
+            return df
+
+    def _add_concall_signals(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Latest concall guidance + sentiment scores from concall_summary.csv (Phase F).
+        guidance_score: RAISED=2, MAINTAINED=1, LOWERED=-1, NOT_GIVEN=0
+        sentiment_score: BULLISH=1, NEUTRAL=0, BEARISH=-1"""
+        if not CONCALL_SUM.exists():
+            logger.warning("[FeatureEng] concall_summary.csv missing -- skipping concall feature")
+            return df
+        try:
+            cols_want = ["symbol", "guidance_score", "sentiment_score"]
+            peek = pd.read_csv(CONCALL_SUM, nrows=0).columns.tolist()
+            usecols = [c for c in cols_want if c in peek]
+            cc = pd.read_csv(CONCALL_SUM, usecols=usecols)
+            cc["symbol"] = cc["symbol"].str.strip().str.upper()
+            rename = {
+                "guidance_score":  "concall_guidance_score",
+                "sentiment_score": "concall_sentiment_score",
+            }
+            cc = cc.rename(columns={k: v for k, v in rename.items() if k in cc.columns})
+            for col in ["concall_guidance_score", "concall_sentiment_score"]:
+                if col in cc.columns:
+                    cc[col] = pd.to_numeric(cc[col], errors="coerce")
+            logger.info("[FeatureEng] Concall signals: %d symbols", len(cc))
+            return df.merge(cc, on="symbol", how="left")
+        except Exception as e:
+            logger.warning("[FeatureEng] Concall signals failed: %s", e)
+            return df
 
     # ------------------------------------------------------------------
     # Validation + save
