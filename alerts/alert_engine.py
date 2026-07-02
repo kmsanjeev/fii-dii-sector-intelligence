@@ -59,6 +59,7 @@ P7_DAILY_DIGEST           = "DAILY_DIGEST"
 P8_ANNOUNCEMENT_MOMENTUM  = "ANNOUNCEMENT_MOMENTUM"
 P9_TRADE_CONVICTION       = "TRADE_CONVICTION"
 P10_OI_SIGNAL_FLIP        = "OI_SIGNAL_FLIP"
+P11_THEME_ROTATION        = "THEME_ROTATION"
 
 PRIORITY_ORDER = [
     P1_REGIME_CHANGE,
@@ -71,7 +72,11 @@ PRIORITY_ORDER = [
     P8_ANNOUNCEMENT_MOMENTUM,
     P9_TRADE_CONVICTION,
     P10_OI_SIGNAL_FLIP,
+    P11_THEME_ROTATION,
 ]
+
+THEME_MOMENTUM_PATH = cfg.INTELLIGENCE_DIR / "theme_momentum.csv"
+THEME_ROTATION_DELTA = 5.0   # min score delta to alert on
 
 
 @dataclass
@@ -121,6 +126,7 @@ class AlertEngine:
         alerts.extend(self._check_announcement_momentum())
         alerts.extend(self._check_trade_conviction())
         alerts.extend(self._check_oi_signal_flip())
+        alerts.extend(self._check_theme_rotation())
 
         logger.info(f"[AlertEngine] Generated {len(alerts)} raw alerts")
         return alerts
@@ -543,6 +549,53 @@ class AlertEngine:
                 data_date=str(row.get("as_of_date", self.today)),
             ))
         logger.info(f"[AlertEngine] P10 OI signal flip alerts: {len(alerts)}")
+        return alerts
+
+
+    # ── P11: Theme Rotation ───────────────────────────────────────────────────
+
+    def _check_theme_rotation(self) -> list[Alert]:
+        if not THEME_MOMENTUM_PATH.exists():
+            return []
+        try:
+            mom = pd.read_csv(THEME_MOMENTUM_PATH)
+        except Exception:
+            return []
+
+        mom["delta"] = pd.to_numeric(mom.get("delta", pd.Series(dtype=float)), errors="coerce").fillna(0)
+        mom["theme_score"] = pd.to_numeric(mom.get("theme_score", pd.Series(dtype=float)), errors="coerce").fillna(0)
+
+        # Alert on phase transitions OR large delta
+        significant = mom[
+            (mom["delta"].abs() >= THEME_ROTATION_DELTA)
+            | (mom.get("phase_transition", "").astype(str).str.startswith("CROSSED_"))
+        ].copy()
+
+        if significant.empty:
+            return []
+
+        alerts: list[Alert] = []
+        for _, row in significant.head(5).iterrows():
+            delta  = float(row["delta"])
+            theme  = str(row.get("theme", ""))
+            pt     = str(row.get("phase_transition", ""))
+            score  = float(row["theme_score"])
+            prev   = float(row.get("prev_score", score - delta))
+            sign   = "+" if delta >= 0 else ""
+            pt_tag = f" [{pt.replace('CROSSED_', '')}]" if pt else ""
+            alerts.append(Alert(
+                alert_type=P11_THEME_ROTATION,
+                priority=11,
+                title=f"THEME ROTATION{pt_tag}: {theme}",
+                body=(
+                    f"{theme} theme score: {prev:.1f} -> {score:.1f} ({sign}{delta:.1f} pts)\n"
+                    f"Signal: {row.get('theme_signal', '')} | Phase: {row.get('momentum_phase', '')}"
+                ),
+                sector=theme,
+                score=delta,
+                data_date=str(row.get("as_of_date", self.today)),
+            ))
+        logger.info(f"[AlertEngine] P11 theme rotation alerts: {len(alerts)}")
         return alerts
 
 

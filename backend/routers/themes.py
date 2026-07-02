@@ -32,17 +32,57 @@ def _parse_picks(raw) -> list:
         return []
 
 
+def _build_trend_map() -> dict[str, dict]:
+    """Returns {THEME: {trend_score, trend_direction, interest_now}} from trend_scores."""
+    tdf = data_loader.get("trend_scores")
+    if tdf is None or tdf.empty:
+        return {}
+    out = {}
+    for _, r in tdf.iterrows():
+        theme = str(r.get("theme", "")).upper()
+        out[theme] = {
+            "trend_score":     _safe(r.get("trend_score")),
+            "trend_direction": str(r.get("trend_direction", "")),
+            "interest_now":    _safe(r.get("interest_now")),
+        }
+    return out
+
+
+def _build_momentum_map() -> dict[str, dict]:
+    """Returns {THEME: {delta, phase_transition, prev_score}} from theme_momentum."""
+    mdf = data_loader.get("theme_momentum")
+    if mdf is None or mdf.empty:
+        return {}
+    out = {}
+    for _, r in mdf.iterrows():
+        theme = str(r.get("theme", "")).upper()
+        out[theme] = {
+            "delta":            _safe(r.get("delta")),
+            "delta_pct":        _safe(r.get("delta_pct")),
+            "prev_score":       _safe(r.get("prev_score")),
+            "phase_transition": str(r.get("phase_transition", "")),
+            "prior_date":       str(r.get("prior_date", "")),
+        }
+    return out
+
+
 @router.get("")
 def get_themes():
     df = data_loader.get("theme_intelligence")
     if df is None or df.empty:
         raise HTTPException(status_code=503, detail="theme_intelligence not loaded")
 
+    trend_map    = _build_trend_map()
+    momentum_map = _build_momentum_map()
+
     themes = []
     for _, row in df.iterrows():
         t = _clean(row.to_dict())
-        t["sectors"] = [s.strip() for s in str(t.get("sectors", "")).split(",") if s.strip()]
+        t["sectors"]   = [s.strip() for s in str(t.get("sectors", "")).split(",") if s.strip()]
         t["top_picks"] = _parse_picks(t.get("top_picks"))
+        code = str(t.get("theme", "")).upper()
+        t["trend"]    = trend_map.get(code, {})
+        t["momentum"] = momentum_map.get(code, {})
         themes.append(t)
 
     return {"count": len(themes), "themes": themes}

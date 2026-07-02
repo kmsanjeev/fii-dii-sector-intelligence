@@ -41,6 +41,9 @@ type Theme = {
   smart_money_score: number | null
   top_picks:         TopPick[]
   as_of_date:        string
+  // Phase H
+  trend?:    { trend_score: number | null; trend_direction: string; interest_now: number | null }
+  momentum?: { delta: number | null; delta_pct: number | null; phase_transition: string; prior_date: string }
 }
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
@@ -219,6 +222,29 @@ function ThemeCard({ t, onClick, expanded }: { t: Theme; onClick: () => void; ex
                   </span>
                 )
               })()}
+              {/* Phase H: trend direction badge */}
+              {t.trend?.trend_direction && t.trend.trend_direction !== '' && (() => {
+                const dir = t.trend!.trend_direction
+                const tc  = dir === 'RISING' ? '#22D35E' : dir === 'FALLING' ? '#FF4D4F' : '#8899AA'
+                return (
+                  <span style={{
+                    fontSize: 8, fontWeight: 700, padding: '2px 7px', borderRadius: 3,
+                    background: `${tc}18`, color: tc, border: `1px solid ${tc}44`, letterSpacing: 0.8,
+                  }}>
+                    {dir === 'RISING' ? 'TREND UP' : dir === 'FALLING' ? 'TREND DN' : 'STABLE'}
+                  </span>
+                )
+              })()}
+              {/* Phase H: phase transition badge */}
+              {t.momentum?.phase_transition && t.momentum.phase_transition !== '' && (
+                <span style={{
+                  fontSize: 8, fontWeight: 700, padding: '2px 7px', borderRadius: 3,
+                  background: '#F5A52418', color: '#F5A524', border: '1px solid #F5A52444',
+                  letterSpacing: 0.8,
+                }}>
+                  {t.momentum.phase_transition.replace('CROSSED_', '')}
+                </span>
+              )}
             </div>
           </div>
           <ScoreRing score={score} color={scoreColor} size={52} />
@@ -256,6 +282,18 @@ function ThemeCard({ t, onClick, expanded }: { t: Theme; onClick: () => void; ex
             </div>
             <div style={{ color: C.dim, fontSize: 8 }}>Leader</div>
           </div>
+          {/* Phase H: momentum delta */}
+          {t.momentum?.delta != null && (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+              <div style={{
+                fontSize: 11, fontWeight: 800,
+                color: (t.momentum.delta as number) >= 0 ? C.bull : C.bear,
+              }}>
+                {(t.momentum.delta as number) >= 0 ? '+' : ''}{(t.momentum.delta as number).toFixed(1)}
+              </div>
+              <div style={{ color: C.dim, fontSize: 8 }}>MomDelta</div>
+            </div>
+          )}
         </div>
 
         {/* Stats row */}

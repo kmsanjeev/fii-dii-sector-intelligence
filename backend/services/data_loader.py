@@ -58,6 +58,10 @@ SOURCES = {
     # Phase G — Consensus + purity
     "consensus_scores":       cfg.INTELLIGENCE_DIR / "consensus_scores.csv",
     "purity_change_log":      cfg.INTELLIGENCE_DIR / "purity_change_log.csv",
+    # Phase H — Trend + AGM + Theme momentum
+    "trend_scores":           cfg.INTELLIGENCE_DIR / "trend_scores.csv",
+    "agm_signals":            cfg.INTELLIGENCE_DIR / "agm_signals.csv",
+    "theme_momentum":         cfg.INTELLIGENCE_DIR / "theme_momentum.csv",
 }
 
 _MARKET_CONTEXT_PATH = cfg.INTELLIGENCE_DIR / "market_context.json"
