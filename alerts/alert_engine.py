@@ -26,6 +26,8 @@ DEAL_SIGNALS         = cfg.INTELLIGENCE_DIR / "institutional_deal_signals.csv"
 CORP_CONFIDENCE      = cfg.INTELLIGENCE_DIR / "corporate_confidence_scores.csv"
 FLOW_SCORES          = cfg.INTELLIGENCE_DIR / "participant_flow_scores.csv"
 ANN_CSV              = cfg.INTELLIGENCE_DIR / "company_announcements.csv"
+TRADE_CONVICTION     = cfg.INTELLIGENCE_DIR / "trade_conviction_scores.csv"
+FNO_INTEL            = cfg.INTELLIGENCE_DIR / "fno_intelligence.csv"
 
 # ── Thresholds ────────────────────────────────────────────────────────────────
 
@@ -39,6 +41,11 @@ ANN_DISTINCT_MIN      = 3          # min distinct announcement types in 30d (con
 ANN_VELOCITY_MIN      = 1.5        # min 30d/60d announcement velocity ratio
 ORDER_WIN_MIN_6M      = 2          # min ORDER_WIN events in 6 months
 ANN_MAX_ALERTS        = 8          # cap per run to prevent flooding
+CONVICTION_STRONG_BUY = 72.0       # trade conviction score -> STRONG_BUY zone
+CONVICTION_EXIT       = 28.0       # trade conviction score -> EXIT_AVOID zone
+CONVICTION_MAX_ALERTS = 10         # cap per run to prevent flooding (5 per direction)
+OI_FLIP_PCT_MIN       = 15.0       # min day-over-day OI % change to count as a "flip"
+OI_FLIP_MAX_ALERTS    = 10         # cap per run to prevent flooding (5 per direction)
 
 # ── Alert priorities ──────────────────────────────────────────────────────────
 
@@ -50,6 +57,8 @@ P5_CORPORATE_CONFIDENCE   = "CORPORATE_CONFIDENCE"
 P6_PARTICIPANT_DIVERGENCE = "PARTICIPANT_DIVERGENCE"
 P7_DAILY_DIGEST           = "DAILY_DIGEST"
 P8_ANNOUNCEMENT_MOMENTUM  = "ANNOUNCEMENT_MOMENTUM"
+P9_TRADE_CONVICTION       = "TRADE_CONVICTION"
+P10_OI_SIGNAL_FLIP        = "OI_SIGNAL_FLIP"
 
 PRIORITY_ORDER = [
     P1_REGIME_CHANGE,
@@ -60,6 +69,8 @@ PRIORITY_ORDER = [
     P6_PARTICIPANT_DIVERGENCE,
     P7_DAILY_DIGEST,
     P8_ANNOUNCEMENT_MOMENTUM,
+    P9_TRADE_CONVICTION,
+    P10_OI_SIGNAL_FLIP,
 ]
 
 
@@ -108,6 +119,8 @@ class AlertEngine:
         alerts.extend(self._check_corporate_confidence())
         alerts.extend(self._check_participant_divergence())
         alerts.extend(self._check_announcement_momentum())
+        alerts.extend(self._check_trade_conviction())
+        alerts.extend(self._check_oi_signal_flip())
 
         logger.info(f"[AlertEngine] Generated {len(alerts)} raw alerts")
         return alerts
@@ -435,6 +448,101 @@ class AlertEngine:
             ))
 
         logger.info(f"[AlertEngine] P8 announcement momentum alerts: {len(alerts)}")
+        return alerts
+
+    # ── P9: Trade Conviction ──────────────────────────────────────────────────
+    # Fires when the 7-factor conviction score (engines/intelligence/
+    # trade_conviction_engine.py -- server-side port of TradeIntelligenceCard)
+    # is in the STRONG_BUY or EXIT_AVOID zone. Unlike P2's bull_run_score (which
+    # rarely crosses its threshold for more than a handful of symbols), this
+    # score routinely lands 500+ symbols in each zone -- so, like P8/P10, cap
+    # to the most extreme scores per direction to avoid flooding.
+
+    def _check_trade_conviction(self) -> list[Alert]:
+        if not TRADE_CONVICTION.exists():
+            return []
+
+        df = pd.read_csv(TRADE_CONVICTION, usecols=[
+            "symbol", "sector", "score", "action", "trend_signal", "oi_signal",
+            "sector_rotation_signal", "entry_low", "entry_high", "stop_loss", "as_of_date"
+        ])
+        per_direction = CONVICTION_MAX_ALERTS // 2
+        strong_buy = df[df["action"] == "STRONG_BUY"].nlargest(per_direction, "score")
+        exit_avoid = df[df["action"] == "EXIT_AVOID"].nsmallest(per_direction, "score")
+        hits = pd.concat([strong_buy, exit_avoid], ignore_index=True)
+        if hits.empty:
+            return []
+
+        alerts = []
+        for _, row in hits.iterrows():
+            is_buy = row["action"] == "STRONG_BUY"
+            title = "TRADE CONVICTION: STRONG BUY" if is_buy else "TRADE CONVICTION: EXIT / AVOID"
+            entry = (
+                f"Entry zone: {row['entry_low']:.2f}-{row['entry_high']:.2f} | Stop: {row['stop_loss']:.2f}"
+                if is_buy and pd.notna(row.get("entry_low")) else
+                f"Stop: {row['stop_loss']:.2f}" if pd.notna(row.get("stop_loss")) else ""
+            )
+            alerts.append(Alert(
+                alert_type=P9_TRADE_CONVICTION,
+                priority=9,
+                title=f"{title}: {row['symbol']}",
+                body=(
+                    f"{row['symbol']} ({row['sector']}) conviction score {row['score']:.0f}/100 -- {row['action']}.\n"
+                    f"Trend: {row.get('trend_signal', 'N/A')} | OI: {row.get('oi_signal', 'N/A')} | "
+                    f"Sector: {row.get('sector_rotation_signal', 'N/A')}\n"
+                    f"{entry}"
+                ),
+                symbol=str(row["symbol"]),
+                sector=str(row["sector"]),
+                score=float(row["score"]),
+                data_date=str(row.get("as_of_date", self.today)),
+            ))
+        logger.info(f"[AlertEngine] P9 trade conviction alerts: {len(alerts)}")
+        return alerts
+
+    # ── P10: OI Signal Flip ───────────────────────────────────────────────────
+    # F&O engine recomputes oi_signal every session from the sign of OI + price
+    # change, so LONG_BUILDUP/SHORT_BUILDUP alone fires on ~95% of the F&O
+    # universe daily. Require a >=15% day-over-day OI move to isolate genuine
+    # outliers, capped at the top 10 by magnitude to prevent flooding.
+
+    def _check_oi_signal_flip(self) -> list[Alert]:
+        if not FNO_INTEL.exists():
+            return []
+
+        df = pd.read_csv(FNO_INTEL, usecols=[
+            "symbol", "futures_oi", "oi_1d", "oi_signal", "fut_close", "as_of_date"
+        ])
+        flips = df[df["oi_signal"].isin(["LONG_BUILDUP", "SHORT_BUILDUP"])].copy()
+        if flips.empty:
+            return []
+
+        prev_oi = flips["futures_oi"] - flips["oi_1d"]
+        flips["oi_pct_chg"] = (flips["oi_1d"] / prev_oi.replace(0, pd.NA)) * 100
+        flips = flips[flips["oi_pct_chg"].abs() >= OI_FLIP_PCT_MIN]
+        if flips.empty:
+            return []
+
+        flips = flips.sort_values("oi_pct_chg", key=lambda s: s.abs(), ascending=False)
+        flips = flips.head(OI_FLIP_MAX_ALERTS)
+
+        alerts = []
+        for _, row in flips.iterrows():
+            direction = "LONG" if row["oi_signal"] == "LONG_BUILDUP" else "SHORT"
+            alerts.append(Alert(
+                alert_type=P10_OI_SIGNAL_FLIP,
+                priority=10,
+                title=f"OI {direction} BUILDUP: {row['symbol']}",
+                body=(
+                    f"{row['symbol']} futures OI {row['oi_signal']} -- "
+                    f"{row['oi_pct_chg']:+.1f}% day-over-day change.\n"
+                    f"Futures close: {row['fut_close']:.2f} | Total OI: {row['futures_oi']:,.0f}"
+                ),
+                symbol=str(row["symbol"]),
+                score=float(row["oi_pct_chg"]),
+                data_date=str(row.get("as_of_date", self.today)),
+            ))
+        logger.info(f"[AlertEngine] P10 OI signal flip alerts: {len(alerts)}")
         return alerts
 
 

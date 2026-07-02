@@ -71,6 +71,10 @@ data/intelligence/
 |-- quarterly_results.csv                4181 rows  NSE XBRL P&L, 2084 symbols (Phase 15)
 |-- valuation_scores.csv                 2084 rows  P/E, ROE, valuation_label (Phase 15)
 `-- management_sentiment.csv              471 rows  Claude tone score, label (Phase 16)
+|-- technical_indicators.csv             2717 rows  52W H/L, 20/50/200 DMA, trend_signal (Phase A)
+|-- fno_intelligence.csv                  211 rows  per-stock futures OI + oi_signal (Phase A)
+|-- market_context.json                             market PCR + regime pulse (Phase A)
+`-- trade_conviction_scores.csv          2406 rows  7-factor conviction score + action (Phase C)
 data/NSE/shareholding/
 |-- quarterly_shp.csv                    7228 rows  Q2FY25-Q1FY26 FII/DII/promoter % (Phase 15C)
 |-- holding_trends.csv                              QoQ promoter/FII/DII deltas (Phase 16)
@@ -99,7 +103,7 @@ data/NSE/shareholding/
 | 7C    | Corporate Action Intelligence | COMPLETE 100%    | 40517 actions, 1111 confidence scores |
 | 8A    | Price Momentum Engine         | COMPLETE 100%    | 2441 symbols, 5 lookbacks |
 | 8B    | Bull Run Probability Engine   | COMPLETE 100%    | 225 EMERGING, regime NEUTRAL x0.90 |
-| 9     | Alert System (Telegram)       | COMPLETE 100%    | 7 alert types, APScheduler, 118 alerts on first run |
+| 9     | Alert System (Telegram)       | COMPLETE 100%    | 10 alert types (P1-P10), APScheduler, cooldown + per-type caps |
 | 10    | FastAPI Backend               | COMPLETE 100%    | 20 endpoints, port 8001, WebSocket live ticker |
 | 11    | React GUI                     | COMPLETE 100%    | 14 pages incl. Charts, Portfolio, Backtest, Broker, Research, Execution, Admin |
 | 12    | ML Intelligence Layer         | COMPLETE 100%    | XGBoost+LightGBM, 24 features, 4 model outputs |
@@ -116,9 +120,12 @@ data/NSE/shareholding/
 | 23    | Research Platform             | COMPLETE 100%    | engines/research/; 2406-symbol screener, comparator, notes |
 | 24    | Execution Platform            | COMPLETE 100%    | engines/execution/; risk engine, paper/live orders, signal recommender |
 | 25    | Commercial Platform           | COMPLETE 100%    | backend/auth/; SQLite sessions, roles, API keys; auth off by default |
+| A     | Technical + F&O Intelligence  | COMPLETE 100%    | engines/intelligence/technical_engine.py + fno_engine.py; market pulse dashboard |
+| B     | Trade Intelligence Card       | COMPLETE 100%    | frontend/.../TradeIntelligenceCard.tsx; 7-factor entry/exit synthesis |
+| C     | Trade Conviction Alerts       | COMPLETE 100%    | engines/intelligence/trade_conviction_engine.py (server-side score port); alerts P9/P10 |
 
 ## CURRENT PLATFORM STATUS (2026-07-02)
-**ALL 25 PHASES COMPLETE.** Full investment operating system is live.
+**ALL 25 CORE PHASES + A/B/C COMPLETE.** Full investment operating system is live.
 - Backend: `py -3.11 -m uvicorn backend.main:app --port 8001 --reload`
 - Frontend: `npm run dev` in `frontend/` (Vite at http://localhost:5173)
 - Startup: Run `./start.ps1` to launch both servers as detached background processes

@@ -50,11 +50,16 @@ STAGES = [
     ("18A_announcements",           "engines.corporate.announcement_intelligence_engine",      "Corporate Announcements (incremental)", 600),
     # Phase 16 — Management Intelligence (uses Anthropic API — non-critical, failures tolerated)
     ("16A_management_sentiment",    "engines.management.management_sentiment_engine",          "Management Sentiment (Claude AI)",     300),
+    # Phase A — Technical + F&O Intelligence (independent of participant/sector data above)
+    ("A1_technical_indicators",     "engines.intelligence.technical_engine",                   "Technical Indicators",                  60),
+    ("A2_fno_intelligence",         "engines.intelligence.fno_engine",                         "F&O Intelligence (PCR + OI signals)",   60),
     # Phase 8 — Price & Bull Run (depends on fresh participant + corporate data above)
     ("8A_price_momentum",           "engines.intelligence.price_momentum_engine",              "Price Momentum",                       60),
     ("8B_bull_run_probability",     "engines.intelligence.bull_run_probability_engine",        "Bull Run Probability",                 60),
     # Phase 12 — ML inference only (no retrain; reads fresh feature matrix + pre-trained model)
     ("12_ml_scorer",                "engines.ml.ml_scorer",                                   "ML Scorer (inference)",                60),
+    # Phase C — Trade Conviction (depends on technical, F&O, sector rotation, ML scores above)
+    ("C1_trade_conviction",         "engines.intelligence.trade_conviction_engine",            "Trade Conviction Scores",               60),
     # Phase 13 — RAG (rebuild indexes from fresh intelligence CSVs)
     ("13A_document_builder",        "engines.ai.knowledge.document_builder",                  "RAG Document Builder",                 30),
     ("13B_faiss_indexer",           "engines.ai.knowledge.faiss_indexer",                     "FAISS Indexer (embedding)",            180),

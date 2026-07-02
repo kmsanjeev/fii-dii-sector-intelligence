@@ -50,6 +50,9 @@ TELEGRAM_CHAT_ID   = os.getenv("TELEGRAM_CHAT_ID")
 | P5 | CORPORATE_CONFIDENCE | confidence_score_12m crosses +2.0 | 48h |
 | P6 | PARTICIPANT_DIVERGENCE | FII vs CLIENT divergence > 2 sigma | 48h |
 | P7 | DAILY_DIGEST | 18:30 IST scheduled summary | 24h |
+| P8 | ANNOUNCEMENT_MOMENTUM | Confluence/order-win momentum on pre-discovery stocks | 48h |
+| P9 | TRADE_CONVICTION | trade_conviction_scores.csv action in {STRONG_BUY, EXIT_AVOID} | 72h |
+| P10 | OI_SIGNAL_FLIP | F&O oi_signal LONG/SHORT_BUILDUP with >=15% day OI change (top 10) | 48h |
 
 ## ALERT DESIGN PRINCIPLES (ADR-010 + ADR-011)
 
@@ -80,6 +83,9 @@ for alert in alerts:
 | institutional_deal_signals.csv | alert_engine | Institutional deals (P4) |
 | corporate_confidence_scores.csv | alert_engine | Corporate confidence (P5) |
 | participant_flow_scores.csv | alert_engine | Participant divergence (P6) |
+| company_announcements.csv | alert_engine | Announcement momentum (P8) |
+| trade_conviction_scores.csv | alert_engine | Trade conviction (P9) |
+| fno_intelligence.csv | alert_engine | OI signal flip (P10) |
 
 ## PACKAGES REQUIRED
 

@@ -32,6 +32,8 @@ COOLDOWN_HOURS = {
     "PARTICIPANT_DIVERGENCE":    48,
     "DAILY_DIGEST":              24,
     "ANNOUNCEMENT_MOMENTUM":     48,
+    "TRADE_CONVICTION":          72,
+    "OI_SIGNAL_FLIP":            48,
 }
 
 
