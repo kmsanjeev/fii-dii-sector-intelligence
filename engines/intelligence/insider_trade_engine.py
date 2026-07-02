@@ -36,7 +36,7 @@ TRADES_PATH  = cfg.INTELLIGENCE_DIR / "insider_trades.csv"
 SIGNALS_PATH = cfg.INTELLIGENCE_DIR / "insider_signals.csv"
 
 LOOKBACK_DAYS  = 90
-SIGNAL_DAYS    = 30
+SIGNAL_DAYS    = 90   # generate signals from full lookback window
 API_DELAY      = cfg.API_DELAY        # 1.0s between requests
 MAX_RETRIES    = cfg.MAX_RETRIES      # 3
 RETRY_DELAY    = cfg.RETRY_DELAY      # 3s
@@ -49,8 +49,10 @@ HIGH_CONVICTION_CATEGORIES = {
 
 NSE_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    "Accept": "application/json",
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
     "Referer": "https://www.nseindia.com/",
+    "X-Requested-With": "XMLHttpRequest",
 }
 
 
@@ -151,23 +153,29 @@ class InsiderTradeEngine:
             for rec in data:
                 if not self._is_high_conviction(rec):
                     continue
-                buy_val  = self._parse_value(rec.get("buyValue",  0))
-                sell_val = self._parse_value(rec.get("sellValue", 0))
-                if buy_val == 0 and sell_val == 0:
+                # NSE PIT API: buyValue/sellValue are always "0"; actual value is in secVal.
+                # tdpTransactionType ("Buy"/"Sell") determines direction.
+                sec_val  = self._parse_value(rec.get("secVal", 0))
+                if sec_val == 0:
                     continue
+                tx_type  = str(rec.get("tdpTransactionType", "")).lower()
+                buy_val  = sec_val if "buy" in tx_type else 0.0
+                sell_val = sec_val if "sell" in tx_type else 0.0
+                qty      = self._parse_value(rec.get("secAcq", rec.get("buyQuantity", rec.get("sellquantity", 0))))
 
                 rows.append({
-                    "symbol":          symbol,
-                    "date":            self._parse_date(str(rec.get("intimDt", ""))),
-                    "acq_name":        str(rec.get("acqName", ""))[:80],
-                    "person_category": str(rec.get("personCategory", ""))[:50],
-                    "buy_qty":         self._parse_value(rec.get("buyQuantity", 0)),
-                    "buy_value_cr":    round(buy_val / 1e7, 4),   # rupees → crores
-                    "sell_qty":        self._parse_value(rec.get("sellquantity", rec.get("sellQuantity", 0))),
-                    "sell_value_cr":   round(sell_val / 1e7, 4),
+                    "symbol":           symbol,
+                    "date":             self._parse_date(str(rec.get("intimDt", ""))),
+                    "acq_name":         str(rec.get("acqName", ""))[:80],
+                    "person_category":  str(rec.get("personCategory", ""))[:50],
+                    "transaction_type": str(rec.get("tdpTransactionType", ""))[:10],
+                    "buy_qty":          qty if buy_val > 0 else 0.0,
+                    "buy_value_cr":     round(buy_val / 1e7, 4),
+                    "sell_qty":         qty if sell_val > 0 else 0.0,
+                    "sell_value_cr":    round(sell_val / 1e7, 4),
                     "after_shares_pct": self._parse_value(rec.get("afterAcqSharesPer", 0)),
-                    "sec_type":        str(rec.get("secType", "Equity"))[:30],
-                    "fetched_at":      datetime.now().strftime("%Y-%m-%d"),
+                    "sec_type":         str(rec.get("secType", "Equity"))[:30],
+                    "fetched_at":       datetime.now().strftime("%Y-%m-%d"),
                 })
 
             if (i + 1) % 25 == 0:
@@ -205,20 +213,24 @@ class InsiderTradeEngine:
         signals = (
             recent.groupby("symbol")
             .agg(
-                buy_value_30d_cr  = ("buy_value_cr",  "sum"),
-                sell_value_30d_cr = ("sell_value_cr", "sum"),
-                buy_count_30d     = ("buy_qty",        lambda x: (x > 0).sum()),
-                sell_count_30d    = ("sell_qty",       lambda x: (x > 0).sum()),
+                buy_value_90d_cr  = ("buy_value_cr",  "sum"),
+                sell_value_90d_cr = ("sell_value_cr", "sum"),
+                buy_count_90d     = ("buy_qty",        lambda x: (x > 0).sum()),
+                sell_count_90d    = ("sell_qty",       lambda x: (x > 0).sum()),
                 latest_date       = ("date",            "max"),
                 acquirers         = ("acq_name",       lambda x: "|".join(x.unique()[:3])),
             )
             .reset_index()
         )
 
-        signals["net_value_30d_cr"] = signals["buy_value_30d_cr"] - signals["sell_value_30d_cr"]
+        signals["net_value_90d_cr"] = signals["buy_value_90d_cr"] - signals["sell_value_90d_cr"]
+        # Keep 30d alias for downstream compatibility
+        signals["buy_value_30d_cr"]  = signals["buy_value_90d_cr"]
+        signals["sell_value_30d_cr"] = signals["sell_value_90d_cr"]
+        signals["net_value_30d_cr"]  = signals["net_value_90d_cr"]
 
         def _conviction(row) -> str:
-            net = row["net_value_30d_cr"]
+            net = row["net_value_90d_cr"]
             if net > 5:    return "STRONG_BUY"
             if net > 1:    return "BUY"
             if net > 0:    return "MILD_BUY"
@@ -227,7 +239,7 @@ class InsiderTradeEngine:
             return "STRONG_SELL"
 
         signals["insider_conviction"]  = signals.apply(_conviction, axis=1)
-        signals["insider_score"]       = signals["net_value_30d_cr"].clip(-20, 20)
+        signals["insider_score"]       = signals["net_value_90d_cr"].clip(-20, 20)
         signals["as_of_date"]          = date.today().strftime("%Y-%m-%d")
 
         tmp2 = SIGNALS_PATH.with_suffix(".tmp")
@@ -235,8 +247,8 @@ class InsiderTradeEngine:
         shutil.move(str(tmp2), str(SIGNALS_PATH))
 
         # Summary
-        buy_syms  = (signals["net_value_30d_cr"] > 0).sum()
-        sell_syms = (signals["net_value_30d_cr"] < 0).sum()
+        buy_syms  = (signals["net_value_90d_cr"] > 0).sum()
+        sell_syms = (signals["net_value_90d_cr"] < 0).sum()
         print(f"\n[InsiderTrade] Phase F insider trade intelligence complete")
         print(f"  Symbols scanned    : {len(symbols)}")
         print(f"  Trades found (90D) : {len(trades_df)}")
@@ -245,9 +257,9 @@ class InsiderTradeEngine:
         print(f"  Net sellers (30D)  : {sell_syms}")
         print()
         print("  Top insider BUYS (30D net Cr):")
-        top_buys = signals.nlargest(8, "net_value_30d_cr")[["symbol", "net_value_30d_cr", "insider_conviction"]]
+        top_buys = signals.nlargest(8, "net_value_90d_cr")[["symbol", "net_value_90d_cr", "insider_conviction"]]
         for _, r in top_buys.iterrows():
-            print(f"    {r['symbol']:<15} +{r['net_value_30d_cr']:.2f} Cr  {r['insider_conviction']}")
+            print(f"    {r['symbol']:<15} +{r['net_value_90d_cr']:.2f} Cr  {r['insider_conviction']}")
 
         logger.info(f"[InsiderTrade] Done — {len(signals)} symbol signals written")
         return signals
