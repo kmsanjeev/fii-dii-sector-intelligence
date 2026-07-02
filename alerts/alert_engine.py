@@ -25,6 +25,7 @@ SECTOR_ROTATION      = cfg.INTELLIGENCE_DIR / "sector_rotation_intelligence.csv"
 DEAL_SIGNALS         = cfg.INTELLIGENCE_DIR / "institutional_deal_signals.csv"
 CORP_CONFIDENCE      = cfg.INTELLIGENCE_DIR / "corporate_confidence_scores.csv"
 FLOW_SCORES          = cfg.INTELLIGENCE_DIR / "participant_flow_scores.csv"
+ANN_CSV              = cfg.INTELLIGENCE_DIR / "company_announcements.csv"
 
 # ── Thresholds ────────────────────────────────────────────────────────────────
 
@@ -34,6 +35,10 @@ DIV_THRESHOLD         = 2.0        # FII/CLIENT divergence sigma
 STRONG_SCORE          = 65.0       # bull_run_score for STRONG_CANDIDATE
 EMERGING_SCORE        = 45.0       # bull_run_score for EMERGING
 DATA_STALENESS_DAYS   = 2          # max trading days lag before ignoring source
+ANN_DISTINCT_MIN      = 3          # min distinct announcement types in 30d (confluence)
+ANN_VELOCITY_MIN      = 1.5        # min 30d/60d announcement velocity ratio
+ORDER_WIN_MIN_6M      = 2          # min ORDER_WIN events in 6 months
+ANN_MAX_ALERTS        = 8          # cap per run to prevent flooding
 
 # ── Alert priorities ──────────────────────────────────────────────────────────
 
@@ -44,6 +49,7 @@ P4_INSTITUTIONAL_DEAL     = "INSTITUTIONAL_DEAL"
 P5_CORPORATE_CONFIDENCE   = "CORPORATE_CONFIDENCE"
 P6_PARTICIPANT_DIVERGENCE = "PARTICIPANT_DIVERGENCE"
 P7_DAILY_DIGEST           = "DAILY_DIGEST"
+P8_ANNOUNCEMENT_MOMENTUM  = "ANNOUNCEMENT_MOMENTUM"
 
 PRIORITY_ORDER = [
     P1_REGIME_CHANGE,
@@ -53,6 +59,7 @@ PRIORITY_ORDER = [
     P5_CORPORATE_CONFIDENCE,
     P6_PARTICIPANT_DIVERGENCE,
     P7_DAILY_DIGEST,
+    P8_ANNOUNCEMENT_MOMENTUM,
 ]
 
 
@@ -100,6 +107,7 @@ class AlertEngine:
         alerts.extend(self._check_institutional_deals())
         alerts.extend(self._check_corporate_confidence())
         alerts.extend(self._check_participant_divergence())
+        alerts.extend(self._check_announcement_momentum())
 
         logger.info(f"[AlertEngine] Generated {len(alerts)} raw alerts")
         return alerts
@@ -290,6 +298,143 @@ class AlertEngine:
                 data_date=data_date,
             ))
         logger.info(f"[AlertEngine] P6 divergence alerts: {len(alerts)}")
+        return alerts
+
+
+    # ── P8: Announcement Momentum ─────────────────────────────────────────────
+    # Two sub-signals:
+    #   CONFLUENCE  -- distinct_types_30d >= 3 AND velocity >= 1.5 (pre-discovery pattern)
+    #   ORDER_WIN   -- 2+ contract wins in 6M with recent activity (revenue pipeline)
+    # Only fires on WATCHLIST/NEUTRAL (pre-EMERGING stocks not yet in the watchlist).
+
+    def _check_announcement_momentum(self) -> list[Alert]:
+        if not ANN_CSV.exists() or not BULL_RUN_PROB.exists():
+            return []
+
+        # Load 180d of announcements (keeps memory footprint small)
+        ann = pd.read_csv(
+            ANN_CSV,
+            usecols=["symbol", "date", "announcement_type", "signal_score"],
+            dtype=str,
+        )
+        ann["date"]         = pd.to_datetime(ann["date"], errors="coerce")
+        ann["signal_score"] = pd.to_numeric(ann["signal_score"], errors="coerce").fillna(0).astype(int)
+        ann["symbol"]       = ann["symbol"].str.strip().str.upper()
+        ann = ann.dropna(subset=["date"])
+
+        today  = pd.Timestamp.now().normalize()
+        cut30  = today - pd.Timedelta(days=30)
+        cut60  = today - pd.Timedelta(days=60)
+        cut180 = today - pd.Timedelta(days=180)
+
+        w30  = ann[ann["date"] >= cut30]
+        w60  = ann[ann["date"] >= cut60]
+        w180 = ann[ann["date"] >= cut180]
+
+        # Per-symbol metrics
+        distinct_30d = w30.groupby("symbol")["announcement_type"].nunique()
+        cnt_30d      = w30.groupby("symbol").size()
+        cnt_60d      = w60.groupby("symbol").size().clip(lower=1)
+        velocity     = (cnt_30d / cnt_60d).round(2)
+        high_30d     = (w30[w30["signal_score"] >= 70]
+                        .groupby("symbol").size())
+        order_wins   = (w180[w180["announcement_type"] == "ORDER_WIN"]
+                        .groupby("symbol").size())
+        latest_order = (w180[w180["announcement_type"] == "ORDER_WIN"]
+                        .groupby("symbol")["date"].max()
+                        .dt.strftime("%Y-%m-%d"))
+        dominant_30d = (w30.groupby("symbol")["announcement_type"]
+                        .agg(lambda x: x.mode().iloc[0] if len(x) > 0 else "OTHER"))
+
+        metrics = pd.DataFrame({
+            "distinct_types_30d": distinct_30d,
+            "ann_velocity_30d":   velocity,
+            "high_signal_30d":    high_30d,
+            "order_wins_6m":      order_wins,
+            "latest_order_date":  latest_order,
+            "dominant_type":      dominant_30d,
+        }).fillna({"distinct_types_30d": 0, "ann_velocity_30d": 0,
+                   "high_signal_30d": 0, "order_wins_6m": 0})
+        metrics = metrics.reset_index().rename(columns={"index": "symbol"})
+
+        # Bull run labels
+        bull = pd.read_csv(
+            BULL_RUN_PROB,
+            usecols=["symbol", "sector", "label", "bull_run_score", "as_of_date"],
+        )
+        bull["symbol"] = bull["symbol"].str.strip().str.upper()
+
+        combined = metrics.merge(bull, on="symbol", how="inner")
+        PRE_DISCOVERY = {"NEUTRAL", "WATCHLIST"}
+
+        alerts: list[Alert] = []
+
+        # --- Sub-signal 1: Momentum Confluence ---
+        confluence = combined[
+            (combined["distinct_types_30d"] >= ANN_DISTINCT_MIN) &
+            (combined["ann_velocity_30d"]   >= ANN_VELOCITY_MIN) &
+            (combined["label"].isin(PRE_DISCOVERY))
+        ].copy()
+        confluence["_rank"] = (
+            confluence["distinct_types_30d"] * confluence["ann_velocity_30d"]
+        )
+        confluence = confluence.sort_values("_rank", ascending=False).head(ANN_MAX_ALERTS // 2)
+
+        for _, row in confluence.iterrows():
+            types_n  = int(row["distinct_types_30d"])
+            velocity = float(row["ann_velocity_30d"])
+            high_n   = int(row.get("high_signal_30d", 0))
+            dom_type = str(row.get("dominant_type", ""))
+            alerts.append(Alert(
+                alert_type=P8_ANNOUNCEMENT_MOMENTUM,
+                priority=8,
+                title=f"ANNOUNCEMENT MOMENTUM: {row['symbol']}",
+                body=(
+                    f"{row['symbol']} ({row['sector']}) - Pre-discovery momentum building.\n"
+                    f"Label: {row['label']} | Bull Run Score: {row['bull_run_score']:.1f}\n"
+                    f"Signal types (30d): {types_n} distinct | Velocity: {velocity:.1f}x\n"
+                    f"High-signal events: {high_n} | Dominant: {dom_type}"
+                ),
+                symbol=str(row["symbol"]),
+                sector=str(row["sector"]),
+                score=float(row["bull_run_score"]),
+                data_date=str(row.get("as_of_date", self.today)),
+            ))
+
+        # --- Sub-signal 2: Order Win Cluster ---
+        order_cluster = combined[
+            (combined["order_wins_6m"] >= ORDER_WIN_MIN_6M) &
+            (combined["label"].isin(PRE_DISCOVERY | {"EMERGING"}))
+        ].copy()
+        # Only alert if a win happened in the last 30d
+        order_cluster = order_cluster[
+            order_cluster["latest_order_date"].notna() &
+            (order_cluster["latest_order_date"] >= cut30.strftime("%Y-%m-%d"))
+        ]
+        order_cluster = order_cluster.sort_values("order_wins_6m", ascending=False).head(ANN_MAX_ALERTS // 2)
+
+        for _, row in order_cluster.iterrows():
+            # Skip if already emitted via confluence
+            if any(a.symbol == str(row["symbol"]) for a in alerts):
+                continue
+            wins_n     = int(row["order_wins_6m"])
+            latest_dt  = str(row.get("latest_order_date", ""))
+            alerts.append(Alert(
+                alert_type=P8_ANNOUNCEMENT_MOMENTUM,
+                priority=8,
+                title=f"ORDER WIN CLUSTER: {row['symbol']}",
+                body=(
+                    f"{row['symbol']} ({row['sector']}) - Order/contract wins accelerating.\n"
+                    f"Label: {row['label']} | Bull Run Score: {row['bull_run_score']:.1f}\n"
+                    f"Order wins (6M): {wins_n} | Latest: {latest_dt}"
+                ),
+                symbol=str(row["symbol"]),
+                sector=str(row["sector"]),
+                score=float(row["bull_run_score"]),
+                data_date=str(row.get("as_of_date", self.today)),
+            ))
+
+        logger.info(f"[AlertEngine] P8 announcement momentum alerts: {len(alerts)}")
         return alerts
 
 
