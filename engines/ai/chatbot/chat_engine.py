@@ -99,13 +99,27 @@ class ChatEngine:
 
         # Agentic loop: model may call tools multiple times
         for _ in range(MAX_TOOL_ROUNDS):
-            response = self.client.chat.completions.create(
-                model=MODEL,
-                max_tokens=MAX_TOKENS,
-                messages=messages,
-                tools=GROQ_TOOLS,
-                tool_choice="auto",
-            )
+            try:
+                response = self.client.chat.completions.create(
+                    model=MODEL,
+                    max_tokens=MAX_TOKENS,
+                    messages=messages,
+                    tools=GROQ_TOOLS,
+                    tool_choice="auto",
+                    parallel_tool_calls=False,  # prevents Llama 3.3 XML-style malformed calls
+                )
+            except Exception as e:
+                # Llama 3.3 occasionally generates XML-style function calls (not JSON).
+                # Groq returns 400 'tool_use_failed' in that case — answer from RAG context instead.
+                if "tool_use_failed" in str(e):
+                    logger.warning("[ChatEngine] tool_use_failed from Groq — retrying without tools")
+                    response = self.client.chat.completions.create(
+                        model=MODEL,
+                        max_tokens=MAX_TOKENS,
+                        messages=messages,
+                    )
+                else:
+                    raise
 
             msg = response.choices[0].message
 
