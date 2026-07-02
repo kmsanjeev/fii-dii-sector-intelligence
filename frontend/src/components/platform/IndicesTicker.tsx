@@ -22,17 +22,14 @@ function TickItem({ t }: { t: IndexTick }) {
   const chg = t.ret_30d
   const pos = chg >= 0
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '0 18px', borderRight: '1px solid #1E2332' }}>
-      <span style={{ color: '#64748B', fontSize: 10, fontWeight: 600, letterSpacing: 0.5 }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 20px', borderRight: '1px solid #1A2540' }}>
+      <span style={{ color: '#B0C4D8', fontSize: 11, fontWeight: 600, letterSpacing: 0.3 }}>
         {SHORT[t.name] ?? t.name}
       </span>
-      <span style={{
-        fontSize: 11, fontWeight: 700,
-        color: pos ? '#22C55E' : '#EF4444',
-      }}>
+      <span style={{ fontSize: 11, fontWeight: 700, color: pos ? '#22D35E' : '#F44B4B' }}>
         {pos ? '+' : ''}{chg.toFixed(2)}%
       </span>
-      <span style={{ fontSize: 8, color: '#334155' }}>30D</span>
+      <span style={{ fontSize: 9, color: '#4E6074', fontWeight: 500 }}>30D</span>
     </span>
   )
 }
@@ -54,15 +51,17 @@ export function IndicesTicker() {
   return (
     <div style={{
       overflow: 'hidden',
-      background: '#0D1017',
-      borderBottom: '1px solid #1E2332',
-      height: 28,
+      background: '#08101E',
+      borderBottom: '1px solid #1A2540',
+      height: 30,
       display: 'flex',
       alignItems: 'center',
     }}>
-      <div
-        style={{ color: '#22C55E', fontSize: 9, fontWeight: 800, letterSpacing: 2, padding: '0 12px', flexShrink: 0, borderRight: '1px solid #1E2332', height: '100%', display: 'flex', alignItems: 'center' }}
-      >
+      <div style={{
+        color: '#22D35E', fontSize: 10, fontWeight: 800, letterSpacing: 2.5,
+        padding: '0 14px', flexShrink: 0, borderRight: '1px solid #1A2540',
+        height: '100%', display: 'flex', alignItems: 'center', background: '#0D1A2E',
+      }}>
         NSE
       </div>
       <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>

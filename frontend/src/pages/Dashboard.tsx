@@ -1,6 +1,6 @@
 /**
- * Dashboard — Infographic-first redesign
- * Visual instruments: Regime Dial, Breadth Donut, Flow Bars, Sector Heatmap
+ * Dashboard — Professional infographic redesign
+ * Design system: high-contrast text, rich navy card palette, visual data encoding
  */
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
@@ -12,148 +12,305 @@ import {
 import { ScoreGauge }   from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 
-// ─── Tiny helpers ─────────────────────────────────────────────────────────────
+// ─── Design system ────────────────────────────────────────────────────────────
+// Text hierarchy  : #F8FAFC (H1 values) > #E2E8F0 (primary) > #B0C4D8 (secondary) > #7B90A8 (muted)
+// Card bg         : #0E1420 with border #1E2D44
+// NEVER below     : #4E6074 for any text the user needs to read
 
-const CARD = { background: '#141720', border: '1px solid #1E2332', borderRadius: 8 } as const
-const S9   = { color: '#475569', fontSize: 9, letterSpacing: 1.5 } as const
+const C = {
+  bg:       '#0E1420',
+  bgInner:  '#111B2E',
+  border:   '1px solid #1E2D44',
+  borderH:  '#2D4A6B',
+  // text
+  h1:       '#F8FAFC',
+  primary:  '#E2E8F0',
+  secondary:'#B0C4D8',
+  muted:    '#7B90A8',
+  dim:      '#4E6074',
+  // accent
+  bull:     '#22D35E',
+  bear:     '#F44B4B',
+  neutral:  '#F5A524',
+  fii:      '#3BAEF0',
+  dii:      '#9B7BEA',
+  pro:      '#F5833A',
+  client:   '#C668E8',
+  blue:     '#4080FF',
+} as const
+
+const CARD: React.CSSProperties = {
+  background: C.bg, border: C.border, borderRadius: 10,
+}
+const LABEL: React.CSSProperties = {
+  color: C.secondary, fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase',
+}
+const VAL: React.CSSProperties = {
+  color: C.h1, fontWeight: 800, fontFamily: 'monospace',
+}
+
 const signed = (n: number | null | undefined, d = 1) =>
   n == null ? '--' : `${n >= 0 ? '+' : ''}${n.toFixed(d)}`
 
-// ─── SVG: Regime Speedometer ──────────────────────────────────────────────────
+// ─── Command Strip ────────────────────────────────────────────────────────────
 
-function RegimeDial({ score, regime, pcr, pcrSignal }: {
-  score: number; regime: string; pcr: number | null; pcrSignal: string
-}) {
-  const cx = 110, cy = 100, R = 72, Rneedle = 58
-  const clamped = Math.max(-100, Math.min(100, score))
-  const ratio   = (clamped + 100) / 200
-  const theta   = Math.PI - ratio * Math.PI
-  const nx      = cx + Rneedle * Math.cos(theta)
-  const ny      = cy - Rneedle * Math.sin(theta)
+function CommandStrip({ ctx, part }: { ctx: MarketContext; part: ParticipantLatest | undefined }) {
+  const rgColor = ctx.regime === 'BULL' ? C.bull : ctx.regime === 'BEAR' ? C.bear : C.neutral
+  const pcrColor = ctx.pcr_signal === 'BULLISH' ? C.bull : ctx.pcr_signal === 'BEARISH' ? C.bear : C.neutral
+  const smColor  = (ctx.smart_money_score ?? 0) >= 0 ? C.bull : C.bear
 
-  const arc = (t: number, r = R) => {
-    const a = Math.PI - t * Math.PI
-    return { x: cx + r * Math.cos(a), y: cy - r * Math.sin(a) }
-  }
-
-  // 3 arc segments: BEAR [0→1/3], NEUTRAL [1/3→2/3], BULL [2/3→1]
-  const segs = [
-    { from: 0, to: 1 / 3, color: '#EF4444', label: 'BEAR' },
-    { from: 1 / 3, to: 2 / 3, color: '#F59E0B', label: 'NEUTRAL' },
-    { from: 2 / 3, to: 1, color: '#22C55E', label: 'BULL' },
-  ]
-
-  const regimeColor = regime === 'BULL' ? '#22C55E' : regime === 'BEAR' ? '#EF4444' : '#F59E0B'
-  const pcrColor    = pcrSignal === 'BULLISH' ? '#22C55E' : pcrSignal === 'BEARISH' ? '#EF4444' : '#F59E0B'
-
-  return (
-    <div style={{ ...CARD, padding: '16px 20px' }}>
-      <div style={S9}>SMART MONEY REGIME</div>
-      <svg viewBox="0 0 220 115" width="100%" style={{ display: 'block', maxWidth: 260, margin: '0 auto' }}>
-        {/* Track */}
-        {(() => {
-          const s = arc(0); const e = arc(1)
-          return <path d={`M ${s.x},${s.y} A ${R},${R} 0 0,1 ${e.x},${e.y}`} stroke="#1E2332" strokeWidth="16" fill="none" strokeLinecap="round" />
-        })()}
-        {/* Colored segments */}
-        {segs.map(({ from, to, color }) => {
-          const s = arc(from); const e = arc(to)
-          return (
-            <path
-              key={from}
-              d={`M ${s.x},${s.y} A ${R},${R} 0 0,1 ${e.x},${e.y}`}
-              stroke={color} strokeWidth="14" fill="none" strokeLinecap="round" strokeOpacity="0.8"
-            />
-          )
-        })}
-        {/* Needle */}
-        <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
-        <circle cx={cx} cy={cy} r="5" fill="#0A0D14" stroke="#E2E8F0" strokeWidth="2" />
-        {/* Labels */}
-        <text x="24" y="112" fill="#EF4444" fontSize="8" textAnchor="middle" fontFamily="monospace">BEAR</text>
-        <text x={cx} y="112" fill="#F59E0B" fontSize="8" textAnchor="middle" fontFamily="monospace">NEUTRAL</text>
-        <text x="198" y="112" fill="#22C55E" fontSize="8" textAnchor="middle" fontFamily="monospace">BULL</text>
-        {/* Center score */}
-        <text x={cx} y="78" fill={regimeColor} fontSize="18" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-          {clamped >= 0 ? '+' : ''}{clamped.toFixed(1)}
-        </text>
-        <text x={cx} y="91" fill="#475569" fontSize="9" textAnchor="middle" fontFamily="monospace">{regime}</text>
-      </svg>
-      {/* PCR row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, borderTop: '1px solid #1E2332', paddingTop: 8 }}>
+  const cells = [
+    {
+      label: 'MARKET REGIME',
+      content: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{
+            padding: '4px 14px', borderRadius: 6, fontWeight: 800, fontSize: 15,
+            background: `${rgColor}20`, color: rgColor, border: `1px solid ${rgColor}55`,
+            letterSpacing: 1,
+          }}>{ctx.regime}</div>
+        </div>
+      ),
+    },
+    {
+      label: 'SMART MONEY',
+      content: (
         <div>
-          <div style={S9}>PCR</div>
-          <div style={{ color: pcrColor, fontWeight: 700, fontSize: 14, marginTop: 2 }}>
-            {pcr?.toFixed(2) ?? '--'}
+          <span style={{ ...VAL, fontSize: 22, color: smColor }}>
+            {signed(ctx.smart_money_score)}
+          </span>
+          <span style={{ color: C.muted, fontSize: 10, marginLeft: 4 }}>z-score</span>
+        </div>
+      ),
+    },
+    {
+      label: 'PUT/CALL RATIO',
+      content: (
+        <div>
+          <span style={{ ...VAL, fontSize: 22, color: pcrColor }}>{ctx.pcr?.toFixed(2) ?? '--'}</span>
+          <div style={{ color: pcrColor, fontSize: 10, fontWeight: 700, marginTop: 2 }}>{ctx.pcr_signal}</div>
+        </div>
+      ),
+    },
+    {
+      label: 'FII CONVICTION',
+      content: part && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: C.secondary, fontSize: 10 }}>FII</span>
+            <span style={{ color: C.fii, fontWeight: 700, fontSize: 12 }}>{part.FII_conviction.toFixed(0)}%</span>
+          </div>
+          <div style={{ height: 5, background: C.bgInner, borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${part.FII_conviction}%`, background: C.fii, borderRadius: 3 }} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: C.secondary, fontSize: 10 }}>DII</span>
+            <span style={{ color: C.dii, fontWeight: 700, fontSize: 12 }}>{part.DII_conviction.toFixed(0)}%</span>
+          </div>
+          <div style={{ height: 5, background: C.bgInner, borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${part.DII_conviction}%`, background: C.dii, borderRadius: 3 }} />
           </div>
         </div>
-        <div style={{ textAlign: 'right' }}>
-          <div style={S9}>SIGNAL</div>
-          <div style={{ color: pcrColor, fontWeight: 700, fontSize: 11, marginTop: 2 }}>{pcrSignal}</div>
+      ),
+    },
+    {
+      label: 'UNIVERSE BREADTH',
+      content: ctx.breadth && (
+        <div style={{ display: 'flex', gap: 12 }}>
+          {([
+            { k: 'strong_candidate', l: 'STRONG',   col: C.bull },
+            { k: 'emerging',         l: 'EMRG',     col: '#10B981' },
+            { k: 'watchlist',        l: 'WATCH',    col: C.blue },
+            { k: 'avoid',            l: 'AVOID',    col: C.bear },
+          ] as const).map(({ k, l, col }) => (
+            <div key={k} style={{ textAlign: 'center' }}>
+              <div style={{ color: col, fontSize: 18, fontWeight: 800, lineHeight: 1 }}>
+                {ctx.breadth![k as keyof typeof ctx.breadth]}
+              </div>
+              <div style={{ color: C.muted, fontSize: 9, marginTop: 3 }}>{l}</div>
+            </div>
+          ))}
         </div>
-      </div>
+      ),
+    },
+    {
+      label: 'FII/DII DIVERGENCE',
+      content: part && (
+        <div>
+          <div style={{ ...VAL, fontSize: 22, color: (part.FII_DII_Divergence ?? 0) >= 0 ? C.bull : C.bear }}>
+            {signed(part.FII_DII_Divergence)}
+          </div>
+          <div style={{ color: C.muted, fontSize: 10, marginTop: 2 }}>
+            Smart/Retail: <span style={{ color: (part.Smart_Retail_Divergence ?? 0) >= 0 ? C.bull : C.bear, fontWeight: 700 }}>
+              {signed(part.Smart_Retail_Divergence)}
+            </span>
+          </div>
+        </div>
+      ),
+    },
+  ]
+
+  return (
+    <div style={{
+      ...CARD,
+      display: 'grid',
+      gridTemplateColumns: 'auto 1fr 1fr 1.4fr 1.6fr 1fr',
+      gap: 0,
+      overflow: 'hidden',
+    }}>
+      {cells.map((cell, i) => (
+        <div key={i} style={{
+          padding: '14px 20px',
+          borderRight: i < cells.length - 1 ? C.border : 'none',
+        }}>
+          <div style={{ ...LABEL, marginBottom: 8 }}>{cell.label}</div>
+          {cell.content}
+        </div>
+      ))}
     </div>
   )
 }
 
-// ─── SVG: Universe Breadth Donut ──────────────────────────────────────────────
+// ─── SVG Regime Speedometer ───────────────────────────────────────────────────
+
+function RegimeDial({ score, regime }: { score: number; regime: string }) {
+  const cx = 120, cy = 105, R = 80, Rn = 65
+  const clamped = Math.max(-100, Math.min(100, score))
+  const ratio   = (clamped + 100) / 200
+  const theta   = Math.PI - ratio * Math.PI
+  const nx = cx + Rn * Math.cos(theta)
+  const ny = cy - Rn * Math.sin(theta)
+
+  const pt = (t: number, r = R) => {
+    const a = Math.PI - t * Math.PI
+    return { x: cx + r * Math.cos(a), y: cy - r * Math.sin(a) }
+  }
+
+  // Needle tip glow coordinates (shorter)
+  const tipX = cx + (Rn + 8) * Math.cos(theta)
+  const tipY = cy - (Rn + 8) * Math.sin(theta)
+
+  const segs = [
+    { from: 0,   to: 1/3, color: C.bear,    stops: ['#F44B4B', '#FF8A8A'] },
+    { from: 1/3, to: 2/3, color: C.neutral, stops: ['#F5A524', '#FFD280'] },
+    { from: 2/3, to: 1,   color: C.bull,    stops: ['#22D35E', '#70FF9A'] },
+  ]
+
+  const rgColor = regime === 'BULL' ? C.bull : regime === 'BEAR' ? C.bear : C.neutral
+
+  return (
+    <div style={{ ...CARD, padding: '20px', display: 'flex', flexDirection: 'column' }}>
+      <div style={LABEL}>REGIME METER</div>
+      <svg viewBox="0 0 240 130" width="100%" style={{ display: 'block', margin: '8px auto 0' }}>
+        <defs>
+          {segs.map(({ from, stops }, i) => (
+            <linearGradient key={i} id={`gr${i}`} x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={stops[0]} />
+              <stop offset="100%" stopColor={stops[1]} />
+            </linearGradient>
+          ))}
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        {/* Track */}
+        {(() => { const s = pt(0); const e = pt(1)
+          return <path d={`M${s.x},${s.y} A${R},${R} 0 0,1 ${e.x},${e.y}`}
+            stroke="#1A2540" strokeWidth="18" fill="none" strokeLinecap="round" /> })()}
+
+        {/* Colored arc segments */}
+        {segs.map(({ from, to, color }, i) => {
+          const s = pt(from); const e = pt(to)
+          return <path key={i} d={`M${s.x},${s.y} A${R},${R} 0 0,1 ${e.x},${e.y}`}
+            stroke={color} strokeWidth="14" fill="none" strokeLinecap="round" opacity="0.85" />
+        })}
+
+        {/* Glow dot at needle tip */}
+        <circle cx={tipX} cy={tipY} r="5" fill={rgColor} filter="url(#glow)" opacity="0.9" />
+
+        {/* Needle */}
+        <line x1={cx} y1={cy} x2={nx} y2={ny}
+          stroke={rgColor} strokeWidth="2.5" strokeLinecap="round" filter="url(#glow)" />
+        <circle cx={cx} cy={cy} r="6" fill="#0E1420" stroke={rgColor} strokeWidth="2.5" />
+
+        {/* Zone labels */}
+        <text x="20" y="122" fill={C.bear}    fontSize="9" textAnchor="middle" fontFamily="monospace" fontWeight="700">BEAR</text>
+        <text x={cx} y="122" fill={C.neutral} fontSize="9" textAnchor="middle" fontFamily="monospace" fontWeight="700">NEUTRAL</text>
+        <text x="220" y="122" fill={C.bull}   fontSize="9" textAnchor="middle" fontFamily="monospace" fontWeight="700">BULL</text>
+
+        {/* Score + regime */}
+        <text x={cx} y="78" fill={rgColor} fontSize="22" fontWeight="800" textAnchor="middle" fontFamily="monospace">
+          {clamped >= 0 ? '+' : ''}{clamped.toFixed(1)}
+        </text>
+        <text x={cx} y="94" fill={C.secondary} fontSize="10" textAnchor="middle" fontFamily="monospace" fontWeight="600">
+          {regime} REGIME
+        </text>
+      </svg>
+    </div>
+  )
+}
+
+// ─── SVG Breadth Donut ────────────────────────────────────────────────────────
 
 function BreadthDonut({ breadth }: { breadth: MarketContext['breadth'] }) {
   if (!breadth) return null
 
-  const total   = Object.values(breadth).reduce((a, b) => a + b, 0)
-  const R = 45, cx = 70, cy = 70
+  const total = Object.values(breadth).reduce((a, b) => a + b, 0)
+  const R = 46, cx = 65, cy = 65
   const circ = 2 * Math.PI * R
 
-  const segments = [
-    { key: 'strong_candidate', label: 'STRONG',    color: '#22C55E' },
-    { key: 'emerging',         label: 'EMERGING',  color: '#10B981' },
-    { key: 'watchlist',        label: 'WATCHLIST', color: '#3B82F6' },
-    { key: 'neutral',          label: 'NEUTRAL',   color: '#475569' },
-    { key: 'avoid',            label: 'AVOID',     color: '#EF4444' },
+  const segs = [
+    { key: 'strong_candidate', label: 'STRONG BUY', color: C.bull,    bg: '#052E14' },
+    { key: 'emerging',         label: 'EMERGING',   color: '#10B981',  bg: '#023323' },
+    { key: 'watchlist',        label: 'WATCHLIST',  color: C.blue,     bg: '#0A1A3A' },
+    { key: 'neutral',          label: 'NEUTRAL',    color: '#64748B',  bg: '#161E2E' },
+    { key: 'avoid',            label: 'AVOID',      color: C.bear,     bg: '#2A0A0A' },
   ] as const
 
   let offset = 0
-  const gap = 2
 
   return (
-    <div style={{ ...CARD, padding: '16px 20px' }}>
-      <div style={S9}>UNIVERSE BREADTH</div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginTop: 10 }}>
-        <svg viewBox="0 0 140 140" width={140} height={140} style={{ flexShrink: 0 }}>
-          {segments.map(({ key, color }) => {
+    <div style={{ ...CARD, padding: '20px' }}>
+      <div style={LABEL}>UNIVERSE BREADTH</div>
+      <div style={{ display: 'flex', gap: 20, marginTop: 12, alignItems: 'center' }}>
+        <svg viewBox="0 0 130 130" width={130} height={130} style={{ flexShrink: 0 }}>
+          {segs.map(({ key, color }) => {
             const count = breadth[key as keyof typeof breadth] ?? 0
             const pct   = total > 0 ? count / total : 0
-            const dash  = circ * pct - (pct > 0 ? gap : 0)
-            const space = circ - dash
-            const thisDash = `${Math.max(0, dash)} ${space}`
-            const thisDashOffset = circ * (1 - offset)
+            const gap   = pct > 0.01 ? 2.5 : 0
+            const dash  = circ * pct - gap
+            const dashOffset = circ * (1 - offset)
             offset += pct
             return (
-              <circle key={key}
-                cx={cx} cy={cy} r={R} fill="none"
-                stroke={color} strokeWidth="22"
-                strokeDasharray={thisDash}
-                strokeDashoffset={thisDashOffset}
+              <circle key={key} cx={cx} cy={cy} r={R} fill="none"
+                stroke={color} strokeWidth="24"
+                strokeDasharray={`${Math.max(0, dash)} ${circ}`}
+                strokeDashoffset={dashOffset}
                 transform={`rotate(-90 ${cx} ${cy})`}
               />
             )
           })}
           {/* Center */}
-          <text x={cx} y={cy - 5} textAnchor="middle" fill="#E2E8F0" fontSize="16" fontWeight="bold" fontFamily="monospace">{total}</text>
-          <text x={cx} y={cy + 10} textAnchor="middle" fill="#475569" fontSize="8" fontFamily="monospace">STOCKS</text>
+          <text x={cx} y={cy - 8} textAnchor="middle" fill={C.h1} fontSize="20" fontWeight="800" fontFamily="monospace">{total}</text>
+          <text x={cx} y={cy + 7}  textAnchor="middle" fill={C.muted} fontSize="9" fontFamily="monospace">STOCKS</text>
         </svg>
+
         {/* Legend */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
-          {segments.map(({ key, label, color }) => {
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 7 }}>
+          {segs.map(({ key, label, color, bg }) => {
             const count = breadth[key as keyof typeof breadth] ?? 0
             const pct   = total > 0 ? (count / total * 100).toFixed(0) : '0'
             return (
-              <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <div style={{ width: 8, height: 8, borderRadius: 2, background: color, flexShrink: 0 }} />
-                <span style={{ color: '#64748B', fontSize: 9, flex: 1 }}>{label}</span>
-                <span style={{ color, fontSize: 11, fontWeight: 700, minWidth: 28, textAlign: 'right' }}>{count}</span>
-                <span style={{ color: '#334155', fontSize: 9, minWidth: 28, textAlign: 'right' }}>{pct}%</span>
+              <div key={key} style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                background: bg, borderRadius: 5, padding: '4px 8px',
+              }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
+                <span style={{ color: C.secondary, fontSize: 10, flex: 1, fontWeight: 600 }}>{label}</span>
+                <span style={{ color, fontSize: 12, fontWeight: 800 }}>{count}</span>
+                <span style={{ color: C.muted, fontSize: 9, minWidth: 24, textAlign: 'right' }}>{pct}%</span>
               </div>
             )
           })}
@@ -163,83 +320,60 @@ function BreadthDonut({ breadth }: { breadth: MarketContext['breadth'] }) {
   )
 }
 
-// ─── Conviction + Divergence Panel ────────────────────────────────────────────
+// ─── Conviction + Cash Panel ──────────────────────────────────────────────────
 
 function ConvictionPanel({ part, cash }: { part: ParticipantLatest; cash: MarketContext['cash_flows'] }) {
-  const bars = [
-    { label: 'FII Conviction',  value: part.FII_conviction, color: '#22C55E', track: '#0F2D1A' },
-    { label: 'DII Conviction',  value: part.DII_conviction, color: '#3B82F6', track: '#0C1E3A' },
+  const convBars = [
+    { label: 'FII / FPI',  value: part.FII_conviction, color: C.fii, track: '#0A1A2E' },
+    { label: 'DII / MF',   value: part.DII_conviction, color: C.dii, track: '#130D2A' },
   ]
-  const div = [
-    { label: 'FII vs DII',      value: part.FII_DII_Divergence,    help: 'positive = FII > DII' },
-    { label: 'Smart vs Retail', value: part.Smart_Retail_Divergence, help: 'positive = institutions > retail' },
-  ]
-
   const flowBars = cash ? [
-    { label: 'FPI/FII', value: cash.fpi_5d_cr,       color: cash.fpi_5d_cr >= 0 ? '#22C55E' : '#EF4444' },
-    { label: 'MF/DII',  value: cash.mf_5d_cr,        color: cash.mf_5d_cr >= 0 ? '#3B82F6' : '#EF4444' },
-    { label: 'Insurance', value: cash.insurance_5d_cr, color: cash.insurance_5d_cr >= 0 ? '#8B5CF6' : '#EF4444' },
+    { label: 'FPI/FII',    value: cash.fpi_5d_cr,       color: cash.fpi_5d_cr >= 0 ? C.bull : C.bear },
+    { label: 'MF/DII',     value: cash.mf_5d_cr,        color: cash.mf_5d_cr >= 0 ? C.dii : C.bear },
+    { label: 'Insurance',  value: cash.insurance_5d_cr,  color: cash.insurance_5d_cr >= 0 ? '#7C4DFF' : C.bear },
   ] : []
-
-  const maxCash = Math.max(...flowBars.map(f => Math.abs(f.value)), 1000)
+  const maxAbs = Math.max(...flowBars.map(f => Math.abs(f.value)), 1000)
 
   return (
-    <div style={{ ...CARD, padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div style={S9}>CONVICTION & CASH FLOWS</div>
+    <div style={{ ...CARD, padding: '20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={LABEL}>CONVICTION & CASH FLOWS</div>
 
-      {/* Conviction bars */}
-      {bars.map(({ label, value, color, track }) => (
+      {convBars.map(({ label, value, color, track }) => (
         <div key={label}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-            <span style={{ color: '#64748B', fontSize: 10 }}>{label}</span>
-            <span style={{ color, fontWeight: 700, fontSize: 12 }}>{value.toFixed(0)}%</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+            <span style={{ color: C.secondary, fontSize: 11, fontWeight: 600 }}>{label}</span>
+            <span style={{ color, fontWeight: 800, fontSize: 15 }}>{value.toFixed(0)}%</span>
           </div>
-          <div style={{ height: 8, background: track, borderRadius: 4, overflow: 'hidden' }}>
+          <div style={{ height: 10, background: track, borderRadius: 5, overflow: 'hidden', position: 'relative' }}>
             <div style={{
               height: '100%', width: `${Math.min(100, value)}%`,
-              background: `linear-gradient(90deg, ${color}88, ${color})`,
-              borderRadius: 4, transition: 'width 1s',
+              background: `linear-gradient(90deg, ${color}55, ${color})`,
+              borderRadius: 5, transition: 'width 1.2s cubic-bezier(.4,0,.2,1)',
             }} />
+            {/* 50% tick mark */}
+            <div style={{ position: 'absolute', left: '50%', top: 0, height: '100%', width: 1, background: '#FFFFFF18' }} />
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-            <span style={{ color: '#334155', fontSize: 8 }}>0%</span>
-            <span style={{ color: '#334155', fontSize: 8 }}>50%</span>
-            <span style={{ color: '#334155', fontSize: 8 }}>100%</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 3 }}>
+            <span style={{ color: C.dim, fontSize: 9 }}>0%</span>
+            <span style={{ color: C.dim, fontSize: 9 }}>50%</span>
+            <span style={{ color: C.dim, fontSize: 9 }}>100%</span>
           </div>
         </div>
       ))}
 
-      {/* Divergence scores */}
-      <div style={{ borderTop: '1px solid #1E2332', paddingTop: 10 }}>
-        <div style={{ ...S9, marginBottom: 6 }}>DIVERGENCE SCORES</div>
-        {div.map(({ label, value }) => (
-          <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-            <span style={{ color: '#64748B', fontSize: 9 }}>{label}</span>
-            <span style={{
-              fontWeight: 700, fontSize: 12, fontFamily: 'monospace',
-              color: value >= 0 ? '#22C55E' : '#EF4444',
-            }}>{signed(value)}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* 5D Cash flows */}
+      {/* 5D Net Cash Flows */}
       {flowBars.length > 0 && (
-        <div style={{ borderTop: '1px solid #1E2332', paddingTop: 10 }}>
-          <div style={{ ...S9, marginBottom: 8 }}>5D NET CASH FLOWS</div>
+        <div style={{ borderTop: `1px solid #1E2D44`, paddingTop: 12 }}>
+          <div style={{ ...LABEL, marginBottom: 10 }}>5-DAY NET CASH FLOWS</div>
           {flowBars.map(({ label, value, color }) => {
-            const pct = Math.min(100, Math.abs(value) / maxCash * 100)
-            const pos = value >= 0
+            const pct = Math.min(100, Math.abs(value) / maxAbs * 100)
             return (
-              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                <span style={{ color: '#475569', fontSize: 9, minWidth: 52 }}>{label}</span>
-                <div style={{ flex: 1, height: 5, background: '#1E2332', borderRadius: 3, overflow: 'hidden' }}>
-                  <div style={{
-                    height: '100%', width: `${pct}%`, borderRadius: 3,
-                    background: color, float: pos ? 'left' : 'right',
-                  }} />
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <span style={{ color: C.secondary, fontSize: 10, fontWeight: 600, minWidth: 56 }}>{label}</span>
+                <div style={{ flex: 1, height: 6, background: C.bgInner, borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 3 }} />
                 </div>
-                <span style={{ color, fontSize: 9, fontWeight: 700, minWidth: 70, textAlign: 'right' }}>
+                <span style={{ color, fontSize: 10, fontWeight: 700, minWidth: 80, textAlign: 'right' }}>
                   {value >= 0 ? '+' : ''}{value.toLocaleString('en-IN', { maximumFractionDigits: 0 })} Cr
                 </span>
               </div>
@@ -254,80 +388,90 @@ function ConvictionPanel({ part, cash }: { part: ParticipantLatest; cash: Market
 // ─── Participant Flow Bars ─────────────────────────────────────────────────────
 
 function FlowBars({ flows, part }: {
-  flows: { FII: number; DII: number; PRO: number; CLIENT: number };
-  part: ParticipantLatest
+  flows: { FII: number; DII: number; PRO: number; CLIENT: number }
+  part:  ParticipantLatest
 }) {
-  const maxAbs  = Math.max(...Object.values(flows).map(Math.abs), 10)
-  const entries = [
-    { key: 'FII',    score: flows.FII,    color: '#22C55E', conv: part.FII_conviction, label: 'FII/FPI', desc: 'Foreign Institutional' },
-    { key: 'DII',    score: flows.DII,    color: '#3B82F6', conv: part.DII_conviction, label: 'DII/MF',  desc: 'Domestic Institutional' },
-    { key: 'PRO',    score: flows.PRO,    color: '#F59E0B', conv: null,                label: 'PRO',     desc: 'Proprietary Desks' },
-    { key: 'CLIENT', score: flows.CLIENT, color: '#8B5CF6', conv: null,                label: 'CLIENT',  desc: 'Retail/HNI' },
+  const maxAbs = Math.max(...Object.values(flows).map(Math.abs), 10)
+  const rows = [
+    { key: 'FII',    score: flows.FII,    color: C.fii,    conv: part.FII_conviction, label: 'FII / FPI',  sub: 'Foreign Institutional' },
+    { key: 'DII',    score: flows.DII,    color: C.dii,    conv: part.DII_conviction, label: 'DII / MF',   sub: 'Domestic Institutional' },
+    { key: 'PRO',    score: flows.PRO,    color: C.pro,    conv: null,                label: 'PRO',         sub: 'Proprietary Desks' },
+    { key: 'CLIENT', score: flows.CLIENT, color: C.client, conv: null,                label: 'CLIENT',      sub: 'Retail / HNI' },
   ]
 
   return (
-    <div style={{ ...CARD, padding: '16px 20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <div style={S9}>F&O PARTICIPANT FLOWS</div>
-        <Link to="/participant" style={{ color: '#3B82F6', fontSize: 10, textDecoration: 'none' }}>Full Analysis</Link>
+    <div style={{ ...CARD, padding: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div style={LABEL}>F&amp;O PARTICIPANT FLOWS  <span style={{ color: C.dim, fontWeight: 400, letterSpacing: 0 }}>(z-score, rolling)</span></div>
+        <Link to="/participant" style={{ color: C.blue, fontSize: 11, textDecoration: 'none', fontWeight: 600 }}>Full Analysis →</Link>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {entries.map(({ key, score, color, conv, label, desc }) => {
-          const pct = Math.abs(score) / maxAbs * 100
-          const pos = score >= 0
-          return (
-            <div key={key}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <div style={{ minWidth: 70 }}>
-                  <div style={{ color: '#E2E8F0', fontSize: 11, fontWeight: 700 }}>{label}</div>
-                  <div style={{ color: '#334155', fontSize: 8 }}>{desc}</div>
-                </div>
-                {/* Centered bar */}
-                <div style={{ flex: 1, position: 'relative', height: 20, display: 'flex', alignItems: 'center' }}>
-                  {/* Center line */}
-                  <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1, background: '#1E2332' }} />
-                  {/* Bar */}
-                  <div style={{
-                    position: 'absolute',
-                    [pos ? 'left' : 'right']: '50%',
-                    width: `${pct / 2}%`,
-                    height: 14,
-                    top: 3,
-                    background: `linear-gradient(${pos ? '90deg' : '270deg'}, ${color}44, ${color})`,
-                    borderRadius: pos ? '0 4px 4px 0' : '4px 0 0 4px',
-                  }} />
-                  {/* Conviction overlay bar (thinner) */}
-                  {conv != null && (
-                    <div style={{
-                      position: 'absolute',
-                      [pos ? 'left' : 'right']: '50%',
-                      width: `${Math.min(conv / 2, pct / 2)}%`,
-                      height: 4,
-                      top: 8,
-                      background: color,
-                      borderRadius: pos ? '0 2px 2px 0' : '2px 0 0 2px',
-                      opacity: 0.9,
-                    }} />
-                  )}
-                </div>
-                <div style={{ minWidth: 60, textAlign: 'right' }}>
-                  <div style={{ color, fontSize: 13, fontWeight: 700, fontFamily: 'monospace' }}>
-                    {score >= 0 ? '+' : ''}{score.toFixed(1)}
-                  </div>
-                  {conv != null && (
-                    <div style={{ color: '#475569', fontSize: 9 }}>{conv.toFixed(0)}% conv.</div>
-                  )}
-                </div>
+
+      {rows.map(({ key, score, color, conv, label, sub }) => {
+        const pct = (Math.abs(score) / maxAbs) * 50  // max 50% of half-width
+        const pos = score >= 0
+        return (
+          <div key={key} style={{ display: 'grid', gridTemplateColumns: '130px 1fr 80px', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+            {/* Label */}
+            <div>
+              <div style={{ color: C.primary, fontSize: 12, fontWeight: 700 }}>{label}</div>
+              <div style={{ color: C.muted, fontSize: 9 }}>{sub}</div>
+            </div>
+
+            {/* Bidirectional bar */}
+            <div style={{ position: 'relative', height: 24, background: C.bgInner, borderRadius: 6, overflow: 'hidden' }}>
+              {/* Center line */}
+              <div style={{ position: 'absolute', left: '50%', top: 0, height: '100%', width: 1, background: '#FFFFFF15', zIndex: 2 }} />
+              {/* Main fill */}
+              <div style={{
+                position: 'absolute',
+                [pos ? 'left' : 'right']: '50%',
+                width: `${pct}%`,
+                height: '100%',
+                background: `linear-gradient(${pos ? '90deg' : '270deg'}, ${color}30, ${color}90)`,
+                borderRadius: pos ? '0 4px 4px 0' : '4px 0 0 4px',
+              }} />
+              {/* Conviction overlay (brighter inner stripe) */}
+              {conv != null && (
+                <div style={{
+                  position: 'absolute',
+                  [pos ? 'left' : 'right']: '50%',
+                  width: `${Math.min(conv / 2 * (pct / 50), pct)}%`,
+                  top: '30%', height: '40%',
+                  background: color,
+                  borderRadius: 2,
+                  opacity: 0.9,
+                }} />
+              )}
+              {/* Score label inside bar */}
+              <div style={{
+                position: 'absolute',
+                [pos ? 'left' : 'right']: `calc(50% + ${pct}% + 4px)`,
+                top: '50%', transform: 'translateY(-50%)',
+                color: C.dim, fontSize: 9, whiteSpace: 'nowrap',
+                display: pct < 15 ? 'block' : 'none',
+              }}>
+                {score >= 0 ? '+' : ''}{score.toFixed(1)}
               </div>
             </div>
-          )
-        })}
-        {/* Scale labels */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: 78 }}>
-          <span style={{ color: '#1E2332', fontSize: 8 }}>{(-maxAbs).toFixed(0)}</span>
-          <span style={{ color: '#334155', fontSize: 8 }}>0</span>
-          <span style={{ color: '#1E2332', fontSize: 8 }}>+{maxAbs.toFixed(0)}</span>
-        </div>
+
+            {/* Value + conviction */}
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ color, fontSize: 15, fontWeight: 800, fontFamily: 'monospace' }}>
+                {score >= 0 ? '+' : ''}{score.toFixed(1)}
+              </div>
+              {conv != null && (
+                <div style={{ color: C.muted, fontSize: 9 }}>{conv.toFixed(0)}% conv</div>
+              )}
+            </div>
+          </div>
+        )
+      })}
+
+      {/* Scale footer */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: 142, paddingTop: 2 }}>
+        <span style={{ color: C.dim, fontSize: 9 }}>— {maxAbs.toFixed(0)}</span>
+        <span style={{ color: C.dim, fontSize: 9 }}>0</span>
+        <span style={{ color: C.dim, fontSize: 9 }}>+{maxAbs.toFixed(0)}</span>
       </div>
     </div>
   )
@@ -335,58 +479,67 @@ function FlowBars({ flows, part }: {
 
 // ─── Sector Heatmap ───────────────────────────────────────────────────────────
 
-const SIG_STYLE: Record<string, { bg: string; text: string; border: string }> = {
-  STRONG_ACCUMULATION: { bg: '#052e16', text: '#22C55E', border: '#22C55E44' },
-  EARLY_ROTATION:      { bg: '#064e3b', text: '#10B981', border: '#10B98144' },
-  PRICE_LED:           { bg: '#1e3a5f', text: '#60A5FA', border: '#60A5FA44' },
-  NEUTRAL:             { bg: '#141720', text: '#475569', border: '#1E2332' },
-  DISTRIBUTION:        { bg: '#450a0a', text: '#EF4444', border: '#EF444444' },
+const SIG: Record<string, { bg: string; glow: string; badge: string; text: string }> = {
+  STRONG_ACCUMULATION: { bg: '#061A0E', glow: '#22D35E40', badge: '#0A3320', text: C.bull },
+  EARLY_ROTATION:      { bg: '#041A10', glow: '#10B98140', badge: '#083320', text: '#10B981' },
+  PRICE_LED:           { bg: '#040E22', glow: '#3BAEF040', badge: '#071830', text: C.fii },
+  NEUTRAL:             { bg: '#0E1420', glow: 'transparent', badge: '#131B2E', text: '#64748B' },
+  DISTRIBUTION:        { bg: '#1A0408', glow: '#F44B4B30', badge: '#2A0608', text: C.bear },
 }
 
 function SectorHeatmap({ sectors }: { sectors: Sector[] }) {
   return (
-    <div style={{ ...CARD, padding: '16px 20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <div style={S9}>SECTOR CAPITAL ROTATION</div>
-        <Link to="/sectors" style={{ color: '#3B82F6', fontSize: 10, textDecoration: 'none' }}>Full View</Link>
+    <div style={{ ...CARD, padding: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div style={LABEL}>SECTOR CAPITAL ROTATION  <span style={{ color: C.dim, fontWeight: 400, letterSpacing: 0 }}>({sectors.length} sectors)</span></div>
+        <Link to="/sectors" style={{ color: C.blue, fontSize: 11, textDecoration: 'none', fontWeight: 600 }}>Full View →</Link>
       </div>
-      {/* Legend */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
-        {Object.entries(SIG_STYLE).map(([sig, style]) => (
-          <div key={sig} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <div style={{ width: 8, height: 8, borderRadius: 2, background: style.text, opacity: 0.8 }} />
-            <span style={{ color: '#475569', fontSize: 8 }}>{sig.replace(/_/g, ' ')}</span>
+
+      {/* Signal legend */}
+      <div style={{ display: 'flex', gap: 14, marginBottom: 14, flexWrap: 'wrap' }}>
+        {Object.entries(SIG).map(([sig, st]) => (
+          <div key={sig} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <div style={{ width: 8, height: 8, borderRadius: 2, background: st.text, opacity: 0.9 }} />
+            <span style={{ color: C.muted, fontSize: 9, fontWeight: 600 }}>{sig.replace(/_/g, ' ')}</span>
           </div>
         ))}
       </div>
-      {/* Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>
+
+      {/* Grid — 3 columns for readability */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
         {sectors.map(s => {
-          const st = SIG_STYLE[s.rotation_signal] ?? SIG_STYLE['NEUTRAL']
+          const st = SIG[s.rotation_signal] ?? SIG['NEUTRAL']
+          const score = s.combined_score
           return (
             <Link key={s.sector} to={`/sectors/${s.sector}`} style={{ textDecoration: 'none' }}>
               <div style={{
-                background: st.bg, border: `1px solid ${st.border}`, borderRadius: 5,
-                padding: '8px 10px', cursor: 'pointer', transition: 'opacity 0.15s',
+                background: st.bg,
+                border: `1px solid ${st.text}33`,
+                boxShadow: st.glow !== 'transparent' ? `0 0 12px ${st.glow}` : 'none',
+                borderRadius: 7, padding: '10px 12px',
+                transition: 'all 0.18s',
+                cursor: 'pointer',
               }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
-                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = `${st.text}88`; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = `${st.text}33`; e.currentTarget.style.transform = 'none' }}
               >
-                <div style={{ color: st.text, fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {s.sector}
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 3, alignItems: 'center' }}>
-                  <span style={{ fontSize: 7, color: st.text, opacity: 0.7 }}>
-                    {s.rotation_signal.replace(/_/g, ' ').slice(0, 10)}
-                  </span>
-                  {s.combined_score != null && (
-                    <span style={{
-                      fontSize: 10, fontWeight: 700, fontFamily: 'monospace',
-                      color: (s.combined_score ?? 0) >= 0 ? '#22C55E' : '#EF4444',
-                    }}>
-                      {s.combined_score >= 0 ? '+' : ''}{Number(s.combined_score).toFixed(0)}
-                    </span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ color: C.primary, fontSize: 11, fontWeight: 700, flex: 1, marginRight: 8 }}>
+                    {s.sector.replace(/_/g, ' ')}
+                  </div>
+                  {score != null && (
+                    <div style={{ color: score >= 0 ? C.bull : C.bear, fontSize: 12, fontWeight: 800, fontFamily: 'monospace', flexShrink: 0 }}>
+                      {score >= 0 ? '+' : ''}{Number(score).toFixed(0)}
+                    </div>
                   )}
+                </div>
+                <div style={{
+                  display: 'inline-block', marginTop: 5,
+                  background: st.badge, color: st.text,
+                  fontSize: 8, fontWeight: 700, padding: '2px 6px',
+                  borderRadius: 3, letterSpacing: 0.5,
+                }}>
+                  {s.rotation_signal.replace(/_/g, ' ')}
                 </div>
               </div>
             </Link>
@@ -397,7 +550,7 @@ function SectorHeatmap({ sectors }: { sectors: Sector[] }) {
   )
 }
 
-// ─── Top Picks + Events column ────────────────────────────────────────────────
+// ─── Side Panel ───────────────────────────────────────────────────────────────
 
 function SidePanel({ strong, catalysts, deals }: {
   strong:    { stocks: import('../api/client').Stock[]; count: number } | undefined
@@ -405,35 +558,38 @@ function SidePanel({ strong, catalysts, deals }: {
   deals:     { deals:    Record<string, unknown>[]; count: number }    | undefined
 }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-      {/* Top Conviction Picks */}
-      <div style={{ ...CARD, padding: '14px 16px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <div style={S9}>TOP CONVICTION</div>
-          <Link to="/watchlist" style={{ color: '#3B82F6', fontSize: 10, textDecoration: 'none' }}>All</Link>
+      {/* Top Conviction */}
+      <div style={{ ...CARD, padding: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <div style={LABEL}>TOP CONVICTION</div>
+          <Link to="/watchlist" style={{ color: C.blue, fontSize: 10, textDecoration: 'none', fontWeight: 600 }}>All →</Link>
         </div>
         {(strong?.stocks ?? []).length === 0 ? (
-          <div style={{ color: '#334155', fontSize: 11, textAlign: 'center', padding: '10px 0' }}>None currently</div>
+          <div style={{ color: C.muted, fontSize: 11, textAlign: 'center', padding: '12px 0' }}>None currently</div>
         ) : (
           (strong?.stocks ?? []).map(s => (
             <Link key={s.symbol} to={`/stocks/${s.symbol}`} style={{ textDecoration: 'none' }}>
               <div style={{
-                display: 'flex', alignItems: 'center', gap: 8, padding: '7px 0',
-                borderBottom: '1px solid #1E2332',
-              }}>
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '8px 0', borderBottom: `1px solid #1E2D44`,
+              }}
+                onMouseEnter={e => (e.currentTarget.style.paddingLeft = '4px')}
+                onMouseLeave={e => (e.currentTarget.style.paddingLeft = '0')}
+              >
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: '#E2E8F0', fontWeight: 700, fontSize: 12 }}>{s.symbol}</div>
-                  <div style={{ color: '#475569', fontSize: 9, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                  <div style={{ color: C.h1, fontWeight: 800, fontSize: 13 }}>{s.symbol}</div>
+                  <div style={{ color: C.muted, fontSize: 10, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                     {s.sector}
                     {s.price?.ret_30d != null && (
-                      <span style={{ color: (s.price.ret_30d ?? 0) >= 0 ? '#22C55E' : '#EF4444', marginLeft: 6 }}>
+                      <span style={{ color: (s.price.ret_30d ?? 0) >= 0 ? C.bull : C.bear, fontWeight: 700, marginLeft: 6 }}>
                         {s.price.ret_30d >= 0 ? '+' : ''}{s.price.ret_30d.toFixed(1)}%
                       </span>
                     )}
                   </div>
                 </div>
-                <ScoreGauge score={s.bull_run_score} size={38} />
+                <ScoreGauge score={s.bull_run_score} size={40} />
               </div>
             </Link>
           ))
@@ -441,29 +597,26 @@ function SidePanel({ strong, catalysts, deals }: {
       </div>
 
       {/* Upcoming Catalysts */}
-      <div style={{ ...CARD, padding: '14px 16px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <div style={S9}>UPCOMING CATALYSTS</div>
-          <Link to="/corporate" style={{ color: '#3B82F6', fontSize: 10, textDecoration: 'none' }}>All</Link>
+      <div style={{ ...CARD, padding: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <div style={LABEL}>UPCOMING CATALYSTS</div>
+          <Link to="/corporate" style={{ color: C.blue, fontSize: 10, textDecoration: 'none', fontWeight: 600 }}>All →</Link>
         </div>
         {(catalysts?.catalysts ?? []).slice(0, 5).map((c, i) => {
           const cat = c as Record<string, unknown>
+          const dateStr = String(cat.event_date ?? '')
           return (
-            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '6px 0', borderBottom: '1px solid #1E2332' }}>
+            <div key={i} style={{ display: 'flex', gap: 10, padding: '7px 0', borderBottom: `1px solid #1E2D44`, alignItems: 'center' }}>
               <div style={{
-                background: '#1A1A08', border: '1px solid #F59E0B44', borderRadius: 4,
-                padding: '3px 6px', flexShrink: 0, textAlign: 'center',
+                flexShrink: 0, background: '#1A1508', border: '1px solid #F5A52455',
+                borderRadius: 5, padding: '4px 7px', textAlign: 'center', minWidth: 34,
               }}>
-                <div style={{ color: '#F59E0B', fontSize: 10, fontWeight: 700 }}>
-                  {String(cat.event_date ?? '').slice(5, 7)}
-                </div>
-                <div style={{ color: '#64748B', fontSize: 8 }}>
-                  {String(cat.event_date ?? '').slice(8)}
-                </div>
+                <div style={{ color: C.neutral, fontSize: 11, fontWeight: 800, lineHeight: 1 }}>{dateStr.slice(8)}</div>
+                <div style={{ color: C.muted, fontSize: 8, marginTop: 1 }}>{dateStr.slice(5, 7)}</div>
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ color: '#E2E8F0', fontSize: 11, fontWeight: 700 }}>{String(cat.symbol ?? '')}</div>
-                <div style={{ color: '#64748B', fontSize: 9, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ color: C.primary, fontSize: 12, fontWeight: 700 }}>{String(cat.symbol ?? '')}</div>
+                <div style={{ color: C.muted, fontSize: 9, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {String(cat.purpose_type ?? cat.purpose ?? '').replace(/_/g, ' ')}
                 </div>
               </div>
@@ -472,30 +625,28 @@ function SidePanel({ strong, catalysts, deals }: {
         })}
       </div>
 
-      {/* Recent Block Deals */}
-      <div style={{ ...CARD, padding: '14px 16px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <div style={S9}>BLOCK DEALS</div>
-          <Link to="/corporate" style={{ color: '#3B82F6', fontSize: 10, textDecoration: 'none' }}>All</Link>
+      {/* Block Deals */}
+      <div style={{ ...CARD, padding: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <div style={LABEL}>BLOCK DEALS</div>
+          <Link to="/corporate" style={{ color: C.blue, fontSize: 10, textDecoration: 'none', fontWeight: 600 }}>All →</Link>
         </div>
         {(deals?.deals ?? []).slice(0, 4).map((d, i) => {
           const deal = d as Record<string, unknown>
           const cr = Number(deal.net_value_cr ?? deal.value_cr ?? 0)
           return (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid #1E2332' }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 0', borderBottom: `1px solid #1E2D44` }}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ color: '#E2E8F0', fontSize: 11, fontWeight: 700 }}>{String(deal.symbol ?? deal.SYMBOL ?? '')}</div>
-                <div style={{ color: '#475569', fontSize: 9, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {String(deal.client_name ?? deal.CLIENT_NAME ?? '').slice(0, 22)}
+                <div style={{ color: C.primary, fontSize: 12, fontWeight: 700 }}>{String(deal.symbol ?? deal.SYMBOL ?? '')}</div>
+                <div style={{ color: C.muted, fontSize: 9, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {String(deal.client_name ?? deal.CLIENT_NAME ?? '').slice(0, 24)}
                 </div>
               </div>
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <div style={{ color: '#8B5CF6', fontSize: 11, fontWeight: 700 }}>
+                <div style={{ color: '#C668E8', fontSize: 12, fontWeight: 800 }}>
                   {cr !== 0 ? `${cr >= 0 ? '+' : ''}${cr.toFixed(0)} Cr` : '--'}
                 </div>
-                <div style={{ color: '#334155', fontSize: 8 }}>
-                  {String(deal.trade_date ?? deal.TRADE_DATE ?? '').slice(5)}
-                </div>
+                <div style={{ color: C.dim, fontSize: 9 }}>{String(deal.trade_date ?? deal.TRADE_DATE ?? '').slice(5)}</div>
               </div>
             </div>
           )
@@ -505,7 +656,7 @@ function SidePanel({ strong, catalysts, deals }: {
   )
 }
 
-// ─── Emerging Watchlist mini-cards ────────────────────────────────────────────
+// ─── Emerging Watchlist Card ──────────────────────────────────────────────────
 
 function EmergeCard({ stock }: { stock: import('../api/client').Stock }) {
   const ret = stock.price?.ret_30d
@@ -513,52 +664,52 @@ function EmergeCard({ stock }: { stock: import('../api/client').Stock }) {
   return (
     <Link to={`/stocks/${stock.symbol}`} style={{ textDecoration: 'none' }}>
       <div style={{
-        ...CARD, padding: '10px 12px', height: '100%',
-        display: 'flex', flexDirection: 'column', gap: 6,
-        transition: 'border-color 0.15s',
+        ...CARD, padding: '12px 14px',
+        display: 'flex', flexDirection: 'column', gap: 8,
+        transition: 'all 0.18s',
       }}
-        onMouseEnter={e => (e.currentTarget.style.borderColor = '#22C55E44')}
-        onMouseLeave={e => (e.currentTarget.style.borderColor = '#1E2332')}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = '#2D4A6B'; e.currentTarget.style.boxShadow = '0 4px 16px #0008'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = '#1E2D44'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none' }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
           <div style={{ minWidth: 0, flex: 1 }}>
-            <div style={{ color: '#E2E8F0', fontWeight: 700, fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ color: C.h1, fontWeight: 800, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {stock.symbol}
             </div>
-            <div style={{ color: '#475569', fontSize: 9, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ color: C.muted, fontSize: 10, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {stock.sector}
             </div>
           </div>
-          <ScoreGauge score={stock.bull_run_score} size={38} />
+          <ScoreGauge score={stock.bull_run_score} size={40} />
         </div>
-        {/* Price & return */}
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {stock.close_now != null && (
-            <span style={{ color: '#94A3B8', fontSize: 10 }}>
+            <span style={{ color: C.secondary, fontSize: 11, fontWeight: 600 }}>
               &#8377;{stock.close_now.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
             </span>
           )}
           {ret != null && (
-            <span style={{ fontSize: 10, fontWeight: 700, color: pos ? '#22C55E' : '#EF4444' }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: pos ? C.bull : C.bear }}>
               {pos ? '+' : ''}{ret.toFixed(1)}%
             </span>
           )}
         </div>
-        {/* Badges */}
+
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
           <CapFlowBadge label={stock.label} />
-          {stock.trend_signal && (stock.trend_signal === 'STRONG_UPTREND' || stock.trend_signal === 'UPTREND') && (
+          {(stock.trend_signal === 'STRONG_UPTREND' || stock.trend_signal === 'UPTREND') && (
             <span style={{
-              fontSize: 7, fontWeight: 700, padding: '1px 4px', borderRadius: 2,
-              border: '1px solid #22C55E44', color: '#22C55E', background: '#052e1688',
+              fontSize: 8, fontWeight: 700, padding: '2px 5px', borderRadius: 3,
+              border: `1px solid ${C.bull}44`, color: C.bull, background: '#061A0E',
             }}>
               {stock.trend_signal === 'STRONG_UPTREND' ? 'STR UP' : 'UPTRD'}
             </span>
           )}
           {stock.oi_signal === 'LONG_BUILDUP' && (
             <span style={{
-              fontSize: 7, fontWeight: 700, padding: '1px 4px', borderRadius: 2,
-              border: '1px solid #3B82F644', color: '#3B82F6', background: '#0f1f3d88',
+              fontSize: 8, fontWeight: 700, padding: '2px 5px', borderRadius: 3,
+              border: `1px solid ${C.fii}44`, color: C.fii, background: '#040E22',
             }}>LB</span>
           )}
         </div>
@@ -573,7 +724,7 @@ export function Dashboard() {
   const { data: ctx }       = useQuery({ queryKey: ['market-context'],    queryFn: fetchMarketContext,    refetchInterval: 300_000 })
   const { data: part }      = useQuery({ queryKey: ['participant-latest'], queryFn: fetchParticipantLatest, refetchInterval: 300_000 })
   const { data: sectors }   = useQuery({ queryKey: ['sectors'],            queryFn: fetchSectors,           refetchInterval: 300_000 })
-  const { data: emerging }  = useQuery({ queryKey: ['watchlist','EMRG'],  queryFn: () => fetchWatchlist('EMERGING', 15),         refetchInterval: 300_000 })
+  const { data: emerging }  = useQuery({ queryKey: ['watchlist','EMRG'],  queryFn: () => fetchWatchlist('EMERGING', 15),        refetchInterval: 300_000 })
   const { data: strong }    = useQuery({ queryKey: ['watchlist','STR'],   queryFn: () => fetchWatchlist('STRONG_CANDIDATE', 6), refetchInterval: 300_000 })
   const { data: catalysts } = useQuery({ queryKey: ['catalysts'],          queryFn: fetchCatalysts,         refetchInterval: 600_000 })
   const { data: deals }     = useQuery({ queryKey: ['deals-dash'],         queryFn: () => fetchDeals(10, 6), refetchInterval: 600_000 })
@@ -582,52 +733,44 @@ export function Dashboard() {
   const flows      = ctx?.flow_scores
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-      {/* ── Row 1: Command Center ─────────────────────────────────────────── */}
+      {/* Row 1: Command Strip */}
+      {ctx && <CommandStrip ctx={ctx} part={part} />}
+
+      {/* Row 2: Three visual instruments */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
-        {ctx ? (
-          <RegimeDial
-            score={ctx.smart_money_score ?? 0}
-            regime={ctx.regime}
-            pcr={ctx.pcr ?? null}
-            pcrSignal={ctx.pcr_signal ?? ''}
-          />
-        ) : (
-          <div style={{ ...CARD, padding: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ color: '#334155', fontSize: 11 }}>Loading...</span>
+        {ctx ? <RegimeDial score={ctx.smart_money_score ?? 0} regime={ctx.regime} /> : (
+          <div style={{ ...CARD, padding: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: C.dim }}>Loading…</span>
           </div>
         )}
         <BreadthDonut breadth={ctx?.breadth} />
-        {part && ctx ? (
-          <ConvictionPanel part={part} cash={ctx.cash_flows} />
-        ) : (
-          <div style={{ ...CARD, padding: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ color: '#334155', fontSize: 11 }}>Loading...</span>
+        {part && ctx ? <ConvictionPanel part={part} cash={ctx.cash_flows} /> : (
+          <div style={{ ...CARD, padding: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: C.dim }}>Loading…</span>
           </div>
         )}
       </div>
 
-      {/* ── Row 2: Participant Flow Bars ──────────────────────────────────── */}
-      {flows && part && (
-        <FlowBars flows={flows} part={part} />
-      )}
+      {/* Row 3: Participant Flow Bars */}
+      {flows && part && <FlowBars flows={flows} part={part} />}
 
-      {/* ── Row 3: Sector Heatmap + Side Panel ───────────────────────────── */}
+      {/* Row 4: Sector Heatmap + Side Panel */}
       {allSectors.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.4fr', gap: 14, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '2.4fr 1fr', gap: 14, alignItems: 'start' }}>
           <SectorHeatmap sectors={allSectors} />
           <SidePanel strong={strong} catalysts={catalysts} deals={deals} />
         </div>
       )}
 
-      {/* ── Row 4: Emerging Watchlist ─────────────────────────────────────── */}
+      {/* Row 5: Emerging Watchlist */}
       {(emerging?.stocks ?? []).length > 0 && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-            <div style={S9}>EMERGING WATCHLIST</div>
-            <Link to="/watchlist" style={{ color: '#3B82F6', fontSize: 10, textDecoration: 'none' }}>
-              View all ({emerging?.count ?? 0})
+            <div style={LABEL}>EMERGING WATCHLIST</div>
+            <Link to="/watchlist" style={{ color: C.blue, fontSize: 11, textDecoration: 'none', fontWeight: 600 }}>
+              View all ({emerging?.count ?? 0}) →
             </Link>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
