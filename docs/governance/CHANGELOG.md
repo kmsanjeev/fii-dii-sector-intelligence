@@ -6,6 +6,259 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.6.0
+
+Chat Engine Robustness + Project Migration to D:\Projects
+
+Date: 2026-07-02
+
+Status: Completed
+
+---
+
+## Summary
+
+Fixed two Groq chat reliability issues and migrated the entire project from
+`C:\Users\hp\fii-dii-sector-intelligence` to `D:\Projects\fii-dii-sector-intelligence`
+without breaking Git history or any functionality.
+
+## Changes
+
+- `engines/ai/chatbot/chat_engine.py`:
+  - `parallel_tool_calls=False` added — prevents Llama 3.3 70B from generating
+    malformed XML-style function calls (`<function=name{args}/>`) instead of JSON
+  - Tool loop restructured: `break` on `tool_use_failed` → final text-only call
+  - Final forced call uses clean synthesised prompt (tool results only, not full history)
+    to prevent model confusion when MAX_TOOL_ROUNDS is exhausted
+  - Rate limit (429) now surfaced as a readable message in both tool loop and final call
+  - `MAX_TOOL_ROUNDS` reduced 5 → 3 (each round costs 2-5k tokens on Groq free tier)
+- Project root: `D:\Projects\fii-dii-sector-intelligence` (migrated via robocopy)
+  - 52,323 files, ~21 GB, 0 failures
+  - Git remote URL (HTTPS) and history unchanged — GitHub connection intact
+
+## Commits
+
+`af498cd` `6dbacd3`
+
+---
+
+# Version 4.5.0
+
+Groq Migration — Anthropic API replaced with Groq llama-3.3-70b-versatile (free tier)
+
+Date: 2026-07-02
+
+Status: Completed
+
+---
+
+## Summary
+
+Replaced the Phase 14 chatbot backend (Anthropic claude-sonnet-4-6) with Groq's free-tier
+`llama-3.3-70b-versatile` model to eliminate API costs during development. Anthropic API
+key is retained in .env for Phase 16 management sentiment only.
+
+## Changes
+
+- `engines/ai/chatbot/chat_engine.py` — full rewrite for Groq:
+  - Model: `llama-3.3-70b-versatile` via `groq` Python package
+  - `_to_groq_tools()`: converts Anthropic `input_schema` format to OpenAI/Groq
+    `{"type":"function","function":{...,"parameters":...}}` format at module load
+  - Agentic loop uses `msg.tool_calls` (OpenAI format) instead of Anthropic `stop_reason`
+  - History uses OpenAI message format: `role:"tool"` + `tool_call_id` for tool results
+  - System prompt injected as first message in `messages` list (not separate API arg)
+- `engines/ai/chatbot/tools/tool_registry.py` — tool schemas retained as Anthropic format
+  (converted at load time via `_to_groq_tools()`)
+- `backend/routers/chat.py` — env var check changed from `ANTHROPIC_API_KEY` to `GROQ_API_KEY`
+- `.env` — `GROQ_API_KEY` added; `ANTHROPIC_API_KEY` retained for Phase 16
+
+## Packages
+
+`groq` Python package installed
+
+---
+
+# Version 4.4.0
+
+Phase D — Chat Page full implementation
+
+Date: 2026-07-02
+
+Status: Completed
+
+---
+
+## Summary
+
+Replaced the 17-line ChatPage.tsx placeholder (Phase 11) with a full 355-line production
+chat UI backed by the Phase 14 Groq chatbot endpoint.
+
+## Changes
+
+- `frontend/src/pages/ChatPage.tsx` — complete rewrite:
+  - Multi-turn session via `session_id` (persists across sends on same page load)
+  - Intent badge (MARKET / SECTOR / STOCK / CORPORATE / RESEARCH) on each assistant reply
+  - `TypingDots` animation while waiting for API response
+  - 6 suggested prompt chips visible on first turn (auto-hide after first message)
+  - Auto-resize textarea (1–4 lines), Shift+Enter for newline, Enter to send
+  - `New Chat` button resets session and clears history
+  - API error banner when GROQ_API_KEY is not configured
+  - WELCOME message pre-populated; capability domain chips shown on first turn
+- `frontend/src/api/client.ts` — added:
+  - `ChatResponseData` type: `{ reply, session_id, intent }`
+  - `sendChat(message, session_id?)` helper
+  - `resetChatSession(session_id)` helper
+
+---
+
+# Version 4.3.0
+
+Phase C — Trade Conviction Alerts (P9/P10)
+
+Date: 2026-07-02
+
+Status: Completed
+
+---
+
+## Summary
+
+Built the server-side trade conviction engine and two new alert types (P9 TRADE_CONVICTION,
+P10 OI_SIGNAL_FLIP) that fire daily based on the same 7-factor score used by Phase B's
+TradeIntelligenceCard frontend component.
+
+## Changes
+
+- `engines/intelligence/trade_conviction_engine.py` (new):
+  - 7-factor conviction score for 2,406 symbols: trend/DMA (25%), F&O OI (20%),
+    sector rotation (15%), shareholding QoQ (15%), valuation (10%), ML score (10%),
+    management sentiment (5%)
+  - Output: `data/intelligence/trade_conviction_scores.csv` (2406 rows)
+  - Action labels: STRONG_BUY / BUY / HOLD / REDUCE / EXIT
+- `alerts/alert_engine.py` — added P9 TRADE_CONVICTION + P10 OI_SIGNAL_FLIP alert types
+  - P9: fires when conviction_score >= 75 and action in (STRONG_BUY, BUY); capped 3/day
+  - P10: fires on OI signal flip (LONG_BUILDUP ↔ SHORT_BUILDUP); capped 5/day
+- Alert types total: 10 (was 7)
+
+## Commits
+
+`6b40076`
+
+---
+
+# Version 4.2.0
+
+Phase B — Trade Intelligence Card with entry/exit synthesis
+
+Date: 2026-07-02
+
+Status: Completed
+
+---
+
+## Summary
+
+Built the WHY BUY / EXIT WATCH synthesis panel on StockDetailPage and enriched all
+stock listing endpoints with technical/F&O/ML bulk fields.
+
+## Changes
+
+- `frontend/src/components/platform/TradeIntelligenceCard.tsx` (new):
+  - `computeTradeSignal(data)`: 7-factor conviction score (0–100) from existing stock data
+  - Factors: trend/DMA (25%), OI signal (20%), sector rotation (15%), shareholding QoQ (15%),
+    valuation (10%), ML bull run score (10%), management sentiment (5%)
+  - Entry zone: LTP ±2%; stop loss: max(dma_200×0.98, close×0.90); trail: ×1.05
+  - `ScoreBar`: 0–100 gradient bar with STRONG BUY / BUY / HOLD / REDUCE / EXIT labels
+  - Action colors: STRONG BUY=#22C55E, BUY=#10B981, HOLD=#F59E0B, REDUCE=#F97316, EXIT=#EF4444
+- `backend/routers/stocks.py`:
+  - `_enrich_bulk(df)`: merges `trend_signal`, `vs_dma_200`, `prox_52w_high` from technical;
+    `oi_signal` from fno_intel; `ml_bull_run_score`, `accumulation_score` from ml_scores
+  - `get_stock_detail()`: added `sector_rotation_signal` via join with sector_rotation_intelligence.csv
+  - Both `get_watchlist()` and `get_all_stocks()` call `_enrich_bulk()`
+- `frontend/src/api/client.ts`:
+  - Added `sector_rotation_signal?`, `trend_signal?`, `oi_signal?`, `ml_bull_run_score?`,
+    `accumulation_score?`, `holding_trends?`, `management?` fields to `Stock` type
+- `frontend/src/pages/WatchlistPage.tsx`:
+  - Added `ActionBadge` component (STR BUY/BUY/HOLD/REDUCE/EXIT from label+trend+oi)
+  - New ACTION column in stock table
+- `frontend/src/pages/Dashboard.tsx`:
+  - Quick action badge on EMERGING watchlist cards using `stock.trend_signal`
+- Backend endpoints: 20 total (was 16)
+
+## Commits
+
+`552cf0e` `bbfe947`
+
+---
+
+# Version 4.1.0
+
+Phase A — Technical + F&O Intelligence + Market Context Dashboard
+
+Date: 2026-07-02
+
+Status: Completed
+
+---
+
+## Summary
+
+Added real-time technical indicators (52W H/L, DMAs, trend signal) and F&O intelligence
+(futures OI, OI signal) for the full stock universe, plus a market PCR pulse dashboard.
+
+## Changes
+
+- `engines/intelligence/technical_engine.py` (new):
+  - 52W High/Low proximity, 20/50/200 DMA, trend_signal (STRONG_UPTREND to STRONG_DOWNTREND)
+  - Output: `data/intelligence/technical_indicators.csv` (2717 rows)
+- `engines/intelligence/fno_engine.py` (new):
+  - Per-stock futures OI, 1D/5D OI delta, oi_signal (LONG_BUILDUP / SHORT_COVER / etc.)
+  - Output: `data/intelligence/fno_intelligence.csv` (211 F&O stocks)
+- `data/intelligence/market_context.json` — market PCR + regime pulse
+- GUI: Market Pulse dashboard panel added (PCR, regime, breadth counts)
+
+## Commits
+
+`bbfe947` `1ae9443`
+
+---
+
+# Version 4.0.0
+
+Generation 4 — Investment Operating System Complete (Phases 17-25)
+
+Date: 2026-07-02
+
+Status: Completed
+
+---
+
+## Summary
+
+All 9 Generation 4 phases built and integrated. Platform now covers the full investment
+loop: data → intelligence → alerts → GUI → research → portfolio → execution → commercial.
+
+## Phases Completed
+
+| Phase | Name | Key Outputs |
+|-------|------|-------------|
+| 17 | Symbol Change History | engines/foundation/symbol_change_engine.py; 1038 renames |
+| 18 | Corporate Announcements | engines/corporate/; NSE XBRL announcement fetcher |
+| 19 | Daily Intelligence Refresh | engines/orchestration/refresh_scheduler.py; APScheduler 18:00 IST |
+| 20 | Portfolio Engine | engines/portfolio/; transactions.csv, P&L, sector allocation |
+| 21 | Backtesting Framework | engines/backtest/; 3 strategies, 5 horizons, Sharpe/drawdown metrics |
+| 22 | Broker Adapter (R/O) | engines/broker/; Dhan + CSV adapters; broker sync engine |
+| 23 | Research Platform | engines/research/; 2406-symbol screener, comparator, notes engine |
+| 24 | Execution Platform | engines/execution/; risk engine, paper/live orders, signal recommender |
+| 25 | Commercial Platform | backend/auth/; SQLite sessions, roles, API keys; auth off by default |
+
+## GUI Pages Added (Phases 17-25)
+
+Portfolio, Backtest, Broker, Research, Execution, Admin (auth config)
+GUI total: 14 pages (was 10)
+
+---
+
 # Version 3.12.0
 
 Charts Page: OHLCV candlestick + intraday + IST timestamps + bhavcopy parquet cache

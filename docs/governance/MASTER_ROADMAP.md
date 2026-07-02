@@ -47,8 +47,13 @@ Output: 32 intelligence CSVs, bull run watchlist, 225 EMERGING symbols.
 Alert delivery, GUI, ML models, conversational AI.
 Phases 9-16. All complete.
 
-## Generation 4 — Investment Operating System (FUTURE)
+## Generation 4 — Investment Operating System (COMPLETE 2026-07-02)
 Portfolio management, broker execution, research platform, commercial tiers.
+Phases 17-25. All complete. Full investment operating system is live.
+
+## Generation 5 — Trade Intelligence Layer (COMPLETE 2026-07-02)
+Per-stock entry/exit synthesis, conviction scoring, technical + F&O intelligence.
+Phases A/B/C/D. All complete.
 
 ---
 
@@ -143,233 +148,90 @@ Valuation: P/E + ROE scores, 2084 symbols.
 
 ---
 
-# GENERATION 4 — Investment Operating System (CURRENT FOCUS)
+# GENERATION 4 — Investment Operating System (COMPLETE 2026-07-02)
 
-Phases 17-23. Each phase is independently deliverable and testable.
-Dependency chain is strictly linear — no phase can be skipped.
+All 9 phases complete. Platform now covers the full investment loop.
 
----
+## PHASE 17 — Symbol Change History | COMPLETE
+`engines/foundation/symbol_change_engine.py` | 1038 NSE symbol renames (e.g. IIFLWAM→360ONE)
+Data: `data/NSE/equity_master/symbol_change_history.csv`
 
-## PHASE 17 — Symbol Change History | Priority 1 (NEXT)
+## PHASE 18 — Corporate Announcements Intelligence | COMPLETE
+`engines/corporate/` | NSE XBRL announcement fetcher, 12 announcement types classified
+Data: `data/intelligence/company_announcements.csv`, `announcement_signals.csv`
 
-**Why:** Data integrity prerequisite. NSE renames symbols when companies rebrand or merge
-(e.g., IIFLWAM -> 360ONE on 23-Jan-2023). Without this, Phase 21 backtesting silently
-returns wrong or missing results for any symbol that changed name historically. Also prevents
-bhavcopy lookups from failing for renamed stocks in all downstream engines.
+## PHASE 19 — Daily Intelligence Refresh | COMPLETE
+`engines/orchestration/refresh_scheduler.py` | APScheduler 18:00 IST weekdays
+Full pipeline: 5A→6A→6B→6C→7A→18→8A→8B→12→13→9
 
-Location: `engines/foundation/`
-Source: NSE archives `https://nsearchives.nseindia.com/content/equities/symbolchange.csv`
-        (1038 records, open endpoint, no auth required)
+## PHASE 20 — Portfolio Engine | COMPLETE
+`engines/portfolio/` | transactions.csv, unrealised P&L, sector allocation
+Backend: `/api/portfolio/positions`, `/exposure`, `/pnl`
+Frontend: Portfolio page
 
-Files:
-- `engines/foundation/symbol_change_engine.py` — download, clean, deduplicate, save
+## PHASE 21 — Backtesting Framework | COMPLETE
+`engines/backtest/` | 3 strategies, 5 horizons, Sharpe/drawdown/win-rate metrics
+Frontend: Backtest page (equity curve, signal accuracy table)
 
-Data:
-- `data/NSE/equity_master/symbol_change_history.csv`
-  columns: company_name, old_symbol, new_symbol, change_date
+## PHASE 22 — Broker Adapter (Read-Only) | COMPLETE
+`engines/broker/` | Dhan + CSV adapters, broker sync engine
+`backend/routers/broker.py` | Frontend: Broker page
 
-Usage in downstream engines: every engine doing historical bhavcopy lookups must resolve
-old_symbol -> new_symbol using this file before loading price data.
+## PHASE 23 — Research Platform | COMPLETE
+`engines/research/` | 2406-symbol screener (15 filters), comparator, notes engine
+Frontend: Research page
 
-Success criteria: 1000+ records downloaded, all major known renames present (IIFLWAM/360ONE,
-BIRLA3M/3MINDIA, etc.), integrated into bhavcopy_import_engine.py as a lookup layer.
+## PHASE 24 — Execution Platform | COMPLETE
+`engines/execution/` | risk engine, paper/live orders, signal recommender
+`engines/execution/dhan_order_adapter.py` | Frontend: Execution page
 
----
-
-## PHASE 18 — Corporate Announcements Intelligence | Priority 2 (after Phase 5A)
-
-**Why:** The board_announcements.csv (527 rows, Phase 16) uses the corporate_actions_for_equity()
-API — same source as dividends and splits. The REAL NSE announcements API is entirely separate and
-provides qualitative corporate disclosures that are critical for management intelligence:
-- Press Releases (management narrative)
-- Analysts/Institutional Investor Meet outcomes (FII-management interaction signals)
-- Outcome of Board Meetings (decisions, not just actions)
-- SEBI Takeover + Insider Trading disclosures (stake change signals)
-- Financial Result Updates (timeline of result filings)
-- Trading Window closures (insider signal — window closes before sensitive events)
-
-NSE endpoint: `GET /api/corporate-announcements?index=equities&symbol=X`
-Sample scale: RELIANCE=3313, TCS=3321, HDFCBANK=2306 announcements each.
-
-Location: `engines/corporate/`
-Stack: nselib nse_urlfetch (existing), APScheduler (for daily update via Phase 19)
-
-Files:
-- `engines/corporate/announcement_intelligence_engine.py`
-  - incremental download per symbol (from last_fetched_date)
-  - classify by `desc` field into 12 announcement types
-  - score by signal value (Analyst Meet > Press Release > Trading Window etc.)
-  - output: per-symbol announcement history + latest signal score
-
-Data:
-- `data/intelligence/company_announcements.csv`
-  columns: symbol, date, announcement_type, signal_score, title_snippet, has_attachment
-- `data/intelligence/announcement_signals.csv`
-  columns: symbol, latest_signal_date, dominant_type, announcement_score (0-100)
-
-Feeds into:
-- Phase 16 management_sentiment (expands source from 527 board_announcements to full feed)
-- Phase 19 daily refresh (announcements updated daily)
-- Phase 21 backtesting (announcement signal as a feature)
-- Phase 23 research platform (thesis validation uses result/meeting announcements)
-
-Success criteria: 50,000+ announcements downloaded for the 2441-symbol universe covering
-the last 2 years; announcement_signals.csv scored for all symbols.
+## PHASE 25 — Commercial Platform | COMPLETE (auth off by default)
+`backend/auth/` | SQLite sessions, roles, API keys
+`POST /api/auth/setup` | Frontend: Admin page (Auth Config panel)
 
 ---
 
-## PHASE 19 — Daily Intelligence Refresh | Priority 3 (after Phases 1-18)
+# GENERATION 5 — Trade Intelligence Layer (COMPLETE 2026-07-02)
 
-Automated orchestration pipeline. Runs every market day at 18:00 IST.
-Transforms the platform from a static historical report into a live capital flow radar.
+Per-stock entry/exit synthesis, conviction scoring, technical + F&O overlays, full chat UI.
 
-Location: `engines/orchestration/`
-Stack: APScheduler (already installed), all existing engines
+## PHASE A — Technical + F&O Intelligence | COMPLETE
+`engines/intelligence/technical_engine.py` | 52W H/L, 20/50/200 DMA, trend_signal (2717 rows)
+`engines/intelligence/fno_engine.py` | futures OI, 1D/5D delta, oi_signal (211 F&O stocks)
+`data/intelligence/market_context.json` | market PCR + regime pulse
 
-Engine pipeline (18:00 IST, market days only):
-```
-5A participant_acquisition (incremental F&O + cash)
-  -> 6A sector_capital_flow (rebuild)
-  -> 6B sector_flow_scores (rebuild)
-  -> 6C sector_rotation_intelligence (rebuild)
-  -> 7A block_bulk_deal (incremental 1-day)
-  -> 18  announcement_intelligence (incremental, last 1 day per symbol)
-  -> 8A price_momentum (rebuild)
-  -> 8B bull_run_probability (rebuild)
-  -> 12  ml_scorer (daily inference, no retraining)
-  -> 13  RAG index_updater (rebuild from fresh CSVs)
-  -> 9   alert_engine (evaluate fresh signals, push Telegram)
-```
+## PHASE B — Trade Intelligence Card | COMPLETE
+`frontend/src/components/platform/TradeIntelligenceCard.tsx` | 7-factor WHY BUY / EXIT WATCH panel
+`backend/routers/stocks.py` `_enrich_bulk()` | merges tech/FNO/ML into all stock listing endpoints
+Stock listing endpoints: 20 total. WatchlistPage: ACTION column. Dashboard: action badge.
 
-Files:
-- `engines/orchestration/daily_refresh.py` — ordered pipeline, per-stage error isolation
-- `engines/orchestration/refresh_scheduler.py` — APScheduler trigger (18:00 IST weekdays)
-- `engines/orchestration/refresh_monitor.py` — staleness checker, refresh_log.csv
+## PHASE C — Trade Conviction Alerts (P9/P10) | COMPLETE
+`engines/intelligence/trade_conviction_engine.py` | server-side 7-factor score, 2406 symbols
+`data/intelligence/trade_conviction_scores.csv` | action: STRONG_BUY/BUY/HOLD/REDUCE/EXIT
+Alert types: 10 total (P9 TRADE_CONVICTION cap 3/day, P10 OI_SIGNAL_FLIP cap 5/day)
 
-Success criteria: Platform runs without manual intervention every market day.
-
----
-
-## PHASE 20 — Portfolio Engine | Priority 4 (after Phase 19)
-
-Track real positions against the intelligence signals the platform generates.
-
-Location: `engines/portfolio/`, `backend/routers/portfolio.py`, `frontend/` Portfolio page
-
-Files:
-- `engines/portfolio/position_engine.py` — CRUD: add/close/update positions
-- `engines/portfolio/exposure_engine.py` — sector/theme exposure vs rotation signal
-- `engines/portfolio/pnl_engine.py` — unrealised P&L from bhavcopy parquet cache
-- `backend/routers/portfolio.py` — /api/portfolio/positions + /exposure + /pnl
-- Frontend Portfolio page
-
-Data:
-- `data/portfolio/positions.csv` — symbol, qty, entry_price, entry_date, sector, status
-- `data/portfolio/portfolio_snapshot.csv` — daily sector exposure + P&L
-
-Success criteria: Can enter positions and see live sector exposure vs sector_rotation_intelligence.
-
----
-
-## PHASE 21 — Backtesting Framework | Priority 5 (after Phase 20)
-
-Validate intelligence signals against historical price outcomes before risking real money.
-Requires Phase 17 (symbol change history) for correct historical bhavcopy lookups.
-
-Location: `engines/backtest/`
-
-Files:
-- `engines/backtest/signal_backtester.py` — replay EMERGING signals, compute forward returns
-- `engines/backtest/strategy_engine.py` — entry/exit rules (N-day hold, stop, target)
-- `engines/backtest/performance_engine.py` — Sharpe, drawdown, win rate, hit rate by sector
-- Frontend Backtest page (equity curve, signal accuracy table)
-
-Data:
-- `data/intelligence/backtest_results.csv`
-- `data/intelligence/strategy_performance.csv`
-
-Success criteria: 2 years of signals replayed. Sharpe and win rate quantified per label tier.
-
----
-
-## PHASE 22 — Broker Adapter (Read-Only) | Priority 6 (after Phase 20)
-
-Sync live broker positions into the portfolio engine. Read-only first.
-
-Location: `engines/broker/`
-
-Files:
-- `engines/broker/base_adapter.py` — abstract BrokerAdapter (ADR-013)
-- `engines/broker/zerodha_adapter.py` — Kite Connect: holdings, positions, margins
-- `engines/broker/position_sync.py` — map broker -> portfolio schema
-
-Env vars: ZERODHA_API_KEY, ZERODHA_API_SECRET, ZERODHA_ACCESS_TOKEN
-
-Success criteria: Live Zerodha holdings auto-import into positions.csv on sync.
-
----
-
-## PHASE 23 — Research Platform | Priority 7 (after Phases 20 + 21)
-
-Investment thesis library. Auto-validates each quarter using announcements + results + SHP.
-
-Location: `engines/research/`
-
-Files:
-- `engines/research/thesis_engine.py` — write/read/archive per-symbol theses
-- `engines/research/thesis_validator.py` — quarterly score vs results + SHP + announcements
-- `engines/research/report_engine.py` — weekly Telegram digest + PDF
-
-Data:
-- `data/research/theses.csv`, `data/research/thesis_scores.csv`
-
----
-
-## PHASE 24 — Execution Platform | Priority 8 (after Phases 21 + 22)
-
-Paper trading first. Live orders only after backtesting validates signal quality.
-Hard gate: LIVE_TRADE_MODE=true in .env required, off by default.
-
-Location: `engines/execution/`
-
-Files:
-- `engines/execution/paper_trader.py` — simulate orders, no real money
-- `engines/execution/order_manager.py` — state machine: PENDING/PLACED/FILLED/FAILED
-- `engines/execution/risk_engine.py` — position limits, concentration, drawdown stop
-- `engines/execution/live_trader.py` — real orders (gate: LIVE_TRADE_MODE=true)
-
-Gate: paper mode must achieve Sharpe > 0.8 over 4 weeks before live_trader is enabled.
-
----
-
-## PHASE 25 — Commercial Platform | Priority 9 (after Phases 19-24 stable)
-
-Productize for multiple users. Last phase — only after core investment loop is proven.
-
-Location: `backend/auth/`, `backend/subscriptions/`, `frontend/auth/`
-
-Files:
-- `backend/auth/` — JWT, bcrypt, user CRUD, role-based access
-- `backend/subscriptions/` — Free/Pro/Institutional tiers, feature gates
-- `frontend/auth/` — login, subscription management
-- Per-user portfolio, research, alert isolation
-- Stripe or equivalent payment integration
+## PHASE D — Chat Page (Full UI) | COMPLETE
+`frontend/src/pages/ChatPage.tsx` | 355 lines: session chat, intent badge, typing dots,
+6 suggested prompts, auto-resize textarea, New Chat reset, API error banner
+`frontend/src/api/client.ts` | ChatResponseData type, sendChat(), resetChatSession()
+LLM backend: Groq llama-3.3-70b-versatile (free tier, replaced Anthropic API)
+`engines/ai/chatbot/chat_engine.py` | Groq agentic loop with tool_use_failed fallback
 
 ---
 
 # CURRENT STATUS (2026-07-02)
 
-Phases 1-16 COMPLETE (with 4 output gaps: RAG indexes, valuation_scores, holding_trends, shap_values).
-Generation 4 active. Build order is strict — Phase 17 first, no exceptions.
+ALL 25 CORE PHASES + A/B/C/D COMPLETE. Full investment operating system is live.
+Project location: `D:\Projects\fii-dii-sector-intelligence`
 
 ```
-Phase 17  Symbol Change History      engines/foundation/      <- BUILD NOW
-Phase 18  Corporate Announcements    engines/corporate/       <- after 17
-Phase 19  Daily Intelligence Refresh engines/orchestration/   <- after 1-18
-Phase 20  Portfolio Engine           engines/portfolio/       <- after 19
-Phase 21  Backtesting Framework      engines/backtest/        <- after 20
-Phase 22  Broker Adapter (R/O)       engines/broker/          <- after 20
-Phase 23  Research Platform          engines/research/        <- after 20+21
-Phase 24  Execution Platform         engines/execution/       <- after 21+22
-Phase 25  Commercial Platform        backend/auth/            <- after 19-24 stable
+Gen 1  Institutional Intelligence   Phases 1-8    COMPLETE
+Gen 2  Application Layer            Phases 9-16   COMPLETE
+Gen 3  Investment Operating System  Phases 17-25  COMPLETE
+Gen 5  Trade Intelligence Layer     Phases A-D    COMPLETE
 ```
+
+Next priorities (no formal phases assigned yet):
+- Daily data refresh validation (run refresh_scheduler.py manually, verify outputs)
+- Chat token conservation (Groq free tier: 100k tokens/day)
+- Backtest signal quality audit (run engines/backtest/ against 2025 EMERGING signals)

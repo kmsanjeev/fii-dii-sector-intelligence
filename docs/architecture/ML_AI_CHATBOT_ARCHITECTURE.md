@@ -1,9 +1,41 @@
 # ML / AI / Chatbot Architecture
 # Capital Flow Intelligence Platform
 
-**Status:** Approved  
-**Date:** 2026-06-29  
+**Status:** Approved — FULLY IMPLEMENTED  
+**Date:** 2026-06-29 | **Last updated:** 2026-07-02  
 **ADR:** ADR-021 (ML Intelligence Layer), ADR-022 (RAG Knowledge Base), ADR-023 (Chatbot)
+
+---
+
+## Implementation Status (2026-07-02)
+
+| Layer | Status | Notes |
+|-------|--------|-------|
+| ML Intelligence (Phase 12) | COMPLETE | XGBoost+LightGBM, 24 features, 4 outputs, 2441 symbols |
+| RAG Knowledge Base (Phase 13) | COMPLETE | FAISS+BM25, 6 domain indexes, hybrid RRF retrieval |
+| Chatbot Engine (Phase 14) | COMPLETE | Groq llama-3.3-70b-versatile (free tier), 11 tools, /api/chat |
+| Chat UI (Phase D) | COMPLETE | ChatPage.tsx — 355 lines, session-aware, 6 suggested prompts |
+
+## LLM Backend Change (2026-07-02)
+
+**Original design:** Anthropic claude-sonnet-4-6 (paid API)  
+**Current implementation:** Groq `llama-3.3-70b-versatile` (free tier, 100k tokens/day)  
+**Reason:** Development cost elimination; Anthropic API retained for Phase 16 management sentiment only.
+
+Tool calling format conversion at module load:
+```python
+# Anthropic format (tool_registry.py) -> Groq/OpenAI format (chat_engine.py)
+GROQ_TOOLS = [{"type":"function","function":{"name":t["name"],"description":t["description"],
+               "parameters":t.get("input_schema",{})}} for t in TOOLS]
+```
+
+Known Groq/Llama tool calling quirks and mitigations:
+- Llama 3.3 occasionally generates XML-style function calls → `parallel_tool_calls=False` prevents this
+- `tool_use_failed` 400 error → caught; final answer generated from clean prompt with tool results only
+- 429 rate limit (100k tokens/day free tier) → caught; user-readable message returned
+- `MAX_TOOL_ROUNDS=3` (was 5) to conserve token budget
+
+---
 
 ---
 
