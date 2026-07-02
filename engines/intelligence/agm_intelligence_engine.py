@@ -34,11 +34,11 @@ from engines.common.logger import get_logger
 
 logger = get_logger(__name__)
 
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 OUTPUT_PATH  = cfg.INTELLIGENCE_DIR / "agm_signals.csv"
 CACHE_PATH   = cfg.INTELLIGENCE_DIR / "agm_seen_ids.json"
-CLAUDE_MODEL = "claude-haiku-4-5-20251001"
-MAX_PER_RUN  = 400     # cost guard: ~400 × 300 tokens ≈ 120K tokens ≈ $0.012
+GROQ_MODEL   = "llama-3.1-8b-instant"
+MAX_PER_RUN  = 400
 
 # Announcement types carrying governance intelligence
 GOVERNANCE_TYPES = {
@@ -99,41 +99,43 @@ def _save_cache(seen: set):
     shutil.move(str(tmp), str(CACHE_PATH))
 
 
-def _call_claude(text: str, client) -> dict:
+def _call_llm(text: str, client) -> dict:
     default = {
         "governance_risk": "MEDIUM", "dividend_signal": "NONE",
         "capex_confirm": "NO", "management_change": "NO",
         "sentiment": "NEUTRAL", "key_decision": "",
     }
     try:
-        msg = client.messages.create(
-            model=CLAUDE_MODEL,
+        msg = client.chat.completions.create(
+            model=GROQ_MODEL,
             max_tokens=200,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": text[:700]}],
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user",   "content": text[:700]},
+            ],
         )
-        raw = msg.content[0].text.strip()
+        raw = msg.choices[0].message.content.strip()
         m = re.search(r"\{.*\}", raw, re.DOTALL)
         if m:
             return {**default, **json.loads(m.group())}
     except Exception as ex:
-        logger.warning("[AGMEngine] Claude failed: %s", ex)
+        logger.warning("[AGMEngine] LLM call failed: %s", ex)
     return default
 
 
 def run() -> pd.DataFrame | None:
     logger.info("[AGMEngine] Phase H AGM/governance intelligence engine starting")
 
-    if not ANTHROPIC_API_KEY:
-        logger.error("[AGMEngine] ANTHROPIC_API_KEY not set")
-        print("[AGMEngine] ERROR: set ANTHROPIC_API_KEY in .env")
+    if not GROQ_API_KEY:
+        logger.error("[AGMEngine] GROQ_API_KEY not set")
+        print("[AGMEngine] ERROR: set GROQ_API_KEY in .env")
         return None
 
     try:
-        import anthropic
-        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        from groq import Groq
+        client = Groq(api_key=GROQ_API_KEY)
     except ImportError:
-        logger.error("[AGMEngine] anthropic package not installed")
+        logger.error("[AGMEngine] groq package not installed — run: py -3.11 -m pip install groq")
         return None
 
     ann_path = cfg.INTELLIGENCE_DIR / "company_announcements.csv"
@@ -205,7 +207,7 @@ def run() -> pd.DataFrame | None:
         seq_id   = str(rec.get(seq_col, f"{symbol}_{i}"))
 
         text = f"Company: {symbol}\nType: {ann_type}\nTitle: {title}\nDescription: {desc}"
-        result = _call_claude(text, client)
+        result = _call_llm(text, client)
         time.sleep(0.35)  # G-A-01 rate limit
 
         rows.append({

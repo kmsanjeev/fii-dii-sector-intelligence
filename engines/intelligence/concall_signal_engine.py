@@ -35,12 +35,12 @@ from engines.common.logger import get_logger
 
 logger = get_logger(__name__)
 
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+GROQ_API_KEY  = os.getenv("GROQ_API_KEY", "")
 SIGNALS_PATH  = cfg.INTELLIGENCE_DIR / "concall_signals.csv"
 SUMMARY_PATH  = cfg.INTELLIGENCE_DIR / "concall_summary.csv"
 CACHE_PATH    = cfg.INTELLIGENCE_DIR / "concall_seen_ids.json"
-CLAUDE_MODEL  = "claude-haiku-4-5-20251001"
-MAX_PER_RUN   = 500     # cost guard: 500 × ~350 tokens ≈ 175K tokens ≈ $0.02
+GROQ_MODEL    = "llama-3.1-8b-instant"
+MAX_PER_RUN   = 500
 RECORDS_PER_SYMBOL = 2  # process latest N concall records per symbol
 
 CONCALL_TYPES = {"ANALYST_MEET", "RESULT_UPDATE"}
@@ -93,20 +93,22 @@ def _save_cache(seen: set):
     shutil.move(str(tmp), str(CACHE_PATH))
 
 
-def _call_claude(text: str, client) -> dict:
+def _call_llm(text: str, client) -> dict:
     try:
-        msg = client.messages.create(
-            model=CLAUDE_MODEL,
+        msg = client.chat.completions.create(
+            model=GROQ_MODEL,
             max_tokens=250,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": text[:800]}],
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user",   "content": text[:800]},
+            ],
         )
-        raw = msg.content[0].text.strip()
+        raw = msg.choices[0].message.content.strip()
         m = re.search(r"\{.*\}", raw, re.DOTALL)
         if m:
             return json.loads(m.group())
     except Exception as ex:
-        logger.warning(f"[ConcallSignal] Claude failed: {ex}")
+        logger.warning(f"[ConcallSignal] LLM call failed: {ex}")
     return {
         "sentiment": "NEUTRAL", "guidance_direction": "NOT_GIVEN",
         "capex_signal": "NO", "capex_amount_cr": None,
@@ -117,16 +119,16 @@ def _call_claude(text: str, client) -> dict:
 def run():
     logger.info("[ConcallSignal] Starting Phase F concall signal engine")
 
-    if not ANTHROPIC_API_KEY:
-        logger.error("[ConcallSignal] ANTHROPIC_API_KEY not set")
-        print("[ConcallSignal] ERROR: set ANTHROPIC_API_KEY in .env")
+    if not GROQ_API_KEY:
+        logger.error("[ConcallSignal] GROQ_API_KEY not set")
+        print("[ConcallSignal] ERROR: set GROQ_API_KEY in .env")
         return None
 
     try:
-        import anthropic
-        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        from groq import Groq
+        client = Groq(api_key=GROQ_API_KEY)
     except ImportError:
-        logger.error("[ConcallSignal] anthropic package not installed")
+        logger.error("[ConcallSignal] groq package not installed — run: py -3.11 -m pip install groq")
         return None
 
     ann_path = cfg.INTELLIGENCE_DIR / "company_announcements.csv"
@@ -189,7 +191,7 @@ def run():
         # Combine text for Claude
         text = f"Company: {symbol}\nType: {ann_type}\nTitle: {title}\nDescription: {desc}"
 
-        result = _call_claude(text, client)
+        result = _call_llm(text, client)
         time.sleep(0.4)  # G-A-01 rate limit (~2.5 req/s)
 
         rows.append({

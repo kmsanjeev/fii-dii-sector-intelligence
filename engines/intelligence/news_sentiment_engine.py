@@ -33,13 +33,13 @@ from engines.common.logger import get_logger
 logger = get_logger(__name__)
 
 # ── Config ─────────────────────────────────────────────────────────────────────
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+GROQ_API_KEY    = os.getenv("GROQ_API_KEY", "")
 SENTIMENT_PATH  = cfg.INTELLIGENCE_DIR / "news_sentiment.csv"
 SIGNALS_PATH    = cfg.INTELLIGENCE_DIR / "news_signals.csv"
 SEEN_IDS_PATH   = cfg.INTELLIGENCE_DIR / "news_seen_ids.json"
 ROLLING_DAYS    = 7
-MAX_ARTICLES_PER_RUN = 200        # cost guard: ~200 × 400 tokens = 80K tokens/run
-CLAUDE_MODEL    = "claude-haiku-4-5-20251001"
+MAX_ARTICLES_PER_RUN = 200
+GROQ_MODEL      = "llama-3.1-8b-instant"
 
 RSS_FEEDS = [
     ("MINT_MARKETS",    "https://www.livemint.com/rss/markets"),
@@ -123,23 +123,24 @@ def _fetch_articles() -> list[dict]:
     return articles
 
 
-def _claude_extract(title: str, summary: str, client) -> dict:
-    """Call Claude Haiku to extract symbols, sentiment, themes from one article."""
+def _llm_extract(title: str, summary: str, client) -> dict:
+    """Call Groq LLM to extract symbols, sentiment, themes from one article."""
     prompt = f"Headline: {title}\n\nSummary: {summary[:400]}"
     try:
-        msg = client.messages.create(
-            model=CLAUDE_MODEL,
+        msg = client.chat.completions.create(
+            model=GROQ_MODEL,
             max_tokens=300,
-            system=SENTIMENT_SYSTEM,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": SENTIMENT_SYSTEM},
+                {"role": "user",   "content": prompt},
+            ],
         )
-        raw = msg.content[0].text.strip()
-        # Extract JSON (handle markdown code fences)
+        raw = msg.choices[0].message.content.strip()
         m = re.search(r"\{.*\}", raw, re.DOTALL)
         if m:
             return json.loads(m.group())
     except Exception as ex:
-        logger.warning(f"[NewsSentiment] Claude extract failed: {ex}")
+        logger.warning(f"[NewsSentiment] LLM extract failed: {ex}")
     return {"symbols": [], "themes": [], "signal_type": "IRRELEVANT", "india_relevant": False}
 
 
@@ -150,16 +151,16 @@ def _sentiment_score(sentiment: str) -> float:
 def run():
     logger.info("[NewsSentiment] Starting Phase F news intelligence engine")
 
-    if not ANTHROPIC_API_KEY:
-        logger.error("[NewsSentiment] ANTHROPIC_API_KEY not set — cannot run Claude NLP")
-        print("[NewsSentiment] ERROR: set ANTHROPIC_API_KEY in .env")
+    if not GROQ_API_KEY:
+        logger.error("[NewsSentiment] GROQ_API_KEY not set")
+        print("[NewsSentiment] ERROR: set GROQ_API_KEY in .env")
         return None
 
     try:
-        import anthropic
-        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        from groq import Groq
+        client = Groq(api_key=GROQ_API_KEY)
     except ImportError:
-        logger.error("[NewsSentiment] anthropic package not installed")
+        logger.error("[NewsSentiment] groq package not installed — run: py -3.11 -m pip install groq")
         return None
 
     # Load seen IDs to skip reprocessing
@@ -181,7 +182,7 @@ def run():
     rows = []
     processed = 0
     for art in batch:
-        result = _claude_extract(art["title"], art["summary"], client)
+        result = _llm_extract(art["title"], art["summary"], client)
         time.sleep(0.3)  # G-A-01 rate limit
 
         if not result.get("india_relevant", False) or not result.get("symbols"):
