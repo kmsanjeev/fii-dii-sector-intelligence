@@ -29,6 +29,41 @@ function SortHeader({
   )
 }
 
+function ActionBadge({ label, trend, oi }: { label: string; trend?: string; oi?: string }) {
+  // Quick action signal from available bulk fields
+  const bullishTrend = trend === 'STRONG_UPTREND' || trend === 'UPTREND'
+  const bearishTrend = trend === 'DOWNTREND'
+  const bullishOI    = oi === 'LONG_BUILDUP' || oi === 'SHORT_COVERING'
+  const bearishOI    = oi === 'SHORT_BUILDUP' || oi === 'LONG_UNWINDING'
+  const avoidLabel   = label === 'AVOID'
+  const strongLabel  = label === 'STRONG_CANDIDATE'
+
+  let text = 'WATCH'
+  let color = '#64748B'
+  let bg    = '#1E2332'
+
+  if (avoidLabel || (bearishTrend && bearishOI)) {
+    text = 'EXIT'; color = '#EF4444'; bg = '#1c0000'
+  } else if (bearishTrend || (bearishOI && !bullishTrend)) {
+    text = 'REDUCE'; color = '#F97316'; bg = '#1c0a00'
+  } else if (strongLabel && bullishTrend && bullishOI) {
+    text = 'STR BUY'; color = '#22C55E'; bg = '#052e16'
+  } else if ((strongLabel || label === 'EMERGING') && bullishTrend) {
+    text = 'BUY'; color = '#10B981'; bg = '#022c22'
+  } else if (bullishTrend) {
+    text = 'HOLD'; color = '#F59E0B'; bg = '#1c1400'
+  }
+
+  return (
+    <span style={{
+      fontSize: 8, fontWeight: 700, padding: '1px 5px', borderRadius: 2,
+      border: `1px solid ${color}44`, color, background: bg,
+    }}>
+      {text}
+    </span>
+  )
+}
+
 function TrendBadge({ signal }: { signal?: string }) {
   if (!signal) return null
   const MAP: Record<string, { color: string; short: string }> = {
@@ -174,6 +209,7 @@ export function WatchlistPage() {
               <SortHeader label="Score"  col="bull_run_score" active={sortKey === 'bull_run_score'} dir={sortDir} onClick={() => toggleSort('bull_run_score')} />
               <th style={{ padding: '6px 10px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Label</th>
               <th style={{ padding: '6px 10px', textAlign: 'center', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Trend</th>
+              <th style={{ padding: '6px 10px', textAlign: 'center', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Action</th>
               <SortHeader label="30D"   col="ret_30d"   active={sortKey === 'ret_30d'}   dir={sortDir} onClick={() => toggleSort('ret_30d')} />
               <SortHeader label="365D"  col="ret_365d"  active={sortKey === 'ret_365d'}  dir={sortDir} onClick={() => toggleSort('ret_365d')} />
               <SortHeader label="Vol"   col="vol_ratio" active={sortKey === 'vol_ratio'} dir={sortDir} onClick={() => toggleSort('vol_ratio')} />
@@ -198,7 +234,14 @@ export function WatchlistPage() {
                 </td>
                 <td style={{ padding: '6px 10px' }}><CapFlowBadge label={s.label} /></td>
                 <td style={{ padding: '6px 10px', textAlign: 'center' }}>
-                  <TrendBadge signal={(s as any).technical?.trend_signal} />
+                  <TrendBadge signal={s.trend_signal ?? (s as any).technical?.trend_signal} />
+                </td>
+                <td style={{ padding: '6px 10px', textAlign: 'center' }}>
+                  <ActionBadge
+                    label={s.label}
+                    trend={s.trend_signal ?? (s as any).technical?.trend_signal}
+                    oi={s.oi_signal ?? (s as any).fno?.oi_signal}
+                  />
                 </td>
                 <td style={{ padding: '6px 10px', textAlign: 'right' }}>{pct(s.price?.ret_30d)}</td>
                 <td style={{ padding: '6px 10px', textAlign: 'right' }}>{pct(s.price?.ret_365d)}</td>

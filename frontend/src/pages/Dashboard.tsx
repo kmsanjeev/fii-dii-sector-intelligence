@@ -195,8 +195,14 @@ export function Dashboard() {
                 </div>
                 <ScoreGauge score={stock.bull_run_score} size={44} />
               </div>
-              <div className="mt-2 flex items-center justify-between">
+              <div className="mt-2 flex items-center justify-between gap-1 flex-wrap">
                 <CapFlowBadge label={stock.label} />
+                {(stock.trend_signal === 'STRONG_UPTREND' || stock.trend_signal === 'UPTREND') && (
+                  <span style={{ fontSize: 8, fontWeight: 700, padding: '1px 5px', borderRadius: 2,
+                    border: '1px solid #22C55E44', color: '#22C55E', background: '#052e1688' }}>
+                    {stock.trend_signal === 'STRONG_UPTREND' ? 'STR BUY' : 'BUY'}
+                  </span>
+                )}
                 {stock.price?.ret_30d != null && (
                   <span style={{ fontSize: 10, color: stock.price.ret_30d >= 0 ? '#22C55E' : '#EF4444' }}>
                     {stock.price.ret_30d >= 0 ? '+' : ''}{stock.price.ret_30d.toFixed(1)}%

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchStockDetail, type TechnicalIndicators, type FnoData } from '../api/client'
 import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
+import { TradeIntelligenceCard } from '../components/platform/TradeIntelligenceCard'
 
 function pct(v: number | null | undefined) {
   if (v == null) return '-'
@@ -291,6 +292,9 @@ export function StockDetailPage() {
           )}
         </div>
       )}
+
+      {/* Trade Intelligence Card — Phase B */}
+      <TradeIntelligenceCard data={data} />
 
       {/* Technical Analysis */}
       {data.technical && data.technical.dma_200 != null && data.close_now != null && (

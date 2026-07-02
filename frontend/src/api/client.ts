@@ -78,6 +78,7 @@ export type Stock = {
   label: string
   market_regime: string
   regime_multiplier: number
+  sector_rotation_signal?: string
   components: {
     price_score: number
     sector_flow_score: number
@@ -90,10 +91,19 @@ export type Stock = {
   corporate_confidence?: Record<string, unknown>
   fundamentals?: Record<string, number | string | null>
   shareholding?: Record<string, number | string | null>
+  holding_trends?: Record<string, number | string | null>[]
+  management?: Record<string, number | string | null>
   ml_scores?: { accumulation_score: number | null; ml_bull_run_score: number | null }
   technical?: TechnicalIndicators
   fno?: FnoData
   catalyst?: { event_date: string; purpose_type: string; catalyst_score: number | null }
+  // fields available in bulk listing (merged from technical/fno/ml datasets)
+  trend_signal?: string
+  vs_dma_200?: number | null
+  prox_52w_high?: number | null
+  oi_signal?: string
+  ml_bull_run_score?: number | null
+  accumulation_score?: number | null
 }
 
 export type ParticipantLatest = {

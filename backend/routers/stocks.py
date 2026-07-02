@@ -31,6 +31,25 @@ def _safe(v):
 router = APIRouter(prefix="/api/stocks", tags=["stocks"])
 
 
+def _enrich_bulk(df: pd.DataFrame) -> pd.DataFrame:
+    """Merge technical / F&O / ML columns into a bulk stock dataframe."""
+    tech_df = data_loader.get("technical")
+    if tech_df is not None:
+        cols = [c for c in ["symbol", "trend_signal", "vs_dma_200", "prox_52w_high"] if c in tech_df.columns]
+        df = df.merge(tech_df[cols], on="symbol", how="left")
+
+    fno_df = data_loader.get("fno_intel")
+    if fno_df is not None and "symbol" in fno_df.columns and "oi_signal" in fno_df.columns:
+        df = df.merge(fno_df[["symbol", "oi_signal"]], on="symbol", how="left")
+
+    ml_df = data_loader.get("ml_scores")
+    if ml_df is not None:
+        ml_cols = [c for c in ["symbol", "ml_bull_run_score", "accumulation_score"] if c in ml_df.columns]
+        df = df.merge(ml_df[ml_cols], on="symbol", how="left")
+
+    return df
+
+
 @router.get("/watchlist")
 def get_watchlist(label: str = "EMERGING", limit: int = 50):
     df = data_loader.get("bull_run_watchlist")
@@ -39,6 +58,7 @@ def get_watchlist(label: str = "EMERGING", limit: int = 50):
 
     filtered = df[df["label"] == label] if label != "ALL" else df
     filtered = filtered.nlargest(limit, "bull_run_score")
+    filtered = _enrich_bulk(filtered)
     return {
         "label": label,
         "count": len(filtered),
@@ -65,7 +85,7 @@ def get_all_stocks(
     df = df.sort_values("bull_run_score", ascending=False)
     total = len(df)
     start = (page - 1) * per_page
-    page_df = df.iloc[start: start + per_page]
+    page_df = _enrich_bulk(df.iloc[start: start + per_page].copy())
 
     return {
         "total": total,
@@ -233,6 +253,15 @@ def get_stock_detail(symbol: str):
                 "as_of_date":  str(r.get("as_of_date", "")),
             }
 
+    # Sector rotation signal for this stock's sector
+    sector_rotation_signal = ""
+    rot_df = data_loader.get("sector_rotation")
+    if rot_df is not None and "sector" in rot_df.columns:
+        sym_sector = str(row.get("sector", "")).upper()
+        rot_row = rot_df[rot_df["sector"].str.upper() == sym_sector]
+        if not rot_row.empty:
+            sector_rotation_signal = str(rot_row.iloc[0].get("rotation_signal", ""))
+
     # Next catalyst
     catalyst: dict = {}
     cat_df = data_loader.get("upcoming_catalysts")
@@ -273,10 +302,11 @@ def get_stock_detail(symbol: str):
         "shareholding":         shareholding,
         "holding_trends":       holding_trends,
         "management":           management,
-        "ml_scores":            ml_scores,
-        "technical":            technical,
-        "fno":                  fno,
-        "catalyst":             catalyst,
+        "ml_scores":               ml_scores,
+        "technical":               technical,
+        "fno":                     fno,
+        "catalyst":                catalyst,
+        "sector_rotation_signal":  sector_rotation_signal,
     }
 
 
