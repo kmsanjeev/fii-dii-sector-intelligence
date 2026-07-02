@@ -28,6 +28,113 @@ def _safe(v):
         return None
     return v
 
+
+def _fmt_cr(v) -> str:
+    """Format crore value as readable string."""
+    if v is None:
+        return "N/A"
+    try:
+        v = float(v)
+        if v >= 100_000:
+            return f"{v/100_000:.1f}L Cr"
+        if v >= 1_000:
+            return f"{v/1_000:.1f}K Cr"
+        return f"{v:.0f} Cr"
+    except Exception:
+        return "N/A"
+
+
+def _generate_insights(sym: str, row, fundamentals: dict, technical: dict,
+                       shareholding: dict, holding_trends: list, fno: dict) -> list:
+    insights = []
+    label  = str(row.get("label", ""))
+    score  = float(row.get("bull_run_score", 0) or 0)
+    ret365 = _safe(row.get("ret_365d"))
+
+    # 1 — Overall conviction (platform verdict in plain English)
+    label_text = {
+        "STRONG_CANDIDATE": f"Strong Opportunity — our intelligence rates this stock {score:.0f}/100. Multiple signals point to institutional accumulation.",
+        "EMERGING":         f"Emerging Opportunity — rating {score:.0f}/100. Early-stage signals suggest smart money interest is building.",
+        "WATCHLIST":        f"On the Watchlist — rating {score:.0f}/100. Interesting setup but needs more confirmation before entry.",
+        "NEUTRAL":          f"No clear signal yet — rating {score:.0f}/100. Neither strongly attractive nor alarming at current levels.",
+        "AVOID":            f"Caution advised — rating {score:.0f}/100. Multiple weak signals detected across the intelligence scorecard.",
+    }
+    if label in label_text:
+        insights.append(label_text[label])
+
+    # 2 — 1-year return (make it tangible with rupee example)
+    if ret365 is not None:
+        worth = 1 + ret365 / 100
+        if ret365 >= 50:
+            insights.append(f"Outstanding {ret365:.0f}% gain over the past year — if you had invested Rs 1 lakh a year ago, it would be worth Rs {worth:.1f} lakh today.")
+        elif ret365 >= 20:
+            insights.append(f"Good performer — up {ret365:.0f}% over the past year. Rs 1 lakh invested a year ago is now Rs {worth:.1f} lakh.")
+        elif ret365 >= 5:
+            insights.append(f"Modest gain of {ret365:.0f}% over the past year. Steady but below-average market returns.")
+        elif ret365 >= -15:
+            insights.append(f"Down {abs(ret365):.0f}% over the past year — currently underperforming. Monitor for recovery signals.")
+        else:
+            insights.append(f"Significant decline of {abs(ret365):.0f}% over the past year — high risk. Requires strong reason to stay invested.")
+
+    # 3 — Price position vs key technical levels
+    prox_high = technical.get("prox_52w_high")
+    vs_200    = technical.get("vs_dma_200")
+    if prox_high is not None and vs_200 is not None:
+        if prox_high >= -5 and vs_200 >= 5:
+            insights.append(f"Near its 52-week peak (only {abs(prox_high):.1f}% below) and {vs_200:.0f}% above its 200-day average — strong uptrend confirmed across all timeframes.")
+        elif vs_200 >= 10:
+            insights.append(f"Healthy uptrend: trading {vs_200:.0f}% above its 200-day moving average. Think of the 200-day average as the long-term direction indicator — being above it is positive.")
+        elif abs(vs_200) <= 5:
+            insights.append(f"At a key decision zone — hugging its 200-day average ({'+' if vs_200 >= 0 else ''}{vs_200:.0f}%). A breakout above could signal a new uptrend; a drop below would be bearish.")
+        elif vs_200 < -10:
+            insights.append(f"Still in a downtrend — {abs(vs_200):.0f}% below its 200-day average. Wait for the price to reclaim this level before considering a buy.")
+
+    # 4 — Institutional ownership trends (latest quarter)
+    if len(holding_trends) >= 2:
+        latest = holding_trends[-1]
+        fii_d  = latest.get("fii_delta")
+        dii_d  = latest.get("dii_delta")
+        pro_d  = latest.get("promoter_delta")
+        period = latest.get("period", "last quarter")
+        if fii_d is not None and dii_d is not None:
+            if fii_d > 0.3 and dii_d > 0.3:
+                insights.append(f"Strong institutional buying in {period} — foreign funds added {fii_d:.2f}% and domestic funds added {dii_d:.2f}%. When both camps accumulate together, it is a very strong signal.")
+            elif fii_d > 0.2:
+                insights.append(f"Foreign investor interest growing — FII stake rose {fii_d:.2f}% in {period}. Global funds typically do deep research before buying, so this signals confidence.")
+            elif dii_d > 0.2:
+                insights.append(f"Domestic funds accumulating — mutual funds and insurance companies added {dii_d:.2f}% in {period}. Local institutions see value here.")
+            elif fii_d < -0.3:
+                insights.append(f"Watch out: foreign investors reduced their stake by {abs(fii_d):.2f}% in {period}. FII selling can pressure the stock price in the near term.")
+            elif pro_d is not None and pro_d > 0.5:
+                insights.append(f"Insider vote of confidence — promoters bought an additional {pro_d:.2f}% of their own company in {period}. Insiders rarely buy unless they see undervaluation.")
+
+    # 5 — Valuation clarity (plain-language P/E explanation)
+    val_label  = fundamentals.get("valuation_label", "")
+    pe         = fundamentals.get("pe_ratio")
+    roe        = fundamentals.get("roe_pct")
+    yoy_profit = fundamentals.get("yoy_profit_pct")
+    if val_label == "CHEAP_QUALITY" and pe is not None:
+        roe_str = f" while generating {roe:.0f}% return on shareholders' equity" if roe else ""
+        insights.append(f"Attractively valued — P/E of {pe:.1f}x{roe_str}. In simple terms: for every Rs {pe:.0f} invested, you own Rs 1 of annual profit. Below-average valuation for this quality.")
+    elif val_label == "EXPENSIVE" and pe is not None:
+        insights.append(f"Premium-priced — P/E of {pe:.1f}x means you are paying Rs {pe:.0f} for every Rs 1 of annual earnings. This is justified only if earnings grow fast. Tread carefully on entry price.")
+    elif yoy_profit is not None and yoy_profit > 20:
+        insights.append(f"Earnings accelerating — net profit up {yoy_profit:.0f}% year-on-year. A rapidly growing profit base is one of the strongest drivers of long-term stock price appreciation.")
+    elif yoy_profit is not None and yoy_profit < -20:
+        insights.append(f"Earnings under pressure — net profit fell {abs(yoy_profit):.0f}% year-on-year. Until profits recover, the stock may remain subdued regardless of other signals.")
+
+    # 6 — Derivatives market intelligence (plain English for laymen)
+    oi_signal = fno.get("oi_signal", "")
+    if oi_signal == "LONG_BUILDUP":
+        insights.append("Futures market signal: institutional traders are adding fresh buy bets ('Long Buildup'). When smart money takes new positions in derivatives, it often precedes a price move up.")
+    elif oi_signal == "SHORT_COVERING":
+        insights.append("Reversal signal: traders who bet against this stock are now buying back to exit ('Short Covering'). This forced buying can create a sharp upward price move.")
+    elif oi_signal == "SHORT_BUILDUP":
+        insights.append("Caution: institutional traders are adding fresh sell bets ('Short Buildup') in futures. This signals that sophisticated market participants expect price weakness ahead.")
+
+    return insights[:5]
+
+
 router = APIRouter(prefix="/api/stocks", tags=["stocks"])
 
 
@@ -272,6 +379,25 @@ def get_stock_detail(symbol: str):
                 "as_of_date":  str(r.get("as_of_date", "")),
             }
 
+    # Quarterly results (last 4 quarters)
+    quarterly_results: list = []
+    qr_df = data_loader.get("quarterly_results")
+    if qr_df is not None and "symbol" in qr_df.columns:
+        qr_rows = qr_df[qr_df["symbol"].str.upper() == sym].copy()
+        if not qr_rows.empty:
+            date_col = next((c for c in ["period_end_date", "period", "quarter_end_date", "date"] if c in qr_rows.columns), None)
+            if date_col:
+                qr_rows["_sort"] = pd.to_datetime(qr_rows[date_col], errors="coerce")
+                qr_rows = qr_rows.sort_values("_sort", ascending=False).head(4).drop(columns=["_sort"])
+            for _, r in qr_rows.iterrows():
+                quarterly_results.append({
+                    k: (_safe(v) if isinstance(v, float) else str(v) if not isinstance(v, (int, type(None))) else v)
+                    for k, v in r.items()
+                    if k in ["period", "period_end_date", "quarter_end_date", "revenue", "revenue_cr",
+                              "net_profit", "net_profit_cr", "eps", "total_income", "total_expenses",
+                              "yoy_revenue_pct", "yoy_profit_pct", "qoq_revenue_pct", "qoq_profit_pct"]
+                })
+
     # Sector rotation signal for this stock's sector
     sector_rotation_signal = ""
     rot_df = data_loader.get("sector_rotation")
@@ -326,6 +452,8 @@ def get_stock_detail(symbol: str):
         "fno":                     fno,
         "catalyst":                catalyst,
         "sector_rotation_signal":  sector_rotation_signal,
+        "quarterly_results":       quarterly_results,
+        "analyst_insights":        _generate_insights(sym, row, fundamentals, technical, shareholding, holding_trends, fno),
     }
 
 
