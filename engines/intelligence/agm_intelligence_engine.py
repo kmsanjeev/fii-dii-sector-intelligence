@@ -31,13 +31,12 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 from engines.common import config as cfg
 from engines.common.logger import get_logger
+from engines.common.llm_client import call_llm, available_providers
 
 logger = get_logger(__name__)
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 OUTPUT_PATH  = cfg.INTELLIGENCE_DIR / "agm_signals.csv"
 CACHE_PATH   = cfg.INTELLIGENCE_DIR / "agm_seen_ids.json"
-GROQ_MODEL   = "llama-3.1-8b-instant"
 MAX_PER_RUN  = 400
 
 # Announcement types carrying governance intelligence
@@ -99,44 +98,32 @@ def _save_cache(seen: set):
     shutil.move(str(tmp), str(CACHE_PATH))
 
 
-def _call_llm(text: str, client) -> dict:
+def _call_llm(text: str) -> dict:
     default = {
         "governance_risk": "MEDIUM", "dividend_signal": "NONE",
         "capex_confirm": "NO", "management_change": "NO",
         "sentiment": "NEUTRAL", "key_decision": "",
     }
-    try:
-        msg = client.chat.completions.create(
-            model=GROQ_MODEL,
-            max_tokens=200,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user",   "content": text[:700]},
-            ],
-        )
-        raw = msg.choices[0].message.content.strip()
-        m = re.search(r"\{.*\}", raw, re.DOTALL)
-        if m:
-            return {**default, **json.loads(m.group())}
-    except Exception as ex:
-        logger.warning("[AGMEngine] LLM call failed: %s", ex)
+    raw = call_llm(system=SYSTEM_PROMPT, user=text[:700], max_tokens=200)
+    if raw:
+        try:
+            m = re.search(r"\{.*\}", raw, re.DOTALL)
+            if m:
+                return {**default, **json.loads(m.group())}
+        except Exception as ex:
+            logger.warning("[AGMEngine] JSON parse failed: %s", ex)
     return default
 
 
 def run() -> pd.DataFrame | None:
     logger.info("[AGMEngine] Phase H AGM/governance intelligence engine starting")
 
-    if not GROQ_API_KEY:
-        logger.error("[AGMEngine] GROQ_API_KEY not set")
-        print("[AGMEngine] ERROR: set GROQ_API_KEY in .env")
+    providers = available_providers()
+    if not providers:
+        logger.error("[AGMEngine] No LLM provider keys found in .env")
+        print("[AGMEngine] ERROR: add at least one API key to .env")
         return None
-
-    try:
-        from groq import Groq
-        client = Groq(api_key=GROQ_API_KEY)
-    except ImportError:
-        logger.error("[AGMEngine] groq package not installed — run: py -3.11 -m pip install groq")
-        return None
+    logger.info(f"[AGMEngine] LLM providers available: {providers}")
 
     ann_path = cfg.INTELLIGENCE_DIR / "company_announcements.csv"
     if not ann_path.exists():
@@ -207,7 +194,7 @@ def run() -> pd.DataFrame | None:
         seq_id   = str(rec.get(seq_col, f"{symbol}_{i}"))
 
         text = f"Company: {symbol}\nType: {ann_type}\nTitle: {title}\nDescription: {desc}"
-        result = _call_llm(text, client)
+        result = _call_llm(text)
         time.sleep(0.35)  # G-A-01 rate limit
 
         rows.append({

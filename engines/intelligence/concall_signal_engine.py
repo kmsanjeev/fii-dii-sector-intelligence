@@ -32,14 +32,13 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 from engines.common import config as cfg
 from engines.common.logger import get_logger
+from engines.common.llm_client import call_llm, available_providers
 
 logger = get_logger(__name__)
 
-GROQ_API_KEY  = os.getenv("GROQ_API_KEY", "")
 SIGNALS_PATH  = cfg.INTELLIGENCE_DIR / "concall_signals.csv"
 SUMMARY_PATH  = cfg.INTELLIGENCE_DIR / "concall_summary.csv"
 CACHE_PATH    = cfg.INTELLIGENCE_DIR / "concall_seen_ids.json"
-GROQ_MODEL    = "llama-3.1-8b-instant"
 MAX_PER_RUN   = 500
 RECORDS_PER_SYMBOL = 2  # process latest N concall records per symbol
 
@@ -93,22 +92,15 @@ def _save_cache(seen: set):
     shutil.move(str(tmp), str(CACHE_PATH))
 
 
-def _call_llm(text: str, client) -> dict:
-    try:
-        msg = client.chat.completions.create(
-            model=GROQ_MODEL,
-            max_tokens=250,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user",   "content": text[:800]},
-            ],
-        )
-        raw = msg.choices[0].message.content.strip()
-        m = re.search(r"\{.*\}", raw, re.DOTALL)
-        if m:
-            return json.loads(m.group())
-    except Exception as ex:
-        logger.warning(f"[ConcallSignal] LLM call failed: {ex}")
+def _call_llm(text: str) -> dict:
+    raw = call_llm(system=SYSTEM_PROMPT, user=text[:800], max_tokens=250)
+    if raw:
+        try:
+            m = re.search(r"\{.*\}", raw, re.DOTALL)
+            if m:
+                return json.loads(m.group())
+        except Exception as ex:
+            logger.warning(f"[ConcallSignal] JSON parse failed: {ex}")
     return {
         "sentiment": "NEUTRAL", "guidance_direction": "NOT_GIVEN",
         "capex_signal": "NO", "capex_amount_cr": None,
@@ -119,17 +111,12 @@ def _call_llm(text: str, client) -> dict:
 def run():
     logger.info("[ConcallSignal] Starting Phase F concall signal engine")
 
-    if not GROQ_API_KEY:
-        logger.error("[ConcallSignal] GROQ_API_KEY not set")
-        print("[ConcallSignal] ERROR: set GROQ_API_KEY in .env")
+    providers = available_providers()
+    if not providers:
+        logger.error("[ConcallSignal] No LLM provider keys found in .env")
+        print("[ConcallSignal] ERROR: add at least one API key to .env")
         return None
-
-    try:
-        from groq import Groq
-        client = Groq(api_key=GROQ_API_KEY)
-    except ImportError:
-        logger.error("[ConcallSignal] groq package not installed — run: py -3.11 -m pip install groq")
-        return None
+    logger.info(f"[ConcallSignal] LLM providers available: {providers}")
 
     ann_path = cfg.INTELLIGENCE_DIR / "company_announcements.csv"
     if not ann_path.exists():
@@ -191,7 +178,7 @@ def run():
         # Combine text for Claude
         text = f"Company: {symbol}\nType: {ann_type}\nTitle: {title}\nDescription: {desc}"
 
-        result = _call_llm(text, client)
+        result = _call_llm(text)
         time.sleep(0.4)  # G-A-01 rate limit (~2.5 req/s)
 
         rows.append({

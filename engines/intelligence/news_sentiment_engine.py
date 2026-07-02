@@ -29,17 +29,16 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 from engines.common import config as cfg
 from engines.common.logger import get_logger
+from engines.common.llm_client import call_llm, available_providers
 
 logger = get_logger(__name__)
 
 # ── Config ─────────────────────────────────────────────────────────────────────
-GROQ_API_KEY    = os.getenv("GROQ_API_KEY", "")
 SENTIMENT_PATH  = cfg.INTELLIGENCE_DIR / "news_sentiment.csv"
 SIGNALS_PATH    = cfg.INTELLIGENCE_DIR / "news_signals.csv"
 SEEN_IDS_PATH   = cfg.INTELLIGENCE_DIR / "news_seen_ids.json"
 ROLLING_DAYS    = 7
 MAX_ARTICLES_PER_RUN = 200
-GROQ_MODEL      = "llama-3.1-8b-instant"
 
 RSS_FEEDS = [
     ("MINT_MARKETS",    "https://www.livemint.com/rss/markets"),
@@ -123,24 +122,17 @@ def _fetch_articles() -> list[dict]:
     return articles
 
 
-def _llm_extract(title: str, summary: str, client) -> dict:
-    """Call Groq LLM to extract symbols, sentiment, themes from one article."""
+def _llm_extract(title: str, summary: str) -> dict:
+    """Extract symbols, sentiment, themes from one article via fallback LLM chain."""
     prompt = f"Headline: {title}\n\nSummary: {summary[:400]}"
-    try:
-        msg = client.chat.completions.create(
-            model=GROQ_MODEL,
-            max_tokens=300,
-            messages=[
-                {"role": "system", "content": SENTIMENT_SYSTEM},
-                {"role": "user",   "content": prompt},
-            ],
-        )
-        raw = msg.choices[0].message.content.strip()
-        m = re.search(r"\{.*\}", raw, re.DOTALL)
-        if m:
-            return json.loads(m.group())
-    except Exception as ex:
-        logger.warning(f"[NewsSentiment] LLM extract failed: {ex}")
+    raw = call_llm(system=SENTIMENT_SYSTEM, user=prompt, max_tokens=300)
+    if raw:
+        try:
+            m = re.search(r"\{.*\}", raw, re.DOTALL)
+            if m:
+                return json.loads(m.group())
+        except Exception as ex:
+            logger.warning(f"[NewsSentiment] JSON parse failed: {ex}")
     return {"symbols": [], "themes": [], "signal_type": "IRRELEVANT", "india_relevant": False}
 
 
@@ -151,17 +143,12 @@ def _sentiment_score(sentiment: str) -> float:
 def run():
     logger.info("[NewsSentiment] Starting Phase F news intelligence engine")
 
-    if not GROQ_API_KEY:
-        logger.error("[NewsSentiment] GROQ_API_KEY not set")
-        print("[NewsSentiment] ERROR: set GROQ_API_KEY in .env")
+    providers = available_providers()
+    if not providers:
+        logger.error("[NewsSentiment] No LLM provider keys found in .env")
+        print("[NewsSentiment] ERROR: add at least one of GROQ_API_KEY / GEMINI_API_KEY / OPENROUTER_API_KEY to .env")
         return None
-
-    try:
-        from groq import Groq
-        client = Groq(api_key=GROQ_API_KEY)
-    except ImportError:
-        logger.error("[NewsSentiment] groq package not installed — run: py -3.11 -m pip install groq")
-        return None
+    logger.info(f"[NewsSentiment] LLM providers available: {providers}")
 
     # Load seen IDs to skip reprocessing
     seen_ids = _load_seen_ids()
@@ -182,7 +169,7 @@ def run():
     rows = []
     processed = 0
     for art in batch:
-        result = _llm_extract(art["title"], art["summary"], client)
+        result = _llm_extract(art["title"], art["summary"])
         time.sleep(0.3)  # G-A-01 rate limit
 
         if not result.get("india_relevant", False) or not result.get("symbols"):

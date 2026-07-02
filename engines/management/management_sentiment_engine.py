@@ -77,9 +77,10 @@ class ManagementSentimentEngine:
 
     def __init__(self, use_ai: bool = True):
         SHAREHOLDING_DIR.mkdir(parents=True, exist_ok=True)
-        self.use_ai = use_ai and bool(os.getenv("GROQ_API_KEY"))
-        if use_ai and not os.getenv("GROQ_API_KEY"):
-            logger.info("[MgmtSentiment] GROQ_API_KEY not set -- skipping AI tone scoring")
+        from engines.common.llm_client import available_providers
+        self.use_ai = use_ai and bool(available_providers())
+        if use_ai and not available_providers():
+            logger.info("[MgmtSentiment] No LLM provider keys set -- skipping AI tone scoring")
 
     def run(self) -> bool:
         logger.info("[MgmtSentiment] Starting management sentiment scoring")
@@ -154,8 +155,7 @@ class ManagementSentimentEngine:
         Only runs when ANTHROPIC_API_KEY is set.
         Processes top 50 symbols by preliminary combined score to stay within budget.
         """
-        from groq import Groq
-        client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+        from engines.common.llm_client import call_llm as _call_llm_fn
 
         # Get text for top candidates
         if ann_df.empty or "symbol" not in ann_df.columns:
@@ -178,20 +178,15 @@ class ManagementSentimentEngine:
                 continue
 
             try:
-                resp = client.chat.completions.create(
-                    model="llama-3.1-8b-instant",
-                    max_tokens=64,
-                    messages=[{
-                        "role": "user",
-                        "content": (
-                            f"Score management quality from 0-100 based on this announcement text. "
-                            f"Respond with ONLY a number. "
-                            f"100=excellent management (buybacks, dividends, acquisitions). "
-                            f"50=neutral. 0=poor (selling, dilution). Text: {text[:500]}"
-                        )
-                    }],
+                score_text = _call_llm_fn(
+                    system="You are a management quality scorer for Indian listed companies. Respond with ONLY a number 0-100.",
+                    user=(
+                        f"Score management quality from 0-100. "
+                        f"100=excellent (buybacks, dividends, acquisitions). "
+                        f"50=neutral. 0=poor (selling, dilution). Text: {text[:500]}"
+                    ),
+                    max_tokens=16,
                 )
-                score_text = resp.choices[0].message.content.strip()
                 ai_score = float(score_text.split()[0])
                 ai_scores[symbol] = max(0, min(100, ai_score))
                 logger.debug(f"[MgmtSentiment] AI tone {symbol}: {ai_score}")
