@@ -656,6 +656,80 @@ function ConcallCard({ concall }: { concall: Record<string, unknown> }) {
   )
 }
 
+// ─── Phase G: Multi-Signal Consensus ─────────────────────────────────────────
+
+function ConsensusCard({ con }: { con: Record<string, unknown> }) {
+  const score  = Number(con.consensus_score ?? 50)
+  const label  = String(con.consensus_label ?? '')
+  const sigs   = String(con.signals_used ?? '').split('|').filter(Boolean)
+  if (!label) return null
+
+  const sc = score >= 68 ? C.bull : score >= 58 ? C.teal : score <= 32 ? C.bear : score <= 42 ? '#F44B4B99' : C.muted
+  const [lbg, lfg] = score >= 58 ? ['#052E1688', '#22D35E']
+    : score <= 42 ? ['#2D0A0A88', '#F44B4B']
+    : ['#1A274088', '#7B90A8']
+
+  const sub: { label: string; key: string; color: string }[] = [
+    { label: 'Concall',  key: 'concall_norm',  color: '#9B7BEA' },
+    { label: 'Insider',  key: 'insider_norm',  color: '#F5A524' },
+    { label: 'News',     key: 'news_norm',     color: '#3BAEF0' },
+    { label: 'Deals',    key: 'deal_norm',     color: '#22D35E' },
+  ]
+
+  return (
+    <Card title={`MARKET CONSENSUS${con.as_of_date ? ` (${String(con.as_of_date)})` : ''}`} accentColor={sc}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 12 }}>
+        <div style={{ fontSize: 28, fontWeight: 900, fontFamily: 'monospace', color: sc }}>
+          {score.toFixed(0)}<span style={{ fontSize: 10, color: C.muted }}>/100</span>
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ height: 6, background: '#1A2740', borderRadius: 3, marginBottom: 6, overflow: 'hidden' }}>
+            <div style={{ width: `${score}%`, height: '100%', background: `linear-gradient(to right, ${sc}88, ${sc})`, borderRadius: 3 }} />
+          </div>
+          <span style={{
+            fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 3,
+            background: lbg, color: lfg,
+          }}>{label.replace(/_/g, ' ')}</span>
+        </div>
+      </div>
+
+      {/* Sub-signal breakdown */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6, marginBottom: 10 }}>
+        {sub.map(({ label: lbl, key, color }) => {
+          const v = con[key] as number | null | undefined
+          const active = v != null
+          return (
+            <div key={key} style={{
+              background: C.bgDeep, border: C.border, borderRadius: 5,
+              padding: '6px 8px', opacity: active ? 1 : 0.4,
+            }}>
+              <div style={{ fontSize: 8, color: C.muted, marginBottom: 3 }}>{lbl}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ flex: 1, height: 4, background: '#1E2D44', borderRadius: 2 }}>
+                  <div style={{
+                    width: `${active ? v! : 50}%`, height: '100%',
+                    background: color, borderRadius: 2,
+                    opacity: active ? 1 : 0.3,
+                  }} />
+                </div>
+                <span style={{ color: active ? color : C.dim, fontSize: 10, fontWeight: 700, minWidth: 28 }}>
+                  {active ? v!.toFixed(0) : '--'}
+                </span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {sigs.length > 0 && (
+        <div style={{ fontSize: 9, color: C.dim }}>
+          Signals active: {sigs.join(' · ')}
+        </div>
+      )}
+    </Card>
+  )
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export function StockDetailPage() {
@@ -1045,6 +1119,11 @@ export function StockDetailPage() {
               </Card>
             )
           })()}
+
+          {/* Phase G: Multi-signal consensus */}
+          {data.consensus && (data.consensus as Record<string, unknown>).consensus_label && (
+            <ConsensusCard con={data.consensus as Record<string, unknown>} />
+          )}
 
           {/* Phase F: Alt-data intelligence */}
           {data.news && Object.keys(data.news as object).length > 0 && (

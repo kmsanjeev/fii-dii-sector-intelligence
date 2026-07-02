@@ -55,6 +55,9 @@ SOURCES = {
     "news_signals":           cfg.INTELLIGENCE_DIR / "news_signals.csv",
     "insider_signals":        cfg.INTELLIGENCE_DIR / "insider_signals.csv",
     "concall_summary":        cfg.INTELLIGENCE_DIR / "concall_summary.csv",
+    # Phase G — Consensus + purity
+    "consensus_scores":       cfg.INTELLIGENCE_DIR / "consensus_scores.csv",
+    "purity_change_log":      cfg.INTELLIGENCE_DIR / "purity_change_log.csv",
 }
 
 _MARKET_CONTEXT_PATH = cfg.INTELLIGENCE_DIR / "market_context.json"

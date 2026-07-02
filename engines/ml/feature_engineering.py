@@ -77,6 +77,7 @@ THEME_INTEL    = cfg.INTELLIGENCE_DIR / "theme_intelligence.csv"
 NEWS_SIGNALS   = cfg.INTELLIGENCE_DIR / "news_signals.csv"
 INSIDER_SIGS   = cfg.INTELLIGENCE_DIR / "insider_signals.csv"
 CONCALL_SUM    = cfg.INTELLIGENCE_DIR / "concall_summary.csv"
+CONSENSUS      = cfg.INTELLIGENCE_DIR / "consensus_scores.csv"
 
 # ---------------------------------------------------------------------------
 # Encoding maps
@@ -166,6 +167,9 @@ class FeatureEngineeringEngine:
         bull = self._add_insider_signals(bull)
         bull = self._add_concall_signals(bull)
 
+        # Phase G consensus
+        bull = self._add_consensus(bull)
+
         bull["label_enc"] = bull["label"].map(LABEL_MAP).fillna(1)
 
         feature_cols = [
@@ -201,6 +205,8 @@ class FeatureEngineeringEngine:
             "theme_score_max", "theme_purity_max",
             "news_sentiment_7d", "insider_score",
             "concall_guidance_score", "concall_sentiment_score",
+            # Phase G — Multi-signal consensus
+            "consensus_score",
         ]
         available = [c for c in feature_cols if c in bull.columns]
         missing = [c for c in feature_cols if c not in bull.columns]
@@ -497,6 +503,21 @@ class FeatureEngineeringEngine:
             return df.merge(ins, on="symbol", how="left")
         except Exception as e:
             logger.warning("[FeatureEng] Insider signals failed: %s", e)
+            return df
+
+    def _add_consensus(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Phase G multi-signal consensus score [0-100] per symbol."""
+        if not CONSENSUS.exists():
+            logger.warning("[FeatureEng] consensus_scores.csv missing -- skipping consensus feature")
+            return df
+        try:
+            cs = pd.read_csv(CONSENSUS, usecols=["symbol", "consensus_score"])
+            cs["symbol"] = cs["symbol"].str.strip().str.upper()
+            cs["consensus_score"] = pd.to_numeric(cs["consensus_score"], errors="coerce")
+            logger.info("[FeatureEng] Consensus scores: %d symbols", len(cs))
+            return df.merge(cs, on="symbol", how="left")
+        except Exception as e:
+            logger.warning("[FeatureEng] Consensus feature failed: %s", e)
             return df
 
     def _add_concall_signals(self, df: pd.DataFrame) -> pd.DataFrame:

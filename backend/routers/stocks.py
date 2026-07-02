@@ -457,6 +457,24 @@ def get_stock_detail(symbol: str):
                 "latest_date":        str(r.get("latest_date", "")),
             }
 
+    # Phase G — Multi-signal consensus
+    consensus: dict = {}
+    con_df = data_loader.get("consensus_scores")
+    if con_df is not None and "symbol" in con_df.columns:
+        con_row = con_df[con_df["symbol"].str.upper() == sym]
+        if not con_row.empty:
+            r = con_row.iloc[0]
+            consensus = {
+                "consensus_score":   _safe(r.get("consensus_score")),
+                "consensus_label":   str(r.get("consensus_label", "")),
+                "signals_used":      str(r.get("signals_used", "")),
+                "concall_norm":      _safe(r.get("concall_norm")),
+                "insider_norm":      _safe(r.get("insider_norm")),
+                "news_norm":         _safe(r.get("news_norm")),
+                "deal_norm":         _safe(r.get("deal_norm")),
+                "as_of_date":        str(r.get("as_of_date", "")),
+            }
+
     # Phase F — Concall / earnings call signals
     concall_signal: dict = {}
     cc_df = data_loader.get("concall_summary")
@@ -515,6 +533,8 @@ def get_stock_detail(symbol: str):
         "news":    news_signal,
         "insider": insider_signal,
         "concall": concall_signal,
+        # Phase G consensus
+        "consensus": consensus,
     }
 
 
