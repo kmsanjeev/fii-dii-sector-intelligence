@@ -487,6 +487,175 @@ function MetRow({ label, value, color }: { label: string; value: React.ReactNode
   )
 }
 
+// ─── Phase F: News Sentiment ──────────────────────────────────────────────────
+
+function NewsCard({ news }: { news: Record<string, unknown> }) {
+  const label = String(news.sentiment_label ?? '')
+  const sc    = label === 'BULLISH' ? C.bull : label === 'BEARISH' ? C.bear : C.muted
+  const cnt   = Number(news.news_count_7d ?? 0)
+  const s7d   = Number(news.sentiment_7d ?? 0)
+  if (!cnt) return null
+  return (
+    <Card title="NEWS SENTIMENT (7-DAY)" accentColor={sc}>
+      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 10 }}>
+        <div>
+          <div style={LABEL}>Signal</div>
+          <span style={{
+            display: 'inline-block', marginTop: 5, fontSize: 10, fontWeight: 700,
+            padding: '3px 10px', borderRadius: 4,
+            background: sc + '22', color: sc, border: `1px solid ${sc}44`,
+          }}>{label || 'NEUTRAL'}</span>
+        </div>
+        <div>
+          <div style={LABEL}>Score</div>
+          <div style={{ color: s7d >= 0.2 ? C.bull : s7d <= -0.2 ? C.bear : C.muted, fontSize: 18, fontWeight: 800, marginTop: 4, fontFamily: 'monospace' }}>
+            {s7d >= 0 ? '+' : ''}{s7d.toFixed(2)}
+          </div>
+        </div>
+        <div>
+          <div style={LABEL}>Articles</div>
+          <div style={{ color: C.secondary, fontSize: 18, fontWeight: 800, marginTop: 4, fontFamily: 'monospace' }}>{cnt}</div>
+        </div>
+        <div>
+          <div style={LABEL}>Bull / Bear</div>
+          <div style={{ marginTop: 4, fontSize: 13, fontWeight: 700 }}>
+            <span style={{ color: C.bull }}>{Number(news.bullish_count ?? 0)}</span>
+            <span style={{ color: C.dim }}> / </span>
+            <span style={{ color: C.bear }}>{Number(news.bearish_count ?? 0)}</span>
+          </div>
+        </div>
+      </div>
+      {news.latest_headline && (
+        <div style={{
+          fontSize: 10, color: C.secondary, background: C.bgDeep,
+          padding: '7px 10px', borderRadius: 5, border: C.border, lineHeight: 1.5,
+        }}>
+          {String(news.latest_headline)}
+          {news.latest_date && <span style={{ color: C.dim, marginLeft: 8 }}>{String(news.latest_date)}</span>}
+        </div>
+      )}
+      {news.top_theme && (
+        <div style={{ marginTop: 8, fontSize: 9, color: C.blue }}>
+          Top theme: {String(news.top_theme).replace(/_/g, ' ')}
+        </div>
+      )}
+    </Card>
+  )
+}
+
+// ─── Phase F: Insider Trade Signals ───────────────────────────────────────────
+
+function InsiderCard({ insider }: { insider: Record<string, unknown> }) {
+  const label = String(insider.insider_conviction ?? '')
+  if (!label) return null
+  const isBuy  = label.includes('BUY')
+  const isSell = label.includes('SELL')
+  const sc     = isBuy ? C.bull : isSell ? C.bear : C.muted
+  const net    = Number(insider.net_value_30d_cr ?? 0)
+  return (
+    <Card title="INSIDER TRADING (30-DAY NSE PIT)" accentColor={sc}>
+      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 10 }}>
+        <div>
+          <div style={LABEL}>Conviction</div>
+          <span style={{
+            display: 'inline-block', marginTop: 5, fontSize: 10, fontWeight: 700,
+            padding: '3px 10px', borderRadius: 4,
+            background: sc + '22', color: sc, border: `1px solid ${sc}44`,
+          }}>{label.replace(/_/g, ' ')}</span>
+        </div>
+        <div>
+          <div style={LABEL}>Net Value</div>
+          <div style={{ color: net >= 0 ? C.bull : C.bear, fontSize: 18, fontWeight: 800, marginTop: 4, fontFamily: 'monospace' }}>
+            {net >= 0 ? '+' : ''}{net.toFixed(2)} Cr
+          </div>
+        </div>
+        <div>
+          <div style={LABEL}>Buy / Sell Txns</div>
+          <div style={{ marginTop: 4, fontSize: 13, fontWeight: 700 }}>
+            <span style={{ color: C.bull }}>{Number(insider.buy_count_30d ?? 0)}</span>
+            <span style={{ color: C.dim }}> / </span>
+            <span style={{ color: C.bear }}>{Number(insider.sell_count_30d ?? 0)}</span>
+          </div>
+        </div>
+      </div>
+      {insider.acquirers && (
+        <div style={{ fontSize: 9, color: C.muted, lineHeight: 1.5 }}>
+          Insiders: {String(insider.acquirers).split('|').slice(0, 3).join(', ')}
+        </div>
+      )}
+      {insider.latest_date && (
+        <div style={{ fontSize: 9, color: C.dim, marginTop: 4 }}>Last transaction: {String(insider.latest_date)}</div>
+      )}
+    </Card>
+  )
+}
+
+// ─── Phase F: Concall / Earnings Signal ───────────────────────────────────────
+
+function ConcallCard({ concall }: { concall: Record<string, unknown> }) {
+  const sentiment  = String(concall.sentiment ?? '')
+  const guidance   = String(concall.guidance_direction ?? '')
+  const capex      = String(concall.capex_signal ?? '')
+  if (!sentiment) return null
+
+  const SC: Record<string, string> = { BULLISH: C.bull, BEARISH: C.bear, NEUTRAL: C.muted }
+  const GC: Record<string, string> = { RAISED: C.bull, MAINTAINED: C.neutral, LOWERED: C.bear, NOT_GIVEN: C.dim }
+  const sc   = SC[sentiment] ?? C.muted
+  const gc   = GC[guidance]  ?? C.muted
+  const score = Number(concall.concall_score ?? 0)
+
+  return (
+    <Card title={`CONCALL SIGNAL${concall.date ? ` (${String(concall.date)})` : ''}`} accentColor={sc}>
+      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 10 }}>
+        <div>
+          <div style={LABEL}>Tone</div>
+          <span style={{
+            display: 'inline-block', marginTop: 5, fontSize: 10, fontWeight: 700,
+            padding: '3px 10px', borderRadius: 4, background: sc + '22', color: sc, border: `1px solid ${sc}44`,
+          }}>{sentiment}</span>
+        </div>
+        <div>
+          <div style={LABEL}>Guidance</div>
+          <span style={{
+            display: 'inline-block', marginTop: 5, fontSize: 10, fontWeight: 700,
+            padding: '3px 10px', borderRadius: 4, background: gc + '22', color: gc, border: `1px solid ${gc}44`,
+          }}>{guidance.replace(/_/g, ' ')}</span>
+        </div>
+        {capex === 'YES' && (
+          <div>
+            <div style={LABEL}>Capex</div>
+            <span style={{
+              display: 'inline-block', marginTop: 5, fontSize: 10, fontWeight: 700,
+              padding: '3px 10px', borderRadius: 4, background: '#0C2A4044', color: C.blue, border: `1px solid ${C.blue}44`,
+            }}>
+              YES{concall.capex_amount_cr ? ` — ${crFmt(Number(concall.capex_amount_cr))}` : ''}
+            </span>
+          </div>
+        )}
+        <div>
+          <div style={LABEL}>Compound Score</div>
+          <div style={{ color: score >= 1 ? C.bull : score <= -0.5 ? C.bear : C.muted, fontSize: 18, fontWeight: 800, marginTop: 4, fontFamily: 'monospace' }}>
+            {score >= 0 ? '+' : ''}{score.toFixed(2)}
+          </div>
+        </div>
+      </div>
+      {concall.key_statement && (
+        <div style={{
+          fontSize: 10, color: C.secondary, fontStyle: 'italic', background: C.bgDeep,
+          padding: '7px 10px', borderRadius: 5, border: C.border, lineHeight: 1.5,
+        }}>
+          "{String(concall.key_statement)}"
+        </div>
+      )}
+      {concall.themes && (
+        <div style={{ marginTop: 8, fontSize: 9, color: C.blue }}>
+          Themes: {String(concall.themes).replace(/,/g, ' · ').replace(/_/g, ' ')}
+        </div>
+      )}
+    </Card>
+  )
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export function StockDetailPage() {
@@ -876,6 +1045,17 @@ export function StockDetailPage() {
               </Card>
             )
           })()}
+
+          {/* Phase F: Alt-data intelligence */}
+          {data.news && Object.keys(data.news as object).length > 0 && (
+            <NewsCard news={data.news as Record<string, unknown>} />
+          )}
+          {data.insider && Object.keys(data.insider as object).length > 0 && (
+            <InsiderCard insider={data.insider as Record<string, unknown>} />
+          )}
+          {data.concall && Object.keys(data.concall as object).length > 0 && (
+            <ConcallCard concall={data.concall as Record<string, unknown>} />
+          )}
 
           {/* Sector link */}
           <Link to={`/sectors/${data.sector}`} style={{

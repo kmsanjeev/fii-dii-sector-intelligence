@@ -101,6 +101,10 @@ export type Stock = {
   catalyst?: { event_date: string; purpose_type: string; catalyst_score: number | null }
   analyst_insights?: string[]
   quarterly_results?: Record<string, string | number | null>[]
+  // Phase F alt-data
+  news?:    Record<string, unknown>
+  insider?: Record<string, unknown>
+  concall?: Record<string, unknown>
   // fields available in bulk listing (merged from technical/fno/ml datasets)
   trend_signal?: string
   vs_dma_200?: number | null
