@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback, Component, type ReactNode } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import {
   createChart,
@@ -222,8 +223,10 @@ function Pill({ label, color }: { label: string; color: string }) {
 // -- Main page ----------------------------------------------------------------
 
 export function ChartsPage() {
-  const [symbol, setSymbol]         = useState('RELIANCE')
-  const [inputVal, setInputVal]     = useState('RELIANCE')
+  const [searchParams]              = useSearchParams()
+  const initSymbol                  = (searchParams.get('symbol') || 'RELIANCE').toUpperCase()
+  const [symbol, setSymbol]         = useState(initSymbol)
+  const [inputVal, setInputVal]     = useState(initSymbol)
   const [timeframe, setTimeframe]   = useState<Timeframe>('1D')
   const [showDropdown, setShowDropdown] = useState(false)
   const [searchQ, setSearchQ]       = useState('')

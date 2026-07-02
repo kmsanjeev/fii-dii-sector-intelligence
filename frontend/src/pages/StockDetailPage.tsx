@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { fetchStockDetail, type TechnicalIndicators, type FnoData } from '../api/client'
 import { ScoreGauge } from '../components/platform/ScoreGauge'
@@ -257,12 +257,12 @@ export function StockDetailPage() {
             >
               BSE
             </a>
-            <a
-              href={`/charts?symbol=${data.symbol}`}
+            <Link
+              to={`/charts?symbol=${data.symbol}`}
               style={{ fontSize: 10, color: '#10B981', textDecoration: 'none', border: '1px solid #064E3B', padding: '2px 8px', borderRadius: 4 }}
             >
               Chart
-            </a>
+            </Link>
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
