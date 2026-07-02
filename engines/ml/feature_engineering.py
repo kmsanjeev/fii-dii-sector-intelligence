@@ -66,6 +66,7 @@ CORP_ACT    = cfg.INTELLIGENCE_DIR / "corporate_action_signals.csv"
 FUND_MASTER  = cfg.NSE_DIR / "equity_master" / "company_fundamentals_master.csv"
 INDEX_MEMB   = cfg.NSE_DIR / "indices" / "index_membership.csv"
 SHP_CSV      = cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv"
+ANN_CSV      = cfg.INTELLIGENCE_DIR / "company_announcements.csv"
 
 # ---------------------------------------------------------------------------
 # Encoding maps
@@ -147,6 +148,7 @@ class FeatureEngineeringEngine:
         bull = self._add_corporate_actions(bull)
         bull = self._add_corporate_confidence(bull)
         bull = self._add_deal_signals(bull)
+        bull = self._add_announcement_features(bull)
 
         bull["label_enc"] = bull["label"].map(LABEL_MAP).fillna(1)
 
@@ -176,6 +178,9 @@ class FeatureEngineeringEngine:
             "div_count_12m", "has_buyback_12m", "has_bonus_12m",
             # Institutional signals
             "corp_confidence", "deal_net_cr",
+            # Phase 18C — Announcement intelligence
+            "ann_score_30d", "high_signal_30d", "distinct_types_30d",
+            "ann_velocity_30d", "order_wins_6m", "spurt_count_30d", "distress_30d",
         ]
         available = [c for c in feature_cols if c in bull.columns]
         missing = [c for c in feature_cols if c not in bull.columns]
@@ -332,6 +337,59 @@ class FeatureEngineeringEngine:
         deals["symbol"] = deals["symbol"].str.strip().str.upper()
         deals = deals.rename(columns={"inst_net_value_cr": "deal_net_cr"})
         return df.merge(deals, on="symbol", how="left")
+
+    def _add_announcement_features(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Phase 18C — 7 announcement-derived features.
+        All windows are point-in-time from today backward (no look-ahead).
+        """
+        if not ANN_CSV.exists():
+            logger.warning("[FeatureEng] company_announcements.csv missing -- skipping ann features")
+            return df
+
+        ann = pd.read_csv(
+            ANN_CSV,
+            usecols=["symbol", "date", "announcement_type", "signal_score"],
+            dtype=str,
+        )
+        ann["signal_score"] = pd.to_numeric(ann["signal_score"], errors="coerce").fillna(0).astype(int)
+        ann["date"]   = pd.to_datetime(ann["date"], errors="coerce")
+        ann["symbol"] = ann["symbol"].str.strip().str.upper()
+        ann = ann.dropna(subset=["date"])
+
+        today  = pd.Timestamp.now().normalize()
+        cut30  = today - pd.Timedelta(days=30)
+        cut60  = today - pd.Timedelta(days=60)
+        cut180 = today - pd.Timedelta(days=180)
+
+        w30  = ann[ann["date"] >= cut30]
+        w60  = ann[ann["date"] >= cut60]
+        w180 = ann[ann["date"] >= cut180]
+
+        score_30d    = w30.groupby("symbol")["signal_score"].sum().rename("ann_score_30d")
+        high_30d     = (w30[w30["signal_score"] >= 70]
+                        .groupby("symbol").size().rename("high_signal_30d"))
+        distinct_30d = (w30.groupby("symbol")["announcement_type"]
+                        .nunique().rename("distinct_types_30d"))
+        cnt_30d      = w30.groupby("symbol").size().rename("_cnt_30d")
+        cnt_60d      = w60.groupby("symbol").size().rename("_cnt_60d")
+        velocity     = (cnt_30d / cnt_60d.clip(lower=1)).rename("ann_velocity_30d")
+        order_wins   = (w180[w180["announcement_type"] == "ORDER_WIN"]
+                        .groupby("symbol").size().rename("order_wins_6m"))
+        spurt_30d    = (w30[w30["announcement_type"] == "VOLUME_ALERT"]
+                        .groupby("symbol").size().rename("spurt_count_30d"))
+        distress_30d = (w30[w30["announcement_type"] == "DISTRESS"]
+                        .groupby("symbol").size().rename("distress_30d"))
+
+        agg = pd.concat(
+            [score_30d, high_30d, distinct_30d, velocity,
+             order_wins, spurt_30d, distress_30d],
+            axis=1,
+        ).fillna(0).reset_index()
+        agg["ann_velocity_30d"] = agg["ann_velocity_30d"].round(3)
+
+        logger.info("[FeatureEng] Announcement features: %d symbols with data", len(agg))
+        return df.merge(agg, on="symbol", how="left")
 
     # ------------------------------------------------------------------
     # Validation + save

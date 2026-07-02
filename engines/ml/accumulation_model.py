@@ -62,6 +62,9 @@ FEATURE_COLS = [
     "div_count_12m", "has_buyback_12m", "has_bonus_12m",
     # Institutional signals
     "corp_confidence", "deal_net_cr",
+    # Phase 18C — Announcement intelligence
+    "ann_score_30d", "high_signal_30d", "distinct_types_30d",
+    "ann_velocity_30d", "order_wins_6m", "spurt_count_30d", "distress_30d",
 ]
 
 

@@ -56,6 +56,9 @@ FEATURE_COLS = [
     "div_count_12m", "has_buyback_12m", "has_bonus_12m",
     # Institutional signals
     "corp_confidence", "deal_net_cr",
+    # Phase 18C — Announcement intelligence
+    "ann_score_30d", "high_signal_30d", "distinct_types_30d",
+    "ann_velocity_30d", "order_wins_6m", "spurt_count_30d", "distress_30d",
 ]
 
 # Ordinal weights for weighted score: AVOID=0, NEUTRAL=25, WATCHLIST=50, EMERGING=75, STRONG=100
@@ -156,10 +159,14 @@ class BullRunMLModel:
             X_top = X.iloc[top_idx]
             explainer = shap.TreeExplainer(lgbm_model)
             shap_vals = explainer.shap_values(X_top)
-            if isinstance(shap_vals, list):
-                shap_arr = np.abs(np.array(shap_vals)).mean(axis=0)
+            arr = np.array(shap_vals)
+            # Multiclass LGBM returns (n_samples, n_features, n_classes) -- collapse class dim
+            if arr.ndim == 3:
+                shap_arr = np.abs(arr).mean(axis=2)
+            elif arr.ndim == 2:
+                shap_arr = np.abs(arr)
             else:
-                shap_arr = np.abs(shap_vals)
+                shap_arr = np.abs(arr).mean(axis=0)
             shap_df = pd.DataFrame(shap_arr, columns=X.columns)
             shap_df.insert(0, "symbol", symbols.iloc[top_idx].values)
             tmp = SHAP_PATH.with_suffix(".tmp.csv")
