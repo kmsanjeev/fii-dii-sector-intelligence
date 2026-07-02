@@ -1,7 +1,7 @@
 """
-Themes Router — Phase D
-GET /api/themes          — all 15 macro themes with intelligence scores
-GET /api/themes/{theme}  — detailed view with top picks
+Themes Router — Phase E
+GET /api/themes          — all 50 themes (10 categories) with intelligence scores
+GET /api/themes/{theme}  — detailed view with enriched top picks
 """
 
 import json
@@ -83,8 +83,42 @@ def get_theme_detail(theme_code: str):
             picks_enriched.append({**pick, **extra})
         row["top_picks"] = picks_enriched
 
-    # Include all stocks in theme for the detail view (sorted by score)
-    clf_df = data_loader.get("classification") if data_loader.get("classification") is not None else None
-    row["stock_list"] = []
-
     return row
+
+
+@router.get("/{theme_code}/stocks")
+def get_theme_stocks(theme_code: str, limit: int = 50):
+    """Return all stocks tagged to a theme, sorted by purity-weighted bull score."""
+    code = theme_code.upper()
+
+    tagging_df = data_loader.get("theme_tagging")
+    if tagging_df is None or tagging_df.empty:
+        raise HTTPException(status_code=503, detail="theme_tagging not loaded")
+
+    tagged = tagging_df[tagging_df["THEME"].str.upper() == code].copy()
+    if tagged.empty:
+        raise HTTPException(status_code=404, detail=f"Theme '{code}' not found in tagging")
+
+    # Enrich with bull run data
+    bull_df = data_loader.get("bull_run")
+    if bull_df is not None:
+        bull_df_up = bull_df.copy()
+        bull_df_up["symbol"] = bull_df_up["symbol"].str.upper()
+        tagged = tagged.merge(
+            bull_df_up[["symbol", "bull_run_score", "label", "close_now", "sector",
+                        "ret_30d", "ret_365d"]].rename(columns={"symbol": "SYMBOL"}),
+            on="SYMBOL", how="left"
+        )
+
+    # Purity-weighted sort score
+    if "bull_run_score" in tagged.columns and "PURITY_SCORE" in tagged.columns:
+        tagged["_sort"] = tagged["bull_run_score"].fillna(0) * tagged["PURITY_SCORE"].fillna(0)
+        tagged = tagged.sort_values("_sort", ascending=False).drop(columns=["_sort"])
+
+    tagged = tagged.head(limit)
+    records = []
+    for _, r in tagged.iterrows():
+        rec = {k: (None if isinstance(v, float) and math.isnan(v) else v) for k, v in r.to_dict().items()}
+        records.append(rec)
+
+    return {"theme": code, "count": len(records), "stocks": records}

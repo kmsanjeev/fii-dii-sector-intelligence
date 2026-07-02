@@ -17,6 +17,7 @@ type TopPick = {
 type Theme = {
   theme:             string
   display_name:      string
+  category:          string
   description:       string
   macro_driver:      string
   risk_factor:       string
@@ -90,6 +91,20 @@ const PARTICIPANT_COLORS: Record<string, string> = {
   DII:         '#9B7BEA',
   SMART_MONEY: '#3BAEF0',
   RETAIL:      '#7B90A8',
+}
+
+const CAT_CFG: Record<string, { color: string; bg: string; label: string }> = {
+  TECHNOLOGY:  { color: '#3BAEF0', bg: '#0C2A4044', label: 'Technology'    },
+  INFRA:       { color: '#F5A524', bg: '#45260044', label: 'Infrastructure' },
+  FINANCE:     { color: '#22D35E', bg: '#05301644', label: 'Finance'        },
+  HEALTHCARE:  { color: '#2BBFCF', bg: '#0A404444', label: 'Healthcare'     },
+  CONSUMER:    { color: '#E070C0', bg: '#3A102244', label: 'Consumer'       },
+  INDUSTRIAL:  { color: '#FB923C', bg: '#3A180044', label: 'Industrial'     },
+  ENERGY:      { color: '#F0B429', bg: '#3A2A0044', label: 'Energy'         },
+  FACTOR:      { color: '#9B7BEA', bg: '#2A1A5044', label: 'Factor/Style'   },
+  EMERGING:    { color: '#F44B4B', bg: '#3A0A0A44', label: 'Speculative'    },
+  MACRO:       { color: '#B8922A', bg: '#3A2A0044', label: 'Macro'          },
+  OTHER:       { color: '#7B90A8', bg: '#1E2D4444', label: 'Other'          },
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -192,6 +207,18 @@ function ThemeCard({ t, onClick, expanded }: { t: Theme; onClick: () => void; ex
               }}>
                 {phase.label.toUpperCase()}
               </span>
+              {(() => {
+                const cat = CAT_CFG[t.category] ?? CAT_CFG.OTHER
+                return (
+                  <span style={{
+                    fontSize: 8, fontWeight: 700, padding: '2px 7px', borderRadius: 3,
+                    background: cat.bg, color: cat.color, border: `1px solid ${cat.color}44`,
+                    letterSpacing: 0.8,
+                  }}>
+                    {cat.label.toUpperCase()}
+                  </span>
+                )
+              })()}
             </div>
           </div>
           <ScoreRing score={score} color={scoreColor} size={52} />
@@ -380,6 +407,7 @@ function ThemeCard({ t, onClick, expanded }: { t: Theme; onClick: () => void; ex
 export function ThemesPage() {
   const [expanded, setExpanded] = useState<string | null>(null)
   const [filter, setFilter]     = useState<string>('ALL')
+  const [catFilter, setCatFilter] = useState<string>('ALL')
 
   const { data, isLoading } = useQuery({
     queryKey: ['themes'],
@@ -398,7 +426,10 @@ export function ThemesPage() {
 
   // Filter
   const filters = ['ALL', 'HEATING_UP', 'BUILDING', 'MOMENTUM', 'PRICE_LED', 'NEUTRAL', 'DISTRIBUTION']
-  const displayed = filter === 'ALL' ? themes : themes.filter(t => t.theme_signal === filter)
+  const catFilters = ['ALL', 'TECHNOLOGY', 'INFRA', 'FINANCE', 'HEALTHCARE', 'CONSUMER', 'INDUSTRIAL', 'ENERGY', 'FACTOR', 'EMERGING', 'MACRO']
+  const displayed = themes
+    .filter(t => filter === 'ALL' || t.theme_signal === filter)
+    .filter(t => catFilter === 'ALL' || t.category === catFilter)
 
   // Summary stats
   const topTheme      = themes[0]
@@ -466,26 +497,44 @@ export function ThemesPage() {
       </div>
 
       {/* ── Filter chips ─────────────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ color: C.dim, fontSize: 10, marginRight: 4 }}>Filter:</span>
-        {filters.map(f => {
-          const cfg = f === 'ALL' ? { color: C.secondary, bg: '#1E3A5F' } : (SIG_CFG[f] ?? { color: C.muted, bg: '#1E2D44' })
-          const count = f === 'ALL' ? themes.length : themes.filter(t => t.theme_signal === f).length
-          return (
-            <button key={f}
-              onClick={() => setFilter(f)}
-              style={{
-                padding: '5px 12px', borderRadius: 5, border: C.border, cursor: 'pointer',
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {/* Signal filter */}
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ color: C.dim, fontSize: 10, minWidth: 56 }}>Signal:</span>
+          {filters.map(f => {
+            const fcfg = f === 'ALL' ? { color: C.secondary, bg: '#1E3A5F' } : (SIG_CFG[f] ?? { color: C.muted, bg: '#1E2D44' })
+            const count = f === 'ALL' ? themes.length : themes.filter(t => t.theme_signal === f).length
+            return (
+              <button key={f} onClick={() => setFilter(f)} style={{
+                padding: '4px 10px', borderRadius: 5, border: C.border, cursor: 'pointer',
                 fontSize: 10, fontWeight: 700,
-                background: filter === f ? cfg.bg : 'transparent',
-                color: filter === f ? cfg.color : C.dim,
-                transition: 'all 0.15s',
-              }}
-            >
-              {f === 'ALL' ? `All (${count})` : `${SIG_CFG[f]?.label ?? f} (${count})`}
-            </button>
-          )
-        })}
+                background: filter === f ? fcfg.bg : 'transparent',
+                color: filter === f ? fcfg.color : C.dim, transition: 'all 0.15s',
+              }}>
+                {f === 'ALL' ? `All (${count})` : `${SIG_CFG[f]?.label ?? f} (${count})`}
+              </button>
+            )
+          })}
+        </div>
+        {/* Category filter */}
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ color: C.dim, fontSize: 10, minWidth: 56 }}>Category:</span>
+          {catFilters.map(c => {
+            const ccfg = c === 'ALL' ? { color: C.secondary, bg: '#1E3A5F', label: 'All' } : (CAT_CFG[c] ?? CAT_CFG.OTHER)
+            const count = c === 'ALL' ? themes.length : themes.filter(t => t.category === c).length
+            if (count === 0 && c !== 'ALL') return null
+            return (
+              <button key={c} onClick={() => setCatFilter(c)} style={{
+                padding: '4px 10px', borderRadius: 5, border: C.border, cursor: 'pointer',
+                fontSize: 10, fontWeight: 700,
+                background: catFilter === c ? ccfg.bg : 'transparent',
+                color: catFilter === c ? ccfg.color : C.dim, transition: 'all 0.15s',
+              }}>
+                {c === 'ALL' ? `All (${count})` : `${ccfg.label} (${count})`}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {/* ── Theme cards grid ─────────────────────────────────────────────────── */}
@@ -511,9 +560,11 @@ export function ThemesPage() {
         background: C.deep, border: C.border, borderRadius: 6,
         padding: '12px 16px', color: C.dim, fontSize: 10, lineHeight: 1.6,
       }}>
-        <strong style={{ color: C.muted }}>Methodology:</strong> Theme Score (0-100) = 35% stock intelligence (bull-run scores)
-        + 30% smart money flow (FII+PRO sector positioning) + 20% 1-year price momentum + 15% 30-day momentum.
-        Signals are derived from participant F&O flow analysis, sector rotation models, and institutional deal intelligence.
+        <strong style={{ color: C.muted }}>Methodology (Phase E):</strong> 50 themes across 10 categories.
+        Theme Score (0-100) = 35% purity-weighted bull-run scores + 30% smart money flow + 20% 1Y momentum + 15% 30D momentum.
+        Multi-theme tagging: each stock can belong to up to 3 themes with a purity score (0–1); pure-play stocks
+        contribute more to a theme score than diversified conglomerates.
+        Signals derived from participant F&O flow analysis, sector rotation models, and institutional deal intelligence.
         Data refreshed daily post-market.
       </div>
     </div>

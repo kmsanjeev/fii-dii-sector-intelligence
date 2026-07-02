@@ -50,6 +50,7 @@ SOURCES = {
     "index_momentum":         cfg.INTELLIGENCE_DIR / "index_momentum.csv",
     "quarterly_results":      cfg.NSE_DIR / "results" / "quarterly_results.csv",
     "theme_intelligence":     cfg.INTELLIGENCE_DIR / "theme_intelligence.csv",
+    "theme_tagging":          cfg.REFERENCE_DIR / "theme_tagging.csv",
 }
 
 _MARKET_CONTEXT_PATH = cfg.INTELLIGENCE_DIR / "market_context.json"
