@@ -379,12 +379,14 @@ function SectorHeatmap({ sectors }: { sectors: Sector[] }) {
                   <span style={{ fontSize: 7, color: st.text, opacity: 0.7 }}>
                     {s.rotation_signal.replace(/_/g, ' ').slice(0, 10)}
                   </span>
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, fontFamily: 'monospace',
-                    color: s.combined_score >= 0 ? '#22C55E' : '#EF4444',
-                  }}>
-                    {s.combined_score >= 0 ? '+' : ''}{s.combined_score.toFixed(0)}
-                  </span>
+                  {s.combined_score != null && (
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, fontFamily: 'monospace',
+                      color: (s.combined_score ?? 0) >= 0 ? '#22C55E' : '#EF4444',
+                    }}>
+                      {s.combined_score >= 0 ? '+' : ''}{Number(s.combined_score).toFixed(0)}
+                    </span>
+                  )}
                 </div>
               </div>
             </Link>
