@@ -8,18 +8,20 @@ import { Link, useNavigate } from 'react-router-dom'
 const LABELS   = ['ALL', 'STRONG_CANDIDATE', 'EMERGING', 'WATCHLIST', 'NEUTRAL', 'AVOID']
 const PER_PAGE = 100
 
-type SortKey = 'bull_run_score' | 'close_now' | 'ret_30d' | 'ret_365d' | 'vol_ratio'
+type SortKey = 'bull_run_score' | 'close_now' | 'ret_30d' | 'ret_365d' | 'vol_ratio' | 'forward_return_score'
 type SortDir = 'asc' | 'desc'
 
 function SortHeader({
-  label, col, active, dir, onClick,
-}: { label: string; col: SortKey; active: boolean; dir: SortDir; onClick: () => void }) {
+  label, col, active, dir, onClick, amber,
+}: { label: string; col: SortKey; active: boolean; dir: SortDir; onClick: () => void; amber?: boolean }) {
+  const isCentered = col === 'bull_run_score' || col === 'forward_return_score'
   return (
     <th
       onClick={onClick}
       style={{
-        padding: '6px 10px', textAlign: col === 'bull_run_score' ? 'center' : 'right',
-        fontSize: 10, fontWeight: 600, color: active ? '#22C55E' : '#64748B',
+        padding: '6px 10px', textAlign: isCentered ? 'center' : 'right',
+        fontSize: 10, fontWeight: 600,
+        color: active ? (amber ? '#F59E0B' : '#22C55E') : (amber ? '#92653A' : '#64748B'),
         whiteSpace: 'nowrap', borderBottom: '1px solid #1E2332', cursor: 'pointer',
         userSelect: 'none',
       }}
@@ -117,10 +119,15 @@ export function WatchlistPage() {
       rows = rows.filter(s => s.symbol.includes(q) || (s.sector ?? '').toUpperCase().includes(q))
     }
     rows = [...rows].sort((a, b) => {
-      const av = (a as any)[sortKey] ?? (sortKey === 'close_now' ? a.close_now : null) ?? -Infinity
-      const bv = (b as any)[sortKey] ?? (sortKey === 'close_now' ? b.close_now : null) ?? -Infinity
-      const va = typeof av === 'number' ? av : (a.price as any)?.[sortKey] ?? -Infinity
-      const vb = typeof bv === 'number' ? bv : (b.price as any)?.[sortKey] ?? -Infinity
+      const resolve = (s: Stock) => {
+        const top = (s as any)[sortKey]
+        if (typeof top === 'number') return top
+        const price = (s.price as any)?.[sortKey]
+        if (typeof price === 'number') return price
+        return -Infinity
+      }
+      const va = resolve(a)
+      const vb = resolve(b)
       return sortDir === 'desc' ? vb - va : va - vb
     })
     return rows
@@ -206,7 +213,8 @@ export function WatchlistPage() {
               <th style={{ padding: '6px 10px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332', whiteSpace: 'nowrap' }}>Symbol</th>
               <th style={{ padding: '6px 10px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Sector</th>
               <SortHeader label="LTP"    col="close_now"     active={sortKey === 'close_now'}     dir={sortDir} onClick={() => toggleSort('close_now')} />
-              <SortHeader label="Score"  col="bull_run_score" active={sortKey === 'bull_run_score'} dir={sortDir} onClick={() => toggleSort('bull_run_score')} />
+              <SortHeader label="Score"  col="bull_run_score"       active={sortKey === 'bull_run_score'}       dir={sortDir} onClick={() => toggleSort('bull_run_score')} />
+              <SortHeader label="FWD 45D" col="forward_return_score" active={sortKey === 'forward_return_score'} dir={sortDir} onClick={() => toggleSort('forward_return_score')} amber />
               <th style={{ padding: '6px 10px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Label</th>
               <th style={{ padding: '6px 10px', textAlign: 'center', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Trend</th>
               <th style={{ padding: '6px 10px', textAlign: 'center', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Action</th>
@@ -231,6 +239,28 @@ export function WatchlistPage() {
                 </td>
                 <td style={{ padding: '6px 10px', textAlign: 'center' }}>
                   <ScoreGauge score={s.bull_run_score} size={36} />
+                </td>
+                <td style={{ padding: '6px 10px', textAlign: 'center' }}>
+                  {(s as any).forward_return_score != null ? (
+                    <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                      <span style={{
+                        fontSize: 12, fontWeight: 800, fontFamily: 'monospace',
+                        color: (s as any).forward_return_score >= 60 ? '#F59E0B'
+                             : (s as any).forward_return_score >= 40 ? '#D97706'
+                             : '#92653A',
+                        fontVariantNumeric: 'tabular-nums',
+                      }}>
+                        {((s as any).forward_return_score as number).toFixed(0)}
+                      </span>
+                      <div style={{ width: 28, height: 2, background: '#1E2332', borderRadius: 1 }}>
+                        <div style={{
+                          width: `${Math.min((s as any).forward_return_score, 100)}%`,
+                          height: '100%', borderRadius: 1,
+                          background: (s as any).forward_return_score >= 60 ? '#F59E0B' : '#92653A',
+                        }} />
+                      </div>
+                    </div>
+                  ) : <span style={{ color: '#334155' }}>--</span>}
                 </td>
                 <td style={{ padding: '6px 10px' }}><CapFlowBadge label={s.label} /></td>
                 <td style={{ padding: '6px 10px', textAlign: 'center' }}>
