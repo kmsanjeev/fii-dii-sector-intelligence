@@ -1,4 +1,4 @@
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { fetchStockDetail, fetchStockAnnouncements, type TechnicalIndicators, type FnoData, type Announcement } from '../api/client'
 import { ScoreGauge } from '../components/platform/ScoreGauge'
@@ -830,8 +830,6 @@ function AnnouncementsCard({ symbol }: { symbol: string }) {
 
 export function StockDetailPage() {
   const { symbol } = useParams<{ symbol: string }>()
-  const navigate   = useNavigate()
-
   const { data, isLoading, isError } = useQuery({
     queryKey: ['stock', symbol],
     queryFn:  () => fetchStockDetail(symbol!),
@@ -844,12 +842,6 @@ export function StockDetailPage() {
   )
   if (isError || !data) return (
     <div>
-      <button onClick={() => navigate(-1)} style={{
-        background: 'none', border: C.border, color: C.muted,
-        padding: '4px 12px', borderRadius: 4, fontSize: 11, cursor: 'pointer', marginBottom: 16,
-      }}>
-        &larr; Back
-      </button>
       <div style={{ color: C.bear, textAlign: 'center', padding: 40, fontSize: 13 }}>
         Symbol {symbol} not found in intelligence data
       </div>
@@ -882,13 +874,6 @@ export function StockDetailPage() {
         background: C.bgCard, border: C.border, borderRadius: 8,
         padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
       }}>
-        <button onClick={() => navigate(-1)} style={{
-          background: 'none', border: C.border, color: C.muted,
-          padding: '5px 12px', borderRadius: 4, fontSize: 12, cursor: 'pointer', flexShrink: 0,
-        }}>
-          &larr; Back
-        </button>
-
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
             <h1 style={{ color: C.h1, fontSize: 24, fontWeight: 900, fontFamily: 'monospace', margin: 0, letterSpacing: 1 }}>

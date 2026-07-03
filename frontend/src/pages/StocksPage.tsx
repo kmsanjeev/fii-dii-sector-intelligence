@@ -686,12 +686,7 @@ export function StocksPage() {
   // ── No-symbol state ───────────────────────────────────────────────────────
 
   if (!symbol) return (
-    <div style={{ background: P.bg, minHeight: 'calc(100vh - 112px)' }}>
-      <div style={{ padding: '10px 0' }}>
-        <button onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: `1px solid ${P.border}`, color: P.sub, cursor: 'pointer', padding: '4px 12px', borderRadius: 4, fontSize: 11 }}>
-          &larr; Back
-        </button>
-      </div>
+    <div style={{ background: P.bg, minHeight: '100%' }}>
       <SearchPrompt onSelect={selectSymbol} />
     </div>
   )
@@ -707,12 +702,6 @@ export function StocksPage() {
         background: P.panel, borderBottom: `1px solid ${P.border}`,
         padding: '10px 0', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
       }}>
-        <button onClick={() => navigate(-1)} style={{
-          display: 'flex', alignItems: 'center', gap: 4, background: 'none',
-          border: `1px solid ${P.border}`, color: P.sub, cursor: 'pointer',
-          padding: '5px 12px', borderRadius: 4, fontSize: 11, flexShrink: 0,
-        }}>&larr; Back</button>
-
         {/* Symbol search */}
         <div style={{ position: 'relative', flexShrink: 0 }}>
           <input

@@ -6,7 +6,6 @@ import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   Legend, BarChart, Bar, ReferenceLine,
 } from 'recharts'
-import { useNavigate } from 'react-router-dom'
 
 const S = { color: '#64748B', fontSize: 9, letterSpacing: 1 } as const
 
@@ -95,7 +94,6 @@ function CashFlowPanel({ cash }: { cash: { fpi_5d_cr: number; mf_5d_cr: number; 
 }
 
 export function ParticipantPage() {
-  const navigate = useNavigate()
   const [period, setPeriod] = useState(90)
 
   const { data: latest }  = useQuery({ queryKey: ['participant_latest'],       queryFn: fetchParticipantLatest,              refetchInterval: 300000 })
@@ -105,12 +103,6 @@ export function ParticipantPage() {
 
   return (
     <div className="space-y-6">
-      <button onClick={() => navigate(-1)} style={{
-        display: 'flex', alignItems: 'center', gap: 6, background: 'none',
-        border: '1px solid #1E2332', color: '#64748B', cursor: 'pointer',
-        padding: '4px 12px', borderRadius: 4, fontSize: 11,
-      }}>&larr; Back</button>
-
       <h1 className="text-lg font-bold tracking-widest" style={{ color: '#E2E8F0' }}>PARTICIPANT INTELLIGENCE</h1>
 
       {latest && (

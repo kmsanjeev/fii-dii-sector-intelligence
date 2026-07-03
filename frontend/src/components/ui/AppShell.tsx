@@ -73,8 +73,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     admin:   '#FBBF24', trader: '#60A5FA', analyst: '#4ADE80',
   }
 
+  const canGoBack = typeof window !== 'undefined' && (window.history.state?.idx ?? 0) > 0
+
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#0A0D14' }}>
+    <div className="flex flex-col" style={{ height: '100vh', overflow: 'hidden', backgroundColor: '#0A0D14' }}>
       {regime && (
         <RegimeBanner
           regime={regime.regime}
@@ -83,7 +85,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         />
       )}
       <IndicesTicker />
-      <header className="px-6 py-3 border-b flex items-center gap-6" style={{ borderColor: '#1E2332', backgroundColor: '#141720' }}>
+      <header className="px-6 py-3 border-b flex items-center gap-6" style={{ borderColor: '#1E2332', backgroundColor: '#141720', flexShrink: 0 }}>
         <span className="font-bold text-sm tracking-widest" style={{ color: '#22C55E', whiteSpace: 'nowrap' }}>CAPITAL FLOW</span>
         <nav className="flex gap-3 flex-wrap flex-1">
           {NAV.map(n => (
@@ -131,8 +133,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </button>
           </div>
         )}
+
+        {/* Back button — far right, visible when there is history to go back to */}
+        {canGoBack && (
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              flexShrink: 0, display: 'flex', alignItems: 'center', gap: 4,
+              background: 'none', border: '1px solid #2D3348',
+              color: '#64748B', cursor: 'pointer',
+              padding: '4px 10px', borderRadius: 4, fontSize: 11,
+            }}
+          >
+            &larr; Back
+          </button>
+        )}
       </header>
-      <main className="flex-1 p-6">{children}</main>
+      <main className="p-6" style={{ flex: 1, overflowY: 'auto' }}>{children}</main>
     </div>
   )
 }

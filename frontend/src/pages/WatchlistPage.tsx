@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchAllStocks, type Stock } from '../api/client'
 import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const LABELS   = ['ALL', 'STRONG_CANDIDATE', 'EMERGING', 'WATCHLIST', 'NEUTRAL', 'AVOID']
 const PER_PAGE = 100
@@ -87,7 +87,6 @@ function TrendBadge({ signal }: { signal?: string }) {
 }
 
 export function WatchlistPage() {
-  const navigate = useNavigate()
   const [page,        setPage]        = useState(1)
   const [labelFilter, setLabelFilter] = useState('EMERGING')
   const [search,      setSearch]      = useState('')
@@ -150,12 +149,6 @@ export function WatchlistPage() {
 
   return (
     <div className="space-y-4">
-      <button onClick={() => navigate(-1)} style={{
-        display: 'flex', alignItems: 'center', gap: 6, background: 'none',
-        border: '1px solid #1E2332', color: '#64748B', cursor: 'pointer',
-        padding: '4px 12px', borderRadius: 4, fontSize: 11,
-      }}>&larr; Back</button>
-
       {/* Header + filters */}
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
         <h1 className="text-lg font-bold tracking-widest" style={{ color: '#E2E8F0' }}>
