@@ -25,39 +25,35 @@ import {
 import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 import { TradeIntelligenceCard } from '../components/platform/TradeIntelligenceCard'
+import { T, FS, FW, CARD_HDR, FIELD_LBL } from '../styles/tokens'
 
-// ─── Palette ──────────────────────────────────────────────────────────────────
+// ─── Page-local palette (aliases to shared tokens + chart-specific) ───────────
 
 const P = {
-  bg:      '#07091A',   // page background
-  panel:   '#0B1220',   // card background
-  cell:    '#0E1628',   // inner cells / deep areas
-  border:  '#182A42',   // default border
-  litBdr:  '#223A58',   // highlighted border
-  text:    '#E8F1FC',   // primary text  — clearly visible
-  sub:     '#7BA3C8',   // secondary text — readable
-  dim:     '#3E5E80',   // dim labels only (captions, metadata)
-  green:   '#00C97A',   // bullish / positive
-  red:     '#FF3851',   // bearish / negative
-  blue:    '#3B8BFF',   // FII / institutional
-  amber:   '#FFAC00',   // neutral / warning
-  purple:  '#A855F7',   // ML / AI / promoter
-  teal:    '#0EC4A0',   // DII / secondary bull
+  bg:      T.bg,
+  panel:   T.panel,
+  cell:    T.cell,
+  border:  T.border,
+  litBdr:  T.borderHi,
+  text:    T.text,
+  sub:     T.textSub,
+  dim:     T.muted,
+  green:   T.green,
+  red:     T.red,
+  blue:    T.blue,
+  amber:   T.amber,
+  purple:  T.purple,
+  teal:    T.teal,
 }
 
-// ─── Shared inline style shortcuts ────────────────────────────────────────────
+// ─── Shared inline style shortcuts (use token sizes) ─────────────────────────
 
 const LABEL: React.CSSProperties = {
-  fontSize: 9, fontWeight: 800, letterSpacing: 1.5,
-  textTransform: 'uppercase', color: P.dim,
+  ...FIELD_LBL,
 }
 
 const CARD_HEADER: React.CSSProperties = {
-  padding: '8px 14px',
-  fontSize: 9, fontWeight: 800, letterSpacing: 1.8,
-  textTransform: 'uppercase', color: P.sub,
-  borderBottom: `1px solid ${P.border}`,
-  background: P.panel,
+  ...CARD_HDR,
 }
 
 // ─── Chart types & constants ──────────────────────────────────────────────────
@@ -261,13 +257,13 @@ function FundTile({ label, value, sub, hdrBg, valColor }: {
   label: string; value: ReactNode; sub?: string; hdrBg: string; valColor?: string
 }) {
   return (
-    <div style={{ background: P.cell, border: `1px solid ${P.border}`, borderRadius: 7, overflow: 'hidden' }}>
-      <div style={{ background: hdrBg, padding: '5px 10px', fontSize: 8, fontWeight: 800, letterSpacing: 1.2, color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase' }}>
+    <div style={{ background: P.cell, border: `1px solid ${P.border}`, borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: hdrBg, padding: '6px 11px', fontSize: FS.caption, fontWeight: FW.heavy, letterSpacing: 1.1, color: 'rgba(255,255,255,0.92)', textTransform: 'uppercase' }}>
         {label}
       </div>
-      <div style={{ padding: '10px 10px 8px' }}>
-        <div style={{ fontSize: 18, fontWeight: 800, fontFamily: 'monospace', color: valColor ?? P.text, lineHeight: 1.1 }}>{value}</div>
-        {sub && <div style={{ fontSize: 9, color: P.sub, marginTop: 4 }}>{sub}</div>}
+      <div style={{ padding: '11px 11px 9px' }}>
+        <div style={{ fontSize: FS['2xl'], fontWeight: FW.black, fontFamily: 'monospace', color: valColor ?? P.text, lineHeight: 1.1 }}>{value}</div>
+        {sub && <div style={{ fontSize: FS.label, color: T.muted, marginTop: 5 }}>{sub}</div>}
       </div>
     </div>
   )
@@ -765,20 +761,40 @@ export function StocksPage() {
               </div>
             )}
 
-            {/* ── Fundamentals — Row 1: Financial Size ──────────────── */}
+            {/* ── Fundamentals — 3 rows × 6 cols by priority ────────── */}
             {Object.keys(fund).length > 0 && (
               <div>
                 <div style={CARD_HEADER}>Fundamentals</div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginTop: 10 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10, marginTop: 10 }}>
 
-                  {/* Row 1 — Financial Size */}
+                  {/* Row 1 — Size & Valuation (quick context) */}
                   <FundTile label="Market Cap (₹ Cr)" hdrBg="#1A3A6E" valColor={P.text}
                     value={fund.market_cap_cr != null ? crFmt(+fund.market_cap_cr) : '--'}
                     sub={fund.shares_outstanding_cr != null ? `${(+fund.shares_outstanding_cr).toFixed(1)} Cr shares` : 'estimated'} />
+                  <FundTile label="P/E Ratio" hdrBg="#2A1800"
+                    value={fund.pe_ratio != null ? `${(+fund.pe_ratio).toFixed(1)}x` : '--'}
+                    valColor={fund.pe_ratio == null ? P.sub : +fund.pe_ratio < 15 ? P.green : +fund.pe_ratio > 40 ? P.red : P.amber}
+                    sub="price to earnings" />
                   <FundTile label="Book Value (₹)" hdrBg="#2D1B4E"
                     valColor={fund.book_value_per_share != null ? P.text : P.sub}
                     value={fund.book_value_per_share != null ? `₹${(+fund.book_value_per_share).toLocaleString('en-IN', {maximumFractionDigits: 0})}` : '---'}
                     sub={fund.total_equity_cr != null ? `Equity ${crFmt(+fund.total_equity_cr)}` : 'balance sheet pending'} />
+                  <FundTile label="Return over 1Y (%)"
+                    hdrBg={detail.price.ret_365d != null && detail.price.ret_365d >= 0 ? '#062014' : '#200606'}
+                    value={pct(detail.price.ret_365d)}
+                    valColor={detail.price.ret_365d == null ? P.sub : detail.price.ret_365d >= 0 ? P.green : P.red}
+                    sub="365-day price return" />
+                  <FundTile label="vs 200 DMA" hdrBg={t?.vs_dma_200 != null && t.vs_dma_200 >= 0 ? '#062014' : '#200606'}
+                    value={t?.vs_dma_200 != null ? `${t.vs_dma_200 >= 0 ? '+' : ''}${t.vs_dma_200.toFixed(1)}%` : '--'}
+                    valColor={t?.vs_dma_200 == null ? P.sub : t.vs_dma_200 >= 5 ? P.green : t.vs_dma_200 >= 0 ? P.teal : P.red}
+                    sub="long-term trend" />
+                  <FundTile label="Valuation"
+                    hdrBg={fund.valuation_label === 'CHEAP_QUALITY' ? '#052E16' : fund.valuation_label === 'FAIR_VALUE' ? '#0C1A3A' : fund.valuation_label === 'EXPENSIVE' ? '#2D0A0A' : '#1A1228'}
+                    value={<span style={{ fontSize: FS.md }}>{String(fund.valuation_label ?? 'N/A').replace(/_/g, ' ')}</span>}
+                    valColor={fund.valuation_label === 'CHEAP_QUALITY' ? P.green : fund.valuation_label === 'FAIR_VALUE' ? P.blue : fund.valuation_label === 'EXPENSIVE' ? P.red : P.amber}
+                    sub={fund.valuation_score != null ? `score ${(+fund.valuation_score).toFixed(0)}/100` : ''} />
+
+                  {/* Row 2 — Profitability & Quality */}
                   <FundTile label="Sales (₹ Cr)" hdrBg="#1A3A6E" valColor={P.text}
                     value={fund.revenue_ttm_cr != null ? crFmt(+fund.revenue_ttm_cr) : '--'}
                     sub={fund.as_of_date ? `TTM as of ${String(fund.as_of_date).slice(0,7)}` : 'trailing 12M'} />
@@ -786,34 +802,10 @@ export function StocksPage() {
                     value={fund.profit_ttm_cr != null ? crFmt(+fund.profit_ttm_cr) : '--'}
                     valColor={fund.profit_ttm_cr == null ? P.sub : +fund.profit_ttm_cr >= 0 ? P.text : P.red}
                     sub="profit after tax TTM" />
-
-                  {/* Row 2 — Performance vs History */}
-                  <FundTile label="Return over 1Y (%)"
-                    hdrBg={detail.price.ret_365d != null && detail.price.ret_365d >= 0 ? '#062014' : '#200606'}
-                    value={pct(detail.price.ret_365d)}
-                    valColor={detail.price.ret_365d == null ? P.sub : detail.price.ret_365d >= 0 ? P.green : P.red}
-                    sub="365-day price return" />
-                  <FundTile label="Down from ATH (%)"
-                    hdrBg={fund.down_from_ath_pct != null && +fund.down_from_ath_pct >= -15 ? '#062014' : '#1A0D00'}
-                    value={fund.down_from_ath_pct != null ? `${(+fund.down_from_ath_pct).toFixed(1)}%` : '--'}
-                    valColor={fund.down_from_ath_pct == null ? P.sub : +fund.down_from_ath_pct >= -15 ? P.teal : +fund.down_from_ath_pct >= -40 ? P.amber : P.red}
-                    sub={fund.ath_price != null ? `ATH ₹${(+fund.ath_price).toFixed(0)}` : 'all-time high'} />
                   <FundTile label="OPM (%)" hdrBg="#0A1A2E"
                     valColor={fund.opm_pct == null ? P.sub : +fund.opm_pct >= 20 ? P.green : +fund.opm_pct >= 10 ? P.teal : +fund.opm_pct >= 0 ? P.amber : P.red}
                     value={fund.opm_pct != null ? `${(+fund.opm_pct).toFixed(1)}%` : '---'}
                     sub={fund.ebitda_cr_latest != null ? `EBITDA ${crFmt(+fund.ebitda_cr_latest)} qtr` : 'EBITDA data pending'} />
-                  <FundTile label={`${fund.qtr_growth_period ?? 'Qtr'} Sales Growth (%)`}
-                    hdrBg={fund.qtr_sales_growth_pct != null && +fund.qtr_sales_growth_pct >= 0 ? '#062014' : '#200606'}
-                    value={fund.qtr_sales_growth_pct != null ? `${+fund.qtr_sales_growth_pct >= 0 ? '+' : ''}${(+fund.qtr_sales_growth_pct).toFixed(1)}%` : '--'}
-                    valColor={fund.qtr_sales_growth_pct == null ? P.sub : +fund.qtr_sales_growth_pct >= 10 ? P.green : +fund.qtr_sales_growth_pct >= 0 ? P.teal : P.red}
-                    sub="vs prior period revenue" />
-
-                  {/* Row 3 — Profitability & Returns */}
-                  <FundTile label={`${fund.qtr_growth_period ?? 'Qtr'} Profit Growth (%)`}
-                    hdrBg={fund.qtr_profit_growth_pct != null && +fund.qtr_profit_growth_pct >= 0 ? '#062014' : '#200606'}
-                    value={fund.qtr_profit_growth_pct != null ? `${+fund.qtr_profit_growth_pct >= 0 ? '+' : ''}${(+fund.qtr_profit_growth_pct).toFixed(1)}%` : '--'}
-                    valColor={fund.qtr_profit_growth_pct == null ? P.sub : +fund.qtr_profit_growth_pct >= 10 ? P.green : +fund.qtr_profit_growth_pct >= 0 ? P.teal : P.red}
-                    sub="vs prior period PAT" />
                   <FundTile label="ROCE (%)" hdrBg="#0A1A2E"
                     valColor={fund.roce_pct == null ? P.sub : +fund.roce_pct >= 20 ? P.green : +fund.roce_pct >= 12 ? P.teal : +fund.roce_pct >= 0 ? P.amber : P.red}
                     value={fund.roce_pct != null ? `${(+fund.roce_pct).toFixed(1)}%` : '---'}
@@ -822,24 +814,29 @@ export function StocksPage() {
                     value={fund.roe_pct != null ? `${(+fund.roe_pct).toFixed(1)}%` : '--'}
                     valColor={fund.roe_pct == null ? P.sub : +fund.roe_pct >= 20 ? P.green : +fund.roe_pct >= 12 ? P.teal : P.red}
                     sub="return on equity" />
+                  <FundTile label={`${fund.qtr_growth_period ?? 'Qtr'} Sales Growth (%)`}
+                    hdrBg={fund.qtr_sales_growth_pct != null && +fund.qtr_sales_growth_pct >= 0 ? '#062014' : '#200606'}
+                    value={fund.qtr_sales_growth_pct != null ? `${+fund.qtr_sales_growth_pct >= 0 ? '+' : ''}${(+fund.qtr_sales_growth_pct).toFixed(1)}%` : '--'}
+                    valColor={fund.qtr_sales_growth_pct == null ? P.sub : +fund.qtr_sales_growth_pct >= 10 ? P.green : +fund.qtr_sales_growth_pct >= 0 ? P.teal : P.red}
+                    sub="vs prior period revenue" />
+
+                  {/* Row 3 — Growth, Momentum & Ownership */}
+                  <FundTile label={`${fund.qtr_growth_period ?? 'Qtr'} Profit Growth (%)`}
+                    hdrBg={fund.qtr_profit_growth_pct != null && +fund.qtr_profit_growth_pct >= 0 ? '#062014' : '#200606'}
+                    value={fund.qtr_profit_growth_pct != null ? `${+fund.qtr_profit_growth_pct >= 0 ? '+' : ''}${(+fund.qtr_profit_growth_pct).toFixed(1)}%` : '--'}
+                    valColor={fund.qtr_profit_growth_pct == null ? P.sub : +fund.qtr_profit_growth_pct >= 10 ? P.green : +fund.qtr_profit_growth_pct >= 0 ? P.teal : P.red}
+                    sub="vs prior period PAT" />
                   <FundTile
                     label={`Sales Growth ${fund.sales_growth_years != null ? `${(+fund.sales_growth_years).toFixed(0)}Y` : '3Y'} (%)`}
                     hdrBg={fund.sales_growth_3y_pct != null && +fund.sales_growth_3y_pct >= 0 ? '#062014' : '#200606'}
                     valColor={fund.sales_growth_3y_pct == null ? P.sub : +fund.sales_growth_3y_pct >= 15 ? P.green : +fund.sales_growth_3y_pct >= 5 ? P.teal : +fund.sales_growth_3y_pct >= 0 ? P.amber : P.red}
                     value={fund.sales_growth_3y_pct != null ? `${+fund.sales_growth_3y_pct >= 0 ? '+' : ''}${(+fund.sales_growth_3y_pct).toFixed(1)}%` : '---'}
                     sub={fund.sales_growth_years != null ? `${(+fund.sales_growth_years).toFixed(1)}Y revenue CAGR` : 'needs 4+ quarters'} />
-                </div>
-
-                {/* Row 4 — Valuation & Technical */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10, marginTop: 10 }}>
-                  <FundTile label="P/E Ratio" hdrBg="#2A1800"
-                    value={fund.pe_ratio != null ? `${(+fund.pe_ratio).toFixed(1)}x` : '--'}
-                    valColor={fund.pe_ratio == null ? P.sub : +fund.pe_ratio < 15 ? P.green : +fund.pe_ratio > 40 ? P.red : P.amber}
-                    sub="price to earnings" />
-                  <FundTile label="vs 200 DMA" hdrBg={t?.vs_dma_200 != null && t.vs_dma_200 >= 0 ? '#062014' : '#200606'}
-                    value={t?.vs_dma_200 != null ? `${t.vs_dma_200 >= 0 ? '+' : ''}${t.vs_dma_200.toFixed(1)}%` : '--'}
-                    valColor={t?.vs_dma_200 == null ? P.sub : t.vs_dma_200 >= 5 ? P.green : t.vs_dma_200 >= 0 ? P.teal : P.red}
-                    sub="long-term trend" />
+                  <FundTile label="Down from ATH (%)"
+                    hdrBg={fund.down_from_ath_pct != null && +fund.down_from_ath_pct >= -15 ? '#062014' : '#1A0D00'}
+                    value={fund.down_from_ath_pct != null ? `${(+fund.down_from_ath_pct).toFixed(1)}%` : '--'}
+                    valColor={fund.down_from_ath_pct == null ? P.sub : +fund.down_from_ath_pct >= -15 ? P.teal : +fund.down_from_ath_pct >= -40 ? P.amber : P.red}
+                    sub={fund.ath_price != null ? `ATH ₹${(+fund.ath_price).toFixed(0)}` : 'all-time high'} />
                   <FundTile label="Vol Ratio" hdrBg="#0A1C2E"
                     value={detail.price.vol_ratio != null ? `${(+detail.price.vol_ratio).toFixed(1)}x` : '--'}
                     valColor={detail.price.vol_ratio == null ? P.sub : +detail.price.vol_ratio >= 1.5 ? P.green : +detail.price.vol_ratio >= 1 ? P.blue : P.sub}
@@ -852,11 +849,6 @@ export function StocksPage() {
                     value={shp.fii_pct != null ? `${(+shp.fii_pct).toFixed(1)}%` : '--'}
                     valColor={shp.fii_pct == null ? P.sub : +shp.fii_pct >= 10 ? P.blue : P.sub}
                     sub="foreign institutional" />
-                  <FundTile label="Valuation"
-                    hdrBg={fund.valuation_label === 'CHEAP_QUALITY' ? '#052E16' : fund.valuation_label === 'FAIR_VALUE' ? '#0C1A3A' : fund.valuation_label === 'EXPENSIVE' ? '#2D0A0A' : '#1A1228'}
-                    value={<span style={{ fontSize: 13 }}>{String(fund.valuation_label ?? 'N/A').replace(/_/g, ' ')}</span>}
-                    valColor={fund.valuation_label === 'CHEAP_QUALITY' ? P.green : fund.valuation_label === 'FAIR_VALUE' ? P.blue : fund.valuation_label === 'EXPENSIVE' ? P.red : P.amber}
-                    sub={fund.valuation_score != null ? `score ${(+fund.valuation_score).toFixed(0)}/100` : ''} />
                 </div>
               </div>
             )}

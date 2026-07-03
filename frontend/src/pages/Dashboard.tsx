@@ -11,42 +11,39 @@ import {
 } from '../api/client'
 import { ScoreGauge }   from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
+import { T, FS, FW } from '../styles/tokens'
 
-// ─── Design system ────────────────────────────────────────────────────────────
-// Text hierarchy  : #F8FAFC (H1 values) > #E2E8F0 (primary) > #B0C4D8 (secondary) > #7B90A8 (muted)
-// Card bg         : #0E1420 with border #1E2D44
-// NEVER below     : #4E6074 for any text the user needs to read
+// ─── Page palette (aliases from shared design tokens) ─────────────────────────
+// Text hierarchy  : h1 > text > textSub > muted  (never dim for readable text)
 
 const C = {
-  bg:       '#0E1420',
-  bgInner:  '#111B2E',
-  border:   '1px solid #1E2D44',
-  borderH:  '#2D4A6B',
-  // text
-  h1:       '#F8FAFC',
-  primary:  '#E2E8F0',
-  secondary:'#B0C4D8',
-  muted:    '#7B90A8',
-  dim:      '#4E6074',
-  // accent
-  bull:     '#22D35E',
-  bear:     '#F44B4B',
-  neutral:  '#F5A524',
-  fii:      '#3BAEF0',
-  dii:      '#9B7BEA',
-  pro:      '#F5833A',
-  client:   '#C668E8',
-  blue:     '#4080FF',
+  bg:       T.bg,
+  bgInner:  T.cell,
+  border:   `1px solid ${T.border}`,
+  borderH:  T.borderHi,
+  h1:       T.h1,
+  primary:  T.text,
+  secondary:T.textSub,
+  muted:    T.muted,
+  dim:      T.dim,
+  bull:     T.green,
+  bear:     T.red,
+  neutral:  T.amber,
+  fii:      T.fii,
+  dii:      T.dii,
+  pro:      T.pro,
+  client:   T.client,
+  blue:     T.blue,
 } as const
 
 const CARD: React.CSSProperties = {
   background: C.bg, border: C.border, borderRadius: 10,
 }
 const LABEL: React.CSSProperties = {
-  color: C.secondary, fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase',
+  color: C.secondary, fontSize: FS.label, fontWeight: FW.bold, letterSpacing: 1.5, textTransform: 'uppercase',
 }
 const VAL: React.CSSProperties = {
-  color: C.h1, fontWeight: 800, fontFamily: 'monospace',
+  color: C.h1, fontWeight: FW.heavy, fontFamily: 'monospace',
 }
 
 const signed = (n: number | null | undefined, d = 1) =>

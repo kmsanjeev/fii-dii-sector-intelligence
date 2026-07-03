@@ -2,21 +2,22 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchSectors, type Sector } from '../api/client'
 import { Link } from 'react-router-dom'
+import { T } from '../styles/tokens'
 
-// ─── Design tokens ─────────────────────────────────────────────────────────────
+// ─── Page palette (aliases from shared tokens) ─────────────────────────────────
 
 const C = {
-  bg:       '#0E1420',
-  card:     '#111B2E',
-  border:   '1px solid #1E2D44',
-  h1:       '#F8FAFC',
-  primary:  '#E2E8F0',
-  secondary:'#B0C4D8',
-  muted:    '#7B90A8',
-  dim:      '#4E6074',
-  bull:     '#22D35E',
-  bear:     '#F44B4B',
-  blue:     '#3BAEF0',
+  bg:       T.bg,
+  card:     T.cell,
+  border:   `1px solid ${T.border}`,
+  h1:       T.h1,
+  primary:  T.text,
+  secondary:T.textSub,
+  muted:    T.muted,
+  dim:      T.dim,
+  bull:     T.green,
+  bear:     T.red,
+  blue:     T.fii,
 }
 
 // ─── Signal config — covers ALL actual values from the engine ─────────────────
