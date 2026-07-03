@@ -415,8 +415,13 @@ export function StocksPage() {
 
   // ── Chart lifecycle ───────────────────────────────────────────────────────
 
+  // Chart init re-runs when symbol changes.
+  // React Router v6 reuses this component instance when navigating from /stocks
+  // (no symbol) to /stocks/:symbol, so [] would only run once with chartDiv=null.
+  // Adding symbol as a dep ensures chart is created the moment the full view mounts.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (!chartDiv.current) return
+    if (!chartDiv.current || !symbol) return
     setChartErr(null)
     let chart: IChartApi | null = null
     try {
@@ -459,7 +464,8 @@ export function StocksPage() {
       }
     } catch (e) { setChartErr(e instanceof Error ? e.message : String(e)); chart?.remove() }
     return () => { chartApi.current?.remove(); chartApi.current = candleRef.current = volRef.current = null }
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [symbol])
 
   useEffect(() => {
     chartApi.current?.applyOptions({ timeScale: { timeVisible: INTRADAY.has(tf), secondsVisible: false } })
