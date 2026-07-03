@@ -143,6 +143,7 @@ def call_llm(
                 api_key=api_key,
                 base_url=p["base_url"],
                 default_headers=p.get("extra_headers", {}),
+                timeout=15.0,   # hard cap per-call; prevents 30s+ Groq hangs
             )
             resp = client.chat.completions.create(
                 model=p["model"],

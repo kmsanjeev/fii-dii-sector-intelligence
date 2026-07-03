@@ -495,6 +495,26 @@ def get_stock_detail(symbol: str):
                 "concall_score":      _safe(r.get("concall_score")),
             }
 
+    # Phase H — AGM / governance signals
+    agm_signal: dict = {}
+    agm_df = data_loader.get("agm_signals")
+    if agm_df is not None and "symbol" in agm_df.columns:
+        agm_row = agm_df[agm_df["symbol"].str.upper() == sym]
+        if not agm_row.empty:
+            r = agm_row.iloc[0]
+            agm_signal = {
+                "date":              str(r.get("date", "")),
+                "announcement_type": str(r.get("announcement_type", "")),
+                "governance_risk":   str(r.get("governance_risk", "")),
+                "governance_score":  _safe(r.get("governance_score")),
+                "dividend_signal":   str(r.get("dividend_signal", "")),
+                "capex_confirm":     str(r.get("capex_confirm", "")),
+                "management_change": str(r.get("management_change", "")),
+                "sentiment":         str(r.get("sentiment", "")),
+                "sentiment_score":   _safe(r.get("sentiment_score")),
+                "key_decision":      str(r.get("key_decision", "")),
+            }
+
     return {
         "symbol":             str(row.get("symbol", "")),
         "sector":             str(row.get("sector", "")),
@@ -533,6 +553,7 @@ def get_stock_detail(symbol: str):
         "news":    news_signal,
         "insider": insider_signal,
         "concall": concall_signal,
+        "agm":     agm_signal,
         # Phase G consensus
         "consensus": consensus,
     }
