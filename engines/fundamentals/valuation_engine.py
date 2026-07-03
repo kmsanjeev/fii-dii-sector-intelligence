@@ -85,22 +85,42 @@ class ValuationEngine:
         return True
 
     def _compute_ttm(self, results: pd.DataFrame) -> pd.DataFrame:
-        """Compute trailing 12-month (TTM) revenue and profit per symbol."""
+        """Compute trailing 12-month (TTM) revenue and profit per symbol.
+
+        Consolidated preference: when a symbol has both Consolidated and Standalone
+        filings, use only Consolidated rows (they include subsidiaries and give the
+        true group-level picture, e.g. RELIANCE includes Jio + Retail).
+        """
         date_col = "date_end" if "date_end" in results.columns else "date"
         results = results.sort_values(["symbol", date_col])
         ttm_rows = []
         groups = list(results.groupby("symbol"))
+        nat_col = "standalone_or_consolidated" if "standalone_or_consolidated" in results.columns else None
 
         for symbol, grp in progress(groups, desc="Computing TTM"):
-            last4 = grp.tail(4)
+            # Prefer Consolidated when available
+            if nat_col:
+                cons = grp[grp[nat_col].str.upper().str.contains("CONSOL", na=False)]
+                base = cons if not cons.empty else grp
+            else:
+                base = grp
+
+            last4 = base.tail(4)
+            num_qtrs = len(last4)
             revenue_ttm = last4["revenue_cr"].sum() if "revenue_cr" in last4.columns else None
             profit_ttm  = last4["net_profit_cr"].sum() if "net_profit_cr" in last4.columns else None
-            latest_eps  = last4["eps"].iloc[-1] if "eps" in last4.columns and not last4["eps"].isnull().all() else None
             as_of = last4[date_col].max()
 
-            # YoY growth (if 8 quarters available)
-            if len(grp) >= 8:
-                prev4 = grp.iloc[-8:-4]
+            # Latest single-quarter EPS + profit for share-count derivation in P/E
+            latest_row = last4.iloc[-1]
+            eps_q   = latest_row.get("eps") if "eps" in last4.columns else None
+            prof_q  = latest_row.get("net_profit_cr") if "net_profit_cr" in last4.columns else None
+            eps_q   = float(eps_q)  if eps_q  is not None and not _isnan(eps_q)  else None
+            prof_q  = float(prof_q) if prof_q is not None and not _isnan(prof_q) else None
+
+            # YoY growth (if 8 quarters available in the same cohort)
+            if len(base) >= 8:
+                prev4 = base.iloc[-8:-4]
                 rev_prev = prev4["revenue_cr"].sum()
                 pft_prev  = prev4["net_profit_cr"].sum()
                 yoy_rev = ((revenue_ttm - rev_prev) / abs(rev_prev) * 100) if rev_prev and rev_prev != 0 else None
@@ -109,13 +129,15 @@ class ValuationEngine:
                 yoy_rev = yoy_pft = None
 
             ttm_rows.append({
-                "symbol": symbol,
-                "revenue_ttm_cr": round(revenue_ttm, 2) if revenue_ttm else None,
-                "profit_ttm_cr": round(profit_ttm, 2) if profit_ttm else None,
-                "eps_ttm": float(latest_eps) if latest_eps and not _isnan(latest_eps) else None,
+                "symbol":          symbol,
+                "revenue_ttm_cr":  round(revenue_ttm, 2) if revenue_ttm else None,
+                "profit_ttm_cr":   round(profit_ttm, 2)  if profit_ttm  else None,
+                "eps_q":           eps_q,
+                "profit_cr_q":     round(prof_q, 2) if prof_q else None,
+                "num_quarters":    num_qtrs,
                 "yoy_revenue_pct": round(yoy_rev, 2) if yoy_rev else None,
-                "yoy_profit_pct": round(yoy_pft, 2) if yoy_pft else None,
-                "as_of_date": as_of,
+                "yoy_profit_pct":  round(yoy_pft, 2) if yoy_pft else None,
+                "as_of_date":      as_of,
             })
 
         return pd.DataFrame(ttm_rows)
@@ -154,33 +176,48 @@ class ValuationEngine:
         return pd.DataFrame(rows)
 
     def _compute_ratios(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Compute P/E, P/B (placeholder), ROE from available data."""
-        pe_list, roe_list = [], []
+        """Compute P/E, P/B (placeholder), net margin from available data.
+
+        P/E derivation:
+          1. Derive shares from latest single-quarter EPS + profit
+             shares_cr = profit_cr_q / eps_q
+          2. Annualize TTM profit to full 4 quarters when fewer are available
+             annualized_profit_cr = profit_ttm_cr * (4 / num_quarters)
+          3. P/E = close * shares_cr / annualized_profit_cr
+             (equivalent to market_cap / annualized_annual_profit)
+        This avoids the single-quarter EPS bug (e.g. RELIANCE showed 200x because
+        it used Q3FY25 standalone EPS=6.44 directly, which is not annualized).
+        """
+        pe_list, margin_list = [], []
 
         for _, row in df.iterrows():
-            close = row.get("latest_close")
-            eps = row.get("eps_ttm")
-            profit = row.get("profit_ttm_cr")
-            revenue = row.get("revenue_ttm_cr")
+            close      = row.get("latest_close")
+            eps_q      = row.get("eps_q")
+            prof_q     = row.get("profit_cr_q")
+            profit_ttm = row.get("profit_ttm_cr")
+            num_qtrs   = int(row.get("num_quarters") or 4)
+            revenue    = row.get("revenue_ttm_cr")
 
-            # P/E ratio
-            if close and eps and eps > 0:
-                pe = round(close / eps, 2)
-            else:
-                pe = None
+            # P/E — annualized market-cap / profit approach
+            pe = None
+            if (close and eps_q and prof_q and profit_ttm
+                    and eps_q > 0 and prof_q > 0 and profit_ttm > 0):
+                shares_cr = prof_q / eps_q                            # crores of shares
+                ann_profit = profit_ttm * (4.0 / max(num_qtrs, 1))   # extrapolate to 4Q
+                if shares_cr > 0 and ann_profit > 0:
+                    pe = round((close * shares_cr) / ann_profit, 2)
 
-            # Approximate ROE = profit / revenue * 100 (proxy without balance sheet)
-            if profit and revenue and revenue > 0:
-                roe = round((profit / revenue) * 100, 2)
-            else:
-                roe = None
+            # Net profit margin (proxy for profitability; true ROE needs balance sheet)
+            margin = None
+            if profit_ttm and revenue and revenue > 0:
+                margin = round((profit_ttm / revenue) * 100, 2)
 
             pe_list.append(pe)
-            roe_list.append(roe)
+            margin_list.append(margin)
 
         df["pe_ratio"] = pe_list
-        df["roe_pct"] = roe_list
-        df["pb_ratio"] = None  # requires book value (balance sheet -- Phase 15C)
+        df["roe_pct"]  = margin_list   # labelled roe_pct for API compat; actually net margin
+        df["pb_ratio"] = None          # requires book value (balance sheet)
         return df
 
     def _score(self, df: pd.DataFrame) -> pd.DataFrame:
