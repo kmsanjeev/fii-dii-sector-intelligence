@@ -6,6 +6,83 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.14.0
+
+Phase 12C -- Forward Return Labels (True Supervised ML Training)
+
+Date: 2026-07-03
+
+Status: Completed
+
+---
+
+## Summary
+
+Phase 12C breaks the circular dependency where Phase 12 models were trained on
+Phase 8B rule-based labels (they were just learning to replicate rules, not
+predict future price performance). A new label generator computes REALIZED
+forward returns from bhavcopy history, and a new model trained on those returns
+provides a true supervised signal. Feature matrix grows from 76 to 77 columns.
+
+## Problem Solved
+
+Old training target: label_enc derived from Phase 8B bull_run_probability.csv
+  -> Model learns to replicate rule-based scoring, circular dependency
+New training target: is_up_15_45d = stock actually rises 15%+ in 45 sessions
+  -> Model trained on realized outcomes from 2024-2026 bhavcopy history
+
+## New Files
+
+### `engines/ml/label_generator.py` -- NEW
+- Loads 790 sessions of adjusted_equity parquets (~3 years)
+- Builds close/high/low/vol pivot matrices
+- For each symbol: computes TA-Lib indicators over full series (RSI, MACD, %B, ADX, DMA200, vol ratio)
+- 53 reference dates (every 10 sessions, 2024-03-12 to 2026-03-24)
+- At each ref date: extracts feature values + computes 20D/45D/60D forward returns
+- Binary labels: is_up_10_20d, is_up_15_45d, is_up_20_60d
+- Output: data/intelligence/ml_forward_labels.csv
+  103,071 rows | 2590 symbols | positive rate 14.4% (is_up_15_45d)
+
+### `engines/ml/forward_return_model.py` -- NEW
+- Loads ml_forward_labels.csv; target = is_up_15_45d (primary label)
+- XGBoost with scale_pos_weight=6.94 (handles 6:1 class imbalance)
+- TimeSeriesSplit(n_splits=5) cross-validation (no future leakage)
+- CV AUC: 0.628 +/- 0.015 (meaningful signal; random = 0.50)
+- Current scoring: joins today's features from technical_pattern_features.csv +
+  technical_indicators.csv + price_momentum.csv (same 6 feature columns)
+- Model: data/intelligence/ml_features/models/forward_return_xgb.json
+- Output: data/intelligence/ml_forward_return_scores.csv (2723 symbols)
+- Top scored: KAYNES 81.3, VEDL 80.2, ZAGGLE 79.6, DPABHUSHAN 78.3
+
+### `engines/ml/feature_engineering.py` -- MODIFIED
+- Added FWD_RETURN_SCORES path constant
+- Added _add_forward_return_score() method
+- Added "forward_return_score" to feature_cols
+- Added method call in _build_matrix() after Phase 12B block
+
+## Outputs Updated
+- data/intelligence/ml_forward_labels.csv -- 103,071 rows (new)
+- data/intelligence/ml_forward_return_scores.csv -- 2723 symbols (new)
+- data/intelligence/ml_features/feature_matrix.parquet -- 2406 x 77 cols
+- All ML ensemble models retrained (accumulation, bull_run, combined scorer)
+
+## Execution Order (Phase 12C)
+1. py -3.11 -m engines.ml.label_generator
+2. py -3.11 -m engines.ml.forward_return_model
+3. py -3.11 engines/ml/feature_engineering.py
+4. py -3.11 engines/ml/accumulation_model.py
+5. py -3.11 engines/ml/bull_run_model.py
+6. py -3.11 -m engines.ml.ml_scorer
+
+## Notes
+- forward_return_score (0-100) is an orthogonal signal to rule-based label_enc
+- Both signals now coexist in the feature matrix; ensemble models use both
+- The 14.4% positive rate reflects real market difficulty: only ~1 in 7 stocks
+  achieves 15%+ gain in 2 months at a random entry point
+- AUC 0.628 is competitive with published academic results for return prediction
+
+---
+
 # Version 4.13.0
 
 Phase 12B -- Technical Strategy Pattern Features (RSI, MACD, Bollinger, ADX)
