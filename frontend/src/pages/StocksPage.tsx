@@ -371,6 +371,11 @@ export function StocksPage() {
   const candleRef = useRef<ISeriesApi<'Candlestick', Time> | null>(null)
   const volRef    = useRef<ISeriesApi<'Histogram', Time> | null>(null)
   const barCount  = useRef(0)
+  // Render-phase snapshot refs — updated every render so chart init can read
+  // the current ohlcv/tf WITHOUT waiting for the data effect to fire again.
+  // This is the correct fix for StrictMode's double-invoke blank chart bug.
+  const latestOhlcvRef = useRef<OhlcvResponse | undefined>(undefined)
+  const latestTfRef    = useRef<TF>('1D')
 
   // Sync when navigating from Watchlist (/stocks/:symbol)
   useEffect(() => {
@@ -415,7 +420,6 @@ export function StocksPage() {
     setChartErr(null)
     let chart: IChartApi | null = null
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chart = createChart(chartDiv.current, {
         autoSize: true,
         layout: { background: { type: ColorType.Solid, color: P.bg }, textColor: P.sub, fontSize: 10, fontFamily: 'monospace' },
@@ -431,7 +435,28 @@ export function StocksPage() {
       const vol = chart.addSeries(HistogramSeries, { priceScaleId: 'vol' })
       vol.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } })
       chartApi.current = chart; candleRef.current = candles; volRef.current = vol
-      setChartKey(k => k + 1)  // notify data effect that chart is ready
+      setChartKey(k => k + 1)
+
+      // Apply data immediately if already in cache — this is the critical path.
+      // The data effect [ohlcv, tf, chartKey] may not re-fire if the deps haven't
+      // changed (StrictMode recreates the chart but ohlcv/tf are the same object).
+      // Reading latestOhlcvRef (set synchronously during render) is always current.
+      const snap = latestOhlcvRef.current
+      if (snap?.bars?.length) {
+        const tfNow = latestTfRef.current
+        const cs = snap.bars.map(b => ({
+          time: (typeof b.time === 'string' ? toPeriodStart(b.time, tfNow) : b.time) as Time,
+          open: b.open, high: b.high, low: b.low, close: b.close,
+        }))
+        const vs = snap.bars.map(b => ({
+          time: (typeof b.time === 'string' ? toPeriodStart(b.time, tfNow) : b.time) as Time,
+          value: b.volume ?? 0,
+          color: b.close >= b.open ? P.green + '55' : P.red + '55',
+        }))
+        candles.setData(cs); vol.setData(vs)
+        barCount.current = cs.length
+        if (cs.length > 0) chart.timeScale().setVisibleLogicalRange({ from: Math.max(0, cs.length - DEFAULT_BARS[tfNow]), to: cs.length + 3 })
+      }
     } catch (e) { setChartErr(e instanceof Error ? e.message : String(e)); chart?.remove() }
     return () => { chartApi.current?.remove(); chartApi.current = candleRef.current = volRef.current = null }
   }, [])
@@ -496,6 +521,11 @@ export function StocksPage() {
     : t?.trend_signal === 'UPTREND' ? P.teal
     : t?.trend_signal === 'CONSOLIDATING' ? P.amber
     : t?.trend_signal ? P.red : P.dim
+
+  // Update render-phase snapshot refs every render (before any early return)
+  // so the chart init effect always has the latest ohlcv/tf values.
+  latestOhlcvRef.current = ohlcv
+  latestTfRef.current    = tf
 
   // ── No-symbol state ───────────────────────────────────────────────────────
 
