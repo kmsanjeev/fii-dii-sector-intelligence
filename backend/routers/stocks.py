@@ -56,22 +56,22 @@ def _fmt_cr(v) -> str:
         return "N/A"
 
 
-def _extended_fundamentals(sym: str, close_now: float | None, qr_df) -> dict:
-    """Compute extra fundamental metrics from parquet cache + quarterly results."""
+def _extended_fundamentals(sym: str, close_now: float | None, qr_df, tech_df=None) -> dict:
+    """Compute extra fundamental metrics from technical indicators + quarterly results."""
     extras: dict = {}
 
-    # ── ATH + Down from ATH ───────────────────────────────────────────────────
-    parquet = Path(_CACHE_DIR) / f"{sym}.parquet"
-    if parquet.exists():
-        try:
-            hist = pd.read_parquet(parquet, columns=["high", "close"])
-            if not hist.empty:
-                ath = float(hist["high"].max())
-                extras["ath_price"] = round(ath, 2)
-                if close_now and ath > 0:
-                    extras["down_from_ath_pct"] = round((close_now - ath) / ath * 100, 2)
-        except Exception:
-            pass
+    # ── 52W High + Down from 52W High (from technical_indicators.csv) ────────
+    # Using 52W High rather than all-time high avoids unadjusted pre-split prices
+    # (e.g. SBIN showed ₹3515 from a 2010 pre-bonus trade; technical_indicators
+    # is computed on the last 252 adjusted sessions and is always correct).
+    if tech_df is not None and "symbol" in tech_df.columns:
+        t_row = tech_df[tech_df["symbol"].str.upper() == sym]
+        if not t_row.empty:
+            h52 = _safe(t_row.iloc[0].get("high_52w"))
+            if h52 is not None and h52 > 0:
+                extras["high_52w"] = h52
+                if close_now and h52 > 0:
+                    extras["down_from_ath_pct"] = round((close_now - h52) / h52 * 100, 2)
 
     # ── Market Cap (approximate) ──────────────────────────────────────────────
     # Shares outstanding ≈ net_profit_cr × 1e7 / eps  (when quarterly data available)
@@ -352,10 +352,11 @@ def get_stock_detail(symbol: str):
                 "as_of_date":       str(r.get("as_of_date", "")),
             }
 
-    # Extended fundamentals (market cap, ATH, YoY quarterly growth)
+    # Extended fundamentals (market cap, 52W High, quarterly growth)
     close_now_val = _safe(row.get("close_now"))
-    qr_df_ref = data_loader.get("quarterly_results")
-    fundamentals.update(_extended_fundamentals(sym, close_now_val, qr_df_ref))
+    qr_df_ref  = data_loader.get("quarterly_results")
+    tech_df_ref = data_loader.get("technical")
+    fundamentals.update(_extended_fundamentals(sym, close_now_val, qr_df_ref, tech_df_ref))
 
     # Phase 15B — OPM, ROCE, Book Value, Sales Growth 3Y
     ext_df = data_loader.get("extended_financials")
@@ -388,6 +389,13 @@ def get_stock_detail(symbol: str):
             total_eq = _safe(r.get("total_equity_cr"))
             if total_eq is not None:
                 fundamentals["total_equity_cr"] = total_eq
+
+    # Sector-aware fundamentals note — banks/NBFCs file XBRL under IndAS Banking
+    # taxonomy (Net Interest Income, NIM, etc.) which Phase 15 doesn't parse yet.
+    _BANKING_SECTORS = {"BANKING", "BANK", "FINANCIAL SERVICES", "NBFC"}
+    sym_sector_upper = str(row.get("sector", "")).upper()
+    if sym_sector_upper in _BANKING_SECTORS and not fundamentals.get("revenue_ttm_cr"):
+        fundamentals["_sector_note"] = "BANKING_XBRL_PENDING"
 
     # Phase 15C — Shareholding (latest quarter per symbol)
     shareholding: dict = {}

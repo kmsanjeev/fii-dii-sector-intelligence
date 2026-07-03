@@ -938,6 +938,18 @@ export function StocksPage() {
             {Object.keys(fund).length > 0 && (
               <div>
                 <div style={CARD_HEADER}>Fundamentals</div>
+                {fund._sector_note === 'BANKING_XBRL_PENDING' && (
+                  <div style={{
+                    margin: '8px 0', padding: '8px 12px', borderRadius: 4,
+                    background: '#0A1828', border: '1px solid #1E3A5A',
+                    fontSize: 11, color: '#64748B', display: 'flex', alignItems: 'center', gap: 8,
+                  }}>
+                    <span style={{ color: '#3B82F6', fontWeight: 700 }}>i</span>
+                    Banking sector: P&amp;L reported under IndAS Banking taxonomy (NIM, NII, GNPA).
+                    Standard P&amp;L metrics (Revenue, PAT, P/E) are not yet parsed — Phase 15 XBRL update pending.
+                    Market cap, shareholding and technical data below are accurate.
+                  </div>
+                )}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10, marginTop: 10 }}>
 
                   {/* Row 1 — Size & Valuation (quick context) */}
@@ -1005,11 +1017,11 @@ export function StocksPage() {
                     valColor={fund.sales_growth_3y_pct == null ? P.sub : +fund.sales_growth_3y_pct >= 15 ? P.green : +fund.sales_growth_3y_pct >= 5 ? P.teal : +fund.sales_growth_3y_pct >= 0 ? P.amber : P.red}
                     value={fund.sales_growth_3y_pct != null ? `${+fund.sales_growth_3y_pct >= 0 ? '+' : ''}${(+fund.sales_growth_3y_pct).toFixed(1)}%` : '---'}
                     sub={fund.sales_growth_years != null ? `${(+fund.sales_growth_years).toFixed(1)}Y revenue CAGR` : 'needs 4+ quarters'} />
-                  <FundTile label="Down from ATH (%)"
+                  <FundTile label="Down from 52W High (%)"
                     hdrBg={fund.down_from_ath_pct != null && +fund.down_from_ath_pct >= -15 ? '#062014' : '#1A0D00'}
                     value={fund.down_from_ath_pct != null ? `${(+fund.down_from_ath_pct).toFixed(1)}%` : '--'}
                     valColor={fund.down_from_ath_pct == null ? P.sub : +fund.down_from_ath_pct >= -15 ? P.teal : +fund.down_from_ath_pct >= -40 ? P.amber : P.red}
-                    sub={fund.ath_price != null ? `ATH ₹${(+fund.ath_price).toFixed(0)}` : 'all-time high'} />
+                    sub={fund.high_52w != null ? `52W High ₹${(+fund.high_52w).toFixed(0)}` : fund.ath_price != null ? `52W High ₹${(+fund.ath_price).toFixed(0)}` : '52-week high'} />
                   <FundTile label="Vol Ratio" hdrBg="#0A1C2E"
                     value={detail.price.vol_ratio != null ? `${(+detail.price.vol_ratio).toFixed(1)}x` : '--'}
                     valColor={detail.price.vol_ratio == null ? P.sub : +detail.price.vol_ratio >= 1.5 ? P.green : +detail.price.vol_ratio >= 1 ? P.blue : P.sub}
