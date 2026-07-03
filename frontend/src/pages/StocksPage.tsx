@@ -436,16 +436,16 @@ function AnnouncementsSection({ symbol }: { symbol: string }) {
                   rel="noopener noreferrer"
                   style={{
                     flexShrink: 0, alignSelf: 'center',
-                    display: 'flex', alignItems: 'center', gap: 4,
-                    fontSize: FS.caption, fontWeight: FW.bold,
-                    padding: '4px 10px', borderRadius: 4,
+                    display: 'flex', alignItems: 'center',
+                    padding: '5px 8px', borderRadius: 4,
                     background: P.blue + '18', color: P.blue,
                     border: `1px solid ${P.blue}40`,
-                    textDecoration: 'none', whiteSpace: 'nowrap',
+                    textDecoration: 'none',
                   }}
-                  title="Download NSE PDF"
                 >
-                  PDF
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 </a>
               )}
             </div>
