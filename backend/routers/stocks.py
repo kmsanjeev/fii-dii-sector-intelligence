@@ -709,6 +709,14 @@ def get_stock_momentum(symbol: str):
     return matched.iloc[0].to_dict()
 
 
+def _clean_ann_text(s: str) -> str:
+    """Strip UTF-8 mojibake artifacts (e.g. 'Â ' from NBSP mis-encoding) and extra whitespace."""
+    import re
+    s = s.replace("Â ", " ").replace("Â", "").replace(" ", " ")
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
+
 @router.get("/{symbol}/announcements")
 def get_stock_announcements(symbol: str, limit: int = Query(20, ge=1, le=100)):
     """Return latest N corporate announcements for a symbol, with NSE PDF link."""
@@ -726,16 +734,24 @@ def get_stock_announcements(symbol: str, limit: int = Query(20, ge=1, le=100)):
     announcements = []
     for _, r in rows.iterrows():
         seq = str(r.get("seq_id", "")).strip()
+        # NSE archives corporate announcement attachments at this path
         pdf_url = (
             f"https://nsearchives.nseindia.com/corporate/XBRL/{seq}.pdf"
             if seq and seq not in ("", "nan") else None
         )
+        title_raw = _clean_ann_text(str(r.get("title_snippet", "")))
+        desc_raw  = _clean_ann_text(str(r.get("desc_raw", "")))
+        # Prefer the longer/more descriptive of the two for display
+        if len(title_raw) >= len(desc_raw):
+            display_title, display_desc = title_raw[:200], desc_raw[:300]
+        else:
+            display_title, display_desc = desc_raw[:200], title_raw[:300]
         announcements.append({
             "date":              str(r.get("date", "")),
             "announcement_type": str(r.get("announcement_type", "")),
             "signal_score":      _safe(r.get("signal_score")),
-            "title":             str(r.get("title_snippet", ""))[:200],
-            "desc":              str(r.get("desc_raw", ""))[:300],
+            "title":             display_title,
+            "desc":              display_desc,
             "seq_id":            seq,
             "pdf_url":           pdf_url,
         })
