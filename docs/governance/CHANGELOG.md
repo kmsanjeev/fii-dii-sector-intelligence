@@ -6,6 +6,62 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.11.0
+
+Phase 15B — Extended Financials Engine (OPM / ROCE / Book Value / Sales Growth)
+
+Date: 2026-07-03
+
+Status: Completed
+
+---
+
+## Summary
+
+Built Phase 15B Extended Financials Engine to compute the 4 balance-sheet-derived metrics
+that were previously showing "---" in the StocksPage fundamentals grid:
+- OPM% (Operating Profit Margin = EBITDA / Revenue)
+- ROCE% (Return on Capital Employed = annualised EBIT / Capital Employed)
+- Book Value per share (Total Equity / Shares Outstanding)
+- Sales Growth CAGR over best-available history (1-3 years depending on data)
+
+Extends the existing NSE XBRL infrastructure (Phase 15A) to also parse balance sheet tags.
+
+## Changes
+
+### Engine: `engines/fundamentals/extended_financials_engine.py` — NEW
+- Fetches balance sheet XBRL fields from the same NSE filing URLs as Phase 15A
+- New XBRL tags extracted: ProfitBeforeTax, FinanceCosts, DepreciationDepletionAndAmortisationExpense,
+  TotalAssets, TotalCurrentLiabilities, EquityShareCapital, OtherEquity
+- Per-symbol aggregation: OPM from EBITDA(=PBT+FC+Dep)/Revenue, ROCE from EBIT*4/CapEmp,
+  Book Value from TotalEquity / EPS-derived shares, Sales Growth CAGR from quarterly revenue history
+- Outputs: data/NSE/results/extended_financials.csv + extended_quarterly_raw.csv (raw cache)
+- Run modes: default (6 windows), --backfill (+ 5 historical for 3Y growth), --agg-only
+- Full guardrail compliance: atomic writes, rate limiting, retry+backoff, recovery queue
+
+### Backend: `backend/services/data_loader.py`
+- Added extended_financials source (data/NSE/results/extended_financials.csv)
+
+### Backend: `backend/routers/stocks.py`
+- Phase 15B merge into fundamentals dict: book_value_per_share, opm_pct, roce_pct,
+  sales_growth_3y_pct, sales_growth_years, capital_employed_cr, total_equity_cr
+
+### Backend: `backend/routers/data_ops.py`
+- Registered extended_financials_15b and extended_financials_15b_backfill engine entries
+
+### Frontend: `frontend/src/pages/StocksPage.tsx`
+- Book Value tile: shows book_value_per_share with total_equity_cr sub-label
+- OPM tile: shows opm_pct with EBITDA value (>=20% green, >=10% teal, <0% red)
+- ROCE tile: shows roce_pct with capital_employed_cr sub-label (>=20% green)
+- Sales Growth tile: dynamic label (1Y/2Y/3Y based on actual data available)
+- Fixed deal_signals type cast from Record<string,unknown> to Record<string,string|number|null>
+
+## Commits
+- c5cc994: feat(phase-15b): Extended Financials Engine -- OPM, ROCE, Book Value, Sales Growth 3Y
+- 7e02c0c: fix(phase-15b): correct share-sort fallback and NaT comparison
+
+---
+
 # Version 4.10.0
 
 Multi-Provider LLM Client + Phase F/G/H Engine Runs
