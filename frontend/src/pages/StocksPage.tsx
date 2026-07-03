@@ -65,6 +65,7 @@ type ChartSignal = {
   price_score?: number; sector_flow_score?: number; deal_score?: number; corporate_score?: number
   market_regime?: string; regime_multiplier?: number; as_of_date?: string
   ml_bull_run_score?: number | null; accumulation_score?: number | null
+  forward_return_score?: number | null
   rotation_signal?: string; sector_combined?: number
   shp_fii_pct?: number | null; shp_dii_pct?: number | null
   shp_promoter_pct?: number | null; shp_quarter?: string
@@ -788,6 +789,12 @@ export function StocksPage() {
               <div style={{ fontSize: 8, color: P.dim, marginTop: 2 }}>ML</div>
             </div>
           )}
+          {detail?.ml_scores?.forward_return_score != null && (
+            <div style={{ textAlign: 'center' }}>
+              <ScoreGauge score={detail.ml_scores.forward_return_score} size={44} />
+              <div style={{ fontSize: 8, color: P.amber, marginTop: 2, fontWeight: 700 }}>FWD</div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -871,19 +878,32 @@ export function StocksPage() {
               { label: 'Sector Flow',        value: detail?.components?.sector_flow_score ?? sig?.sector_flow_score },
               { label: 'Block Deals',        value: detail?.components?.deal_score        ?? sig?.deal_score },
               { label: 'Corp Events',        value: detail?.components?.corporate_score   ?? sig?.corporate_score },
-              { label: 'ML Bull Run',        value: detail?.ml_scores?.ml_bull_run_score  ?? sig?.ml_bull_run_score },
-              { label: 'Accumulation',       value: detail?.ml_scores?.accumulation_score ?? sig?.accumulation_score },
-            ].filter(m => m.value != null).map(({ label, value }) => {
-              const c = scoreC(value!)
+              { label: 'ML Bull Run',        value: detail?.ml_scores?.ml_bull_run_score  ?? sig?.ml_bull_run_score,  isFwd: false },
+              { label: 'Accumulation',       value: detail?.ml_scores?.accumulation_score ?? sig?.accumulation_score, isFwd: false },
+              { label: 'Fwd Return (45D)',   value: detail?.ml_scores?.forward_return_score ?? sig?.forward_return_score, isFwd: true },
+            ].filter(m => m.value != null).map(({ label, value, isFwd }) => {
+              const c = isFwd ? P.amber : scoreC(value!)
               return (
-                <div key={label} style={{ background: P.panel, border: `1px solid ${P.border}`, borderRadius: 7, padding: '10px 14px', borderLeft: `3px solid ${c}` }}>
-                  <div style={LABEL}>{label}</div>
+                <div key={label} style={{ background: P.panel, border: `1px solid ${isFwd ? P.amber + '55' : P.border}`, borderRadius: 7, padding: '10px 14px', borderLeft: `3px solid ${c}` }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div style={LABEL}>{label}</div>
+                    {isFwd && (
+                      <span style={{ fontSize: 8, fontWeight: 700, color: P.amber, background: P.amber + '18', border: `1px solid ${P.amber}44`, borderRadius: 3, padding: '1px 4px', letterSpacing: '0.04em' }}>
+                        REALIZED
+                      </span>
+                    )}
+                  </div>
                   <div style={{ fontSize: 22, fontWeight: 900, color: c, fontFamily: 'monospace', marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>
                     {value!.toFixed(0)}
                   </div>
                   <div style={{ height: 3, background: P.border, borderRadius: 2, marginTop: 6 }}>
                     <div style={{ width: `${Math.min(value!, 100)}%`, height: '100%', background: c, borderRadius: 2 }} />
                   </div>
+                  {isFwd && (
+                    <div style={{ fontSize: 9, color: P.dim, marginTop: 4 }}>
+                      P(+15% in 45 sessions) · AUC 0.63
+                    </div>
+                  )}
                 </div>
               )
             })}

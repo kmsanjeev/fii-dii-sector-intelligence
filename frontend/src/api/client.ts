@@ -95,7 +95,7 @@ export type Stock = {
   shareholding?: Record<string, number | string | null>
   holding_trends?: Record<string, number | string | null>[]
   management?: Record<string, number | string | null>
-  ml_scores?: { accumulation_score: number | null; ml_bull_run_score: number | null }
+  ml_scores?: { accumulation_score: number | null; ml_bull_run_score: number | null; forward_return_score?: number | null; forward_return_prob?: number | null }
   technical?: TechnicalIndicators
   fno?: FnoData
   catalyst?: { event_date: string; purpose_type: string; catalyst_score: number | null }

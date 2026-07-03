@@ -233,6 +233,10 @@ def _enrich_bulk(df: pd.DataFrame) -> pd.DataFrame:
         ml_cols = [c for c in ["symbol", "ml_bull_run_score", "accumulation_score"] if c in ml_df.columns]
         df = df.merge(ml_df[ml_cols], on="symbol", how="left")
 
+    fwd_df = data_loader.get("fwd_return_scores")
+    if fwd_df is not None and "symbol" in fwd_df.columns and "forward_return_score" in fwd_df.columns:
+        df = df.merge(fwd_df[["symbol", "forward_return_score"]], on="symbol", how="left")
+
     conv_df = data_loader.get("trade_conviction")
     if conv_df is not None and "symbol" in conv_df.columns:
         conv_cols = ["symbol"]
@@ -453,6 +457,14 @@ def get_stock_detail(symbol: str):
                 "accumulation_score": _safe(r.get("accumulation_score")),
                 "ml_bull_run_score":  _safe(r.get("ml_bull_run_score")),
             }
+    # Phase 12C — forward return score (trained on realized returns)
+    fwd_df = data_loader.get("fwd_return_scores")
+    if fwd_df is not None:
+        fwd_row = fwd_df[fwd_df["symbol"].str.upper() == sym]
+        if not fwd_row.empty:
+            r = fwd_row.iloc[0]
+            ml_scores["forward_return_score"] = _safe(r.get("forward_return_score"))
+            ml_scores["forward_return_prob"]  = _safe(r.get("forward_return_prob"))
 
     # Technical indicators
     technical: dict = {}

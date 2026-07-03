@@ -48,6 +48,8 @@ SOURCES = {
     "announcement_signals": cfg.INTELLIGENCE_DIR / "announcement_signals.csv",
     # Phase A/C — Technical + F&O + Trade Conviction Intelligence
     "ml_scores":              cfg.INTELLIGENCE_DIR / "ml_scores_combined.csv",
+    # Phase 12C — Forward return model (trained on realized returns)
+    "fwd_return_scores":      cfg.INTELLIGENCE_DIR / "ml_forward_return_scores.csv",
     "technical":              cfg.INTELLIGENCE_DIR / "technical_indicators.csv",
     "fno_intel":              cfg.INTELLIGENCE_DIR / "fno_intelligence.csv",
     "trade_conviction":       cfg.INTELLIGENCE_DIR / "trade_conviction_scores.csv",
