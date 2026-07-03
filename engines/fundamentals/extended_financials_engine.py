@@ -484,15 +484,11 @@ class ExtendedFinancialsEngine:
 
     def _estimate_shares_cr(self, sym_raw: pd.DataFrame, sym_qr: pd.DataFrame) -> Optional[float]:
         """Estimate shares outstanding (in crores) from eps + net_profit_cr."""
-        # Try from raw (new XBRL data)
         for df in [sym_raw, sym_qr]:
             if df.empty:
                 continue
-            df_sorted = df.sort_values(
-                "_date" if "_date" in df.columns
-                else pd.Series(range(len(df))),
-                ascending=False
-            )
+            sort_col = "_date" if "_date" in df.columns else df.columns[0]
+            df_sorted = df.sort_values(sort_col, ascending=False)
             for _, r in df_sorted.iterrows():
                 eps = _to_float(r.get("eps"))
                 pat = _to_float(r.get("net_profit_cr"))
@@ -512,11 +508,10 @@ class ExtendedFinancialsEngine:
                 continue
             date_col = "_date" if "_date" in df.columns else None
             if date_col is None:
-                # Add _date for sym_qr which may not have it
                 for _, r in df.iterrows():
                     dt = pd.to_datetime(r.get("date_end"), errors="coerce")
                     rev = _to_float(r.get("revenue_cr"))
-                    if dt is not pd.NaT and rev and rev > 0:
+                    if pd.notna(dt) and rev and rev > 0:
                         rev_data.append((dt, rev))
             else:
                 for _, r in df.iterrows():
