@@ -11,22 +11,28 @@ import pandas as pd
 from fastapi import APIRouter, HTTPException, Query
 from backend.services import data_loader
 
-
-def _clean(records):
-    cleaned = []
-    for rec in records:
-        cleaned.append({
-            k: (None if isinstance(v, float) and math.isnan(v) else v)
-            for k, v in rec.items()
-        })
-    return cleaned
+try:
+    import numpy as _np
+    _NP_INT   = _np.integer
+    _NP_FLOAT = _np.floating
+except ImportError:
+    _NP_INT   = type(None)
+    _NP_FLOAT = type(None)
 
 
 def _safe(v):
-    """Return None for NaN floats so JSON serialization never fails."""
+    """Coerce pandas/numpy scalars to JSON-safe Python primitives."""
+    if isinstance(v, _NP_INT):
+        return int(v)
+    if isinstance(v, _NP_FLOAT):
+        return None if _np.isnan(v) else float(v)
     if isinstance(v, float) and math.isnan(v):
         return None
     return v
+
+
+def _clean(records):
+    return [{k: _safe(v) for k, v in rec.items()} for rec in records]
 
 
 def _fmt_cr(v) -> str:
@@ -506,12 +512,12 @@ def get_stock_detail(symbol: str):
                 "date":              str(r.get("date", "")),
                 "announcement_type": str(r.get("announcement_type", "")),
                 "governance_risk":   str(r.get("governance_risk", "")),
-                "governance_score":  _safe(r.get("governance_score")),
+                "governance_score":  int(r.get("governance_score") or 50),
                 "dividend_signal":   str(r.get("dividend_signal", "")),
                 "capex_confirm":     str(r.get("capex_confirm", "")),
                 "management_change": str(r.get("management_change", "")),
                 "sentiment":         str(r.get("sentiment", "")),
-                "sentiment_score":   _safe(r.get("sentiment_score")),
+                "sentiment_score":   int(r.get("sentiment_score") or 0),
                 "key_decision":      str(r.get("key_decision", "")),
             }
 
@@ -571,3 +577,35 @@ def get_stock_momentum(symbol: str):
         raise HTTPException(status_code=404, detail=f"Symbol '{sym}' not found in momentum data")
 
     return matched.iloc[0].to_dict()
+
+
+@router.get("/{symbol}/announcements")
+def get_stock_announcements(symbol: str, limit: int = Query(20, ge=1, le=100)):
+    """Return latest N corporate announcements for a symbol."""
+    df = data_loader.get("announcements")
+    if df is None or df.empty:
+        return {"symbol": symbol.upper(), "announcements": [], "total": 0}
+
+    sym = symbol.upper()
+    rows = df[df["symbol"].str.upper() == sym].copy()
+    if rows.empty:
+        return {"symbol": sym, "announcements": [], "total": 0}
+
+    rows = rows.sort_values("date", ascending=False).head(limit)
+
+    announcements = []
+    for _, r in rows.iterrows():
+        announcements.append({
+            "date":              str(r.get("date", "")),
+            "announcement_type": str(r.get("announcement_type", "")),
+            "signal_score":      _safe(r.get("signal_score")),
+            "title":             str(r.get("title_snippet", ""))[:200],
+            "desc":              str(r.get("desc_raw", ""))[:300],
+            "seq_id":            str(r.get("seq_id", "")),
+        })
+
+    return {
+        "symbol":        sym,
+        "announcements": _clean(announcements),
+        "total":         int(len(df[df["symbol"].str.upper() == sym])),
+    }

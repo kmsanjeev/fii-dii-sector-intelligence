@@ -152,6 +152,19 @@ export const fetchSectors       = () => api.get<{ sectors: Sector[]; count: numb
 export const fetchWatchlist     = (label = 'EMERGING', limit = 50) =>
   api.get<{ stocks: Stock[]; count: number; label: string }>(`/stocks/watchlist?label=${label}&limit=${limit}`).then(r => r.data)
 export const fetchStockDetail   = (symbol: string) => api.get<Stock>(`/stocks/${symbol}`).then(r => r.data)
+export const fetchStockAnnouncements = (symbol: string, limit = 20) =>
+  api.get<{ symbol: string; announcements: Announcement[]; total: number }>(
+    `/stocks/${symbol}/announcements?limit=${limit}`
+  ).then(r => r.data)
+
+export interface Announcement {
+  date:              string
+  announcement_type: string
+  signal_score:      number | null
+  title:             string
+  desc:              string
+  seq_id:            string
+}
 export const fetchParticipantLatest  = () => api.get<ParticipantLatest>('/participant/latest').then(r => r.data)
 export const fetchParticipantHistory = (limit = 252) =>
   api.get<{ rows: Record<string, number | string>[]; count: number }>(`/participant/history?limit=${limit}`).then(r => r.data)

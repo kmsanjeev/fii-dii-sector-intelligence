@@ -1,6 +1,6 @@
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { fetchStockDetail, type TechnicalIndicators, type FnoData } from '../api/client'
+import { fetchStockDetail, fetchStockAnnouncements, type TechnicalIndicators, type FnoData, type Announcement } from '../api/client'
 import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 import { TradeIntelligenceCard } from '../components/platform/TradeIntelligenceCard'
@@ -730,6 +730,103 @@ function ConsensusCard({ con }: { con: Record<string, unknown> }) {
   )
 }
 
+// ─── Corporate Announcements Feed ────────────────────────────────────────────
+
+const ANN_COLOR: Record<string, string> = {
+  BOARD_OUTCOME:     '#9B7BEA',   // purple  — governance
+  MANAGEMENT_CHANGE: '#F44B4B',   // red     — leadership shift
+  ACQUISITION:       '#F5A524',   // amber   — M&A
+  FUNDRAISE:         '#3BAEF0',   // blue    — capital raise
+  DIVIDEND:          '#22D35E',   // green   — cash return
+  ORDER_WIN:         '#22D35E',   // green   — revenue visibility
+  DISTRESS:          '#F44B4B',   // red     — risk flag
+  RESULT_UPDATE:     '#10B981',   // teal    — earnings
+  ANALYST_MEET:      '#3BAEF0',   // blue    — institutional
+  REGULATORY:        '#F5A524',   // amber   — compliance
+  CREDIT_RATING:     '#F5A524',   // amber
+  VOLUME_ALERT:      '#F5A524',   // amber
+  ESOP:              '#7B90A8',
+  PRESS_RELEASE:     '#4E6074',
+  OTHER:             '#4E6074',
+}
+
+function AnnouncementsCard({ symbol }: { symbol: string }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ['announcements', symbol],
+    queryFn:  () => fetchStockAnnouncements(symbol, 20),
+    staleTime: 5 * 60 * 1000,
+  })
+
+  if (isLoading) return (
+    <Card title="CORPORATE ANNOUNCEMENTS" accentColor={C.blue}>
+      <div style={{ color: C.muted, fontSize: 11, textAlign: 'center', padding: 16 }}>Loading...</div>
+    </Card>
+  )
+
+  const items: Announcement[] = data?.announcements ?? []
+  if (!items.length) return null
+
+  return (
+    <Card title={`CORPORATE ANNOUNCEMENTS${data?.total && data.total > 20 ? ` (latest 20 of ${data.total})` : ` (${items.length})`}`} accentColor={C.blue}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        {items.map((ann, i) => {
+          const typeColor = ANN_COLOR[ann.announcement_type] ?? C.muted
+          const scoreColor = ann.signal_score == null ? C.dim
+            : ann.signal_score >= 75 ? C.bull
+            : ann.signal_score >= 55 ? C.neutral
+            : C.dim
+          return (
+            <div key={ann.seq_id || i} style={{
+              display: 'flex', gap: 10, padding: '8px 6px',
+              borderBottom: i < items.length - 1 ? '1px solid #131E30' : 'none',
+              alignItems: 'flex-start',
+            }}>
+              {/* Left: date + score */}
+              <div style={{ minWidth: 68, flexShrink: 0 }}>
+                <div style={{ color: C.dim, fontSize: 9, fontFamily: 'monospace', marginBottom: 3 }}>
+                  {ann.date.slice(0, 10)}
+                </div>
+                {ann.signal_score != null && (
+                  <div style={{
+                    display: 'inline-block', fontSize: 8, fontWeight: 700,
+                    padding: '1px 5px', borderRadius: 2,
+                    background: scoreColor + '18', color: scoreColor,
+                    border: `1px solid ${scoreColor}33`,
+                  }}>
+                    {ann.signal_score}
+                  </div>
+                )}
+              </div>
+
+              {/* Middle: type badge + title */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ marginBottom: 3 }}>
+                  <span style={{
+                    fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 2,
+                    background: typeColor + '18', color: typeColor,
+                    border: `1px solid ${typeColor}33`, letterSpacing: 0.5,
+                  }}>
+                    {ann.announcement_type.replace(/_/g, ' ')}
+                  </span>
+                </div>
+                <div style={{
+                  fontSize: 10, color: C.secondary, lineHeight: 1.4,
+                  overflow: 'hidden',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                } as React.CSSProperties}>
+                  {ann.title || ann.desc}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </Card>
+  )
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export function StockDetailPage() {
@@ -1135,6 +1232,71 @@ export function StockDetailPage() {
           {data.concall && Object.keys(data.concall as object).length > 0 && (
             <ConcallCard concall={data.concall as Record<string, unknown>} />
           )}
+
+          {/* Phase H: AGM governance signal */}
+          {data.agm && Object.keys(data.agm as object).length > 0 && (() => {
+            const agm = data.agm as Record<string, unknown>
+            if (!agm.governance_risk) return null
+            const risk = String(agm.governance_risk)
+            const rc = risk === 'LOW' ? C.bull : risk === 'HIGH' ? C.bear : C.neutral
+            const divSig = String(agm.dividend_signal ?? '')
+            const mgmtChg = String(agm.management_change ?? '')
+            const capex = String(agm.capex_confirm ?? '')
+            return (
+              <Card title={`GOVERNANCE SIGNAL${agm.date ? ` (${String(agm.date)})` : ''}`} accentColor={rc}>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
+                  <div>
+                    <div style={LABEL}>Risk</div>
+                    <span style={{
+                      display: 'inline-block', marginTop: 5, fontSize: 10, fontWeight: 700,
+                      padding: '3px 10px', borderRadius: 4, background: rc + '22', color: rc, border: `1px solid ${rc}44`,
+                    }}>{risk}</span>
+                  </div>
+                  {divSig && divSig !== 'NONE' && (
+                    <div>
+                      <div style={LABEL}>Dividend</div>
+                      <span style={{
+                        display: 'inline-block', marginTop: 5, fontSize: 10, fontWeight: 700,
+                        padding: '3px 10px', borderRadius: 4,
+                        background: C.bull + '22', color: C.bull, border: `1px solid ${C.bull}44`,
+                      }}>{divSig}</span>
+                    </div>
+                  )}
+                  {mgmtChg === 'YES' && (
+                    <div>
+                      <div style={LABEL}>Mgmt Change</div>
+                      <span style={{
+                        display: 'inline-block', marginTop: 5, fontSize: 10, fontWeight: 700,
+                        padding: '3px 10px', borderRadius: 4,
+                        background: C.neutral + '22', color: C.neutral, border: `1px solid ${C.neutral}44`,
+                      }}>YES</span>
+                    </div>
+                  )}
+                  {capex === 'YES' && (
+                    <div>
+                      <div style={LABEL}>Capex</div>
+                      <span style={{
+                        display: 'inline-block', marginTop: 5, fontSize: 10, fontWeight: 700,
+                        padding: '3px 10px', borderRadius: 4,
+                        background: C.blue + '22', color: C.blue, border: `1px solid ${C.blue}44`,
+                      }}>CONFIRMED</span>
+                    </div>
+                  )}
+                </div>
+                {agm.key_decision && (
+                  <div style={{
+                    fontSize: 10, color: C.secondary, background: C.bgDeep,
+                    padding: '7px 10px', borderRadius: 5, border: C.border, lineHeight: 1.5,
+                  }}>
+                    {String(agm.key_decision)}
+                  </div>
+                )}
+              </Card>
+            )
+          })()}
+
+          {/* Corporate Announcements feed */}
+          {symbol && <AnnouncementsCard symbol={symbol} />}
 
           {/* Sector link */}
           <Link to={`/sectors/${data.sector}`} style={{
