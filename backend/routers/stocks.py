@@ -353,6 +353,38 @@ def get_stock_detail(symbol: str):
     qr_df_ref = data_loader.get("quarterly_results")
     fundamentals.update(_extended_fundamentals(sym, close_now_val, qr_df_ref))
 
+    # Phase 15B — OPM, ROCE, Book Value, Sales Growth 3Y
+    ext_df = data_loader.get("extended_financials")
+    if ext_df is not None and "symbol" in ext_df.columns:
+        ext_row = ext_df[ext_df["symbol"].str.upper() == sym]
+        if not ext_row.empty:
+            r = ext_row.iloc[0]
+            # Book Value per share
+            bvps = _safe(r.get("book_value_per_share"))
+            if bvps is not None:
+                fundamentals["book_value_per_share"] = bvps
+            # OPM
+            opm = _safe(r.get("opm_pct"))
+            if opm is not None:
+                fundamentals["opm_pct"] = opm
+            # ROCE
+            roce = _safe(r.get("roce_pct"))
+            if roce is not None:
+                fundamentals["roce_pct"] = roce
+            # Sales Growth (CAGR over available history)
+            sg = _safe(r.get("sales_growth_cagr_pct"))
+            sg_years = _safe(r.get("sales_growth_years"))
+            if sg is not None:
+                fundamentals["sales_growth_3y_pct"]   = sg
+                fundamentals["sales_growth_years"]     = sg_years
+            # Additional balance sheet context
+            cap_emp = _safe(r.get("capital_employed_cr"))
+            if cap_emp is not None:
+                fundamentals["capital_employed_cr"] = cap_emp
+            total_eq = _safe(r.get("total_equity_cr"))
+            if total_eq is not None:
+                fundamentals["total_equity_cr"] = total_eq
+
     # Phase 15C — Shareholding (latest quarter per symbol)
     shareholding: dict = {}
     shp_df = data_loader.get("shareholding")

@@ -178,8 +178,19 @@ ENGINES = {
         "phase": "15A",
     },
     "valuation_15b": {
-        "label": "Valuation Engine (15B)",
+        "label": "Valuation Engine (P/E, ROE)",
         "script": "engines/fundamentals/valuation_engine.py",
+        "phase": "15B",
+    },
+    "extended_financials_15b": {
+        "label": "Extended Financials — OPM / ROCE / Book Value / Sales Growth (15B)",
+        "script": "engines/fundamentals/extended_financials_engine.py",
+        "phase": "15B",
+    },
+    "extended_financials_15b_backfill": {
+        "label": "Extended Financials — backfill historical windows for 3Y growth (15B)",
+        "script": "engines/fundamentals/extended_financials_engine.py",
+        "args": ["--backfill"],
         "phase": "15B",
     },
     "shp_acquisition": {

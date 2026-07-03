@@ -737,9 +737,10 @@ export function StocksPage() {
                   <FundTile label="Market Cap (₹ Cr)" hdrBg="#1A3A6E" valColor={P.text}
                     value={fund.market_cap_cr != null ? crFmt(+fund.market_cap_cr) : '--'}
                     sub={fund.shares_outstanding_cr != null ? `${(+fund.shares_outstanding_cr).toFixed(1)} Cr shares` : 'estimated'} />
-                  <FundTile label="Book Value (₹)" hdrBg="#2D1B4E" valColor={P.sub}
-                    value="---"
-                    sub="balance sheet data pending" />
+                  <FundTile label="Book Value (₹)" hdrBg="#2D1B4E"
+                    valColor={fund.book_value_per_share != null ? P.text : P.sub}
+                    value={fund.book_value_per_share != null ? `₹${(+fund.book_value_per_share).toLocaleString('en-IN', {maximumFractionDigits: 0})}` : '---'}
+                    sub={fund.total_equity_cr != null ? `Equity ${crFmt(+fund.total_equity_cr)}` : 'balance sheet pending'} />
                   <FundTile label="Sales (₹ Cr)" hdrBg="#1A3A6E" valColor={P.text}
                     value={fund.revenue_ttm_cr != null ? crFmt(+fund.revenue_ttm_cr) : '--'}
                     sub={fund.as_of_date ? `TTM as of ${String(fund.as_of_date).slice(0,7)}` : 'trailing 12M'} />
@@ -759,9 +760,10 @@ export function StocksPage() {
                     value={fund.down_from_ath_pct != null ? `${(+fund.down_from_ath_pct).toFixed(1)}%` : '--'}
                     valColor={fund.down_from_ath_pct == null ? P.sub : +fund.down_from_ath_pct >= -15 ? P.teal : +fund.down_from_ath_pct >= -40 ? P.amber : P.red}
                     sub={fund.ath_price != null ? `ATH ₹${(+fund.ath_price).toFixed(0)}` : 'all-time high'} />
-                  <FundTile label="OPM (%)" hdrBg="#0A1A2E" valColor={P.sub}
-                    value="---"
-                    sub="EBITDA data pending" />
+                  <FundTile label="OPM (%)" hdrBg="#0A1A2E"
+                    valColor={fund.opm_pct == null ? P.sub : +fund.opm_pct >= 20 ? P.green : +fund.opm_pct >= 10 ? P.teal : +fund.opm_pct >= 0 ? P.amber : P.red}
+                    value={fund.opm_pct != null ? `${(+fund.opm_pct).toFixed(1)}%` : '---'}
+                    sub={fund.ebitda_cr_latest != null ? `EBITDA ${crFmt(+fund.ebitda_cr_latest)} qtr` : 'EBITDA data pending'} />
                   <FundTile label={`${fund.qtr_growth_period ?? 'Qtr'} Sales Growth (%)`}
                     hdrBg={fund.qtr_sales_growth_pct != null && +fund.qtr_sales_growth_pct >= 0 ? '#062014' : '#200606'}
                     value={fund.qtr_sales_growth_pct != null ? `${+fund.qtr_sales_growth_pct >= 0 ? '+' : ''}${(+fund.qtr_sales_growth_pct).toFixed(1)}%` : '--'}
@@ -774,16 +776,20 @@ export function StocksPage() {
                     value={fund.qtr_profit_growth_pct != null ? `${+fund.qtr_profit_growth_pct >= 0 ? '+' : ''}${(+fund.qtr_profit_growth_pct).toFixed(1)}%` : '--'}
                     valColor={fund.qtr_profit_growth_pct == null ? P.sub : +fund.qtr_profit_growth_pct >= 10 ? P.green : +fund.qtr_profit_growth_pct >= 0 ? P.teal : P.red}
                     sub="vs prior period PAT" />
-                  <FundTile label="ROCE (%)" hdrBg="#0A1A2E" valColor={P.sub}
-                    value="---"
-                    sub="capital employed data pending" />
+                  <FundTile label="ROCE (%)" hdrBg="#0A1A2E"
+                    valColor={fund.roce_pct == null ? P.sub : +fund.roce_pct >= 20 ? P.green : +fund.roce_pct >= 12 ? P.teal : +fund.roce_pct >= 0 ? P.amber : P.red}
+                    value={fund.roce_pct != null ? `${(+fund.roce_pct).toFixed(1)}%` : '---'}
+                    sub={fund.capital_employed_cr != null ? `CE ${crFmt(+fund.capital_employed_cr)}` : 'capital employed pending'} />
                   <FundTile label="ROE (%)" hdrBg="#0A2A1F"
                     value={fund.roe_pct != null ? `${(+fund.roe_pct).toFixed(1)}%` : '--'}
                     valColor={fund.roe_pct == null ? P.sub : +fund.roe_pct >= 20 ? P.green : +fund.roe_pct >= 12 ? P.teal : P.red}
                     sub="return on equity" />
-                  <FundTile label="Sales Growth 3Y (%)" hdrBg="#0A1A2E" valColor={P.sub}
-                    value="---"
-                    sub="needs 4+ quarters of data" />
+                  <FundTile
+                    label={`Sales Growth ${fund.sales_growth_years != null ? `${(+fund.sales_growth_years).toFixed(0)}Y` : '3Y'} (%)`}
+                    hdrBg={fund.sales_growth_3y_pct != null && +fund.sales_growth_3y_pct >= 0 ? '#062014' : '#200606'}
+                    valColor={fund.sales_growth_3y_pct == null ? P.sub : +fund.sales_growth_3y_pct >= 15 ? P.green : +fund.sales_growth_3y_pct >= 5 ? P.teal : +fund.sales_growth_3y_pct >= 0 ? P.amber : P.red}
+                    value={fund.sales_growth_3y_pct != null ? `${+fund.sales_growth_3y_pct >= 0 ? '+' : ''}${(+fund.sales_growth_3y_pct).toFixed(1)}%` : '---'}
+                    sub={fund.sales_growth_years != null ? `${(+fund.sales_growth_years).toFixed(1)}Y revenue CAGR` : 'needs 4+ quarters'} />
                 </div>
 
                 {/* Row 4 — Valuation & Technical */}
@@ -1032,7 +1038,7 @@ export function StocksPage() {
 
                 {/* Deal signals */}
                 {detail.deal_signals && Object.keys(detail.deal_signals).length > 0 && (() => {
-                  const d = detail.deal_signals as Record<string, unknown>
+                  const d = detail.deal_signals as Record<string, string | number | null>
                   if (!d.deal_signal) return null
                   const dc = String(d.deal_signal).includes('BULL') ? P.green : String(d.deal_signal).includes('BEAR') ? P.red : P.sub
                   return (
