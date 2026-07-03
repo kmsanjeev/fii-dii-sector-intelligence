@@ -691,7 +691,7 @@ def get_stock_momentum(symbol: str):
 
 @router.get("/{symbol}/announcements")
 def get_stock_announcements(symbol: str, limit: int = Query(20, ge=1, le=100)):
-    """Return latest N corporate announcements for a symbol."""
+    """Return latest N corporate announcements for a symbol, with NSE PDF link."""
     df = data_loader.get("announcements")
     if df is None or df.empty:
         return {"symbol": symbol.upper(), "announcements": [], "total": 0}
@@ -705,17 +705,86 @@ def get_stock_announcements(symbol: str, limit: int = Query(20, ge=1, le=100)):
 
     announcements = []
     for _, r in rows.iterrows():
+        seq = str(r.get("seq_id", "")).strip()
+        pdf_url = (
+            f"https://nsearchives.nseindia.com/corporate/XBRL/{seq}.pdf"
+            if seq and seq not in ("", "nan") else None
+        )
         announcements.append({
             "date":              str(r.get("date", "")),
             "announcement_type": str(r.get("announcement_type", "")),
             "signal_score":      _safe(r.get("signal_score")),
             "title":             str(r.get("title_snippet", ""))[:200],
             "desc":              str(r.get("desc_raw", ""))[:300],
-            "seq_id":            str(r.get("seq_id", "")),
+            "seq_id":            seq,
+            "pdf_url":           pdf_url,
         })
 
     return {
         "symbol":        sym,
         "announcements": _clean(announcements),
         "total":         int(len(df[df["symbol"].str.upper() == sym])),
+    }
+
+
+@router.get("/{symbol}/corporate-actions")
+def get_stock_corp_actions(
+    symbol: str,
+    years: int = Query(5, ge=1, le=10, description="Years of history to return"),
+    types: str = Query(
+        "DIVIDEND,BONUS,SPLIT,BUYBACK,RIGHTS",
+        description="Comma-separated action types to include",
+    ),
+):
+    """Return corporate actions (dividend/bonus/split/buyback/rights) for a symbol."""
+    df = data_loader.get("corp_actions")
+    if df is None or df.empty:
+        return {"symbol": symbol.upper(), "actions": [], "summary": {}}
+
+    sym = symbol.upper()
+    allowed = {t.strip().upper() for t in types.split(",")}
+
+    rows = df[
+        (df["symbol"].str.upper() == sym) &
+        (df["action_type"].str.upper().isin(allowed))
+    ].copy()
+
+    if rows.empty:
+        return {"symbol": sym, "actions": [], "summary": {}}
+
+    # Filter to requested years window
+    cutoff = (pd.Timestamp.now() - pd.DateOffset(years=years)).strftime("%Y-%m-%d")
+    rows = rows[rows["ex_date"] >= cutoff].sort_values("ex_date", ascending=False)
+
+    actions = []
+    for _, r in rows.iterrows():
+        atype = str(r.get("action_type", "")).upper()
+        actions.append({
+            "ex_date":      str(r.get("ex_date", ""))[:10],
+            "rec_date":     str(r.get("rec_date", ""))[:10] if pd.notna(r.get("rec_date")) else None,
+            "action_type":  atype,
+            "dividend_rs":  _safe(r.get("dividend_rs")),
+            "bonus_ratio":  _safe(r.get("bonus_ratio")),
+            "split_new_fv": _safe(r.get("split_new_fv")),
+            "subject":      str(r.get("subject", ""))[:200],
+        })
+
+    # Build summary
+    type_counts: dict[str, int] = {}
+    total_div = 0.0
+    for a in actions:
+        t = a["action_type"]
+        type_counts[t] = type_counts.get(t, 0) + 1
+        if t == "DIVIDEND" and a["dividend_rs"] is not None:
+            total_div += a["dividend_rs"]
+
+    return {
+        "symbol":  sym,
+        "years":   years,
+        "count":   len(actions),
+        "actions": actions,
+        "summary": {
+            **type_counts,
+            "total_dividend_rs": round(total_div, 2) if total_div else None,
+        },
     }

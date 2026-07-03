@@ -19,8 +19,8 @@ import {
   type HistogramData, type Time,
 } from 'lightweight-charts'
 import {
-  api, fetchStockDetail, fetchStockAnnouncements,
-  type TechnicalIndicators, type FnoData, type Announcement,
+  api, fetchStockDetail, fetchStockAnnouncements, fetchStockCorpActions,
+  type TechnicalIndicators, type FnoData, type Announcement, type CorpAction,
 } from '../api/client'
 import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
@@ -291,6 +291,91 @@ function DMARow({ label, dma, close, color }: { label: string; dma: number | nul
   )
 }
 
+// ─── Corporate Action color config ───────────────────────────────────────────
+
+const CA_CFG: Record<string, { color: string; bg: string; label: string; marker: string }> = {
+  DIVIDEND: { color: P.amber,  bg: '#F5A52414', label: 'Dividend',   marker: 'D' },
+  BONUS:    { color: P.green,  bg: '#22D35E14', label: 'Bonus Issue',marker: 'B' },
+  SPLIT:    { color: P.blue,   bg: '#4080FF14', label: 'Split',      marker: 'S' },
+  BUYBACK:  { color: P.purple, bg: '#A855F714', label: 'Buyback',    marker: '$' },
+  RIGHTS:   { color: P.teal,   bg: '#0EC4A014', label: 'Rights',     marker: 'R' },
+}
+function caDisplay(a: CorpAction): string {
+  if (a.action_type === 'DIVIDEND' && a.dividend_rs != null) return `₹${a.dividend_rs.toFixed(2)}`
+  if (a.action_type === 'BONUS'    && a.bonus_ratio  != null) return `1 : ${a.bonus_ratio.toFixed(0)}`
+  if (a.action_type === 'SPLIT'    && a.split_new_fv != null) return `FV ₹${a.split_new_fv}`
+  if (a.action_type === 'BUYBACK')                             return 'Offer'
+  if (a.action_type === 'RIGHTS')                              return 'Rights'
+  return a.subject.slice(0, 12)
+}
+function caUnit(a: CorpAction): string {
+  if (a.action_type === 'DIVIDEND') return 'per share'
+  if (a.action_type === 'BONUS')    return 'bonus per share held'
+  if (a.action_type === 'SPLIT')    return 'new face value'
+  if (a.action_type === 'BUYBACK')  return 'buyback scheme'
+  if (a.action_type === 'RIGHTS')   return 'rights issue'
+  return ''
+}
+
+function CorporateActionsSection({ symbol }: { symbol: string }) {
+  const { data } = useQuery({
+    queryKey: ['stock-ca', symbol],
+    queryFn:  () => fetchStockCorpActions(symbol, 5),
+    staleTime: 10 * 60_000,
+  })
+  const actions = data?.actions ?? []
+  if (!actions.length) return null
+
+  const summary = data?.summary ?? {}
+  const chips = (['DIVIDEND','BONUS','SPLIT','BUYBACK','RIGHTS'] as const)
+    .filter(k => (summary[k] ?? 0) > 0)
+    .map(k => ({ k, count: summary[k] as number, cfg: CA_CFG[k] }))
+
+  return (
+    <div style={{ background: P.panel, border: `1px solid ${P.border}`, borderRadius: 10, overflow: 'hidden' }}>
+      {/* header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', ...CARD_HEADER }}>
+        <span>Corporate Actions</span>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {chips.map(({ k, count, cfg }) => (
+            <span key={k} style={{ fontSize: FS.caption, fontWeight: FW.bold, padding: '2px 8px', borderRadius: 10, background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.color}40` }}>
+              {count} {cfg.label}{count > 1 ? 's' : ''}
+            </span>
+          ))}
+        </div>
+      </div>
+      {/* horizontal scrollable rail */}
+      <div style={{ display: 'flex', gap: 10, padding: '12px 14px', overflowX: 'auto', scrollbarWidth: 'thin' } as React.CSSProperties}>
+        {actions.map((a, i) => {
+          const cfg = CA_CFG[a.action_type] ?? { color: P.sub, bg: P.cell, label: a.action_type, marker: '?' }
+          return (
+            <div key={i} style={{ flexShrink: 0, width: 138, background: T.cell, border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
+              {/* colored type header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', background: cfg.bg, fontSize: FS.caption, fontWeight: FW.heavy, letterSpacing: 1, textTransform: 'uppercase', color: cfg.color }}>
+                <span style={{ width: 18, height: 18, borderRadius: '50%', background: cfg.color + '30', color: cfg.color, fontSize: 9, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {cfg.marker}
+                </span>
+                {cfg.label}
+              </div>
+              {/* body */}
+              <div style={{ padding: '9px 10px 8px' }}>
+                <div style={{ fontSize: FS['2xl'], fontWeight: FW.black, fontFamily: 'monospace', color: cfg.color, lineHeight: 1, marginBottom: 3 }}>
+                  {caDisplay(a)}
+                </div>
+                <div style={{ fontSize: FS.caption, color: T.muted, marginBottom: 6 }}>{caUnit(a)}</div>
+                <div style={{ fontSize: 9, color: T.dim, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 1 }}>Ex-Date</div>
+                <div style={{ fontSize: FS.caption, color: T.dim, fontFamily: 'monospace' }}>
+                  {new Date(a.ex_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 // ─── Announcement timeline ────────────────────────────────────────────────────
 
 const ANN_CLR: Record<string, string> = {
@@ -304,7 +389,7 @@ const ANN_CLR: Record<string, string> = {
 function AnnouncementsSection({ symbol }: { symbol: string }) {
   const { data, isLoading } = useQuery({
     queryKey: ['stock-ann', symbol],
-    queryFn: () => fetchStockAnnouncements(symbol, 15),
+    queryFn: () => fetchStockAnnouncements(symbol, 20),
     staleTime: 5 * 60_000,
   })
   if (isLoading) return <SectionCard title="Corporate Announcements"><span style={{ color: P.dim, fontSize: 11 }}>Loading...</span></SectionCard>
@@ -312,34 +397,56 @@ function AnnouncementsSection({ symbol }: { symbol: string }) {
   if (!items.length) return null
   return (
     <SectionCard title={`Corporate Announcements — latest ${items.length} of ${data?.total ?? 0}`} accentColor={P.blue}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         {items.map((a, i) => {
           const tc = ANN_CLR[a.announcement_type] ?? P.sub
-          const sc = a.signal_score == null ? P.dim : a.signal_score >= 75 ? P.green : a.signal_score >= 50 ? P.amber : P.dim
+          const sc = a.signal_score == null ? T.dim : a.signal_score >= 75 ? P.green : a.signal_score >= 50 ? P.amber : T.dim
           return (
             <div key={a.seq_id || i} style={{
-              display: 'flex', gap: 10, padding: '8px 4px',
-              borderBottom: i < items.length - 1 ? `1px solid ${P.border}30` : 'none',
+              display: 'flex', gap: 10, padding: '9px 4px',
+              borderBottom: i < items.length - 1 ? `1px solid ${P.border}` : 'none',
               alignItems: 'flex-start',
             }}>
-              <div style={{ minWidth: 72, flexShrink: 0 }}>
-                <div style={{ fontSize: 9, color: P.dim, fontFamily: 'monospace', marginBottom: 3 }}>{a.date.slice(0, 10)}</div>
+              {/* date + score */}
+              <div style={{ minWidth: 76, flexShrink: 0 }}>
+                <div style={{ fontSize: FS.label, color: T.muted, fontFamily: 'monospace', marginBottom: 4 }}>{a.date.slice(0, 10)}</div>
                 {a.signal_score != null && (
-                  <span style={{ fontSize: 8, fontWeight: 700, padding: '1px 5px', borderRadius: 3, background: sc + '18', color: sc, border: `1px solid ${sc}33` }}>
+                  <span style={{ fontSize: FS.caption, fontWeight: FW.bold, padding: '1px 6px', borderRadius: 3, background: sc + '18', color: sc, border: `1px solid ${sc}33` }}>
                     {a.signal_score}
                   </span>
                 )}
               </div>
+              {/* type + title */}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ marginBottom: 3 }}>
-                  <span style={{ fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 3, background: tc + '18', color: tc, border: `1px solid ${tc}33`, letterSpacing: 0.4 }}>
+                <div style={{ marginBottom: 4 }}>
+                  <span style={{ fontSize: FS.caption, fontWeight: FW.bold, padding: '2px 7px', borderRadius: 3, background: tc + '18', color: tc, border: `1px solid ${tc}33`, letterSpacing: 0.3 }}>
                     {a.announcement_type.replace(/_/g, ' ')}
                   </span>
                 </div>
-                <div style={{ fontSize: 10, color: P.text, lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' } as React.CSSProperties}>
+                <div style={{ fontSize: FS.body, color: P.text, lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' } as React.CSSProperties}>
                   {a.title || a.desc}
                 </div>
               </div>
+              {/* PDF link */}
+              {a.pdf_url && (
+                <a
+                  href={a.pdf_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    flexShrink: 0, alignSelf: 'center',
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    fontSize: FS.caption, fontWeight: FW.bold,
+                    padding: '4px 10px', borderRadius: 4,
+                    background: P.blue + '18', color: P.blue,
+                    border: `1px solid ${P.blue}40`,
+                    textDecoration: 'none', whiteSpace: 'nowrap',
+                  }}
+                  title="Download NSE PDF"
+                >
+                  PDF
+                </a>
+              )}
             </div>
           )
         })}
@@ -407,6 +514,13 @@ export function StocksPage() {
     queryFn: () => fetchStockDetail(symbol),
     enabled: !!symbol,
     staleTime: 5 * 60_000,
+  })
+
+  const { data: corpActions } = useQuery({
+    queryKey: ['stock-ca', symbol],
+    queryFn: () => fetchStockCorpActions(symbol, 5),
+    enabled: !!symbol,
+    staleTime: 10 * 60_000,
   })
 
   // ── Chart lifecycle ───────────────────────────────────────────────────────
@@ -486,6 +600,45 @@ export function StocksPage() {
         chartApi.current.timeScale().setVisibleLogicalRange({ from: Math.max(0, cs.length - DEFAULT_BARS[tf]), to: cs.length + 3 })
     } catch (e) { setChartErr(e instanceof Error ? e.message : String(e)) }
   }, [ohlcv, tf, chartKey])
+
+  // ── Corporate action markers on chart ─────────────────────────────────────
+  // Renders colored circles below candle bars at the ex-date of each CA event.
+  useEffect(() => {
+    if (!candleRef.current || !corpActions?.actions?.length) return
+    const CA_MARKER_CFG: Record<string, { color: string; text: string }> = {
+      DIVIDEND: { color: P.amber,  text: 'D' },
+      BONUS:    { color: P.green,  text: 'B' },
+      SPLIT:    { color: P.blue,   text: 'S' },
+      BUYBACK:  { color: P.purple, text: '$' },
+      RIGHTS:   { color: P.teal,   text: 'R' },
+    }
+    try {
+      const markers = corpActions.actions
+        .filter(a => CA_MARKER_CFG[a.action_type])
+        .map(a => {
+          const cfg = CA_MARKER_CFG[a.action_type]
+          // For daily/weekly TF, ex_date maps directly to a 'YYYY-MM-DD' time
+          const dateStr = a.ex_date.slice(0, 10)
+          const label = a.action_type === 'DIVIDEND' && a.dividend_rs != null
+            ? `Div ₹${a.dividend_rs}`
+            : a.action_type === 'BONUS' && a.bonus_ratio != null
+            ? `Bonus ${a.bonus_ratio}:1`
+            : a.action_type === 'SPLIT' && a.split_new_fv != null
+            ? `Split FV ${a.split_new_fv}`
+            : cfg.text
+          return {
+            time:     dateStr as Time,
+            position: 'belowBar' as const,
+            color:    cfg.color,
+            shape:    'circle' as const,
+            text:     label,
+            size:     0.8,
+          }
+        })
+        .sort((a, b) => String(a.time).localeCompare(String(b.time)))
+      candleRef.current.setMarkers(markers)
+    } catch { /* markers are cosmetic — ignore failures */ }
+  }, [corpActions, chartKey])
 
   const resetChart = useCallback(() => {
     if (!chartApi.current) return
@@ -1142,7 +1295,10 @@ export function StocksPage() {
             {/* ── Trade Intelligence (full width) ────────────────────── */}
             <TradeIntelligenceCard data={detail!} />
 
-            {/* ── Announcements (full width) ─────────────────────────── */}
+            {/* ── Corporate Actions timeline ─────────────────────────── */}
+            <CorporateActionsSection symbol={symbol} />
+
+            {/* ── Corporate Announcements (full width) ───────────────── */}
             <AnnouncementsSection symbol={symbol} />
 
           </>

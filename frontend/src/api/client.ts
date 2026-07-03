@@ -165,7 +165,29 @@ export interface Announcement {
   title:             string
   desc:              string
   seq_id:            string
+  pdf_url:           string | null
 }
+
+export interface CorpAction {
+  ex_date:      string
+  rec_date:     string | null
+  action_type:  'DIVIDEND' | 'BONUS' | 'SPLIT' | 'BUYBACK' | 'RIGHTS' | string
+  dividend_rs:  number | null
+  bonus_ratio:  number | null
+  split_new_fv: number | null
+  subject:      string
+}
+
+export interface CorpActionsResponse {
+  symbol:  string
+  years:   number
+  count:   number
+  actions: CorpAction[]
+  summary: Record<string, number | null>
+}
+
+export const fetchStockCorpActions = (symbol: string, years = 5) =>
+  api.get<CorpActionsResponse>(`/stocks/${symbol}/corporate-actions?years=${years}`).then(r => r.data)
 export const fetchParticipantLatest  = () => api.get<ParticipantLatest>('/participant/latest').then(r => r.data)
 export const fetchParticipantHistory = (limit = 252) =>
   api.get<{ rows: Record<string, number | string>[]; count: number }>(`/participant/history?limit=${limit}`).then(r => r.data)
