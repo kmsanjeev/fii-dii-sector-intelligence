@@ -4,7 +4,6 @@ import { fetchStockDetail, fetchStockAnnouncements, type TechnicalIndicators, ty
 import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 import { TradeIntelligenceCard } from '../components/platform/TradeIntelligenceCard'
-import { StockChart } from '../components/platform/StockChart'
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 
@@ -973,11 +972,6 @@ export function StockDetailPage() {
 
         {/* ── LEFT COLUMN ────────────────────────────────────────────────────── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-
-          {/* Chart */}
-          <Card title={`PRICE CHART — ${data.symbol}`} accentColor="#3BAEF0">
-            <StockChart symbol={data.symbol} />
-          </Card>
 
           {/* Score components */}
           <Card title="BULL RUN SCORE BREAKDOWN">

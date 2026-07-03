@@ -11,7 +11,7 @@ import { CorporatePage } from './pages/CorporatePage'
 import { ChatPage } from './pages/ChatPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { DataControlPage } from './pages/DataControlPage'
-import { ChartsPage } from './pages/ChartsPage'
+import { StocksPage } from './pages/StocksPage'
 import { PortfolioPage } from './pages/PortfolioPage'
 import { BacktestPage } from './pages/BacktestPage'
 import { BrokerPage } from './pages/BrokerPage'
@@ -46,7 +46,8 @@ export default function App() {
             <Route path="/corporate" element={<CorporatePage />} />
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/charts" element={<ChartsPage />} />
+            <Route path="/stocks" element={<StocksPage />} />
+            <Route path="/charts" element={<StocksPage />} />
             <Route path="/data" element={<DataControlPage />} />
             <Route path="/portfolio" element={<PortfolioPage />} />
             <Route path="/backtest" element={<BacktestPage />} />
