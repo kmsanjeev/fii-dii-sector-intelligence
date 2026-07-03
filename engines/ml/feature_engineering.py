@@ -71,6 +71,12 @@ INDEX_MEMB   = cfg.NSE_DIR / "indices" / "index_membership.csv"
 SHP_CSV      = cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv"
 ANN_CSV      = cfg.INTELLIGENCE_DIR / "company_announcements.csv"
 
+# Phase 12A — enriched fundamentals + technical + F&O sources
+EXT_FIN      = cfg.NSE_DIR / "results" / "extended_financials.csv"
+VAL_SCORES   = cfg.NSE_DIR / "results" / "valuation_scores.csv"
+TECH_IND     = cfg.INTELLIGENCE_DIR / "technical_indicators.csv"
+FNO_INTEL    = cfg.INTELLIGENCE_DIR / "fno_intelligence.csv"
+
 # Phase F alt-data sources
 THEME_TAG      = cfg.REFERENCE_DIR / "theme_tagging.csv"
 THEME_INTEL    = cfg.INTELLIGENCE_DIR / "theme_intelligence.csv"
@@ -109,6 +115,23 @@ MKTCAP_MAP = {
     "MID":   2,
     "SMALL": 1,
     "MICRO": 0,
+}
+VALUATION_MAP = {
+    "CHEAP_QUALITY": 3,
+    "FAIR_VALUE":    2,
+    "OVERVALUED":    1,
+    "EXPENSIVE":     1,
+    "LOSS":          0,
+}
+TREND_MAP = {
+    "UPTREND":   2,
+    "NEUTRAL":   1,
+    "DOWNTREND": 0,
+}
+FNO_OI_MAP = {
+    "BULLISH": 2,
+    "NEUTRAL": 1,
+    "BEARISH": 0,
 }
 
 
@@ -161,6 +184,12 @@ class FeatureEngineeringEngine:
         bull = self._add_deal_signals(bull)
         bull = self._add_announcement_features(bull)
 
+        # Phase 12A — enriched fundamentals + technical + F&O features
+        bull = self._add_extended_financials(bull)
+        bull = self._add_valuation_features(bull)
+        bull = self._add_technical_features(bull)
+        bull = self._add_fno_features(bull)
+
         # Phase F alt-data features
         bull = self._add_theme_features(bull)
         bull = self._add_news_sentiment(bull)
@@ -207,6 +236,15 @@ class FeatureEngineeringEngine:
             "concall_guidance_score", "concall_sentiment_score",
             # Phase G — Multi-signal consensus
             "consensus_score",
+            # Phase 12A — enriched fundamentals
+            "opm_pct", "roce_pct", "sales_growth_3y",
+            # Phase 12A — valuation intelligence
+            "pe_ratio_log", "roe_pct", "valuation_label_enc",
+            "yoy_revenue_pct", "yoy_profit_pct",
+            # Phase 12A — technical indicators
+            "vs_dma_200", "trend_signal_enc",
+            # Phase 12A — F&O open interest signal
+            "fno_oi_signal_enc",
         ]
         available = [c for c in feature_cols if c in bull.columns]
         missing = [c for c in feature_cols if c not in bull.columns]
@@ -545,6 +583,107 @@ class FeatureEngineeringEngine:
             return df.merge(cc, on="symbol", how="left")
         except Exception as e:
             logger.warning("[FeatureEng] Concall signals failed: %s", e)
+            return df
+
+    # ------------------------------------------------------------------
+    # Phase 12A — enriched feature methods
+    # ------------------------------------------------------------------
+
+    def _add_extended_financials(self, df: pd.DataFrame) -> pd.DataFrame:
+        """OPM%, ROCE%, 3Y Sales Growth CAGR from Phase 15B extended_financials.csv."""
+        if not EXT_FIN.exists():
+            logger.warning("[FeatureEng 12A] extended_financials.csv missing -- skipping")
+            return df
+        try:
+            ef = pd.read_csv(
+                EXT_FIN,
+                usecols=["symbol", "opm_pct", "roce_pct", "sales_growth_cagr_pct"],
+            )
+            ef["symbol"] = ef["symbol"].str.strip().str.upper()
+            ef = ef.rename(columns={"sales_growth_cagr_pct": "sales_growth_3y"})
+            for col in ["opm_pct", "roce_pct", "sales_growth_3y"]:
+                ef[col] = pd.to_numeric(ef[col], errors="coerce")
+            # Clip extreme outliers before training
+            ef["opm_pct"]        = ef["opm_pct"].clip(-50, 80)
+            ef["roce_pct"]       = ef["roce_pct"].clip(-20, 60)
+            ef["sales_growth_3y"] = ef["sales_growth_3y"].clip(-20, 100)
+            logger.info("[FeatureEng 12A] Extended financials: %d symbols", ef["symbol"].nunique())
+            return df.merge(ef, on="symbol", how="left")
+        except Exception as e:
+            logger.warning("[FeatureEng 12A] Extended financials failed: %s", e)
+            return df
+
+    def _add_valuation_features(self, df: pd.DataFrame) -> pd.DataFrame:
+        """P/E (log), ROE%, valuation label, YoY revenue & profit growth from Phase 15 valuation_scores.csv."""
+        if not VAL_SCORES.exists():
+            logger.warning("[FeatureEng 12A] valuation_scores.csv missing -- skipping")
+            return df
+        try:
+            vs = pd.read_csv(
+                VAL_SCORES,
+                usecols=["symbol", "pe_ratio", "roe_pct", "valuation_label",
+                         "yoy_revenue_pct", "yoy_profit_pct"],
+            )
+            vs["symbol"] = vs["symbol"].str.strip().str.upper()
+            vs["pe_ratio"]       = pd.to_numeric(vs["pe_ratio"],       errors="coerce")
+            vs["roe_pct"]        = pd.to_numeric(vs["roe_pct"],        errors="coerce")
+            vs["yoy_revenue_pct"] = pd.to_numeric(vs["yoy_revenue_pct"], errors="coerce")
+            vs["yoy_profit_pct"]  = pd.to_numeric(vs["yoy_profit_pct"],  errors="coerce")
+            # log1p(max(0, pe)) compresses the long right tail; negative PE → NaN
+            vs["pe_ratio_log"] = np.where(
+                vs["pe_ratio"].notna() & (vs["pe_ratio"] > 0),
+                np.log1p(vs["pe_ratio"]).clip(0, 5.5),
+                np.nan,
+            )
+            vs["roe_pct"]         = vs["roe_pct"].clip(-30, 80)
+            vs["yoy_revenue_pct"] = vs["yoy_revenue_pct"].clip(-50, 200)
+            vs["yoy_profit_pct"]  = vs["yoy_profit_pct"].clip(-100, 300)
+            vs["valuation_label_enc"] = (
+                vs["valuation_label"].str.strip().str.upper().map(VALUATION_MAP).fillna(1)
+            )
+            keep = ["symbol", "pe_ratio_log", "roe_pct", "valuation_label_enc",
+                    "yoy_revenue_pct", "yoy_profit_pct"]
+            logger.info("[FeatureEng 12A] Valuation features: %d symbols", vs["symbol"].nunique())
+            return df.merge(vs[keep], on="symbol", how="left")
+        except Exception as e:
+            logger.warning("[FeatureEng 12A] Valuation features failed: %s", e)
+            return df
+
+    def _add_technical_features(self, df: pd.DataFrame) -> pd.DataFrame:
+        """vs_200_dma and trend_signal from Phase A technical_indicators.csv."""
+        if not TECH_IND.exists():
+            logger.warning("[FeatureEng 12A] technical_indicators.csv missing -- skipping")
+            return df
+        try:
+            ti = pd.read_csv(TECH_IND, usecols=["symbol", "vs_dma_200", "trend_signal"])
+            ti["symbol"]    = ti["symbol"].str.strip().str.upper()
+            ti["vs_dma_200"] = pd.to_numeric(ti["vs_dma_200"], errors="coerce").clip(-60, 100)
+            ti["trend_signal_enc"] = (
+                ti["trend_signal"].str.strip().str.upper().map(TREND_MAP).fillna(1)
+            )
+            keep = ["symbol", "vs_dma_200", "trend_signal_enc"]
+            logger.info("[FeatureEng 12A] Technical features: %d symbols", ti["symbol"].nunique())
+            return df.merge(ti[keep], on="symbol", how="left")
+        except Exception as e:
+            logger.warning("[FeatureEng 12A] Technical features failed: %s", e)
+            return df
+
+    def _add_fno_features(self, df: pd.DataFrame) -> pd.DataFrame:
+        """F&O OI signal from Phase A fno_intelligence.csv (211 F&O-eligible stocks)."""
+        if not FNO_INTEL.exists():
+            logger.warning("[FeatureEng 12A] fno_intelligence.csv missing -- skipping")
+            return df
+        try:
+            fi = pd.read_csv(FNO_INTEL, usecols=["symbol", "oi_signal"])
+            fi["symbol"] = fi["symbol"].str.strip().str.upper()
+            fi["fno_oi_signal_enc"] = (
+                fi["oi_signal"].str.strip().str.upper().map(FNO_OI_MAP).fillna(1)
+            )
+            keep = ["symbol", "fno_oi_signal_enc"]
+            logger.info("[FeatureEng 12A] F&O features: %d symbols (rest get NaN)", fi["symbol"].nunique())
+            return df.merge(fi[keep], on="symbol", how="left")
+        except Exception as e:
+            logger.warning("[FeatureEng 12A] F&O features failed: %s", e)
             return df
 
     # ------------------------------------------------------------------

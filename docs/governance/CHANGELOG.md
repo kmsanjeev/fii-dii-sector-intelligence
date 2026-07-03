@@ -6,6 +6,73 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.12.0
+
+Phase 12A -- ML Feature Enrichment (Fundamentals + Technical + F&O)
+
+Date: 2026-07-03
+
+Status: Completed
+
+---
+
+## Summary
+
+Phase 12A enriches the ML feature matrix from 57 to 68 features by integrating
+fundamentals, technicals, and F&O intelligence into the XGBoost/LightGBM models.
+All 3 ML engines (feature_engineering, accumulation_model, bull_run_model) retrained
+and scored on the full 2406-symbol universe.
+
+## New Features Added (11)
+
+### Extended Financials (from Phase 15B extended_financials.csv)
+- `opm_pct` -- Operating Profit Margin %; 70.9% coverage; clipped -50..80
+- `roce_pct` -- Return on Capital Employed %; 68.7% coverage; clipped -20..60
+- `sales_growth_3y` -- 3Y Sales CAGR %; 67.3% coverage; clipped -20..100
+
+### Valuation Features (from Phase 15 valuation_scores.csv)
+- `pe_ratio_log` -- log1p(PE ratio) clipped 0..5.5; handles negative PE as NaN; 61.3%
+- `roe_pct` -- Return on Equity %; 70.5% coverage
+- `valuation_label_enc` -- CHEAP_QUALITY=3, FAIRLY_VALUED=2, EXPENSIVE=1, LOSS=0; 71.0%
+- `yoy_revenue_pct` -- YoY revenue growth; effectively null in current source (data gap)
+- `yoy_profit_pct` -- YoY profit growth; effectively null in current source (data gap)
+
+### Technical Features (from Phase A technical_indicators.csv)
+- `vs_dma_200` -- % vs 200-DMA; 79.8% coverage; clipped -60..100
+- `trend_signal_enc` -- UPTREND=2, NEUTRAL=1, DOWNTREND=0; 99.7% coverage
+
+### F&O Features (from Phase A fno_intelligence.csv)
+- `fno_oi_signal_enc` -- BULLISH=2, NEUTRAL=1, BEARISH=0; 8.8% (211 F&O stocks only)
+
+## Changes
+
+### `engines/ml/feature_engineering.py` -- MODIFIED
+- Added 4 path constants: EXT_FIN, VAL_SCORES, TECH_IND, FNO_INTEL
+- Added 3 encoding maps: VALUATION_MAP, TREND_MAP, FNO_OI_MAP
+- Added 4 _add_*() method bodies: _add_extended_financials, _add_valuation_features,
+  _add_technical_features, _add_fno_features
+- All methods follow established pattern: exists-check, usecols read, upper-norm,
+  clip/encode, left-merge on symbol, skip-with-warning if source missing
+- 4 method calls wired into _build_matrix(); 11 feature names added to feature_cols
+- Feature matrix now: 2406 rows x 68 cols (was 57)
+
+## Outputs Updated
+- data/intelligence/ml_features/feature_matrix.parquet -- 2406 x 68
+- data/intelligence/ml_accumulation_scores.csv -- 2406 rows
+- data/intelligence/ml_bull_run_scores.csv -- 2406 rows
+- data/intelligence/ml_scores_combined.csv -- 2406 rows
+
+## Known Data Gaps
+- yoy_revenue_pct / yoy_profit_pct: only 5/2084 non-null in source valuation_scores.csv
+  (Phase 15 pipeline does not compute these metrics for most symbols yet)
+  Trees ignore fully-null features without error; will auto-activate when source fills.
+
+## Phase Roadmap
+- Phase 12B: Technical strategy pattern features (RSI, MACD, Bollinger, ADX)
+- Phase 12C: Forward return labels (supervised learning, break circular dependency)
+
+---
+
 # Version 4.11.0
 
 Phase 15B — Extended Financials Engine (OPM / ROCE / Book Value / Sales Growth)
