@@ -364,6 +364,7 @@ export function StocksPage() {
   const [showDrop, setShowDrop] = useState(false)
   const [acQ, setAcQ]       = useState('')
   const [chartErr, setChartErr] = useState<string | null>(null)
+  const [chartKey, setChartKey] = useState(0)   // increments each time chart is (re)created
 
   const chartDiv  = useRef<HTMLDivElement>(null)
   const chartApi  = useRef<IChartApi | null>(null)
@@ -430,6 +431,7 @@ export function StocksPage() {
       const vol = chart.addSeries(HistogramSeries, { priceScaleId: 'vol' })
       vol.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } })
       chartApi.current = chart; candleRef.current = candles; volRef.current = vol
+      setChartKey(k => k + 1)  // notify data effect that chart is ready
     } catch (e) { setChartErr(e instanceof Error ? e.message : String(e)); chart?.remove() }
     return () => { chartApi.current?.remove(); chartApi.current = candleRef.current = volRef.current = null }
   }, [])
@@ -456,7 +458,7 @@ export function StocksPage() {
       if (cs.length > 0 && chartApi.current)
         chartApi.current.timeScale().setVisibleLogicalRange({ from: Math.max(0, cs.length - DEFAULT_BARS[tf]), to: cs.length + 3 })
     } catch (e) { setChartErr(e instanceof Error ? e.message : String(e)) }
-  }, [ohlcv, tf])
+  }, [ohlcv, tf, chartKey])
 
   const resetChart = useCallback(() => {
     if (!chartApi.current) return
