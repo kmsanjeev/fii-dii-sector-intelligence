@@ -6,6 +6,64 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.10.0
+
+Multi-Provider LLM Client + Phase F/G/H Engine Runs
+
+Date: 2026-07-03
+
+Status: Completed
+
+---
+
+## Summary
+
+Migrated all Phase F/H LLM engines from Anthropic API (exhausted credits) to a shared
+multi-provider fallback client. Fixed NSE PIT API field mapping for insider trades.
+Executed all Phase F, G, and H engines with real data — all outputs now populated.
+
+## Changes
+
+### Shared LLM Client (`engines/common/llm_client.py`) — NEW
+- OpenAI-compatible fallback chain: Groq -> Cerebras -> Gemini -> OpenRouter -> Together
+- Per-provider 5-minute cooldown on 429/credit errors
+- timeout=15.0s to prevent Groq slow-response hangs
+- Confirmed working: Groq (llama-3.1-8b-instant), Cerebras (gemma-4-31b)
+
+### Phase F Engine Bug Fixes
+- `engines/intelligence/insider_trade_engine.py`: NSE PIT API always returns buyValue=0
+  Fix: use secVal for trade value + tdpTransactionType for direction; SIGNAL_DAYS 30->90
+  Result: 3 signals — HCLTECH +34.3 Cr STRONG_BUY, DMART +1.05 Cr BUY
+- `engines/intelligence/news_sentiment_engine.py`: migrated to llm_client; stale cache cleared
+  Result: 54 news signals across 54 symbols
+- `engines/intelligence/concall_signal_engine.py`: migrated to llm_client
+  Result: 400 symbols scored, concall_summary.csv (400 rows)
+- `engines/intelligence/agm_intelligence_engine.py`: migrated to llm_client
+  Result: 400 rows, 13 HIGH governance risk, 25 dividend signals, 137 mgmt changes
+
+### Phase G Runs
+- `engines/intelligence/purity_engine.py`: 225 tags boosted (all index-based), avg purity 0.6082
+- `engines/intelligence/consensus_engine.py`: 540 symbols, 45 BUY, 8 SELL
+
+### Phase H Runs
+- `engines/intelligence/theme_momentum_engine.py`: first snapshot saved (2026-07-03.csv)
+  Momentum delta will compute from second run onwards
+
+### Backend
+- `backend/routers/stocks.py`: AGM signal block added to /api/stocks/{symbol}
+  Returns governance_risk, dividend_signal, management_change, capex_confirm, key_decision
+
+### ML Updated
+- `engines/ml/feature_engineering.py`: feature_matrix.parquet now 2406 x 57 features
+  (includes concall_guidance_score, concall_sentiment_score, consensus_score, etc.)
+- `engines/ml/ml_scorer.py`: ml_scores_combined.csv updated (2406 symbols)
+
+## Commits
+
+`d5821f4` `bd83553`
+
+---
+
 # Version 4.9.0
 
 Theme Intelligence Phases E-H Complete
