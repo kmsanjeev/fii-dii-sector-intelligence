@@ -5,7 +5,6 @@ import { Dashboard } from './pages/Dashboard'
 import { SectorsPage } from './pages/SectorsPage'
 import { SectorDetailPage } from './pages/SectorDetailPage'
 import { WatchlistPage } from './pages/WatchlistPage'
-import { StockDetailPage } from './pages/StockDetailPage'
 import { ParticipantPage } from './pages/ParticipantPage'
 import { CorporatePage } from './pages/CorporatePage'
 import { ChatPage } from './pages/ChatPage'
@@ -41,7 +40,7 @@ export default function App() {
             <Route path="/sectors" element={<SectorsPage />} />
             <Route path="/sectors/:sector" element={<SectorDetailPage />} />
             <Route path="/watchlist" element={<WatchlistPage />} />
-            <Route path="/stocks/:symbol" element={<StockDetailPage />} />
+            <Route path="/stocks/:symbol" element={<StocksPage />} />
             <Route path="/participant" element={<ParticipantPage />} />
             <Route path="/corporate" element={<CorporatePage />} />
             <Route path="/chat" element={<ChatPage />} />

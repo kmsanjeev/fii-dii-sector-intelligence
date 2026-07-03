@@ -91,7 +91,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               key={n.path}
               to={n.path}
               className="text-xs tracking-wide transition-colors"
-              style={{ color: (location.pathname === n.path || (n.path === '/stocks' && location.pathname === '/charts')) ? '#22C55E' : '#64748B', whiteSpace: 'nowrap' }}
+              style={{ color: (location.pathname === n.path || (n.path === '/stocks' && (location.pathname === '/charts' || location.pathname.startsWith('/stocks/')))) ? '#22C55E' : '#64748B', whiteSpace: 'nowrap' }}
             >
               {n.label}
             </Link>

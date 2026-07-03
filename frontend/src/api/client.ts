@@ -102,11 +102,12 @@ export type Stock = {
   analyst_insights?: string[]
   quarterly_results?: Record<string, string | number | null>[]
   // Phase F alt-data
-  news?:    Record<string, unknown>
-  insider?: Record<string, unknown>
-  concall?: Record<string, unknown>
+  news?:    Record<string, string | number | null>
+  insider?: Record<string, string | number | null>
+  concall?: Record<string, string | number | null>
+  agm?:     Record<string, string | number | null>
   // Phase G consensus
-  consensus?: Record<string, unknown>
+  consensus?: Record<string, string | number | null>
   // fields available in bulk listing (merged from technical/fno/ml datasets)
   trend_signal?: string
   vs_dma_200?: number | null
