@@ -1174,6 +1174,30 @@ export function StocksPage() {
                     })()}
                   </SectionCard>
                 )}
+
+                {/* Institutional Block Deals — below F&O for flow continuity */}
+                {detail.deal_signals && Object.keys(detail.deal_signals).length > 0 && (() => {
+                  const d = detail.deal_signals as Record<string, string | number | null>
+                  if (!d.deal_signal) return null
+                  const dc = String(d.deal_signal).includes('BULL') ? P.green : String(d.deal_signal).includes('BEAR') ? P.red : P.sub
+                  return (
+                    <SectionCard title="Institutional Block Deals" accentColor={dc}>
+                      <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', marginBottom: 10 }}>
+                        {[
+                          { label: 'Signal', value: String(d.deal_signal).replace(/_/g, ' '), color: dc },
+                          { label: 'Total Deals', value: String(d.total_deals ?? '--'), color: P.text },
+                          { label: 'Inst Net (Cr)', value: d.inst_net_value_cr != null ? crFmt(+d.inst_net_value_cr!) : '--', color: +d.inst_net_value_cr! >= 0 ? P.green : P.red },
+                        ].map(({ label, value, color }) => (
+                          <div key={label}>
+                            <div style={LABEL}>{label}</div>
+                            <div style={{ fontSize: 15, fontWeight: 800, color, marginTop: 4 }}>{value}</div>
+                          </div>
+                        ))}
+                      </div>
+                      {d.last_deal_date && <div style={{ fontSize: 9, color: P.dim }}>last deal: {String(d.last_deal_date)} | window: {d.window_days}D</div>}
+                    </SectionCard>
+                  )
+                })()}
               </div>
 
               {/* RIGHT */}
@@ -1250,30 +1274,6 @@ export function StocksPage() {
                     </div>
                   </SectionCard>
                 )}
-
-                {/* Deal signals */}
-                {detail.deal_signals && Object.keys(detail.deal_signals).length > 0 && (() => {
-                  const d = detail.deal_signals as Record<string, string | number | null>
-                  if (!d.deal_signal) return null
-                  const dc = String(d.deal_signal).includes('BULL') ? P.green : String(d.deal_signal).includes('BEAR') ? P.red : P.sub
-                  return (
-                    <SectionCard title="Institutional Block Deals" accentColor={dc}>
-                      <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', marginBottom: 10 }}>
-                        {[
-                          { label: 'Signal', value: String(d.deal_signal).replace(/_/g, ' '), color: dc },
-                          { label: 'Total Deals', value: String(d.total_deals ?? '--'), color: P.text },
-                          { label: 'Inst Net (Cr)', value: d.inst_net_value_cr != null ? crFmt(+d.inst_net_value_cr!) : '--', color: +d.inst_net_value_cr! >= 0 ? P.green : P.red },
-                        ].map(({ label, value, color }) => (
-                          <div key={label}>
-                            <div style={LABEL}>{label}</div>
-                            <div style={{ fontSize: 15, fontWeight: 800, color, marginTop: 4 }}>{value}</div>
-                          </div>
-                        ))}
-                      </div>
-                      {d.last_deal_date && <div style={{ fontSize: 9, color: P.dim }}>last deal: {String(d.last_deal_date)} | window: {d.window_days}D</div>}
-                    </SectionCard>
-                  )
-                })()}
 
                 {/* Management score */}
                 {Object.keys(mgmt).length > 0 && mgmt.management_score != null && (
