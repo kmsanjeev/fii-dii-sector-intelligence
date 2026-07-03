@@ -6,6 +6,75 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.13.0
+
+Phase 12B -- Technical Strategy Pattern Features (RSI, MACD, Bollinger, ADX)
+
+Date: 2026-07-03
+
+Status: Completed
+
+---
+
+## Summary
+
+Phase 12B adds 8 technical oscillator and trend-strength features to the ML feature
+matrix, computed via TA-Lib from 300 sessions of adjusted bhavcopy parquets.
+Feature matrix grows from 68 to 76 columns. All 3 ML models retrained.
+
+## New Features Added (8)
+
+### RSI (14-period Wilder)
+- `rsi_14` -- continuous RSI value; 98.6% coverage; clipped 0-100
+- `rsi_zone_enc` -- OVERSOLD(<=30)=2, NEUTRAL=1, OVERBOUGHT(>=70)=0
+  dist: 2147 NEUTRAL, 182 OVERBOUGHT, 44 OVERSOLD (market currently elevated)
+
+### MACD (12, 26, 9)
+- `macd_hist` -- MACD histogram = MACD line - signal line; continuous; clipped -50..50
+- `macd_signal_enc` -- BULLISH=2 (hist>0 and rising), BEARISH=0 (hist<0 and falling), NEUTRAL=1
+  dist: 1216 NEUTRAL, 709 BEARISH, 448 BULLISH
+
+### Bollinger Bands (20, 2-sigma)
+- `bb_pct_b` -- %B = (close - lower) / (upper - lower); 0=at lower, 1=at upper; clipped -0.5..1.5
+- `bb_squeeze` -- band width as % of middle band; lower = tighter squeeze / potential breakout
+
+### ADX (14-period)
+- `adx_14` -- trend strength 0-100; >25 = trending
+- `adx_trending` -- binary flag: 1 if ADX > 25
+  dist: 932 trending (39%), 1441 not trending (61%)
+
+## New Files
+
+### `engines/ml/technical_feature_engine.py` -- NEW
+- Reads last 300 adjusted_equity parquets (same source as technical_engine.py)
+- Builds close/high/low pivot matrices; computes TA-Lib indicators per symbol
+- RSI/MACD/Bollinger use close prices; ADX uses close+high+low
+- Minimum 50 sessions required per symbol; 2664 computed, 72 skipped
+- Output: data/intelligence/technical_pattern_features.csv (2664 rows, 100% populated)
+- Guardrail: atomic write (.tmp -> shutil.move), skip-with-warning on missing source
+
+### `engines/ml/feature_engineering.py` -- MODIFIED
+- Added TECH_PATTERNS path constant
+- Added _add_technical_patterns() method (reads CSV, clips ranges, left-merge)
+- Added 8 new feature names to feature_cols
+- Added method call in _build_matrix() after Phase 12A block
+
+## Outputs Updated
+- data/intelligence/technical_pattern_features.csv -- 2664 symbols, as_of 2026-06-30
+- data/intelligence/ml_features/feature_matrix.parquet -- 2406 x 76 cols
+- data/intelligence/ml_accumulation_scores.csv -- retrained
+- data/intelligence/ml_bull_run_scores.csv -- retrained
+- data/intelligence/ml_scores_combined.csv -- rescored 2406 symbols
+
+## Execution Order (Phase 12B)
+1. py -3.11 -m engines.ml.technical_feature_engine
+2. py -3.11 engines/ml/feature_engineering.py
+3. py -3.11 engines/ml/accumulation_model.py
+4. py -3.11 engines/ml/bull_run_model.py
+5. py -3.11 -m engines.ml.ml_scorer
+
+---
+
 # Version 4.12.0
 
 Phase 12A -- ML Feature Enrichment (Fundamentals + Technical + F&O)
