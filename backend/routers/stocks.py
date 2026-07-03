@@ -734,11 +734,11 @@ def get_stock_announcements(symbol: str, limit: int = Query(20, ge=1, le=100)):
     announcements = []
     for _, r in rows.iterrows():
         seq = str(r.get("seq_id", "")).strip()
-        # NSE archives corporate announcement attachments at this path
-        pdf_url = (
-            f"https://nsearchives.nseindia.com/corporate/XBRL/{seq}.pdf"
-            if seq and seq not in ("", "nan") else None
-        )
+        # Use the stored full URL from NSE archives (attchmntFile field).
+        # Falls back to None if missing — no constructed URLs (they were all 404).
+        stored_url = str(r.get("pdf_url", "")).strip()
+        pdf_url = stored_url if stored_url and stored_url not in ("", "nan") else None
+
         title_raw = _clean_ann_text(str(r.get("title_snippet", "")))
         desc_raw  = _clean_ann_text(str(r.get("desc_raw", "")))
         # Prefer the longer/more descriptive of the two for display

@@ -244,12 +244,14 @@ def _parse_rows(raw_rows: list[dict]) -> list[dict]:
         sym = str(r.get("symbol", "")).strip().upper()
         if not sym:
             continue
-        seq_id   = str(r.get("seq_id", "")).strip()
-        desc_raw = str(r.get("desc", "")).strip()
-        snippet  = str(r.get("attchmntText", "")).strip()[:200]
-        sort_dt  = str(r.get("sort_date", "")).strip()
-        # Normalise date to YYYY-MM-DD
-        date_str = sort_dt[:10] if sort_dt else ""
+        seq_id      = str(r.get("seq_id", "")).strip()
+        desc_raw    = str(r.get("desc", "")).strip()
+        snippet     = str(r.get("attchmntText", "")).strip()[:200]
+        # attchmntFile is the full PDF URL from NSE archives — store it directly.
+        # Format: https://nsearchives.nseindia.com/corporate/{SYMBOL}_{DATETIME}_{NAME}.pdf
+        pdf_url     = str(r.get("attchmntFile", "")).strip()
+        sort_dt     = str(r.get("sort_date", "")).strip()
+        date_str    = sort_dt[:10] if sort_dt else ""
 
         ann_type, score = _classify(desc_raw)
         parsed.append({
@@ -260,6 +262,7 @@ def _parse_rows(raw_rows: list[dict]) -> list[dict]:
             "desc_raw":          desc_raw,
             "title_snippet":     snippet,
             "seq_id":            seq_id,
+            "pdf_url":           pdf_url if pdf_url and pdf_url != "nan" else "",
         })
     return parsed
 
@@ -416,9 +419,25 @@ def run(lookback_months: int = LOOKBACK_MONTHS) -> bool:
     if ANNOUNCEMENTS_FILE.exists():
         try:
             existing = pd.read_csv(ANNOUNCEMENTS_FILE, dtype=str)
-            # Convert signal_score back to int
             if "signal_score" in existing.columns:
                 existing["signal_score"] = pd.to_numeric(existing["signal_score"], errors="coerce").fillna(DEFAULT_SCORE).astype(int)
+            # Ensure pdf_url column exists on existing rows
+            if "pdf_url" not in existing.columns:
+                existing["pdf_url"] = ""
+
+            # Back-fill pdf_url: for existing rows whose pdf_url is empty but
+            # the fresh fetch now has it, update in-place before concat.
+            new_url_map = (
+                new_df[new_df["pdf_url"].notna() & (new_df["pdf_url"] != "")]
+                .set_index("seq_id")["pdf_url"]
+                .to_dict()
+            )
+            if new_url_map:
+                mask = existing["pdf_url"].fillna("").str.strip() == ""
+                existing.loc[mask, "pdf_url"] = existing.loc[mask, "seq_id"].map(new_url_map)
+                filled = mask.sum()
+                logger.info("[Ann] Back-filled pdf_url for %d existing rows", filled)
+
             combined = pd.concat([existing, new_df], ignore_index=True)
             logger.info("[Ann] Merged %d existing + %d new rows", len(existing), len(new_df))
         except Exception as e:
@@ -427,7 +446,7 @@ def run(lookback_months: int = LOOKBACK_MONTHS) -> bool:
     else:
         combined = new_df
 
-    # ── Dedup by seq_id (primary) or (symbol, date, desc_raw) ────────────────
+    # ── Dedup by seq_id ───────────────────────────────────────────────────────
     before = len(combined)
     combined = combined.drop_duplicates(subset=["seq_id"]).reset_index(drop=True)
     logger.info("[Ann] Dedup: %d -> %d rows (removed %d)", before, len(combined), before - len(combined))
