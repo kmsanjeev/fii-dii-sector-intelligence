@@ -7,9 +7,15 @@ GET /api/stocks                       — all 2441 symbols (paginated)
 """
 
 import math
+from pathlib import Path
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Query
 from backend.services import data_loader
+
+try:
+    from engines.common.config import STOCK_HISTORY_CACHE as _CACHE_DIR
+except Exception:
+    _CACHE_DIR = Path("data/NSE/nsecache/stock_history")
 
 try:
     import numpy as _np
@@ -48,6 +54,73 @@ def _fmt_cr(v) -> str:
         return f"{v:.0f} Cr"
     except Exception:
         return "N/A"
+
+
+def _extended_fundamentals(sym: str, close_now: float | None, qr_df) -> dict:
+    """Compute extra fundamental metrics from parquet cache + quarterly results."""
+    extras: dict = {}
+
+    # ── ATH + Down from ATH ───────────────────────────────────────────────────
+    parquet = Path(_CACHE_DIR) / f"{sym}.parquet"
+    if parquet.exists():
+        try:
+            hist = pd.read_parquet(parquet, columns=["high", "close"])
+            if not hist.empty:
+                ath = float(hist["high"].max())
+                extras["ath_price"] = round(ath, 2)
+                if close_now and ath > 0:
+                    extras["down_from_ath_pct"] = round((close_now - ath) / ath * 100, 2)
+        except Exception:
+            pass
+
+    # ── Market Cap (approximate) ──────────────────────────────────────────────
+    # Shares outstanding ≈ net_profit_cr × 1e7 / eps  (when quarterly data available)
+    if qr_df is not None and "symbol" in qr_df.columns:
+        sym_qr = qr_df[qr_df["symbol"].str.upper() == sym].copy()
+        if not sym_qr.empty and "eps" in sym_qr.columns and "net_profit_cr" in sym_qr.columns:
+            sym_qr["_dt"] = pd.to_datetime(sym_qr.get("date_end", sym_qr.get("date_start", "")), errors="coerce")
+            sym_qr = sym_qr.sort_values("_dt", ascending=False)
+            # Use most recent row with both eps and net_profit_cr non-null
+            for _, r in sym_qr.iterrows():
+                eps = r.get("eps")
+                pat = r.get("net_profit_cr")
+                if eps and pat and float(eps) != 0 and not (isinstance(eps, float) and math.isnan(eps)):
+                    shares_cr = abs(float(pat) * 1e7 / float(eps)) / 1e7  # shares in crores
+                    if close_now and shares_cr > 0:
+                        extras["market_cap_cr"] = round(close_now * shares_cr, 0)
+                        extras["shares_outstanding_cr"] = round(shares_cr, 2)
+                    break
+
+        # ── Quarterly growth (YOY preferred, QOQ fallback) ────────────────────
+        if len(sym_qr) >= 2:
+            sym_qr = sym_qr.sort_values("_dt")
+            latest = sym_qr.iloc[-1]
+            latest_dt = latest["_dt"]
+            prior = None
+            growth_period = None
+            if pd.notna(latest_dt):
+                # Try YoY first (same quarter ~365 days ago)
+                target_yoy = latest_dt - pd.Timedelta(days=350)
+                yoy_window = sym_qr[sym_qr["_dt"].between(target_yoy - pd.Timedelta(days=30), target_yoy + pd.Timedelta(days=30))]
+                if not yoy_window.empty:
+                    prior = yoy_window.iloc[-1]
+                    growth_period = "YOY"
+                else:
+                    # Fall back to QoQ (previous consecutive quarter)
+                    prior = sym_qr.iloc[-2]
+                    growth_period = "QOQ"
+            if prior is not None:
+                r_now  = _safe(latest.get("revenue_cr"))
+                r_prev = _safe(prior.get("revenue_cr"))
+                p_now  = _safe(latest.get("net_profit_cr"))
+                p_prev = _safe(prior.get("net_profit_cr"))
+                if r_now is not None and r_prev and float(r_prev) != 0:
+                    extras["qtr_sales_growth_pct"]   = round((float(r_now) - float(r_prev)) / abs(float(r_prev)) * 100, 1)
+                if p_now is not None and p_prev and float(p_prev) != 0:
+                    extras["qtr_profit_growth_pct"]  = round((float(p_now) - float(p_prev)) / abs(float(p_prev)) * 100, 1)
+                if growth_period:
+                    extras["qtr_growth_period"] = growth_period
+    return extras
 
 
 def _generate_insights(sym: str, row, fundamentals: dict, technical: dict,
@@ -274,6 +347,11 @@ def get_stock_detail(symbol: str):
                 "yoy_profit_pct":   _safe(r.get("yoy_profit_pct")),
                 "as_of_date":       str(r.get("as_of_date", "")),
             }
+
+    # Extended fundamentals (market cap, ATH, YoY quarterly growth)
+    close_now_val = _safe(row.get("close_now"))
+    qr_df_ref = data_loader.get("quarterly_results")
+    fundamentals.update(_extended_fundamentals(sym, close_now_val, qr_df_ref))
 
     # Phase 15C — Shareholding (latest quarter per symbol)
     shareholding: dict = {}

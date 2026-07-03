@@ -727,57 +727,90 @@ export function StocksPage() {
               </div>
             )}
 
-            {/* ── Fundamentals tiles (12-tile grid) ─────────────────── */}
-            {(Object.keys(fund).length > 0 || Object.keys(shp).length > 0) && (
+            {/* ── Fundamentals — Row 1: Financial Size ──────────────── */}
+            {Object.keys(fund).length > 0 && (
               <div>
-                <div style={CARD_HEADER}>Fundamentals & Ownership</div>
+                <div style={CARD_HEADER}>Fundamentals</div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginTop: 10 }}>
-                  <FundTile label="Sales TTM"     hdrBg="#1A3A6E" valColor={P.text}
+
+                  {/* Row 1 — Financial Size */}
+                  <FundTile label="Market Cap (₹ Cr)" hdrBg="#1A3A6E" valColor={P.text}
+                    value={fund.market_cap_cr != null ? crFmt(+fund.market_cap_cr) : '--'}
+                    sub={fund.shares_outstanding_cr != null ? `${(+fund.shares_outstanding_cr).toFixed(1)} Cr shares` : 'estimated'} />
+                  <FundTile label="Book Value (₹)" hdrBg="#2D1B4E" valColor={P.sub}
+                    value="---"
+                    sub="balance sheet data pending" />
+                  <FundTile label="Sales (₹ Cr)" hdrBg="#1A3A6E" valColor={P.text}
                     value={fund.revenue_ttm_cr != null ? crFmt(+fund.revenue_ttm_cr) : '--'}
-                    sub={fund.yoy_revenue_pct != null ? `YoY ${pct(+fund.yoy_revenue_pct)}` : 'trailing 12M revenue'} />
-                  <FundTile label="Net Profit"    hdrBg="#2D1B4E"
+                    sub={fund.as_of_date ? `TTM as of ${String(fund.as_of_date).slice(0,7)}` : 'trailing 12M'} />
+                  <FundTile label="PAT (₹ Cr)" hdrBg="#2D1B4E"
                     value={fund.profit_ttm_cr != null ? crFmt(+fund.profit_ttm_cr) : '--'}
-                    valColor={(+fund.profit_ttm_cr! >= 0) ? P.text : P.red}
-                    sub={fund.yoy_profit_pct != null ? `YoY ${pct(+fund.yoy_profit_pct)}` : 'trailing 12M PAT'} />
-                  <FundTile label="P/E Ratio"     hdrBg="#2A1800"
-                    value={fund.pe_ratio != null ? `${(+fund.pe_ratio).toFixed(1)}x` : '--'}
-                    valColor={fund.pe_ratio == null ? P.sub : +fund.pe_ratio < 15 ? P.green : +fund.pe_ratio > 40 ? P.red : P.amber}
-                    sub="price to earnings" />
-                  <FundTile label="ROE %"         hdrBg="#0A2A1F"
-                    value={fund.roe_pct != null ? `${(+fund.roe_pct).toFixed(1)}%` : '--'}
-                    valColor={fund.roe_pct == null ? P.sub : +fund.roe_pct >= 20 ? P.green : +fund.roe_pct >= 12 ? P.teal : P.red}
-                    sub="return on equity" />
-                  <FundTile label="1-Year Return" hdrBg={detail.price.ret_365d != null && detail.price.ret_365d >= 0 ? '#062014' : '#200606'}
+                    valColor={fund.profit_ttm_cr == null ? P.sub : +fund.profit_ttm_cr >= 0 ? P.text : P.red}
+                    sub="profit after tax TTM" />
+
+                  {/* Row 2 — Performance vs History */}
+                  <FundTile label="Return over 1Y (%)"
+                    hdrBg={detail.price.ret_365d != null && detail.price.ret_365d >= 0 ? '#062014' : '#200606'}
                     value={pct(detail.price.ret_365d)}
                     valColor={detail.price.ret_365d == null ? P.sub : detail.price.ret_365d >= 0 ? P.green : P.red}
                     sub="365-day price return" />
-                  <FundTile label="vs 52W High"   hdrBg={t?.prox_52w_high != null && t.prox_52w_high >= -10 ? '#062014' : '#1A0D00'}
-                    value={t?.prox_52w_high != null ? `${t.prox_52w_high >= 0 ? '+' : ''}${t.prox_52w_high.toFixed(1)}%` : '--'}
-                    valColor={t?.prox_52w_high == null ? P.sub : t.prox_52w_high >= -10 ? P.green : t.prox_52w_high >= -25 ? P.amber : P.red}
-                    sub="proximity to yearly peak" />
-                  <FundTile label="vs 200-Day MA" hdrBg={t?.vs_dma_200 != null && t.vs_dma_200 >= 0 ? '#062014' : '#200606'}
+                  <FundTile label="Down from ATH (%)"
+                    hdrBg={fund.down_from_ath_pct != null && +fund.down_from_ath_pct >= -15 ? '#062014' : '#1A0D00'}
+                    value={fund.down_from_ath_pct != null ? `${(+fund.down_from_ath_pct).toFixed(1)}%` : '--'}
+                    valColor={fund.down_from_ath_pct == null ? P.sub : +fund.down_from_ath_pct >= -15 ? P.teal : +fund.down_from_ath_pct >= -40 ? P.amber : P.red}
+                    sub={fund.ath_price != null ? `ATH ₹${(+fund.ath_price).toFixed(0)}` : 'all-time high'} />
+                  <FundTile label="OPM (%)" hdrBg="#0A1A2E" valColor={P.sub}
+                    value="---"
+                    sub="EBITDA data pending" />
+                  <FundTile label={`${fund.qtr_growth_period ?? 'Qtr'} Sales Growth (%)`}
+                    hdrBg={fund.qtr_sales_growth_pct != null && +fund.qtr_sales_growth_pct >= 0 ? '#062014' : '#200606'}
+                    value={fund.qtr_sales_growth_pct != null ? `${+fund.qtr_sales_growth_pct >= 0 ? '+' : ''}${(+fund.qtr_sales_growth_pct).toFixed(1)}%` : '--'}
+                    valColor={fund.qtr_sales_growth_pct == null ? P.sub : +fund.qtr_sales_growth_pct >= 10 ? P.green : +fund.qtr_sales_growth_pct >= 0 ? P.teal : P.red}
+                    sub="vs prior period revenue" />
+
+                  {/* Row 3 — Profitability & Returns */}
+                  <FundTile label={`${fund.qtr_growth_period ?? 'Qtr'} Profit Growth (%)`}
+                    hdrBg={fund.qtr_profit_growth_pct != null && +fund.qtr_profit_growth_pct >= 0 ? '#062014' : '#200606'}
+                    value={fund.qtr_profit_growth_pct != null ? `${+fund.qtr_profit_growth_pct >= 0 ? '+' : ''}${(+fund.qtr_profit_growth_pct).toFixed(1)}%` : '--'}
+                    valColor={fund.qtr_profit_growth_pct == null ? P.sub : +fund.qtr_profit_growth_pct >= 10 ? P.green : +fund.qtr_profit_growth_pct >= 0 ? P.teal : P.red}
+                    sub="vs prior period PAT" />
+                  <FundTile label="ROCE (%)" hdrBg="#0A1A2E" valColor={P.sub}
+                    value="---"
+                    sub="capital employed data pending" />
+                  <FundTile label="ROE (%)" hdrBg="#0A2A1F"
+                    value={fund.roe_pct != null ? `${(+fund.roe_pct).toFixed(1)}%` : '--'}
+                    valColor={fund.roe_pct == null ? P.sub : +fund.roe_pct >= 20 ? P.green : +fund.roe_pct >= 12 ? P.teal : P.red}
+                    sub="return on equity" />
+                  <FundTile label="Sales Growth 3Y (%)" hdrBg="#0A1A2E" valColor={P.sub}
+                    value="---"
+                    sub="needs 4+ quarters of data" />
+                </div>
+
+                {/* Row 4 — Valuation & Technical */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10, marginTop: 10 }}>
+                  <FundTile label="P/E Ratio" hdrBg="#2A1800"
+                    value={fund.pe_ratio != null ? `${(+fund.pe_ratio).toFixed(1)}x` : '--'}
+                    valColor={fund.pe_ratio == null ? P.sub : +fund.pe_ratio < 15 ? P.green : +fund.pe_ratio > 40 ? P.red : P.amber}
+                    sub="price to earnings" />
+                  <FundTile label="vs 200 DMA" hdrBg={t?.vs_dma_200 != null && t.vs_dma_200 >= 0 ? '#062014' : '#200606'}
                     value={t?.vs_dma_200 != null ? `${t.vs_dma_200 >= 0 ? '+' : ''}${t.vs_dma_200.toFixed(1)}%` : '--'}
                     valColor={t?.vs_dma_200 == null ? P.sub : t.vs_dma_200 >= 5 ? P.green : t.vs_dma_200 >= 0 ? P.teal : P.red}
-                    sub="vs long-term trend" />
-                  <FundTile label="Volume Ratio"  hdrBg="#0A1C2E"
+                    sub="long-term trend" />
+                  <FundTile label="Vol Ratio" hdrBg="#0A1C2E"
                     value={detail.price.vol_ratio != null ? `${(+detail.price.vol_ratio).toFixed(1)}x` : '--'}
                     valColor={detail.price.vol_ratio == null ? P.sub : +detail.price.vol_ratio >= 1.5 ? P.green : +detail.price.vol_ratio >= 1 ? P.blue : P.sub}
-                    sub="vs 90-day avg volume" />
-                  <FundTile label="Promoter Holding" hdrBg="#1E0D3A"
-                    value={shp.promoter_pct != null ? `${(+shp.promoter_pct).toFixed(2)}%` : '--'}
+                    sub="vs 90D avg volume" />
+                  <FundTile label="Promoter %" hdrBg="#1E0D3A"
+                    value={shp.promoter_pct != null ? `${(+shp.promoter_pct).toFixed(1)}%` : '--'}
                     valColor={shp.promoter_pct == null ? P.sub : +shp.promoter_pct >= 65 ? P.green : +shp.promoter_pct >= 50 ? P.teal : P.amber}
-                    sub={+shp.promoter_pct! >= 65 ? 'Very high — insiders committed' : 'promoter ownership'} />
-                  <FundTile label="FII / Foreign"    hdrBg="#0A2014"
-                    value={shp.fii_pct != null ? `${(+shp.fii_pct).toFixed(2)}%` : '--'}
+                    sub="promoter holding" />
+                  <FundTile label="FII %" hdrBg="#0A2014"
+                    value={shp.fii_pct != null ? `${(+shp.fii_pct).toFixed(1)}%` : '--'}
                     valColor={shp.fii_pct == null ? P.sub : +shp.fii_pct >= 10 ? P.blue : P.sub}
-                    sub={+shp.fii_pct! >= 20 ? 'High foreign interest' : 'foreign institutional'} />
-                  <FundTile label="DII / Domestic"   hdrBg="#0A1230"
-                    value={shp.dii_pct != null ? `${(+shp.dii_pct).toFixed(2)}%` : '--'}
-                    valColor={shp.dii_pct == null ? P.sub : +shp.dii_pct >= 10 ? P.teal : P.sub}
-                    sub="mutual funds + insurance" />
+                    sub="foreign institutional" />
                   <FundTile label="Valuation"
                     hdrBg={fund.valuation_label === 'CHEAP_QUALITY' ? '#052E16' : fund.valuation_label === 'FAIR_VALUE' ? '#0C1A3A' : fund.valuation_label === 'EXPENSIVE' ? '#2D0A0A' : '#1A1228'}
-                    value={<span style={{ fontSize: 14, letterSpacing: 0.4 }}>{String(fund.valuation_label ?? 'N/A').replace(/_/g, ' ')}</span>}
+                    value={<span style={{ fontSize: 13 }}>{String(fund.valuation_label ?? 'N/A').replace(/_/g, ' ')}</span>}
                     valColor={fund.valuation_label === 'CHEAP_QUALITY' ? P.green : fund.valuation_label === 'FAIR_VALUE' ? P.blue : fund.valuation_label === 'EXPENSIVE' ? P.red : P.amber}
                     sub={fund.valuation_score != null ? `score ${(+fund.valuation_score).toFixed(0)}/100` : ''} />
                 </div>
