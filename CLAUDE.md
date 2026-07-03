@@ -110,6 +110,7 @@ data/NSE/shareholding/
 | 13    | RAG Knowledge Base            | COMPLETE 100%    | FAISS+BM25, 6 domain indexes, hybrid RRF retrieval |
 | 14    | Chatbot (Claude API)          | COMPLETE 100%    | 4 agents, tool registry, /api/chat endpoint |
 | 15    | Financial Results + SHP       | COMPLETE 100%    | 4181 XBRL rows, 2084 symbols; 4 quarters shareholding |
+| 15B   | Extended Financials Engine    | COMPLETE 100%    | OPM%, ROCE%, Book Value/share, Sales Growth CAGR; engine: extended_financials_engine.py; output: extended_financials.csv |
 | 16    | Management Intelligence       | COMPLETE 100%    | 3 engines: holding trends, announcements, sentiment |
 | 17    | Symbol Change History         | COMPLETE 100%    | 1038 symbol renames; engines/foundation/symbol_change_engine.py |
 | 18    | Corporate Announcements       | COMPLETE 100%    | engines/corporate/; NSE XBRL announcement fetcher |

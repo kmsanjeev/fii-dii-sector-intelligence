@@ -157,11 +157,13 @@ class ExtendedFinancialsEngine:
         backfill: bool = False,
         max_windows: Optional[int] = None,
         use_cached_raw: bool = True,
+        use_yfinance_bs: bool = True,
     ):
         RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-        self.backfill       = backfill
-        self.max_windows    = max_windows
-        self.use_cached_raw = use_cached_raw
+        self.backfill        = backfill
+        self.max_windows     = max_windows
+        self.use_cached_raw  = use_cached_raw
+        self.use_yfinance_bs = use_yfinance_bs
         self.recovery: list[dict] = []
 
     def run(self) -> bool:
@@ -215,6 +217,10 @@ class ExtendedFinancialsEngine:
         out_df = pd.DataFrame(out_rows).sort_values("symbol")
         if out_df.empty:
             return False
+
+        # Phase 15B-YF: augment with yfinance balance sheet for ROCE + Book Value
+        if self.use_yfinance_bs:
+            out_df = self._augment_yfinance_bs(out_df)
 
         # Atomic save
         tmp = OUTPUT_PATH.with_suffix(".tmp")
@@ -488,6 +494,117 @@ class ExtendedFinancialsEngine:
 
         return out
 
+    def _augment_yfinance_bs(self, out_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Fetch quarterly balance sheet from yfinance for each symbol and compute:
+        - total_equity_cr        (Common Stock Equity)
+        - capital_employed_cr    (Total Assets - Current Liabilities)
+        - shares_outstanding_cr  (Ordinary Shares Number in crores)
+        - book_value_per_share   (total_equity_cr / shares_outstanding_cr)
+        - roce_pct               (ebit_cr_latest * 4 / capital_employed_cr * 100)
+        """
+        try:
+            import yfinance as yf
+        except ImportError:
+            logger.warning("[ExtendedFinancials] yfinance not installed; skipping BS augment")
+            return out_df
+
+        symbols = out_df["symbol"].tolist()
+        n_workers = min(cfg.MAX_CONCURRENCY, 6)
+        logger.info(f"[ExtendedFinancials] yfinance BS augment: {len(symbols)} symbols, {n_workers} workers")
+
+        bs_cache: dict = {}
+
+        def _fetch_bs(sym: str) -> Optional[dict]:
+            try:
+                time.sleep(max(0.3, cfg.API_DELAY / n_workers))
+                t = yf.Ticker(f"{sym}.NS")
+                bs = t.quarterly_balance_sheet
+                if bs is None or bs.empty:
+                    return None
+                # Use most recent column with data
+                for col in bs.columns:
+                    equity = None
+                    try:
+                        equity = float(bs.loc["Common Stock Equity", col])
+                        if equity != equity:  # NaN
+                            equity = None
+                    except Exception:
+                        pass
+
+                    assets, cur_liab, shares = None, None, None
+                    try:
+                        assets = float(bs.loc["Total Assets", col])
+                        if assets != assets:
+                            assets = None
+                    except Exception:
+                        pass
+                    try:
+                        cur_liab = float(bs.loc["Current Liabilities", col])
+                        if cur_liab != cur_liab:
+                            cur_liab = None
+                    except Exception:
+                        pass
+                    try:
+                        shares = float(bs.loc["Ordinary Shares Number", col])
+                        if shares != shares:
+                            shares = None
+                    except Exception:
+                        pass
+
+                    if equity is not None:
+                        result = {
+                            "equity_cr": round(equity / 1e7, 2),
+                            "assets_cr": round(assets / 1e7, 2) if assets else None,
+                            "cur_liab_cr": round(cur_liab / 1e7, 2) if cur_liab else None,
+                            "shares_cr": round(shares / 1e7, 4) if shares else None,
+                        }
+                        if assets and cur_liab:
+                            result["cap_employed_cr"] = round((assets - cur_liab) / 1e7, 2)
+                        return result
+                return None
+            except Exception as e:
+                logger.debug(f"[ExtendedFinancials] yf BS fail {sym}: {e}")
+                return None
+
+        with ThreadPoolExecutor(max_workers=n_workers) as ex:
+            futures = {ex.submit(_fetch_bs, sym): sym for sym in symbols}
+            for fut in progress(as_completed(futures), total=len(futures), desc="YF BS"):
+                sym = futures[fut]
+                try:
+                    result = fut.result()
+                    if result:
+                        bs_cache[sym] = result
+                except Exception:
+                    pass
+
+        logger.info(f"[ExtendedFinancials] yfinance BS: {len(bs_cache)}/{len(symbols)} symbols with balance sheet")
+
+        # Merge into out_df
+        def _enrich(row):
+            sym = row["symbol"]
+            bs = bs_cache.get(sym)
+            if not bs:
+                return row
+            eq = bs.get("equity_cr")
+            sh = bs.get("shares_cr")
+            cap_emp = bs.get("cap_employed_cr")
+            if eq is not None and eq > 0:
+                row["total_equity_cr"] = eq
+                if sh and sh > 0:
+                    row["book_value_per_share"] = round(eq / sh, 2)
+                elif row.get("shares_outstanding_cr") and float(row["shares_outstanding_cr"] or 0) > 0:
+                    row["book_value_per_share"] = round(eq / float(row["shares_outstanding_cr"]), 2)
+            if cap_emp and cap_emp > 0:
+                row["capital_employed_cr"] = cap_emp
+                ebit = row.get("ebit_cr_latest")
+                if ebit and float(ebit or 0) != 0:
+                    row["roce_pct"] = round(float(ebit) * 4 / cap_emp * 100, 2)
+            return row
+
+        out_df = out_df.apply(_enrich, axis=1)
+        return out_df
+
     def _estimate_shares_cr(self, sym_raw: pd.DataFrame, sym_qr: pd.DataFrame) -> Optional[float]:
         """Estimate shares outstanding (in crores) from eps + net_profit_cr."""
         for df in [sym_raw, sym_qr]:
@@ -602,18 +719,20 @@ def main():
     ap = argparse.ArgumentParser(description="Phase 15B Extended Financials Engine")
     ap.add_argument("--backfill",      action="store_true", help="Fetch historical windows for 3Y growth")
     ap.add_argument("--windows",       type=int, default=None, help="Limit number of windows to fetch")
-    ap.add_argument("--no-cache",      action="store_true", help="Ignore cached raw data (re-fetch everything)")
-    ap.add_argument("--agg-only",      action="store_true", help="Skip XBRL fetch; re-aggregate from cached raw")
+    ap.add_argument("--no-cache",        action="store_true", help="Ignore cached raw data (re-fetch everything)")
+    ap.add_argument("--agg-only",        action="store_true", help="Skip XBRL fetch; re-aggregate from cached raw")
+    ap.add_argument("--no-yfinance-bs",  action="store_true", help="Skip yfinance balance sheet augmentation")
     args = ap.parse_args()
 
     engine = ExtendedFinancialsEngine(
         backfill=args.backfill,
         max_windows=args.windows,
         use_cached_raw=not args.no_cache,
+        use_yfinance_bs=not args.no_yfinance_bs,
     )
 
     if args.agg_only:
-        # Just re-aggregate from existing raw cache
+        # Re-aggregate from existing raw cache, then optionally augment with yfinance BS
         raw_df = engine._load_raw_cache()
         qr_df  = engine._load_qr()
         if raw_df.empty:
@@ -624,10 +743,12 @@ def main():
             print("[ERROR] Aggregation produced no rows")
             sys.exit(1)
         out_df = pd.DataFrame(rows).sort_values("symbol")
+        if engine.use_yfinance_bs:
+            out_df = engine._augment_yfinance_bs(out_df)
         tmp = OUTPUT_PATH.with_suffix(".tmp")
         out_df.to_csv(tmp, index=False)
         shutil.move(str(tmp), str(OUTPUT_PATH))
-        print(f"[OK] Aggregation complete: {len(out_df)} symbols -> {OUTPUT_PATH}")
+        print(f"[OK] {len(out_df)} symbols -> {OUTPUT_PATH}")
         return
 
     ok = engine.run()
