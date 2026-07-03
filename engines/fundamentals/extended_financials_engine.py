@@ -175,22 +175,28 @@ class ExtendedFinancialsEngine:
         if self.max_windows:
             windows = windows[: self.max_windows]
 
-        new_rows = self._fetch_xbrl_windows(windows, skip_labels=done_labels)
-
-        if new_rows:
-            new_df = pd.DataFrame(new_rows)
-            if not raw_df.empty:
-                combined = pd.concat([raw_df, new_df], ignore_index=True)
-                combined = combined.drop_duplicates(subset=["symbol", "date_end", "window_label"])
-            else:
-                combined = new_df
-            # Save raw cache (atomic write)
+        # Fetch per-window and save incrementally (safe against mid-run interruption)
+        any_new = False
+        for window in windows:
+            label = window[2]
+            if label in done_labels:
+                logger.info(f"[ExtendedFinancials] Skipping {label} (cached)")
+                continue
+            rows = self._fetch_xbrl_windows([window], skip_labels=set())
+            if not rows:
+                continue
+            any_new = True
+            new_df = pd.DataFrame(rows)
+            raw_df = pd.concat([raw_df, new_df], ignore_index=True) if not raw_df.empty else new_df
+            raw_df = raw_df.drop_duplicates(subset=["symbol", "date_end", "window_label"])
+            # Save after each window (incremental)
             tmp = RAW_CACHE_PATH.with_suffix(".tmp")
-            combined.to_csv(tmp, index=False)
+            raw_df.to_csv(tmp, index=False)
             shutil.move(str(tmp), str(RAW_CACHE_PATH))
-            raw_df = combined
-            logger.info(f"[ExtendedFinancials] Raw cache: {len(raw_df)} rows, {raw_df['symbol'].nunique()} symbols")
-        else:
+            done_labels.add(label)
+            logger.info(f"[ExtendedFinancials] {label} saved. Cache: {len(raw_df)} rows, {raw_df['symbol'].nunique()} symbols")
+
+        if not any_new:
             logger.info("[ExtendedFinancials] No new balance sheet data fetched; using cached raw")
 
         if raw_df.empty:
