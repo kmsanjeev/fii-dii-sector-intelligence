@@ -10,6 +10,15 @@ from fastapi import APIRouter, HTTPException
 from backend.services import data_loader
 
 
+def _safe_float(val, default: float = 0.0) -> float:
+    """Convert val to float, returning default for None/NaN/non-numeric."""
+    try:
+        f = float(val)
+        return default if math.isnan(f) or math.isinf(f) else round(f, 2)
+    except (TypeError, ValueError):
+        return default
+
+
 def _clean_records(records: list) -> list:
     """Replace float NaN with None for JSON compliance."""
     cleaned = []
@@ -32,13 +41,13 @@ def get_sectors():
     records = []
     for _, row in df.iterrows():
         records.append({
-            "sector":           str(row.get("sector", "")),
-            "rotation_signal":  str(row.get("rotation_signal", "")),
-            "combined_score":   round(float(row.get("combined_score", 0) or 0), 2),
-            "FII_flow_score":   round(float(row.get("FII_flow_score",  0) or 0), 2),
-            "DII_flow_score":   round(float(row.get("DII_flow_score",  0) or 0), 2),
-            "Smart_Money_Score":round(float(row.get("Smart_Money_Score",0) or 0), 2),
-            "last_date":        str(row.get("last_date", "")),
+            "sector":            str(row.get("sector", "")),
+            "rotation_signal":   str(row.get("rotation_signal", "")),
+            "combined_score":    _safe_float(row.get("combined_score")),
+            "FII_flow_score":    _safe_float(row.get("FII_flow_score")),
+            "DII_flow_score":    _safe_float(row.get("DII_flow_score")),
+            "Smart_Money_Score": _safe_float(row.get("Smart_Money_Score")),
+            "last_date":         str(row.get("last_date", "")),
         })
 
     records.sort(key=lambda r: (r["combined_score"] or 0), reverse=True)
@@ -86,12 +95,12 @@ def get_sector_detail(sector: str):
         top_stocks = sector_stocks[["symbol", "bull_run_score", "label"]].to_dict(orient="records")
 
     return {
-        "sector":           str(row.get("sector", "")),
-        "rotation_signal":  str(row.get("rotation_signal", "")),
-        "combined_score":   round(float(row.get("combined_score", 0) or 0), 2),
-        "FII_flow_score":   round(float(row.get("FII_flow_score",  0) or 0), 2),
-        "DII_flow_score":   round(float(row.get("DII_flow_score",  0) or 0), 2),
-        "Smart_Money_Score":round(float(row.get("Smart_Money_Score",0) or 0), 2),
-        "last_date":        str(row.get("last_date", "")),
-        "top_stocks":       top_stocks,
+        "sector":            str(row.get("sector", "")),
+        "rotation_signal":   str(row.get("rotation_signal", "")),
+        "combined_score":    _safe_float(row.get("combined_score")),
+        "FII_flow_score":    _safe_float(row.get("FII_flow_score")),
+        "DII_flow_score":    _safe_float(row.get("DII_flow_score")),
+        "Smart_Money_Score": _safe_float(row.get("Smart_Money_Score")),
+        "last_date":         str(row.get("last_date", "")),
+        "top_stocks":        top_stocks,
     }
