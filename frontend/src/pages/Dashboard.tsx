@@ -116,10 +116,10 @@ function CommandStrip({ ctx, part, isMobile }: { ctx: MarketContext; part: Parti
       content: ctx.breadth && (
         <div style={{ display: 'flex', gap: 12 }}>
           {([
-            { k: 'bull_run',  l: 'BULL',  col: C.bull },
-            { k: 'emerging',  l: 'EMRG',  col: '#10B981' },
-            { k: 'watchlist', l: 'WATCH', col: C.blue },
-            { k: 'dead',      l: 'DEAD',  col: C.bear },
+            { k: 'bull_run',     l: 'BULL',  col: C.bull    },
+            { k: 'emerging',     l: 'EMRG',  col: '#10B981' },
+            { k: 'accumulation', l: 'ACCUM', col: '#9575CD' },
+            { k: 'markdown',     l: 'DOWN',  col: C.bear    },
           ] as const).map(({ k, l, col }) => (
             <div key={k} style={{ textAlign: 'center' }}>
               <div style={{ color: col, fontSize: 18, fontWeight: 800, lineHeight: 1 }}>
@@ -263,11 +263,12 @@ function BreadthDonut({ breadth }: { breadth: MarketContext['breadth'] }) {
   const circ = 2 * Math.PI * R
 
   const segs = [
-    { key: 'bull_run',  label: 'BULL RUN',  color: C.bull,    bg: '#052E14' },
-    { key: 'emerging',  label: 'EMERGING',  color: '#10B981', bg: '#023323' },
-    { key: 'watchlist', label: 'WATCHLIST', color: C.blue,    bg: '#0A1A3A' },
-    { key: 'neutral',   label: 'NEUTRAL',   color: '#64748B', bg: '#161E2E' },
-    { key: 'dead',      label: 'DEAD',      color: C.bear,    bg: '#2A0A0A' },
+    { key: 'bull_run',     label: 'BULL RUN',     color: C.bull,    bg: '#052E14' },
+    { key: 'emerging',     label: 'EMERGING',     color: '#10B981', bg: '#023323' },
+    { key: 'watchlist',    label: 'WATCHLIST',    color: C.blue,    bg: '#0A1A3A' },
+    { key: 'neutral',      label: 'NEUTRAL',      color: '#64748B', bg: '#161E2E' },
+    { key: 'accumulation', label: 'ACCUMULATION', color: '#9575CD', bg: '#1A0A2E' },
+    { key: 'markdown',     label: 'MARKDOWN',     color: C.bear,    bg: '#2A0A0A' },
   ] as const
 
   let offset = 0

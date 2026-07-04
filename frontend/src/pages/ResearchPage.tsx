@@ -92,7 +92,8 @@ const td: React.CSSProperties = { padding: '6px 10px', fontSize: 11 }
 
 const LABEL_COLORS: Record<string, string> = {
   BULL_RUN: '#22C55E', EMERGING: '#10B981',
-  WATCHLIST: '#F59E0B', NEUTRAL: '#64748B', DEAD: '#EF4444',
+  WATCHLIST: '#F59E0B', NEUTRAL: '#64748B',
+  ACCUMULATION: '#9575CD', MARKDOWN: '#EF4444',
 }
 
 const ROT_COLORS: Record<string, string> = {
@@ -285,7 +286,7 @@ function ScreenerTab({ stats }: { stats: UniverseStats }) {
           <div style={{ padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
             {/* Labels + Indices */}
             <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-              <MultiChip label="LABEL" options={['BULL_RUN','EMERGING','WATCHLIST','NEUTRAL','DEAD']}
+              <MultiChip label="LABEL" options={['BULL_RUN','EMERGING','ACCUMULATION','WATCHLIST','NEUTRAL','MARKDOWN']}
                 selected={filters.labels} onChange={set('labels')} />
               <MultiChip label="INDEX" options={['NIFTY50','NIFTY100','NIFTY200','NIFTY500','NIFTY_MIDCAP_100']}
                 selected={filters.indices} onChange={set('indices')} />

@@ -123,11 +123,12 @@ const COLORS = {
 }
 
 const LABEL_COLOR: Record<string, string> = {
-  BULL_RUN:  '#22C55E',
-  EMERGING:  '#3B82F6',
-  WATCHLIST: '#F59E0B',
-  NEUTRAL:   '#64748B',
-  DEAD:      '#EF4444',
+  BULL_RUN:     '#22C55E',
+  EMERGING:     '#3B82F6',
+  WATCHLIST:    '#F59E0B',
+  NEUTRAL:      '#64748B',
+  ACCUMULATION: '#9575CD',
+  MARKDOWN:     '#EF4444',
 }
 
 const ROTATION_COLOR: Record<string, string> = {

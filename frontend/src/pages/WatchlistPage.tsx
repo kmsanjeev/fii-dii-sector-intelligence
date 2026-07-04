@@ -5,7 +5,7 @@ import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 import { Link } from 'react-router-dom'
 
-const LABELS   = ['ALL', 'BULL_RUN', 'EMERGING', 'WATCHLIST', 'NEUTRAL', 'DEAD']
+const LABELS   = ['ALL', 'BULL_RUN', 'EMERGING', 'ACCUMULATION', 'WATCHLIST', 'NEUTRAL', 'MARKDOWN']
 const PER_PAGE = 100
 
 type SortKey = 'bull_run_score' | 'close_now' | 'ret_30d' | 'ret_365d' | 'vol_ratio' | 'forward_return_score'
@@ -37,7 +37,8 @@ function ActionBadge({ label, trend, oi }: { label: string; trend?: string; oi?:
   const bearishTrend = trend === 'DOWNTREND'
   const bullishOI    = oi === 'LONG_BUILDUP' || oi === 'SHORT_COVERING'
   const bearishOI    = oi === 'SHORT_BUILDUP' || oi === 'LONG_UNWINDING'
-  const avoidLabel   = label === 'DEAD'
+  const avoidLabel   = label === 'MARKDOWN'
+  const accumLabel   = label === 'ACCUMULATION'
   const strongLabel  = label === 'BULL_RUN'
 
   let text = 'WATCH'
@@ -52,6 +53,8 @@ function ActionBadge({ label, trend, oi }: { label: string; trend?: string; oi?:
     text = 'STR BUY'; color = '#22C55E'; bg = '#052e16'
   } else if ((strongLabel || label === 'EMERGING') && bullishTrend) {
     text = 'BUY'; color = '#10B981'; bg = '#022c22'
+  } else if (accumLabel) {
+    text = 'ACCUM'; color = '#9575CD'; bg = '#1a0a2e'
   } else if (bullishTrend) {
     text = 'HOLD'; color = '#F59E0B'; bg = '#1c1400'
   }

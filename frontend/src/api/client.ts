@@ -25,11 +25,12 @@ export type MarketContext = MarketRegime & {
     mf_20d_cr:       number
   }
   breadth: {
-    strong_candidate: number
-    emerging:         number
-    watchlist:        number
-    neutral:          number
-    avoid:            number
+    bull_run:     number
+    emerging:     number
+    watchlist:    number
+    neutral:      number
+    accumulation: number
+    markdown:     number
   }
 }
 

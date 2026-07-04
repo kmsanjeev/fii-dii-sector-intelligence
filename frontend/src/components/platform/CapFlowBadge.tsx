@@ -3,11 +3,12 @@ interface CapFlowBadgeProps {
 }
 
 const BADGE_STYLES: Record<string, { bg: string; text: string }> = {
-  BULL_RUN:  { bg: '#10B98120', text: '#10B981' },
-  EMERGING:  { bg: '#22C55E20', text: '#22C55E' },
-  WATCHLIST: { bg: '#3B82F620', text: '#3B82F6' },
-  NEUTRAL:   { bg: '#F59E0B20', text: '#F59E0B' },
-  DEAD:      { bg: '#EF444420', text: '#EF4444' },
+  BULL_RUN:     { bg: '#10B98120', text: '#10B981' },
+  EMERGING:     { bg: '#22C55E20', text: '#22C55E' },
+  WATCHLIST:    { bg: '#3B82F620', text: '#3B82F6' },
+  NEUTRAL:      { bg: '#F59E0B20', text: '#F59E0B' },
+  ACCUMULATION: { bg: '#9575CD20', text: '#9575CD' },
+  MARKDOWN:     { bg: '#EF444420', text: '#EF4444' },
 }
 
 export function CapFlowBadge({ label }: CapFlowBadgeProps) {

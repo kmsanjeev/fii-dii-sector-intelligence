@@ -79,11 +79,12 @@ def get_market_context():
     if bull_df is not None and not bull_df.empty and "label" in bull_df.columns:
         vc = bull_df["label"].value_counts().to_dict()
         breadth = {
-            "bull_run":  int(vc.get("BULL_RUN",  0)),
-            "emerging":  int(vc.get("EMERGING",  0)),
-            "watchlist": int(vc.get("WATCHLIST", 0)),
-            "neutral":   int(vc.get("NEUTRAL",   0)),
-            "dead":      int(vc.get("DEAD",       0)),
+            "bull_run":     int(vc.get("BULL_RUN",     0)),
+            "emerging":     int(vc.get("EMERGING",     0)),
+            "watchlist":    int(vc.get("WATCHLIST",    0)),
+            "neutral":      int(vc.get("NEUTRAL",      0)),
+            "accumulation": int(vc.get("ACCUMULATION", 0)),
+            "markdown":     int(vc.get("MARKDOWN",     0)),
         }
 
     return {

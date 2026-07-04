@@ -14,16 +14,26 @@ Market Regime Multiplier applied after scoring:
   STRONG_ACCUMULATION: x1.20  ACCUMULATION: x1.10  EARLY_ACCUMULATION: x1.02
   NEUTRAL: x0.90  DISTRIBUTION: x0.80  STRONG_DISTRIBUTION: x0.65
 
-Labels (market-phase descriptive):
-  BULL_RUN  (>=60)  -- Already in confirmed bull run; near ATH, strong uptrend
-  EMERGING  (>=42)  -- Early breakout / building momentum; not yet at ATH
-  WATCHLIST (>=28)  -- On watch; some positive signals but unconfirmed
-  NEUTRAL   (>=15)  -- No clear direction; sideways
-  DEAD      (< 15)  -- Downtrend / distribution; avoid
+Labels (Wyckoff cycle-aligned):
+  BULL_RUN     (>=60)  -- Mark-Up: confirmed bull run, near ATH, strong uptrend
+  EMERGING     (>=52)  -- Late Accumulation / early Mark-Up: building momentum, early breakout
+  WATCHLIST    (>=40)  -- Watch zone: some positive signals, needs confirmation
+  NEUTRAL      (>=25)  -- Distribution / plateau: mixed signals, no clear direction
+  ACCUMULATION (<25, institutional presence) -- Early Accumulation: institutions quietly
+                         buying while stock stays in base; Wyckoff "dead / boring" phase
+                         that precedes breakout; NOT a sell signal
+  MARKDOWN     (<25, no institutional support) -- Mark-Down: active decline, no institutional
+                         backing; avoid until base forms
+
+ACCUMULATION vs MARKDOWN split logic (for score < 25):
+  ACCUMULATION if: sector_flow_score >= 43 (institutions not net-selling sector)
+                   AND price_score >= 12 (not in active steep decline)
+  OR:              deal_score > 50 (above-median institutional deal buying in this stock)
+  MARKDOWN otherwise
 
 Outputs:
   data/intelligence/bull_run_probability.csv   -- all symbols with component scores
-  data/intelligence/bull_run_watchlist.csv     -- BULL_RUN + EMERGING only
+  data/intelligence/bull_run_watchlist.csv     -- BULL_RUN + EMERGING + ACCUMULATION
 
 Guardrails: G-D-02 (atomic), G-D-03 (no empty write), G-I-04 (no fillna on financial data)
 """
@@ -75,27 +85,52 @@ REGIME_MULTIPLIER = {
 }
 DEFAULT_MULTIPLIER = 0.90
 
-# Market-phase labels
+# Market-phase labels (Wyckoff-aligned)
 # Thresholds calibrated for NEUTRAL regime (x0.90), score mean ~43, range ~15-70:
-#   BULL_RUN  >= 62: confirmed bull run; near ATH, strong uptrend  (~1%)
-#   EMERGING  >= 52: building momentum, early breakout            (~20%)
-#   WATCHLIST >= 40: worth monitoring, some positive signals      (~35%)
-#   NEUTRAL   >= 25: no clear direction, sideways                 (~40%)
-#   DEAD      <  25: downtrend / distribution — avoid             (~4%)
+#   BULL_RUN     >= 60: confirmed Mark-Up; near ATH, strong uptrend     (~1%)
+#   EMERGING     >= 52: late Accumulation / early Mark-Up               (~20%)
+#   WATCHLIST    >= 40: watch zone, some positive signals                (~35%)
+#   NEUTRAL      >= 25: Distribution plateau / mixed signals             (~40%)
+#   ACCUMULATION <  25: Wyckoff Accumulation — institutions quietly building base (~2%)
+#   MARKDOWN     <  25: active Mark-Down — avoid                         (~2%)
+# Note: ACCUMULATION vs MARKDOWN requires secondary signal — see _label_score()
 LABEL_THRESHOLDS = [
     (60, "BULL_RUN"),
     (52, "EMERGING"),
     (40, "WATCHLIST"),
     (25, "NEUTRAL"),
-    (0,  "DEAD"),
 ]
 
+# ACCUMULATION criteria (for score < 25).
+# Calibrated for NEUTRAL regime where blended sector scores range 28-42:
+#   Sector not in heavy distribution: sector_flow_score >= 32
+#     (In current NEUTRAL regime, range is ~28-40; >= 32 = sector has some institutional presence)
+#   Stock not in free-fall: price_score >= 10
+#     (price_score range in < 25 bucket is ~2-22; >= 10 = sideways/base forming)
+#   OR: explicit deal activity present (deal_score > 50 — above fillna(50) baseline)
+ACCUM_SECTOR_FLOW_MIN = 32    # sector has some institutional interest (not in heavy selling)
+ACCUM_PRICE_SCORE_MIN = 10    # price not in active steep decline
+ACCUM_DEAL_SCORE_MIN  = 50    # deal_score > 50 means real above-median inst. buying
 
-def _label_score(score: float) -> str:
+
+def _label_score(score: float,
+                 sector_flow_score: float = 50.0,
+                 price_score: float = 50.0,
+                 deal_score: float = 50.0) -> str:
+    """Wyckoff-aligned label. For score >= 25 uses thresholds only.
+    For score < 25 applies secondary logic to split ACCUMULATION vs MARKDOWN."""
     for threshold, label in LABEL_THRESHOLDS:
         if score >= threshold:
             return label
-    return "DEAD"
+    # score < 25 — Wyckoff split
+    # ACCUMULATION: sector is not in heavy distribution AND stock not in active decline
+    #            OR visible institutional deal buying is present
+    sector_ok  = sector_flow_score >= ACCUM_SECTOR_FLOW_MIN
+    price_ok   = price_score >= ACCUM_PRICE_SCORE_MIN
+    deals_ok   = deal_score > ACCUM_DEAL_SCORE_MIN
+    if (sector_ok and price_ok) or deals_ok:
+        return "ACCUMULATION"
+    return "MARKDOWN"
 
 
 def _pct_rank_0_100(series: pd.Series) -> pd.Series:
@@ -318,7 +353,17 @@ class BullRunProbabilityEngine:
         base["market_regime"]     = regime
         base["regime_multiplier"] = multiplier
         base["bull_run_score"]    = (base["base_score"] * multiplier).clip(0, 100).round(2)
-        base["label"]             = base["bull_run_score"].apply(_label_score)
+
+        # Wyckoff-aligned labeling: passes secondary signals for the < 25 bucket split
+        base["label"] = base.apply(
+            lambda r: _label_score(
+                r["bull_run_score"],
+                r.get("sector_flow_score", 50.0),
+                r.get("price_score",       50.0),
+                r.get("deal_score",        50.0),
+            ),
+            axis=1,
+        )
 
         result = base.reset_index()
 
@@ -336,8 +381,8 @@ class BullRunProbabilityEngine:
         if result.empty:
             raise ValueError("G-D-03: bull run result is empty")
 
-        # Watchlist: BULL_RUN + EMERGING only
-        watchlist = result[result["label"].isin(["BULL_RUN", "EMERGING"])].copy()
+        # Watchlist: BULL_RUN + EMERGING + ACCUMULATION (actionable labels)
+        watchlist = result[result["label"].isin(["BULL_RUN", "EMERGING", "ACCUMULATION"])].copy()
         watchlist = watchlist.sort_values("bull_run_score", ascending=False).reset_index(drop=True)
 
         self._save_atomic(result.sort_values("bull_run_score", ascending=False)
@@ -371,7 +416,7 @@ class BullRunProbabilityEngine:
         for label, count in label_counts.items():
             print(f"  {label:22s}: {count:4d} symbols")
         print()
-        print(f"Watchlist (BULL_RUN + EMERGING): {len(watchlist)} symbols")
+        print(f"Watchlist (BULL_RUN + EMERGING + ACCUMULATION): {len(watchlist)} symbols")
 
         if not watchlist.empty:
             print("\nTop 15 bull run candidates:")
@@ -387,8 +432,8 @@ class BullRunProbabilityEngine:
                       f"  ({r['label']})")
 
         print()
-        print("Participant driving sectors (BULL_RUN stocks):")
-        br = result[result["label"] == "BULL_RUN"]
+        print("Participant driving sectors (BULL_RUN + ACCUMULATION stocks):")
+        br = result[result["label"].isin(["BULL_RUN", "ACCUMULATION"])]
         if not br.empty:
             part_cnt = br["driving_participant"].value_counts()
             for participant, cnt in part_cnt.items():
