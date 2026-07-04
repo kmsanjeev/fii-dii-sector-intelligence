@@ -907,10 +907,14 @@ export function StocksPage() {
 
   // ── Derived values ────────────────────────────────────────────────────────
 
-  const latest   = ohlcv?.bars.at(-1)
-  const prev     = ohlcv?.bars.at(-2)
-  const priceChg = latest && prev ? ((latest.close - prev.close) / prev.close) * 100 : null
-  const close    = detail?.close_now ?? latest?.close ?? 0
+  const latest        = ohlcv?.bars.at(-1)
+  const prev          = ohlcv?.bars.at(-2)
+  const priceChg      = latest && prev ? ((latest.close - prev.close) / prev.close) * 100 : null
+  const priceChgAbs   = latest && prev ? latest.close - prev.close : null
+  // Fall back to API-provided 1D change when OHLCV not loaded yet
+  const chg1dPct  = priceChg ?? (detail?.price?.change_1d_pct ?? null)
+  const chg1dAbs  = priceChgAbs ?? (detail?.price?.change_1d_abs ?? null)
+  const close     = detail?.close_now ?? latest?.close ?? 0
   const t        = detail?.technical as TechnicalIndicators | undefined
   const f        = detail?.fno as FnoData | undefined
   const fund     = (detail?.fundamentals ?? {}) as Record<string, number | string | null>
@@ -986,15 +990,22 @@ export function StocksPage() {
           )}
         </div>
 
-        {/* Price + change */}
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+        {/* Price + 1D change */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 22, fontWeight: 900, color: P.text, fontFamily: 'monospace', fontVariantNumeric: 'tabular-nums' }}>
             {close > 0 ? `₹${close.toLocaleString('en-IN', { maximumFractionDigits: 2 })}` : (latest ? `₹${latest.close.toFixed(2)}` : '—')}
           </span>
-          {priceChg != null && (
-            <span style={{ fontSize: 13, fontWeight: 700, color: priceChg >= 0 ? P.green : P.red }}>
-              {priceChg >= 0 ? '+' : ''}{priceChg.toFixed(2)}%
-            </span>
+          {chg1dPct != null && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <span style={{ fontSize: 13, fontWeight: 800, color: chg1dPct >= 0 ? P.green : P.red, lineHeight: 1.1 }}>
+                {chg1dPct >= 0 ? '▲' : '▼'} {chg1dPct >= 0 ? '+' : ''}{chg1dPct.toFixed(2)}%
+              </span>
+              {chg1dAbs != null && (
+                <span style={{ fontSize: 10, color: chg1dPct >= 0 ? P.green : P.red, fontFamily: 'monospace', lineHeight: 1 }}>
+                  {chg1dAbs >= 0 ? '+' : ''}&#x20B9;{Math.abs(chg1dAbs).toFixed(2)} 1D
+                </span>
+              )}
+            </div>
           )}
           {detail?.price?.ret_30d != null && (
             <span style={{ fontSize: 11, color: P.sub }}>

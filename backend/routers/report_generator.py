@@ -85,11 +85,15 @@ def generate_report_html(symbol: str, data: dict) -> str:
     c_deal   = float(comps.get('deal_score')         or 0)
     c_corp   = float(comps.get('corporate_score')    or 0)
 
-    pr     = data.get('price') or {}
-    ret30  = pr.get('ret_30d')
-    ret90  = pr.get('ret_90d')
-    ret365 = pr.get('ret_365d')
-    volr   = pr.get('vol_ratio')
+    pr      = data.get('price') or {}
+    ret30   = pr.get('ret_30d')
+    ret90   = pr.get('ret_90d')
+    ret365  = pr.get('ret_365d')
+    volr    = pr.get('vol_ratio')
+    ret7    = pr.get('ret_7d')
+    ret15   = pr.get('ret_15d')
+    chg1d   = pr.get('change_1d_pct')
+    chg1dA  = pr.get('change_1d_abs')
 
     t       = data.get('technical') or {}
     h52     = t.get('high_52w')
@@ -218,6 +222,7 @@ def generate_report_html(symbol: str, data: dict) -> str:
             'dii': float(dii_pct or 0), 'public': pub_computed,
         },
         'momentum': {
+            '7d': float(ret7 or 0), '15d': float(ret15 or 0),
             '30d': float(ret30 or 0), '90d': float(ret90 or 0), '365d': float(ret365 or 0),
         },
         'vs_dma': {
@@ -302,8 +307,7 @@ def generate_report_html(symbol: str, data: dict) -> str:
     # ── Price display ─────────────────────────────────────────────────────────
     close_disp = f'&#x20B9;{float(close):.2f}' if close else 'N/A'
 
-    # Pre-compute any HTML that would contain backslashes inside {}-expressions
-    # (Python 3.11 restriction: no backslash inside f-string expression parts)
+    # Pre-compute any HTML with font-family single-quotes (Python 3.11 f-string restriction)
     _ret30_hero = ''
     if ret30 is not None:
         _col = _rc(ret30)
@@ -311,6 +315,21 @@ def generate_report_html(symbol: str, data: dict) -> str:
         _ret30_hero = ('<div style="font-family:\'Courier New\',monospace;'
                        'font-size:12px;color:' + _col + ';margin-top:4px">'
                        + _val + ' 30D</div>')
+
+    _chg1d_hero = ''
+    if chg1d is not None:
+        _c   = _rc(chg1d)
+        _arr = '&#9650;' if float(chg1d) >= 0 else '&#9660;'
+        _s   = ('+' if float(chg1d) >= 0 else '') + f'{float(chg1d):.2f}%'
+        _abs_part = ''
+        if chg1dA is not None:
+            _abs_sign = '+' if float(chg1dA) >= 0 else ''
+            _abs_part = (' <span style="font-size:11px;opacity:0.8">('
+                         + _abs_sign + '&#x20B9;' + f'{abs(float(chg1dA)):.2f}' + ')</span>')
+        _chg1d_hero = ('<div style="font-family:\'Courier New\',monospace;'
+                       'font-size:15px;font-weight:800;color:' + _c + ';margin-top:6px;line-height:1.2">'
+                       + _arr + ' ' + _s + _abs_part + '</div>'
+                       '<div style="font-size:9px;color:#4D6A90;letter-spacing:1px">1 DAY CHANGE</div>')
 
     return f'''<!DOCTYPE html>
 <html lang="en">
@@ -724,6 +743,7 @@ def generate_report_html(symbol: str, data: dict) -> str:
     </div>
     <div class="hero-right">
       <div class="hero-price">{close_disp}</div>
+      {_chg1d_hero}
       {_ret30_hero}
       <div class="hero-date">Report as of {_h(as_of)} &nbsp;&bull;&nbsp; Capital Flow Intelligence Platform</div>
     </div>
@@ -762,6 +782,22 @@ def generate_report_html(symbol: str, data: dict) -> str:
       <!-- Price Momentum -->
       <div class="card">
         <div class="card-title">Price Momentum</div>
+        <div class="bar-row">
+          <div class="bar-label">7 Day</div>
+          <div class="bar-track" id="bt-7">
+            <div class="bar-zero" id="bz-7"></div>
+            <div class="bar-fill" id="bf-7"></div>
+          </div>
+          <div class="bar-val" id="bv-7" style="color:{_rc(ret7)}">{_pct(ret7,sign=True)}</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">15 Day</div>
+          <div class="bar-track" id="bt-15">
+            <div class="bar-zero" id="bz-15"></div>
+            <div class="bar-fill" id="bf-15"></div>
+          </div>
+          <div class="bar-val" id="bv-15" style="color:{_rc(ret15)}">{_pct(ret15,sign=True)}</div>
+        </div>
         <div class="bar-row">
           <div class="bar-label">30 Day</div>
           <div class="bar-track" id="bt-30">
@@ -1096,8 +1132,10 @@ function drawDonut(id, segments) {{
 // ── Momentum bars ─────────────────────────────────────────────────────────────
 function drawBars() {{
   const range = 60; // +/- 60% max
-  [['30','bt-30','bz-30','bf-30', D.momentum['30d']],
-   ['90','bt-90','bz-90','bf-90', D.momentum['90d']],
+  [['7',  'bt-7',  'bz-7',  'bf-7',   D.momentum['7d']],
+   ['15', 'bt-15', 'bz-15', 'bf-15',  D.momentum['15d']],
+   ['30', 'bt-30', 'bz-30', 'bf-30',  D.momentum['30d']],
+   ['90', 'bt-90', 'bz-90', 'bf-90',  D.momentum['90d']],
    ['365','bt-365','bz-365','bf-365', D.momentum['365d']]].forEach(([k,tid,zid,fid,val]) => {{
     const track = document.getElementById(tid);
     const zero  = document.getElementById(zid);

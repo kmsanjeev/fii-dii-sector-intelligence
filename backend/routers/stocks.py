@@ -100,6 +100,51 @@ def _clean(records):
     return [{k: _safe(v) for k, v in rec.items()} for rec in records]
 
 
+def _compute_short_returns(sym: str) -> dict:
+    """Read per-symbol OHLCV parquet and return 1D / 7D / 15D returns."""
+    result: dict = {}
+    try:
+        cache_path = _CACHE_DIR / f"{sym}.parquet"
+        if not cache_path.exists():
+            return result
+        df = pd.read_parquet(cache_path)
+        if df.empty:
+            return result
+        close_col = next((c for c in df.columns if c.lower() == "close"), None)
+        if close_col is None:
+            return result
+        df = df.sort_index()
+        closes = df[close_col].dropna()
+        if len(closes) < 2:
+            return result
+        curr = float(closes.iloc[-1])
+        # 1-day
+        prev1 = float(closes.iloc[-2])
+        if prev1 > 0:
+            result["change_1d_abs"] = round(curr - prev1, 2)
+            result["change_1d_pct"] = round((curr - prev1) / prev1 * 100, 2)
+            result["prev_close"]    = round(prev1, 2)
+        # 7D and 15D by calendar date
+        try:
+            curr_dt = pd.Timestamp(closes.index[-1])
+            for days, key in [(7, "ret_7d"), (15, "ret_15d")]:
+                target = curr_dt - pd.Timedelta(days=days)
+                subset = closes[closes.index <= target]
+                if not subset.empty:
+                    pv = float(subset.iloc[-1])
+                    if pv > 0:
+                        result[key] = round((curr - pv) / pv * 100, 2)
+        except Exception:
+            for row_back, key in [(5, "ret_7d"), (11, "ret_15d")]:
+                if key not in result and len(closes) > row_back:
+                    pv = float(closes.iloc[-1 - row_back])
+                    if pv > 0:
+                        result[key] = round((curr - pv) / pv * 100, 2)
+    except Exception:
+        pass
+    return result
+
+
 def _fmt_cr(v) -> str:
     """Format crore value as readable string."""
     if v is None:
@@ -1144,10 +1189,11 @@ def get_stock_detail(symbol: str):
             "corporate_score":    round(float(row.get("corporate_score",    0) or 0), 2),
         },
         "price": {
-            "ret_30d":   _safe(row.get("ret_30d")),
-            "ret_90d":   _safe(row.get("ret_90d")),
-            "ret_365d":  _safe(row.get("ret_365d")),
-            "vol_ratio": _safe(row.get("vol_ratio")),
+            "ret_30d":        _safe(row.get("ret_30d")),
+            "ret_90d":        _safe(row.get("ret_90d")),
+            "ret_365d":       _safe(row.get("ret_365d")),
+            "vol_ratio":      _safe(row.get("vol_ratio")),
+            **_compute_short_returns(sym),
         },
         "as_of_date":           str(row.get("as_of_date", "")),
         "deal_signals":         deal_info,

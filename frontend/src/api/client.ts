@@ -87,7 +87,11 @@ export type Stock = {
     deal_score: number
     corporate_score: number
   }
-  price: { ret_30d: number | null; ret_90d: number | null; ret_365d: number | null; vol_ratio: number | null }
+  price: {
+    ret_30d: number | null; ret_90d: number | null; ret_365d: number | null; vol_ratio: number | null
+    ret_7d?: number | null; ret_15d?: number | null
+    change_1d_pct?: number | null; change_1d_abs?: number | null; prev_close?: number | null
+  }
   as_of_date: string
   deal_signals?: Record<string, unknown>
   corporate_confidence?: Record<string, unknown>
