@@ -20,8 +20,8 @@ import {
 } from 'lightweight-charts'
 import {
   api, fetchStockDetail, fetchStockAnnouncements, fetchStockCorpActions,
-  fetchAnnouncementSummary,
-  type TechnicalIndicators, type FnoData, type Announcement, type CorpAction,
+  fetchAnnouncementSummary, fetchNewsArticleSummary,
+  type TechnicalIndicators, type FnoData, type Announcement, type CorpAction, type NewsArticle,
 } from '../api/client'
 import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
@@ -533,6 +533,176 @@ function AnnouncementsSection({ symbol }: { symbol: string }) {
           <AnnRow key={a.seq_id || i} a={a} i={i} last={i === items.length - 1} />
         ))}
       </div>
+    </SectionCard>
+  )
+}
+
+// ─── Governance Signal card ───────────────────────────────────────────────────
+
+function GovernanceCard({ agm }: { agm: Record<string, string | number | null> }) {
+  const [summary, setSummary] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error,   setError]   = useState<string | null>(null)
+  const [open,    setOpen]    = useState(false)
+
+  const risk = String(agm.governance_risk ?? '')
+  const riskColor = risk === 'LOW' ? P.green : risk === 'HIGH' ? P.red : P.amber
+  const pdfUrl  = agm.pdf_url  ? String(agm.pdf_url)  : null
+  const seqId   = agm.seq_id   ? String(agm.seq_id)   : ''
+  const keyDec  = agm.key_decision ? String(agm.key_decision) : ''
+
+  const handleSummarise = async () => {
+    if (!pdfUrl) return
+    if (summary) { setOpen(o => !o); return }
+    setOpen(true); setLoading(true); setError(null)
+    try {
+      const res = await fetchAnnouncementSummary(pdfUrl, seqId, keyDec)
+      setSummary(res.summary)
+    } catch (e: unknown) {
+      setError((e as { response?: { data?: { detail?: string } }; message?: string })?.response?.data?.detail ?? 'Failed')
+    } finally { setLoading(false) }
+  }
+
+  return (
+    <SectionCard title={`Governance Signal${agm.date ? ` (${agm.date})` : ''}`} accentColor={riskColor}>
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 10, alignItems: 'flex-start' }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 8 }}>
+            {[
+              { label: 'Risk',        value: risk, color: riskColor },
+              { label: 'Dividend',    value: String(agm.dividend_signal ?? ''), color: P.green,  hide: String(agm.dividend_signal) === 'NONE' },
+              { label: 'Mgmt Change', value: 'CHANGE',    color: P.amber, hide: String(agm.management_change) !== 'YES' },
+              { label: 'Capex',       value: 'CONFIRMED', color: P.teal,  hide: String(agm.capex_confirm) !== 'YES' },
+            ].filter(({ hide }) => !hide).map(({ label, value, color }) => value && (
+              <div key={label}>
+                <div style={LABEL}>{label}</div>
+                <div style={{ marginTop: 5 }}><Chip label={value} color={color} size={11} /></div>
+              </div>
+            ))}
+          </div>
+          {keyDec && (
+            <div style={{ fontSize: 11, color: P.text, background: P.cell, padding: '8px 12px', borderRadius: 6, border: `1px solid ${P.border}`, lineHeight: 1.55 }}>
+              {keyDec}
+            </div>
+          )}
+        </div>
+        {/* Action buttons */}
+        {pdfUrl && (
+          <div style={{ display: 'flex', gap: 6, flexShrink: 0, alignSelf: 'flex-start', marginTop: 2 }}>
+            <button onClick={handleSummarise} style={{ display: 'flex', alignItems: 'center', gap: 3, padding: '4px 9px', borderRadius: 4, cursor: 'pointer', border: `1px solid ${P.amber}50`, background: open ? P.amber + '22' : P.amber + '10', color: P.amber, fontSize: 10, fontWeight: 700 }}>
+              {loading ? <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>⟳</span> : 'AI'}
+            </button>
+            <a href={pdfUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '5px 8px', borderRadius: 4, background: P.blue + '18', color: P.blue, border: `1px solid ${P.blue}40`, textDecoration: 'none' }}>
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </a>
+          </div>
+        )}
+      </div>
+      {open && (
+        <div style={{ padding: '10px 12px', borderRadius: 6, background: P.amber + '0C', border: `1px solid ${P.amber}28` }}>
+          {loading && <span style={{ color: P.dim, fontSize: 11 }}>Reading PDF and generating analysis...</span>}
+          {error   && <span style={{ color: P.red,  fontSize: 11 }}>Error: {error}</span>}
+          {summary && !loading && <AISummaryBody text={summary} accentColor={P.amber} />}
+        </div>
+      )}
+    </SectionCard>
+  )
+}
+
+// ─── News article row ─────────────────────────────────────────────────────────
+
+function NewsArticleRow({ art, last }: { art: NewsArticle; last: boolean }) {
+  const [summary, setSummary] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error,   setError]   = useState<string | null>(null)
+  const [open,    setOpen]    = useState(false)
+
+  const sentColor = art.sentiment === 'BULLISH' ? P.green : art.sentiment === 'BEARISH' ? P.red : P.amber
+
+  const handleSummarise = async () => {
+    if (summary) { setOpen(o => !o); return }
+    setOpen(true); setLoading(true); setError(null)
+    try {
+      const res = await fetchNewsArticleSummary(art.link, art.article_id, art.headline, art.themes)
+      setSummary(res.summary)
+    } catch (e: unknown) {
+      setError((e as { response?: { data?: { detail?: string } }; message?: string })?.response?.data?.detail ?? 'Failed')
+    } finally { setLoading(false) }
+  }
+
+  return (
+    <div style={{ padding: '9px 4px', borderBottom: !last ? `1px solid ${P.border}` : 'none' }}>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+        {/* date + sentiment */}
+        <div style={{ minWidth: 72, flexShrink: 0 }}>
+          <div style={{ fontSize: 10, color: T.muted, fontFamily: 'monospace', marginBottom: 3 }}>{art.date}</div>
+          <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3, background: sentColor + '18', color: sentColor, border: `1px solid ${sentColor}33` }}>{art.sentiment || 'NEUTRAL'}</span>
+        </div>
+        {/* headline + source */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 11, color: P.text, lineHeight: 1.4, marginBottom: 3 }}>{art.headline}</div>
+          <div style={{ fontSize: 9, color: P.dim }}>{art.source.replace(/_/g, ' ')}</div>
+        </div>
+        {/* buttons */}
+        <div style={{ flexShrink: 0, display: 'flex', gap: 5, alignSelf: 'center' }}>
+          <button onClick={handleSummarise} style={{ display: 'flex', alignItems: 'center', gap: 3, padding: '3px 7px', borderRadius: 3, cursor: 'pointer', border: `1px solid ${P.amber}50`, background: open ? P.amber + '22' : P.amber + '10', color: P.amber, fontSize: 9, fontWeight: 700 }}>
+            {loading ? <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>⟳</span> : 'AI'}
+          </button>
+          <a href={art.link} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '4px 7px', borderRadius: 3, background: P.blue + '18', color: P.blue, border: `1px solid ${P.blue}40`, textDecoration: 'none' }}>
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+      {open && (
+        <div style={{ marginTop: 8, marginLeft: 82, padding: '10px 12px', borderRadius: 6, background: P.amber + '0C', border: `1px solid ${P.amber}28` }}>
+          {loading && <span style={{ color: P.dim, fontSize: 11 }}>Fetching article and generating analysis...</span>}
+          {error   && <span style={{ color: P.red,  fontSize: 11 }}>Error: {error}</span>}
+          {summary && !loading && <AISummaryBody text={summary} accentColor={P.amber} />}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── News signal card ─────────────────────────────────────────────────────────
+
+function NewsCard({ news }: { news: Record<string, string | number | null | unknown[]> }) {
+  const articles = (news.recent_articles ?? []) as NewsArticle[]
+  const sentLabel = String(news.sentiment_label ?? '')
+  const sentColor = sentLabel === 'BULLISH' ? P.green : sentLabel === 'BEARISH' ? P.red : P.amber
+
+  return (
+    <SectionCard title="Recent News Signal" accentColor={P.blue}>
+      {/* stats row */}
+      <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginBottom: articles.length ? 12 : 0 }}>
+        {[
+          { label: 'Articles (7D)', value: String(news.news_count_7d), color: P.text },
+          { label: 'Sentiment',     value: sentLabel, color: sentColor },
+          { label: 'Bullish',       value: String(news.bullish_count ?? 0), color: P.green },
+          { label: 'Bearish',       value: String(news.bearish_count ?? 0), color: P.red },
+        ].map(({ label, value, color }) => (
+          <div key={label}>
+            <div style={LABEL}>{label}</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{value || '--'}</div>
+          </div>
+        ))}
+      </div>
+      {news.top_theme && (
+        <div style={{ marginBottom: articles.length ? 12 : 0, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          <span style={{ ...LABEL, alignSelf: 'center' }}>Themes:</span>
+          {String(news.top_theme).split(',').map(th => (
+            <Chip key={th.trim()} label={th.trim()} color={P.blue} size={9} />
+          ))}
+        </div>
+      )}
+      {/* article list */}
+      {articles.length > 0 && (
+        <div style={{ borderTop: `1px solid ${P.border}`, paddingTop: 8 }}>
+          {articles.map((art, i) => (
+            <NewsArticleRow key={art.article_id || i} art={art} last={i === articles.length - 1} />
+          ))}
+        </div>
+      )}
     </SectionCard>
   )
 }
@@ -1170,56 +1340,14 @@ export function StocksPage() {
                   </SectionCard>
                 )}
 
-                {/* AGM signal */}
+                {/* AGM / Governance signal */}
                 {Object.keys(agm).length > 0 && agm.governance_risk && (
-                  <SectionCard title={`Governance Signal${agm.date ? ` (${agm.date})` : ''}`}
-                    accentColor={String(agm.governance_risk) === 'LOW' ? P.green : String(agm.governance_risk) === 'HIGH' ? P.red : P.amber}>
-                    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
-                      {[
-                        { label: 'Risk',        value: String(agm.governance_risk), color: String(agm.governance_risk) === 'LOW' ? P.green : P.red },
-                        { label: 'Dividend',    value: String(agm.dividend_signal ?? ''), color: P.green, hide: String(agm.dividend_signal) === 'NONE' },
-                        { label: 'Mgmt Change', value: 'CHANGE', color: P.amber, hide: String(agm.management_change) !== 'YES' },
-                        { label: 'Capex',       value: 'CONFIRMED', color: P.teal, hide: String(agm.capex_confirm) !== 'YES' },
-                      ].filter(({ hide }) => !hide).map(({ label, value, color }) => value && (
-                        <div key={label}>
-                          <div style={LABEL}>{label}</div>
-                          <div style={{ marginTop: 5 }}><Chip label={value} color={color} size={11} /></div>
-                        </div>
-                      ))}
-                    </div>
-                    {agm.key_decision && (
-                      <div style={{ fontSize: 11, color: P.text, background: P.cell, padding: '8px 12px', borderRadius: 6, border: `1px solid ${P.border}`, lineHeight: 1.55 }}>
-                        {String(agm.key_decision)}
-                      </div>
-                    )}
-                  </SectionCard>
+                  <GovernanceCard agm={agm} />
                 )}
 
-                {/* News signal */}
+                {/* Recent News Signal */}
                 {Object.keys(news).length > 0 && news.news_count_7d != null && +news.news_count_7d > 0 && (
-                  <SectionCard title="Recent News Signal" accentColor={P.blue}>
-                    <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-                      {[
-                        { label: 'Articles (7D)', value: String(news.news_count_7d), color: P.text },
-                        { label: 'Sentiment',     value: String(news.sentiment_label ?? ''), color: String(news.sentiment_label) === 'BULLISH' ? P.green : String(news.sentiment_label) === 'BEARISH' ? P.red : P.amber },
-                        { label: 'Bullish',       value: String(news.bullish_count ?? 0), color: P.green },
-                        { label: 'Bearish',       value: String(news.bearish_count ?? 0), color: P.red },
-                      ].map(({ label, value, color }) => (
-                        <div key={label}>
-                          <div style={LABEL}>{label}</div>
-                          <div style={{ fontSize: 16, fontWeight: 800, color, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{value || '--'}</div>
-                        </div>
-                      ))}
-                    </div>
-                    {news.top_theme && (
-                      <div style={{ marginTop: 10, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                        <span style={{ ...LABEL, alignSelf: 'center' }}>Themes:</span>
-                        {String(news.top_theme).split(',').map(th => (
-                          <Chip key={th.trim()} label={th.trim()} color={P.blue} size={9} />
-                        ))}
-                      </div>
-                    )}
-                  </SectionCard>
+                  <NewsCard news={news} />
                 )}
 
                 {/* F&O */}

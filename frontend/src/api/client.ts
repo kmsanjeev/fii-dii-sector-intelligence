@@ -163,6 +163,21 @@ export const fetchAnnouncementSummary = (pdf_url: string, seq_id: string, title:
     `/stocks/announcement-summary?pdf_url=${encodeURIComponent(pdf_url)}&seq_id=${encodeURIComponent(seq_id)}&title=${encodeURIComponent(title)}`
   ).then(r => r.data)
 
+export const fetchNewsArticleSummary = (url: string, article_id: string, headline: string, themes = '') =>
+  api.get<{ summary: string; cached: boolean }>(
+    `/stocks/news-article-summary?url=${encodeURIComponent(url)}&article_id=${encodeURIComponent(article_id)}&headline=${encodeURIComponent(headline)}&themes=${encodeURIComponent(themes)}`
+  ).then(r => r.data)
+
+export interface NewsArticle {
+  headline:   string
+  source:     string
+  date:       string
+  sentiment:  string
+  link:       string
+  article_id: string
+  themes:     string
+}
+
 export interface Announcement {
   date:              string
   announcement_type: string

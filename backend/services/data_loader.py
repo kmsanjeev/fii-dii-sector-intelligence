@@ -59,6 +59,7 @@ SOURCES = {
     "theme_tagging":          cfg.REFERENCE_DIR / "theme_tagging.csv",
     # Phase F — Alt-data intelligence
     "news_signals":           cfg.INTELLIGENCE_DIR / "news_signals.csv",
+    "news_sentiment":         cfg.INTELLIGENCE_DIR / "news_sentiment.csv",
     "insider_signals":        cfg.INTELLIGENCE_DIR / "insider_signals.csv",
     "concall_summary":        cfg.INTELLIGENCE_DIR / "concall_summary.csv",
     # Phase G — Consensus + purity

@@ -42,6 +42,33 @@ def _save_summary_cache():
 
 _load_summary_cache()
 
+# ── News article summary cache (article_id → summary text) ───────────────────
+_NEWS_CACHE_PATH = Path("data/intelligence/news_article_summaries.json")
+_news_cache: dict[str, str] = {}
+_news_lock = threading.Lock()
+
+def _load_news_cache():
+    global _news_cache
+    if _NEWS_CACHE_PATH.exists():
+        try:
+            with open(_NEWS_CACHE_PATH, encoding="utf-8") as f:
+                _news_cache = json.load(f)
+        except Exception:
+            _news_cache = {}
+
+def _save_news_cache():
+    try:
+        _NEWS_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        tmp = _NEWS_CACHE_PATH.with_suffix(".tmp")
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(_news_cache, f, ensure_ascii=False, indent=2)
+        import shutil
+        shutil.move(str(tmp), str(_NEWS_CACHE_PATH))
+    except Exception:
+        pass
+
+_load_news_cache()
+
 try:
     from engines.common.config import STOCK_HISTORY_CACHE as _CACHE_DIR
 except Exception:
@@ -582,6 +609,80 @@ def get_announcement_summary(
     return {"summary": summary, "cached": False}
 
 
+@router.get("/news-article-summary")
+def get_news_article_summary(
+    url:        str = Query(..., description="Full article URL"),
+    article_id: str = Query("",  description="Unique article ID for caching"),
+    headline:   str = Query("",  description="Article headline for context"),
+    themes:     str = Query("",  description="Comma-separated themes for context"),
+):
+    """
+    Fetch a news article, extract its text, and return a plain-English AI summary.
+    Falls back to headline+themes if the article cannot be scraped.
+    Results cached by article_id.
+    """
+    cache_key = article_id.strip() or url
+    with _news_lock:
+        if cache_key in _news_cache:
+            return {"summary": _news_cache[cache_key], "cached": True}
+
+    # ── 1. Fetch article HTML ─────────────────────────────────────────────────
+    article_text = ""
+    try:
+        import requests
+        from bs4 import BeautifulSoup
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,*/*",
+            "Accept-Language": "en-US,en;q=0.9",
+        }
+        r = requests.get(url, headers=headers, timeout=15)
+        r.raise_for_status()
+        soup = BeautifulSoup(r.text, "html.parser")
+        # Remove noise
+        for tag in soup(["script", "style", "nav", "header", "footer", "aside", "form", "noscript"]):
+            tag.decompose()
+        # Extract paragraphs
+        paragraphs = [p.get_text(strip=True) for p in soup.find_all("p") if len(p.get_text(strip=True)) > 60]
+        article_text = " ".join(paragraphs[:30])[:4000]
+    except Exception:
+        article_text = ""  # fall back to headline-only context
+
+    # ── 2. Build LLM prompt ───────────────────────────────────────────────────
+    try:
+        import sys
+        from pathlib import Path as _P
+        sys.path.insert(0, str(_P(__file__).resolve().parent.parent.parent))
+        from engines.common.llm_client import call_llm
+    except ImportError:
+        raise HTTPException(status_code=503, detail="LLM client not available")
+
+    if article_text:
+        user_prompt = f"Headline: {headline}\nThemes: {themes}\n\nArticle text:\n{article_text}"
+    else:
+        user_prompt = f"Headline: {headline}\nThemes: {themes}\n\n(Full article text could not be retrieved. Summarise based on the headline and themes only.)"
+
+    system_prompt = (
+        "You summarise financial news articles for retail investors aged 15 and above who understand basic concepts "
+        "like profit, shares, and markets but are not finance professionals. "
+        "Respond with exactly three labelled points — no intro line, no outro: "
+        "**What happened:** One or two sentences. State the specific event with key numbers, dates, or names. "
+        "**What this means for the company:** One or two sentences. Explain the business or financial impact in plain terms. "
+        "**Why you should care:** One or two sentences. Tell a shareholder what changed in the outlook or what to watch next. "
+        "Use clear, direct language. No jargon without explanation. No filler phrases."
+    )
+
+    summary = call_llm(system=system_prompt, user=user_prompt, max_tokens=300, temperature=0.1)
+    if not summary:
+        raise HTTPException(status_code=503, detail="LLM returned empty response")
+
+    with _news_lock:
+        _news_cache[cache_key] = summary
+        _save_news_cache()
+
+    return {"summary": summary, "cached": False}
+
+
 @router.get("/watchlist")
 def get_watchlist(label: str = "EMERGING", limit: int = 50):
     # EMERGING label: use pre-filtered watchlist CSV (faster); other labels: full bull_run dataset
@@ -902,7 +1003,27 @@ def get_stock_detail(symbol: str):
                 "top_theme":       str(r.get("top_theme", "")),
                 "latest_headline": str(r.get("latest_headline", "")),
                 "latest_date":     str(r.get("latest_date", "")),
+                "recent_articles": [],
             }
+            # Attach per-article links from news_sentiment
+            sent_df = data_loader.get("news_sentiment")
+            if sent_df is not None and "symbol" in sent_df.columns:
+                art_rows = sent_df[
+                    sent_df["symbol"].str.upper() == sym
+                ].sort_values("date", ascending=False).head(5)
+                news_signal["recent_articles"] = [
+                    {
+                        "headline":   str(ar.get("headline", "")),
+                        "source":     str(ar.get("source", "")),
+                        "date":       str(ar.get("date", ""))[:10],
+                        "sentiment":  str(ar.get("sentiment", "")),
+                        "link":       str(ar.get("link", "")),
+                        "article_id": str(ar.get("article_id", "") or ar.get("link", "")),
+                        "themes":     str(ar.get("themes", "")),
+                    }
+                    for _, ar in art_rows.iterrows()
+                    if str(ar.get("link", "")).startswith("http")
+                ]
 
     # Phase F — Insider trade signals (30-day)
     insider_signal: dict = {}
@@ -979,7 +1100,30 @@ def get_stock_detail(symbol: str):
                 "sentiment":         str(r.get("sentiment", "")),
                 "sentiment_score":   int(r.get("sentiment_score") or 0),
                 "key_decision":      str(r.get("key_decision", "")),
+                "pdf_url":           None,
+                "seq_id":            None,
             }
+            # Look up the source PDF from company_announcements
+            ann_df = data_loader.get("announcements")
+            if ann_df is not None and "symbol" in ann_df.columns:
+                agm_date = str(r.get("date", ""))
+                agm_type = str(r.get("announcement_type", ""))
+                match = ann_df[
+                    (ann_df["symbol"].str.upper() == sym) &
+                    (ann_df["date"].astype(str).str[:10] == agm_date[:10]) &
+                    (ann_df["announcement_type"] == agm_type) &
+                    (ann_df["pdf_url"].notna())
+                ]
+                if match.empty:
+                    # relax: same symbol + date, any announcement with a PDF
+                    match = ann_df[
+                        (ann_df["symbol"].str.upper() == sym) &
+                        (ann_df["date"].astype(str).str[:10] == agm_date[:10]) &
+                        (ann_df["pdf_url"].notna())
+                    ]
+                if not match.empty:
+                    agm_signal["pdf_url"] = str(match.iloc[0]["pdf_url"])
+                    agm_signal["seq_id"]  = str(match.iloc[0].get("seq_id", ""))
 
     return {
         "symbol":             str(row.get("symbol", "")),
