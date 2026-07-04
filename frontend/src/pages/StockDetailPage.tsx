@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { fetchStockDetail, fetchStockAnnouncements, type TechnicalIndicators, type FnoData, type Announcement } from '../api/client'
+import { fetchStockDetail, fetchStockAnnouncements, fetchAnnouncementSummary, type TechnicalIndicators, type FnoData, type Announcement } from '../api/client'
 import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 import { TradeIntelligenceCard } from '../components/platform/TradeIntelligenceCard'
@@ -749,6 +750,124 @@ const ANN_COLOR: Record<string, string> = {
   OTHER:             '#4E6074',
 }
 
+function AnnItem({ ann, last }: { ann: Announcement; last: boolean }) {
+  const [summary, setSummary] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error,   setError]   = useState<string | null>(null)
+  const [open,    setOpen]    = useState(false)
+
+  const typeColor  = ANN_COLOR[ann.announcement_type] ?? C.muted
+  const scoreColor = ann.signal_score == null ? C.dim
+    : ann.signal_score >= 75 ? C.bull
+    : ann.signal_score >= 55 ? C.neutral
+    : C.dim
+
+  const handleSummarise = async () => {
+    if (summary) { setOpen(o => !o); return }
+    setOpen(true); setLoading(true); setError(null)
+    try {
+      const res = await fetchAnnouncementSummary(ann.pdf_url!, ann.seq_id, ann.title || ann.desc)
+      setSummary(res.summary)
+    } catch (e: unknown) {
+      const msg = (e as { response?: { data?: { detail?: string } }; message?: string })
+        ?.response?.data?.detail ?? (e as { message?: string })?.message ?? 'Failed'
+      setError(msg)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div style={{ padding: '8px 6px', borderBottom: !last ? '1px solid #131E30' : 'none' }}>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+        {/* Left: date + score */}
+        <div style={{ minWidth: 68, flexShrink: 0 }}>
+          <div style={{ color: C.dim, fontSize: 9, fontFamily: 'monospace', marginBottom: 3 }}>
+            {ann.date.slice(0, 10)}
+          </div>
+          {ann.signal_score != null && (
+            <div style={{
+              display: 'inline-block', fontSize: 8, fontWeight: 700,
+              padding: '1px 5px', borderRadius: 2,
+              background: scoreColor + '18', color: scoreColor,
+              border: `1px solid ${scoreColor}33`,
+            }}>
+              {ann.signal_score}
+            </div>
+          )}
+        </div>
+
+        {/* Middle: type badge + title */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ marginBottom: 3 }}>
+            <span style={{
+              fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 2,
+              background: typeColor + '18', color: typeColor,
+              border: `1px solid ${typeColor}33`, letterSpacing: 0.5,
+            }}>
+              {ann.announcement_type.replace(/_/g, ' ')}
+            </span>
+          </div>
+          <div style={{
+            fontSize: 10, color: C.secondary, lineHeight: 1.4,
+            overflow: 'hidden', display: '-webkit-box',
+            WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+          } as React.CSSProperties}>
+            {ann.title || ann.desc}
+          </div>
+        </div>
+
+        {/* Right: AI + PDF buttons */}
+        <div style={{ flexShrink: 0, display: 'flex', gap: 5, alignSelf: 'center' }}>
+          {ann.pdf_url && (
+            <button
+              onClick={handleSummarise}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 3,
+                padding: '3px 7px', borderRadius: 3, cursor: 'pointer',
+                border: `1px solid ${C.neutral}50`,
+                background: open ? C.neutral + '22' : C.neutral + '10',
+                color: C.neutral, fontSize: 9, fontWeight: 700,
+              }}
+            >
+              {loading
+                ? <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>⟳</span>
+                : 'AI'
+              }
+            </button>
+          )}
+          {ann.pdf_url && (
+            <a href={ann.pdf_url} target="_blank" rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', padding: '4px 7px', borderRadius: 3, background: C.blue + '18', color: C.blue, border: `1px solid ${C.blue}40`, textDecoration: 'none' }}
+            >
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </a>
+          )}
+        </div>
+      </div>
+
+      {/* AI summary panel */}
+      {open && (
+        <div style={{
+          marginTop: 7, marginLeft: 78,
+          padding: '8px 10px', borderRadius: 5,
+          background: C.neutral + '0C', border: `1px solid ${C.neutral}28`,
+          fontSize: 10, color: C.secondary, lineHeight: 1.5,
+        }}>
+          {loading && <span style={{ color: C.dim }}>Reading PDF and generating analysis...</span>}
+          {error   && <span style={{ color: C.bear }}>Error: {error}</span>}
+          {summary && !loading && (
+            <>
+              <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: 1, color: C.neutral, marginBottom: 5, textTransform: 'uppercase' }}>AI Analysis</div>
+              <div>{summary}</div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function AnnouncementsCard({ symbol }: { symbol: string }) {
   const { data, isLoading } = useQuery({
     queryKey: ['announcements', symbol],
@@ -767,60 +886,10 @@ function AnnouncementsCard({ symbol }: { symbol: string }) {
 
   return (
     <Card title={`CORPORATE ANNOUNCEMENTS${data?.total && data.total > 20 ? ` (latest 20 of ${data.total})` : ` (${items.length})`}`} accentColor={C.blue}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-        {items.map((ann, i) => {
-          const typeColor = ANN_COLOR[ann.announcement_type] ?? C.muted
-          const scoreColor = ann.signal_score == null ? C.dim
-            : ann.signal_score >= 75 ? C.bull
-            : ann.signal_score >= 55 ? C.neutral
-            : C.dim
-          return (
-            <div key={ann.seq_id || i} style={{
-              display: 'flex', gap: 10, padding: '8px 6px',
-              borderBottom: i < items.length - 1 ? '1px solid #131E30' : 'none',
-              alignItems: 'flex-start',
-            }}>
-              {/* Left: date + score */}
-              <div style={{ minWidth: 68, flexShrink: 0 }}>
-                <div style={{ color: C.dim, fontSize: 9, fontFamily: 'monospace', marginBottom: 3 }}>
-                  {ann.date.slice(0, 10)}
-                </div>
-                {ann.signal_score != null && (
-                  <div style={{
-                    display: 'inline-block', fontSize: 8, fontWeight: 700,
-                    padding: '1px 5px', borderRadius: 2,
-                    background: scoreColor + '18', color: scoreColor,
-                    border: `1px solid ${scoreColor}33`,
-                  }}>
-                    {ann.signal_score}
-                  </div>
-                )}
-              </div>
-
-              {/* Middle: type badge + title */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ marginBottom: 3 }}>
-                  <span style={{
-                    fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 2,
-                    background: typeColor + '18', color: typeColor,
-                    border: `1px solid ${typeColor}33`, letterSpacing: 0.5,
-                  }}>
-                    {ann.announcement_type.replace(/_/g, ' ')}
-                  </span>
-                </div>
-                <div style={{
-                  fontSize: 10, color: C.secondary, lineHeight: 1.4,
-                  overflow: 'hidden',
-                  display: '-webkit-box',
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical',
-                } as React.CSSProperties}>
-                  {ann.title || ann.desc}
-                </div>
-              </div>
-            </div>
-          )
-        })}
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {items.map((ann, i) => (
+          <AnnItem key={ann.seq_id || i} ann={ann} last={i === items.length - 1} />
+        ))}
       </div>
     </Card>
   )
