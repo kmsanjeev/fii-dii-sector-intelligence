@@ -999,17 +999,26 @@ def get_stock_detail(symbol: str):
     if qr_df is not None and "symbol" in qr_df.columns:
         qr_rows = qr_df[qr_df["symbol"].str.upper() == sym].copy()
         if not qr_rows.empty:
-            date_col = next((c for c in ["period_end_date", "period", "quarter_end_date", "date"] if c in qr_rows.columns), None)
+            date_col = next(
+                (c for c in ["date_end", "period_end_date", "period", "quarter_end_date", "date"] if c in qr_rows.columns),
+                None,
+            )
             if date_col:
                 qr_rows["_sort"] = pd.to_datetime(qr_rows[date_col], errors="coerce")
                 qr_rows = qr_rows.sort_values("_sort", ascending=False).head(4).drop(columns=["_sort"])
+            _QR_KEEP = {
+                "quarter_label", "window_label", "date_end", "date_start",
+                "period", "period_end_date", "quarter_end_date",
+                "revenue", "revenue_cr", "net_profit", "net_profit_cr",
+                "eps", "total_income", "total_expenses",
+                "yoy_revenue_pct", "yoy_profit_pct", "qoq_revenue_pct", "qoq_profit_pct",
+                "standalone_or_consolidated",
+            }
             for _, r in qr_rows.iterrows():
                 quarterly_results.append({
                     k: (_safe(v) if isinstance(v, float) else str(v) if not isinstance(v, (int, type(None))) else v)
                     for k, v in r.items()
-                    if k in ["period", "period_end_date", "quarter_end_date", "revenue", "revenue_cr",
-                              "net_profit", "net_profit_cr", "eps", "total_income", "total_expenses",
-                              "yoy_revenue_pct", "yoy_profit_pct", "qoq_revenue_pct", "qoq_profit_pct"]
+                    if k in _QR_KEEP
                 })
 
     # Sector rotation signal for this stock's sector

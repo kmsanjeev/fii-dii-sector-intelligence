@@ -234,7 +234,12 @@ def generate_report_html(symbol: str, data: dict) -> str:
     # ── Quarterly results table rows ──────────────────────────────────────────
     qr_rows_html = ''
     for q in qr_list[:4]:
-        period = str(q.get('period') or q.get('period_end_date') or q.get('quarter_end_date') or '')[:10]
+        period = str(q.get('window_label') or q.get('quarter_label') or q.get('date_end') or
+                     q.get('period_end_date') or q.get('period') or '')
+        sa_or_cons = str(q.get('standalone_or_consolidated') or '')
+        sa_badge = (' <span style="font-size:8px;opacity:0.6;letter-spacing:0.5px">'
+                    + _h(sa_or_cons[:2].upper()) + '</span>') if sa_or_cons else ''
+        period_cell = _h(period) + sa_badge
         rev    = _cr(q.get('revenue_cr') or q.get('revenue'))
         pft    = q.get('net_profit_cr') or q.get('net_profit')
         pft_v  = _cr(pft)
@@ -245,7 +250,7 @@ def generate_report_html(symbol: str, data: dict) -> str:
         yoy_c  = _rc(yoy_p)
         qr_rows_html += f'''
         <tr>
-          <td style="color:#8AAED0">{_h(period)}</td>
+          <td style="color:#8AAED0">{period_cell}</td>
           <td style="font-family:'Courier New',monospace">{rev}</td>
           <td style="font-family:'Courier New',monospace;color:{p_col}">{pft_v}</td>
           <td style="font-family:'Courier New',monospace">{eps}</td>
