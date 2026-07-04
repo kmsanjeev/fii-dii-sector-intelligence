@@ -255,64 +255,80 @@ function RegimeDial({ score, regime }: { score: number; regime: string }) {
 
 // ─── SVG Breadth Donut ────────────────────────────────────────────────────────
 
-function BreadthDonut({ breadth }: { breadth: MarketContext['breadth'] }) {
+function BreadthDonut({ breadth }: { breadth: MarketContext['breadth'] | undefined }) {
   if (!breadth) return null
 
   const total = Object.values(breadth).reduce((a, b) => a + b, 0)
-  const R = 46, cx = 65, cy = 65
+  const R = 44, cx = 65, cy = 65, SW = 22
   const circ = 2 * Math.PI * R
 
-  const segs = [
-    { key: 'bull_run',     label: 'BULL RUN',     color: C.bull,    bg: '#052E14' },
-    { key: 'emerging',     label: 'EMERGING',     color: '#10B981', bg: '#023323' },
-    { key: 'watchlist',    label: 'WATCHLIST',    color: C.blue,    bg: '#0A1A3A' },
-    { key: 'neutral',      label: 'NEUTRAL',      color: '#64748B', bg: '#161E2E' },
-    { key: 'accumulation', label: 'ACCUMULATION', color: '#9575CD', bg: '#1A0A2E' },
-    { key: 'markdown',     label: 'MARKDOWN',     color: C.bear,    bg: '#2A0A0A' },
+  const SEG_DEFS = [
+    { key: 'bull_run',     label: 'BULL RUN',     color: '#22D35E', bg: '#052E14' },
+    { key: 'emerging',     label: 'EMERGING',     color: '#0EC4A0', bg: '#023323' },
+    { key: 'watchlist',    label: 'WATCHLIST',    color: '#4080FF', bg: '#0A1A3A' },
+    { key: 'neutral',      label: 'NEUTRAL',      color: '#94A3B8', bg: '#161E2E' },
+    { key: 'accumulation', label: 'ACCUMULATION', color: '#A78BFA', bg: '#1A0A2E' },
+    { key: 'markdown',     label: 'MARKDOWN',     color: '#F44B4B', bg: '#2A0A0A' },
   ] as const
 
-  let offset = 0
+  // Pre-compute each segment's fraction and cumulative start position
+  const segments = SEG_DEFS.map((def, i) => {
+    const count = (breadth as Record<string, number>)[def.key] ?? 0
+    const pct   = total > 0 ? count / total : 0
+    const cumStart = SEG_DEFS.slice(0, i).reduce((s, d) => {
+      return s + ((breadth as Record<string, number>)[d.key] ?? 0) / total
+    }, 0)
+    return { ...def, count, pct, cumStart }
+  })
 
   return (
     <div style={{ ...CARD, padding: '20px' }}>
       <div style={LABEL}>UNIVERSE BREADTH</div>
       <div style={{ display: 'flex', gap: 20, marginTop: 12, alignItems: 'center' }}>
         <svg viewBox="0 0 130 130" width={130} height={130} style={{ flexShrink: 0 }}>
-          {segs.map(({ key, color }) => {
-            const count = breadth[key as keyof typeof breadth] ?? 0
-            const pct   = total > 0 ? count / total : 0
-            const gap   = pct > 0.01 ? 2.5 : 0
-            const dash  = circ * pct - gap
-            const dashOffset = circ * (1 - offset)
-            offset += pct
+          {/* Background track */}
+          <circle cx={cx} cy={cy} r={R} fill="none"
+            stroke="#1E2D44" strokeWidth={SW}
+          />
+          {segments.map(({ key, color, pct, cumStart }) => {
+            if (pct < 0.001) return null
+            // Gap between segments (only for non-tiny segments)
+            const gap    = pct > 0.015 ? 2 : 0
+            const dash   = Math.max(0.5, circ * pct - gap)
+            // Correct SVG donut formula:
+            // dashOffset = circ * (1 + pct - cumStart)
+            // This places the start of the dash at the cumStart position of the circle.
+            const dashOffset = circ * (1 + pct - cumStart)
             return (
               <circle key={key} cx={cx} cy={cy} r={R} fill="none"
-                stroke={color} strokeWidth="24"
-                strokeDasharray={`${Math.max(0, dash)} ${circ}`}
+                stroke={color} strokeWidth={SW}
+                strokeDasharray={`${dash} ${circ}`}
                 strokeDashoffset={dashOffset}
                 transform={`rotate(-90 ${cx} ${cy})`}
+                strokeLinecap="butt"
               />
             )
           })}
-          {/* Center */}
-          <text x={cx} y={cy - 8} textAnchor="middle" fill={C.h1} fontSize="20" fontWeight="800" fontFamily="monospace">{total}</text>
-          <text x={cx} y={cy + 7}  textAnchor="middle" fill={C.muted} fontSize="9" fontFamily="monospace">STOCKS</text>
+          {/* Center label */}
+          <text x={cx} y={cy - 7} textAnchor="middle" fill={C.h1}
+            fontSize="20" fontWeight="800" fontFamily="monospace">{total.toLocaleString()}</text>
+          <text x={cx} y={cy + 8} textAnchor="middle" fill={C.muted}
+            fontSize="9" fontFamily="monospace">STOCKS</text>
         </svg>
 
         {/* Legend */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 7 }}>
-          {segs.map(({ key, label, color, bg }) => {
-            const count = breadth[key as keyof typeof breadth] ?? 0
-            const pct   = total > 0 ? (count / total * 100).toFixed(0) : '0'
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {segments.map(({ key, label, color, bg, count, pct }) => {
+            const pctStr = (pct * 100).toFixed(0)
             return (
               <div key={key} style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 background: bg, borderRadius: 5, padding: '4px 8px',
               }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
+                <div style={{ width: 8, height: 8, borderRadius: 2, background: color, flexShrink: 0 }} />
                 <span style={{ color: C.secondary, fontSize: 10, flex: 1, fontWeight: 600 }}>{label}</span>
-                <span style={{ color, fontSize: 12, fontWeight: 800 }}>{count}</span>
-                <span style={{ color: C.muted, fontSize: 9, minWidth: 24, textAlign: 'right' }}>{pct}%</span>
+                <span style={{ color, fontSize: 12, fontWeight: 800, fontFamily: 'monospace' }}>{count}</span>
+                <span style={{ color: C.muted, fontSize: 9, minWidth: 26, textAlign: 'right' }}>{pctStr}%</span>
               </div>
             )
           })}
