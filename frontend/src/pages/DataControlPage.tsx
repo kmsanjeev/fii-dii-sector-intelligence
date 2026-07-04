@@ -32,7 +32,7 @@ function parseProgress(data: Record<string, unknown>): ProgressInfo | null {
   const line = (data.line as string) ?? ''
   const labelMatch = line.match(/^(.+?):\s+\d+%\|/)
   return {
-    label: labelMatch ? labelMatch[1].trim() : 'Progress',
+    label:   labelMatch ? labelMatch[1].trim() : 'Progress',
     pct:     (data.pct   as number) ?? 0,
     n:       (data.n     as number) ?? 0,
     total:   (data.total as number) ?? 0,
@@ -89,12 +89,12 @@ function ProgressBar({ info }: { info: ProgressInfo }) {
 // ── Daily Pipeline Panel ──────────────────────────────────────────────────────
 
 type StageInfo = {
-  label:       string
-  status:      string   // RUNNING | DONE | FAILED | TIMEOUT | STOPPED
-  started_at?: string
+  label:        string
+  status:       string   // RUNNING | DONE | FAILED | TIMEOUT | STOPPED
+  started_at?:  string
   finished_at?: string
-  duration_s?: number
-  error?:      string
+  duration_s?:  number
+  error?:       string
 }
 
 type PipelineStatus = {
@@ -108,29 +108,60 @@ type PipelineStatus = {
   stages:        Record<string, StageInfo>
 }
 
-const STAGE_ORDER = [
-  '17_symbol_change',
-  '5A_participant_acquisition',
-  '5B_participant_flow',
-  '5C_participant_intelligence',
-  '6A_sector_capital_flow',
-  '6B_sector_flow_scores',
-  '6C_sector_rotation',
-  '7A_block_bulk_deals',
-  '7C_corp_action_intel',
-  '18A_announcements',
-  '16A_management_sentiment',
-  '8A_price_momentum',
-  '8B_bull_run_probability',
-  '12_ml_scorer',
-  '13A_document_builder',
-  '13B_faiss_indexer',
-  '13C_bm25_indexer',
-  '20_portfolio',
-  '9_alert_engine',
+// ── Section definitions for pipeline grouping ─────────────────────────────────
+
+const PIPELINE_SECTIONS: { id: string; title: string; stages: string[] }[] = [
+  {
+    id: 'acquisition',
+    title: 'Daily Acquisition',
+    stages: [
+      '1A_bhavcopy_equity',
+      '1B_bhavcopy_fno',
+      '1C_corp_actions',
+      '1D_equity_master',
+      '1E_price_adjust',
+      '1F_stock_history',
+    ],
+  },
+  {
+    id: 'intelligence',
+    title: 'Intelligence Gathering',
+    stages: [
+      '17_symbol_change',
+      '5A_participant_acquisition',
+      '5B_participant_flow',
+      '5C_participant_intelligence',
+      '6A_sector_capital_flow',
+      '6B_sector_flow_scores',
+      '6C_sector_rotation',
+      '7A_block_bulk_deals',
+      '7C_corp_action_intel',
+      '18A_announcements',
+      '16A_management_sentiment',
+      'A1_technical_indicators',
+      'A2_fno_intelligence',
+      '8A_price_momentum',
+      '8B_bull_run_probability',
+      '12_ml_scorer',
+      'C1_trade_conviction',
+      '13A_document_builder',
+      '13B_faiss_indexer',
+      '13C_bm25_indexer',
+      '20_portfolio',
+      '9_alert_engine',
+    ],
+  },
 ]
 
+const STAGE_ORDER = PIPELINE_SECTIONS.flatMap(s => s.stages)
+
 const STAGE_LABELS: Record<string, string> = {
+  '1A_bhavcopy_equity':          'NSE Equity Bhavcopy Download',
+  '1B_bhavcopy_fno':             'NSE F&O Bhavcopy Download',
+  '1C_corp_actions':             'Corporate Actions Update',
+  '1D_equity_master':            'Equity Master Refresh',
+  '1E_price_adjust':             'Price Adjustment (adjusted OHLCV)',
+  '1F_stock_history':            'Stock History Cache (incremental)',
   '17_symbol_change':            'Symbol Change History',
   '5A_participant_acquisition':  'Participant Acquisition (NSE API)',
   '5B_participant_flow':         'Participant Flow Scores',
@@ -142,15 +173,51 @@ const STAGE_LABELS: Record<string, string> = {
   '7C_corp_action_intel':        'Corporate Action Intelligence',
   '18A_announcements':           'Corporate Announcements (incremental)',
   '16A_management_sentiment':    'Management Sentiment (Claude AI)',
+  'A1_technical_indicators':     'Technical Indicators',
+  'A2_fno_intelligence':         'F&O Intelligence (PCR + OI signals)',
   '8A_price_momentum':           'Price Momentum',
   '8B_bull_run_probability':     'Bull Run Probability',
   '12_ml_scorer':                'ML Scorer (inference)',
+  'C1_trade_conviction':         'Trade Conviction Scores',
   '13A_document_builder':        'RAG Document Builder',
   '13B_faiss_indexer':           'FAISS Indexer (embedding)',
   '13C_bm25_indexer':            'BM25 Indexer',
   '20_portfolio':                'Portfolio Intelligence Rebuild',
   '9_alert_engine':              'Alert Engine (Telegram push)',
 }
+
+// Map stage IDs to their data-status keys for Records / Coverage columns
+const STAGE_STATUS_KEY: Record<string, string> = {
+  '1A_bhavcopy_equity':          'bhavcopy_equity',
+  '1B_bhavcopy_fno':             'bhavcopy_fno',
+  '1C_corp_actions':             'corporate_actions',
+  '1D_equity_master':            'equity_master',
+  '1E_price_adjust':             'adjusted_equity',
+  '1F_stock_history':            'stock_history_cache',
+  '5A_participant_acquisition':  'participant_flows',
+  '6A_sector_capital_flow':      'sector_flow_scores',
+  '7A_block_bulk_deals':         'block_bulk_deals',
+  '8A_price_momentum':           'price_momentum',
+  '8B_bull_run_probability':     'bull_run_probability',
+  '12_ml_scorer':                'ml_scores_combined',
+  'C1_trade_conviction':         'trade_conviction_scores',
+  'A1_technical_indicators':     'technical_indicators',
+  'A2_fno_intelligence':         'fno_intelligence',
+  '13B_faiss_indexer':           'participant_intelligence',  // proxy — RAG has no direct file
+  '20_portfolio':                'deal_signals',              // proxy — portfolio has no direct file
+}
+
+// Map backfill engine keys to labels/descriptions
+const BACKFILL_ENGINES: { key: string; label: string; desc: string }[] = [
+  { key: 'results_acquisition',               label: 'Financial Results (recent)',       desc: 'Last 2 quarters NSE XBRL P&L' },
+  { key: 'results_acquisition_full',          label: 'Financial Results (full backfill)', desc: 'Full FY2018+ XBRL history' },
+  { key: 'valuation_15b',                     label: 'Valuation Scores',                 desc: 'P/E, ROE per symbol' },
+  { key: 'extended_financials_15b',           label: 'Extended Financials (recent)',     desc: 'OPM, ROCE, Book Value, Sales CAGR' },
+  { key: 'extended_financials_15b_backfill',  label: 'Extended Financials (backfill)',   desc: '3Y growth window history' },
+  { key: 'shp_acquisition',                   label: 'Shareholding (latest quarter)',    desc: 'FII/DII/promoter % from NSE' },
+  { key: 'shp_acquisition_full',              label: 'Shareholding (full backfill)',     desc: 'Full FY2008+ quarterly history' },
+  { key: 'stock_history_full',                label: 'Stock History Cache (full rebuild)', desc: 'Rebuild all per-symbol parquet from scratch' },
+]
 
 function stageColor(status: string): string {
   if (status === 'DONE')    return '#22C55E'
@@ -168,10 +235,25 @@ function stateColor(state: string): string {
   return '#334155'
 }
 
-function DailyPipelinePanel() {
-  const [ps, setPs]             = useState<PipelineStatus | null>(null)
-  const [log, setLog]           = useState<Record<string, unknown>[]>([])
-  const [showLog, setShowLog]   = useState(false)
+function SectionLabel({ label }: { label: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '14px 0 6px' }}>
+      <div style={{ fontSize: 9, fontWeight: 800, color: '#475569', letterSpacing: '0.12em', flexShrink: 0 }}>
+        {label.toUpperCase()}
+      </div>
+      <div style={{ flex: 1, height: 1, background: '#1E2332' }} />
+    </div>
+  )
+}
+
+function DailyPipelinePanel({
+  allStatus,
+}: {
+  allStatus: Record<string, ModuleInfo>
+}) {
+  const [ps, setPs]               = useState<PipelineStatus | null>(null)
+  const [log, setLog]             = useState<Record<string, unknown>[]>([])
+  const [showLog, setShowLog]     = useState(false)
   const [actionMsg, setActionMsg] = useState('')
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -184,12 +266,11 @@ function DailyPipelinePanel() {
 
   const fetchLog = useCallback(async () => {
     try {
-      const r = await fetch(`${API_BASE}/api/pipeline/log?n=50`)
+      const r = await fetch(`${API_BASE}/api/pipeline/log?n=60`)
       if (r.ok) setLog(await r.json())
     } catch {}
   }, [])
 
-  // Poll every 5s while running, every 30s otherwise
   useEffect(() => {
     fetchStatus()
     const tick = () => {
@@ -203,7 +284,7 @@ function DailyPipelinePanel() {
   async function runNow() {
     setActionMsg('')
     try {
-      const r = await fetch(`${API_BASE}/api/pipeline/run`, { method: 'POST' })
+      const r    = await fetch(`${API_BASE}/api/pipeline/run`, { method: 'POST' })
       const body = await r.json()
       setActionMsg(r.ok ? 'Pipeline started.' : body.detail ?? 'Already running.')
       fetchStatus()
@@ -213,15 +294,15 @@ function DailyPipelinePanel() {
   async function killPipeline() {
     setActionMsg('')
     try {
-      const r = await fetch(`${API_BASE}/api/pipeline/stop`, { method: 'POST' })
+      const r    = await fetch(`${API_BASE}/api/pipeline/stop`, { method: 'POST' })
       const body = await r.json()
       setActionMsg(body.message ?? 'Stop signal sent.')
       fetchStatus()
     } catch { setActionMsg('Could not reach backend.') }
   }
 
-  const isRunning = ps?.state === 'RUNNING'
-  const doneCount = STAGE_ORDER.filter(id => ps?.stages?.[id]?.status === 'DONE').length
+  const isRunning  = ps?.state === 'RUNNING'
+  const doneCount  = STAGE_ORDER.filter(id => ps?.stages?.[id]?.status === 'DONE').length
 
   return (
     <div style={{
@@ -230,7 +311,7 @@ function DailyPipelinePanel() {
     }}>
 
       {/* Header row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
         <h2 style={{ color: '#E2E8F0', fontSize: 13, fontWeight: 700, letterSpacing: 2, margin: 0 }}>
           DAILY PIPELINE
         </h2>
@@ -243,27 +324,16 @@ function DailyPipelinePanel() {
           {ps?.state ?? 'IDLE'}
         </span>
         <div style={{ flex: 1 }} />
-        {/* Action message */}
-        {actionMsg && (
-          <span style={{ fontSize: 10, color: '#94A3B8' }}>{actionMsg}</span>
-        )}
-        {/* Kill button — only when running */}
+        {actionMsg && <span style={{ fontSize: 10, color: '#94A3B8' }}>{actionMsg}</span>}
         {isRunning && (
-          <button
-            onClick={killPipeline}
-            style={{
-              padding: '3px 14px', borderRadius: 4,
-              border: '1px solid #EF4444', backgroundColor: '#EF444422',
-              color: '#EF4444', cursor: 'pointer', fontSize: 10, fontWeight: 700,
-            }}
-          >
-            KILL
-          </button>
+          <button onClick={killPipeline} style={{
+            padding: '3px 14px', borderRadius: 4,
+            border: '1px solid #EF4444', backgroundColor: '#EF444422',
+            color: '#EF4444', cursor: 'pointer', fontSize: 10, fontWeight: 700,
+          }}>KILL</button>
         )}
-        {/* Run Now button */}
         <button
-          onClick={runNow}
-          disabled={isRunning}
+          onClick={runNow} disabled={isRunning}
           style={{
             padding: '3px 14px', borderRadius: 4,
             border: `1px solid ${isRunning ? '#334155' : '#22C55E'}`,
@@ -278,7 +348,7 @@ function DailyPipelinePanel() {
       </div>
 
       {/* Meta row */}
-      <div style={{ display: 'flex', gap: 24, fontSize: 10, color: '#64748B', marginBottom: 14 }}>
+      <div style={{ display: 'flex', gap: 24, fontSize: 10, color: '#64748B', marginBottom: 12 }}>
         <span>Schedule: <span style={{ color: '#94A3B8' }}>Mon-Fri 18:00 IST</span></span>
         <span>Next run: <span style={{ color: '#94A3B8' }}>{ps?.next_run_ist ?? '--'}</span></span>
         <span>Last run: <span style={{ color: '#94A3B8' }}>{ps?.last_run_at ?? 'never'}</span></span>
@@ -287,22 +357,19 @@ function DailyPipelinePanel() {
         )}
       </div>
 
-      {/* Stage progress bar */}
-      <div style={{ marginBottom: 12 }}>
+      {/* Progress strip — all stages coloured by section */}
+      <div style={{ marginBottom: 14 }}>
         <div style={{ display: 'flex', gap: 2 }}>
           {STAGE_ORDER.map(id => {
-            const s = ps?.stages?.[id]
+            const s   = ps?.stages?.[id]
             const col = s ? stageColor(s.status) : (
-              ps?.state === 'RUNNING' && id === ps?.current_stage ? '#F59E0B' : '#1E2332'
+              isRunning && id === ps?.current_stage ? '#F59E0B' : '#1E2332'
             )
             return (
-              <div
-                key={id}
-                title={`${STAGE_LABELS[id]}: ${s?.status ?? 'PENDING'}`}
+              <div key={id} title={`${STAGE_LABELS[id]}: ${s?.status ?? 'PENDING'}`}
                 style={{
                   flex: 1, height: 8, borderRadius: 2,
-                  backgroundColor: col,
-                  opacity: s ? 1 : 0.4,
+                  backgroundColor: col, opacity: s ? 1 : 0.4,
                   transition: 'background-color 0.4s',
                 }}
               />
@@ -314,47 +381,69 @@ function DailyPipelinePanel() {
         </div>
       </div>
 
-      {/* Stage table */}
-      <table style={{ width: '100%', fontSize: 10, borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ borderBottom: '1px solid #1E2332', color: '#64748B' }}>
-            <th style={{ textAlign: 'left',  padding: '4px 6px' }}>Stage</th>
-            <th style={{ textAlign: 'center', padding: '4px 6px' }}>Status</th>
-            <th style={{ textAlign: 'right', padding: '4px 6px' }}>Duration</th>
-            <th style={{ textAlign: 'left',  padding: '4px 6px' }}>Finished</th>
-          </tr>
-        </thead>
-        <tbody>
-          {STAGE_ORDER.map(id => {
-            const s      = ps?.stages?.[id]
-            const isCurr = isRunning && ps?.current_stage === id
-            const col    = isCurr ? '#F59E0B' : (s ? stageColor(s.status) : '#334155')
-            return (
-              <tr key={id} style={{ borderBottom: '1px solid #1E233218' }}>
-                <td style={{ padding: '4px 6px', color: col, fontWeight: isCurr ? 700 : 400 }}>
-                  {isCurr ? '> ' : ''}{STAGE_LABELS[id]}
-                  {s?.error ? <span style={{ color: '#EF4444', marginLeft: 6 }}>{s.error.slice(0, 60)}</span> : null}
-                </td>
-                <td style={{ padding: '4px 6px', textAlign: 'center' }}>
-                  <span style={{
-                    color: col, border: `1px solid ${col}`,
-                    padding: '0 6px', borderRadius: 3,
-                    fontSize: 9, fontWeight: 700,
-                  }}>
-                    {isCurr ? 'RUNNING' : (s?.status ?? 'PENDING')}
-                  </span>
-                </td>
-                <td style={{ padding: '4px 6px', textAlign: 'right', color: '#64748B' }}>
-                  {s?.duration_s != null ? `${s.duration_s}s` : '--'}
-                </td>
-                <td style={{ padding: '4px 6px', color: '#64748B' }}>
-                  {s?.finished_at ?? '--'}
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      {/* Sectioned stage tables */}
+      {PIPELINE_SECTIONS.map(section => {
+        const sectionDone = section.stages.filter(id => ps?.stages?.[id]?.status === 'DONE').length
+        return (
+          <div key={section.id}>
+            <SectionLabel label={`${section.title} — ${sectionDone}/${section.stages.length}`} />
+            <table style={{ width: '100%', fontSize: 10, borderCollapse: 'collapse', marginBottom: 4 }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid #1E2332', color: '#475569' }}>
+                  <th style={{ textAlign: 'left',   padding: '3px 6px', width: '32%' }}>Stage</th>
+                  <th style={{ textAlign: 'center', padding: '3px 6px', width: '10%' }}>Status</th>
+                  <th style={{ textAlign: 'left',   padding: '3px 6px', width: '22%' }}>Records</th>
+                  <th style={{ textAlign: 'left',   padding: '3px 6px', width: '18%' }}>Coverage</th>
+                  <th style={{ textAlign: 'right',  padding: '3px 6px', width: '8%'  }}>Duration</th>
+                  <th style={{ textAlign: 'left',   padding: '3px 6px', width: '10%' }}>Finished</th>
+                </tr>
+              </thead>
+              <tbody>
+                {section.stages.map(id => {
+                  const s      = ps?.stages?.[id]
+                  const isCurr = isRunning && ps?.current_stage === id
+                  const col    = isCurr ? '#F59E0B' : (s ? stageColor(s.status) : '#334155')
+                  const dataKey = STAGE_STATUS_KEY[id]
+                  const dataInfo = dataKey ? allStatus[dataKey] : undefined
+                  return (
+                    <tr key={id} style={{ borderBottom: '1px solid #1E233218' }}>
+                      <td style={{ padding: '4px 6px', color: col, fontWeight: isCurr ? 700 : 400 }}>
+                        {isCurr ? '> ' : ''}{STAGE_LABELS[id]}
+                        {s?.error ? (
+                          <span style={{ color: '#EF4444', marginLeft: 6, fontSize: 9 }}>
+                            {s.error.slice(0, 50)}
+                          </span>
+                        ) : null}
+                      </td>
+                      <td style={{ padding: '4px 6px', textAlign: 'center' }}>
+                        <span style={{
+                          color: col, border: `1px solid ${col}`,
+                          padding: '0 6px', borderRadius: 3,
+                          fontSize: 9, fontWeight: 700,
+                        }}>
+                          {isCurr ? 'RUNNING' : (s?.status ?? 'PENDING')}
+                        </span>
+                      </td>
+                      <td style={{ padding: '4px 6px', color: '#94A3B8', fontSize: 9 }}>
+                        {dataInfo?.records ?? '--'}
+                      </td>
+                      <td style={{ padding: '4px 6px', color: '#64748B', fontSize: 9 }}>
+                        {dataInfo?.coverage ?? dataInfo?.as_of_date ?? '--'}
+                      </td>
+                      <td style={{ padding: '4px 6px', textAlign: 'right', color: '#64748B' }}>
+                        {s?.duration_s != null ? `${s.duration_s}s` : '--'}
+                      </td>
+                      <td style={{ padding: '4px 6px', color: '#64748B', fontSize: 9 }}>
+                        {s?.finished_at ?? '--'}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )
+      })}
 
       {/* Log toggle */}
       <div style={{ marginTop: 10, display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -368,7 +457,7 @@ function DailyPipelinePanel() {
         >
           {showLog ? 'Hide Log' : 'Show Log'}
         </button>
-        <span style={{ fontSize: 9, color: '#475569' }}>Last 50 stage entries from refresh_log.csv</span>
+        <span style={{ fontSize: 9, color: '#475569' }}>Last 60 stage entries from refresh_log.csv</span>
       </div>
 
       {showLog && log.length > 0 && (
@@ -380,17 +469,17 @@ function DailyPipelinePanel() {
         }}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 60px 50px 80px',
+            gridTemplateColumns: '1fr 60px 50px 100px',
             gap: '0 8px', color: '#475569', marginBottom: 4, fontWeight: 700,
           }}>
             <span>Stage</span><span>Status</span><span>Dur(s)</span><span>Finished</span>
           </div>
           {log.slice().reverse().map((row, i) => {
-            const st = String(row.status ?? '')
+            const st  = String(row.status ?? '')
             const col = st === 'DONE' ? '#22C55E' : st === 'FAILED' || st === 'TIMEOUT' ? '#EF4444' : '#64748B'
             return (
               <div key={i} style={{
-                display: 'grid', gridTemplateColumns: '1fr 60px 50px 80px',
+                display: 'grid', gridTemplateColumns: '1fr 60px 50px 100px',
                 gap: '0 8px', borderBottom: '1px solid #1E233220', padding: '2px 0',
               }}>
                 <span style={{ color: '#94A3B8' }}>{String(row.label ?? row.stage_id ?? '')}</span>
@@ -406,79 +495,48 @@ function DailyPipelinePanel() {
   )
 }
 
-// Engine key lookup by module key
-const ENGINE_MAP: Record<string, string> = {
-  bhavcopy_equity:              'bhavcopy_equity',
-  bhavcopy_fno:                 'bhavcopy_fno',
-  corporate_actions:            'corporate_actions',
-  equity_master:                'equity_master',
-  stock_history_cache:          'stock_history_build',
-  participant_flows:            'participant_5a',
-  participant_flow_scores:      'participant_5b',
-  participant_intelligence:     'participant_5c',
-  sector_flow_scores:           'sector_6b',
-  sector_rotation_intelligence: 'sector_6c',
-  price_momentum:               'momentum_8a',
-  bull_run_probability:         'bull_run_8b',
-  ml_scores_combined:           'ml_12',
-  block_bulk_deals:             'deals_7a',
-  deal_signals:                 'deals_7a',
-  event_calendar:               'events_7b',
-  upcoming_catalysts:           'events_7b',
-  corporate_action_signals:     'corp_actions_7c',
-  corporate_confidence:         'corp_actions_7c',
-  quarterly_results:            'results_acquisition',
-  valuation_scores:             'valuation_15b',
-  shareholding:                 'shp_acquisition',
-}
+// ── Backfill Historical Data Panel ────────────────────────────────────────────
 
-function ModuleTable({
-  title,
-  modules,
-  pipelineKey,
-  onBusyChange,
+function BackfillPanel({
+  allStatus,
   onRunComplete,
 }: {
-  title: string
-  modules: Record<string, ModuleInfo>
-  pipelineKey: string
-  onBusyChange?: (busy: boolean) => void
-  onRunComplete?: () => void
+  allStatus: Record<string, ModuleInfo>
+  onRunComplete: () => void
 }) {
-  const [running, setRunning]             = useState<string | null>(null)
-  const [logs, setLogs]                   = useState<Record<string, string[]>>({})
-  const [engProgress, setEngProgress]     = useState<Record<string, ProgressInfo | null>>({})
-  const [lastProgress, setLastProgress]   = useState<Record<string, ProgressInfo | null>>({})
-  const [openLog, setOpenLog]             = useState<string | null>(null)
-  const [pipeRunning, setPipeRunning]     = useState(false)
-  const [pipeLogs, setPipeLogs]           = useState<string[]>([])
-  const [pipeProgress, setPipeProgress]   = useState<ProgressInfo | null>(null)
-  const logRef   = useRef<HTMLDivElement>(null)
-  const pipeRef  = useRef<HTMLDivElement>(null)
+  const [running, setRunning]   = useState<string | null>(null)
+  const [logs, setLogs]         = useState<Record<string, string[]>>({})
+  const [openLog, setOpenLog]   = useState<string | null>(null)
+  const logRef = useRef<HTMLDivElement>(null)
   const activeEs = useRef<EventSource | null>(null)
 
-  const busy = running !== null || pipeRunning
-
-  useEffect(() => { onBusyChange?.(busy) }, [busy])
-
-  function streamEngine(key: string, onLine: (line: string) => void, onProgress: (p: ProgressInfo) => void, onDone: () => void) {
+  function streamEngine(key: string, onLine: (l: string) => void, onDone: () => void) {
     activeEs.current?.close()
     const es = new EventSource(`${BASE}/api/data/run/${key}`)
     activeEs.current = es
     es.onmessage = (e) => {
       try {
         const data = JSON.parse(e.data)
-        if (data.ping) return                          // keepalive — ignore
-        if (data.type === 'progress') {
-          const p = parseProgress(data)
-          if (p) onProgress(p)
-        } else if (data.line !== undefined) {
-          onLine(data.line as string)
-        }
+        if (data.ping) return
+        if (data.line !== undefined) onLine(data.line as string)
         if (data.all_done) { es.close(); activeEs.current = null; onDone() }
       } catch {}
     }
     es.onerror = () => { es.close(); activeEs.current = null; onDone() }
+  }
+
+  function runEngine(key: string) {
+    setRunning(key)
+    setLogs(prev => ({ ...prev, [key]: [`Starting ${key}...`] }))
+    setOpenLog(key)
+    streamEngine(
+      key,
+      (line) => {
+        setLogs(prev => ({ ...prev, [key]: [...(prev[key] ?? []), line] }))
+        if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight
+      },
+      () => { setRunning(null); onRunComplete() },
+    )
   }
 
   function stopAll() {
@@ -486,152 +544,94 @@ function ModuleTable({
     activeEs.current = null
     killBackend()
     setRunning(null)
-    setPipeRunning(false)
   }
 
-  function runEngine(engineKey: string) {
-    setRunning(engineKey)
-    setLogs(prev => ({ ...prev, [engineKey]: [`Starting ${engineKey}...`] }))
-    setEngProgress(prev => ({ ...prev, [engineKey]: null }))
-    setOpenLog(engineKey)
-    streamEngine(
-      engineKey,
-      (line) => {
-        setLogs(prev => ({ ...prev, [engineKey]: [...(prev[engineKey] ?? []), line] }))
-        if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight
-      },
-      (p) => {
-        setEngProgress(prev => ({ ...prev, [engineKey]: p }))
-        setLastProgress(prev => ({ ...prev, [engineKey]: p }))
-      },
-      () => {
-        // Persist the last progress state at 100% so the bar stays visible
-        setEngProgress(prev => {
-          const last = prev[engineKey]
-          if (last) setLastProgress(lp => ({ ...lp, [engineKey]: { ...last, pct: 100 } }))
-          return { ...prev, [engineKey]: null }
-        })
-        setRunning(null)
-        onRunComplete?.()
-      },
-    )
+  // Map engine key to status data key
+  const ENGINE_TO_STATUS: Record<string, string> = {
+    results_acquisition:              'quarterly_results',
+    results_acquisition_full:         'quarterly_results',
+    valuation_15b:                    'valuation_scores',
+    extended_financials_15b:          'valuation_scores',
+    extended_financials_15b_backfill: 'valuation_scores',
+    shp_acquisition:                  'shareholding',
+    shp_acquisition_full:             'shareholding',
+    stock_history_full:               'stock_history_cache',
   }
 
-  function runSectionPipeline() {
-    setPipeRunning(true)
-    setPipeLogs([`Starting ${title} pipeline...`])
-    setPipeProgress(null)
-    streamEngine(
-      pipelineKey,
-      (line) => {
-        setPipeLogs(prev => [...prev, line])
-        if (pipeRef.current) pipeRef.current.scrollTop = pipeRef.current.scrollHeight
-      },
-      (p) => setPipeProgress(p),
-      () => { setPipeRunning(false); onRunComplete?.() },
-    )
-  }
-
-  const okCount = Object.values(modules).filter(m => m.status === 'OK').length
-  const total   = Object.keys(modules).length
-  const pct     = total > 0 ? Math.round((okCount / total) * 100) : 0
+  const busy = running !== null
 
   return (
-    <div style={{ marginBottom: 32 }}>
-
-      {/* Section header + health bar + pipeline button */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-        <h2 style={{ color: '#E2E8F0', fontSize: 13, fontWeight: 700, letterSpacing: 2, margin: 0, whiteSpace: 'nowrap' }}>
-          {title}
+    <div style={{
+      backgroundColor: '#141720', border: '1px solid #1E2332',
+      borderRadius: 6, padding: 16, marginBottom: 28,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+        <h2 style={{ color: '#E2E8F0', fontSize: 13, fontWeight: 700, letterSpacing: 2, margin: 0 }}>
+          BACKFILL HISTORICAL DATA
         </h2>
-        <div style={{ flex: 1, height: 6, backgroundColor: '#1E2332', borderRadius: 3 }}>
-          <div style={{
-            width: `${pct}%`, height: 6, borderRadius: 3,
-            backgroundColor: pct === 100 ? '#22C55E' : pct > 50 ? '#F59E0B' : '#EF4444',
-            transition: 'width 0.5s',
-          }} />
-        </div>
-        <span style={{ color: '#64748B', fontSize: 11, whiteSpace: 'nowrap' }}>{okCount}/{total} ({pct}%)</span>
-        {busy ? (
-          <button
-            onClick={stopAll}
-            style={{
-              padding: '3px 14px', borderRadius: 4,
-              border: '1px solid #EF4444',
-              backgroundColor: '#EF444422',
-              color: '#EF4444',
-              cursor: 'pointer',
-              fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap',
-            }}
-          >
-            Stop
-          </button>
-        ) : (
-          <button
-            onClick={runSectionPipeline}
-            style={{
-              padding: '3px 14px', borderRadius: 4,
-              border: '1px solid #22C55E',
-              backgroundColor: 'transparent',
-              color: '#22C55E',
-              cursor: 'pointer',
-              fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap',
-            }}
-          >
-            Run Pipeline
-          </button>
+        <div style={{ flex: 1, height: 1, background: '#1E2332' }} />
+        <span style={{ fontSize: 10, color: '#64748B' }}>Run manually only — not part of daily schedule</span>
+        {busy && (
+          <button onClick={stopAll} style={{
+            padding: '3px 14px', borderRadius: 4,
+            border: '1px solid #EF4444', backgroundColor: '#EF444422',
+            color: '#EF4444', cursor: 'pointer', fontSize: 10, fontWeight: 700,
+          }}>STOP</button>
         )}
       </div>
 
-      {/* Module table */}
-      <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
+      <table style={{ width: '100%', fontSize: 10, borderCollapse: 'collapse' }}>
         <thead>
-          <tr style={{ borderBottom: '1px solid #1E2332', color: '#64748B' }}>
-            <th style={{ textAlign: 'left', padding: '6px 8px' }}>Module</th>
-            <th style={{ textAlign: 'center', padding: '6px 8px' }}>Status</th>
-            <th style={{ textAlign: 'left', padding: '6px 8px' }}>Records</th>
-            <th style={{ textAlign: 'left', padding: '6px 8px' }}>Coverage / As-of</th>
-            <th style={{ textAlign: 'left', padding: '6px 8px' }}>Last Updated</th>
-            <th style={{ textAlign: 'center', padding: '6px 8px' }}>Action</th>
+          <tr style={{ borderBottom: '1px solid #1E2332', color: '#475569' }}>
+            <th style={{ textAlign: 'left',   padding: '3px 6px', width: '26%' }}>Engine</th>
+            <th style={{ textAlign: 'left',   padding: '3px 6px', width: '28%' }}>Description</th>
+            <th style={{ textAlign: 'center', padding: '3px 6px', width: '9%'  }}>Status</th>
+            <th style={{ textAlign: 'left',   padding: '3px 6px', width: '19%' }}>Records</th>
+            <th style={{ textAlign: 'left',   padding: '3px 6px', width: '12%' }}>Coverage</th>
+            <th style={{ textAlign: 'center', padding: '3px 6px', width: '6%'  }}>Action</th>
           </tr>
         </thead>
         <tbody>
-          {Object.entries(modules).map(([key, m]) => {
-            const engineKey   = ENGINE_MAP[key]
-            const isRunning   = running === engineKey
-            const hasLogs     = (logs[engineKey] ?? []).length > 0
-            const progress    = engProgress[engineKey] ?? null
-            const prevProgress = lastProgress[engineKey] ?? null
-
+          {BACKFILL_ENGINES.map(({ key, label, desc }) => {
+            const dataKey  = ENGINE_TO_STATUS[key]
+            const dataInfo = dataKey ? allStatus[dataKey] : undefined
+            const isRun    = running === key
+            const hasLogs  = (logs[key] ?? []).length > 0
             return (
               <>
-                <tr key={key} style={{ borderBottom: '1px solid #1E233230' }}>
-                  <td style={{ padding: '6px 8px', color: '#E2E8F0', fontWeight: 600 }}>{m.label}</td>
-                  <td style={{ padding: '6px 8px', textAlign: 'center' }}><StatusBadge status={m.status} /></td>
-                  <td style={{ padding: '6px 8px', color: '#94A3B8' }}>{m.records}</td>
-                  <td style={{ padding: '6px 8px', color: '#64748B' }}>{m.as_of_date ?? m.coverage ?? '-'}</td>
-                  <td style={{ padding: '6px 8px', color: '#64748B' }}>{m.last_modified ?? '-'}</td>
-                  <td style={{ padding: '6px 8px', textAlign: 'center' }}>
+                <tr key={key} style={{ borderBottom: '1px solid #1E233218' }}>
+                  <td style={{ padding: '5px 6px', color: isRun ? '#F59E0B' : '#E2E8F0', fontWeight: 600 }}>
+                    {label}
+                  </td>
+                  <td style={{ padding: '5px 6px', color: '#64748B' }}>{desc}</td>
+                  <td style={{ padding: '5px 6px', textAlign: 'center' }}>
+                    {dataInfo ? <StatusBadge status={dataInfo.status} /> : <span style={{ color: '#475569' }}>--</span>}
+                  </td>
+                  <td style={{ padding: '5px 6px', color: '#94A3B8', fontSize: 9 }}>
+                    {dataInfo?.records ?? '--'}
+                  </td>
+                  <td style={{ padding: '5px 6px', color: '#64748B', fontSize: 9 }}>
+                    {dataInfo?.coverage ?? dataInfo?.as_of_date ?? '--'}
+                  </td>
+                  <td style={{ padding: '5px 6px', textAlign: 'center' }}>
                     <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
-                      {engineKey && (
-                        <button
-                          onClick={() => runEngine(engineKey)}
-                          disabled={busy}
-                          style={{
-                            padding: '2px 10px', borderRadius: 4,
-                            border: '1px solid #22C55E',
-                            backgroundColor: isRunning ? '#22C55E22' : 'transparent',
-                            color: '#22C55E',
-                            cursor: busy ? 'not-allowed' : 'pointer',
-                            fontSize: 10, fontWeight: 700,
-                          }}
-                        >
-                          {isRunning ? 'Running...' : 'Run'}
-                        </button>
-                      )}
+                      <button
+                        onClick={() => runEngine(key)}
+                        disabled={busy}
+                        style={{
+                          padding: '2px 10px', borderRadius: 4,
+                          border: '1px solid #22C55E',
+                          backgroundColor: isRun ? '#22C55E22' : 'transparent',
+                          color: '#22C55E',
+                          cursor: busy ? 'not-allowed' : 'pointer',
+                          fontSize: 10, fontWeight: 700,
+                        }}
+                      >
+                        {isRun ? 'Running...' : 'Run'}
+                      </button>
                       {hasLogs && (
                         <button
-                          onClick={() => setOpenLog(openLog === engineKey ? null : engineKey)}
+                          onClick={() => setOpenLog(openLog === key ? null : key)}
                           style={{
                             padding: '2px 8px', borderRadius: 4,
                             border: '1px solid #334155',
@@ -639,37 +639,24 @@ function ModuleTable({
                             cursor: 'pointer', fontSize: 10,
                           }}
                         >
-                          {openLog === engineKey ? 'Hide' : 'Log'}
+                          {openLog === key ? 'Hide' : 'Log'}
                         </button>
                       )}
                     </div>
                   </td>
                 </tr>
 
-                {/* Progress bar — live while running, last-state persisted after done */}
-                {(isRunning ? progress : prevProgress) && (
-                  <tr key={`${key}_prog`}>
-                    <td colSpan={6} style={{ padding: '0 8px 4px 8px' }}>
-                      <ProgressBar info={(isRunning ? progress : prevProgress)!} />
-                    </td>
-                  </tr>
-                )}
-
-                {/* Log panel */}
-                {openLog === engineKey && hasLogs && (
+                {openLog === key && hasLogs && (
                   <tr key={`${key}_log`}>
-                    <td colSpan={6} style={{ padding: '0 8px 8px 8px' }}>
-                      <div
-                        ref={logRef}
-                        style={{
-                          backgroundColor: '#0A0D14', border: '1px solid #1E2332',
-                          borderRadius: 4, padding: 8,
-                          maxHeight: 180, overflowY: 'auto',
-                          fontFamily: 'monospace', fontSize: 10,
-                          color: '#94A3B8', whiteSpace: 'pre-wrap',
-                        }}
-                      >
-                        {(logs[engineKey] ?? []).map((line, i) => (
+                    <td colSpan={6} style={{ padding: '0 6px 8px 6px' }}>
+                      <div ref={logRef} style={{
+                        backgroundColor: '#0A0D14', border: '1px solid #1E2332',
+                        borderRadius: 4, padding: 8,
+                        maxHeight: 160, overflowY: 'auto',
+                        fontFamily: 'monospace', fontSize: 10,
+                        color: '#94A3B8', whiteSpace: 'pre-wrap',
+                      }}>
+                        {(logs[key] ?? []).map((line, i) => (
                           <div key={i} style={{
                             color: line.startsWith('ERROR') ? '#EF4444'
                                  : line.startsWith('---')   ? '#22C55E'
@@ -678,7 +665,7 @@ function ModuleTable({
                             {line || ' '}
                           </div>
                         ))}
-                        {isRunning && <div style={{ color: '#F59E0B' }}>... running ...</div>}
+                        {isRun && <div style={{ color: '#F59E0B' }}>... running ...</div>}
                       </div>
                     </td>
                   </tr>
@@ -688,97 +675,22 @@ function ModuleTable({
           })}
         </tbody>
       </table>
-
-      {/* Section pipeline log */}
-      {pipeLogs.length > 0 && (
-        <div style={{ marginTop: 10 }}>
-          <div style={{ color: '#64748B', fontSize: 10, marginBottom: 4, letterSpacing: 1 }}>
-            {title} PIPELINE LOG
-          </div>
-          {pipeProgress && <ProgressBar info={pipeProgress} />}
-          <div
-            ref={pipeRef}
-            style={{
-              backgroundColor: '#0A0D14', border: '1px solid #1E2332',
-              borderRadius: 4, padding: 8,
-              maxHeight: 220, overflowY: 'auto',
-              fontFamily: 'monospace', fontSize: 10,
-              color: '#94A3B8', whiteSpace: 'pre-wrap',
-              marginTop: pipeProgress ? 4 : 0,
-            }}
-          >
-            {pipeLogs.map((line, i) => (
-              <div key={i} style={{
-                color: line.startsWith('ERROR') ? '#EF4444'
-                     : line.startsWith('---')   ? '#22C55E'
-                     : '#94A3B8',
-              }}>
-                {line || ' '}
-              </div>
-            ))}
-            {pipeRunning && <div style={{ color: '#F59E0B' }}>... running ...</div>}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
 
+// ── Main Page ─────────────────────────────────────────────────────────────────
+
 export function DataControlPage() {
   const { data: status, isLoading, isFetching, refetch } = useQuery({
     queryKey: ['data_status'],
-    queryFn: fetchDataStatus,
-    staleTime: 0,           // always consider stale so manual refetch hits the network
+    queryFn:  fetchDataStatus,
+    staleTime: 0,
     refetchOnWindowFocus: false,
   })
 
-  const [pipeRunning, setPipeRunning]     = useState(false)
-  const [pipeLogs, setPipeLogs]           = useState<string[]>([])
-  const [pipeProgress, setPipeProgress]   = useState<ProgressInfo | null>(null)
-  const [sectionBusy, setSectionBusy]     = useState<Record<string, boolean>>({})
-  const pipeRef  = useRef<HTMLDivElement>(null)
-  const activeEs = useRef<EventSource | null>(null)
-
   // Kill any stale subprocess from a previous session on page load
   useEffect(() => { killBackend() }, [])
-
-  const anythingRunning = pipeRunning || Object.values(sectionBusy).some(Boolean)
-
-  const handleSectionBusy = useCallback((section: string) => (busy: boolean) => {
-    setSectionBusy(prev => ({ ...prev, [section]: busy }))
-  }, [])
-
-  function stopAll() {
-    activeEs.current?.close()
-    activeEs.current = null
-    killBackend()
-    setPipeRunning(false)
-  }
-
-  function runFullPipeline() {
-    killBackend()          // clear any stale process before starting
-    setPipeRunning(true)
-    setPipeLogs(['Starting full intelligence pipeline...'])
-    setPipeProgress(null)
-    activeEs.current?.close()
-    const es = new EventSource(`${BASE}/api/data/run/pipeline_all`)
-    activeEs.current = es
-    es.onmessage = (e) => {
-      try {
-        const data = JSON.parse(e.data)
-        if (data.ping) return                        // keepalive — ignore
-        if (data.type === 'progress') {
-          const p = parseProgress(data)
-          if (p) setPipeProgress(p)
-        } else if (data.line !== undefined) {
-          setPipeLogs(prev => [...prev, data.line as string])
-          if (pipeRef.current) pipeRef.current.scrollTop = pipeRef.current.scrollHeight
-        }
-        if (data.all_done) { es.close(); activeEs.current = null; setPipeRunning(false); refetch() }
-      } catch {}
-    }
-    es.onerror = () => { es.close(); activeEs.current = null; setPipeRunning(false); refetch() }
-  }
 
   if (isLoading) return (
     <div style={{ color: '#64748B', padding: 40, textAlign: 'center' }}>Scanning data modules...</div>
@@ -786,71 +698,40 @@ export function DataControlPage() {
 
   const acquisition  = (status?.acquisition  ?? {}) as Record<string, ModuleInfo>
   const intelligence = (status?.intelligence ?? {}) as Record<string, ModuleInfo>
+  const allStatus    = { ...acquisition, ...intelligence }
 
   const acqOk  = Object.values(acquisition).filter(m => m.status === 'OK').length
   const intOk  = Object.values(intelligence).filter(m => m.status === 'OK').length
   const acqLen = Object.keys(acquisition).length
   const intLen = Object.keys(intelligence).length
-  const total   = acqLen + intLen
-  const totalOk = acqOk + intOk
-  const pct     = total > 0 ? Math.round((totalOk / total) * 100) : 0
+  const total    = acqLen + intLen
+  const totalOk  = acqOk + intOk
+  const pct      = total > 0 ? Math.round((totalOk / total) * 100) : 0
 
   return (
-    <div style={{ maxWidth: 1100 }}>
+    <div style={{ maxWidth: 1200 }}>
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <h1 style={{ color: '#E2E8F0', fontSize: 16, fontWeight: 700, letterSpacing: 3, margin: 0 }}>
           DATA CONTROL
         </h1>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button
-            onClick={() => refetch()}
-            disabled={isFetching}
-            style={{
-              padding: '4px 14px', borderRadius: 4,
-              border: '1px solid #334155', backgroundColor: 'transparent',
-              color: isFetching ? '#22C55E' : '#64748B',
-              cursor: isFetching ? 'not-allowed' : 'pointer',
-              fontSize: 11,
-              transition: 'color 0.2s',
-            }}
-          >
-            {isFetching ? 'Refreshing...' : 'Refresh Status'}
-          </button>
-          {anythingRunning && (
-            <button
-              onClick={stopAll}
-              style={{
-                padding: '4px 18px', borderRadius: 4,
-                border: '1px solid #EF4444',
-                backgroundColor: '#EF444433',
-                color: '#EF4444',
-                cursor: 'pointer',
-                fontSize: 11, fontWeight: 700, letterSpacing: 1,
-              }}
-            >
-              STOP
-            </button>
-          )}
-          <button
-            onClick={runFullPipeline}
-            disabled={anythingRunning}
-            style={{
-              padding: '4px 14px', borderRadius: 4,
-              border: '1px solid #22C55E',
-              backgroundColor: pipeRunning ? '#22C55E22' : 'transparent',
-              color: '#22C55E',
-              cursor: anythingRunning ? 'not-allowed' : 'pointer',
-              fontSize: 11, fontWeight: 700,
-            }}
-          >
-            {pipeRunning ? 'Full Pipeline Running...' : 'Run Full Pipeline'}
-          </button>
-        </div>
+        <button
+          onClick={() => refetch()}
+          disabled={isFetching}
+          style={{
+            padding: '4px 14px', borderRadius: 4,
+            border: '1px solid #334155', backgroundColor: 'transparent',
+            color: isFetching ? '#22C55E' : '#64748B',
+            cursor: isFetching ? 'not-allowed' : 'pointer',
+            fontSize: 11, transition: 'color 0.2s',
+          }}
+        >
+          {isFetching ? 'Refreshing...' : 'Refresh Status'}
+        </button>
       </div>
 
-      {/* Overall health */}
+      {/* Overall health tile */}
       <div style={{
         backgroundColor: '#141720', border: '1px solid #1E2332',
         borderRadius: 6, padding: 16, marginBottom: 24,
@@ -864,7 +745,7 @@ export function DataControlPage() {
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ color: '#94A3B8', fontSize: 12, marginBottom: 6 }}>
-            Platform Health — {totalOk}/{total} modules operational
+            Platform Health — {totalOk}/{total} data modules operational
           </div>
           <div style={{ height: 8, backgroundColor: '#1E2332', borderRadius: 4 }}>
             <div style={{
@@ -879,40 +760,11 @@ export function DataControlPage() {
         </div>
       </div>
 
-      <DailyPipelinePanel />
+      {/* Daily Pipeline — 3 sections: Acquisition + Intelligence + Backfill */}
+      <DailyPipelinePanel allStatus={allStatus} />
 
-      <ModuleTable title="DATA ACQUISITION"     modules={acquisition}  pipelineKey="pipeline_acquisition"  onBusyChange={handleSectionBusy('acquisition')}  onRunComplete={refetch} />
-      <ModuleTable title="INTELLIGENCE OUTPUTS" modules={intelligence} pipelineKey="pipeline_intelligence" onBusyChange={handleSectionBusy('intelligence')} onRunComplete={refetch} />
+      <BackfillPanel allStatus={allStatus} onRunComplete={refetch} />
 
-      {/* Full pipeline log */}
-      {pipeLogs.length > 0 && (
-        <div style={{ marginTop: 16 }}>
-          <div style={{ color: '#64748B', fontSize: 11, marginBottom: 6 }}>FULL PIPELINE LOG</div>
-          {pipeProgress && <ProgressBar info={pipeProgress} />}
-          <div
-            ref={pipeRef}
-            style={{
-              backgroundColor: '#0A0D14', border: '1px solid #1E2332',
-              borderRadius: 4, padding: 12,
-              height: 280, overflowY: 'auto',
-              fontFamily: 'monospace', fontSize: 10,
-              color: '#94A3B8', whiteSpace: 'pre-wrap',
-              marginTop: pipeProgress ? 4 : 0,
-            }}
-          >
-            {pipeLogs.map((line, i) => (
-              <div key={i} style={{
-                color: line.startsWith('ERROR') ? '#EF4444'
-                     : line.startsWith('---')   ? '#22C55E'
-                     : '#94A3B8',
-              }}>
-                {line || ' '}
-              </div>
-            ))}
-            {pipeRunning && <div style={{ color: '#F59E0B' }}>... running ...</div>}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

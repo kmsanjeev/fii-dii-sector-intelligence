@@ -99,6 +99,11 @@ ENGINES = {
         "script": "engines/equity_master_engine.py",
         "phase": "1",
     },
+    "price_adjustment": {
+        "label": "Price Adjustment (adjusted OHLCV)",
+        "script": "engines/analytics/price_adjustment_engine.py",
+        "phase": "1E",
+    },
     "stock_history_build": {
         "label": "Stock History Cache Builder (incremental)",
         "script": "engines/acquisition/stock_history_builder.py",
@@ -219,14 +224,19 @@ ENGINES = {
 
 ACQUISITION_PIPELINE = [
     "bhavcopy_equity", "bhavcopy_fno", "corporate_actions",
-    "equity_master", "stock_history_build",
-    "results_acquisition", "shp_acquisition",
+    "equity_master", "price_adjustment", "stock_history_build",
 ]
 INTELLIGENCE_PIPELINE = [
     "participant_5a", "participant_5b", "participant_5c",
     "sector_6a", "sector_6b", "sector_6c",
-    "deals_7a", "events_7b", "corp_actions_7c",
+    "deals_7a", "corp_actions_7c",
     "momentum_8a", "bull_run_8b", "ml_12",
+]
+BACKFILL_PIPELINE = [
+    "results_acquisition", "results_acquisition_full",
+    "valuation_15b", "extended_financials_15b", "extended_financials_15b_backfill",
+    "shp_acquisition", "shp_acquisition_full",
+    "stock_history_full",
 ]
 PIPELINE_SEQUENCE = ACQUISITION_PIPELINE + INTELLIGENCE_PIPELINE
 
@@ -401,6 +411,39 @@ def get_data_status():
         "last_modified": shp_info["last_modified"],
     }
 
+    # ── Adjusted equity (price_adjustment_engine output) ─────────────────────
+    adj_dir = cfg.NSE_DIR / "adjusted_equity"
+    adj_files = sorted(adj_dir.rglob("*.csv")) if adj_dir.exists() else []
+    adj_last_date = None
+    if adj_files:
+        try:
+            # Date is encoded in filename: eq_YYYYMMDD.csv
+            dates = [f.stem.replace("eq_", "") for f in adj_files if f.stem.startswith("eq_")]
+            dates = sorted(d for d in dates if len(d) == 8 and d.isdigit())
+            if dates:
+                raw = dates[-1]
+                adj_last_date = f"{raw[:4]}-{raw[4:6]}-{raw[6:]}"
+        except Exception:
+            pass
+    import datetime as _dt2
+    adj_status = "EMPTY"
+    if adj_files:
+        if adj_last_date:
+            days_behind2 = (_dt2.date.today() - _dt2.date.fromisoformat(adj_last_date)).days
+            adj_status = "OK" if days_behind2 <= 5 else "PARTIAL"
+        else:
+            adj_status = "OK"
+    status["adjusted_equity"] = {
+        "label": "Adjusted Equity (OHLCV)",
+        "status": adj_status,
+        "records": f"{len(adj_files):,} files",
+        "coverage": f"up to {adj_last_date or '-'}",
+        "last_modified": (
+            pd.Timestamp(max(adj_files, key=lambda f: f.stat().st_mtime).stat().st_mtime, unit="s").strftime("%Y-%m-%d %H:%M")
+            if adj_files else None
+        ),
+    }
+
     # ── Stock history cache ────────────────────────────────────────────────────
     cache_files = list(cfg.STOCK_HISTORY_CACHE.glob("*.parquet"))
     manifest_path = cfg.STOCK_HISTORY_CACHE / "manifest.json"
@@ -453,6 +496,11 @@ def get_data_status():
         "ml_scores_combined":             "ml_scores_combined.csv",
         # Phase 15B — valuation is computed (not fetched) → belongs in intelligence
         "valuation_scores":               "valuation_scores.csv",
+        # Phase A — technical + F&O signals
+        "technical_indicators":           "technical_indicators.csv",
+        "fno_intelligence":               "fno_intelligence.csv",
+        # Phase C — trade conviction
+        "trade_conviction_scores":        "trade_conviction_scores.csv",
     }
     intelligence = {}
     _intel_alt_paths = {
@@ -505,6 +553,8 @@ def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
         engines_to_run = ACQUISITION_PIPELINE
     elif engine_name == "pipeline_intelligence":
         engines_to_run = INTELLIGENCE_PIPELINE
+    elif engine_name == "pipeline_backfill":
+        engines_to_run = BACKFILL_PIPELINE
     else:
         engines_to_run = [engine_name]
 
@@ -620,7 +670,7 @@ def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
 @router.get("/run/{engine_name}")
 def run_engine(engine_name: str):
     """SSE endpoint — stream live output from an engine subprocess."""
-    valid = list(ENGINES.keys()) + ["pipeline_all", "pipeline_acquisition", "pipeline_intelligence"]
+    valid = list(ENGINES.keys()) + ["pipeline_all", "pipeline_acquisition", "pipeline_intelligence", "pipeline_backfill"]
     if engine_name not in valid:
         return {"error": f"Unknown engine '{engine_name}'. Valid: {valid}"}
 

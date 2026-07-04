@@ -33,42 +33,70 @@ REFRESH_LOG = cfg.INTELLIGENCE_DIR / "refresh_log.csv"
 # (stage_id, module_path, label, timeout_seconds)
 
 STAGES = [
-    # Phase 17 — Symbol Change (foundational; check daily, NSE updates infrequently)
-    ("17_symbol_change",            "engines.foundation.symbol_change_engine",                 "Symbol Change History",                120),
-    # Phase 5 — Participant flows (critical path: if 5A fails, nothing downstream is fresh)
-    ("5A_participant_acquisition",  "engines.participant.participant_acquisition_engine",       "Participant Acquisition (NSE API)",     600),
-    ("5B_participant_flow",         "engines.participant.participant_flow_engine",              "Participant Flow Scores",               60),
-    ("5C_participant_intelligence", "engines.participant.participant_intelligence_engine",      "Participant Intelligence",              60),
-    # Phase 6 — Sector flows
-    ("6A_sector_capital_flow",      "engines.participant.sector_capital_flow_engine",           "Sector Capital Flow",                  300),
-    ("6B_sector_flow_scores",       "engines.participant.sector_flow_score_engine",             "Sector Flow Scores",                   30),
-    ("6C_sector_rotation",          "engines.participant.sector_rotation_intelligence_engine",  "Sector Rotation Intelligence",         30),
-    # Phase 7 — Corporate data
-    ("7A_block_bulk_deals",         "engines.corporate.block_bulk_deal_engine",                "Block/Bulk Deals (NSE API)",            300),
-    ("7C_corp_action_intel",        "engines.corporate.corporate_action_intelligence_engine",  "Corporate Action Intelligence",        120),
-    # Phase 18 — Corporate Announcements (incremental: re-fetches last 3 months + dedup)
-    ("18A_announcements",           "engines.corporate.announcement_intelligence_engine",      "Corporate Announcements (incremental)", 600),
-    # Phase 16 — Management Intelligence (uses Anthropic API — non-critical, failures tolerated)
-    ("16A_management_sentiment",    "engines.management.management_sentiment_engine",          "Management Sentiment (Claude AI)",     300),
-    # Phase A — Technical + F&O Intelligence (independent of participant/sector data above)
-    ("A1_technical_indicators",     "engines.intelligence.technical_engine",                   "Technical Indicators",                  60),
-    ("A2_fno_intelligence",         "engines.intelligence.fno_engine",                         "F&O Intelligence (PCR + OI signals)",   60),
-    # Phase 8 — Price & Bull Run (depends on fresh participant + corporate data above)
-    ("8A_price_momentum",           "engines.intelligence.price_momentum_engine",              "Price Momentum",                       60),
-    ("8B_bull_run_probability",     "engines.intelligence.bull_run_probability_engine",        "Bull Run Probability",                 60),
-    # Phase 12 — ML inference only (no retrain; reads fresh feature matrix + pre-trained model)
-    ("12_ml_scorer",                "engines.ml.ml_scorer",                                   "ML Scorer (inference)",                60),
-    # Phase C — Trade Conviction (depends on technical, F&O, sector rotation, ML scores above)
-    ("C1_trade_conviction",         "engines.intelligence.trade_conviction_engine",            "Trade Conviction Scores",               60),
-    # Phase 13 — RAG (rebuild indexes from fresh intelligence CSVs)
-    ("13A_document_builder",        "engines.ai.knowledge.document_builder",                  "RAG Document Builder",                 30),
-    ("13B_faiss_indexer",           "engines.ai.knowledge.faiss_indexer",                     "FAISS Indexer (embedding)",            180),
-    ("13C_bm25_indexer",            "engines.ai.knowledge.bm25_indexer",                      "BM25 Indexer",                        30),
-    # Phase 20 — Portfolio (rebuild intelligence overlay with today's fresh data)
-    ("20_portfolio",                "engines.portfolio.portfolio_engine",                     "Portfolio Intelligence Rebuild",       30),
-    # Phase 9 — Alerts (always last — fires on fresh intelligence)
-    ("9_alert_engine",              "alerts.alert_engine",                                    "Alert Engine (Telegram push)",         60),
+    # ── SECTION 1: DAILY ACQUISITION ─────────────────────────────────────────
+    # Download today's raw files from NSE, then build the adjusted+cached datasets
+    # that all intelligence engines depend on.
+    ("1A_bhavcopy_equity",  "engines.acquisition.nse_equity_acquisition_engine",              "NSE Equity Bhavcopy Download",          600),
+    ("1B_bhavcopy_fno",     "engines.acquisition.nse_fno_acquisition_engine",                 "NSE F&O Bhavcopy Download",             600),
+    ("1C_corp_actions",     "engines.acquisition.nse_corporate_actions_acquisition_engine",   "Corporate Actions Update",              300),
+    ("1D_equity_master",    "engines.equity_master_engine",                                   "Equity Master Refresh",                 120),
+    # Price Adjustment MUST run after bhavcopy download and before stock_history_builder.
+    # Converts raw bhavcopy → split/bonus-adjusted OHLCV in data/NSE/adjusted_equity/
+    ("1E_price_adjust",     "engines.analytics.price_adjustment_engine",                      "Price Adjustment (adjusted OHLCV)",     300),
+    # Stock History Cache reads from adjusted_equity — must come after 1E
+    ("1F_stock_history",    "engines.acquisition.stock_history_builder",                      "Stock History Cache (incremental)",     600),
+
+    # ── SECTION 2: INTELLIGENCE GATHERING ────────────────────────────────────
+    # Foundational reference data
+    ("17_symbol_change",            "engines.foundation.symbol_change_engine",                "Symbol Change History",                 120),
+    # Participant flows — critical path: all sector/intelligence engines depend on fresh 5A data
+    ("5A_participant_acquisition",  "engines.participant.participant_acquisition_engine",      "Participant Acquisition (NSE API)",     600),
+    ("5B_participant_flow",         "engines.participant.participant_flow_engine",             "Participant Flow Scores",               60),
+    ("5C_participant_intelligence", "engines.participant.participant_intelligence_engine",     "Participant Intelligence",              60),
+    # Sector flows (depend on 5A/5B)
+    ("6A_sector_capital_flow",      "engines.participant.sector_capital_flow_engine",          "Sector Capital Flow",                   300),
+    ("6B_sector_flow_scores",       "engines.participant.sector_flow_score_engine",            "Sector Flow Scores",                    30),
+    ("6C_sector_rotation",          "engines.participant.sector_rotation_intelligence_engine", "Sector Rotation Intelligence",          30),
+    # Corporate data (independent of participant flow)
+    ("7A_block_bulk_deals",         "engines.corporate.block_bulk_deal_engine",               "Block/Bulk Deals (NSE API)",             300),
+    ("7C_corp_action_intel",        "engines.corporate.corporate_action_intelligence_engine", "Corporate Action Intelligence",         120),
+    ("18A_announcements",           "engines.corporate.announcement_intelligence_engine",     "Corporate Announcements (incremental)", 600),
+    # Management Intelligence (uses Anthropic API — non-critical, failures tolerated)
+    ("16A_management_sentiment",    "engines.management.management_sentiment_engine",         "Management Sentiment (Claude AI)",      300),
+    # Technical + F&O signals (depend on fresh stock_history_cache from 1F)
+    ("A1_technical_indicators",     "engines.intelligence.technical_engine",                  "Technical Indicators",                  120),
+    ("A2_fno_intelligence",         "engines.intelligence.fno_engine",                        "F&O Intelligence (PCR + OI signals)",   60),
+    # Price scoring (depends on 5B sector flow + 7A deals + 7C corporate confidence)
+    ("8A_price_momentum",           "engines.intelligence.price_momentum_engine",             "Price Momentum",                        60),
+    ("8B_bull_run_probability",     "engines.intelligence.bull_run_probability_engine",       "Bull Run Probability",                  60),
+    # ML inference (reads fresh feature matrix; no model retrain)
+    ("12_ml_scorer",                "engines.ml.ml_scorer",                                  "ML Scorer (inference)",                 60),
+    # Trade Conviction (depends on technical A1, F&O A2, sector rotation 6C, ML 12)
+    ("C1_trade_conviction",         "engines.intelligence.trade_conviction_engine",           "Trade Conviction Scores",               60),
+    # RAG indexes (rebuilt from fresh intelligence CSVs above)
+    ("13A_document_builder",        "engines.ai.knowledge.document_builder",                 "RAG Document Builder",                  30),
+    ("13B_faiss_indexer",           "engines.ai.knowledge.faiss_indexer",                    "FAISS Indexer (embedding)",             180),
+    ("13C_bm25_indexer",            "engines.ai.knowledge.bm25_indexer",                     "BM25 Indexer",                          30),
+    # Portfolio overlay (fresh intelligence applied to holdings)
+    ("20_portfolio",                "engines.portfolio.portfolio_engine",                    "Portfolio Intelligence Rebuild",        30),
+    # Alerts — always last, fires on fully-refreshed intelligence
+    ("9_alert_engine",              "alerts.alert_engine",                                   "Alert Engine (Telegram push)",          60),
 ]
+
+# Stage-to-section mapping for UI grouping
+STAGE_SECTIONS = {
+    "Daily Acquisition":      ["1A_bhavcopy_equity", "1B_bhavcopy_fno", "1C_corp_actions",
+                                "1D_equity_master", "1E_price_adjust", "1F_stock_history"],
+    "Intelligence Gathering": ["17_symbol_change", "5A_participant_acquisition",
+                                "5B_participant_flow", "5C_participant_intelligence",
+                                "6A_sector_capital_flow", "6B_sector_flow_scores", "6C_sector_rotation",
+                                "7A_block_bulk_deals", "7C_corp_action_intel", "18A_announcements",
+                                "16A_management_sentiment", "A1_technical_indicators",
+                                "A2_fno_intelligence", "8A_price_momentum", "8B_bull_run_probability",
+                                "12_ml_scorer", "C1_trade_conviction",
+                                "13A_document_builder", "13B_faiss_indexer", "13C_bm25_indexer",
+                                "20_portfolio", "9_alert_engine"],
+}
 
 # ── Shared state (guarded by _lock) ──────────────────────────────────────────
 
