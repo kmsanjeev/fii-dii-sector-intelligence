@@ -139,6 +139,15 @@ function SectionCard({ title, accentColor, children }: { title: string; accentCo
   )
 }
 
+function SectionDivider({ label }: { label: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '10px 0 2px' }}>
+      <div style={{ fontSize: 9, fontWeight: 800, color: P.dim, letterSpacing: '0.12em', flexShrink: 0 }}>{label}</div>
+      <div style={{ flex: 1, height: 1, background: P.border }} />
+    </div>
+  )
+}
+
 function ScoreBar({ label, value, max = 100, color }: { label: string; value: number | null | undefined; max?: number; color?: string }) {
   if (value == null) return null
   const fill = Math.min(Math.max(value / max, 0), 1) * 100
@@ -1462,27 +1471,124 @@ export function StocksPage() {
 
         {detail && (
           <>
-            {/* ── Investment Thesis ─────────────────────────────────── */}
+            {/* ══ THESIS & CONVICTION ══════════════════════════════════════════ */}
+            <SectionDivider label="THESIS & CONVICTION" />
+
             {detail.structured_thesis && (
               <InvestmentThesisCard thesis={detail.structured_thesis} />
             )}
 
-            {/* ── Analyst insights ──────────────────────────────────── */}
-            {insights && insights.length > 0 && (
-              <div style={{ background: '#090F1E', border: `1px solid ${P.litBdr}`, borderLeft: `4px solid ${P.blue}`, borderRadius: 8, padding: 16 }}>
-                <div style={{ ...LABEL, color: P.blue, marginBottom: 12 }}>Analyst Insights — Plain English</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {insights.map((txt, i) => (
-                    <div key={i} style={{ display: 'flex', gap: 10, background: P.cell, border: `1px solid ${P.border}`, borderRadius: 6, padding: '9px 12px' }}>
-                      <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#1E3A5F', color: P.blue, fontSize: 10, fontWeight: 800, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</div>
-                      <div style={{ color: P.text, fontSize: 12, lineHeight: 1.55 }}>{txt}</div>
-                    </div>
-                  ))}
+            {/* Analyst Insights (left) + Score Breakdown (right) */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.4fr 1fr', gap: 14, alignItems: 'start' }}>
+              {insights && insights.length > 0 ? (
+                <div style={{ background: '#090F1E', border: `1px solid ${P.litBdr}`, borderLeft: `4px solid ${P.blue}`, borderRadius: 8, padding: 16 }}>
+                  <div style={{ ...LABEL, color: P.blue, marginBottom: 12 }}>Analyst Insights — Plain English</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {insights.map((txt, i) => (
+                      <div key={i} style={{ display: 'flex', gap: 10, background: P.cell, border: `1px solid ${P.border}`, borderRadius: 6, padding: '9px 12px' }}>
+                        <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#1E3A5F', color: P.blue, fontSize: 10, fontWeight: 800, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</div>
+                        <div style={{ color: P.text, fontSize: 12, lineHeight: 1.55 }}>{txt}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              ) : <div />}
+              <SectionCard title="Bull Run Score Breakdown">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+                  {[
+                    { label: 'Price Momentum', value: detail.components.price_score,       sub: '30% weight' },
+                    { label: 'Sector Flow',    value: detail.components.sector_flow_score, sub: '25% weight' },
+                    { label: 'Block Deals',    value: detail.components.deal_score,        sub: '25% weight' },
+                    { label: 'Corp Events',    value: detail.components.corporate_score,   sub: '20% weight' },
+                  ].map(({ label, value, sub }) => {
+                    const c = scoreC(value)
+                    return (
+                      <div key={label} style={{ background: P.cell, border: `1px solid ${P.border}`, borderRadius: 6, padding: '10px 12px' }}>
+                        <div style={{ fontSize: 22, fontWeight: 900, color: c, fontFamily: 'monospace', fontVariantNumeric: 'tabular-nums' }}>{value.toFixed(0)}</div>
+                        <div style={{ height: 3, background: P.border, borderRadius: 2, margin: '6px 0' }}>
+                          <div style={{ width: `${value}%`, height: '100%', background: c, borderRadius: 2 }} />
+                        </div>
+                        <div style={{ color: P.sub, fontSize: 9 }}>{label}</div>
+                        <div style={{ color: P.dim, fontSize: 8 }}>{sub}</div>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div style={{ background: P.cell, borderRadius: 5, border: `1px solid ${P.border}`, padding: '7px 10px', display: 'flex', gap: 12, flexWrap: 'wrap', fontSize: 10 }}>
+                  <span style={{ color: P.sub }}>Regime: <span style={{ color: P.text, fontWeight: 700 }}>{detail.market_regime}</span></span>
+                  <span style={{ color: P.dim }}>|</span>
+                  <span style={{ color: P.sub }}>Multiplier: <span style={{ color: P.text, fontWeight: 700 }}>×{detail.regime_multiplier.toFixed(2)}</span></span>
+                  <span style={{ color: P.dim }}>|</span>
+                  <span style={{ color: P.dim }}>as of {detail.as_of_date}</span>
+                </div>
+              </SectionCard>
+            </div>
 
-            {/* ── Fundamentals — 3 rows × 6 cols by priority ────────── */}
+            {/* ══ PRICE & TECHNICALS ══════════════════════════════════════════ */}
+            <SectionDivider label="PRICE & TECHNICALS" />
+
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 14 }}>
+              {t && (
+                <SectionCard title="Technical Indicators" accentColor={trendColor}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
+                    <Chip label={t.trend_signal?.replace(/_/g, ' ') ?? 'N/A'} color={trendColor} size={11} />
+                    {t.vol_20d_avg != null && <span style={{ color: P.sub, fontSize: 10 }}>Avg Vol {(t.vol_20d_avg / 1e5).toFixed(1)}L shares/day</span>}
+                  </div>
+                  {t.high_52w != null && t.low_52w != null && (
+                    <div style={{ marginBottom: 14 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: P.dim, marginBottom: 5 }}>
+                        <span>52W Low ₹{t.low_52w.toFixed(0)}</span>
+                        <span>52W High ₹{t.high_52w.toFixed(0)}</span>
+                      </div>
+                      <div style={{ height: 6, background: '#1A2740', borderRadius: 3, position: 'relative' }}>
+                        {(() => {
+                          const pos = (close - t.low_52w!) / (t.high_52w! - t.low_52w!) * 100
+                          return (
+                            <>
+                              <div style={{ width: `${pos}%`, height: '100%', background: `linear-gradient(to right, ${P.border}, ${P.green}55)`, borderRadius: 3 }} />
+                              <div style={{ position: 'absolute', top: -4, left: `${pos}%`, width: 14, height: 14, borderRadius: '50%', background: pos >= 80 ? P.green : pos >= 40 ? P.amber : P.red, transform: 'translateX(-50%)', border: `2px solid ${P.bg}`, boxShadow: `0 0 8px ${pos >= 80 ? P.green : pos >= 40 ? P.amber : P.red}88` }} />
+                            </>
+                          )
+                        })()}
+                      </div>
+                    </div>
+                  )}
+                  <DMARow label="20 DMA"  dma={t.dma_20}  close={close} color={P.blue} />
+                  <DMARow label="50 DMA"  dma={t.dma_50}  close={close} color="#A78BFA" />
+                  <DMARow label="200 DMA" dma={t.dma_200} close={close} color={P.amber} />
+                  {t.as_of_date && <div style={{ fontSize: 9, color: P.dim, marginTop: 8 }}>as of {t.as_of_date}</div>}
+                </SectionCard>
+              )}
+
+              {detail.key_levels && detail.key_levels.conf_res_1 != null && (
+                <KeyLevelsCard kl={detail.key_levels} close={close} />
+              )}
+
+              {f && f.oi_signal && (
+                <SectionCard title="Futures & Options" accentColor={f.oi_signal.includes('LONG') ? P.green : P.red}>
+                  {(() => {
+                    const OI_MAP: Record<string, string> = { LONG_BUILDUP: P.green, SHORT_BUILDUP: P.red, LONG_UNWINDING: P.amber, SHORT_COVERING: P.teal }
+                    const OI_TEXT: Record<string, string> = { LONG_BUILDUP: 'Big traders buying fresh — bullish', SHORT_BUILDUP: 'Traders betting on fall — bearish', LONG_UNWINDING: 'Buyers exiting — weakening', SHORT_COVERING: 'Bears buying back — potential reversal' }
+                    const c = OI_MAP[f.oi_signal] ?? P.sub
+                    return (
+                      <>
+                        <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', marginBottom: 10 }}>
+                          <div><div style={LABEL}>Signal</div><div style={{ marginTop: 5 }}><Chip label={f.oi_signal.replace(/_/g, ' ')} color={c} size={11} /></div></div>
+                          {f.futures_oi != null && <div><div style={LABEL}>Open Interest</div><div style={{ fontSize: 16, fontWeight: 800, color: P.text, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{(f.futures_oi / 1e6).toFixed(2)}M</div></div>}
+                          {f.oi_1d != null && <div><div style={LABEL}>1D Change</div><div style={{ fontSize: 16, fontWeight: 800, color: f.oi_1d >= 0 ? P.green : P.red, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{f.oi_1d >= 0 ? '+' : ''}{f.oi_1d.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div></div>}
+                          {f.oi_5d != null && <div><div style={LABEL}>5D Change</div><div style={{ fontSize: 16, fontWeight: 800, color: f.oi_5d >= 0 ? P.green : P.red, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{f.oi_5d >= 0 ? '+' : ''}{f.oi_5d.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div></div>}
+                        </div>
+                        {OI_TEXT[f.oi_signal] && <div style={{ fontSize: 11, color: c, background: c + '12', border: `1px solid ${c}33`, padding: '7px 10px', borderRadius: 5 }}>{OI_TEXT[f.oi_signal]}</div>}
+                      </>
+                    )
+                  })()}
+                </SectionCard>
+              )}
+            </div>
+
+            {/* ══ FUNDAMENTALS & VALUATION ════════════════════════════════════ */}
+            <SectionDivider label="FUNDAMENTALS & VALUATION" />
+
             {Object.keys(fund).length > 0 && (
               <div>
                 <div style={CARD_HEADER}>Fundamentals</div>
@@ -1500,7 +1606,7 @@ export function StocksPage() {
                 )}
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(6, 1fr)', gap: 10, marginTop: 10 }}>
 
-                  {/* Row 1 — Size & Valuation (quick context) */}
+                  {/* Row 1 — Valuation & Quality Ratios */}
                   <FundTile label="Market Cap (₹ Cr)" hdrBg="#1A3A6E" valColor={P.text}
                     value={fund.market_cap_cr != null ? crFmt(+fund.market_cap_cr) : '--'}
                     sub={fund.shares_outstanding_cr != null ? `${(+fund.shares_outstanding_cr).toFixed(1)} Cr shares` : 'estimated'} />
@@ -1512,22 +1618,21 @@ export function StocksPage() {
                     valColor={fund.book_value_per_share != null ? P.text : P.sub}
                     value={fund.book_value_per_share != null ? `₹${(+fund.book_value_per_share).toLocaleString('en-IN', {maximumFractionDigits: 0})}` : '---'}
                     sub={fund.total_equity_cr != null ? `Equity ${crFmt(+fund.total_equity_cr)}` : 'balance sheet pending'} />
-                  <FundTile label="Return over 1Y (%)"
-                    hdrBg={detail.price.ret_365d != null && detail.price.ret_365d >= 0 ? '#062014' : '#200606'}
-                    value={pct(detail.price.ret_365d)}
-                    valColor={detail.price.ret_365d == null ? P.sub : detail.price.ret_365d >= 0 ? P.green : P.red}
-                    sub="365-day price return" />
-                  <FundTile label="vs 200 DMA" hdrBg={t?.vs_dma_200 != null && t.vs_dma_200 >= 0 ? '#062014' : '#200606'}
-                    value={t?.vs_dma_200 != null ? `${t.vs_dma_200 >= 0 ? '+' : ''}${t.vs_dma_200.toFixed(1)}%` : '--'}
-                    valColor={t?.vs_dma_200 == null ? P.sub : t.vs_dma_200 >= 5 ? P.green : t.vs_dma_200 >= 0 ? P.teal : P.red}
-                    sub="long-term trend" />
                   <FundTile label="Valuation"
                     hdrBg={fund.valuation_label === 'CHEAP_QUALITY' ? '#052E16' : fund.valuation_label === 'FAIR_VALUE' ? '#0C1A3A' : fund.valuation_label === 'EXPENSIVE' ? '#2D0A0A' : '#1A1228'}
                     value={<span style={{ fontSize: FS.md }}>{String(fund.valuation_label ?? 'N/A').replace(/_/g, ' ')}</span>}
                     valColor={fund.valuation_label === 'CHEAP_QUALITY' ? P.green : fund.valuation_label === 'FAIR_VALUE' ? P.blue : fund.valuation_label === 'EXPENSIVE' ? P.red : P.amber}
                     sub={fund.valuation_score != null ? `score ${(+fund.valuation_score).toFixed(0)}/100` : ''} />
+                  <FundTile label="ROE (%)" hdrBg="#0A2A1F"
+                    value={fund.roe_pct != null ? `${(+fund.roe_pct).toFixed(1)}%` : '--'}
+                    valColor={fund.roe_pct == null ? P.sub : +fund.roe_pct >= 20 ? P.green : +fund.roe_pct >= 12 ? P.teal : P.red}
+                    sub="return on equity" />
+                  <FundTile label="ROCE (%)" hdrBg="#0A1A2E"
+                    valColor={fund.roce_pct == null ? P.sub : +fund.roce_pct >= 20 ? P.green : +fund.roce_pct >= 12 ? P.teal : +fund.roce_pct >= 0 ? P.amber : P.red}
+                    value={fund.roce_pct != null ? `${(+fund.roce_pct).toFixed(1)}%` : '---'}
+                    sub={fund.capital_employed_cr != null ? `CE ${crFmt(+fund.capital_employed_cr)}` : 'capital employed pending'} />
 
-                  {/* Row 2 — Profitability & Quality */}
+                  {/* Row 2 — Income Statement & Quarterly Growth */}
                   <FundTile label="Sales (₹ Cr)" hdrBg="#1A3A6E" valColor={P.text}
                     value={fund.revenue_ttm_cr != null ? crFmt(+fund.revenue_ttm_cr) : '--'}
                     sub={fund.as_of_date ? `TTM as of ${String(fund.as_of_date).slice(0,7)}` : 'trailing 12M'} />
@@ -1539,21 +1644,11 @@ export function StocksPage() {
                     valColor={fund.opm_pct == null ? P.sub : +fund.opm_pct >= 20 ? P.green : +fund.opm_pct >= 10 ? P.teal : +fund.opm_pct >= 0 ? P.amber : P.red}
                     value={fund.opm_pct != null ? `${(+fund.opm_pct).toFixed(1)}%` : '---'}
                     sub={fund.ebitda_cr_latest != null ? `EBITDA ${crFmt(+fund.ebitda_cr_latest)} qtr` : 'EBITDA data pending'} />
-                  <FundTile label="ROCE (%)" hdrBg="#0A1A2E"
-                    valColor={fund.roce_pct == null ? P.sub : +fund.roce_pct >= 20 ? P.green : +fund.roce_pct >= 12 ? P.teal : +fund.roce_pct >= 0 ? P.amber : P.red}
-                    value={fund.roce_pct != null ? `${(+fund.roce_pct).toFixed(1)}%` : '---'}
-                    sub={fund.capital_employed_cr != null ? `CE ${crFmt(+fund.capital_employed_cr)}` : 'capital employed pending'} />
-                  <FundTile label="ROE (%)" hdrBg="#0A2A1F"
-                    value={fund.roe_pct != null ? `${(+fund.roe_pct).toFixed(1)}%` : '--'}
-                    valColor={fund.roe_pct == null ? P.sub : +fund.roe_pct >= 20 ? P.green : +fund.roe_pct >= 12 ? P.teal : P.red}
-                    sub="return on equity" />
                   <FundTile label={`${fund.qtr_growth_period ?? 'Qtr'} Sales Growth (%)`}
                     hdrBg={fund.qtr_sales_growth_pct != null && +fund.qtr_sales_growth_pct >= 0 ? '#062014' : '#200606'}
                     value={fund.qtr_sales_growth_pct != null ? `${+fund.qtr_sales_growth_pct >= 0 ? '+' : ''}${(+fund.qtr_sales_growth_pct).toFixed(1)}%` : '--'}
                     valColor={fund.qtr_sales_growth_pct == null ? P.sub : +fund.qtr_sales_growth_pct >= 10 ? P.green : +fund.qtr_sales_growth_pct >= 0 ? P.teal : P.red}
                     sub="vs prior period revenue" />
-
-                  {/* Row 3 — Growth, Momentum & Ownership */}
                   <FundTile label={`${fund.qtr_growth_period ?? 'Qtr'} Profit Growth (%)`}
                     hdrBg={fund.qtr_profit_growth_pct != null && +fund.qtr_profit_growth_pct >= 0 ? '#062014' : '#200606'}
                     value={fund.qtr_profit_growth_pct != null ? `${+fund.qtr_profit_growth_pct >= 0 ? '+' : ''}${(+fund.qtr_profit_growth_pct).toFixed(1)}%` : '--'}
@@ -1565,6 +1660,17 @@ export function StocksPage() {
                     valColor={fund.sales_growth_3y_pct == null ? P.sub : +fund.sales_growth_3y_pct >= 15 ? P.green : +fund.sales_growth_3y_pct >= 5 ? P.teal : +fund.sales_growth_3y_pct >= 0 ? P.amber : P.red}
                     value={fund.sales_growth_3y_pct != null ? `${+fund.sales_growth_3y_pct >= 0 ? '+' : ''}${(+fund.sales_growth_3y_pct).toFixed(1)}%` : '---'}
                     sub={fund.sales_growth_years != null ? `${(+fund.sales_growth_years).toFixed(1)}Y revenue CAGR` : 'needs 4+ quarters'} />
+
+                  {/* Row 3 — Price Position & Ownership */}
+                  <FundTile label="Return over 1Y (%)"
+                    hdrBg={detail.price.ret_365d != null && detail.price.ret_365d >= 0 ? '#062014' : '#200606'}
+                    value={pct(detail.price.ret_365d)}
+                    valColor={detail.price.ret_365d == null ? P.sub : detail.price.ret_365d >= 0 ? P.green : P.red}
+                    sub="365-day price return" />
+                  <FundTile label="vs 200 DMA" hdrBg={t?.vs_dma_200 != null && t.vs_dma_200 >= 0 ? '#062014' : '#200606'}
+                    value={t?.vs_dma_200 != null ? `${t.vs_dma_200 >= 0 ? '+' : ''}${t.vs_dma_200.toFixed(1)}%` : '--'}
+                    valColor={t?.vs_dma_200 == null ? P.sub : t.vs_dma_200 >= 5 ? P.green : t.vs_dma_200 >= 0 ? P.teal : P.red}
+                    sub="long-term trend" />
                   <FundTile label="Down from 52W High (%)"
                     hdrBg={fund.down_from_ath_pct != null && +fund.down_from_ath_pct >= -15 ? '#062014' : '#1A0D00'}
                     value={fund.down_from_ath_pct != null ? `${(+fund.down_from_ath_pct).toFixed(1)}%` : '--'}
@@ -1586,179 +1692,16 @@ export function StocksPage() {
               </div>
             )}
 
-            {/* ── Two-column intelligence grid ───────────────────────── */}
+            {detail.sector_peer_valuation && Object.keys(detail.sector_peer_valuation).length > 0 && (
+              <ValuationContextCard fundamentals={fund} peers={detail.sector_peer_valuation} />
+            )}
+
+            {/* ══ INSTITUTIONAL POSITIONING ════════════════════════════════════ */}
+            <SectionDivider label="INSTITUTIONAL POSITIONING" />
+
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
-
-              {/* LEFT */}
+              {/* LEFT: Shareholding Trends */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-
-                {/* Technicals */}
-                {t && (
-                  <SectionCard title="Technical Indicators" accentColor={trendColor}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
-                      <Chip label={t.trend_signal?.replace(/_/g, ' ') ?? 'N/A'} color={trendColor} size={11} />
-                      {t.vol_20d_avg != null && <span style={{ color: P.sub, fontSize: 10 }}>Avg Vol {(t.vol_20d_avg / 1e5).toFixed(1)}L shares/day</span>}
-                    </div>
-                    {t.high_52w != null && t.low_52w != null && (
-                      <div style={{ marginBottom: 14 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: P.dim, marginBottom: 5 }}>
-                          <span>52W Low ₹{t.low_52w.toFixed(0)}</span>
-                          <span>52W High ₹{t.high_52w.toFixed(0)}</span>
-                        </div>
-                        <div style={{ height: 6, background: '#1A2740', borderRadius: 3, position: 'relative' }}>
-                          {(() => {
-                            const pos = (close - t.low_52w!) / (t.high_52w! - t.low_52w!) * 100
-                            return (
-                              <>
-                                <div style={{ width: `${pos}%`, height: '100%', background: `linear-gradient(to right, ${P.border}, ${P.green}55)`, borderRadius: 3 }} />
-                                <div style={{ position: 'absolute', top: -4, left: `${pos}%`, width: 14, height: 14, borderRadius: '50%', background: pos >= 80 ? P.green : pos >= 40 ? P.amber : P.red, transform: 'translateX(-50%)', border: `2px solid ${P.bg}`, boxShadow: `0 0 8px ${pos >= 80 ? P.green : pos >= 40 ? P.amber : P.red}88` }} />
-                              </>
-                            )
-                          })()}
-                        </div>
-                      </div>
-                    )}
-                    <DMARow label="20 DMA"  dma={t.dma_20}  close={close} color={P.blue} />
-                    <DMARow label="50 DMA"  dma={t.dma_50}  close={close} color="#A78BFA" />
-                    <DMARow label="200 DMA" dma={t.dma_200} close={close} color={P.amber} />
-                    {t.as_of_date && <div style={{ fontSize: 9, color: P.dim, marginTop: 8 }}>as of {t.as_of_date}</div>}
-                  </SectionCard>
-                )}
-
-                {/* Key S/R Levels */}
-                {detail.key_levels && detail.key_levels.conf_res_1 != null && (
-                  <KeyLevelsCard kl={detail.key_levels} close={close} />
-                )}
-
-                {/* Concall signal */}
-                {Object.keys(concall).length > 0 && concall.sentiment && (
-                  <SectionCard title="Concall Intelligence" accentColor={String(concall.sentiment) === 'BULLISH' ? P.green : String(concall.sentiment) === 'BEARISH' ? P.red : P.amber}>
-                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 10 }}>
-                      {[
-                        { label: 'Sentiment', value: String(concall.sentiment ?? ''), color: String(concall.sentiment) === 'BULLISH' ? P.green : String(concall.sentiment) === 'BEARISH' ? P.red : P.amber },
-                        { label: 'Guidance',  value: String(concall.guidance_direction ?? ''), color: P.blue },
-                        { label: 'Capex',     value: String(concall.capex_signal ?? ''), color: String(concall.capex_signal) === 'YES' ? P.teal : P.dim },
-                      ].map(({ label, value, color }) => value && value !== 'undefined' && (
-                        <div key={label}>
-                          <div style={LABEL}>{label}</div>
-                          <Chip label={value.replace(/_/g, ' ')} color={color} size={11} />
-                        </div>
-                      ))}
-                    </div>
-                    {concall.key_statement && (
-                      <div style={{ fontSize: 11, color: P.text, background: P.cell, padding: '8px 12px', borderRadius: 6, border: `1px solid ${P.border}`, lineHeight: 1.55 }}>
-                        "{String(concall.key_statement)}"
-                      </div>
-                    )}
-                    {concall.concall_score != null && <ScoreBar label="Concall Score" value={+concall.concall_score} />}
-                  </SectionCard>
-                )}
-
-                {/* AGM / Governance signal */}
-                {Object.keys(agm).length > 0 && agm.governance_risk && (
-                  <GovernanceCard agm={agm} />
-                )}
-
-                {/* Recent News Signal */}
-                {Object.keys(news).length > 0 && news.news_count_7d != null && +news.news_count_7d > 0 && (
-                  <NewsCard news={news} />
-                )}
-
-                {/* F&O */}
-                {f && f.oi_signal && (
-                  <SectionCard title="Futures & Options" accentColor={f.oi_signal.includes('LONG') ? P.green : P.red}>
-                    {(() => {
-                      const OI_MAP: Record<string, string> = { LONG_BUILDUP: P.green, SHORT_BUILDUP: P.red, LONG_UNWINDING: P.amber, SHORT_COVERING: P.teal }
-                      const OI_TEXT: Record<string, string> = { LONG_BUILDUP: 'Big traders buying fresh — bullish', SHORT_BUILDUP: 'Traders betting on fall — bearish', LONG_UNWINDING: 'Buyers exiting — weakening', SHORT_COVERING: 'Bears buying back — potential reversal' }
-                      const c = OI_MAP[f.oi_signal] ?? P.sub
-                      return (
-                        <>
-                          <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', marginBottom: 10 }}>
-                            <div><div style={LABEL}>Signal</div><div style={{ marginTop: 5 }}><Chip label={f.oi_signal.replace(/_/g, ' ')} color={c} size={11} /></div></div>
-                            {f.futures_oi != null && <div><div style={LABEL}>Open Interest</div><div style={{ fontSize: 16, fontWeight: 800, color: P.text, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{(f.futures_oi / 1e6).toFixed(2)}M</div></div>}
-                            {f.oi_1d != null && <div><div style={LABEL}>1D Change</div><div style={{ fontSize: 16, fontWeight: 800, color: f.oi_1d >= 0 ? P.green : P.red, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{f.oi_1d >= 0 ? '+' : ''}{f.oi_1d.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div></div>}
-                            {f.oi_5d != null && <div><div style={LABEL}>5D Change</div><div style={{ fontSize: 16, fontWeight: 800, color: f.oi_5d >= 0 ? P.green : P.red, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{f.oi_5d >= 0 ? '+' : ''}{f.oi_5d.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div></div>}
-                          </div>
-                          {OI_TEXT[f.oi_signal] && <div style={{ fontSize: 11, color: c, background: c + '12', border: `1px solid ${c}33`, padding: '7px 10px', borderRadius: 5 }}>{OI_TEXT[f.oi_signal]}</div>}
-                        </>
-                      )
-                    })()}
-                  </SectionCard>
-                )}
-
-                {/* Institutional Block Deals — below F&O for flow continuity */}
-                {detail.deal_signals && Object.keys(detail.deal_signals).length > 0 && (() => {
-                  const d = detail.deal_signals as Record<string, string | number | null>
-                  if (!d.deal_signal) return null
-                  const dc = String(d.deal_signal).includes('BULL') ? P.green : String(d.deal_signal).includes('BEAR') ? P.red : P.sub
-                  return (
-                    <SectionCard title="Institutional Block Deals" accentColor={dc}>
-                      <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', marginBottom: 10 }}>
-                        {[
-                          { label: 'Signal', value: String(d.deal_signal).replace(/_/g, ' '), color: dc },
-                          { label: 'Total Deals', value: String(d.total_deals ?? '--'), color: P.text },
-                          { label: 'Inst Net (Cr)', value: d.inst_net_value_cr != null ? crFmt(+d.inst_net_value_cr!) : '--', color: +d.inst_net_value_cr! >= 0 ? P.green : P.red },
-                        ].map(({ label, value, color }) => (
-                          <div key={label}>
-                            <div style={LABEL}>{label}</div>
-                            <div style={{ fontSize: 15, fontWeight: 800, color, marginTop: 4 }}>{value}</div>
-                          </div>
-                        ))}
-                      </div>
-                      {d.last_deal_date && <div style={{ fontSize: 9, color: P.dim }}>last deal: {String(d.last_deal_date)} | window: {d.window_days}D</div>}
-                    </SectionCard>
-                  )
-                })()}
-              </div>
-
-              {/* RIGHT */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-
-                {/* Score breakdown */}
-                <SectionCard title="Bull Run Score Breakdown">
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
-                    {[
-                      { label: 'Price Momentum', value: detail.components.price_score,       sub: '30% weight' },
-                      { label: 'Sector Flow',    value: detail.components.sector_flow_score, sub: '25% weight' },
-                      { label: 'Block Deals',    value: detail.components.deal_score,        sub: '25% weight' },
-                      { label: 'Corp Events',    value: detail.components.corporate_score,   sub: '20% weight' },
-                    ].map(({ label, value, sub }) => {
-                      const c = scoreC(value)
-                      return (
-                        <div key={label} style={{ background: P.cell, border: `1px solid ${P.border}`, borderRadius: 6, padding: '10px 12px' }}>
-                          <div style={{ fontSize: 22, fontWeight: 900, color: c, fontFamily: 'monospace', fontVariantNumeric: 'tabular-nums' }}>{value.toFixed(0)}</div>
-                          <div style={{ height: 3, background: P.border, borderRadius: 2, margin: '6px 0' }}>
-                            <div style={{ width: `${value}%`, height: '100%', background: c, borderRadius: 2 }} />
-                          </div>
-                          <div style={{ color: P.sub, fontSize: 9 }}>{label}</div>
-                          <div style={{ color: P.dim, fontSize: 8 }}>{sub}</div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                  <div style={{ background: P.cell, borderRadius: 5, border: `1px solid ${P.border}`, padding: '7px 10px', display: 'flex', gap: 12, flexWrap: 'wrap', fontSize: 10 }}>
-                    <span style={{ color: P.sub }}>Regime: <span style={{ color: P.text, fontWeight: 700 }}>{detail.market_regime}</span></span>
-                    <span style={{ color: P.dim }}>|</span>
-                    <span style={{ color: P.sub }}>Multiplier: <span style={{ color: P.text, fontWeight: 700 }}>×{detail.regime_multiplier.toFixed(2)}</span></span>
-                    <span style={{ color: P.dim }}>|</span>
-                    <span style={{ color: P.dim }}>as of {detail.as_of_date}</span>
-                  </div>
-                </SectionCard>
-
-                {/* Valuation vs sector peers */}
-                {detail.sector_peer_valuation && Object.keys(detail.sector_peer_valuation).length > 0 && (
-                  <ValuationContextCard
-                    fundamentals={fund}
-                    peers={detail.sector_peer_valuation}
-                  />
-                )}
-
-                {/* Upcoming catalysts */}
-                {detail.upcoming_events && detail.upcoming_events.length > 0 && (
-                  <UpcomingCatalystsCard events={detail.upcoming_events} />
-                )}
-
-                {/* Holding trends */}
                 {trends.length > 0 && (
                   <SectionCard title="Shareholding Trends (QoQ)" accentColor={P.purple}>
                     <div style={{ overflowX: 'auto' }}>
@@ -1798,8 +1741,32 @@ export function StocksPage() {
                     </div>
                   </SectionCard>
                 )}
+              </div>
 
-                {/* Management score */}
+              {/* RIGHT: Block Deals + Management + Consensus */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {detail.deal_signals && Object.keys(detail.deal_signals).length > 0 && (() => {
+                  const d = detail.deal_signals as Record<string, string | number | null>
+                  if (!d.deal_signal) return null
+                  const dc = String(d.deal_signal).includes('BULL') ? P.green : String(d.deal_signal).includes('BEAR') ? P.red : P.sub
+                  return (
+                    <SectionCard title="Institutional Block Deals" accentColor={dc}>
+                      <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', marginBottom: 10 }}>
+                        {[
+                          { label: 'Signal', value: String(d.deal_signal).replace(/_/g, ' '), color: dc },
+                          { label: 'Total Deals', value: String(d.total_deals ?? '--'), color: P.text },
+                          { label: 'Inst Net (Cr)', value: d.inst_net_value_cr != null ? crFmt(+d.inst_net_value_cr!) : '--', color: +d.inst_net_value_cr! >= 0 ? P.green : P.red },
+                        ].map(({ label, value, color }) => (
+                          <div key={label}>
+                            <div style={LABEL}>{label}</div>
+                            <div style={{ fontSize: 15, fontWeight: 800, color, marginTop: 4 }}>{value}</div>
+                          </div>
+                        ))}
+                      </div>
+                      {d.last_deal_date && <div style={{ fontSize: 9, color: P.dim }}>last deal: {String(d.last_deal_date)} | window: {d.window_days}D</div>}
+                    </SectionCard>
+                  )
+                })()}
                 {Object.keys(mgmt).length > 0 && mgmt.management_score != null && (
                   <SectionCard title="Management Intelligence" accentColor={+mgmt.management_score! >= 65 ? P.green : +mgmt.management_score! >= 45 ? P.amber : P.red}>
                     <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', marginBottom: 10 }}>
@@ -1817,15 +1784,13 @@ export function StocksPage() {
                     <ScoreBar label="Announcements"  value={mgmt.announcement_score != null ? +mgmt.announcement_score : null} />
                   </SectionCard>
                 )}
-
-                {/* Consensus */}
                 {Object.keys(consensus).length > 0 && consensus.consensus_action && (
                   <SectionCard title="Multi-Signal Consensus" accentColor={String(consensus.consensus_action) === 'BUY' ? P.green : String(consensus.consensus_action) === 'SELL' ? P.red : P.amber}>
                     <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>
                       {[
-                        { label: 'Action',    value: String(consensus.consensus_action ?? ''),  color: String(consensus.consensus_action) === 'BUY' ? P.green : String(consensus.consensus_action) === 'SELL' ? P.red : P.amber },
-                        { label: 'Confidence',value: String(consensus.confidence ?? ''),        color: P.blue },
-                        { label: 'Signals In',value: String(consensus.signals_in ?? ''),        color: P.text },
+                        { label: 'Action',     value: String(consensus.consensus_action ?? ''),  color: String(consensus.consensus_action) === 'BUY' ? P.green : String(consensus.consensus_action) === 'SELL' ? P.red : P.amber },
+                        { label: 'Confidence', value: String(consensus.confidence ?? ''),        color: P.blue },
+                        { label: 'Signals In', value: String(consensus.signals_in ?? ''),        color: P.text },
                       ].map(({ label, value, color }) => value && (
                         <div key={label}>
                           <div style={LABEL}>{label}</div>
@@ -1835,28 +1800,68 @@ export function StocksPage() {
                     </div>
                   </SectionCard>
                 )}
-
-                {/* Sector link */}
-                <Link to={`/sectors/${detail.sector}`} style={{
-                  display: 'block', textAlign: 'center', padding: '12px 0',
-                  color: P.blue, fontSize: 12, textDecoration: 'none',
-                  border: `1px solid ${P.litBdr}`, borderRadius: 8, background: P.cell,
-                  fontWeight: 700, letterSpacing: 0.5,
-                }}>
-                  View {detail.sector} Sector Intelligence &rarr;
-                </Link>
               </div>
             </div>
 
-            {/* ── Trade Intelligence (full width) ────────────────────── */}
+            {/* ══ EVENTS & CATALYSTS ══════════════════════════════════════════ */}
+            <SectionDivider label="EVENTS & CATALYSTS" />
+
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
+              {/* LEFT: Upcoming Catalysts + Concall */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {detail.upcoming_events && detail.upcoming_events.length > 0 && (
+                  <UpcomingCatalystsCard events={detail.upcoming_events} />
+                )}
+                {Object.keys(concall).length > 0 && concall.sentiment && (
+                  <SectionCard title="Concall Intelligence" accentColor={String(concall.sentiment) === 'BULLISH' ? P.green : String(concall.sentiment) === 'BEARISH' ? P.red : P.amber}>
+                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 10 }}>
+                      {[
+                        { label: 'Sentiment', value: String(concall.sentiment ?? ''), color: String(concall.sentiment) === 'BULLISH' ? P.green : String(concall.sentiment) === 'BEARISH' ? P.red : P.amber },
+                        { label: 'Guidance',  value: String(concall.guidance_direction ?? ''), color: P.blue },
+                        { label: 'Capex',     value: String(concall.capex_signal ?? ''), color: String(concall.capex_signal) === 'YES' ? P.teal : P.dim },
+                      ].map(({ label, value, color }) => value && value !== 'undefined' && (
+                        <div key={label}>
+                          <div style={LABEL}>{label}</div>
+                          <Chip label={value.replace(/_/g, ' ')} color={color} size={11} />
+                        </div>
+                      ))}
+                    </div>
+                    {concall.key_statement && (
+                      <div style={{ fontSize: 11, color: P.text, background: P.cell, padding: '8px 12px', borderRadius: 6, border: `1px solid ${P.border}`, lineHeight: 1.55 }}>
+                        "{String(concall.key_statement)}"
+                      </div>
+                    )}
+                    {concall.concall_score != null && <ScoreBar label="Concall Score" value={+concall.concall_score} />}
+                  </SectionCard>
+                )}
+              </div>
+
+              {/* RIGHT: Governance + News */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {Object.keys(agm).length > 0 && agm.governance_risk && (
+                  <GovernanceCard agm={agm} />
+                )}
+                {Object.keys(news).length > 0 && news.news_count_7d != null && +news.news_count_7d > 0 && (
+                  <NewsCard news={news} />
+                )}
+              </div>
+            </div>
+
+            {/* ══ CORPORATE ════════════════════════════════════════════════════ */}
+            <SectionDivider label="CORPORATE" />
+
             <TradeIntelligenceCard data={detail!} />
-
-            {/* ── Corporate Actions timeline ─────────────────────────── */}
             <CorporateActionsSection symbol={symbol} />
-
-            {/* ── Corporate Announcements (full width) ───────────────── */}
             <AnnouncementsSection symbol={symbol} />
 
+            <Link to={`/sectors/${detail.sector}`} style={{
+              display: 'block', textAlign: 'center', padding: '12px 0',
+              color: P.blue, fontSize: 12, textDecoration: 'none',
+              border: `1px solid ${P.litBdr}`, borderRadius: 8, background: P.cell,
+              fontWeight: 700, letterSpacing: 0.5,
+            }}>
+              View {detail.sector} Sector Intelligence &rarr;
+            </Link>
           </>
         )}
       </div>
