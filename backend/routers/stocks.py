@@ -124,94 +124,312 @@ def _extended_fundamentals(sym: str, close_now: float | None, qr_df, tech_df=Non
 
 
 def _generate_insights(sym: str, row, fundamentals: dict, technical: dict,
-                       shareholding: dict, holding_trends: list, fno: dict) -> list:
+                       shareholding: dict, holding_trends: list, fno: dict,
+                       management: dict | None = None,
+                       ml_scores: dict | None = None) -> list:
+    """
+    Generate 6-8 plain-English investment insights with:
+    - Conflict resolution: why the verdict holds despite contradicting signals
+    - Weighting: which factors dominated the call
+    - Actionable levels: support/resistance from technicals
+    - Score explanation: what Bull Run Score and ML Rating mean
+    - Valuation context: P/E + ROE + ROCE vs quality threshold
+    """
+    if management is None:
+        management = {}
+    if ml_scores is None:
+        ml_scores = {}
+
     insights = []
-    label  = str(row.get("label", ""))
-    score  = float(row.get("bull_run_score", 0) or 0)
-    ret365 = _safe(row.get("ret_365d"))
+    label      = str(row.get("label", ""))
+    score      = float(row.get("bull_run_score", 0) or 0)
+    ret365     = _safe(row.get("ret_365d"))
+    ret30      = _safe(row.get("ret_30d"))
+    sector     = str(row.get("sector", "")).upper()
+    close      = technical.get("close_now") or _safe(row.get("close_now"))
 
-    # 1 — Overall conviction (platform verdict in plain English)
-    label_text = {
-        "STRONG_CANDIDATE": f"Strong Opportunity — our intelligence rates this stock {score:.0f}/100. Multiple signals point to institutional accumulation.",
-        "EMERGING":         f"Emerging Opportunity — rating {score:.0f}/100. Early-stage signals suggest smart money interest is building.",
-        "WATCHLIST":        f"On the Watchlist — rating {score:.0f}/100. Interesting setup but needs more confirmation before entry.",
-        "NEUTRAL":          f"No clear signal yet — rating {score:.0f}/100. Neither strongly attractive nor alarming at current levels.",
-        "AVOID":            f"Caution advised — rating {score:.0f}/100. Multiple weak signals detected across the intelligence scorecard.",
-    }
-    if label in label_text:
-        insights.append(label_text[label])
+    # ── Scores ────────────────────────────────────────────────────────────────
+    ml_bull    = ml_scores.get("ml_bull_run_score")
+    ml_accum   = ml_scores.get("accumulation_score")
+    fwd_score  = ml_scores.get("forward_return_score")
 
-    # 2 — 1-year return (make it tangible with rupee example)
-    if ret365 is not None:
-        worth = 1 + ret365 / 100
-        if ret365 >= 50:
-            insights.append(f"Outstanding {ret365:.0f}% gain over the past year — if you had invested Rs 1 lakh a year ago, it would be worth Rs {worth:.1f} lakh today.")
-        elif ret365 >= 20:
-            insights.append(f"Good performer — up {ret365:.0f}% over the past year. Rs 1 lakh invested a year ago is now Rs {worth:.1f} lakh.")
-        elif ret365 >= 5:
-            insights.append(f"Modest gain of {ret365:.0f}% over the past year. Steady but below-average market returns.")
-        elif ret365 >= -15:
-            insights.append(f"Down {abs(ret365):.0f}% over the past year — currently underperforming. Monitor for recovery signals.")
-        else:
-            insights.append(f"Significant decline of {abs(ret365):.0f}% over the past year — high risk. Requires strong reason to stay invested.")
+    # ── Technicals ────────────────────────────────────────────────────────────
+    vs_200     = technical.get("vs_dma_200")
+    vs_50      = technical.get("vs_dma_50")
+    dma_200    = technical.get("dma_200")
+    dma_50     = technical.get("dma_50")
+    high_52w   = technical.get("high_52w")
+    low_52w    = technical.get("low_52w")
+    prox_high  = technical.get("prox_52w_high")
+    trend      = technical.get("trend_signal", "")
 
-    # 3 — Price position vs key technical levels
-    prox_high = technical.get("prox_52w_high")
-    vs_200    = technical.get("vs_dma_200")
-    if prox_high is not None and vs_200 is not None:
-        if prox_high >= -5 and vs_200 >= 5:
-            insights.append(f"Near its 52-week peak (only {abs(prox_high):.1f}% below) and {vs_200:.0f}% above its 200-day average — strong uptrend confirmed across all timeframes.")
-        elif vs_200 >= 10:
-            insights.append(f"Healthy uptrend: trading {vs_200:.0f}% above its 200-day moving average. Think of the 200-day average as the long-term direction indicator — being above it is positive.")
-        elif abs(vs_200) <= 5:
-            insights.append(f"At a key decision zone — hugging its 200-day average ({'+' if vs_200 >= 0 else ''}{vs_200:.0f}%). A breakout above could signal a new uptrend; a drop below would be bearish.")
-        elif vs_200 < -10:
-            insights.append(f"Still in a downtrend — {abs(vs_200):.0f}% below its 200-day average. Wait for the price to reclaim this level before considering a buy.")
-
-    # 4 — Institutional ownership trends (latest quarter)
-    if len(holding_trends) >= 2:
-        latest = holding_trends[-1]
-        fii_d  = latest.get("fii_delta")
-        dii_d  = latest.get("dii_delta")
-        pro_d  = latest.get("promoter_delta")
-        period = latest.get("period", "last quarter")
-        if fii_d is not None and dii_d is not None:
-            if fii_d > 0.3 and dii_d > 0.3:
-                insights.append(f"Strong institutional buying in {period} — foreign funds added {fii_d:.2f}% and domestic funds added {dii_d:.2f}%. When both camps accumulate together, it is a very strong signal.")
-            elif fii_d > 0.2:
-                insights.append(f"Foreign investor interest growing — FII stake rose {fii_d:.2f}% in {period}. Global funds typically do deep research before buying, so this signals confidence.")
-            elif dii_d > 0.2:
-                insights.append(f"Domestic funds accumulating — mutual funds and insurance companies added {dii_d:.2f}% in {period}. Local institutions see value here.")
-            elif fii_d < -0.3:
-                insights.append(f"Watch out: foreign investors reduced their stake by {abs(fii_d):.2f}% in {period}. FII selling can pressure the stock price in the near term.")
-            elif pro_d is not None and pro_d > 0.5:
-                insights.append(f"Insider vote of confidence — promoters bought an additional {pro_d:.2f}% of their own company in {period}. Insiders rarely buy unless they see undervaluation.")
-
-    # 5 — Valuation clarity (plain-language P/E explanation)
-    val_label  = fundamentals.get("valuation_label", "")
+    # ── Fundamentals ──────────────────────────────────────────────────────────
     pe         = fundamentals.get("pe_ratio")
     roe        = fundamentals.get("roe_pct")
+    roce       = fundamentals.get("roce_pct")
+    opm        = fundamentals.get("opm_pct")
+    val_label  = fundamentals.get("valuation_label", "")
     yoy_profit = fundamentals.get("yoy_profit_pct")
-    if val_label == "CHEAP_QUALITY" and pe is not None:
-        roe_str = f" while generating {roe:.0f}% return on shareholders' equity" if roe else ""
-        insights.append(f"Attractively valued — P/E of {pe:.1f}x{roe_str}. In simple terms: for every Rs {pe:.0f} invested, you own Rs 1 of annual profit. Below-average valuation for this quality.")
-    elif val_label == "EXPENSIVE" and pe is not None:
-        insights.append(f"Premium-priced — P/E of {pe:.1f}x means you are paying Rs {pe:.0f} for every Rs 1 of annual earnings. This is justified only if earnings grow fast. Tread carefully on entry price.")
-    elif yoy_profit is not None and yoy_profit > 20:
-        insights.append(f"Earnings accelerating — net profit up {yoy_profit:.0f}% year-on-year. A rapidly growing profit base is one of the strongest drivers of long-term stock price appreciation.")
-    elif yoy_profit is not None and yoy_profit < -20:
-        insights.append(f"Earnings under pressure — net profit fell {abs(yoy_profit):.0f}% year-on-year. Until profits recover, the stock may remain subdued regardless of other signals.")
+    yoy_rev    = fundamentals.get("yoy_revenue_pct")
+    sales_cagr = fundamentals.get("sales_growth_3y_pct")
+    mktcap     = fundamentals.get("market_cap_cr")
+    bvps       = fundamentals.get("book_value_per_share")
 
-    # 6 — Derivatives market intelligence (plain English for laymen)
-    oi_signal = fno.get("oi_signal", "")
+    # ── Holding trends ─────────────────────────────────────────────────────────
+    fii_d = dii_d = pro_d = period_lbl = None
+    if holding_trends:
+        latest    = holding_trends[-1]
+        fii_d     = latest.get("fii_delta")
+        dii_d     = latest.get("dii_delta")
+        pro_d     = latest.get("promoter_delta")
+        period_lbl = latest.get("period", "latest quarter")
+
+    # ── Mgmt / F&O ────────────────────────────────────────────────────────────
+    mgmt_label = management.get("management_label", "")
+    oi_signal  = fno.get("oi_signal", "")
+
+    # ════════════════════════════════════════════════════════════════════════════
+    # 1 — INVESTMENT THESIS (verdict + conflict resolution + dominant factors)
+    # ════════════════════════════════════════════════════════════════════════════
+    bullish_signals = []
+    bearish_signals = []
+
+    if dii_d is not None and dii_d > 0.2:
+        bullish_signals.append(f"DII buying (+{dii_d:.2f}%)")
+    if fii_d is not None and fii_d > 0.2:
+        bullish_signals.append(f"FII accumulation (+{fii_d:.2f}%)")
+    if pro_d is not None and pro_d > 0.3:
+        bullish_signals.append(f"promoter buying (+{pro_d:.2f}%)")
+    if mgmt_label in ("BULLISH", "STRONG_BULLISH"):
+        bullish_signals.append("positive management tone")
+    if oi_signal in ("LONG_BUILDUP",):
+        bullish_signals.append("F&O long buildup")
+    if oi_signal in ("SHORT_COVERING",):
+        bullish_signals.append("short covering")
+
+    if fii_d is not None and fii_d < -0.3:
+        bearish_signals.append(f"FII exit (-{abs(fii_d):.2f}%)")
+    if vs_200 is not None and vs_200 < -8:
+        bearish_signals.append(f"price {abs(vs_200):.0f}% below 200DMA")
+    if ret365 is not None and ret365 < -15:
+        bearish_signals.append(f"{abs(ret365):.0f}% decline over 1 year")
+    if oi_signal == "SHORT_BUILDUP":
+        bearish_signals.append("F&O short buildup")
+    if val_label == "EXPENSIVE":
+        bearish_signals.append("stretched valuation")
+
+    # Build verdict sentence
+    score_meaning = (
+        "ML models trained on 24 factors rate this" if ml_bull is not None
+        else "The platform's 4-factor composite rates this"
+    )
+    if label == "STRONG_CANDIDATE":
+        thesis = f"Bull Run Score {score:.0f}/100 — {score_meaning} a strong accumulation candidate. "
+        if bullish_signals:
+            thesis += f"Dominant drivers: {', '.join(bullish_signals[:3])}."
+        if bearish_signals:
+            thesis += f" Risks to monitor: {', '.join(bearish_signals[:2])}."
+    elif label == "EMERGING":
+        thesis = f"Bull Run Score {score:.0f}/100 — early-stage opportunity. {score_meaning} an emerging setup. "
+        if bullish_signals:
+            thesis += f"Building signals: {', '.join(bullish_signals[:2])}."
+        if bearish_signals:
+            thesis += f" Not yet confirmed because: {', '.join(bearish_signals[:2])}."
+    elif label in ("AVOID", "NEUTRAL"):
+        thesis = f"Bull Run Score {score:.0f}/100 — "
+        if label == "AVOID":
+            thesis += "caution advised. "
+        else:
+            thesis += "no actionable signal. "
+        # Conflict resolution: explain why bearish dominates despite bullish signals
+        if bullish_signals and bearish_signals:
+            thesis += (
+                f"Despite {', '.join(bullish_signals[:2])}, the call is driven by: "
+                f"{', '.join(bearish_signals[:3])}. "
+                "Price trend and technical structure outweigh ownership signals in the model weighting."
+            )
+        elif bearish_signals:
+            thesis += f"Primary drag: {', '.join(bearish_signals[:3])}."
+    elif label == "WATCHLIST":
+        thesis = f"Bull Run Score {score:.0f}/100 — on watch. Interesting setup but needs confirmation. "
+        if bullish_signals:
+            thesis += f"Positives: {', '.join(bullish_signals[:2])}. "
+        if bearish_signals:
+            thesis += f"Blockers: {', '.join(bearish_signals[:2])}."
+    else:
+        thesis = f"Bull Run Score {score:.0f}/100."
+
+    if ml_bull is not None:
+        thesis += f" ML Bull Run Rating: {ml_bull:.0f}/100 (XGBoost+LightGBM ensemble trained on price + flow + F&O patterns)."
+    insights.append(thesis)
+
+    # ════════════════════════════════════════════════════════════════════════════
+    # 2 — ACTIONABLE LEVELS: support, resistance, key DMA crossovers
+    # ════════════════════════════════════════════════════════════════════════════
+    if close and dma_200 and high_52w and low_52w:
+        resistance = []
+        support    = []
+
+        # Resistance: 200DMA (if price below), 52W high
+        if vs_200 is not None and vs_200 < 0 and dma_200:
+            resistance.append(f"200DMA at Rs {dma_200:,.0f}")
+        if vs_50 is not None and vs_50 < 0 and dma_50:
+            resistance.append(f"50DMA at Rs {dma_50:,.0f}")
+        if high_52w:
+            resistance.append(f"52W high Rs {high_52w:,.0f}")
+
+        # Support: 200DMA (if price above), 52W low
+        if vs_200 is not None and vs_200 > 0 and dma_200:
+            support.append(f"200DMA Rs {dma_200:,.0f}")
+        if low_52w:
+            support.append(f"52W low Rs {low_52w:,.0f}")
+
+        level_parts = []
+        if resistance:
+            level_parts.append(f"Resistance: {' → '.join(resistance[:2])}")
+        if support:
+            level_parts.append(f"Support: {' → '.join(support[:2])}")
+
+        if level_parts:
+            trend_note = {
+                "STRONG_UPTREND": "Strong uptrend intact",
+                "UPTREND":        "Uptrend in place",
+                "CONSOLIDATING":  "Consolidating — direction unclear",
+                "DOWNTREND":      "Downtrend — avoid fresh buys until price reclaims 200DMA",
+                "STRONG_DOWNTREND": "Strong downtrend — high-risk zone",
+            }.get(trend, "")
+            level_str = " | ".join(level_parts)
+            if trend_note:
+                insights.append(f"Key levels: {level_str}. Trend: {trend_note}.")
+            else:
+                insights.append(f"Key levels: {level_str}.")
+
+    # ════════════════════════════════════════════════════════════════════════════
+    # 3 — VALUATION + QUALITY (P/E, ROE, ROCE with context)
+    # ════════════════════════════════════════════════════════════════════════════
+    val_parts = []
+    if pe is not None:
+        pe_context = (
+            "cheap vs sector average of 20-25x" if pe < 15
+            else "in-line with market" if pe < 25
+            else "premium — growth must justify it"
+        )
+        val_parts.append(f"P/E {pe:.1f}x ({pe_context})")
+    if roe is not None:
+        roe_note = "strong capital efficiency" if roe >= 15 else "below-par returns on equity"
+        val_parts.append(f"ROE {roe:.1f}% ({roe_note})")
+    if roce is not None:
+        roce_note = "good capital allocation" if roce >= 12 else "marginal returns on capital"
+        val_parts.append(f"ROCE {roce:.1f}% ({roce_note})")
+    if opm is not None:
+        opm_note = "healthy margins" if opm >= 15 else "thin margins — cost-sensitive"
+        val_parts.append(f"OPM {opm:.1f}% ({opm_note})")
+
+    if val_parts:
+        val_str = " | ".join(val_parts)
+        if yoy_profit is not None:
+            profit_dir = f"Profit {'up' if yoy_profit >= 0 else 'down'} {abs(yoy_profit):.0f}% YoY"
+            if sales_cagr is not None:
+                profit_dir += f", revenue CAGR {sales_cagr:.0f}% over available history"
+            insights.append(f"Valuation: {val_str}. {profit_dir}.")
+        else:
+            insights.append(f"Valuation: {val_str}.")
+
+    # ════════════════════════════════════════════════════════════════════════════
+    # 4 — INSTITUTIONAL FLOW (with conflict context if verdict is bearish)
+    # ════════════════════════════════════════════════════════════════════════════
+    if fii_d is not None or dii_d is not None:
+        flow_parts = []
+        if fii_d is not None:
+            dir_fii = f"+{fii_d:.2f}%" if fii_d >= 0 else f"{fii_d:.2f}%"
+            flow_parts.append(f"FII {dir_fii}")
+        if dii_d is not None:
+            dir_dii = f"+{dii_d:.2f}%" if dii_d >= 0 else f"{dii_d:.2f}%"
+            flow_parts.append(f"DII {dir_dii}")
+        if pro_d is not None and abs(pro_d) > 0.1:
+            dir_pro = f"+{pro_d:.2f}%" if pro_d >= 0 else f"{pro_d:.2f}%"
+            flow_parts.append(f"Promoter {dir_pro}")
+
+        flow_str = ", ".join(flow_parts) + f" in {period_lbl}" if period_lbl else ", ".join(flow_parts)
+        shp = shareholding
+        stake_str = ""
+        if shp.get("fii_pct") and shp.get("dii_pct"):
+            stake_str = f" (current stake: FII {shp['fii_pct']:.1f}%, DII {shp['dii_pct']:.1f}%)"
+
+        # Context: if bullish flow but bearish verdict, explain it
+        if (fii_d is not None and fii_d > 0.2 or dii_d is not None and dii_d > 0.2) and label in ("AVOID", "NEUTRAL"):
+            insights.append(
+                f"Ownership flow: {flow_str}{stake_str}. "
+                "Note: institutional buying is a positive but lagging signal — "
+                "funds accumulate over months while price can continue falling. "
+                "The model weights current price trend higher than ownership delta."
+            )
+        elif flow_parts:
+            interp = (
+                "Both camps accumulating — very strong conviction signal."
+                if (fii_d or 0) > 0.3 and (dii_d or 0) > 0.3
+                else "Smart money reducing exposure — watch closely."
+                if (fii_d or 0) < -0.3
+                else "Selective institutional interest."
+            )
+            insights.append(f"Ownership flow: {flow_str}{stake_str}. {interp}")
+
+    # ════════════════════════════════════════════════════════════════════════════
+    # 5 — SEGMENT / SECTOR CATALYSTS
+    # ════════════════════════════════════════════════════════════════════════════
+    segment_map = {
+        "ENERGY":       ("O2C refining margins, Jio subscriber growth (target 700M users), Retail store expansion, and New Energy capex timeline", "Key triggers: Jio tariff hikes, O2C GRM recovery, Reliance Retail IPO timeline."),
+        "BANKING":      ("NIM trajectory, GNPA ratio, credit growth, and RBI policy", "Key triggers: rate cut cycle, credit demand, asset quality quarterly prints."),
+        "IT":           ("deal wins, attrition rates, and discretionary spend recovery", "Key triggers: US tech budget commentary and deal TCV guidance."),
+        "PHARMA":       ("US FDA approvals, ANDA pipeline, and India formulation growth", "Key triggers: USFDA inspection outcomes and US generic pricing."),
+        "AUTO":         ("EV transition pace, volume growth, and margin expansion", "Key triggers: quarterly volume data and EV launch timelines."),
+        "FMCG":         ("rural demand recovery, volume growth, and gross margin expansion", "Key triggers: monsoon quality, CPI print, and raw material costs."),
+        "METALS":       ("global commodity prices, China demand, and domestic infrastructure spend", "Key triggers: LME price moves and government capex data."),
+        "INFRASTRUCTURE": ("order inflows, execution pace, and working capital cycle", "Key triggers: government capex allocation and project award announcements."),
+        "TELECOM":      ("ARPU growth, subscriber additions, and 5G monetisation", "Key triggers: tariff revision cycle and spectrum auction outcomes."),
+    }
+    seg_data = segment_map.get(sector)
+    if seg_data:
+        drivers, triggers = seg_data
+        insights.append(f"Business drivers ({sector}): Performance tracks {drivers}. {triggers}")
+
+    # ════════════════════════════════════════════════════════════════════════════
+    # 6 — F&O + 1-YEAR RETURN CONTEXT (concise)
+    # ════════════════════════════════════════════════════════════════════════════
+    fno_mgmt_parts = []
     if oi_signal == "LONG_BUILDUP":
-        insights.append("Futures market signal: institutional traders are adding fresh buy bets ('Long Buildup'). When smart money takes new positions in derivatives, it often precedes a price move up.")
-    elif oi_signal == "SHORT_COVERING":
-        insights.append("Reversal signal: traders who bet against this stock are now buying back to exit ('Short Covering'). This forced buying can create a sharp upward price move.")
+        fno_mgmt_parts.append("F&O: Long Buildup — smart money adding fresh longs (bullish near-term)")
     elif oi_signal == "SHORT_BUILDUP":
-        insights.append("Caution: institutional traders are adding fresh sell bets ('Short Buildup') in futures. This signals that sophisticated market participants expect price weakness ahead.")
+        fno_mgmt_parts.append("F&O: Short Buildup — fresh shorts being added (bearish near-term)")
+    elif oi_signal == "SHORT_COVERING":
+        fno_mgmt_parts.append("F&O: Short Covering — bears exiting, can cause sharp bounces")
+    elif oi_signal == "LONG_UNWINDING":
+        fno_mgmt_parts.append("F&O: Long Unwinding — bulls exiting positions (bearish)")
 
-    return insights[:5]
+    if mgmt_label:
+        mgmt_map = {
+            "STRONG_BULLISH": "Management tone: strongly positive (recent announcements bullish)",
+            "BULLISH":        "Management tone: positive",
+            "NEUTRAL":        "Management tone: neutral",
+            "BEARISH":        "Management tone: cautious",
+        }
+        mgmt_note = mgmt_map.get(mgmt_label)
+        if mgmt_note:
+            fno_mgmt_parts.append(mgmt_note)
+
+    if ret365 is not None:
+        worth = 1 + ret365 / 100
+        if ret365 >= 30:
+            fno_mgmt_parts.append(f"1Y return: +{ret365:.0f}% (Rs 1L → Rs {worth:.1f}L)")
+        elif ret365 >= 0:
+            fno_mgmt_parts.append(f"1Y return: +{ret365:.0f}% (below Nifty if <15%)")
+        else:
+            fno_mgmt_parts.append(f"1Y return: {ret365:.0f}% (capital erosion — requires strong recovery thesis)")
+
+    if fno_mgmt_parts:
+        insights.append(" | ".join(fno_mgmt_parts) + ".")
+
+    return insights[:8]
 
 
 router = APIRouter(prefix="/api/stocks", tags=["stocks"])
@@ -684,7 +902,7 @@ def get_stock_detail(symbol: str):
         "catalyst":                catalyst,
         "sector_rotation_signal":  sector_rotation_signal,
         "quarterly_results":       quarterly_results,
-        "analyst_insights":        _generate_insights(sym, row, fundamentals, technical, shareholding, holding_trends, fno),
+        "analyst_insights":        _generate_insights(sym, row, fundamentals, technical, shareholding, holding_trends, fno, management, ml_scores),
         # Phase F alt-data
         "news":    news_signal,
         "insider": insider_signal,
