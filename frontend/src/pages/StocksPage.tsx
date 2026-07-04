@@ -27,6 +27,7 @@ import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 import { TradeIntelligenceCard } from '../components/platform/TradeIntelligenceCard'
 import { T, FS, FW, CARD_HDR, FIELD_LBL } from '../styles/tokens'
+import { useMobile } from '../hooks/useMobile'
 
 // ─── Page-local palette (aliases to shared tokens + chart-specific) ───────────
 
@@ -707,9 +708,301 @@ function NewsCard({ news }: { news: Record<string, string | number | null | unkn
   )
 }
 
+// ─── Investment Thesis Card ───────────────────────────────────────────────────
+
+type Thesis = NonNullable<import('../api/client').Stock['structured_thesis']>
+
+function InvestmentThesisCard({ thesis }: { thesis: Thesis }) {
+  const VERDICT_CFG: Record<string, { color: string; label: string }> = {
+    STRONG_CANDIDATE: { color: P.green,  label: 'STRONG BUY' },
+    EMERGING:         { color: P.teal,   label: 'EMERGING'   },
+    WATCHLIST:        { color: P.blue,   label: 'WATCHLIST'  },
+    NEUTRAL:          { color: P.amber,  label: 'NEUTRAL'    },
+    AVOID:            { color: P.red,    label: 'AVOID'      },
+  }
+  const cfg     = VERDICT_CFG[thesis.verdict] ?? { color: P.sub, label: thesis.verdict }
+  const confClr = thesis.confidence === 'HIGH' ? P.green : thesis.confidence === 'MEDIUM' ? P.amber : P.red
+
+  return (
+    <div style={{
+      background: '#090F1E', border: `1px solid ${cfg.color}44`,
+      borderLeft: `4px solid ${cfg.color}`, borderRadius: 8, padding: 16,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
+        <div style={{
+          background: cfg.color + '22', border: `1px solid ${cfg.color}55`,
+          borderRadius: 6, padding: '5px 14px',
+          fontSize: 13, fontWeight: 900, color: cfg.color, letterSpacing: 1.5,
+        }}>{cfg.label}</div>
+        <div style={{ fontSize: 20, fontWeight: 900, color: cfg.color, fontFamily: 'monospace', fontVariantNumeric: 'tabular-nums' }}>
+          {thesis.score.toFixed(0)}<span style={{ fontSize: 11, fontWeight: 400, color: P.dim }}>/100</span>
+        </div>
+        <span style={{ fontSize: 9, fontWeight: 700, color: confClr, background: confClr + '18', border: `1px solid ${confClr}44`, borderRadius: 3, padding: '2px 7px', letterSpacing: 0.5 }}>
+          {thesis.confidence} CONFIDENCE
+        </span>
+        <div style={{ marginLeft: 'auto', fontSize: 9, color: P.dim, letterSpacing: 0.8 }}>INVESTMENT THESIS</div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: (thesis.conflict_note || thesis.dominant_factor) ? 12 : 0 }}>
+        {thesis.bull_signals.map(s => (
+          <span key={s} style={{ fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 10, background: P.green + '18', color: P.green, border: `1px solid ${P.green}44` }}>
+            + {s}
+          </span>
+        ))}
+        {thesis.bear_signals.map(s => (
+          <span key={s} style={{ fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 10, background: P.red + '18', color: P.red, border: `1px solid ${P.red}44` }}>
+            - {s}
+          </span>
+        ))}
+        {thesis.bull_signals.length === 0 && thesis.bear_signals.length === 0 && (
+          <span style={{ fontSize: 10, color: P.dim }}>Insufficient signal data for chip analysis</span>
+        )}
+      </div>
+
+      {thesis.conflict_note && (
+        <div style={{ fontSize: 11, color: P.amber, background: P.amber + '0C', border: `1px solid ${P.amber}28`, borderRadius: 5, padding: '8px 12px', marginBottom: 8, lineHeight: 1.55 }}>
+          {thesis.conflict_note}
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        {thesis.dominant_factor && (
+          <div style={{ fontSize: 10, color: P.sub }}>
+            <span style={{ color: P.dim, marginRight: 4 }}>Driver:</span>{thesis.dominant_factor}
+          </div>
+        )}
+        {thesis.ml_note && (
+          <div style={{ fontSize: 10, color: P.dim }}>
+            <span style={{ color: P.purple, marginRight: 4 }}>ML:</span>{thesis.ml_note}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── Key Levels Card ──────────────────────────────────────────────────────────
+
+type KeyLevels = NonNullable<import('../api/client').Stock['key_levels']>
+
+function KeyLevelsCard({ kl, close }: { kl: KeyLevels; close: number }) {
+  const fmt = (v: number | null) =>
+    v != null ? `₹${v.toLocaleString('en-IN', { maximumFractionDigits: 0 })}` : '--'
+  const pctFrom = (v: number | null) => {
+    if (v == null || close <= 0) return ''
+    const p = (v - close) / close * 100
+    return `${p >= 0 ? '+' : ''}${p.toFixed(1)}%`
+  }
+
+  const lo  = kl.conf_sup_1 ?? (close - (kl.atr_14 ?? 0) * 3)
+  const hi  = kl.conf_res_1 ?? (close + (kl.atr_14 ?? 0) * 3)
+  const pos = (lo < hi) ? Math.max(0, Math.min(100, (close - lo) / (hi - lo) * 100)) : 50
+
+  function TagRow({ tags, color }: { tags: string; color: string }) {
+    if (!tags) return null
+    return (
+      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
+        {tags.split('|').map(t => t.trim()).filter(Boolean).map(t => (
+          <span key={t} style={{ fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 8, background: color + '18', color, border: `1px solid ${color}33`, letterSpacing: 0.3 }}>
+            {t}
+          </span>
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <SectionCard title="Key Support & Resistance Levels" accentColor={P.teal}>
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: P.dim, marginBottom: 5 }}>
+          <span>S1 {fmt(kl.conf_sup_1)}</span>
+          <span style={{ color: P.text, fontWeight: 700 }}>Now {fmt(close)}</span>
+          <span>R1 {fmt(kl.conf_res_1)}</span>
+        </div>
+        <div style={{ height: 6, background: '#1A2740', borderRadius: 3, position: 'relative' }}>
+          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to right, ${P.red}44, ${P.border}, ${P.green}44)`, borderRadius: 3 }} />
+          {kl.entry_zone_low != null && kl.entry_zone_high != null && lo < hi && (
+            <div style={{
+              position: 'absolute',
+              left: `${Math.max(0, (kl.entry_zone_low - lo) / (hi - lo) * 100)}%`,
+              right: `${Math.max(0, 100 - (kl.entry_zone_high - lo) / (hi - lo) * 100)}%`,
+              height: '100%', background: P.teal + '55', borderRadius: 3,
+            }} />
+          )}
+          <div style={{ position: 'absolute', top: -4, left: `${pos}%`, width: 14, height: 14, borderRadius: '50%', background: pos >= 70 ? P.green : pos >= 30 ? P.amber : P.red, transform: 'translateX(-50%)', border: `2px solid ${P.bg}`, boxShadow: `0 0 6px ${pos >= 70 ? P.green : pos >= 30 ? P.amber : P.red}88` }} />
+        </div>
+      </div>
+
+      <div style={{ marginBottom: 10 }}>
+        <div style={{ fontSize: 9, color: P.dim, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Resistance</div>
+        {[
+          { price: kl.conf_res_1, score: kl.conf_res_1_score, tags: kl.conf_res_1_tags, rank: 'R1' },
+          { price: kl.conf_res_2, score: kl.conf_res_2_score, tags: kl.conf_res_2_tags, rank: 'R2' },
+        ].filter(l => l.price != null).map(l => (
+          <div key={l.rank} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
+            <span style={{ fontSize: 9, fontWeight: 800, color: P.red, background: P.red + '18', border: `1px solid ${P.red}33`, borderRadius: 3, padding: '1px 6px', flexShrink: 0 }}>{l.rank}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: P.red, fontFamily: 'monospace', fontVariantNumeric: 'tabular-nums' }}>{fmt(l.price)}</span>
+                <span style={{ fontSize: 10, color: P.dim }}>{pctFrom(l.price)}</span>
+                {l.score != null && <span style={{ fontSize: 9, color: P.amber, marginLeft: 'auto' }}>confluence {l.score}</span>}
+              </div>
+              <TagRow tags={l.tags ?? ''} color={P.red} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 9, color: P.dim, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Support</div>
+        {[
+          { price: kl.conf_sup_1, score: kl.conf_sup_1_score, tags: kl.conf_sup_1_tags, rank: 'S1' },
+          { price: kl.conf_sup_2, score: kl.conf_sup_2_score, tags: kl.conf_sup_2_tags, rank: 'S2' },
+        ].filter(l => l.price != null).map(l => (
+          <div key={l.rank} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
+            <span style={{ fontSize: 9, fontWeight: 800, color: P.green, background: P.green + '18', border: `1px solid ${P.green}33`, borderRadius: 3, padding: '1px 6px', flexShrink: 0 }}>{l.rank}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: P.green, fontFamily: 'monospace', fontVariantNumeric: 'tabular-nums' }}>{fmt(l.price)}</span>
+                <span style={{ fontSize: 10, color: P.dim }}>{pctFrom(l.price)}</span>
+                {l.score != null && <span style={{ fontSize: 9, color: P.amber, marginLeft: 'auto' }}>confluence {l.score}</span>}
+              </div>
+              <TagRow tags={l.tags ?? ''} color={P.green} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ background: P.cell, border: `1px solid ${P.border}`, borderRadius: 6, padding: '9px 12px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+        {[
+          { label: 'Entry Zone',  value: kl.entry_zone_low != null && kl.entry_zone_high != null ? `${fmt(kl.entry_zone_low)}–${fmt(kl.entry_zone_high)}` : '--', color: P.teal },
+          { label: 'Stop Loss',   value: fmt(kl.stop_loss),   color: P.red   },
+          { label: 'ATR (14D)',   value: kl.atr_14 != null ? `₹${kl.atr_14.toFixed(1)}` : '--', color: P.sub },
+        ].map(({ label, value, color }) => (
+          <div key={label}>
+            <div style={{ fontSize: 9, color: P.dim, letterSpacing: 0.5, marginBottom: 3 }}>{label}</div>
+            <div style={{ fontSize: 11, fontWeight: 800, color, fontFamily: 'monospace' }}>{value}</div>
+          </div>
+        ))}
+      </div>
+      {kl.as_of_date && (
+        <div style={{ fontSize: 9, color: P.dim, marginTop: 8 }}>
+          Fib + Pivot + Volume Profile + Swing confluence · as of {kl.as_of_date}
+        </div>
+      )}
+    </SectionCard>
+  )
+}
+
+// ─── Valuation Context Card ───────────────────────────────────────────────────
+
+type PeerVal = NonNullable<import('../api/client').Stock['sector_peer_valuation']>
+
+function ValuationContextCard({ fundamentals, peers }: {
+  fundamentals: Record<string, number | string | null>
+  peers: PeerVal
+}) {
+  const metrics = [
+    { label: 'P/E Ratio', stock: fundamentals.pe_ratio,  peer: peers.sector_pe,   unit: 'x', good: 'low'  },
+    { label: 'ROE (%)',   stock: fundamentals.roe_pct,   peer: peers.sector_roe,  unit: '%', good: 'high' },
+    { label: 'ROCE (%)',  stock: fundamentals.roce_pct,  peer: peers.sector_roce, unit: '%', good: 'high' },
+  ].filter(m => m.stock != null || m.peer != null)
+
+  if (!metrics.length) return null
+
+  return (
+    <SectionCard title={`Valuation vs ${peers.sector ?? 'Sector'} Median (${peers.peer_count ?? 0} peers)`} accentColor={P.purple}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        {metrics.map(({ label, stock, peer, unit, good }) => {
+          const sv = stock != null ? +stock : null
+          const pv = peer  != null ? +peer  : null
+          const vsStr = sv != null && pv != null
+            ? (good === 'low'
+                ? (sv < pv * 0.85 ? 'cheaper than sector' : sv > pv * 1.2 ? 'more expensive' : 'in-line')
+                : (sv > pv * 1.1  ? 'better than sector'  : sv < pv * 0.8 ? 'below sector'  : 'in-line'))
+            : ''
+          const vsClr = (vsStr === 'cheaper than sector' || vsStr === 'better than sector') ? P.green
+            : (vsStr === 'more expensive' || vsStr === 'below sector') ? P.red : P.amber
+          const barMax = Math.max(sv ?? 0, pv ?? 0, 5) * 1.15
+          return (
+            <div key={label}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                <span style={{ fontSize: 10, color: P.sub }}>{label}</span>
+                {vsStr && <span style={{ fontSize: 9, fontWeight: 700, color: vsClr }}>{vsStr}</span>}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {sv != null && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 9, color: P.dim, minWidth: 34 }}>Stock</span>
+                    <div style={{ flex: 1, height: 8, background: P.border, borderRadius: 4, overflow: 'hidden' }}>
+                      <div style={{ width: `${Math.min(100, sv / barMax * 100)}%`, height: '100%', background: P.blue, borderRadius: 4 }} />
+                    </div>
+                    <span style={{ fontSize: 10, fontWeight: 800, color: P.blue, fontVariantNumeric: 'tabular-nums', minWidth: 38, textAlign: 'right' }}>{sv.toFixed(1)}{unit}</span>
+                  </div>
+                )}
+                {pv != null && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 9, color: P.dim, minWidth: 34 }}>Sector</span>
+                    <div style={{ flex: 1, height: 8, background: P.border, borderRadius: 4, overflow: 'hidden' }}>
+                      <div style={{ width: `${Math.min(100, pv / barMax * 100)}%`, height: '100%', background: P.dim, borderRadius: 4 }} />
+                    </div>
+                    <span style={{ fontSize: 10, fontWeight: 800, color: P.dim, fontVariantNumeric: 'tabular-nums', minWidth: 38, textAlign: 'right' }}>{pv.toFixed(1)}{unit}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </SectionCard>
+  )
+}
+
+// ─── Upcoming Catalysts Card ──────────────────────────────────────────────────
+
+function UpcomingCatalystsCard({ events }: { events: Array<{ event_date: string; purpose_type: string; bm_desc: string }> }) {
+  if (!events.length) return null
+  const TYPE_CLR: Record<string, string> = {
+    RESULTS: P.green, DIVIDEND: P.amber, AGM: P.purple,
+    EGM: P.blue, BUYBACK: P.teal, OTHER: P.dim,
+  }
+
+  return (
+    <SectionCard title={`Upcoming Catalysts — next 90 days (${events.length})`} accentColor={P.amber}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {events.map((ev, i) => {
+          const clr = TYPE_CLR[ev.purpose_type] ?? P.sub
+          const daysFrom = Math.round((new Date(ev.event_date).getTime() - Date.now()) / 86400000)
+          return (
+            <div key={i} style={{ display: 'flex', gap: 10, padding: '9px 0', borderBottom: i < events.length - 1 ? `1px solid ${P.border}` : 'none', alignItems: 'flex-start' }}>
+              <div style={{ minWidth: 60, flexShrink: 0 }}>
+                <div style={{ fontSize: 11, fontWeight: 800, color: P.text, fontFamily: 'monospace' }}>{ev.event_date.slice(5)}</div>
+                <div style={{ fontSize: 9, color: daysFrom <= 14 ? P.amber : P.dim }}>in {daysFrom}d</div>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ marginBottom: 4 }}>
+                  <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 8, background: clr + '18', color: clr, border: `1px solid ${clr}33`, letterSpacing: 0.3 }}>
+                    {ev.purpose_type.replace(/_/g, ' ')}
+                  </span>
+                </div>
+                {ev.bm_desc && ev.bm_desc.length > 4 && (
+                  <div style={{ fontSize: 10, color: P.sub, lineHeight: 1.45, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' } as React.CSSProperties}>
+                    {ev.bm_desc.replace(/=+/g, '').trim()}
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </SectionCard>
+  )
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export function StocksPage() {
+  const isMobile = useMobile()
   const { symbol: urlSym } = useParams<{ symbol?: string }>()
   const navigate = useNavigate()
 
@@ -1169,6 +1462,11 @@ export function StocksPage() {
 
         {detail && (
           <>
+            {/* ── Investment Thesis ─────────────────────────────────── */}
+            {detail.structured_thesis && (
+              <InvestmentThesisCard thesis={detail.structured_thesis} />
+            )}
+
             {/* ── Analyst insights ──────────────────────────────────── */}
             {insights && insights.length > 0 && (
               <div style={{ background: '#090F1E', border: `1px solid ${P.litBdr}`, borderLeft: `4px solid ${P.blue}`, borderRadius: 8, padding: 16 }}>
@@ -1200,7 +1498,7 @@ export function StocksPage() {
                     Market cap, shareholding and technical data below are accurate.
                   </div>
                 )}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10, marginTop: 10 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(6, 1fr)', gap: 10, marginTop: 10 }}>
 
                   {/* Row 1 — Size & Valuation (quick context) */}
                   <FundTile label="Market Cap (₹ Cr)" hdrBg="#1A3A6E" valColor={P.text}
@@ -1289,7 +1587,7 @@ export function StocksPage() {
             )}
 
             {/* ── Two-column intelligence grid ───────────────────────── */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
 
               {/* LEFT */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -1325,6 +1623,11 @@ export function StocksPage() {
                     <DMARow label="200 DMA" dma={t.dma_200} close={close} color={P.amber} />
                     {t.as_of_date && <div style={{ fontSize: 9, color: P.dim, marginTop: 8 }}>as of {t.as_of_date}</div>}
                   </SectionCard>
+                )}
+
+                {/* Key S/R Levels */}
+                {detail.key_levels && detail.key_levels.conf_res_1 != null && (
+                  <KeyLevelsCard kl={detail.key_levels} close={close} />
                 )}
 
                 {/* Concall signal */}
@@ -1441,6 +1744,19 @@ export function StocksPage() {
                     <span style={{ color: P.dim }}>as of {detail.as_of_date}</span>
                   </div>
                 </SectionCard>
+
+                {/* Valuation vs sector peers */}
+                {detail.sector_peer_valuation && Object.keys(detail.sector_peer_valuation).length > 0 && (
+                  <ValuationContextCard
+                    fundamentals={fund}
+                    peers={detail.sector_peer_valuation}
+                  />
+                )}
+
+                {/* Upcoming catalysts */}
+                {detail.upcoming_events && detail.upcoming_events.length > 0 && (
+                  <UpcomingCatalystsCard events={detail.upcoming_events} />
+                )}
 
                 {/* Holding trends */}
                 {trends.length > 0 && (

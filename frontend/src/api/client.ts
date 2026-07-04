@@ -112,6 +112,27 @@ export type Stock = {
   agm?:     Record<string, string | number | null>
   // Phase G consensus
   consensus?: Record<string, string | number | null>
+  // Phase D — four new intelligence cards
+  structured_thesis?: {
+    verdict: string; score: number
+    bull_signals: string[]; bear_signals: string[]
+    conflict_note: string; dominant_factor: string; confidence: string; ml_note: string
+  }
+  key_levels?: {
+    close: number | null; atr_14: number | null
+    conf_res_1: number | null; conf_res_1_score: number | null; conf_res_1_tags: string
+    conf_res_2: number | null; conf_res_2_score: number | null; conf_res_2_tags: string
+    conf_sup_1: number | null; conf_sup_1_score: number | null; conf_sup_1_tags: string
+    conf_sup_2: number | null; conf_sup_2_score: number | null; conf_sup_2_tags: string
+    entry_zone_low: number | null; entry_zone_high: number | null
+    stop_loss: number | null; target_1atr: number | null; target_2atr: number | null
+    as_of_date: string
+  }
+  sector_peer_valuation?: {
+    sector_pe?: number; sector_roe?: number; sector_roce?: number
+    peer_count?: number; sector?: string
+  }
+  upcoming_events?: Array<{ event_date: string; purpose_type: string; bm_desc: string }>
   // fields available in bulk listing (merged from technical/fno/ml datasets)
   trend_signal?: string
   vs_dma_200?: number | null

@@ -536,6 +536,109 @@ def _generate_insights(sym: str, row, fundamentals: dict, technical: dict,
     return insights[:8]
 
 
+def _build_structured_thesis(sym: str, row, fundamentals: dict, technical: dict,
+                              shareholding: dict, holding_trends: list, fno: dict,
+                              management: dict | None = None,
+                              ml_scores: dict | None = None) -> dict:
+    """Return structured thesis dict: verdict badge + signal chips + conflict note."""
+    if management is None:
+        management = {}
+    if ml_scores is None:
+        ml_scores = {}
+
+    label      = str(row.get("label", ""))
+    score      = float(row.get("bull_run_score", 0) or 0)
+    ret365     = _safe(row.get("ret_365d"))
+    vs_200     = technical.get("vs_dma_200")
+    val_label  = fundamentals.get("valuation_label", "")
+    oi_signal  = fno.get("oi_signal", "")
+    mgmt_label = management.get("management_label", "")
+    ml_bull    = ml_scores.get("ml_bull_run_score")
+
+    fii_d = dii_d = pro_d = period_lbl = None
+    if holding_trends:
+        latest     = holding_trends[-1]
+        fii_d      = latest.get("fii_delta")
+        dii_d      = latest.get("dii_delta")
+        pro_d      = latest.get("promoter_delta")
+        period_lbl = latest.get("period", "latest quarter")
+
+    bull_signals: list[str] = []
+    bear_signals: list[str] = []
+
+    if dii_d is not None and dii_d > 0.2:
+        bull_signals.append(f"DII buying (+{dii_d:.2f}%)")
+    if fii_d is not None and fii_d > 0.2:
+        bull_signals.append(f"FII accumulation (+{fii_d:.2f}%)")
+    if pro_d is not None and pro_d > 0.3:
+        bull_signals.append(f"Promoter buying (+{pro_d:.2f}%)")
+    if mgmt_label in ("BULLISH", "STRONG_BULLISH"):
+        bull_signals.append("Positive management tone")
+    if oi_signal == "LONG_BUILDUP":
+        bull_signals.append("F&O long buildup")
+    if oi_signal == "SHORT_COVERING":
+        bull_signals.append("Short covering")
+    if vs_200 is not None and vs_200 > 5:
+        bull_signals.append(f"Price +{vs_200:.0f}% above 200DMA")
+    if ret365 is not None and ret365 > 20:
+        bull_signals.append(f"+{ret365:.0f}% 1Y return")
+
+    if fii_d is not None and fii_d < -0.3:
+        bear_signals.append(f"FII exit (-{abs(fii_d):.2f}%)")
+    if vs_200 is not None and vs_200 < -8:
+        bear_signals.append(f"Price {abs(vs_200):.0f}% below 200DMA")
+    if ret365 is not None and ret365 < -15:
+        bear_signals.append(f"{abs(ret365):.0f}% decline (1Y)")
+    if oi_signal == "SHORT_BUILDUP":
+        bear_signals.append("F&O short buildup")
+    if val_label == "EXPENSIVE":
+        bear_signals.append("Stretched valuation")
+    if pro_d is not None and pro_d < -0.5:
+        bear_signals.append(f"Promoter selling ({pro_d:.2f}%)")
+
+    conflict_note = ""
+    if bull_signals and bear_signals and label in ("AVOID", "NEUTRAL", "WATCHLIST"):
+        conflict_note = (
+            f"Despite {bull_signals[0].lower()}, the model is cautious because "
+            f"{', '.join(s.lower() for s in bear_signals[:2])}. "
+            "Price trend and technicals carry more weight than ownership changes in the current regime."
+        )
+    elif bull_signals and label in ("STRONG_CANDIDATE", "EMERGING") and bear_signals:
+        conflict_note = (
+            f"Risk to monitor: {bear_signals[0].lower()}. "
+            "Positive thesis holds while price stays above key support."
+        )
+
+    dominant = ""
+    if label in ("STRONG_CANDIDATE", "EMERGING", "WATCHLIST"):
+        components = {
+            "Price Momentum": float(row.get("price_score",       0) or 0),
+            "Sector Flow":    float(row.get("sector_flow_score", 0) or 0),
+            "Block Deals":    float(row.get("deal_score",        0) or 0),
+            "Corp Events":    float(row.get("corporate_score",   0) or 0),
+        }
+        dominant_key = max(components, key=lambda k: components[k])
+        dominant = f"{dominant_key} ({components[dominant_key]:.0f}/100) is the primary driver"
+
+    signal_count = len(bull_signals) + len(bear_signals)
+    confidence   = "HIGH" if signal_count >= 4 else "MEDIUM" if signal_count >= 2 else "LOW"
+
+    ml_note = ""
+    if ml_bull is not None:
+        ml_note = f"ML ensemble (XGBoost + LightGBM, 24 features): {ml_bull:.0f}/100"
+
+    return {
+        "verdict":          label,
+        "score":            round(score, 1),
+        "bull_signals":     bull_signals,
+        "bear_signals":     bear_signals,
+        "conflict_note":    conflict_note,
+        "dominant_factor":  dominant,
+        "confidence":       confidence,
+        "ml_note":          ml_note,
+    }
+
+
 router = APIRouter(prefix="/api/stocks", tags=["stocks"])
 
 
@@ -1183,6 +1286,81 @@ def get_stock_detail(symbol: str):
                     agm_signal["pdf_url"] = str(match.iloc[0]["pdf_url"])
                     agm_signal["seq_id"]  = str(match.iloc[0].get("seq_id", ""))
 
+    # ── Structured thesis (visual card data) ─────────────────────────────────
+    structured_thesis = _build_structured_thesis(
+        sym, row, fundamentals, technical, shareholding, holding_trends,
+        fno, management, ml_scores
+    )
+
+    # ── Key levels (Phase D — confluence engine) ──────────────────────────────
+    key_levels_data: dict = {}
+    kl_df = data_loader.get("key_levels")
+    if kl_df is not None and "symbol" in kl_df.columns:
+        kl_row = kl_df[kl_df["symbol"].str.upper() == sym]
+        if not kl_row.empty:
+            r = kl_row.iloc[0]
+            key_levels_data = {
+                "close":           _safe(r.get("close")),
+                "atr_14":          _safe(r.get("atr_14")),
+                "conf_res_1":      _safe(r.get("conf_res_1")),
+                "conf_res_1_score": _safe(r.get("conf_res_1_score")),
+                "conf_res_1_tags": str(r.get("conf_res_1_tags", "")),
+                "conf_res_2":      _safe(r.get("conf_res_2")),
+                "conf_res_2_score": _safe(r.get("conf_res_2_score")),
+                "conf_res_2_tags": str(r.get("conf_res_2_tags", "")),
+                "conf_sup_1":      _safe(r.get("conf_sup_1")),
+                "conf_sup_1_score": _safe(r.get("conf_sup_1_score")),
+                "conf_sup_1_tags": str(r.get("conf_sup_1_tags", "")),
+                "conf_sup_2":      _safe(r.get("conf_sup_2")),
+                "conf_sup_2_score": _safe(r.get("conf_sup_2_score")),
+                "conf_sup_2_tags": str(r.get("conf_sup_2_tags", "")),
+                "entry_zone_low":  _safe(r.get("entry_zone_low")),
+                "entry_zone_high": _safe(r.get("entry_zone_high")),
+                "stop_loss":       _safe(r.get("stop_loss")),
+                "target_1atr":     _safe(r.get("target_1atr")),
+                "target_2atr":     _safe(r.get("target_2atr")),
+                "as_of_date":      str(r.get("as_of_date", "")),
+            }
+
+    # ── Sector peer valuation (median P/E, ROE, ROCE for sector) ─────────────
+    sector_peer_val: dict = {}
+    val_df_all = data_loader.get("valuation_scores")
+    if val_df_all is not None and "symbol" in val_df_all.columns and "sector" in val_df_all.columns:
+        sym_sector = str(row.get("sector", ""))
+        peers = val_df_all[val_df_all["sector"].str.upper() == sym_sector.upper()]
+        if len(peers) >= 3:
+            for col, key in [("pe_ratio", "sector_pe"), ("roe_pct", "sector_roe"), ("roce_pct", "sector_roce")]:
+                if col in peers.columns:
+                    import numpy as _np2
+                    vals = pd.to_numeric(peers[col], errors="coerce").dropna()
+                    if len(vals) >= 3:
+                        sector_peer_val[key] = round(float(_np2.nanmedian(vals)), 1)
+            sector_peer_val["peer_count"] = int(len(peers))
+            sector_peer_val["sector"]     = sym_sector
+
+    # ── Upcoming events from event_calendar (next 90 days for this symbol) ───
+    upcoming_events: list = []
+    ev_df = data_loader.get("event_calendar")
+    if ev_df is not None and "symbol" in ev_df.columns and "event_date" in ev_df.columns:
+        today   = pd.Timestamp.now().normalize()
+        cutoff  = today + pd.Timedelta(days=90)
+        ev_dates = pd.to_datetime(ev_df["event_date"], errors="coerce")
+        ev_mask  = (
+            (ev_df["symbol"].str.upper() == sym) &
+            (ev_dates >= today) &
+            (ev_dates <= cutoff)
+        )
+        ev_rows = ev_df[ev_mask].copy()
+        if not ev_rows.empty:
+            ev_rows["_dt"] = pd.to_datetime(ev_rows["event_date"], errors="coerce")
+            ev_rows = ev_rows.sort_values("_dt").head(5)
+            for _, er in ev_rows.iterrows():
+                upcoming_events.append({
+                    "event_date":   str(er.get("event_date", ""))[:10],
+                    "purpose_type": str(er.get("purpose_type", "")),
+                    "bm_desc":      str(er.get("bm_desc", ""))[:300],
+                })
+
     return {
         "symbol":             str(row.get("symbol", "")),
         "sector":             str(row.get("sector", "")),
@@ -1218,6 +1396,11 @@ def get_stock_detail(symbol: str):
         "sector_rotation_signal":  sector_rotation_signal,
         "quarterly_results":       quarterly_results,
         "analyst_insights":        _generate_insights(sym, row, fundamentals, technical, shareholding, holding_trends, fno, management, ml_scores),
+        # Phase D — four new intelligence cards
+        "structured_thesis":       structured_thesis,
+        "key_levels":              key_levels_data,
+        "sector_peer_valuation":   sector_peer_val,
+        "upcoming_events":         upcoming_events,
         # Phase F alt-data
         "news":    news_signal,
         "insider": insider_signal,
