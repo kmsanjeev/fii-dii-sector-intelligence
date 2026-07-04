@@ -19,7 +19,7 @@ const NAV = [
   { path: '/broker',     label: 'Broker' },
   { path: '/research',   label: 'Research' },
   { path: '/execution',  label: 'Execution' },
-  { path: '/chat',       label: 'AI Chat' },
+  { path: '/chat',       label: 'ChatBot' },
   { path: '/data',       label: 'Data' },
   { path: '/settings',   label: 'Settings' },
 ]

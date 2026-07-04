@@ -260,9 +260,10 @@ export const fetchHealth        = () => api.get('/health').then(r => r.data)
 export const fetchDataStatus    = () => api.get('/data/status').then(r => r.data)
 export const fetchEngineList    = () => api.get('/data/engines').then(r => r.data)
 
-// Phase 14 — AI Chat
+// Phase 14 — AI Chat (separate instance with longer timeout for multi-round Groq tool calls)
+const chatApi = axios.create({ baseURL: '/api', timeout: 60000 })
 export type ChatResponseData = { reply: string; session_id: string; intent: string }
 export const sendChat         = (message: string, session_id?: string) =>
-  api.post<ChatResponseData>('/chat', { message, session_id }).then(r => r.data)
+  chatApi.post<ChatResponseData>('/chat', { message, session_id }).then(r => r.data)
 export const resetChatSession = (session_id: string) =>
-  api.delete(`/chat/session/${session_id}`).then(r => r.data)
+  chatApi.delete(`/chat/session/${session_id}`).then(r => r.data)

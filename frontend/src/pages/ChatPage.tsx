@@ -24,7 +24,7 @@ const INTENT_META: Record<string, { label: string; color: string }> = {
 const SUGGESTED = [
   'Which sectors are in early rotation right now?',
   'What is the FII vs DII divergence signal today?',
-  'Show me top STRONG_CANDIDATE stocks in BANKING',
+  'Show me top BULL_RUN or EMERGING stocks in BANKING',
   'Explain the PCR signal and what it means',
   'What is the conviction score for RELIANCE?',
   'Which F&O stocks have long buildup today?',
@@ -32,7 +32,7 @@ const SUGGESTED = [
 
 const WELCOME: Msg = {
   role: 'assistant',
-  content: `Hello! I'm your AI market intelligence assistant — powered by Claude with access to real-time institutional flow data, sector rotation signals, F&O intelligence, and company fundamentals across 2,400+ NSE stocks.\n\nAsk me anything about markets, sectors, stocks, or flows.`,
+  content: `Hello! I'm your market intelligence chatbot — powered by Groq / Llama 3.3 70B with access to real-time institutional flow data, sector rotation signals, F&O intelligence, and company fundamentals across 2,400+ NSE stocks.\n\nAsk me anything about markets, sectors, stocks, or flows.`,
   ts: Date.now(),
 }
 
@@ -207,10 +207,10 @@ export function ChatPage() {
       }}>
         <div>
           <h1 style={{ color: '#E2E8F0', fontSize: 16, fontWeight: 700, margin: 0 }}>
-            AI MARKET INTELLIGENCE
+            MARKET CHATBOT
           </h1>
           <div style={{ color: '#475569', fontSize: 10, marginTop: 3 }}>
-            Claude API + RAG (6 domain indexes) + 11 live data tools &nbsp;|&nbsp; Phase 14
+            Groq / Llama 3.3 70B &nbsp;+&nbsp; RAG (6 domain indexes) &nbsp;+&nbsp; 11 live data tools &nbsp;|&nbsp; Phase 14
             {sessionId && <span style={{ color: '#334155' }}> &nbsp;|&nbsp; Session: {sessionId}</span>}
           </div>
         </div>
