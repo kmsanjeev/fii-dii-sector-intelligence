@@ -36,6 +36,12 @@ body {
 .bg-surface { background-color: var(--bg-surface); }
 .border-platform { border-color: var(--bg-border); }
 
+/* Spinner for AI loading states */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 /* Indices ticker tape */
 @keyframes ticker-scroll {
   0%   { transform: translateX(0); }

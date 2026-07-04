@@ -20,6 +20,7 @@ import {
 } from 'lightweight-charts'
 import {
   api, fetchStockDetail, fetchStockAnnouncements, fetchStockCorpActions,
+  fetchAnnouncementSummary,
   type TechnicalIndicators, type FnoData, type Announcement, type CorpAction,
 } from '../api/client'
 import { ScoreGauge } from '../components/platform/ScoreGauge'
@@ -387,6 +388,113 @@ const ANN_CLR: Record<string, string> = {
   PRESS_RELEASE: P.dim, OTHER: P.dim,
 }
 
+function AnnRow({ a, i, last }: { a: Announcement; i: number; last: boolean }) {
+  const [summary, setSummary]   = useState<string | null>(null)
+  const [loading, setLoading]   = useState(false)
+  const [error,   setError]     = useState<string | null>(null)
+  const [open,    setOpen]      = useState(false)
+
+  const tc = ANN_CLR[a.announcement_type] ?? P.sub
+  const sc = a.signal_score == null ? T.dim : a.signal_score >= 75 ? P.green : a.signal_score >= 50 ? P.amber : T.dim
+
+  const handleSummarise = async () => {
+    if (summary) { setOpen(o => !o); return }
+    setOpen(true)
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetchAnnouncementSummary(a.pdf_url!, a.seq_id, a.title || a.desc)
+      setSummary(res.summary)
+    } catch (e: unknown) {
+      const msg = (e as { response?: { data?: { detail?: string } }; message?: string })
+        ?.response?.data?.detail ?? (e as { message?: string })?.message ?? 'Failed'
+      setError(msg)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div key={a.seq_id || i} style={{
+      padding: '9px 4px',
+      borderBottom: !last ? `1px solid ${P.border}` : 'none',
+    }}>
+      {/* ── top row ── */}
+      <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+        {/* date + score */}
+        <div style={{ minWidth: 76, flexShrink: 0 }}>
+          <div style={{ fontSize: FS.label, color: T.muted, fontFamily: 'monospace', marginBottom: 4 }}>{a.date.slice(0, 10)}</div>
+          {a.signal_score != null && (
+            <span style={{ fontSize: FS.caption, fontWeight: FW.bold, padding: '1px 6px', borderRadius: 3, background: sc + '18', color: sc, border: `1px solid ${sc}33` }}>
+              {a.signal_score}
+            </span>
+          )}
+        </div>
+        {/* type + title */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ marginBottom: 4 }}>
+            <span style={{ fontSize: FS.caption, fontWeight: FW.bold, padding: '2px 7px', borderRadius: 3, background: tc + '18', color: tc, border: `1px solid ${tc}33`, letterSpacing: 0.3 }}>
+              {a.announcement_type.replace(/_/g, ' ')}
+            </span>
+          </div>
+          <div style={{ fontSize: FS.body, color: P.text, lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' } as React.CSSProperties}>
+            {a.title || a.desc}
+          </div>
+        </div>
+        {/* actions */}
+        <div style={{ flexShrink: 0, alignSelf: 'center', display: 'flex', gap: 6 }}>
+          {/* AI summary button — only when PDF available */}
+          {a.pdf_url && (
+            <button
+              onClick={handleSummarise}
+              title={summary ? (open ? 'Hide summary' : 'Show summary') : 'Read PDF & summarise'}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 4,
+                padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
+                border: `1px solid ${P.amber}50`,
+                background: open ? P.amber + '22' : P.amber + '10',
+                color: P.amber, fontSize: 10, fontWeight: 700,
+              }}
+            >
+              {loading
+                ? <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>⟳</span>
+                : <span>AI</span>
+              }
+            </button>
+          )}
+          {/* PDF download */}
+          {a.pdf_url && (
+            <a href={a.pdf_url} target="_blank" rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', padding: '5px 8px', borderRadius: 4, background: P.blue + '18', color: P.blue, border: `1px solid ${P.blue}40`, textDecoration: 'none' }}
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </a>
+          )}
+        </div>
+      </div>
+
+      {/* ── AI summary panel ── */}
+      {open && (
+        <div style={{
+          marginTop: 8, marginLeft: 86,
+          padding: '10px 12px', borderRadius: 6,
+          background: P.amber + '0C', border: `1px solid ${P.amber}28`,
+          fontSize: FS.body, color: P.text, lineHeight: 1.55,
+        }}>
+          {loading && <span style={{ color: P.dim }}>Reading PDF and generating analysis...</span>}
+          {error   && <span style={{ color: P.red }}>Error: {error}</span>}
+          {summary && !loading && (
+            <>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, color: P.amber, marginBottom: 6, textTransform: 'uppercase' }}>AI Analysis</div>
+              <div>{summary}</div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function AnnouncementsSection({ symbol }: { symbol: string }) {
   const { data, isLoading } = useQuery({
     queryKey: ['stock-ann', symbol],
@@ -399,58 +507,9 @@ function AnnouncementsSection({ symbol }: { symbol: string }) {
   return (
     <SectionCard title={`Corporate Announcements — latest ${items.length} of ${data?.total ?? 0}`} accentColor={P.blue}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {items.map((a, i) => {
-          const tc = ANN_CLR[a.announcement_type] ?? P.sub
-          const sc = a.signal_score == null ? T.dim : a.signal_score >= 75 ? P.green : a.signal_score >= 50 ? P.amber : T.dim
-          return (
-            <div key={a.seq_id || i} style={{
-              display: 'flex', gap: 10, padding: '9px 4px',
-              borderBottom: i < items.length - 1 ? `1px solid ${P.border}` : 'none',
-              alignItems: 'flex-start',
-            }}>
-              {/* date + score */}
-              <div style={{ minWidth: 76, flexShrink: 0 }}>
-                <div style={{ fontSize: FS.label, color: T.muted, fontFamily: 'monospace', marginBottom: 4 }}>{a.date.slice(0, 10)}</div>
-                {a.signal_score != null && (
-                  <span style={{ fontSize: FS.caption, fontWeight: FW.bold, padding: '1px 6px', borderRadius: 3, background: sc + '18', color: sc, border: `1px solid ${sc}33` }}>
-                    {a.signal_score}
-                  </span>
-                )}
-              </div>
-              {/* type + title */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ marginBottom: 4 }}>
-                  <span style={{ fontSize: FS.caption, fontWeight: FW.bold, padding: '2px 7px', borderRadius: 3, background: tc + '18', color: tc, border: `1px solid ${tc}33`, letterSpacing: 0.3 }}>
-                    {a.announcement_type.replace(/_/g, ' ')}
-                  </span>
-                </div>
-                <div style={{ fontSize: FS.body, color: P.text, lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' } as React.CSSProperties}>
-                  {a.title || a.desc}
-                </div>
-              </div>
-              {/* PDF link */}
-              {a.pdf_url && (
-                <a
-                  href={a.pdf_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    flexShrink: 0, alignSelf: 'center',
-                    display: 'flex', alignItems: 'center',
-                    padding: '5px 8px', borderRadius: 4,
-                    background: P.blue + '18', color: P.blue,
-                    border: `1px solid ${P.blue}40`,
-                    textDecoration: 'none',
-                  }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </a>
-              )}
-            </div>
-          )
-        })}
+        {items.map((a, i) => (
+          <AnnRow key={a.seq_id || i} a={a} i={i} last={i === items.length - 1} />
+        ))}
       </div>
     </SectionCard>
   )

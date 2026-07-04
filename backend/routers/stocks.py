@@ -6,11 +6,41 @@ GET /api/stocks/{symbol}/momentum     — price momentum detail
 GET /api/stocks                       — all 2441 symbols (paginated)
 """
 
+import json
 import math
+import threading
+import time
 from pathlib import Path
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Query
 from backend.services import data_loader
+
+# ── Announcement summary cache (seq_id → summary text) ───────────────────────
+_SUMMARY_CACHE_PATH = Path("data/intelligence/announcement_summaries.json")
+_summary_cache: dict[str, str] = {}
+_summary_lock = threading.Lock()
+
+def _load_summary_cache():
+    global _summary_cache
+    if _SUMMARY_CACHE_PATH.exists():
+        try:
+            with open(_SUMMARY_CACHE_PATH, encoding="utf-8") as f:
+                _summary_cache = json.load(f)
+        except Exception:
+            _summary_cache = {}
+
+def _save_summary_cache():
+    try:
+        _SUMMARY_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        tmp = _SUMMARY_CACHE_PATH.with_suffix(".tmp")
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(_summary_cache, f, ensure_ascii=False, indent=2)
+        import shutil
+        shutil.move(str(tmp), str(_SUMMARY_CACHE_PATH))
+    except Exception:
+        pass
+
+_load_summary_cache()
 
 try:
     from engines.common.config import STOCK_HISTORY_CACHE as _CACHE_DIR
@@ -468,6 +498,88 @@ def _enrich_bulk(df: pd.DataFrame) -> pd.DataFrame:
         df = merged
 
     return df
+
+
+@router.get("/announcement-summary")
+def get_announcement_summary(
+    pdf_url: str = Query(..., description="Full NSE archive PDF URL"),
+    seq_id:  str = Query("", description="Announcement seq_id for caching"),
+    title:   str = Query("", description="Announcement title for context"),
+):
+    """
+    Fetch an NSE announcement PDF, extract text, and return an AI-generated
+    crux summary. Results are cached by seq_id to avoid repeated LLM calls.
+    """
+    cache_key = seq_id.strip() or pdf_url
+
+    # Serve from cache if available
+    with _summary_lock:
+        if cache_key in _summary_cache:
+            return {"summary": _summary_cache[cache_key], "cached": True}
+
+    # ── 1. Fetch PDF ──────────────────────────────────────────────────────────
+    try:
+        import requests
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120",
+            "Accept": "application/pdf,*/*",
+            "Referer": "https://www.nseindia.com/",
+        }
+        r = requests.get(pdf_url, headers=headers, timeout=20)
+        r.raise_for_status()
+        pdf_bytes = r.content
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Could not fetch PDF: {exc}")
+
+    # ── 2. Extract text ───────────────────────────────────────────────────────
+    try:
+        import pdfplumber, io
+        with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
+            pages_text = []
+            for page in pdf.pages[:6]:          # first 6 pages is enough
+                t = page.extract_text() or ""
+                pages_text.append(t)
+            raw_text = "\n".join(pages_text).strip()
+    except Exception as exc:
+        raise HTTPException(status_code=422, detail=f"PDF text extraction failed: {exc}")
+
+    if not raw_text:
+        raise HTTPException(status_code=422, detail="PDF has no extractable text (may be scanned image)")
+
+    # Trim to ~3500 chars to stay within LLM context
+    text_chunk = raw_text[:3500]
+
+    # ── 3. Call LLM ───────────────────────────────────────────────────────────
+    try:
+        import sys
+        from pathlib import Path as _P
+        sys.path.insert(0, str(_P(__file__).resolve().parent.parent.parent))
+        from engines.common.llm_client import call_llm
+    except ImportError:
+        raise HTTPException(status_code=503, detail="LLM client not available")
+
+    system_prompt = (
+        "You are a senior equity research analyst specialising in Indian capital markets. "
+        "You will be given the text of an NSE corporate announcement. "
+        "Your job is to write a 4-6 sentence investment-focused crux: "
+        "(1) What specifically happened — name amounts, dates, counterparties where present. "
+        "(2) Why this matters financially or strategically for the company. "
+        "(3) What investors should watch or do as a result. "
+        "Be precise and specific. No generic phrases. No filler. Numbers and facts only."
+    )
+    user_prompt = f"Announcement title: {title}\n\nPDF content:\n{text_chunk}"
+
+    summary = call_llm(system=system_prompt, user=user_prompt, max_tokens=300, temperature=0.1)
+
+    if not summary:
+        raise HTTPException(status_code=503, detail="LLM providers unavailable — try again shortly")
+
+    # ── 4. Cache and return ───────────────────────────────────────────────────
+    with _summary_lock:
+        _summary_cache[cache_key] = summary
+        _save_summary_cache()
+
+    return {"summary": summary, "cached": False}
 
 
 @router.get("/watchlist")

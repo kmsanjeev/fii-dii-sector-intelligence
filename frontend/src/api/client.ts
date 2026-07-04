@@ -158,6 +158,11 @@ export const fetchStockAnnouncements = (symbol: string, limit = 20) =>
     `/stocks/${symbol}/announcements?limit=${limit}`
   ).then(r => r.data)
 
+export const fetchAnnouncementSummary = (pdf_url: string, seq_id: string, title: string) =>
+  api.get<{ summary: string; cached: boolean }>(
+    `/stocks/announcement-summary?pdf_url=${encodeURIComponent(pdf_url)}&seq_id=${encodeURIComponent(seq_id)}&title=${encodeURIComponent(title)}`
+  ).then(r => r.data)
+
 export interface Announcement {
   date:              string
   announcement_type: string
