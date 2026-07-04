@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
-const API = 'http://localhost:8001'
+const API = ''
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 
-const API = 'http://localhost:8001/api/execution'
+const API = '/api/execution'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

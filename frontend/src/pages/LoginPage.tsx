@@ -12,7 +12,7 @@ export function LoginPage() {
     e.preventDefault()
     setError(''); setLoading(true)
     try {
-      const r = await fetch('http://localhost:8001/api/auth/login', {
+      const r = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

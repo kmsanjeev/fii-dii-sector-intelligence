@@ -61,3 +61,43 @@ body {
 .tv-lightweight-charts a[href*="TradingView"] {
   display: none !important;
 }
+
+/* ── Mobile responsive ──────────────────────────────────────────────────────── */
+
+/* Use 100dvh so mobile browser chrome (address bar) is accounted for */
+#root {
+  height: 100dvh;
+}
+
+@media (max-width: 900px) {
+  body {
+    font-size: 13px;
+  }
+
+  /* Reduce page padding */
+  main.p-6 { padding: 12px !important; }
+  main.p-4 { padding: 12px !important; }
+
+  /* Tables: horizontal scroll instead of overflow clipping */
+  main table {
+    min-width: 480px;
+  }
+  /* Wrap any direct table child of main in a scroll container */
+  main > div {
+    max-width: 100%;
+  }
+}
+
+/* Scrollable table wrapper utility — apply to any table container */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Card grids: single column on narrow screens */
+@media (max-width: 640px) {
+  body { font-size: 12px; }
+}
+
+/* Ensure no horizontal overflow bleeds outside main */
+main { box-sizing: border-box; }

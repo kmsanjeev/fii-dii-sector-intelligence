@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 
-const API = 'http://localhost:8001'
+const API = ''
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

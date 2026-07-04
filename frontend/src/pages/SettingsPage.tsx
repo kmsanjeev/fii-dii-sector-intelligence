@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchHealth } from '../api/client'
 
-const API = 'http://localhost:8001'
+const API = ''
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
