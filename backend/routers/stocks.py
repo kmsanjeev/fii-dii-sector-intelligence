@@ -1005,11 +1005,13 @@ def get_stock_detail(symbol: str):
                 "latest_date":     str(r.get("latest_date", "")),
                 "recent_articles": [],
             }
-            # Attach per-article links from news_sentiment
+            # Attach per-article links from news_sentiment (last 30 days only)
             sent_df = data_loader.get("news_sentiment")
             if sent_df is not None and "symbol" in sent_df.columns:
+                cutoff = (pd.Timestamp.now() - pd.Timedelta(days=30)).strftime("%Y-%m-%d")
                 art_rows = sent_df[
-                    sent_df["symbol"].str.upper() == sym
+                    (sent_df["symbol"].str.upper() == sym) &
+                    (sent_df["date"].astype(str) >= cutoff)
                 ].sort_values("date", ascending=False).head(5)
                 news_signal["recent_articles"] = [
                     {
