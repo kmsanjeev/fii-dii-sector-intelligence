@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchDataStatus } from '../api/client'
 
-const BASE     = 'http://localhost:8000'
+const BASE     = 'http://localhost:8001'
 const API_BASE = 'http://localhost:8001'
 
 async function killBackend(): Promise<void> {
