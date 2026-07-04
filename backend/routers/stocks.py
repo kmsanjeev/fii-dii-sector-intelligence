@@ -13,7 +13,9 @@ import time
 from pathlib import Path
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import HTMLResponse
 from backend.services import data_loader
+from backend.routers.report_generator import generate_report_html
 
 # ── Announcement summary cache (seq_id → summary text) ───────────────────────
 _SUMMARY_CACHE_PATH = Path("data/intelligence/announcement_summaries.json")
@@ -1169,6 +1171,14 @@ def get_stock_detail(symbol: str):
         # Phase G consensus
         "consensus": consensus,
     }
+
+
+@router.get("/{symbol}/report", response_class=HTMLResponse)
+def get_stock_report(symbol: str):
+    """Generate a self-contained interactive HTML intelligence report for a stock."""
+    data = get_stock_detail(symbol)
+    html = generate_report_html(symbol, data)
+    return HTMLResponse(content=html, media_type="text/html")
 
 
 @router.get("/{symbol}/momentum")

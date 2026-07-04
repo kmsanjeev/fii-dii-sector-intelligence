@@ -75,6 +75,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const canGoBack = typeof window !== 'undefined' && (window.history.state?.idx ?? 0) > 0
 
+  // Report button — visible only on /stocks/:symbol (not on the stock list)
+  const stockSymbolMatch = location.pathname.match(/^\/stocks\/([A-Z0-9&.-]+)$/i)
+  const currentStockSymbol = stockSymbolMatch?.[1]?.toUpperCase() ?? null
+
   return (
     <div className="flex flex-col" style={{ height: '100vh', overflow: 'hidden', backgroundColor: '#0A0D14' }}>
       {regime && (
@@ -132,6 +136,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               Sign out
             </button>
           </div>
+        )}
+
+        {/* Report button — visible only on a specific stock detail page */}
+        {currentStockSymbol && (
+          <a
+            href={`http://localhost:8001/api/stocks/${currentStockSymbol}/report`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 5,
+              background: '#0A1F0A', border: '1px solid #22C55E40',
+              color: '#22C55E', textDecoration: 'none', cursor: 'pointer',
+              padding: '4px 12px', borderRadius: 4, fontSize: 11, fontWeight: 600,
+              letterSpacing: '0.5px',
+            }}
+          >
+            &#9654; Report
+          </a>
         )}
 
         {/* Back button — far right, visible when there is history to go back to */}
