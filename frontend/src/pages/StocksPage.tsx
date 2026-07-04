@@ -696,9 +696,8 @@ export function StocksPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0, background: P.bg }}>
 
-      {/* ── Sticky header: back + search + price ─────────────────────── */}
+      {/* ── Stock header: search + price ─────────────────────────────── */}
       <div style={{
-        position: 'sticky', top: 0, zIndex: 100,
         background: P.panel, borderBottom: `1px solid ${P.border}`,
         padding: '10px 0', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
       }}>
