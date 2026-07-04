@@ -723,11 +723,11 @@ type Thesis = NonNullable<import('../api/client').Stock['structured_thesis']>
 
 function InvestmentThesisCard({ thesis }: { thesis: Thesis }) {
   const VERDICT_CFG: Record<string, { color: string; label: string }> = {
-    STRONG_CANDIDATE: { color: P.green,  label: 'STRONG BUY' },
-    EMERGING:         { color: P.teal,   label: 'EMERGING'   },
-    WATCHLIST:        { color: P.blue,   label: 'WATCHLIST'  },
-    NEUTRAL:          { color: P.amber,  label: 'NEUTRAL'    },
-    AVOID:            { color: P.red,    label: 'AVOID'      },
+    BULL_RUN:  { color: P.green,  label: 'BULL RUN'   },
+    EMERGING:  { color: P.teal,   label: 'EMERGING'   },
+    WATCHLIST: { color: P.blue,   label: 'WATCHLIST'  },
+    NEUTRAL:   { color: P.amber,  label: 'NEUTRAL'    },
+    DEAD:      { color: P.red,    label: 'DEAD'       },
   }
   const cfg     = VERDICT_CFG[thesis.verdict] ?? { color: P.sub, label: thesis.verdict }
   const confClr = thesis.confidence === 'HIGH' ? P.green : thesis.confidence === 'MEDIUM' ? P.amber : P.red

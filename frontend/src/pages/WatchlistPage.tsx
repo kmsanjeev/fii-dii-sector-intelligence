@@ -5,7 +5,7 @@ import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 import { Link } from 'react-router-dom'
 
-const LABELS   = ['ALL', 'STRONG_CANDIDATE', 'EMERGING', 'WATCHLIST', 'NEUTRAL', 'AVOID']
+const LABELS   = ['ALL', 'BULL_RUN', 'EMERGING', 'WATCHLIST', 'NEUTRAL', 'DEAD']
 const PER_PAGE = 100
 
 type SortKey = 'bull_run_score' | 'close_now' | 'ret_30d' | 'ret_365d' | 'vol_ratio' | 'forward_return_score'
@@ -37,8 +37,8 @@ function ActionBadge({ label, trend, oi }: { label: string; trend?: string; oi?:
   const bearishTrend = trend === 'DOWNTREND'
   const bullishOI    = oi === 'LONG_BUILDUP' || oi === 'SHORT_COVERING'
   const bearishOI    = oi === 'SHORT_BUILDUP' || oi === 'LONG_UNWINDING'
-  const avoidLabel   = label === 'AVOID'
-  const strongLabel  = label === 'STRONG_CANDIDATE'
+  const avoidLabel   = label === 'DEAD'
+  const strongLabel  = label === 'BULL_RUN'
 
   let text = 'WATCH'
   let color = '#64748B'

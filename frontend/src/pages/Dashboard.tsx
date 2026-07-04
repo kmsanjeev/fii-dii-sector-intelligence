@@ -12,6 +12,7 @@ import {
 import { ScoreGauge }   from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 import { T, FS, FW } from '../styles/tokens'
+import { useMobile }    from '../hooks/useMobile'
 
 // ─── Page palette (aliases from shared design tokens) ─────────────────────────
 // Text hierarchy  : h1 > text > textSub > muted  (never dim for readable text)
@@ -51,7 +52,7 @@ const signed = (n: number | null | undefined, d = 1) =>
 
 // ─── Command Strip ────────────────────────────────────────────────────────────
 
-function CommandStrip({ ctx, part }: { ctx: MarketContext; part: ParticipantLatest | undefined }) {
+function CommandStrip({ ctx, part, isMobile }: { ctx: MarketContext; part: ParticipantLatest | undefined; isMobile: boolean }) {
   const rgColor = ctx.regime === 'BULL' ? C.bull : ctx.regime === 'BEAR' ? C.bear : C.neutral
   const pcrColor = ctx.pcr_signal === 'BULLISH' ? C.bull : ctx.pcr_signal === 'BEARISH' ? C.bear : C.neutral
   const smColor  = (ctx.smart_money_score ?? 0) >= 0 ? C.bull : C.bear
@@ -115,10 +116,10 @@ function CommandStrip({ ctx, part }: { ctx: MarketContext; part: ParticipantLate
       content: ctx.breadth && (
         <div style={{ display: 'flex', gap: 12 }}>
           {([
-            { k: 'strong_candidate', l: 'STRONG',   col: C.bull },
-            { k: 'emerging',         l: 'EMRG',     col: '#10B981' },
-            { k: 'watchlist',        l: 'WATCH',    col: C.blue },
-            { k: 'avoid',            l: 'AVOID',    col: C.bear },
+            { k: 'bull_run',  l: 'BULL',  col: C.bull },
+            { k: 'emerging',  l: 'EMRG',  col: '#10B981' },
+            { k: 'watchlist', l: 'WATCH', col: C.blue },
+            { k: 'dead',      l: 'DEAD',  col: C.bear },
           ] as const).map(({ k, l, col }) => (
             <div key={k} style={{ textAlign: 'center' }}>
               <div style={{ color: col, fontSize: 18, fontWeight: 800, lineHeight: 1 }}>
@@ -151,14 +152,17 @@ function CommandStrip({ ctx, part }: { ctx: MarketContext; part: ParticipantLate
     <div style={{
       ...CARD,
       display: 'grid',
-      gridTemplateColumns: 'auto 1fr 1fr 1.4fr 1.6fr 1fr',
+      gridTemplateColumns: isMobile ? '1fr 1fr' : 'auto 1fr 1fr 1.4fr 1.6fr 1fr',
       gap: 0,
       overflow: 'hidden',
     }}>
       {cells.map((cell, i) => (
         <div key={i} style={{
-          padding: '14px 20px',
-          borderRight: i < cells.length - 1 ? C.border : 'none',
+          padding: isMobile ? '10px 12px' : '14px 20px',
+          borderRight: isMobile
+            ? (i % 2 === 0 ? C.border : 'none')
+            : (i < cells.length - 1 ? C.border : 'none'),
+          borderBottom: isMobile && i < cells.length - 2 ? C.border : 'none',
         }}>
           <div style={{ ...LABEL, marginBottom: 8 }}>{cell.label}</div>
           {cell.content}
@@ -259,11 +263,11 @@ function BreadthDonut({ breadth }: { breadth: MarketContext['breadth'] }) {
   const circ = 2 * Math.PI * R
 
   const segs = [
-    { key: 'strong_candidate', label: 'STRONG BUY', color: C.bull,    bg: '#052E14' },
-    { key: 'emerging',         label: 'EMERGING',   color: '#10B981',  bg: '#023323' },
-    { key: 'watchlist',        label: 'WATCHLIST',  color: C.blue,     bg: '#0A1A3A' },
-    { key: 'neutral',          label: 'NEUTRAL',    color: '#64748B',  bg: '#161E2E' },
-    { key: 'avoid',            label: 'AVOID',      color: C.bear,     bg: '#2A0A0A' },
+    { key: 'bull_run',  label: 'BULL RUN',  color: C.bull,    bg: '#052E14' },
+    { key: 'emerging',  label: 'EMERGING',  color: '#10B981', bg: '#023323' },
+    { key: 'watchlist', label: 'WATCHLIST', color: C.blue,    bg: '#0A1A3A' },
+    { key: 'neutral',   label: 'NEUTRAL',   color: '#64748B', bg: '#161E2E' },
+    { key: 'dead',      label: 'DEAD',      color: C.bear,    bg: '#2A0A0A' },
   ] as const
 
   let offset = 0
@@ -384,9 +388,10 @@ function ConvictionPanel({ part, cash }: { part: ParticipantLatest; cash: Market
 
 // ─── Participant Flow Bars ─────────────────────────────────────────────────────
 
-function FlowBars({ flows, part }: {
+function FlowBars({ flows, part, isMobile }: {
   flows: { FII: number; DII: number; PRO: number; CLIENT: number }
   part:  ParticipantLatest
+  isMobile: boolean
 }) {
   const maxAbs = Math.max(...Object.values(flows).map(Math.abs), 10)
   const rows = [
@@ -407,11 +412,11 @@ function FlowBars({ flows, part }: {
         const pct = (Math.abs(score) / maxAbs) * 50  // max 50% of half-width
         const pos = score >= 0
         return (
-          <div key={key} style={{ display: 'grid', gridTemplateColumns: '130px 1fr 80px', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+          <div key={key} style={{ display: 'grid', gridTemplateColumns: isMobile ? '80px 1fr 65px' : '130px 1fr 80px', alignItems: 'center', gap: isMobile ? 8 : 12, marginBottom: 14 }}>
             {/* Label */}
             <div>
               <div style={{ color: C.primary, fontSize: 12, fontWeight: 700 }}>{label}</div>
-              <div style={{ color: C.muted, fontSize: 9 }}>{sub}</div>
+              {!isMobile && <div style={{ color: C.muted, fontSize: 9 }}>{sub}</div>}
             </div>
 
             {/* Bidirectional bar */}
@@ -465,7 +470,7 @@ function FlowBars({ flows, part }: {
       })}
 
       {/* Scale footer */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: 142, paddingTop: 2 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: isMobile ? 88 : 142, paddingTop: 2 }}>
         <span style={{ color: C.dim, fontSize: 9 }}>— {maxAbs.toFixed(0)}</span>
         <span style={{ color: C.dim, fontSize: 9 }}>0</span>
         <span style={{ color: C.dim, fontSize: 9 }}>+{maxAbs.toFixed(0)}</span>
@@ -484,7 +489,7 @@ const SIG: Record<string, { bg: string; glow: string; badge: string; text: strin
   DISTRIBUTION:        { bg: '#1A0408', glow: '#F44B4B30', badge: '#2A0608', text: C.bear },
 }
 
-function SectorHeatmap({ sectors }: { sectors: Sector[] }) {
+function SectorHeatmap({ sectors, isMobile }: { sectors: Sector[]; isMobile: boolean }) {
   return (
     <div style={{ ...CARD, padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
@@ -502,8 +507,8 @@ function SectorHeatmap({ sectors }: { sectors: Sector[] }) {
         ))}
       </div>
 
-      {/* Grid — 3 columns for readability */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+      {/* Grid — 3 cols desktop / 2 cols mobile */}
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: 6 }}>
         {sectors.map(s => {
           const st = SIG[s.rotation_signal] ?? SIG['NEUTRAL']
           const score = s.combined_score
@@ -718,11 +723,13 @@ function EmergeCard({ stock }: { stock: import('../api/client').Stock }) {
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 
 export function Dashboard() {
+  const isMobile = useMobile()
+
   const { data: ctx }       = useQuery({ queryKey: ['market-context'],    queryFn: fetchMarketContext,    refetchInterval: 300_000 })
   const { data: part }      = useQuery({ queryKey: ['participant-latest'], queryFn: fetchParticipantLatest, refetchInterval: 300_000 })
   const { data: sectors }   = useQuery({ queryKey: ['sectors'],            queryFn: fetchSectors,           refetchInterval: 300_000 })
   const { data: emerging }  = useQuery({ queryKey: ['watchlist','EMRG'],  queryFn: () => fetchWatchlist('EMERGING', 15),        refetchInterval: 300_000 })
-  const { data: strong }    = useQuery({ queryKey: ['watchlist','STR'],   queryFn: () => fetchWatchlist('STRONG_CANDIDATE', 6), refetchInterval: 300_000 })
+  const { data: strong }    = useQuery({ queryKey: ['watchlist','STR'],   queryFn: () => fetchWatchlist('BULL_RUN', 6), refetchInterval: 300_000 })
   const { data: catalysts } = useQuery({ queryKey: ['catalysts'],          queryFn: fetchCatalysts,         refetchInterval: 600_000 })
   const { data: deals }     = useQuery({ queryKey: ['deals-dash'],         queryFn: () => fetchDeals(10, 6), refetchInterval: 600_000 })
 
@@ -733,10 +740,10 @@ export function Dashboard() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
       {/* Row 1: Command Strip */}
-      {ctx && <CommandStrip ctx={ctx} part={part} />}
+      {ctx && <CommandStrip ctx={ctx} part={part} isMobile={isMobile} />}
 
       {/* Row 2: Three visual instruments */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 14 }}>
         {ctx ? <RegimeDial score={ctx.smart_money_score ?? 0} regime={ctx.regime} /> : (
           <div style={{ ...CARD, padding: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ color: C.dim }}>Loading…</span>
@@ -751,12 +758,12 @@ export function Dashboard() {
       </div>
 
       {/* Row 3: Participant Flow Bars */}
-      {flows && part && <FlowBars flows={flows} part={part} />}
+      {flows && part && <FlowBars flows={flows} part={part} isMobile={isMobile} />}
 
       {/* Row 4: Sector Heatmap + Side Panel */}
       {allSectors.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: '2.4fr 1fr', gap: 14, alignItems: 'start' }}>
-          <SectorHeatmap sectors={allSectors} />
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2.4fr 1fr', gap: 14, alignItems: 'start' }}>
+          <SectorHeatmap sectors={allSectors} isMobile={isMobile} />
           <SidePanel strong={strong} catalysts={catalysts} deals={deals} />
         </div>
       )}
@@ -770,7 +777,7 @@ export function Dashboard() {
               View all ({emerging?.count ?? 0}) →
             </Link>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', gap: 8 }}>
             {(emerging?.stocks ?? []).map(stock => (
               <EmergeCard key={stock.symbol} stock={stock} />
             ))}

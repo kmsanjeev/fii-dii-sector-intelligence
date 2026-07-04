@@ -82,8 +82,8 @@ const th: React.CSSProperties = {
 const td: React.CSSProperties = { padding: '6px 10px', fontSize: 11 }
 
 const LABEL_COLORS: Record<string, string> = {
-  STRONG_CANDIDATE: '#22C55E', EMERGING: '#10B981',
-  WATCHLIST: '#F59E0B', NEUTRAL: '#64748B', AVOID: '#EF4444',
+  BULL_RUN: '#22C55E', EMERGING: '#10B981',
+  WATCHLIST: '#F59E0B', NEUTRAL: '#64748B', DEAD: '#EF4444',
 }
 const SIGNAL_COLORS: Record<string, string> = {
   'STRONG BUY':         '#22C55E',

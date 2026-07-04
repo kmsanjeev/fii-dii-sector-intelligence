@@ -69,11 +69,11 @@ async function deletePosition(symbol: string): Promise<void> {
 // ── Small reusable UI pieces ──────────────────────────────────────────────────
 
 const LABEL_COLORS: Record<string, string> = {
-  STRONG_CANDIDATE: '#22C55E',
-  EMERGING:         '#10B981',
-  WATCHLIST:        '#F59E0B',
-  NEUTRAL:          '#64748B',
-  AVOID:            '#EF4444',
+  BULL_RUN:  '#22C55E',
+  EMERGING:  '#10B981',
+  WATCHLIST: '#F59E0B',
+  NEUTRAL:   '#64748B',
+  DEAD:      '#EF4444',
 }
 
 function LabelBadge({ label }: { label: string | null }) {

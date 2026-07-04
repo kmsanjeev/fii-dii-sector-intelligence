@@ -88,11 +88,11 @@ const th: React.CSSProperties = {
 const td: React.CSSProperties = { padding: '6px 10px', fontSize: 11 }
 
 const LABEL_COLORS: Record<string, string> = {
-  STRONG_CANDIDATE: '#22C55E',
-  EMERGING:         '#10B981',
-  WATCHLIST:        '#F59E0B',
-  NEUTRAL:          '#64748B',
-  AVOID:            '#EF4444',
+  BULL_RUN:  '#22C55E',
+  EMERGING:  '#10B981',
+  WATCHLIST: '#F59E0B',
+  NEUTRAL:   '#64748B',
+  DEAD:      '#EF4444',
 }
 
 // ── Small components ──────────────────────────────────────────────────────────
@@ -246,9 +246,9 @@ export function BacktestPage() {
               <div style={{ width: 160 }}>
                 <FieldLabel>Label</FieldLabel>
                 <select value={lsLabel} onChange={e => setLsLabel(e.target.value)} style={inp}>
+                  <option value="BULL_RUN">BULL_RUN</option>
                   <option value="EMERGING">EMERGING</option>
                   <option value="WATCHLIST">WATCHLIST</option>
-                  <option value="STRONG_CANDIDATE">STRONG_CANDIDATE</option>
                   <option value="NEUTRAL">NEUTRAL</option>
                 </select>
               </div>
