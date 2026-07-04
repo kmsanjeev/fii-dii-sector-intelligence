@@ -80,9 +80,12 @@ export type Stock = {
   label: string
   market_regime: string
   regime_multiplier: number
+  driving_participant?: string
+  ath_proximity_score?: number
   sector_rotation_signal?: string
   components: {
     price_score: number
+    ath_proximity_score?: number
     sector_flow_score: number
     deal_score: number
     corporate_score: number

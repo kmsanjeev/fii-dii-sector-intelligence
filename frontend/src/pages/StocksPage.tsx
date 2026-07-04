@@ -717,11 +717,89 @@ function NewsCard({ news }: { news: Record<string, string | number | null | unkn
   )
 }
 
+// ─── Participant Caution Banner ───────────────────────────────────────────────
+
+const PARTICIPANT_CFG: Record<string, { color: string; label: string; icon: string }> = {
+  FII:         { color: '#4FC3F7', label: 'FII',         icon: 'F' },
+  DII:         { color: '#81C784', label: 'DII',         icon: 'D' },
+  SMART_MONEY: { color: '#CE93D8', label: 'SMART MONEY', icon: 'S' },
+  MIXED:       { color: '#FFD54F', label: 'MIXED',       icon: 'M' },
+  RETAIL:      { color: '#FF8A65', label: 'RETAIL',      icon: 'R' },
+  NONE:        { color: '#607D8B', label: 'NONE',        icon: '?' },
+}
+
+function ParticipantCautionBanner({ label, drivingParticipant }: {
+  label: string
+  drivingParticipant: string
+}) {
+  const dp = drivingParticipant?.toUpperCase() || 'NONE'
+  const cfg = PARTICIPANT_CFG[dp] ?? PARTICIPANT_CFG['NONE']
+  const isRisky = (label === 'BULL_RUN' || label === 'EMERGING') && (dp === 'RETAIL' || dp === 'NONE')
+  const isInstitutional = dp === 'FII' || dp === 'DII' || dp === 'SMART_MONEY'
+
+  if (dp === 'MIXED') return null  // mixed signal — no caution needed, no praise
+
+  const borderColor  = isRisky ? '#FF8A65' : isInstitutional ? cfg.color : P.border
+  const bgColor      = isRisky ? '#FF8A6508' : isInstitutional ? cfg.color + '08' : 'transparent'
+  const accentColor  = isRisky ? '#FF8A65' : cfg.color
+
+  return (
+    <div style={{
+      background: bgColor,
+      border: `1px solid ${borderColor}44`,
+      borderLeft: `3px solid ${accentColor}`,
+      borderRadius: 6, padding: '10px 14px',
+      display: 'flex', alignItems: 'flex-start', gap: 12,
+    }}>
+      {/* Participant badge */}
+      <div style={{
+        width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+        background: cfg.color + '22', border: `1px solid ${cfg.color}55`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 11, fontWeight: 900, color: cfg.color, fontFamily: 'monospace',
+      }}>{cfg.icon}</div>
+
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 10, fontWeight: 700, color: accentColor, letterSpacing: 0.8 }}>
+            {isRisky ? 'DISTRIBUTION RISK' : isInstitutional ? 'INSTITUTIONAL BACKING' : 'PARTICIPANT SIGNAL'}
+          </span>
+          <span style={{
+            fontSize: 9, fontWeight: 700, padding: '1px 7px', borderRadius: 8,
+            background: cfg.color + '18', color: cfg.color, border: `1px solid ${cfg.color}44`,
+            letterSpacing: 0.5,
+          }}>{cfg.label} DRIVEN</span>
+        </div>
+        <div style={{ fontSize: 11, color: isRisky ? '#FFCCBC' : P.sub, lineHeight: 1.55 }}>
+          {isRisky && dp === 'RETAIL' && (
+            'FII and DII are not accumulating in this sector. This move is driven by retail momentum — characteristic of the Wyckoff Distribution phase. Smart money may be quietly exiting while retail FOMO drives prices higher. Exercise position sizing caution.'
+          )}
+          {isRisky && dp === 'NONE' && (
+            'No institutional participant is driving this sector. Price appreciation lacks institutional conviction — high reversal risk if retail sentiment shifts.'
+          )}
+          {!isRisky && dp === 'FII' && (
+            'Foreign Institutional Investors are accumulating in this sector. FII-backed moves tend to have stronger follow-through and lower reversal risk.'
+          )}
+          {!isRisky && dp === 'DII' && (
+            'Domestic Institutional Investors (MFs, Insurance) are accumulating. DII flows indicate domestic conviction and provide structural price support.'
+          )}
+          {!isRisky && dp === 'SMART_MONEY' && (
+            'Professional / Smart Money participants are the dominant buyers in this sector. Institutional conviction is high.'
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Investment Thesis Card ───────────────────────────────────────────────────
 
 type Thesis = NonNullable<import('../api/client').Stock['structured_thesis']>
 
-function InvestmentThesisCard({ thesis }: { thesis: Thesis }) {
+function InvestmentThesisCard({ thesis, drivingParticipant }: {
+  thesis: Thesis
+  drivingParticipant?: string
+}) {
   const VERDICT_CFG: Record<string, { color: string; label: string }> = {
     BULL_RUN:  { color: P.green,  label: 'BULL RUN'   },
     EMERGING:  { color: P.teal,   label: 'EMERGING'   },
@@ -731,6 +809,9 @@ function InvestmentThesisCard({ thesis }: { thesis: Thesis }) {
   }
   const cfg     = VERDICT_CFG[thesis.verdict] ?? { color: P.sub, label: thesis.verdict }
   const confClr = thesis.confidence === 'HIGH' ? P.green : thesis.confidence === 'MEDIUM' ? P.amber : P.red
+
+  const dp    = drivingParticipant?.toUpperCase() || 'NONE'
+  const dpCfg = PARTICIPANT_CFG[dp] ?? PARTICIPANT_CFG['NONE']
 
   return (
     <div style={{
@@ -749,6 +830,16 @@ function InvestmentThesisCard({ thesis }: { thesis: Thesis }) {
         <span style={{ fontSize: 9, fontWeight: 700, color: confClr, background: confClr + '18', border: `1px solid ${confClr}44`, borderRadius: 3, padding: '2px 7px', letterSpacing: 0.5 }}>
           {thesis.confidence} CONFIDENCE
         </span>
+        {/* Participant driver chip */}
+        {dp && dp !== 'NONE' && (
+          <span style={{
+            fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 8,
+            background: dpCfg.color + '18', color: dpCfg.color, border: `1px solid ${dpCfg.color}44`,
+            letterSpacing: 0.5,
+          }}>
+            {dpCfg.label}
+          </span>
+        )}
         <div style={{ marginLeft: 'auto', fontSize: 9, color: P.dim, letterSpacing: 0.8 }}>INVESTMENT THESIS</div>
       </div>
 
@@ -1426,10 +1517,11 @@ export function StocksPage() {
         {(detail || sig) && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10 }}>
             {[
-              { label: 'Price Momentum',    value: detail?.components?.price_score       ?? sig?.price_score },
-              { label: 'Sector Flow',        value: detail?.components?.sector_flow_score ?? sig?.sector_flow_score },
-              { label: 'Block Deals',        value: detail?.components?.deal_score        ?? sig?.deal_score },
-              { label: 'Corp Events',        value: detail?.components?.corporate_score   ?? sig?.corporate_score },
+              { label: 'Price Momentum',    value: detail?.components?.price_score           ?? sig?.price_score },
+              { label: 'ATH Proximity',     value: detail?.components?.ath_proximity_score  ?? detail?.ath_proximity_score },
+              { label: 'Sector Flow',        value: detail?.components?.sector_flow_score   ?? sig?.sector_flow_score },
+              { label: 'Block Deals',        value: detail?.components?.deal_score          ?? sig?.deal_score },
+              { label: 'Corp Events',        value: detail?.components?.corporate_score     ?? sig?.corporate_score },
               { label: 'ML Bull Run',        value: detail?.ml_scores?.ml_bull_run_score  ?? sig?.ml_bull_run_score,  isFwd: false },
               { label: 'Accumulation',       value: detail?.ml_scores?.accumulation_score ?? sig?.accumulation_score, isFwd: false },
               { label: 'Fwd Return (45D)',   value: detail?.ml_scores?.forward_return_score ?? sig?.forward_return_score, isFwd: true },
@@ -1475,7 +1567,18 @@ export function StocksPage() {
             <SectionDivider label="THESIS & CONVICTION" />
 
             {detail.structured_thesis && (
-              <InvestmentThesisCard thesis={detail.structured_thesis} />
+              <InvestmentThesisCard
+                thesis={detail.structured_thesis}
+                drivingParticipant={detail.driving_participant}
+              />
+            )}
+
+            {/* Participant caution — only shown when signal is meaningful */}
+            {detail.driving_participant && (
+              <ParticipantCautionBanner
+                label={detail.label}
+                drivingParticipant={detail.driving_participant}
+              />
             )}
 
             {/* Analyst Insights + Score Breakdown: 2-col when insights exist, full-width 4-tile row otherwise */}
@@ -1495,10 +1598,11 @@ export function StocksPage() {
                 <SectionCard title="Bull Run Score Breakdown">
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
                     {[
-                      { label: 'Price Momentum', value: detail.components.price_score,       sub: '30% weight' },
-                      { label: 'Sector Flow',    value: detail.components.sector_flow_score, sub: '25% weight' },
-                      { label: 'Block Deals',    value: detail.components.deal_score,        sub: '25% weight' },
-                      { label: 'Corp Events',    value: detail.components.corporate_score,   sub: '20% weight' },
+                      { label: 'Price Momentum', value: detail.components.price_score,                            sub: '25% weight' },
+                      { label: 'ATH Proximity',  value: detail.components.ath_proximity_score ?? detail.ath_proximity_score ?? 0, sub: '20% weight' },
+                      { label: 'Sector Flow',    value: detail.components.sector_flow_score,                      sub: '20% weight' },
+                      { label: 'Block Deals',    value: detail.components.deal_score,                             sub: '20% weight' },
+                      { label: 'Corp Events',    value: detail.components.corporate_score,                        sub: '15% weight' },
                     ].map(({ label, value, sub }) => {
                       const c = scoreC(value)
                       return (
@@ -1524,12 +1628,13 @@ export function StocksPage() {
               </div>
             ) : (
               <SectionCard title="Bull Run Score Breakdown">
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 10, marginBottom: 12 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', gap: 10, marginBottom: 12 }}>
                   {[
-                    { label: 'Price Momentum', value: detail.components.price_score,       sub: '30% weight' },
-                    { label: 'Sector Flow',    value: detail.components.sector_flow_score, sub: '25% weight' },
-                    { label: 'Block Deals',    value: detail.components.deal_score,        sub: '25% weight' },
-                    { label: 'Corp Events',    value: detail.components.corporate_score,   sub: '20% weight' },
+                    { label: 'Price Momentum', value: detail.components.price_score,                            sub: '25% weight' },
+                    { label: 'ATH Proximity',  value: detail.components.ath_proximity_score ?? detail.ath_proximity_score ?? 0, sub: '20% weight' },
+                    { label: 'Sector Flow',    value: detail.components.sector_flow_score,                      sub: '20% weight' },
+                    { label: 'Block Deals',    value: detail.components.deal_score,                             sub: '20% weight' },
+                    { label: 'Corp Events',    value: detail.components.corporate_score,                        sub: '15% weight' },
                   ].map(({ label, value, sub }) => {
                     const c = scoreC(value)
                     return (

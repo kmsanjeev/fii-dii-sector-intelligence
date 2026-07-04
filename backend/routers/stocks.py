@@ -1369,11 +1369,14 @@ def get_stock_detail(symbol: str):
         "label":              str(row.get("label", "")),
         "market_regime":      str(row.get("market_regime", "")),
         "regime_multiplier":  float(row.get("regime_multiplier", 1.0) or 1.0),
+        "driving_participant": str(row.get("driving_participant", "NONE") or "NONE"),
+        "ath_proximity_score": round(float(row.get("ath_proximity_score", 0) or 0), 2),
         "components": {
-            "price_score":        round(float(row.get("price_score",        0) or 0), 2),
-            "sector_flow_score":  round(float(row.get("sector_flow_score",  0) or 0), 2),
-            "deal_score":         round(float(row.get("deal_score",         0) or 0), 2),
-            "corporate_score":    round(float(row.get("corporate_score",    0) or 0), 2),
+            "price_score":         round(float(row.get("price_score",         0) or 0), 2),
+            "ath_proximity_score": round(float(row.get("ath_proximity_score", 0) or 0), 2),
+            "sector_flow_score":   round(float(row.get("sector_flow_score",   0) or 0), 2),
+            "deal_score":          round(float(row.get("deal_score",          0) or 0), 2),
+            "corporate_score":     round(float(row.get("corporate_score",     0) or 0), 2),
         },
         "price": {
             "ret_30d":        _safe(row.get("ret_30d")),
