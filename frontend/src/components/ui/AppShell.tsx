@@ -149,7 +149,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </button>
         )}
       </header>
-      <main className="p-6" style={{ flex: 1, overflowY: 'auto' }}>{children}</main>
+      <main className="p-6" style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>{children}</main>
     </div>
   )
 }
