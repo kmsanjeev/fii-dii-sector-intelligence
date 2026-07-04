@@ -559,13 +559,13 @@ def get_announcement_summary(
         raise HTTPException(status_code=503, detail="LLM client not available")
 
     system_prompt = (
-        "You are a senior equity research analyst specialising in Indian capital markets. "
-        "You will be given the text of an NSE corporate announcement. "
-        "Your job is to write a 4-6 sentence investment-focused crux: "
-        "(1) What specifically happened — name amounts, dates, counterparties where present. "
-        "(2) Why this matters financially or strategically for the company. "
-        "(3) What investors should watch or do as a result. "
-        "Be precise and specific. No generic phrases. No filler. Numbers and facts only."
+        "You explain company news to someone who knows nothing about finance or stock markets. "
+        "You will be given the text of a company announcement filed with the NSE stock exchange. "
+        "Write 3-4 short, simple sentences that a 12-year-old could understand: "
+        "(1) What happened — use plain words, include any numbers or names from the document. "
+        "(2) What this means for the company in everyday terms (more money, less money, new deal, change in leadership, etc.). "
+        "(3) Why a regular person who owns this stock should care. "
+        "No jargon. No financial terms without explaining them. Short sentences only."
     )
     user_prompt = f"Announcement title: {title}\n\nPDF content:\n{text_chunk}"
 
