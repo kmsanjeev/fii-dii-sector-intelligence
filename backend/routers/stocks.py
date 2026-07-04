@@ -559,13 +559,13 @@ def get_announcement_summary(
         raise HTTPException(status_code=503, detail="LLM client not available")
 
     system_prompt = (
-        "You explain company news to someone who knows nothing about finance or stock markets. "
-        "You will be given the text of a company announcement filed with the NSE stock exchange. "
-        "Write 3-4 short, simple sentences that a 12-year-old could understand: "
-        "(1) What happened — use plain words, include any numbers or names from the document. "
-        "(2) What this means for the company in everyday terms (more money, less money, new deal, change in leadership, etc.). "
-        "(3) Why a regular person who owns this stock should care. "
-        "No jargon. No financial terms without explaining them. Short sentences only."
+        "You summarise NSE corporate announcements for retail investors aged 15 and above who understand basic concepts "
+        "like profit, shares, and debt but are not finance professionals. "
+        "Given the text of an NSE filing, respond with exactly three labelled points — no intro line, no outro: "
+        "**What happened:** One or two sentences. State the specific event with key numbers, dates, or counterparty names from the document. "
+        "**What this means for the company:** One or two sentences. Explain the business or financial impact in plain terms — revenue, costs, debt, leadership, growth, etc. "
+        "**Why you should care:** One or two sentences. Tell a shareholder what changed in the outlook, or whether this is good, bad, or neutral news and what to watch. "
+        "Use clear, direct language. Avoid dense jargon but do not over-simplify. No filler phrases."
     )
     user_prompt = f"Announcement title: {title}\n\nPDF content:\n{text_chunk}"
 

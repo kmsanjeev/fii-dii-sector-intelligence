@@ -378,6 +378,33 @@ function CorporateActionsSection({ symbol }: { symbol: string }) {
   )
 }
 
+// ─── AI summary renderer ──────────────────────────────────────────────────────
+
+function AISummaryBody({ text, accentColor }: { text: string; accentColor: string }) {
+  const LABELS = ['What happened:', 'What this means for the company:', 'Why you should care:']
+  const parts = text.split(/\*\*(.+?)\*\*/)
+  // parts alternates: [pre, label, body, label, body, ...]
+  const sections: { label: string; body: string }[] = []
+  for (let i = 1; i < parts.length - 1; i += 2) {
+    const raw = parts[i].replace(/:$/, '').trim()
+    const label = LABELS.find(l => l.toLowerCase().startsWith(raw.toLowerCase())) ?? raw + ':'
+    sections.push({ label, body: (parts[i + 1] ?? '').trim() })
+  }
+  if (!sections.length) {
+    return <div style={{ fontSize: 12, lineHeight: 1.55 }}>{text}</div>
+  }
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {sections.map(({ label, body }) => (
+        <div key={label}>
+          <span style={{ fontWeight: 700, color: accentColor, fontSize: 11 }}>{label} </span>
+          <span style={{ fontSize: 12, lineHeight: 1.55 }}>{body}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // ─── Announcement timeline ────────────────────────────────────────────────────
 
 const ANN_CLR: Record<string, string> = {
@@ -483,12 +510,7 @@ function AnnRow({ a, i, last }: { a: Announcement; i: number; last: boolean }) {
         }}>
           {loading && <span style={{ color: P.dim }}>Reading PDF and generating analysis...</span>}
           {error   && <span style={{ color: P.red }}>Error: {error}</span>}
-          {summary && !loading && (
-            <>
-              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, color: P.amber, marginBottom: 6, textTransform: 'uppercase' }}>AI Analysis</div>
-              <div>{summary}</div>
-            </>
-          )}
+          {summary && !loading && <AISummaryBody text={summary} accentColor={P.amber} />}
         </div>
       )}
     </div>

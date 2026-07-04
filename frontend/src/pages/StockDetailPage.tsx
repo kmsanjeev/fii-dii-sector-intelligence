@@ -750,6 +750,25 @@ const ANN_COLOR: Record<string, string> = {
   OTHER:             '#4E6074',
 }
 
+function AISummaryBody({ text, accentColor }: { text: string; accentColor: string }) {
+  const parts = text.split(/\*\*(.+?)\*\*/)
+  const sections: { label: string; body: string }[] = []
+  for (let i = 1; i < parts.length - 1; i += 2) {
+    sections.push({ label: parts[i].trim(), body: (parts[i + 1] ?? '').trim() })
+  }
+  if (!sections.length) return <div style={{ fontSize: 11, lineHeight: 1.55 }}>{text}</div>
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+      {sections.map(({ label, body }) => (
+        <div key={label}>
+          <span style={{ fontWeight: 700, color: accentColor, fontSize: 10 }}>{label} </span>
+          <span style={{ fontSize: 11, lineHeight: 1.55 }}>{body}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function AnnItem({ ann, last }: { ann: Announcement; last: boolean }) {
   const [summary, setSummary] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -856,12 +875,7 @@ function AnnItem({ ann, last }: { ann: Announcement; last: boolean }) {
         }}>
           {loading && <span style={{ color: C.dim }}>Reading PDF and generating analysis...</span>}
           {error   && <span style={{ color: C.bear }}>Error: {error}</span>}
-          {summary && !loading && (
-            <>
-              <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: 1, color: C.neutral, marginBottom: 5, textTransform: 'uppercase' }}>AI Analysis</div>
-              <div>{summary}</div>
-            </>
-          )}
+          {summary && !loading && <AISummaryBody text={summary} accentColor={C.neutral} />}
         </div>
       )}
     </div>
