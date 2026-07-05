@@ -1338,6 +1338,41 @@ def get_stock_detail(symbol: str):
             sector_peer_val["peer_count"] = int(len(peers))
             sector_peer_val["sector"]     = sym_sector
 
+    # ── Phase AF — AstroFinance signal for this symbol's sector ─────────────────
+    astro_signal: dict = {}
+    astro_df = data_loader.get("astro_signals")
+    sym_sector = str(row.get("sector", ""))
+    if astro_df is not None and "sector" in astro_df.columns and sym_sector:
+        astro_match = astro_df[astro_df["sector"].str.upper() == sym_sector.upper()]
+        if astro_match.empty:
+            astro_match = astro_df[astro_df["sector"].str.upper() == "UNCATEGORIZED"]
+        if not astro_match.empty:
+            r = astro_match.iloc[0]
+            astro_signal = {
+                "sector":            str(r.get("sector", "")),
+                "ruling_planets":    str(r.get("ruling_planets", "")),
+                "primary_planet":    str(r.get("primary_planet", "")),
+                "planet_sign":       str(r.get("planet_sign", "")),
+                "planet_state":      str(r.get("planet_state", "")),
+                "planet_retrograde": bool(r.get("planet_retrograde", False)),
+                "key_aspects":       str(r.get("key_aspects", "")),
+                "astro_score":       round(float(r.get("astro_score", 0) or 0), 1),
+                "astro_action":      str(r.get("astro_action", "HOLD")),
+                "astro_reason":      str(r.get("astro_reason", "")),
+                "moon_phase":        str(r.get("moon_phase", "")),
+                "eclipse_active":    bool(r.get("eclipse_active", False)),
+                "as_of_date":        str(r.get("as_of_date", "")),
+            }
+        # Attach market-level planetary context
+        astro_ctx = data_loader.get_astro_context()
+        astro_signal["market_astro_signal"] = astro_ctx.get("market_astro_signal", "")
+        astro_signal["mercury_retrograde"]  = bool(astro_ctx.get("mercury_retrograde", False))
+        astro_signal["venus_retrograde"]    = bool(astro_ctx.get("venus_retrograde", False))
+        astro_signal["moon_illumination"]   = astro_ctx.get("moon_illumination")
+        astro_signal["jupiter_sign"]        = astro_ctx.get("jupiter_sign", "")
+        astro_signal["saturn_sign"]         = astro_ctx.get("saturn_sign", "")
+        astro_signal["reversal_note"]       = astro_ctx.get("reversal_note")
+
     # ── Upcoming events from event_calendar (next 90 days for this symbol) ───
     upcoming_events: list = []
     ev_df = data_loader.get("event_calendar")
@@ -1411,6 +1446,8 @@ def get_stock_detail(symbol: str):
         "agm":     agm_signal,
         # Phase G consensus
         "consensus": consensus,
+        # Phase AF — AstroFinance
+        "astro":    astro_signal,
     }
 
 

@@ -229,6 +229,78 @@ def get_stocks_by_sector(sector: str, top_n: int = 10) -> list[dict]:
 
 
 # ------------------------------------------------------------------
+# AstroFinance tools
+# ------------------------------------------------------------------
+
+def get_astro_signal(sector: Optional[str] = None) -> dict:
+    """
+    Returns AstroFinance planetary signals for a sector or full market context.
+    Shows ruling planet status, retrograde warnings, aspect quality, and BUY/HOLD/CAUTION/EXIT/AVOID action.
+    """
+    import json
+    from pathlib import Path
+
+    result: dict = {}
+
+    # Market-level astro context
+    ctx_path = INTEL / "market_astro_context.json"
+    if ctx_path.exists():
+        try:
+            with open(ctx_path, encoding="utf-8") as f:
+                ctx = json.load(f)
+            result["market_astro_signal"] = ctx.get("market_astro_signal")
+            result["market_astro_score"]  = ctx.get("market_astro_score")
+            result["mercury_retrograde"]  = ctx.get("mercury_retrograde")
+            result["venus_retrograde"]    = ctx.get("venus_retrograde")
+            result["moon_phase"]          = ctx.get("moon_phase")
+            result["moon_illumination"]   = ctx.get("moon_illumination")
+            result["jupiter_sign"]        = ctx.get("jupiter_sign")
+            result["saturn_sign"]         = ctx.get("saturn_sign")
+            result["eclipse_active"]      = ctx.get("eclipse_active")
+            result["eclipse_signal"]      = ctx.get("eclipse_signal")
+            result["reversal_note"]       = ctx.get("reversal_note")
+            result["planet_positions"]    = ctx.get("planet_positions")
+            result["computed_date"]       = ctx.get("computed_date")
+        except Exception as e:
+            result["error_context"] = str(e)
+
+    # Sector-level signals
+    sector_df = _load(INTEL / "astro_signals.csv")
+    if sector_df is not None:
+        if sector:
+            matches = sector_df[sector_df["sector"].str.upper() == sector.upper()]
+            if not matches.empty:
+                r = matches.iloc[0]
+                result["sector"]           = str(r.get("sector", ""))
+                result["ruling_planets"]   = str(r.get("ruling_planets", ""))
+                result["primary_planet"]   = str(r.get("primary_planet", ""))
+                result["planet_sign"]      = str(r.get("planet_sign", ""))
+                result["planet_state"]     = str(r.get("planet_state", ""))
+                result["planet_retrograde"]= bool(r.get("planet_retrograde", False))
+                result["key_aspects"]      = str(r.get("key_aspects", ""))
+                result["astro_score"]      = float(r.get("astro_score", 0) or 0)
+                result["astro_action"]     = str(r.get("astro_action", "HOLD"))
+                result["astro_reason"]     = str(r.get("astro_reason", ""))
+            else:
+                result["sector_error"] = f"Sector '{sector}' not found in astro signals"
+        else:
+            # Return all sectors sorted by astro_score
+            top = sector_df.sort_values("astro_score", ascending=False)
+            result["all_sectors"] = [
+                {
+                    "sector":       str(r["sector"]),
+                    "primary_planet": str(r["primary_planet"]),
+                    "planet_state": str(r["planet_state"]),
+                    "astro_score":  round(float(r.get("astro_score", 0) or 0), 1),
+                    "astro_action": str(r["astro_action"]),
+                }
+                for _, r in top.iterrows()
+            ]
+
+    return result if result else {"error": "astro_signals.csv and market_astro_context.json not yet generated. Run astro_engine.py first."}
+
+
+# ------------------------------------------------------------------
 # Deal tools
 # ------------------------------------------------------------------
 

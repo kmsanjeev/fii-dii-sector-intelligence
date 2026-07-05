@@ -57,6 +57,8 @@ SOURCES = {
     "quarterly_results":      cfg.NSE_DIR / "results" / "quarterly_results.csv",
     "theme_intelligence":     cfg.INTELLIGENCE_DIR / "theme_intelligence.csv",
     "theme_tagging":          cfg.REFERENCE_DIR / "theme_tagging.csv",
+    # Phase AF — AstroFinance Intelligence
+    "astro_signals":          cfg.INTELLIGENCE_DIR / "astro_signals.csv",
     # Phase F — Alt-data intelligence
     "news_signals":           cfg.INTELLIGENCE_DIR / "news_signals.csv",
     "news_sentiment":         cfg.INTELLIGENCE_DIR / "news_sentiment.csv",
@@ -74,6 +76,7 @@ SOURCES = {
 }
 
 _MARKET_CONTEXT_PATH = cfg.INTELLIGENCE_DIR / "market_context.json"
+_ASTRO_CONTEXT_PATH  = cfg.INTELLIGENCE_DIR / "market_astro_context.json"
 
 _lock = threading.Lock()
 _data: dict[str, Optional[pd.DataFrame]] = {k: None for k in SOURCES}
@@ -125,6 +128,17 @@ def get_market_context() -> dict:
     try:
         if _MARKET_CONTEXT_PATH.exists():
             with open(_MARKET_CONTEXT_PATH, encoding="utf-8") as fh:
+                return json.load(fh)
+    except Exception:
+        pass
+    return {}
+
+
+def get_astro_context() -> dict:
+    """Load market_astro_context.json (planetary pulse). Returns empty dict if missing."""
+    try:
+        if _ASTRO_CONTEXT_PATH.exists():
+            with open(_ASTRO_CONTEXT_PATH, encoding="utf-8") as fh:
                 return json.load(fh)
     except Exception:
         pass

@@ -26,6 +26,7 @@ import {
 import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 import { TradeIntelligenceCard } from '../components/platform/TradeIntelligenceCard'
+import { AstroSignalCard } from '../components/platform/AstroSignalCard'
 import { T, FS, FW, CARD_HDR, FIELD_LBL } from '../styles/tokens'
 import { useMobile } from '../hooks/useMobile'
 
@@ -735,13 +736,14 @@ function ParticipantCautionBanner({ label, drivingParticipant }: {
   const dp = drivingParticipant?.toUpperCase() || 'NONE'
   const cfg = PARTICIPANT_CFG[dp] ?? PARTICIPANT_CFG['NONE']
   const isRisky = (label === 'BULL_RUN' || label === 'EMERGING') && (dp === 'RETAIL' || dp === 'NONE')
+  const isAccumPhase = label === 'ACCUMULATION'
   const isInstitutional = dp === 'FII' || dp === 'DII' || dp === 'SMART_MONEY'
 
-  if (dp === 'MIXED') return null  // mixed signal — no caution needed, no praise
+  if (dp === 'MIXED' && !isAccumPhase) return null  // mixed signal — no strong message
 
-  const borderColor  = isRisky ? '#FF8A65' : isInstitutional ? cfg.color : P.border
-  const bgColor      = isRisky ? '#FF8A6508' : isInstitutional ? cfg.color + '08' : 'transparent'
-  const accentColor  = isRisky ? '#FF8A65' : cfg.color
+  const borderColor  = isRisky ? '#FF8A65' : isAccumPhase ? '#9575CD' : isInstitutional ? cfg.color : P.border
+  const bgColor      = isRisky ? '#FF8A6508' : isAccumPhase ? '#9575CD08' : isInstitutional ? cfg.color + '08' : 'transparent'
+  const accentColor  = isRisky ? '#FF8A65' : isAccumPhase ? '#9575CD' : cfg.color
 
   return (
     <div style={{
@@ -762,7 +764,7 @@ function ParticipantCautionBanner({ label, drivingParticipant }: {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 10, fontWeight: 700, color: accentColor, letterSpacing: 0.8 }}>
-            {isRisky ? 'DISTRIBUTION RISK' : isInstitutional ? 'INSTITUTIONAL BACKING' : 'PARTICIPANT SIGNAL'}
+            {isRisky ? 'DISTRIBUTION RISK' : isAccumPhase ? 'WYCKOFF ACCUMULATION' : isInstitutional ? 'INSTITUTIONAL BACKING' : 'PARTICIPANT SIGNAL'}
           </span>
           <span style={{
             fontSize: 9, fontWeight: 700, padding: '1px 7px', borderRadius: 8,
@@ -770,20 +772,26 @@ function ParticipantCautionBanner({ label, drivingParticipant }: {
             letterSpacing: 0.5,
           }}>{cfg.label} DRIVEN</span>
         </div>
-        <div style={{ fontSize: 11, color: isRisky ? '#FFCCBC' : P.sub, lineHeight: 1.55 }}>
+        <div style={{ fontSize: 11, color: isRisky ? '#FFCCBC' : isAccumPhase ? '#CE93D8' : P.sub, lineHeight: 1.55 }}>
+          {isAccumPhase && isInstitutional && (
+            `Wyckoff Accumulation Phase: ${cfg.label} is quietly building a position in this sector while the stock remains in a base. Price has not yet moved — this is the "boring" phase before breakout. Patient entry; wait for volume expansion confirming the move.`
+          )}
+          {isAccumPhase && !isInstitutional && dp === 'RETAIL' && (
+            'Stock is in base-building phase with sector institutional flow near neutral. No strong institutional accumulation detected yet — watch for volume expansion and sector rotation signals before entry.'
+          )}
           {isRisky && dp === 'RETAIL' && (
             'FII and DII are not accumulating in this sector. This move is driven by retail momentum — characteristic of the Wyckoff Distribution phase. Smart money may be quietly exiting while retail FOMO drives prices higher. Exercise position sizing caution.'
           )}
           {isRisky && dp === 'NONE' && (
             'No institutional participant is driving this sector. Price appreciation lacks institutional conviction — high reversal risk if retail sentiment shifts.'
           )}
-          {!isRisky && dp === 'FII' && (
+          {!isRisky && !isAccumPhase && dp === 'FII' && (
             'Foreign Institutional Investors are accumulating in this sector. FII-backed moves tend to have stronger follow-through and lower reversal risk.'
           )}
-          {!isRisky && dp === 'DII' && (
+          {!isRisky && !isAccumPhase && dp === 'DII' && (
             'Domestic Institutional Investors (MFs, Insurance) are accumulating. DII flows indicate domestic conviction and provide structural price support.'
           )}
-          {!isRisky && dp === 'SMART_MONEY' && (
+          {!isRisky && !isAccumPhase && dp === 'SMART_MONEY' && (
             'Professional / Smart Money participants are the dominant buyers in this sector. Institutional conviction is high.'
           )}
         </div>
@@ -801,11 +809,12 @@ function InvestmentThesisCard({ thesis, drivingParticipant }: {
   drivingParticipant?: string
 }) {
   const VERDICT_CFG: Record<string, { color: string; label: string }> = {
-    BULL_RUN:  { color: P.green,  label: 'BULL RUN'   },
-    EMERGING:  { color: P.teal,   label: 'EMERGING'   },
-    WATCHLIST: { color: P.blue,   label: 'WATCHLIST'  },
-    NEUTRAL:   { color: P.amber,  label: 'NEUTRAL'    },
-    DEAD:      { color: P.red,    label: 'DEAD'       },
+    BULL_RUN:     { color: P.green,  label: 'BULL RUN'     },
+    EMERGING:     { color: P.teal,   label: 'EMERGING'     },
+    WATCHLIST:    { color: P.blue,   label: 'WATCHLIST'    },
+    NEUTRAL:      { color: P.amber,  label: 'NEUTRAL'      },
+    ACCUMULATION: { color: '#9575CD', label: 'ACCUMULATION' },
+    MARKDOWN:     { color: P.red,    label: 'MARKDOWN'     },
   }
   const cfg     = VERDICT_CFG[thesis.verdict] ?? { color: P.sub, label: thesis.verdict }
   const confClr = thesis.confidence === 'HIGH' ? P.green : thesis.confidence === 'MEDIUM' ? P.amber : P.red
@@ -1988,6 +1997,14 @@ export function StocksPage() {
                 </div>
               )}
             </div>
+
+            {/* ══ ASTRO SIGNAL ═════════════════════════════════════════════════ */}
+            {detail.astro && detail.astro.astro_action && (
+              <>
+                <SectionDivider label="ASTRO SIGNAL" />
+                <AstroSignalCard astro={detail.astro as import('../components/platform/AstroSignalCard').AstroSignal} />
+              </>
+            )}
 
             {/* ══ CORPORATE ════════════════════════════════════════════════════ */}
             <SectionDivider label="CORPORATE" />

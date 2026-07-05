@@ -36,12 +36,19 @@ INTENT_KEYWORDS = {
         "deal", "bulk", "block", "buyback", "dividend", "corporate", "promoter",
         "confidence", "catalyst", "announcement", "board", "event",
     ],
+    "ASTRO": [
+        "astro", "planet", "planetary", "jupiter", "saturn", "mercury", "venus",
+        "mars", "moon", "rahu", "ketu", "retrograde", "eclipse", "zodiac",
+        "cosmic", "celestial", "nakshatra", "hora", "transit", "aspect",
+        "benefic", "malefic", "exalted", "debilitated", "cycle",
+        "financial astrology", "astrology",
+    ],
 }
 
 
 @dataclass
 class Intent:
-    intent_type: str   # MARKET | SECTOR | STOCK | CORPORATE | RESEARCH
+    intent_type: str   # MARKET | SECTOR | STOCK | CORPORATE | ASTRO | RESEARCH
     entity: str | None  # specific symbol/sector if detected
     confidence: float   # 0-1
 
@@ -115,6 +122,16 @@ def get_system_prompt(intent: Intent) -> str:
             " This is a broad research query. Use the RAG context provided. "
             "Synthesize across all intelligence layers: participant, sector, stock, corporate. "
             "Draw connections across the capital flow cascade."
+        ),
+        "ASTRO": (
+            " Focus on AstroFinance planetary intelligence. "
+            "Always call get_astro_signal() first -- it returns live planetary positions and sector signals. "
+            "Key rules from the books: Mercury retrograde = avoid new positions in IT/TELECOM/MEDIA. "
+            "Saturn debilitated = weakness in Saturn-ruled sectors (PHARMA, REALTY, CEMENT, INFRA). "
+            "Jupiter in own/exaltation sign = strong bullish for BANKING and DIVERSIFIED. "
+            "Rahu eclipse = uptrend potential; Ketu eclipse = downtrend warning. "
+            "Retrograde ruling planet = EXIT that sector. Moon waxing = bullish tendency. "
+            "Combine astro signals with technical and flow data for conviction."
         ),
     }
 

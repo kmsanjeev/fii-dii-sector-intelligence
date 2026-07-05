@@ -215,6 +215,28 @@ TOOLS: list[dict] = [
         },
     },
     {
+        "name": "get_astro_signal",
+        "description": (
+            "Get AstroFinance planetary intelligence. Returns current planetary positions, "
+            "retrograde warnings (Mercury retrograde = avoid IT/TELECOM/MEDIA), Moon phase, "
+            "eclipse status, and BUY/HOLD/CAUTION/EXIT/AVOID action for a sector. "
+            "Based on Vedic Indian planet-sector mapping (Banerjee 2009) + Western aspect theory "
+            "(Pesavento 2015). Use when user asks about astrology, planets, cosmic signals, "
+            "astro trading, or sector planetary analysis. "
+            "If no sector specified, returns all sectors ranked by astro score."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "sector": {
+                    "type": "string",
+                    "description": "Sector name to get astro signal for (optional). If omitted, returns all sectors. Examples: BANKING, IT, PHARMA, METAL, REALTY",
+                }
+            },
+            "required": [],
+        },
+    },
+    {
         "name": "get_corporate_catalysts",
         "description": "Get upcoming corporate events and catalysts within the next N days.",
         "input_schema": {
@@ -245,19 +267,21 @@ from engines.ai.chatbot.tools.data_tools import (
     get_institutional_deals,
     get_top_corporate_confidence,
     get_corporate_catalysts,
+    get_astro_signal,
 )
 
 TOOL_FUNCTIONS: dict[str, callable] = {
-    "get_market_regime": get_market_regime,
-    "get_participant_history": get_participant_history,
-    "get_all_sectors": get_all_sectors,
-    "get_sector_detail": get_sector_detail,
-    "get_sectors_by_signal": get_sectors_by_signal,
-    "get_top_stocks": get_top_stocks,
-    "get_fno_stocks": get_fno_stocks,
-    "get_stock_detail": get_stock_detail,
-    "get_stocks_by_sector": get_stocks_by_sector,
-    "get_institutional_deals": get_institutional_deals,
+    "get_market_regime":          get_market_regime,
+    "get_participant_history":    get_participant_history,
+    "get_all_sectors":            get_all_sectors,
+    "get_sector_detail":          get_sector_detail,
+    "get_sectors_by_signal":      get_sectors_by_signal,
+    "get_top_stocks":             get_top_stocks,
+    "get_fno_stocks":             get_fno_stocks,
+    "get_stock_detail":           get_stock_detail,
+    "get_stocks_by_sector":       get_stocks_by_sector,
+    "get_institutional_deals":    get_institutional_deals,
     "get_top_corporate_confidence": get_top_corporate_confidence,
-    "get_corporate_catalysts": get_corporate_catalysts,
+    "get_corporate_catalysts":    get_corporate_catalysts,
+    "get_astro_signal":           get_astro_signal,
 }
