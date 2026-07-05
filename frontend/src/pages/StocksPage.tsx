@@ -26,7 +26,7 @@ import {
 import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 import { TradeIntelligenceCard } from '../components/platform/TradeIntelligenceCard'
-import { AstroSignalCard } from '../components/platform/AstroSignalCard'
+import { AstroSignalCard, type AstroSignal } from '../components/platform/AstroSignalCard'
 import { T, FS, FW, CARD_HDR, FIELD_LBL } from '../styles/tokens'
 import { useMobile } from '../hooks/useMobile'
 
@@ -2002,7 +2002,7 @@ export function StocksPage() {
             {detail.astro && detail.astro.astro_action && (
               <>
                 <SectionDivider label="ASTRO SIGNAL" />
-                <AstroSignalCard astro={detail.astro as import('../components/platform/AstroSignalCard').AstroSignal} />
+                <AstroSignalCard astro={detail.astro as AstroSignal} />
               </>
             )}
 

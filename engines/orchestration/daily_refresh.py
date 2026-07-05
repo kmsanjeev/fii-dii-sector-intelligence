@@ -73,6 +73,8 @@ STAGES = [
     ("12_ml_scorer",                "engines.ml.ml_scorer",                                  "ML Scorer (inference)",                 60),
     # Trade Conviction (depends on technical A1, F&O A2, sector rotation 6C, ML 12)
     ("C1_trade_conviction",         "engines.intelligence.trade_conviction_engine",           "Trade Conviction Scores",               60),
+    # AstroFinance planetary signals (depends on sector rotation 6C; runs before RAG so signals are indexed)
+    ("AF_astro_engine",             "engines.intelligence.astro_engine",                     "AstroFinance Planetary Signals",        60),
     # RAG indexes (rebuilt from fresh intelligence CSVs above)
     ("13A_document_builder",        "engines.ai.knowledge.document_builder",                 "RAG Document Builder",                  30),
     ("13B_faiss_indexer",           "engines.ai.knowledge.faiss_indexer",                    "FAISS Indexer (embedding)",             180),
@@ -94,6 +96,7 @@ STAGE_SECTIONS = {
                                 "16A_management_sentiment", "A1_technical_indicators",
                                 "A2_fno_intelligence", "8A_price_momentum", "8B_bull_run_probability",
                                 "12_ml_scorer", "C1_trade_conviction",
+                                "AF_astro_engine",
                                 "13A_document_builder", "13B_faiss_indexer", "13C_bm25_indexer",
                                 "20_portfolio", "9_alert_engine"],
 }
