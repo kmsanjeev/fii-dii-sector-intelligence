@@ -1,23 +1,25 @@
 """
-Chat Engine -- Phase 14C (Groq backend)
-Orchestrates Groq API calls with function calling and RAG context injection.
+Chat Engine -- Phase 14C (multi-provider with automatic fallback)
+Orchestrates LLM API calls with function calling and RAG context injection.
 
-Flow:
-  1. Detect intent (intent_router)
-  2. Retrieve RAG context (engines/ai/knowledge/retriever)
-  3. Build system prompt (domain-specific from intent_router)
-  4. Call Groq llama-3.3-70b-versatile with tools + RAG context
-  5. Handle tool_calls (call data_tools functions)
-  6. Return final assistant text
+Provider priority (all OpenAI-compatible):
+  1. Groq         llama-3.3-70b-versatile    (best function calling, fastest)
+  2. Gemini        gemini-2.0-flash            (good function calling support)
+  3. OpenRouter    llama-3.3-70b-instruct:free (reliable free tier)
+  4. Cerebras      llama-3.3-70b               (fast inference, if available)
+
+On rate-limit (429 / "daily token limit") the engine automatically rotates to
+the next configured provider for that turn. Each provider gets a 5-minute
+cooldown before being retried.
 
 Security:
-  GROQ_API_KEY is ALWAYS read from os.getenv() -- NEVER hardcoded.
-  If not set, ChatEngine raises EnvironmentError at init time.
+  API keys are ALWAYS read from os.getenv() -- NEVER hardcoded.
 """
 
 from __future__ import annotations
 import json
 import os
+import time
 
 from engines.common.logger import get_logger
 from engines.ai.chatbot.intent_router import detect_intent, get_system_prompt
@@ -25,125 +27,209 @@ from engines.ai.chatbot.tools.tool_registry import TOOLS, TOOL_FUNCTIONS
 
 logger = get_logger(__name__)
 
-MODEL = "llama-3.3-70b-versatile"
-MAX_TOKENS = 1024
-MAX_TOOL_ROUNDS = 3  # keep token budget low on Groq free tier (100k/day)
+MAX_TOKENS      = 1024
+MAX_TOOL_ROUNDS = 3
+COOLDOWN_S      = 300   # 5 min before retrying a rate-limited provider
+
+# ── Provider definitions (OpenAI-compatible) ──────────────────────────────────
+_CHAT_PROVIDERS = [
+    {
+        "name":    "Groq",
+        "env_var": "GROQ_API_KEY",
+        "base_url": "https://api.groq.com/openai/v1",
+        "model":   "llama-3.3-70b-versatile",
+        "extra_headers": {},
+    },
+    {
+        "name":    "Gemini",
+        "env_var": "GEMINI_API_KEY",
+        "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
+        "model":   "gemini-2.0-flash",
+        "extra_headers": {},
+    },
+    {
+        "name":    "OpenRouter",
+        "env_var": "OPENROUTER_API_KEY",
+        "base_url": "https://openrouter.ai/api/v1",
+        "model":   "meta-llama/llama-3.3-70b-instruct:free",
+        "extra_headers": {
+            "HTTP-Referer": "https://github.com/kmsanjeev/fii-dii-sector-intelligence"
+        },
+    },
+    {
+        "name":    "Cerebras",
+        "env_var": "CEREBRAS_API_KEY",
+        "base_url": "https://api.cerebras.ai/v1",
+        "model":   "llama-3.3-70b",
+        "extra_headers": {},
+    },
+]
 
 
-def _to_groq_tools(anthropic_tools: list[dict]) -> list[dict]:
-    """Convert Anthropic tool schema format to OpenAI/Groq function calling format."""
-    groq_tools = []
-    for t in anthropic_tools:
-        groq_tools.append({
+def _to_openai_tools(anthropic_tools: list[dict]) -> list[dict]:
+    """Convert Anthropic tool schema format to OpenAI function calling format."""
+    return [
+        {
             "type": "function",
             "function": {
                 "name": t["name"],
                 "description": t["description"],
                 "parameters": t.get("input_schema", {"type": "object", "properties": {}, "required": []}),
             },
-        })
-    return groq_tools
+        }
+        for t in anthropic_tools
+    ]
 
 
-GROQ_TOOLS = _to_groq_tools(TOOLS)
+OPENAI_TOOLS = _to_openai_tools(TOOLS)
+
+
+def _is_rate_limit(exc: Exception) -> bool:
+    msg = str(exc).lower()
+    return (
+        "429" in msg or "rate_limit" in msg or "rate limit" in msg
+        or "quota" in msg or "too many" in msg or "daily token" in msg
+        or "tokens per day" in msg
+    )
 
 
 class ChatEngine:
     """
-    Single-session chat engine backed by Groq (Llama 3.3 70B).
+    Single-session chat engine with automatic provider fallback.
     Each instance maintains OpenAI-format message history for one session.
     """
 
     def __init__(self):
-        api_key = os.getenv("GROQ_API_KEY")
-        if not api_key:
-            raise EnvironmentError(
-                "GROQ_API_KEY environment variable not set. "
-                "Get a free key at console.groq.com and add it to .env"
-            )
         try:
-            from groq import Groq
-            self.client = Groq(api_key=api_key)
+            from openai import OpenAI as _OpenAI
+            self._OpenAI = _OpenAI
         except ImportError:
-            raise ImportError("groq package not installed. Run: py -3.11 -m pip install groq")
+            raise ImportError("openai package not installed. Run: py -3.11 -m pip install openai")
 
+        self._cooldowns: dict[str, float] = {}
         self.history: list[dict] = []
         self._retriever = None
 
-    def _get_retriever(self):
-        if self._retriever is None:
-            try:
-                from engines.ai.knowledge.retriever import HybridRetriever
-                self._retriever = HybridRetriever(top_k=5)
-            except Exception as e:
-                logger.warning(f"[ChatEngine] Retriever not available: {e}")
-        return self._retriever
+        # Ensure at least one provider is configured
+        if not self._active_providers():
+            raise EnvironmentError(
+                "No chat provider API key found. Set at least one of: "
+                "GROQ_API_KEY, GEMINI_API_KEY, OPENROUTER_API_KEY, CEREBRAS_API_KEY in .env"
+            )
+
+    def _active_providers(self) -> list[dict]:
+        now = time.time()
+        return [
+            p for p in _CHAT_PROVIDERS
+            if os.getenv(p["env_var"]) and now >= self._cooldowns.get(p["name"], 0)
+        ]
+
+    def _mark_rate_limited(self, name: str) -> None:
+        self._cooldowns[name] = time.time() + COOLDOWN_S
+        logger.warning("[ChatEngine] %s rate-limited — cooling down %ds", name, COOLDOWN_S)
+
+    def _get_client(self, provider: dict):
+        return self._OpenAI(
+            api_key=os.getenv(provider["env_var"], ""),
+            base_url=provider["base_url"],
+            default_headers=provider.get("extra_headers", {}),
+            timeout=60.0,
+        )
 
     def chat(self, user_message: str) -> str:
         """
         Process one user turn and return the assistant's reply.
-        Maintains conversation history across calls.
+        Automatically rotates to the next provider if rate-limited.
         """
-        intent = detect_intent(user_message)
+        intent       = detect_intent(user_message)
         system_prompt = get_system_prompt(intent)
 
-        # Inject RAG context into system prompt
         rag_context = self._get_rag_context(user_message, intent)
         if rag_context:
             system_prompt += f"\n\nRelevant intelligence context:\n{rag_context}"
 
         self.history.append({"role": "user", "content": user_message})
 
-        # Build full message list: system + history
+        providers = self._active_providers()
+        if not providers:
+            reply = (
+                "All AI providers are temporarily rate-limited. "
+                "Please try again in a few minutes."
+            )
+            self.history.append({"role": "assistant", "content": reply})
+            return reply
+
+        for provider in providers:
+            client = self._get_client(provider)
+            model  = provider["model"]
+            logger.debug("[ChatEngine] Using provider: %s (%s)", provider["name"], model)
+
+            result = self._run_turn(client, model, system_prompt, user_message)
+
+            if result["status"] == "ok":
+                reply = result["reply"]
+                self.history.append({"role": "assistant", "content": reply})
+                return reply.strip()
+
+            if result["status"] == "rate_limited":
+                self._mark_rate_limited(provider["name"])
+                continue   # try next provider
+
+            # Other error — log and try next provider
+            logger.error("[ChatEngine] %s failed: %s", provider["name"], result.get("error"))
+            continue
+
+        # All providers exhausted
+        reply = (
+            "All AI providers are currently unavailable or rate-limited. "
+            "Please try again in a few minutes."
+        )
+        self.history.append({"role": "assistant", "content": reply})
+        return reply
+
+    def _run_turn(self, client, model: str, system_prompt: str, user_message: str) -> dict:
+        """
+        Run the full tool loop for one turn using the given client.
+        Returns {"status": "ok", "reply": ...} or {"status": "rate_limited"} or {"status": "error", "error": ...}.
+        """
         messages = [{"role": "system", "content": system_prompt}] + self.history
 
-        # Agentic tool loop — model gathers data via tools before answering
         tool_use_failed = False
         for _ in range(MAX_TOOL_ROUNDS):
             try:
-                response = self.client.chat.completions.create(
-                    model=MODEL,
+                response = client.chat.completions.create(
+                    model=model,
                     max_tokens=MAX_TOKENS,
                     messages=messages,
-                    tools=GROQ_TOOLS,
+                    tools=OPENAI_TOOLS,
                     tool_choice="auto",
-                    parallel_tool_calls=False,  # prevents Llama 3.3 XML-style malformed calls
+                    parallel_tool_calls=False,
                 )
             except Exception as e:
-                err_str = str(e)
-                if "tool_use_failed" in err_str:
-                    # Llama 3.3 generated XML-style function call — break to final text call
-                    logger.warning("[ChatEngine] tool_use_failed from Groq — forcing text response")
+                if _is_rate_limit(e):
+                    return {"status": "rate_limited"}
+                err = str(e)
+                if "tool_use_failed" in err:
+                    logger.warning("[ChatEngine] tool_use_failed — forcing text response")
                     tool_use_failed = True
                     break
-                if "rate_limit_exceeded" in err_str or "429" in err_str:
-                    # Groq daily token limit hit — surface it to the user immediately
-                    reply = (
-                        "The AI API daily token limit has been reached. "
-                        "Please wait a few minutes and try again, or upgrade at console.groq.com."
-                    )
-                    self.history.append({"role": "assistant", "content": reply})
-                    return reply
-                raise
+                return {"status": "error", "error": err}
 
             msg = response.choices[0].message
 
             if not msg.tool_calls:
-                # Model produced a final text response — we're done
-                reply = msg.content or ""
-                self.history.append({"role": "assistant", "content": reply})
-                return reply.strip()
+                return {"status": "ok", "reply": msg.content or ""}
 
-            # Append assistant message with tool_calls
+            # Append assistant tool-call turn
             messages.append({
-                "role": "assistant",
-                "content": msg.content,
+                "role":       "assistant",
+                "content":    msg.content,
                 "tool_calls": [
                     {
-                        "id": tc.id,
+                        "id":   tc.id,
                         "type": "function",
                         "function": {
-                            "name": tc.function.name,
+                            "name":      tc.function.name,
                             "arguments": tc.function.arguments,
                         },
                     }
@@ -151,7 +237,7 @@ class ChatEngine:
                 ],
             })
 
-            # Execute each tool and append results
+            # Execute tools and append results
             for tc in msg.tool_calls:
                 try:
                     args = json.loads(tc.function.arguments)
@@ -159,24 +245,22 @@ class ChatEngine:
                     args = {}
                 result = self._call_tool(tc.function.name, args)
                 messages.append({
-                    "role": "tool",
+                    "role":         "tool",
                     "tool_call_id": tc.id,
-                    "content": json.dumps(result, default=str),
+                    "content":      json.dumps(result, default=str),
                 })
 
-        # Tool loop exhausted or tool_use_failed — force one final text-only call.
-        # Build a clean prompt from the tool results gathered so far rather than
-        # passing the full messy tool-call history, which confuses the model.
+        # Tool loop done (exhausted or tool_use_failed) — force final text call
         logger.warning(
             "[ChatEngine] %s — forcing final text response",
             "tool_use_failed" if tool_use_failed else "MAX_TOOL_ROUNDS exhausted",
         )
         tool_results = [m["content"] for m in messages if m.get("role") == "tool"]
         if tool_results:
-            data_block = "\n".join(tool_results[:6])
+            data_block    = "\n".join(tool_results[:6])
             final_messages = [
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": (
+                {"role": "user",   "content": (
                     f"Using this live market data:\n{data_block}\n\n"
                     f"Answer the question: {user_message}"
                 )},
@@ -185,53 +269,43 @@ class ChatEngine:
             final_messages = [{"role": "system", "content": system_prompt}] + self.history
 
         try:
-            final = self.client.chat.completions.create(
-                model=MODEL,
+            final = client.chat.completions.create(
+                model=model,
                 max_tokens=MAX_TOKENS,
                 messages=final_messages,
             )
-            reply = final.choices[0].message.content or ""
+            return {"status": "ok", "reply": final.choices[0].message.content or ""}
         except Exception as e:
-            err_str = str(e)
-            if "rate_limit_exceeded" in err_str or "429" in err_str:
-                reply = (
-                    "The AI API daily token limit has been reached. "
-                    "Please wait a few minutes and try again, or upgrade at console.groq.com."
-                )
-            else:
-                logger.error(f"[ChatEngine] Final text call failed: {e}")
-                reply = ""
-
-        self.history.append({"role": "assistant", "content": reply})
-        return reply.strip() or "I was unable to complete this request. Please try again."
+            if _is_rate_limit(e):
+                return {"status": "rate_limited"}
+            return {"status": "error", "error": str(e)}
 
     def _call_tool(self, tool_name: str, tool_input: dict):
-        """Execute a registered tool and return its result."""
         fn = TOOL_FUNCTIONS.get(tool_name)
         if fn is None:
-            logger.error(f"[ChatEngine] Unknown tool: {tool_name}")
+            logger.error("[ChatEngine] Unknown tool: %s", tool_name)
             return {"error": f"Unknown tool: {tool_name}"}
         try:
-            logger.debug(f"[ChatEngine] Calling tool: {tool_name}({tool_input})")
+            logger.debug("[ChatEngine] Calling tool: %s(%s)", tool_name, tool_input)
             return fn(**tool_input)
         except Exception as e:
-            logger.error(f"[ChatEngine] Tool {tool_name} failed: {e}")
+            logger.error("[ChatEngine] Tool %s failed: %s", tool_name, e)
             return {"error": str(e)}
 
     def _get_rag_context(self, query: str, intent) -> str:
-        """Fetch RAG context for the query (max 3 docs)."""
-        retriever = self._get_retriever()
-        if retriever is None:
-            return ""
-        try:
-            results = retriever.retrieve(query, domain=None)[:3]
-            if not results:
+        if self._retriever is None:
+            try:
+                from engines.ai.knowledge.retriever import HybridRetriever
+                self._retriever = HybridRetriever(top_k=5)
+            except Exception as e:
+                logger.warning("[ChatEngine] Retriever not available: %s", e)
                 return ""
-            return "\n".join(f"- {r['text'][:300]}" for r in results)
+        try:
+            results = self._retriever.retrieve(query, domain=None)[:3]
+            return "\n".join(f"- {r['text'][:300]}" for r in results) if results else ""
         except Exception as e:
-            logger.debug(f"[ChatEngine] RAG retrieval skipped: {e}")
+            logger.debug("[ChatEngine] RAG retrieval skipped: %s", e)
             return ""
 
     def reset(self):
-        """Clear conversation history."""
         self.history = []
