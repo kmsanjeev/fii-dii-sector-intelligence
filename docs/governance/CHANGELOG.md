@@ -6,6 +6,75 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.15.0
+
+Phase AF -- AstroFinance Intelligence Layer
+
+Date: 2026-07-05
+
+Status: Completed
+
+Commits: 8159d1c, da83713
+
+---
+
+## Summary
+
+Three-sub-phase AstroFinance integration adds planetary intelligence to the
+decision platform. Indian/Vedic planet-sector mapping (Banerjee 2009) combined
+with Western aspect theory (Pesavento 2015) and 6 financial astrology PDFs
+ingested into the RAG knowledge base.
+
+## New Files
+
+### `engines/ai/knowledge/book_ingestion_engine.py` -- AF-1
+- Extracts all 6 AstroFinance PDFs using pdfplumber (ASCII encoding fallback)
+- Chunks at sentence boundaries (~600 chars, 80-char overlap)
+- Tags domain="ASTRO"; appends to documents.jsonl (idempotent via doc_id check)
+- Result: 3,173 ASTRO documents ingested, faiss_ASTRO.index 4.8MB
+
+### `engines/intelligence/astro_engine.py` -- AF-2
+- Daily planetary computation using ephem library
+- Planets: Sun/Moon/Mercury/Venus/Mars/Jupiter/Saturn/Uranus/Neptune + Rahu/Ketu
+- Rahu: mean node formula (Omega = 125.0445 - 1934.136 * T)
+- Sign strength: exaltation +4, own sign +3, neutral 0, debilitation -3
+- Aspect types: conjunction/sextile/square/trine/opposition with financial polarity
+- Moon phase illumination + waxing/waning signal
+- Eclipse proximity detection (Rahu = uptrend, Ketu = downtrend)
+- Bradley Siderograph-style market score
+- Planet-sector mapping: 31 NSE sectors per Vedic Indian system
+- Outputs: astro_signals.csv (31 rows), market_astro_context.json
+
+### `frontend/src/components/platform/AstroSignalCard.tsx` -- AF-3
+- Action badge with color coding (BUY/HOLD/CAUTION/EXIT/AVOID)
+- Astro score bar (-100 to +100)
+- Planet state chips with sign strength colors
+- Retrograde warning banners (orange highlight)
+- Moon phase, eclipse warnings, market pulse, source book disclaimer
+
+## Modified Files
+
+- `engines/ai/knowledge/faiss_indexer.py`: added ASTRO to DOMAINS list
+- `backend/services/data_loader.py`: registers astro_signals.csv + get_astro_context()
+- `backend/routers/stocks.py`: adds astro{} block to stock detail endpoint
+- `frontend/src/pages/StocksPage.tsx`: renders ASTRO SIGNAL section (before CORPORATE)
+- `frontend/src/api/client.ts`: added astro? type to Stock
+- `engines/ai/chatbot/tools/data_tools.py`: get_astro_signal() function
+- `engines/ai/chatbot/tools/tool_registry.py`: get_astro_signal tool schema
+- `engines/ai/chatbot/intent_router.py`: ASTRO intent keywords + system prompt
+- `engines/orchestration/daily_refresh.py`: AF_astro_engine stage after C1_trade_conviction
+
+## Current Astro Signals (2026-07-05)
+
+- BUY: BANKING, DIVERSIFIED (Jupiter in Leo, benefic aspects, score +31.9)
+- HOLD: SHIPPING, AMC, FMCG, HOSPITALITY, TEXTILE
+- CAUTION: IT, TELECOM, MEDIA, AVIATION, LOGISTICS (Mercury RETROGRADE)
+- EXIT: AUTO, CAPITAL_GOODS, METAL, DEFENSE (Mars negative aspects, -40 to -59)
+- AVOID: PHARMA, HEALTHCARE, REALTY, CEMENT, INFRA (Saturn DEBILITATED in Aries)
+- Market overall: BEARISH (-49.0 Bradley score)
+
+---
+
 # Version 4.14.0
 
 Phase 12C -- Forward Return Labels (True Supervised ML Training)
