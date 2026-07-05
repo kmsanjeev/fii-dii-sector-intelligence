@@ -18,12 +18,22 @@ export function RegimeBanner({ regime, smartMoney, fiiConviction }: RegimeBanner
 
   return (
     <div
-      className="w-full px-4 py-2 text-sm flex items-center gap-6 border-b"
-      style={{ backgroundColor: `${color}18`, borderColor: `${color}40`, color }}
+      className="w-full border-b"
+      style={{
+        backgroundColor: `${color}18`,
+        borderColor: `${color}40`,
+        color,
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        gap: 'clamp(8px, 3vw, 24px)',
+        padding: 'clamp(4px, 1.5vw, 8px) clamp(10px, 3vw, 16px)',
+        fontSize: 'clamp(11px, 2.5vw, 14px)',
+      }}
     >
-      <span className="font-bold tracking-widest">{regime}</span>
-      <span>Smart Money: {smSign}{smartMoney.toFixed(1)}</span>
-      <span>FII Conviction: {fiiConviction.toFixed(0)}%</span>
+      <span style={{ fontWeight: 700, letterSpacing: '0.12em', whiteSpace: 'nowrap' }}>{regime}</span>
+      <span style={{ whiteSpace: 'nowrap' }}>Smart Money: {smSign}{smartMoney.toFixed(1)}</span>
+      <span style={{ whiteSpace: 'nowrap' }}>FII Conv: {fiiConviction.toFixed(0)}%</span>
     </div>
   )
 }

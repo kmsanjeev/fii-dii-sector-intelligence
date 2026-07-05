@@ -69,35 +69,35 @@ body {
   height: 100dvh;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   body {
     font-size: 13px;
   }
 
-  /* Reduce page padding */
-  main.p-6 { padding: 12px !important; }
-  main.p-4 { padding: 12px !important; }
+  /* Reduce page padding on mobile */
+  main { padding: 10px !important; }
 
-  /* Tables: horizontal scroll instead of overflow clipping */
-  main table {
-    min-width: 480px;
-  }
-  /* Wrap any direct table child of main in a scroll container */
-  main > div {
-    max-width: 100%;
-  }
+  /* Tables: horizontal scroll instead of clipping */
+  main table { min-width: 480px; }
+
+  /* Prevent any child from exceeding viewport width */
+  main > div { max-width: 100%; }
 }
 
-/* Scrollable table wrapper utility — apply to any table container */
+@media (max-width: 480px) {
+  body { font-size: 12px; }
+}
+
+/* Scrollable table wrapper — apply className="table-scroll" to any table container */
 .table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-/* Card grids: single column on narrow screens */
-@media (max-width: 640px) {
-  body { font-size: 12px; }
-}
-
-/* Ensure no horizontal overflow bleeds outside main */
+/* Box-sizing safety */
 main { box-sizing: border-box; }
+
+/* Prevent inline-flex labels from overflowing on small screens */
+@media (max-width: 768px) {
+  .ticker-inner { gap: 16px; }
+}

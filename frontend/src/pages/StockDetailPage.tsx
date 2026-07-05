@@ -5,6 +5,7 @@ import { fetchStockDetail, fetchStockAnnouncements, fetchAnnouncementSummary, ty
 import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 import { TradeIntelligenceCard } from '../components/platform/TradeIntelligenceCard'
+import { useMobile } from '../hooks/useMobile'
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 
@@ -125,6 +126,7 @@ type FundTilesProps = {
 }
 
 function FundamentalTiles({ fund, shp, tech, price }: FundTilesProps) {
+  const isMobile = useMobile()
 
   const ret1y    = price?.ret_365d
   const volRatio = price?.vol_ratio
@@ -141,7 +143,7 @@ function FundamentalTiles({ fund, shp, tech, price }: FundTilesProps) {
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: 'repeat(4, 1fr)',
+      gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
       gap: 10,
     }}>
       {/* Row 1 — Financial Fundamentals */}
@@ -912,6 +914,7 @@ function AnnouncementsCard({ symbol }: { symbol: string }) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export function StockDetailPage() {
+  const isMobile = useMobile()
   const { symbol } = useParams<{ symbol: string }>()
   const { data, isLoading, isError } = useQuery({
     queryKey: ['stock', symbol],
@@ -1036,14 +1039,14 @@ export function StockDetailPage() {
       <AnalystInsights insights={insights} />
 
       {/* ── Two-column body ──────────────────────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 16, alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 380px', gap: 16, alignItems: 'start' }}>
 
         {/* ── LEFT COLUMN ────────────────────────────────────────────────────── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
           {/* Score components */}
           <Card title="BULL RUN SCORE BREAKDOWN">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 10 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 10, marginBottom: 10 }}>
               {[
                 { label: 'Price Momentum', value: c.price_score,       sub: '30% weight' },
                 { label: 'Sector Flow',    value: c.sector_flow_score, sub: '25% weight' },
@@ -1074,7 +1077,7 @@ export function StockDetailPage() {
 
           {/* Price returns — 4 boxes */}
           <Card title="PRICE PERFORMANCE">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 8 }}>
               {[
                 { label: '30-Day',    value: data.price.ret_30d, isMult: false },
                 { label: '90-Day',    value: data.price.ret_90d, isMult: false },
