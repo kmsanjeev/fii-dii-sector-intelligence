@@ -86,16 +86,46 @@ TOOLS: list[dict] = [
     {
         "name": "get_top_stocks",
         "description": (
-            "Get the top stocks for a given accumulation label by bull_run_score. "
-            "Labels: STRONG_CANDIDATE, EMERGING, WATCHLIST, NEUTRAL, AVOID."
+            "Get the top stocks for a given label by bull_run_score, enriched with "
+            "ML scores and technical trend signal. "
+            "Current valid labels: BULL_RUN (score>=65), EMERGING (>=45), WATCHLIST (>=30), "
+            "NEUTRAL (>=15), ACCUMULATION (institutional base-building), MARKDOWN (declining). "
+            "Use BULL_RUN for strongest candidates, EMERGING for upcoming movers."
         ),
         "input_schema": {
             "type": "object",
             "properties": {
                 "label": {
                     "type": "string",
-                    "description": "Accumulation label to filter by (default: EMERGING)",
+                    "description": "Label to filter by (default: EMERGING). Valid: BULL_RUN, EMERGING, WATCHLIST, NEUTRAL, ACCUMULATION, MARKDOWN",
                     "default": "EMERGING",
+                },
+                "top_n": {
+                    "type": "integer",
+                    "description": "Number of stocks to return (default: 20)",
+                    "default": 20,
+                },
+            },
+            "required": [],
+        },
+    },
+    {
+        "name": "get_fno_stocks",
+        "description": (
+            "Get F&O (futures & options) stocks filtered by OI signal. "
+            "ONLY use this tool for questions about F&O stocks, futures OI, long buildup, "
+            "short buildup, short covering, or open interest trends. "
+            "Results are real NSE F&O-eligible stocks (210 universe), sorted by 5-day OI change. "
+            "Valid signals: LONG_BUILDUP (bullish, rising price+OI), SHORT_BUILDUP (bearish), "
+            "LONG_UNWINDING (bulls exiting), SHORT_COVERING (shorts being squeezed)."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "signal": {
+                    "type": "string",
+                    "description": "OI signal to filter by (default: LONG_BUILDUP). Valid: LONG_BUILDUP, SHORT_BUILDUP, LONG_UNWINDING, SHORT_COVERING",
+                    "default": "LONG_BUILDUP",
                 },
                 "top_n": {
                     "type": "integer",
@@ -209,6 +239,7 @@ from engines.ai.chatbot.tools.data_tools import (
     get_sector_detail,
     get_sectors_by_signal,
     get_top_stocks,
+    get_fno_stocks,
     get_stock_detail,
     get_stocks_by_sector,
     get_institutional_deals,
@@ -223,6 +254,7 @@ TOOL_FUNCTIONS: dict[str, callable] = {
     "get_sector_detail": get_sector_detail,
     "get_sectors_by_signal": get_sectors_by_signal,
     "get_top_stocks": get_top_stocks,
+    "get_fno_stocks": get_fno_stocks,
     "get_stock_detail": get_stock_detail,
     "get_stocks_by_sector": get_stocks_by_sector,
     "get_institutional_deals": get_institutional_deals,

@@ -96,14 +96,78 @@ def get_sectors_by_signal(signal: str) -> list[dict]:
 # Stock tools
 # ------------------------------------------------------------------
 
+def _enrich_with_technical(df_rows: list[dict]) -> list[dict]:
+    """Add key technical fields (trend_signal, vs_dma_200, prox_52w_high) to each row."""
+    tech = _load(INTEL / "technical_indicators.csv")
+    if tech is None:
+        return df_rows
+    tech_idx = tech.set_index("symbol")
+    for row in df_rows:
+        sym = row.get("symbol", "")
+        if sym and sym in tech_idx.index:
+            t = tech_idx.loc[sym]
+            row["trend_signal"]  = _clean(t.get("trend_signal"))
+            row["vs_dma_200"]    = _clean(t.get("vs_dma_200"))
+            row["prox_52w_high"] = _clean(t.get("prox_52w_high"))
+            row["close_now"]     = _clean(t.get("close_now"))
+    return df_rows
+
+
 def get_top_stocks(label: str = "EMERGING", top_n: int = 20) -> list[dict]:
-    """Returns top stocks by bull_run_score for a given label."""
+    """
+    Returns top stocks by bull_run_score for a given label, enriched with
+    ML scores and key technical signals for cross-validation.
+    Current valid labels: BULL_RUN, EMERGING, WATCHLIST, NEUTRAL, ACCUMULATION, MARKDOWN.
+    """
     df = _load(INTEL / "bull_run_probability.csv")
     if df is None:
         return []
     filtered = df[df["label"].str.upper() == label.upper()]
     top = filtered.nlargest(top_n, "bull_run_score")
-    return [_row_to_dict(r) for _, r in top.iterrows()]
+    rows = [_row_to_dict(r) for _, r in top.iterrows()]
+
+    # Enrich with ML scores
+    ml = _load(INTEL / "ml_scores_combined.csv")
+    if ml is not None:
+        ml_idx = ml.set_index("symbol")
+        for row in rows:
+            sym = row.get("symbol", "")
+            if sym and sym in ml_idx.index:
+                m = ml_idx.loc[sym]
+                row["ml_bull_run_score"] = _clean(m.get("ml_bull_run_score"))
+                row["accumulation_score"] = _clean(m.get("accumulation_score"))
+
+    return _enrich_with_technical(rows)
+
+
+def get_fno_stocks(signal: str = "LONG_BUILDUP", top_n: int = 20) -> list[dict]:
+    """
+    Returns F&O stocks filtered by OI signal, sorted by 5-day OI change.
+    Only stocks in fno_intelligence.csv are genuine F&O (futures & options) stocks.
+    Valid signals: LONG_BUILDUP, SHORT_BUILDUP, LONG_UNWINDING, SHORT_COVERING.
+    LONG_BUILDUP = rising price + rising OI = bullish conviction.
+    SHORT_COVERING = falling OI + rising price = short squeeze.
+    """
+    fno = _load(INTEL / "fno_intelligence.csv")
+    if fno is None:
+        return []
+    filtered = fno[fno["oi_signal"].str.upper() == signal.upper()]
+    top = filtered.nlargest(top_n, "oi_5d")
+    rows = [_row_to_dict(r) for _, r in top.iterrows()]
+
+    # Enrich with bull_run score + sector
+    br = _load(INTEL / "bull_run_probability.csv")
+    if br is not None:
+        br_idx = br.set_index("symbol")
+        for row in rows:
+            sym = row.get("symbol", "")
+            if sym and sym in br_idx.index:
+                b = br_idx.loc[sym]
+                row["bull_run_score"] = _clean(b.get("bull_run_score"))
+                row["label"]          = _clean(b.get("label"))
+                row["sector"]         = _clean(b.get("sector"))
+
+    return _enrich_with_technical(rows)
 
 
 def get_stock_detail(symbol: str) -> dict:
@@ -127,6 +191,22 @@ def get_stock_detail(symbol: str) -> dict:
             result["ml_bull_run_score"] = ml_row.get("ml_bull_run_score")
             result["accumulation_score"] = ml_row.get("accumulation_score")
 
+    # Enrich with technical indicators — critical for trend validation
+    tech = _load(INTEL / "technical_indicators.csv")
+    if tech is not None:
+        tech_match = tech[tech["symbol"].str.upper() == symbol.upper()]
+        if not tech_match.empty:
+            t = tech_match.iloc[0]
+            result["trend_signal"]  = _clean(t.get("trend_signal"))
+            result["vs_dma_20"]     = _clean(t.get("vs_dma_20"))
+            result["vs_dma_50"]     = _clean(t.get("vs_dma_50"))
+            result["vs_dma_200"]    = _clean(t.get("vs_dma_200"))
+            result["prox_52w_high"] = _clean(t.get("prox_52w_high"))
+            result["prox_52w_low"]  = _clean(t.get("prox_52w_low"))
+            result["close_now"]     = _clean(t.get("close_now"))
+            result["high_52w"]      = _clean(t.get("high_52w"))
+            result["low_52w"]       = _clean(t.get("low_52w"))
+
     # Enrich with corporate confidence
     corp = _load(INTEL / "corporate_confidence_scores.csv")
     if corp is not None:
@@ -144,7 +224,8 @@ def get_stocks_by_sector(sector: str, top_n: int = 10) -> list[dict]:
         return []
     matches = df[df["sector"].str.upper() == sector.upper()]
     top = matches.nlargest(top_n, "bull_run_score")
-    return [_row_to_dict(r) for _, r in top.iterrows()]
+    rows = [_row_to_dict(r) for _, r in top.iterrows()]
+    return _enrich_with_technical(rows)
 
 
 # ------------------------------------------------------------------

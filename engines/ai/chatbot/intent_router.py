@@ -25,10 +25,12 @@ INTENT_KEYWORDS = {
     "SECTOR": [
         "sector", "rotation", "industry", "leading", "lagging", "early rotation",
         "it sector", "pharma", "banking", "metal", "power", "auto", "fmcg",
+        "top sector", "best sector", "performing sector",
     ],
     "STOCK": [
-        "stock", "symbol", "share", "equity", "watchlist", "emerging", "strong candidate",
-        "bull run", "score", "accumulation score", "which stocks",
+        "stock", "symbol", "share", "equity", "watchlist", "emerging", "bull run",
+        "score", "accumulation score", "which stocks", "buy", "f&o", "futures",
+        "oi", "open interest", "long buildup", "short buildup", "short covering",
     ],
     "CORPORATE": [
         "deal", "bulk", "block", "buyback", "dividend", "corporate", "promoter",
@@ -88,15 +90,20 @@ def get_system_prompt(intent: Intent) -> str:
         ),
         "SECTOR": (
             " Focus on sector rotation analysis. "
+            "To find the top-performing sector, ALWAYS call get_all_sectors() first and rank by combined_score descending. "
+            "Do NOT call get_sector_detail() for just one sector when the user asks for the best/top sector. "
             "EARLY_ROTATION is the most actionable signal -- FII entering before retail. "
             "LEADING means sector is in confirmed uptrend with institutional support. "
-            "Compare sectors and highlight rotation opportunities."
+            "combined_score is the definitive rank: higher is better. A positive combined_score means net institutional inflow."
         ),
         "STOCK": (
             " Focus on stock-level accumulation signals. "
-            "Bull run score > 65 = STRONG_CANDIDATE. "
+            "Current labels: BULL_RUN (score>=65), EMERGING (>=45), WATCHLIST (>=30), NEUTRAL (>=15), ACCUMULATION, MARKDOWN. "
+            "For F&O or futures OI questions (long buildup, short buildup, open interest), ALWAYS use get_fno_stocks() -- "
+            "never use get_top_stocks() for F&O queries as it returns non-F&O stocks. "
+            "Always cross-check trend_signal and prox_52w_high before recommending a stock as a buy. "
+            "A stock with prox_52w_high < -20% is far from its high -- mention this. "
             "Explain the capital flow cascade: participant -> sector -> stock. "
-            "Always mention the sector context for any stock."
         ),
         "CORPORATE": (
             " Focus on corporate action intelligence. "
