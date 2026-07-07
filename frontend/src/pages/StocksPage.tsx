@@ -27,6 +27,7 @@ import { ScoreGauge } from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
 import { TradeIntelligenceCard } from '../components/platform/TradeIntelligenceCard'
 import { AstroSignalCard, type AstroSignal } from '../components/platform/AstroSignalCard'
+import { KundliCard } from '../components/platform/KundliCard'
 import { T, FS, FW, CARD_HDR, FIELD_LBL } from '../styles/tokens'
 import { useMobile } from '../hooks/useMobile'
 
@@ -2005,6 +2006,10 @@ export function StocksPage() {
                 <AstroSignalCard astro={detail.astro as AstroSignal} />
               </>
             )}
+
+            {/* ══ VEDIC KUNDLI + GANN ══════════════════════════════════════════ */}
+            <SectionDivider label="VEDIC KUNDLI + GANN" />
+            <KundliCard symbol={symbol} />
 
             {/* ══ CORPORATE ════════════════════════════════════════════════════ */}
             <SectionDivider label="CORPORATE" />

@@ -75,6 +75,9 @@ STAGES = [
     ("C1_trade_conviction",         "engines.intelligence.trade_conviction_engine",           "Trade Conviction Scores",               60),
     # AstroFinance planetary signals (depends on sector rotation 6C; runs before RAG so signals are indexed)
     ("AF_astro_engine",             "engines.intelligence.astro_engine",                     "AstroFinance Planetary Signals",        60),
+    # Vedic Kundli + Gann (natal charts for all NSE stocks; depends on equity_master + price_momentum)
+    ("KU_kundli_engine",            "engines.intelligence.kundli_engine",                    "Vedic Kundli Natal Charts",            180),
+    ("KU_gann_engine",              "engines.intelligence.gann_engine",                      "Gann Square of 9 Price Levels",         60),
     # RAG indexes (rebuilt from fresh intelligence CSVs above)
     ("13A_document_builder",        "engines.ai.knowledge.document_builder",                 "RAG Document Builder",                  30),
     ("13B_faiss_indexer",           "engines.ai.knowledge.faiss_indexer",                    "FAISS Indexer (embedding)",             180),
@@ -97,6 +100,7 @@ STAGE_SECTIONS = {
                                 "A2_fno_intelligence", "8A_price_momentum", "8B_bull_run_probability",
                                 "12_ml_scorer", "C1_trade_conviction",
                                 "AF_astro_engine",
+                                "KU_kundli_engine", "KU_gann_engine",
                                 "13A_document_builder", "13B_faiss_indexer", "13C_bm25_indexer",
                                 "20_portfolio", "9_alert_engine"],
 }
