@@ -601,12 +601,12 @@ export function ReportPage() {
               {/* Tags row */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
                 {detail?.sector && <Chip label={String(detail.sector)} color={C.accent} />}
-                {String(br?.label ?? '')} && <Chip label={String(br?.label ?? '')} color={scoreColor(Number(br?.probability_score ?? 50))} />
-                {String(ast?.astro_action ?? ast?.signal ?? '')} && (
+                {!!br?.label && <Chip label={String(br.label)} color={scoreColor(Number(br?.probability_score ?? 50))} />}
+                {!!(ast?.astro_action ?? ast?.signal) && (
                   <Chip label={String(ast?.astro_action ?? ast?.signal ?? '')} color={SIGNAL_COLOR[String(ast?.astro_action ?? ast?.signal ?? '')] ?? C.sub} />
                 )}
-                {String(tec?.trend_signal ?? '')} && <Chip label={String(tec?.trend_signal ?? '')} color={C.teal} />
-                {String(fno?.oi_signal ?? '')} && <Chip label={`F&O: ${String(fno?.oi_signal ?? '')}`} color={C.purple} />
+                {!!tec?.trend_signal && <Chip label={String(tec.trend_signal)} color={C.teal} />}
+                {!!fno?.oi_signal && <Chip label={`F&O: ${String(fno.oi_signal)}`} color={C.purple} />}
               </div>
             </div>
             {/* Date stamp */}
