@@ -18,7 +18,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from backend.services import data_loader
-from backend.routers import market, sectors, stocks, participant, corporate, chat, data_ops, charts, pipeline, portfolio, backtest, broker, research, execution, themes, kundli, news
+from backend.routers import market, sectors, stocks, participant, corporate, chat, data_ops, charts, pipeline, portfolio, backtest, broker, research, execution, themes, kundli, news, social_pulse
 from backend.auth import router as auth_router
 from backend.auth.middleware import AuthMiddleware
 from backend.auth.store import init_db, bootstrap_admin
@@ -75,6 +75,7 @@ app.include_router(execution.router)
 app.include_router(themes.router)
 app.include_router(kundli.router)
 app.include_router(news.router)
+app.include_router(social_pulse.router)
 app.include_router(auth_router.router)
 
 

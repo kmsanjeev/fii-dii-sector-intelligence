@@ -271,6 +271,33 @@ export const fetchHealth        = () => api.get('/health').then(r => r.data)
 export const fetchDataStatus    = () => api.get('/data/status').then(r => r.data)
 export const fetchEngineList    = () => api.get('/data/engines').then(r => r.data)
 
+// Social Pulse — intelligence ticker
+export type SocialPulseItem = {
+  title:         string
+  url:           string
+  published_ts:  number
+  published_rel: string
+  sentiment:     'POSITIVE' | 'NEGATIVE' | 'NEUTRAL'
+}
+export type SocialPulseHandle = {
+  handle:       string
+  display_name: string
+  avatar:       string   // 2-3 char abbreviation
+  category:     string
+  region:       'INDIA' | 'GLOBAL'
+  item_count:   number
+  items:        SocialPulseItem[]
+  is_direct:    boolean
+}
+export type SocialPulseResponse = {
+  handles:   SocialPulseHandle[]
+  active:    number
+  total:     number
+  cached_at: number
+}
+export const fetchSocialPulse = () =>
+  api.get<SocialPulseResponse>('/social-pulse').then(r => r.data)
+
 // Phase News — RSS aggregator
 export type NewsItem = {
   title:        string

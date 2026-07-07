@@ -7,8 +7,9 @@ import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import {
   fetchMarketContext, fetchParticipantLatest, fetchSectors,
-  fetchWatchlist, fetchCatalysts, fetchDeals, fetchNews,
+  fetchWatchlist, fetchCatalysts, fetchDeals, fetchNews, fetchSocialPulse,
   type MarketContext, type ParticipantLatest, type Sector, type NewsItem,
+  type SocialPulseHandle,
 } from '../api/client'
 import { ScoreGauge }   from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
@@ -738,6 +739,205 @@ function EmergeCard({ stock }: { stock: import('../api/client').Stock }) {
   )
 }
 
+// ─── Social Pulse Ticker ─────────────────────────────────────────────────────
+
+const CAT_ACCENT: Record<string, string> = {
+  CENTRAL_BANK: '#C668E8',
+  GOVERNMENT:   '#F5A524',
+  REGULATORY:   '#3BAEF0',
+  GEOPOLITICAL: '#F44B4B',
+  CORPORATE:    '#22D35E',
+  MARKET:       '#22D3EE',
+  COMMODITIES:  '#FB923C',
+  MACRO:        '#818CF8',
+  GLOBAL:       '#60A5FA',
+}
+
+const SENT_DOT: Record<string, string> = {
+  POSITIVE: '#22D35E',
+  NEGATIVE: '#F44B4B',
+  NEUTRAL:  '#64748B',
+}
+
+function HandleCard({ h }: { h: SocialPulseHandle }) {
+  const accent = CAT_ACCENT[h.category] ?? '#64748B'
+  const regionColor = h.region === 'INDIA' ? '#22D35E' : '#3BAEF0'
+
+  return (
+    <div style={{
+      flexShrink: 0,
+      width: 230,
+      height: 188,
+      background: C.bg,
+      border: `1px solid ${accent}33`,
+      borderLeft: `3px solid ${accent}`,
+      borderRadius: 8,
+      padding: '10px 12px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 7,
+      boxSizing: 'border-box',
+    }}>
+      {/* Card header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+        <div style={{
+          flexShrink: 0,
+          width: 32, height: 32, borderRadius: 16,
+          background: `${accent}22`,
+          border: `1px solid ${accent}66`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: accent, fontSize: 9, fontWeight: 900, letterSpacing: 0.3,
+        }}>{h.avatar}</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ color: C.h1, fontSize: 11, fontWeight: 800, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+            {h.display_name}
+          </div>
+          <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
+            <span style={{ color: accent, fontSize: 8, fontWeight: 700 }}>{h.handle}</span>
+            <span style={{
+              fontSize: 7, fontWeight: 700, padding: '1px 4px', borderRadius: 2,
+              background: `${regionColor}18`, color: regionColor,
+            }}>{h.region}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div style={{ height: 1, background: `${accent}22` }} />
+
+      {/* Items */}
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 5 }}>
+        {h.items.slice(0, 3).map((it, i) => (
+          <a
+            key={i}
+            href={it.url || '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: 'none', display: 'flex', gap: 5, alignItems: 'flex-start' }}
+          >
+            <div style={{
+              flexShrink: 0, width: 5, height: 5, borderRadius: '50%',
+              background: SENT_DOT[it.sentiment] ?? '#64748B',
+              marginTop: 4,
+            }} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{
+                color: C.primary, fontSize: 10, lineHeight: 1.35,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}>{it.title}</div>
+              <div style={{ color: C.dim, fontSize: 8, marginTop: 1 }}>{it.published_rel}</div>
+            </div>
+          </a>
+        ))}
+        {h.items.length === 0 && (
+          <div style={{ color: C.dim, fontSize: 10, marginTop: 4 }}>No recent updates</div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function SocialPulse() {
+  const [paused, setPaused] = useState(false)
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['social-pulse'],
+    queryFn:  fetchSocialPulse,
+    refetchInterval: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+  })
+
+  const handles = (data?.handles ?? []).filter(h => h.item_count > 0)
+  // Duplicate for seamless loop — need at least enough to fill viewport twice
+  const track   = handles.length > 0 ? [...handles, ...handles, ...handles] : []
+  const duration = Math.max(40, handles.length * 7)  // seconds
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <style>{`
+        @keyframes pulse-scroll {
+          0%   { transform: translateX(0) }
+          100% { transform: translateX(calc(-100% / 3)) }
+        }
+        .pulse-track {
+          animation: pulse-scroll ${duration}s linear infinite;
+          will-change: transform;
+        }
+        .pulse-track.paused { animation-play-state: paused; }
+      `}</style>
+
+      {/* Header row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={LABEL}>INTELLIGENCE TICKER</div>
+          {/* Live dot */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div style={{
+              width: 6, height: 6, borderRadius: 3,
+              background: '#22D35E',
+              boxShadow: '0 0 6px #22D35E',
+              animation: 'none',
+            }} />
+            <span style={{ color: '#22D35E', fontSize: 9, fontWeight: 700 }}>LIVE</span>
+          </div>
+          {data && (
+            <span style={{ color: C.dim, fontSize: 9 }}>
+              {data.active}/{data.total} sources
+            </span>
+          )}
+        </div>
+        <button
+          onClick={() => setPaused(v => !v)}
+          style={{
+            background: 'transparent', border: `1px solid #1E2D44`,
+            borderRadius: 5, color: paused ? C.bull : C.muted,
+            fontSize: 9, fontWeight: 700, padding: '3px 10px', cursor: 'pointer',
+          }}
+        >{paused ? 'RESUME' : 'PAUSE'}</button>
+      </div>
+
+      {/* Scrolling track */}
+      <div style={{ overflow: 'hidden', position: 'relative' }}>
+        {/* Fade edges */}
+        <div style={{
+          position: 'absolute', left: 0, top: 0, bottom: 0, width: 40,
+          background: `linear-gradient(90deg, ${C.bg}, transparent)`,
+          zIndex: 2, pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', right: 0, top: 0, bottom: 0, width: 40,
+          background: `linear-gradient(270deg, ${C.bg}, transparent)`,
+          zIndex: 2, pointerEvents: 'none',
+        }} />
+
+        {isLoading ? (
+          <div style={{ display: 'flex', gap: 8 }}>
+            {[...Array(5)].map((_, i) => (
+              <div key={i} style={{
+                flexShrink: 0, width: 230, height: 188,
+                background: C.bg, border: `1px solid #1E2D44`, borderRadius: 8,
+                opacity: 0.5,
+              }} />
+            ))}
+          </div>
+        ) : (
+          <div
+            className={`pulse-track${paused ? ' paused' : ''}`}
+            style={{ display: 'flex', gap: 8, width: 'max-content' }}
+          >
+            {track.map((h, i) => (
+              <HandleCard key={`${h.handle}-${i}`} h={h} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ─── News Section ─────────────────────────────────────────────────────────────
 
 const SENT_STYLE: Record<string, React.CSSProperties> = {
@@ -977,7 +1177,10 @@ export function Dashboard() {
       {/* Row 3: Participant Flow Bars */}
       {flows && part && <FlowBars flows={flows} part={part} isMobile={isMobile} />}
 
-      {/* Row 3B: News Section */}
+      {/* Row 3B: Intelligence Ticker */}
+      <SocialPulse />
+
+      {/* Row 3C: News Section */}
       <NewsSection />
 
       {/* Row 4: Sector Heatmap + Side Panel */}
