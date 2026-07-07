@@ -375,6 +375,109 @@ def _planet_sentence(pname: str, house: int, dignity: str, retrograde: bool = Fa
     return f"{prefix}{base}{retro_note}"
 
 
+def _karaka_area_sentence(planet: str, house: int, dignity: str, retrograde: bool, area: str) -> str:
+    """
+    Generate a life-area-contextual interpretation for a natural karaka planet.
+    Frames the planet's house placement for the specific life domain so the same
+    planet (e.g. Jupiter in H10) doesn't output career text inside the Children or
+    Spirituality sections.
+    """
+    retro = " [Retrograde: energy turns inward; timing may shift or be non-linear.]" if retrograde else ""
+    strong = dignity in {"exalted", "own_sign", "moolatrikona", "friendly"}
+    dig_label = {
+        "exalted": "exalted", "own_sign": "in own sign",
+        "moolatrikona": "in Moolatrikona", "friendly": "in a friendly sign",
+        "neutral": "in a neutral sign", "enemy": "in an enemy sign",
+        "debilitated": "debilitated",
+    }.get(dignity, "placed")
+
+    _AREA_KARAKA: dict[tuple, tuple] = {
+        ("children", "Jupiter"): (
+            f"Jupiter ({dig_label}) in H{house}: children are blessed with intelligence, moral strength, and ambition; the native's dharmic life creates an auspicious environment for progeny.{retro}",
+            f"Jupiter ({dig_label}) in H{house}: children karma has some complexity -- timing of progeny may be delayed or parenthood requires extra effort; once arrived, children bring genuine wisdom.{retro}",
+        ),
+        ("children", "Saturn"): (
+            f"Saturn ({dig_label}) in H{house}: children arrive later in life but prove stable and accomplished; they inherit the native's disciplined work ethic and perseverance.{retro}",
+            f"Saturn ({dig_label}) in H{house}: delays or limitations around children are possible; first child may come after challenges; children tend toward seriousness and responsibility.{retro}",
+        ),
+        ("home", "Moon"): (
+            f"Moon ({dig_label}) in H{house}: emotional life is rich and the mother is a central nurturing force; home provides genuine comfort, peace, and emotional security to the native.{retro}",
+            f"Moon ({dig_label}) in H{house}: emotional fluctuations colour domestic life; mother's health or presence may be a sensitive area; home is both a refuge and a place of inner work.{retro}",
+        ),
+        ("siblings", "Mars"): (
+            f"Mars ({dig_label}) in H{house}: siblings are strong, courageous, and generally supportive; the native and siblings share competitive drive and mutual encouragement throughout life.{retro}",
+            f"Mars ({dig_label}) in H{house}: sibling relationships have competitive or friction-prone edges; the native's own courage is strong, but disputes with siblings require careful handling.{retro}",
+        ),
+        ("father", "Jupiter"): (
+            f"Jupiter ({dig_label}) in H{house}: the father, guru, or mentor is wise and accomplished; their influence shapes the native's dharma, fortune, and approach to higher knowledge.{retro}",
+            f"Jupiter ({dig_label}) in H{house}: the father or guru principle brings karmic complexity; wisdom is earned through challenge rather than inherited; higher guidance must be sought actively.{retro}",
+        ),
+        ("father", "Sun"): (
+            f"Sun ({dig_label}) in H{house}: father is a strong, authoritative, and influential figure whose example directly shapes the native's ambition and leadership style.{retro}",
+            f"Sun ({dig_label}) in H{house}: father's presence or authority may be limited or complex; the native builds personal authority independently, without relying on paternal support.{retro}",
+        ),
+        ("love", "Venus"): (
+            f"Venus ({dig_label}) in H{house}: romantic life is genuine and pleasurable; the native naturally attracts loving, aesthetic, or culturally refined partners; love deepens into lasting bonds.{retro}",
+            f"Venus ({dig_label}) in H{house}: romantic relationships are coloured by differing values or expectations around beauty and material life; love tests personal values before it deepens.{retro}",
+        ),
+        ("love", "Jupiter"): (
+            f"Jupiter ({dig_label}) in H{house}: marriage brings wisdom and dharmic expansion; the spouse is educated, virtuous, and a genuine life guide who elevates the native's perspective.{retro}",
+            f"Jupiter ({dig_label}) in H{house}: marriage may come after karmic testing; once established, the partnership grows through shared dharma, learning, and philosophical alignment.{retro}",
+        ),
+        ("love", "Mars"): (
+            f"Mars ({dig_label}) in H{house}: passion and desire are strong; the native pursues romance with energy and directness; physical attraction and initiative characterise love life.{retro}",
+            f"Mars ({dig_label}) in H{house}: passion is intense but can turn to friction; Manglik energy in love calls for patience and choosing a partner with compatible drive and temperament.{retro}",
+        ),
+        ("love", "Moon"): (
+            f"Moon ({dig_label}) in H{house}: emotional bonding and nurturing define the native's approach to love; they seek security, emotional depth, and family connection in partnership.{retro}",
+            f"Moon ({dig_label}) in H{house}: emotional fluctuations influence romantic choices; the native may be over-sensitive in relationships; consistent emotional grounding is essential.{retro}",
+        ),
+        ("finance", "Jupiter"): (
+            f"Jupiter ({dig_label}) in H{house}: wealth expands through wisdom, dharmic living, and auspicious timing; Jupiter's placement creates Dhana Yoga potential across financial houses.{retro}",
+            f"Jupiter ({dig_label}) in H{house}: wealth requires dharmic effort; overconfidence or excessive generosity should be balanced with practical financial discipline and long-term planning.{retro}",
+        ),
+        ("finance", "Venus"): (
+            f"Venus ({dig_label}) in H{house}: financial prosperity through aesthetic, creative, or pleasure-linked ventures; the native genuinely attracts material comfort and financial ease.{retro}",
+            f"Venus ({dig_label}) in H{house}: expenses on luxury or pleasure may outpace income; financial discipline around lifestyle choices and indulgences is important for stability.{retro}",
+        ),
+        ("spirituality", "Ketu"): (
+            f"Ketu ({dig_label}) in H{house}: deep spiritual inclination carried from past-life wisdom; liberation (moksha) is a genuine life theme; detachment from material outcomes supports inner growth.{retro}",
+            f"Ketu ({dig_label}) in H{house}: spiritual path has karmic complexity; the native oscillates between worldly engagement and renunciation before finding their authentic dharmic centre.{retro}",
+        ),
+        ("spirituality", "Jupiter"): (
+            f"Jupiter ({dig_label}) in H{house}: consciousness expands through wisdom and dharmic service; the native finds spiritual fulfilment through teaching, healing, or generous service to society.{retro}",
+            f"Jupiter ({dig_label}) in H{house}: spiritual growth comes through karmic challenge; over-attachment to belief systems or excessive optimism may delay genuine inner awakening.{retro}",
+        ),
+        ("education", "Mercury"): (
+            f"Mercury ({dig_label}) in H{house}: sharp intellect and genuine aptitude for learning; excels in analytical, communicative, or technical subjects; multiple educational streams are possible.{retro}",
+            f"Mercury ({dig_label}) in H{house}: academic learning benefits from structured effort and focus; analytical abilities are present but need consistent practice to fully develop.{retro}",
+        ),
+        ("education", "Jupiter"): (
+            f"Jupiter ({dig_label}) in H{house}: higher education and wisdom accumulation are strongly favoured; philosophical, legal, spiritual, or financial disciplines are areas of natural excellence.{retro}",
+            f"Jupiter ({dig_label}) in H{house}: higher learning requires sustained effort; breadth of curiosity may initially outpace depth; eventual mastery comes through patience and focused study.{retro}",
+        ),
+        ("health", "Saturn"): (
+            f"Saturn ({dig_label}) in H{house}: health is maintained through disciplined routine and preventive care; longevity is supported when karmic duty is fulfilled consistently.{retro}",
+            f"Saturn ({dig_label}) in H{house}: chronic or recurring health challenges around bones, joints, or the nervous system; preventive care and dietary discipline are essential throughout life.{retro}",
+        ),
+        ("health", "Mars"): (
+            f"Mars ({dig_label}) in H{house}: physical vitality and recovery power are strong; immunity is robust; the native thrives with regular exercise and an active lifestyle.{retro}",
+            f"Mars ({dig_label}) in H{house}: susceptibility to inflammation, accidents, or surgical events; caution in physically risky situations; managing anger and stress directly improves health outcomes.{retro}",
+        ),
+        ("health", "Moon"): (
+            f"Moon ({dig_label}) in H{house}: emotional balance strongly supports physical health; the mind-body connection is powerful; mental peace directly contributes to longevity.{retro}",
+            f"Moon ({dig_label}) in H{house}: emotional fluctuations and digestive sensitivity may affect overall health; adequate rest, emotional support, and stress reduction are key wellbeing pillars.{retro}",
+        ),
+    }
+
+    key = (area, planet)
+    if key in _AREA_KARAKA:
+        pos_text, neg_text = _AREA_KARAKA[key]
+        return pos_text if strong else neg_text
+
+    return _planet_sentence(planet, house, dignity, retrograde)
+
+
 def _lord_sentence(house_num: int, lord_house: int, dignity: str) -> str:
     """Return lord-in-house reading."""
     base = LORD_IN_HOUSE.get(house_num, {}).get(lord_house, "")
@@ -500,16 +603,20 @@ def _read_education(planets: dict, lagna: dict, all_houses: dict) -> str:
     parts.append(f"Early Education (H4 -- Vidya Bhava): H4 sign is {h4.get('sign','')}; "
                  f"lord {h4_lord} is in H{h4_lh} ({h4_dg}). " + _lord_sentence(4, h4_lh, h4_dg))
 
+    seen: set = set()
     if h4.get("occupants"):
         for p in h4.get("occupants", [])[:2]:
+            seen.add(p)
             pd = planets.get(p, {})
             s = _planet_sentence(p, 4, pd.get("dignity", "neutral"), pd.get("retrograde", False))
             if s:
                 parts.append(f"{p} occupying H4: {s}")
 
-    parts.append(f"Mercury (karaka of education and intellect) is in H{mercury.get('house',0)} "
-                 f"in {mercury.get('sign','')} ({mercury.get('dignity','neutral')} dignity). "
-                 + _planet_sentence("Mercury", mercury.get("house", 0), mercury.get("dignity", "neutral"), mercury.get("retrograde", False)))
+    if "Mercury" not in seen:
+        parts.append(f"Mercury (karaka of education and intellect) is in H{mercury.get('house',0)} "
+                     f"in {mercury.get('sign','')} ({mercury.get('dignity','neutral')} dignity). "
+                     + _karaka_area_sentence("Mercury", mercury.get("house", 0), mercury.get("dignity", "neutral"), mercury.get("retrograde", False), "education"))
+    seen.add("Mercury")
 
     # H5 for higher education and intelligence
     h5 = all_houses.get("H5", {})
@@ -520,9 +627,9 @@ def _read_education(planets: dict, lagna: dict, all_houses: dict) -> str:
                  + _lord_sentence(5, h5_lh, h5_dg))
 
     # Jupiter for higher wisdom
-    if jupiter:
+    if jupiter and "Jupiter" not in seen:
         parts.append(f"Jupiter (higher wisdom and dharma) in H{jupiter.get('house',0)}: "
-                     + _planet_sentence("Jupiter", jupiter.get("house", 0), jupiter.get("dignity", "neutral"), jupiter.get("retrograde", False)))
+                     + _karaka_area_sentence("Jupiter", jupiter.get("house", 0), jupiter.get("dignity", "neutral"), jupiter.get("retrograde", False), "education"))
 
     # H9 for philosophy and higher learning
     h9 = all_houses.get("H9", {})
@@ -571,12 +678,21 @@ def _read_career(planets: dict, lagna: dict, all_houses: dict, dasha: dict) -> s
                  f"{sun.get('sign','')} ({sun.get('dignity','neutral')}): "
                  + _planet_sentence("Sun", sun.get("house", 0), sun.get("dignity", "neutral"), sun.get("retrograde", False)))
 
-    # D10 hint
-    parts.append(f"Career timing: The current {maha.get('planet','')} Mahadasha "
-                 f"(until {str(maha.get('end_date',''))[:7]}) is "
-                 + (_DASHA_THEMES.get(maha.get("planet", ""), ("a time of general life themes", ""))[0]
-                    if planets.get(maha.get("planet",""), {}).get("dignity","neutral") in ("exalted","own_sign","moolatrikona","friendly")
-                    else _DASHA_THEMES.get(maha.get("planet",""), ("", "a time of karmic lessons"))[1]) + ".")
+    # D10 hint — career timing in terms of current Mahadasha
+    _mp = maha.get("planet", "")
+    _mp_until = str(maha.get("end_date", ""))[:7]
+    _mp_dig = planets.get(_mp, {}).get("dignity", "neutral")
+    if _mp:
+        if _mp_dig in ("exalted", "own_sign", "moolatrikona", "friendly"):
+            _timing = (f"The current {_mp} Mahadasha (until {_mp_until}) is favourable for career: "
+                       + _DASHA_THEMES.get(_mp, ("growth and opportunity", ""))[0] + ".")
+        else:
+            _raw = _DASHA_THEMES.get(_mp, ("", "patience and perseverance"))[1]
+            _first_theme = _raw.split(",")[0].strip().lower() if _raw else "patience"
+            _timing = (f"The current {_mp} Mahadasha (until {_mp_until}) is a karmic period in career; "
+                       f"it calls for discipline and realistic expectations around {_first_theme} "
+                       f"before eventual stabilisation and recognition.")
+        parts.append(f"Career timing: {_timing}")
 
     h10_strength = h10.get("strength", "moderate")
     parts.append("Career outlook: "
@@ -604,20 +720,25 @@ def _read_finance(planets: dict, lagna: dict, all_houses: dict, yogas: list) -> 
                  f"lord {h11.get('lord','')} in H{h11.get('lord_house',0)} ({h11.get('lord_dignity','neutral')}). "
                  + _lord_sentence(11, h11.get("lord_house", 0), h11.get("lord_dignity", "neutral")))
 
+    seen: set = set()
     if h2.get("occupants"):
         for p in h2.get("occupants", [])[:2]:
+            seen.add(p)
             pd = planets.get(p, {})
             s = _planet_sentence(p, 2, pd.get("dignity", "neutral"), pd.get("retrograde", False))
             if s:
                 parts.append(f"{p} in the Wealth house: {s}")
 
-    parts.append(f"Jupiter (wealth karaka) in H{jupiter.get('house',0)}, {jupiter.get('sign','')} "
-                 f"({jupiter.get('dignity','neutral')}): "
-                 + _planet_sentence("Jupiter", jupiter.get("house", 0), jupiter.get("dignity", "neutral"), jupiter.get("retrograde", False)))
+    if "Jupiter" not in seen:
+        parts.append(f"Jupiter (wealth karaka) in H{jupiter.get('house',0)}, {jupiter.get('sign','')} "
+                     f"({jupiter.get('dignity','neutral')}): "
+                     + _karaka_area_sentence("Jupiter", jupiter.get("house", 0), jupiter.get("dignity", "neutral"), jupiter.get("retrograde", False), "finance"))
+    seen.add("Jupiter")
 
-    parts.append(f"Venus (material prosperity) in H{venus.get('house',0)}, {venus.get('sign','')} "
-                 f"({venus.get('dignity','neutral')}): "
-                 + _planet_sentence("Venus", venus.get("house", 0), venus.get("dignity", "neutral"), venus.get("retrograde", False)))
+    if "Venus" not in seen:
+        parts.append(f"Venus (material prosperity) in H{venus.get('house',0)}, {venus.get('sign','')} "
+                     f"({venus.get('dignity','neutral')}): "
+                     + _karaka_area_sentence("Venus", venus.get("house", 0), venus.get("dignity", "neutral"), venus.get("retrograde", False), "finance"))
 
     # 5th house speculation
     parts.append(f"5th House (Speculation & Investments): lord {h5.get('lord','')} in H{h5.get('lord_house',0)} "
@@ -660,22 +781,29 @@ def _read_love_marriage(planets: dict, lagna: dict, all_houses: dict, yogas: lis
                  f"lord {h7.get('lord','')} in H{h7.get('lord_house',0)} ({h7.get('lord_dignity','neutral')}). "
                  + _lord_sentence(7, h7.get("lord_house", 0), h7.get("lord_dignity", "neutral")))
 
+    seen: set = set()
     if h7.get("occupants"):
         for p in h7.get("occupants", [])[:2]:
+            seen.add(p)
             pd = planets.get(p, {})
             s = _planet_sentence(p, 7, pd.get("dignity", "neutral"), pd.get("retrograde", False))
             if s:
                 parts.append(f"{p} in the Marriage house: {s}")
 
-    parts.append(f"Venus (love, beauty, and marriage karaka) in H{venus.get('house',0)}, "
-                 f"{venus.get('sign','')} ({venus.get('dignity','neutral')}): "
-                 + _planet_sentence("Venus", venus.get("house", 0), venus.get("dignity", "neutral"), venus.get("retrograde", False)))
+    if "Venus" not in seen:
+        parts.append(f"Venus (love, beauty, and marriage karaka) in H{venus.get('house',0)}, "
+                     f"{venus.get('sign','')} ({venus.get('dignity','neutral')}): "
+                     + _karaka_area_sentence("Venus", venus.get("house", 0), venus.get("dignity", "neutral"), venus.get("retrograde", False), "love"))
+    seen.add("Venus")
 
-    parts.append(f"Mars (passion, desire) in H{mars.get('house',0)}: "
-                 + _planet_sentence("Mars", mars.get("house", 0), mars.get("dignity", "neutral"), mars.get("retrograde", False)))
+    if "Mars" not in seen:
+        parts.append(f"Mars (passion, desire) in H{mars.get('house',0)}: "
+                     + _karaka_area_sentence("Mars", mars.get("house", 0), mars.get("dignity", "neutral"), mars.get("retrograde", False), "love"))
+    seen.add("Mars")
 
-    parts.append(f"Moon (emotional bonding) in H{moon.get('house',0)}: "
-                 + _planet_sentence("Moon", moon.get("house", 0), moon.get("dignity", "neutral"), moon.get("retrograde", False)))
+    if "Moon" not in seen:
+        parts.append(f"Moon (emotional bonding) in H{moon.get('house',0)}: "
+                     + _karaka_area_sentence("Moon", moon.get("house", 0), moon.get("dignity", "neutral"), moon.get("retrograde", False), "love"))
 
     # Marriage timing indicators
     h7_lord_h = h7.get("lord_house", 0)
@@ -705,16 +833,19 @@ def _read_children(planets: dict, lagna: dict, all_houses: dict) -> str:
                  f"lord {h5.get('lord','')} in H{h5.get('lord_house',0)} ({h5.get('lord_dignity','neutral')} dignity). "
                  + _lord_sentence(5, h5.get("lord_house", 0), h5.get("lord_dignity", "neutral")))
 
+    seen: set = set()
     if h5.get("occupants"):
         for p in h5.get("occupants", [])[:3]:
+            seen.add(p)
             pd = planets.get(p, {})
             s = _planet_sentence(p, 5, pd.get("dignity", "neutral"), pd.get("retrograde", False))
             if s:
                 parts.append(f"{p} in H5: {s}")
 
-    parts.append(f"Jupiter (karaka of children and progeny) in H{jupiter.get('house',0)}, "
-                 f"{jupiter.get('sign','')} ({jupiter.get('dignity','neutral')}): "
-                 + _planet_sentence("Jupiter", jupiter.get("house", 0), jupiter.get("dignity", "neutral"), jupiter.get("retrograde", False)))
+    if "Jupiter" not in seen:
+        parts.append(f"Jupiter (karaka of children and progeny) in H{jupiter.get('house',0)}, "
+                     f"{jupiter.get('sign','')} ({jupiter.get('dignity','neutral')}): "
+                     + _karaka_area_sentence("Jupiter", jupiter.get("house", 0), jupiter.get("dignity", "neutral"), jupiter.get("retrograde", False), "children"))
 
     h5_strength = h5.get("strength", "moderate")
     sat_in_h5 = "Saturn" in h5.get("occupants", [])
@@ -791,16 +922,19 @@ def _read_home_family(planets: dict, lagna: dict, all_houses: dict) -> str:
                  f"lord {h4.get('lord','')} in H{h4.get('lord_house',0)} ({h4.get('lord_dignity','neutral')} dignity). "
                  + _lord_sentence(4, h4.get("lord_house", 0), h4.get("lord_dignity", "neutral")))
 
+    seen: set = set()
     if h4.get("occupants"):
         for p in h4.get("occupants", [])[:2]:
+            seen.add(p)
             pd = planets.get(p, {})
             s = _planet_sentence(p, 4, pd.get("dignity", "neutral"), pd.get("retrograde", False))
             if s:
                 parts.append(f"{p} in H4: {s}")
 
-    parts.append(f"Moon (mother, emotions and domestic peace) in H{moon.get('house',0)}, "
-                 f"{moon.get('sign','')} ({moon.get('dignity','neutral')}): "
-                 + _planet_sentence("Moon", moon.get("house", 0), moon.get("dignity", "neutral"), moon.get("retrograde", False)))
+    if "Moon" not in seen:
+        parts.append(f"Moon (mother, emotions and domestic peace) in H{moon.get('house',0)}, "
+                     f"{moon.get('sign','')} ({moon.get('dignity','neutral')}): "
+                     + _karaka_area_sentence("Moon", moon.get("house", 0), moon.get("dignity", "neutral"), moon.get("retrograde", False), "home"))
 
     parts.append(f"2nd House (Family and Speech): lord {h2.get('lord','')} in H{h2.get('lord_house',0)} "
                  f"({h2.get('lord_dignity','neutral')}). " + _lord_sentence(2, h2.get("lord_house", 0), h2.get("lord_dignity", "neutral")))
@@ -825,16 +959,19 @@ def _read_siblings(planets: dict, lagna: dict, all_houses: dict) -> str:
                  f"lord {h3.get('lord','')} in H{h3.get('lord_house',0)} ({h3.get('lord_dignity','neutral')}). "
                  + _lord_sentence(3, h3.get("lord_house", 0), h3.get("lord_dignity", "neutral")))
 
+    seen: set = set()
     if h3.get("occupants"):
         for p in h3.get("occupants", [])[:2]:
+            seen.add(p)
             pd = planets.get(p, {})
             s = _planet_sentence(p, 3, pd.get("dignity", "neutral"), pd.get("retrograde", False))
             if s:
                 parts.append(f"{p} in H3: {s}")
 
-    parts.append(f"Mars (karaka of siblings and courage) in H{mars.get('house',0)}, "
-                 f"{mars.get('sign','')} ({mars.get('dignity','neutral')}): "
-                 + _planet_sentence("Mars", mars.get("house", 0), mars.get("dignity", "neutral"), mars.get("retrograde", False)))
+    if "Mars" not in seen:
+        parts.append(f"Mars (karaka of siblings and courage) in H{mars.get('house',0)}, "
+                     f"{mars.get('sign','')} ({mars.get('dignity','neutral')}): "
+                     + _karaka_area_sentence("Mars", mars.get("house", 0), mars.get("dignity", "neutral"), mars.get("retrograde", False), "siblings"))
 
     parts.append(f"11th House (elder siblings) lord {h11.get('lord','')} in H{h11.get('lord_house',0)}: "
                  + _lord_sentence(11, h11.get("lord_house", 0), h11.get("lord_dignity", "neutral")))
@@ -853,19 +990,24 @@ def _read_father_fortune(planets: dict, lagna: dict, all_houses: dict) -> str:
                  f"lord {h9.get('lord','')} in H{h9.get('lord_house',0)} ({h9.get('lord_dignity','neutral')} dignity). "
                  + _lord_sentence(9, h9.get("lord_house", 0), h9.get("lord_dignity", "neutral")))
 
+    seen: set = set()
     if h9.get("occupants"):
         for p in h9.get("occupants", [])[:2]:
+            seen.add(p)
             pd = planets.get(p, {})
             s = _planet_sentence(p, 9, pd.get("dignity", "neutral"), pd.get("retrograde", False))
             if s:
                 parts.append(f"{p} in H9: {s}")
 
-    parts.append(f"Jupiter (dharma, guru, and higher knowledge) in H{jupiter.get('house',0)}, "
-                 f"{jupiter.get('sign','')} ({jupiter.get('dignity','neutral')}): "
-                 + _planet_sentence("Jupiter", jupiter.get("house", 0), jupiter.get("dignity", "neutral"), jupiter.get("retrograde", False)))
+    if "Jupiter" not in seen:
+        parts.append(f"Jupiter (dharma, guru, and higher knowledge) in H{jupiter.get('house',0)}, "
+                     f"{jupiter.get('sign','')} ({jupiter.get('dignity','neutral')}): "
+                     + _karaka_area_sentence("Jupiter", jupiter.get("house", 0), jupiter.get("dignity", "neutral"), jupiter.get("retrograde", False), "father"))
+    seen.add("Jupiter")
 
-    parts.append(f"Sun (father and authority) in H{sun.get('house',0)}: "
-                 + _planet_sentence("Sun", sun.get("house", 0), sun.get("dignity", "neutral"), sun.get("retrograde", False)))
+    if "Sun" not in seen:
+        parts.append(f"Sun (father and authority) in H{sun.get('house',0)}: "
+                     + _karaka_area_sentence("Sun", sun.get("house", 0), sun.get("dignity", "neutral"), sun.get("retrograde", False), "father"))
 
     h9_strength = h9.get("strength", "moderate")
     parts.append("Fortune summary: "
@@ -889,19 +1031,24 @@ def _read_spirituality(planets: dict, lagna: dict, all_houses: dict) -> str:
                  f"lord {h12.get('lord','')} in H{h12.get('lord_house',0)} ({h12.get('lord_dignity','neutral')}). "
                  + _lord_sentence(12, h12.get("lord_house", 0), h12.get("lord_dignity", "neutral")))
 
+    seen: set = set()
     if h12.get("occupants"):
         for p in h12.get("occupants", [])[:2]:
+            seen.add(p)
             pd = planets.get(p, {})
             s = _planet_sentence(p, 12, pd.get("dignity", "neutral"), pd.get("retrograde", False))
             if s:
                 parts.append(f"{p} in H12: {s}")
 
-    parts.append(f"Ketu (karaka of spirituality and moksha) in H{ketu.get('house',0)}, "
-                 f"{ketu.get('sign','')} ({ketu.get('dignity','neutral')}): "
-                 + _planet_sentence("Ketu", ketu.get("house", 0), ketu.get("dignity", "neutral"), ketu.get("retrograde", False)))
+    if "Ketu" not in seen:
+        parts.append(f"Ketu (karaka of spirituality and moksha) in H{ketu.get('house',0)}, "
+                     f"{ketu.get('sign','')} ({ketu.get('dignity','neutral')}): "
+                     + _karaka_area_sentence("Ketu", ketu.get("house", 0), ketu.get("dignity", "neutral"), ketu.get("retrograde", False), "spirituality"))
+    seen.add("Ketu")
 
-    parts.append(f"Jupiter (expansion of consciousness) in H{jupiter.get('house',0)}: "
-                 + _planet_sentence("Jupiter", jupiter.get("house", 0), jupiter.get("dignity", "neutral"), jupiter.get("retrograde", False)))
+    if "Jupiter" not in seen:
+        parts.append(f"Jupiter (expansion of consciousness) in H{jupiter.get('house',0)}: "
+                     + _karaka_area_sentence("Jupiter", jupiter.get("house", 0), jupiter.get("dignity", "neutral"), jupiter.get("retrograde", False), "spirituality"))
 
     # Moksha yoga detection
     ketu_h = ketu.get("house", 0)
@@ -918,7 +1065,7 @@ def _read_current_period(planets: dict, lagna: dict, dasha: dict) -> str:
     parts = ["CURRENT PERIOD & PREDICTIONS (DASHA ANALYSIS)"]
 
     maha = dasha.get("mahadasha", {}) or {}
-    ant = dasha.get("antardasha", {}) or {}
+    ant  = dasha.get("antardasha", {}) or {}
     prat = dasha.get("pratyantardasha", {}) or {}
 
     mp = maha.get("planet", "")
@@ -927,62 +1074,86 @@ def _read_current_period(planets: dict, lagna: dict, dasha: dict) -> str:
 
     mp_data = planets.get(mp, {})
     ap_data = planets.get(ap, {})
-    mp_dg = mp_data.get("dignity", "neutral")
-    ap_dg = ap_data.get("dignity", "neutral")
-    mp_h = mp_data.get("house", 0)
-    ap_h = ap_data.get("dignity", 0)
-
+    mp_dg   = mp_data.get("dignity", "neutral")
+    ap_dg   = ap_data.get("dignity", "neutral")
+    mp_h    = mp_data.get("house", 0)
+    ap_h    = ap_data.get("house", 0)
     positive_dg = {"exalted", "own_sign", "moolatrikona", "friendly"}
 
+    # -- Period headers (concise — no theme text here, theme text appears ONCE below) --
     if mp:
-        parts.append(f"Mahadasha: {mp} (until {str(maha.get('end_date',''))[:7]})")
-        parts.append(f"  {mp} is in H{mp_h} in {mp_data.get('sign','')} with {mp_dg} dignity. "
-                     + ("This is a favourable Mahadasha: " + _DASHA_THEMES.get(mp, ("growth",""))[0]
-                        if mp_dg in positive_dg
-                        else "This is a karmic Mahadasha requiring patience: " + _DASHA_THEMES.get(mp, ("","challenges"))[1]))
+        mp_label = "favourable" if mp_dg in positive_dg else "karmic (requires patience)"
+        parts.append(f"Mahadasha: {mp} (until {str(maha.get('end_date',''))[:7]}) -- "
+                     f"{mp} is in H{mp_h} ({mp_data.get('sign','')}) with {mp_dg} dignity [{mp_label}].")
 
     if ap:
-        parts.append(f"Antardasha: {ap} (until {str(ant.get('end_date',''))[:10]})")
-        ap_themes = _DASHA_THEMES.get(ap, ("positive growth", "karmic testing"))
-        parts.append(f"  {ap} sub-period modifies the {mp} Mahadasha theme: "
-                     + ("Supportive period for " + ap_themes[0]
-                        if ap_dg in positive_dg
-                        else "Karmic sub-period: " + ap_themes[1]))
+        ap_label = "supportive" if ap_dg in positive_dg else "challenging"
+        parts.append(f"Antardasha: {ap} (until {str(ant.get('end_date',''))[:10]}) -- "
+                     f"{ap} sub-period is {ap_label} within the {mp} Mahadasha.")
 
     if pp:
-        parts.append(f"Pratyantardasha: {pp} (until {str(prat.get('end_date',''))[:10]}) -- fine-tunes the sub-period theme.")
+        parts.append(f"Pratyantardasha: {pp} (until {str(prat.get('end_date',''))[:10]}) -- "
+                     f"fine-tunes the current sub-period energy.")
 
-    # Combined prediction
+    # -- Combined synthesised reading (theme text appears ONCE here only) --
     if mp and ap:
-        parts.append(f"Combined {mp}/{ap} period reading: "
-                     + _combined_dasha_reading(mp, ap, mp_dg, ap_dg, planets))
+        parts.append(f"Synthesised {mp}/{ap} reading:")
+        parts.append("  " + _combined_dasha_reading(mp, ap, mp_dg, ap_dg, mp_h, ap_h, planets))
 
     return "\n".join(f"  {p}" if i > 0 else p for i, p in enumerate(parts))
 
 
-def _combined_dasha_reading(mp: str, ap: str, mp_dg: str, ap_dg: str, planets: dict) -> str:
+def _combined_dasha_reading(mp: str, ap: str, mp_dg: str, ap_dg: str,
+                            mp_h: int, ap_h: int, planets: dict) -> str:
     positive = {"exalted", "own_sign", "moolatrikona", "friendly"}
     mp_pos = mp_dg in positive
     ap_pos = ap_dg in positive
+    same_planet = (mp == ap)
 
     mp_themes = _DASHA_THEMES.get(mp, ("positive themes", "challenging themes"))
     ap_themes = _DASHA_THEMES.get(ap, ("positive themes", "challenging themes"))
+
+    if same_planet:
+        # When Mahadasha and Antardasha are the same planet, the themes are identical.
+        # Provide a synthesised, practical reading instead of repeating the same text twice.
+        planet_sign = planets.get(mp, {}).get("sign", "")
+        if mp_pos:
+            return (f"{mp}/{mp} (double dasha of the same planet) is a period of concentrated "
+                    f"{mp_themes[0]}. With {mp} in H{mp_h} ({planet_sign}, {mp_dg}), "
+                    f"the core themes intensify without relief or opposition — this is the most "
+                    f"consistent period for {mp_themes[0].split(',')[0]}. "
+                    f"Use this window to build lasting foundations in those areas.")
+        else:
+            first_theme = mp_themes[1].split(",")[0].strip().lower()
+            rest_themes = ", ".join(t.strip() for t in mp_themes[1].split(",")[1:3])
+            return (f"{mp}/{mp} (double dasha) concentrates karmic lessons — "
+                    f"particularly around {first_theme}. "
+                    f"With {mp} in H{mp_h} ({planet_sign}, {mp_dg}), there is no relief sub-lord "
+                    f"to ease the pressure. Secondary themes include {rest_themes}. "
+                    f"This period calls for disciplined routine, spiritual practice, and realistic "
+                    f"expectations. The intensity is temporary; character and resilience built now "
+                    f"yield rewards in the following Antardasha.")
 
     if mp_pos and ap_pos:
         return (f"Both dasha lords are well-placed -- this is a highly productive period. "
                 f"{mp} Mahadasha activates: {mp_themes[0]}. "
                 f"{ap} antardasha amplifies this through: {ap_themes[0]}.")
     elif mp_pos and not ap_pos:
-        return (f"{mp} Mahadasha is strong ({mp_themes[0]}), "
-                f"but {ap} antardasha creates friction: {ap_themes[1]}. Patience and focus are key.")
+        return (f"{mp} Mahadasha is strong (themes: {mp_themes[0]}), "
+                f"but {ap} antardasha introduces friction around {ap_themes[1].split(',')[0].strip().lower()}. "
+                f"Patience during the sub-period brings the Mahadasha's rewards back into view.")
     elif not mp_pos and ap_pos:
-        return (f"{mp} Mahadasha brings karmic lessons ({mp_themes[1]}), "
-                f"but {ap} antardasha offers relief through: {ap_themes[0]}.")
+        return (f"{mp} Mahadasha is a karmic period (themes: {mp_themes[1]}), "
+                f"but {ap} antardasha offers genuine relief through {ap_themes[0].split(',')[0].strip().lower()}. "
+                f"Lean into the sub-period's strength to navigate the broader Mahadasha's demands.")
     else:
-        return (f"Both dasha lords are challenged -- significant patience and spiritual practice are required. "
-                f"{mp} Mahadasha theme: {mp_themes[1]}. "
-                f"{ap} antardasha theme: {ap_themes[1]}. "
-                f"Character deepens through this period of karmic purification.")
+        first_mp = mp_themes[1].split(",")[0].strip()
+        first_ap = ap_themes[1].split(",")[0].strip()
+        return (f"Both dasha lords face karmic challenge. The {mp} Mahadasha centres on {first_mp.lower()}; "
+                f"the {ap} antardasha adds pressure around {first_ap.lower()}. "
+                f"Significant patience, daily spiritual practice, and realistic life expectations are "
+                f"required. The native's character deepens substantially through this period of karmic "
+                f"purification, and the following Antardasha brings measurable relief.")
 
 
 def _read_longevity(planets: dict, lagna: dict, all_houses: dict) -> str:
