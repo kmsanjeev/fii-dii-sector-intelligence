@@ -446,8 +446,9 @@ class GannEngine:
             logger.error('[GannEngine] price_momentum.csv not found')
             return False
 
-        prices = pd.read_csv(momentum_csv, usecols=['symbol', 'close'])\
-                   .set_index('symbol')['close'].to_dict()
+        _pm = pd.read_csv(momentum_csv)
+        price_col = 'close_now' if 'close_now' in _pm.columns else 'close'
+        prices = _pm.set_index('symbol')[price_col].to_dict()
 
         kundli = pd.read_csv(kundli_csv)
         today  = datetime.now().strftime('%Y-%m-%d')

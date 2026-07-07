@@ -963,6 +963,7 @@ class KundliEngine:
             return False
 
         em = pd.read_csv(em_path)
+        em.columns = [c.lower() for c in em.columns]   # normalize to lowercase
         em = em[em['series'] == 'EQ'].copy()
 
         if 'listing_date' not in em.columns:

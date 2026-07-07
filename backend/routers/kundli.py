@@ -51,6 +51,7 @@ def _load_equity_master() -> pd.DataFrame:
     if not path.exists():
         raise HTTPException(status_code=503, detail='equity_master.csv not found')
     df = pd.read_csv(path)
+    df.columns = [c.lower() for c in df.columns]   # normalize to lowercase
     return df[df['series'] == 'EQ'].set_index('symbol')
 
 
@@ -59,10 +60,12 @@ def _latest_price(symbol: str) -> Optional[float]:
     if not p.exists():
         return None
     try:
-        df = pd.read_csv(p, usecols=['symbol', 'close'])
+        df = pd.read_csv(p)
+        # column is 'close_now' in price_momentum.csv
+        price_col = 'close_now' if 'close_now' in df.columns else 'close'
         row = df[df['symbol'] == symbol]
         if not row.empty:
-            return float(row.iloc[0]['close'])
+            return float(row.iloc[0][price_col])
     except Exception:
         pass
     return None
