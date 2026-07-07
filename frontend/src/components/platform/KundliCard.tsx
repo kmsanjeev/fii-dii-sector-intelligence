@@ -608,7 +608,7 @@ export function KundliCard({ symbol }: Props) {
 
   const { data, isLoading, error } = useQuery<KundliResponse>({
     queryKey: ['kundli', symbol],
-    queryFn:  () => api.get(`/api/stocks/${symbol}/kundli?include_gann=true&generate_narrative=false`).then(r => r.data),
+    queryFn:  () => api.get(`/stocks/${symbol}/kundli?include_gann=true&generate_narrative=false`).then(r => r.data),
     staleTime: 3600_000,  // cache 1 hour
     retry: false,
     enabled: expanded,
