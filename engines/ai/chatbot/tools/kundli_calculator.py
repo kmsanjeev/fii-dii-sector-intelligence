@@ -110,6 +110,14 @@ CITY_COORDS: dict[str, tuple[float, float]] = {
     "imphal":(24.8170,93.9368),"agartala":(23.8315,91.2868),
     "gangtok":(27.3389,88.6065),"itanagar":(27.0844,93.6053),
     "port blair":(11.6234,92.7265),
+    "nalanda":(25.1369,85.4415),"nalanda district":(25.1369,85.4415),
+    "rajgir":(25.0269,85.4205),"bodh gaya":(24.6959,84.9914),
+    "gaya":(24.7955,84.9994),"muzaffarpur":(26.1197,85.3910),
+    "bhagalpur":(25.2425,86.9842),"darbhanga":(26.1542,85.8918),
+    "purnia":(25.7771,87.4753),"ara":(25.5561,84.6564),
+    "begusarai":(25.4182,86.1272),"chapra":(25.7831,84.7478),
+    "katihar":(25.5478,87.5678),"samastipur":(25.8726,85.7778),
+    "hajipur":(25.6837,85.2085),
     # International
     "london":(51.5074,-0.1278),"new york":(40.7128,-74.0060),
     "dubai":(25.2048,55.2708),"singapore":(1.3521,103.8198),
@@ -529,7 +537,23 @@ def _narrative(lagna: dict, planets: dict, dasha: dict, yogas: list, score: floa
     return n
 
 
-# ── Financial house significations ────────────────────────────────────────────
+# ── All-house significations ──────────────────────────────────────────────────
+_HOUSE_SIG = {
+    1:  "Self, personality, health, overall life direction",
+    2:  "Wealth, savings, speech, family, food, right eye",
+    3:  "Siblings, courage, communication, short journeys, hands",
+    4:  "Mother, home, property, vehicles, education, chest",
+    5:  "Children, intelligence, creativity, speculation, past life merits",
+    6:  "Enemies, debts, diseases, litigation, service, maternal uncle",
+    7:  "Spouse, partnerships, business, foreign journeys, lower abdomen",
+    8:  "Longevity, obstacles, inheritance, transformation, hidden knowledge",
+    9:  "Father, fortune, higher education, religion, guru, long journeys",
+    10: "Career, reputation, authority, government, public image, knees",
+    11: "Income, gains, elder siblings, social networks, hopes and desires",
+    12: "Losses, moksha, foreign lands, expenses, bed pleasures, left eye",
+}
+
+# ── Financial house significations (subset) ───────────────────────────────────
 _FH_SIG = {
     2: "Wealth, savings, liquid assets, speech, family",
     5: "Speculation, creativity, intelligence, children, investments",
@@ -537,6 +561,276 @@ _FH_SIG = {
     10: "Career, public status, authority, reputation, father",
     11: "Income, gains, elder siblings, large networks, desires fulfilled",
 }
+
+
+# ── Vedic special aspects (drishti) ──────────────────────────────────────────
+# All planets cast 7th house aspect (full); Mars+Jupiter+Saturn have special
+_SPECIAL_ASPECTS = {
+    "Mars":    [4, 7, 8],
+    "Jupiter": [5, 7, 9],
+    "Saturn":  [3, 7, 10],
+}
+_DEFAULT_ASPECTS = [7]
+
+def _compute_drishti(planets: dict) -> list[dict]:
+    """Compute Vedic graha drishti (planetary aspects) for all 9 planets."""
+    aspects = []
+    for pname, pdata in planets.items():
+        ph = pdata.get("house")
+        if ph is None:
+            continue
+        houses_aspected = _SPECIAL_ASPECTS.get(pname, _DEFAULT_ASPECTS)
+        aspected_houses = [(ph + offset - 1) % 12 + 1 for offset in houses_aspected]
+        aspected_planets = [
+            tgt for tgt, tdata in planets.items()
+            if tdata.get("house") in aspected_houses and tgt != pname
+        ]
+        aspects.append({
+            "planet":           pname,
+            "from_house":       ph,
+            "aspects_houses":   aspected_houses,
+            "aspected_planets": aspected_planets,
+        })
+    return aspects
+
+
+def _all_12_houses(planets: dict, lagna_idx: int) -> dict:
+    """Build all 12 house dicts (whole-sign)."""
+    houses = {}
+    for hnum in range(1, 13):
+        sign_idx = (lagna_idx + hnum - 1) % 12
+        sign = SIGNS[sign_idx]
+        lord = SIGN_RULERS[sign]
+        pl   = planets.get(lord, {})
+        occ  = [p for p, d in planets.items() if d.get("house") == hnum]
+        dg   = pl.get("dignity", "neutral")
+        malefic_occ = any(p in ("Saturn","Mars","Rahu","Ketu") for p in occ)
+        benefic_occ = any(p in ("Jupiter","Venus") for p in occ)
+        strength = ("strong" if dg in ("exalted","own_sign","moolatrikona") or benefic_occ
+                    else "weak"   if dg == "debilitated" or malefic_occ
+                    else "moderate")
+        houses[f"H{hnum}"] = {
+            "house":          hnum,
+            "sign":           sign,
+            "lord":           lord,
+            "lord_house":     pl.get("house"),
+            "lord_dignity":   dg,
+            "occupants":      occ,
+            "strength":       strength,
+            "signification":  _HOUSE_SIG[hnum],
+        }
+    return houses
+
+
+def _dasha_interpretation(planet: str, dignity: str) -> str:
+    """Return a short interpretation of a dasha planet based on its natal dignity."""
+    positive = dignity in ("exalted","own_sign","moolatrikona","friendly")
+    themes = {
+        "Sun":     "authority, government service, leadership, vitality",
+        "Moon":    "emotions, mother, property, mental peace, public dealings",
+        "Mars":    "energy, real estate, siblings, courage, surgery",
+        "Mercury": "business, communication, education, trade, writing",
+        "Jupiter": "wisdom, wealth, children, spirituality, expansion",
+        "Venus":   "luxury, relationships, arts, vehicles, finances",
+        "Saturn":  "career, discipline, delays, labour, long-term gains",
+        "Rahu":    "ambition, technology, foreign elements, sudden changes",
+        "Ketu":    "spirituality, detachment, research, losses, moksha",
+    }
+    th = themes.get(planet, "general life themes")
+    tone = "favourable period for" if positive else "karmic test period — challenges in"
+    return f"{tone} {th}"
+
+
+def _build_formatted_report(
+    entity: dict, birth_details: dict, lagna: dict, planets: dict,
+    dasha: dict, all_houses: dict, fh: dict, yogas: list,
+    drishti: list, bull: list, bear: list, narr: str,
+    score: float, action: str,
+) -> str:
+    """Build a complete pre-formatted Vedic Kundli report as text."""
+    lines: list[str] = []
+    sep  = "=" * 52
+    dash = "-" * 52
+
+    lines += [sep, "   VEDIC NATAL CHART  (JYOTISH KUNDLI)", "   Lahiri Ayanamsha | Whole-Sign Houses | Vimshottari Dasha", sep, ""]
+
+    # Birth details
+    lines += ["BIRTH DETAILS", dash]
+    lines.append(f"  Date        : {entity.get('inception_date','')}  ({datetime.strptime(entity['inception_date'],'%Y-%m-%d').strftime('%d %B %Y') if entity.get('inception_date') else ''})")
+    lines.append(f"  Time (Local): {entity.get('inception_time','')} (UTC{'+' if entity.get('timezone_offset_hours',5.5)>=0 else ''}{entity.get('timezone_offset_hours',5.5):.1f}){'  [approximate — Ascendant may vary]' if entity.get('time_approximate') else ''}")
+    lines.append(f"  Place       : {entity.get('place','')}  ({entity.get('latitude',0):.4f}N, {entity.get('longitude',0):.4f}E)")
+    lines.append(f"  UTC Time    : {birth_details.get('utc_datetime','')}")
+    lines.append(f"  Ayanamsha   : {birth_details.get('ayanamsha',0):.4f} deg ({birth_details.get('ayanamsha_type','')})")
+    lines.append("")
+
+    # Lagna
+    lines += ["LAGNA (ASCENDANT)", dash]
+    lagna_lord = lagna.get("lord","")
+    ll_data = planets.get(lagna_lord, {})
+    lines.append(f"  Sign   : {lagna.get('sign','')} ({_vedic_name(lagna.get('sign',''))})")
+    lines.append(f"  Degree : {lagna.get('degree',0):.2f} deg  in  {lagna.get('sign','')}")
+    lines.append(f"  Lord   : {lagna_lord}  — H{ll_data.get('house','?')}, {ll_data.get('sign','')}, {ll_data.get('dignity','neutral')}")
+    lines.append("")
+
+    # Planetary table
+    lines += ["PLANETARY POSITIONS  (GRAHA STHITI)", dash]
+    lines.append(f"  {'Planet':<10}  {'Sign':<14}  {'Deg':>6}  H   {'Nakshatra':<20}  P  {'Dignity':<14}  R")
+    lines.append(f"  {'-'*10}  {'-'*14}  {'-'*6}  --  {'-'*20}  -  {'-'*14}  -")
+    ORDER = ["Sun","Moon","Mars","Mercury","Jupiter","Venus","Saturn","Rahu","Ketu"]
+    for pname in ORDER:
+        pd = planets.get(pname)
+        if pd is None:
+            continue
+        retro = "R" if pd.get("retrograde") else "-"
+        vname = _vedic_name(pd.get("sign",""))
+        sign_str = f"{pd.get('sign','')} ({vname})" if vname else pd.get("sign","")
+        lines.append(
+            f"  {pname:<10}  {sign_str:<14}  {pd.get('degree',0):>6.2f}  {pd.get('house',''):>2}  "
+            f"{pd.get('nakshatra',''):<20}  {pd.get('pada','')}  {pd.get('dignity','neutral'):<14}  {retro}"
+        )
+    lines.append("  Key: H = House (Whole Sign)  |  P = Pada  |  R = Retrograde")
+    lines.append("")
+
+    # Dasha
+    lines += ["VIMSHOTTARI DASHA", dash]
+    maha = dasha.get("mahadasha") or {}
+    ant  = dasha.get("antardasha") or {}
+    prat = dasha.get("pratyantardasha") or {}
+    if maha:
+        mp = maha.get("planet","")
+        mp_dg = planets.get(mp,{}).get("dignity","neutral")
+        mp_h  = planets.get(mp,{}).get("house","?")
+        lines.append(f"  Mahadasha      : {mp:<10} ends {maha.get('end_date','')[:10]}  [H{mp_h}, {mp_dg}]")
+        lines.append(f"  Interpretation : {_dasha_interpretation(mp, mp_dg)}")
+    if ant:
+        ap = ant.get("planet","")
+        ap_dg = planets.get(ap,{}).get("dignity","neutral")
+        lines.append(f"  Antardasha     : {ap:<10} ends {ant.get('end_date','')[:10]}  [{ap_dg}]")
+    if prat:
+        pp = prat.get("planet","")
+        lines.append(f"  Pratyantardasha: {pp:<10} ends {prat.get('end_date','')[:10]}")
+    lines.append("")
+    lines.append("  Mahadasha Timeline:")
+    for m in (dasha.get("all_mahadashas") or [])[:12]:
+        marker = "  <-- NOW" if (
+            m.get("start_date","") <= datetime.now(timezone.utc).strftime("%Y-%m-%d") <= m.get("end_date","")
+        ) else ""
+        lines.append(f"    {m.get('planet',''):<10} {m.get('start_date','')[:10]} to {m.get('end_date','')[:10]}{marker}")
+    lines.append("")
+
+    # Yogas
+    lines += ["ACTIVE YOGAS", dash]
+    pos_yogas = [y for y in yogas if y.get("score",0) >= 0]
+    neg_yogas = [y for y in yogas if y.get("score",0) < 0]
+    if pos_yogas:
+        lines.append("  Positive Yogas:")
+        for y in pos_yogas:
+            lines.append(f"    + {y.get('name',''):<30}  [{y.get('signal','')}]")
+            lines.append(f"      Effect: {y.get('effect','')}")
+    if neg_yogas:
+        lines.append("  Challenging Yogas:")
+        for y in neg_yogas:
+            lines.append(f"    - {y.get('name',''):<30}  [{y.get('signal','')}]")
+            lines.append(f"      Effect: {y.get('effect','')}")
+    if not yogas:
+        lines.append("  No major yogas detected in this chart.")
+    lines.append("")
+
+    # All 12 houses
+    lines += ["ALL 12 HOUSES  (BHAVA ANALYSIS)", dash]
+    lines.append(f"  {'H':<3}  {'Sign':<14}  {'Lord':<8}  {'Lord-H':<7}  {'Occupants':<24}  {'Strength':<8}  Signification")
+    lines.append(f"  {'-'*3}  {'-'*14}  {'-'*8}  {'-'*7}  {'-'*24}  {'-'*8}  {'-'*20}")
+    for hnum in range(1, 13):
+        hd = all_houses.get(f"H{hnum}", {})
+        occ_str = ", ".join(hd.get("occupants",[]))[:22] or "--"
+        lord_h  = str(hd.get("lord_house") or "?")
+        lines.append(
+            f"  {hnum:<3}  {hd.get('sign',''):<14}  {hd.get('lord',''):<8}  "
+            f"H{lord_h:<6}  {occ_str:<24}  {hd.get('strength',''):<8}  {hd.get('signification','')[:40]}"
+        )
+    lines.append("")
+
+    # Financial houses (detailed)
+    lines += ["FINANCIAL HOUSES  (ARTHA BHAVAS)", dash]
+    FH_NAMES = {
+        "2H":"2nd House — WEALTH (Dhana Bhava)",
+        "5H":"5th House — SPECULATION & INVESTMENTS (Putra Bhava)",
+        "8H":"8th House — INHERITANCE & HIDDEN WEALTH (Ayu Bhava)",
+        "10H":"10th House — CAREER & STATUS (Karma Bhava)",
+        "11H":"11th House — INCOME & GAINS (Labha Bhava)",
+    }
+    for key, title in FH_NAMES.items():
+        hd = fh.get(key, {})
+        if not hd:
+            continue
+        occ  = ", ".join(hd.get("occupants",[])) or "No occupants"
+        lord = hd.get("lord","")
+        lh   = hd.get("lord_house")
+        ldg  = hd.get("lord_dignity","neutral")
+        lines.append(f"  {title}")
+        lines.append(f"    Sign       : {hd.get('sign','')}   |   Lord: {lord} (H{lh}, {ldg})")
+        lines.append(f"    Occupants  : {occ}")
+        lines.append(f"    Strength   : {hd.get('strength','moderate').upper()}")
+        lines.append(f"    Signif.    : {hd.get('signification','')}")
+        lines.append("")
+
+    # Drishti
+    lines += ["PLANETARY ASPECTS  (VEDIC DRISHTI)", dash]
+    for asp in drishti:
+        pname = asp.get("planet","")
+        ph    = asp.get("from_house","?")
+        aspH  = asp.get("aspects_houses",[])
+        aspP  = asp.get("aspected_planets",[])
+        aspH_str = ", ".join(f"H{h}" for h in aspH)
+        aspP_str = ", ".join(aspP) if aspP else "--"
+        lines.append(f"  {pname:<10} (H{ph}) aspects {aspH_str:<20}  targets: {aspP_str}")
+    lines.append("")
+
+    # Bullish / bearish factors
+    lines += ["KEY LIFE FACTORS", dash]
+    lines.append("  POSITIVE:")
+    for f in bull:
+        lines.append(f"    + {f}")
+    lines.append("  CHALLENGING:")
+    for f in bear:
+        lines.append(f"    - {f}")
+    lines.append("")
+
+    # Summary
+    lines += ["OVERALL ASSESSMENT", dash]
+    lines.append(f"  Chart Score  : {score:+.1f}  ({action})")
+    if maha:
+        mp = maha.get("planet","")
+        mp_dg = planets.get(mp,{}).get("dignity","neutral")
+        lines.append(f"  Current Dasha: {mp} Mahadasha [{mp_dg}] — {_dasha_interpretation(mp, mp_dg)}")
+    lines.append("")
+    # Wrap narrative at ~70 chars
+    words = narr.split()
+    line_buf = "  "
+    for word in words:
+        if len(line_buf) + len(word) + 1 > 72:
+            lines.append(line_buf)
+            line_buf = "  " + word
+        else:
+            line_buf += (" " if line_buf != "  " else "") + word
+    if line_buf.strip():
+        lines.append(line_buf)
+    lines.append("")
+    lines.append("  NOTE: Chart computed via PyEphem + Lahiri ayanamsha. Dignities are")
+    lines.append("  calculated (not paraphrased). For major decisions, consult a Jyotishi.")
+    lines.append(sep)
+
+    return "\n".join(lines)
+
+
+def _vedic_name(sign: str) -> str:
+    """Return Sanskrit rashi name for an English sign name."""
+    MAP = {
+        "Aries":"Mesha","Taurus":"Vrishabha","Gemini":"Mithuna","Cancer":"Karka",
+        "Leo":"Simha","Virgo":"Kanya","Libra":"Tula","Scorpio":"Vrishchika",
+        "Sagittarius":"Dhanu","Capricorn":"Makara","Aquarius":"Kumbha","Pisces":"Meena",
+    }
+    return MAP.get(sign, "")
 
 
 def compute_personal_kundli(
@@ -670,37 +964,50 @@ def compute_personal_kundli(
             "signification": _FH_SIG[hnum],
         }
 
-    yogas   = _yogas(planets_out, lagna_idx)
+    yogas        = _yogas(planets_out, lagna_idx)
     score, action = _astro_score_and_action(planets_out, dasha)
-    bull, bear = _factors(planets_out, dasha, fh)
-    narr = _narrative(lagna, planets_out, dasha, yogas, score, action)
+    bull, bear   = _factors(planets_out, dasha, fh)
+    narr         = _narrative(lagna, planets_out, dasha, yogas, score, action)
+    all_houses   = _all_12_houses(planets_out, lagna_idx)
+    drishti      = _compute_drishti(planets_out)
+
+    entity = {
+        "type": "person",
+        "inception_date": birth_date.strftime("%Y-%m-%d"),
+        "inception_time": f"{birth_time.hour:02d}:{birth_time.minute:02d}:{birth_time.second:02d}",
+        "place": place_name,
+        "latitude": round(lat, 4),
+        "longitude": round(lon, 4),
+        "timezone_offset_hours": timezone_offset_hours,
+        "time_approximate": time_approx,
+    }
+    birth_details = {
+        "utc_datetime": birth_utc.strftime("%Y-%m-%d %H:%M:%S UTC"),
+        "local_datetime": birth_local.strftime("%Y-%m-%d %H:%M:%S"),
+        "ayanamsha": round(ayanamsha, 4),
+        "ayanamsha_type": "Lahiri (Chitrapaksha)",
+        "julian_date": round(jd, 4),
+    }
+
+    formatted_report = _build_formatted_report(
+        entity, birth_details, lagna, planets_out, dasha,
+        all_houses, fh, yogas, drishti, bull, bear, narr, score, action,
+    )
 
     return {
-        "entity": {
-            "type": "person",
-            "inception_date": birth_date.strftime("%Y-%m-%d"),
-            "inception_time": f"{birth_time.hour:02d}:{birth_time.minute:02d}:{birth_time.second:02d}",
-            "place": place_name,
-            "latitude": round(lat, 4),
-            "longitude": round(lon, 4),
-            "timezone_offset_hours": timezone_offset_hours,
-            "time_approximate": time_approx,
-        },
-        "birth_details": {
-            "utc_datetime": birth_utc.strftime("%Y-%m-%d %H:%M:%S UTC"),
-            "local_datetime": birth_local.strftime("%Y-%m-%d %H:%M:%S"),
-            "ayanamsha": round(ayanamsha, 4),
-            "ayanamsha_type": "Lahiri (Chitrapaksha)",
-            "julian_date": round(jd, 4),
-        },
-        "lagna": lagna,
-        "planets": planets_out,
-        "current_dasha": dasha,
-        "financial_houses": fh,
-        "yogas": yogas,
-        "astro_score": score,
-        "astro_action": action,
+        "entity":          entity,
+        "birth_details":   birth_details,
+        "lagna":           lagna,
+        "planets":         planets_out,
+        "current_dasha":   dasha,
+        "all_houses":      all_houses,
+        "financial_houses":fh,
+        "planetary_aspects":drishti,
+        "yogas":           yogas,
+        "astro_score":     score,
+        "astro_action":    action,
         "bullish_factors": bull,
         "bearish_factors": bear,
-        "narrative": narr,
+        "narrative":       narr,
+        "formatted_report":formatted_report,
     }

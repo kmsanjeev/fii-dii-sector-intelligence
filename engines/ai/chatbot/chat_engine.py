@@ -27,8 +27,8 @@ from engines.ai.chatbot.tools.tool_registry import TOOLS, TOOL_FUNCTIONS
 
 logger = get_logger(__name__)
 
-MAX_TOKENS      = 1024
-MAX_TOOL_ROUNDS = 3
+MAX_TOKENS      = 4096   # increased: kundli + detailed reports need headroom
+MAX_TOOL_ROUNDS = 4
 COOLDOWN_S      = 300   # 5 min before retrying a rate-limited provider
 
 # ── Provider definitions (OpenAI-compatible) ──────────────────────────────────
