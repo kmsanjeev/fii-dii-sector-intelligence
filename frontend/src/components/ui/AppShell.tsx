@@ -169,10 +169,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* Report button — visible only on stock detail page */}
         {currentStockSymbol && (
-          <a
-            href={`/api/stocks/${currentStockSymbol}/report`}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to={`/report/${currentStockSymbol}`}
             style={{
               flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 5,
               background: '#0A1F0A', border: '1px solid #22C55E40',
@@ -181,8 +179,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               letterSpacing: '0.5px',
             }}
           >
-            &#9654; Report
-          </a>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+            </svg>
+            Report / PDF
+          </Link>
         )}
 
         {/* Desktop back button */}
