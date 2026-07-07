@@ -1,28 +1,29 @@
 /**
  * KundliCard — Phase KU-5
- * Vedic natal chart + Gann analysis for a stock (fetched on-demand from /api/stocks/{symbol}/kundli).
+ * Vedic natal chart + Gann analysis card.
+ * Uses platform design tokens (T / FS / FW) throughout.
  *
  * Tabs: Overview | Planets | Houses | Dasha | Gann | Report
- * Uses the same dark design language as AstroSignalCard.
  */
 
 import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../../api/client'
+import { T, FS, FW } from '../../styles/tokens'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface Planet {
-  longitude:      number
-  sign:           string
-  sign_num:       number
-  degree:         number
-  house:          number
-  nakshatra:      string
-  pada:           number
-  nakshatra_lord: string
-  dignity:        string
-  retrograde:     boolean
+  longitude:       number
+  sign:            string
+  sign_num:        number
+  degree:          number
+  house:           number
+  nakshatra:       string
+  pada:            number
+  nakshatra_lord:  string
+  dignity:         string
+  retrograde:      boolean
 }
 
 interface DashaEntry {
@@ -32,20 +33,20 @@ interface DashaEntry {
 }
 
 interface HouseData {
-  sign:         string
-  lord:         string
-  lord_house:   number | null
-  lord_dignity: string
-  occupants:    string[]
-  strength:     string
+  sign:          string
+  lord:          string
+  lord_house:    number | null
+  lord_dignity:  string
+  occupants:     string[]
+  strength:      string
   signification: string
 }
 
 interface Yoga {
-  name:    string
-  effect:  string
-  score:   number
-  signal:  string
+  name:   string
+  effect: string
+  score:  number
+  signal: string
 }
 
 interface KundliData {
@@ -53,10 +54,10 @@ interface KundliData {
   lagna:    { sign: string; degree: number; lord: string; full_longitude: number }
   planets:  Record<string, Planet>
   current_dasha: {
-    mahadasha:        DashaEntry
-    antardasha:       DashaEntry
-    pratyantardasha:  DashaEntry
-    all_mahadashas:   DashaEntry[]
+    mahadasha:       DashaEntry
+    antardasha:      DashaEntry
+    pratyantardasha: DashaEntry
+    all_mahadashas:  DashaEntry[]
   }
   financial_houses: Record<string, HouseData>
   yogas:            Yoga[]
@@ -82,7 +83,7 @@ interface GannData {
     current_sun_degree: number
     fixed_future_dates: Record<string, string>
   }
-  planetary_lines: Record<string, { longitude: number; base_price: number; quadrant_levels?: number[] }>
+  planetary_lines: Record<string, { longitude: number; base_price: number }>
 }
 
 interface Interpretation {
@@ -103,82 +104,73 @@ interface KundliResponse {
   interpretation: Interpretation
 }
 
-// ── Colors ────────────────────────────────────────────────────────────────────
-
-const C = {
-  bg:      '#0D1117',
-  border:  '#1E2332',
-  text:    '#E2E8F0',
-  sub:     '#94A3B8',
-  dim:     '#475569',
-  dimmer:  '#1E2D3D',
-  green:   '#4ADE80',
-  blue:    '#60A5FA',
-  amber:   '#FBBF24',
-  orange:  '#F97316',
-  red:     '#F87171',
-  purple:  '#C084FC',
-  teal:    '#2DD4BF',
-}
+// ── Design constants ──────────────────────────────────────────────────────────
 
 const ACTION_CFG: Record<string, { color: string; bg: string; border: string }> = {
-  STRONG_BUY: { color: '#4ADE80', bg: '#022c22', border: '#059669' },
-  BUY:        { color: '#4ADE80', bg: '#052e16', border: '#16a34a' },
-  HOLD:       { color: '#60A5FA', bg: '#0c1a2e', border: '#2563eb' },
-  CAUTION:    { color: '#FBBF24', bg: '#1c1500', border: '#d97706' },
-  EXIT:       { color: '#F97316', bg: '#1c0a00', border: '#ea580c' },
-  AVOID:      { color: '#F87171', bg: '#1c0000', border: '#dc2626' },
+  STRONG_BUY: { color: T.green,   bg: `${T.green}14`,   border: `${T.green}55`   },
+  BUY:        { color: T.green,   bg: `${T.green}14`,   border: `${T.green}55`   },
+  HOLD:       { color: T.blue,    bg: `${T.blue}14`,    border: `${T.blue}55`    },
+  CAUTION:    { color: T.amber,   bg: `${T.amber}14`,   border: `${T.amber}55`   },
+  EXIT:       { color: '#F97316', bg: '#F9731614',       border: '#F9731655'      },
+  AVOID:      { color: T.red,     bg: `${T.red}14`,     border: `${T.red}55`     },
 }
 
 const DIGNITY_COLOR: Record<string, string> = {
-  exalted_exact: '#4ADE80', exalted: '#4ADE80', moolatrikona: '#2DD4BF',
-  own_sign: '#60A5FA', friendly: '#94A3B8', neutral: '#475569',
-  enemy: '#FBBF24', debilitated: '#F87171',
+  exalted_exact: T.green,
+  exalted:       T.green,
+  moolatrikona:  T.teal,
+  own_sign:      T.blue,
+  friendly:      T.textSub,
+  neutral:       T.muted,
+  enemy:         T.amber,
+  debilitated:   T.red,
 }
 
 const HOUSE_STRENGTH_COLOR: Record<string, string> = {
-  strong:          '#4ADE80',
-  'moderate-strong': '#60A5FA',
-  moderate:        '#94A3B8',
-  weak:            '#F87171',
+  strong:            T.green,
+  'moderate-strong': T.blue,
+  moderate:          T.textSub,
+  weak:              T.red,
 }
 
-const SIGNAL_YOGA: Record<string, string> = {
-  BUY: C.green, HOLD: C.blue, CAUTION: C.amber, EXIT: C.orange, AVOID: C.red,
+const YOGA_SIGNAL_COLOR: Record<string, string> = {
+  BUY: T.green, HOLD: T.blue, CAUTION: T.amber, EXIT: '#F97316', AVOID: T.red,
 }
 
-// ── Tabs ──────────────────────────────────────────────────────────────────────
+const DASHA_COLOR: Record<string, string> = {
+  Sun: T.amber, Moon: T.blue, Mars: T.red, Mercury: T.green,
+  Jupiter: T.teal, Venus: T.purple, Saturn: '#F97316',
+  Rahu: '#E879F9', Ketu: T.muted,
+}
+
+const PLANET_ORDER = ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Rahu','Ketu']
 
 const TABS = ['Overview', 'Planets', 'Houses', 'Dasha', 'Gann', 'Report'] as const
 type Tab = (typeof TABS)[number]
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ── Shared sub-components ─────────────────────────────────────────────────────
 
-function InfoRow({ label, value, valueColor }: { label: string; value: string; valueColor?: string }) {
+function SectionLabel({ text }: { text: string }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-      <span style={{ color: C.dim, fontSize: 10, flexShrink: 0, minWidth: 100 }}>{label}</span>
-      <span style={{ color: valueColor ?? C.sub, fontSize: 10, fontWeight: 600, textAlign: 'right', maxWidth: '55%' }}>
-        {value}
-      </span>
+    <div style={{
+      fontSize: FS.caption, fontWeight: FW.heavy, letterSpacing: 1.4,
+      textTransform: 'uppercase' as const,
+      color: T.muted,
+      borderBottom: `1px solid ${T.border}`,
+      paddingBottom: 5, marginBottom: 8, marginTop: 14,
+    }}>
+      {text}
     </div>
   )
 }
 
-function ScoreBar({ score, label }: { score: number; label?: string }) {
-  const pct   = Math.min(100, Math.max(0, (score + 100) / 2))
-  const color = score >= 30 ? C.green : score >= 5 ? C.blue : score >= -10 ? C.amber : C.red
+function InfoRow({ label, value, valueColor }: { label: string; value: string; valueColor?: string }) {
   return (
-    <div style={{ marginBottom: 10 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-        <span style={{ color: C.dim, fontSize: 9, letterSpacing: 0.5 }}>{label ?? 'ASTRO SCORE'}</span>
-        <span style={{ color, fontSize: 11, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
-          {score > 0 ? '+' : ''}{score.toFixed(0)}
-        </span>
-      </div>
-      <div style={{ height: 4, background: '#1E2332', borderRadius: 2, overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 2, transition: 'width 0.5s ease' }} />
-      </div>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 7 }}>
+      <span style={{ color: T.muted, fontSize: FS.caption, flexShrink: 0, minWidth: 120 }}>{label}</span>
+      <span style={{ color: valueColor ?? T.textSub, fontSize: FS.caption, fontWeight: FW.medium, textAlign: 'right', maxWidth: '55%' }}>
+        {value}
+      </span>
     </div>
   )
 }
@@ -186,21 +178,32 @@ function ScoreBar({ score, label }: { score: number; label?: string }) {
 function Tag({ text, color }: { text: string; color: string }) {
   return (
     <span style={{
-      display: 'inline-block', padding: '2px 7px', borderRadius: 10, fontSize: 9, fontWeight: 700,
-      background: `${color}18`, border: `1px solid ${color}44`, color, letterSpacing: 0.4,
+      display: 'inline-block', padding: '3px 8px', borderRadius: 10,
+      fontSize: FS.caption, fontWeight: FW.bold,
+      background: `${color}18`, border: `1px solid ${color}44`, color,
+      letterSpacing: 0.4, marginRight: 4, marginBottom: 4,
     }}>
       {text}
     </span>
   )
 }
 
-function SectionHeader({ label }: { label: string }) {
+function ScoreBar({ score }: { score: number }) {
+  const pct   = Math.min(100, Math.max(2, (score + 100) / 2))
+  const color = score >= 30 ? T.green : score >= 5 ? T.blue : score >= -10 ? T.amber : T.red
   return (
-    <div style={{
-      fontSize: 9, fontWeight: 700, letterSpacing: 1, color: C.dim,
-      borderBottom: `1px solid ${C.border}`, paddingBottom: 5, marginBottom: 8, marginTop: 12,
-    }}>
-      {label}
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+        <span style={{ color: T.muted, fontSize: FS.caption, fontWeight: FW.heavy, letterSpacing: 0.8, textTransform: 'uppercase' as const }}>
+          Astro Score
+        </span>
+        <span style={{ color, fontSize: FS.label, fontWeight: FW.heavy, fontVariantNumeric: 'tabular-nums' }}>
+          {score > 0 ? '+' : ''}{score.toFixed(0)}
+        </span>
+      </div>
+      <div style={{ height: 5, background: T.border, borderRadius: 3, overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 3, transition: 'width 0.5s ease' }} />
+      </div>
     </div>
   )
 }
@@ -215,52 +218,54 @@ function OverviewTab({ kundli, interp }: { kundli: KundliData; interp: Interpret
 
   return (
     <div>
-      <SectionHeader label="LAGNA (ASCENDANT)" />
-      <InfoRow label="Rising Sign (Lagna)" value={`${lagna.sign} ${lagna.degree.toFixed(1)}`} valueColor={C.text} />
-      <InfoRow label="Lagna Lord" value={lagna.lord} valueColor={C.blue} />
-      <InfoRow label="IPO Date / Time" value={`${kundli.entity.inception_date} ${kundli.entity.inception_time}`} />
+      <SectionLabel text="Lagna (Ascendant)" />
+      <InfoRow label="Rising sign"    value={`${lagna.sign}  ${lagna.degree.toFixed(1)}°`}       valueColor={T.text} />
+      <InfoRow label="Lagna lord"     value={lagna.lord}                                           valueColor={T.blue} />
+      <InfoRow label="Inception date" value={`${kundli.entity.inception_date}  ${kundli.entity.inception_time}`} />
 
-      <SectionHeader label="CURRENT DASHA" />
-      <InfoRow label="Mahadasha" value={`${dasha.mahadasha.planet} until ${dasha.mahadasha.end_date}`} valueColor={C.amber} />
-      <InfoRow label="Antardasha" value={`${dasha.antardasha.planet} until ${dasha.antardasha.end_date}`} />
-      <InfoRow label="Pratyantardasha" value={`${dasha.pratyantardasha.planet} until ${dasha.pratyantardasha.end_date}`} />
+      <SectionLabel text="Current Dasha Period" />
+      <InfoRow label="Mahadasha"       value={`${dasha.mahadasha.planet}  until ${dasha.mahadasha.end_date}`}       valueColor={T.amber} />
+      <InfoRow label="Antardasha"      value={`${dasha.antardasha.planet}  until ${dasha.antardasha.end_date}`}      valueColor={T.textSub} />
+      <InfoRow label="Pratyantardasha" value={`${dasha.pratyantardasha.planet}  until ${dasha.pratyantardasha.end_date}`} />
 
-      <SectionHeader label="KEY PLANETS" />
+      <SectionLabel text="Key Planets" />
       {moon && (
-        <InfoRow label="Moon (sentiment)"
-          value={`${moon.sign} H${moon.house} — ${moon.nakshatra} Pada ${moon.pada}`}
-          valueColor={DIGNITY_COLOR[moon.dignity] ?? C.sub}
+        <InfoRow
+          label="Moon (sentiment)"
+          value={`${moon.sign}  H${moon.house}  —  ${moon.nakshatra} Pada ${moon.pada}`}
+          valueColor={DIGNITY_COLOR[moon.dignity] ?? T.textSub}
         />
       )}
       {jup && (
-        <InfoRow label="Jupiter (growth)"
-          value={`${jup.sign} H${jup.house} — ${jup.dignity}`}
-          valueColor={DIGNITY_COLOR[jup.dignity] ?? C.sub}
+        <InfoRow
+          label="Jupiter (growth)"
+          value={`${jup.sign}  H${jup.house}  —  ${jup.dignity.replace(/_/g,' ')}`}
+          valueColor={DIGNITY_COLOR[jup.dignity] ?? T.textSub}
         />
       )}
 
       {kundli.yogas.length > 0 && (
         <>
-          <SectionHeader label="ACTIVE YOGAS" />
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+          <SectionLabel text="Active Yogas" />
+          <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: 4 }}>
             {kundli.yogas.map((y, i) => (
-              <Tag key={i} text={y.name} color={SIGNAL_YOGA[y.signal] ?? C.sub} />
+              <Tag key={i} text={y.name} color={YOGA_SIGNAL_COLOR[y.signal] ?? T.textSub} />
             ))}
           </div>
         </>
       )}
 
-      <SectionHeader label="INTERPRETATION" />
-      {interp.bullish_factors.slice(0, 3).map((f, i) => (
-        <div key={i} style={{ display: 'flex', gap: 6, marginBottom: 5, alignItems: 'flex-start' }}>
-          <span style={{ color: C.green, fontSize: 9, marginTop: 1 }}>+</span>
-          <span style={{ fontSize: 10, color: C.sub, lineHeight: 1.45 }}>{f}</span>
+      <SectionLabel text="Financial Interpretation" />
+      {interp.bullish_factors.slice(0, 4).map((f, i) => (
+        <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 6, alignItems: 'flex-start' }}>
+          <span style={{ color: T.green, fontSize: FS.label, marginTop: 1, flexShrink: 0 }}>+</span>
+          <span style={{ fontSize: FS.body, color: T.textSub, lineHeight: 1.5 }}>{f}</span>
         </div>
       ))}
       {interp.bearish_factors.slice(0, 2).map((f, i) => (
-        <div key={i} style={{ display: 'flex', gap: 6, marginBottom: 5, alignItems: 'flex-start' }}>
-          <span style={{ color: C.red, fontSize: 9, marginTop: 1 }}>-</span>
-          <span style={{ fontSize: 10, color: C.sub, lineHeight: 1.45 }}>{f}</span>
+        <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 6, alignItems: 'flex-start' }}>
+          <span style={{ color: T.red, fontSize: FS.label, marginTop: 1, flexShrink: 0 }}>−</span>
+          <span style={{ fontSize: FS.body, color: T.textSub, lineHeight: 1.5 }}>{f}</span>
         </div>
       ))}
     </div>
@@ -268,42 +273,42 @@ function OverviewTab({ kundli, interp }: { kundli: KundliData; interp: Interpret
 }
 
 function PlanetsTab({ planets }: { planets: Record<string, Planet> }) {
-  const PLANET_ORDER = ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Rahu','Ketu']
   const listed = PLANET_ORDER.filter(p => planets[p])
-
   return (
     <div>
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: FS.body }}>
           <thead>
-            <tr style={{ borderBottom: `1px solid ${C.border}` }}>
-              {['Planet','Sign','House','Nakshatra','Pada','Dignity','R'].map(h => (
-                <th key={h} style={{ padding: '4px 6px', textAlign: 'left', color: C.dim, fontSize: 9, fontWeight: 600, letterSpacing: 0.3 }}>{h}</th>
+            <tr style={{ borderBottom: `1px solid ${T.border}` }}>
+              {['Planet','Sign','H','Nakshatra','Pd','Dignity','R'].map(h => (
+                <th key={h} style={{
+                  padding: '5px 8px', textAlign: 'left',
+                  color: T.muted, fontSize: FS.caption, fontWeight: FW.bold, letterSpacing: 0.5,
+                }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {listed.map(name => {
-              const p    = planets[name]
-              const dc   = DIGNITY_COLOR[p.dignity] ?? C.sub
-              const retro = p.retrograde
+              const p  = planets[name]
+              const dc = DIGNITY_COLOR[p.dignity] ?? T.textSub
               return (
-                <tr key={name} style={{ borderBottom: `1px solid ${C.border}22` }}>
-                  <td style={{ padding: '5px 6px', color: C.text, fontWeight: 700 }}>{name}</td>
-                  <td style={{ padding: '5px 6px', color: C.sub }}>
+                <tr key={name} style={{ borderBottom: `1px solid ${T.border}33` }}>
+                  <td style={{ padding: '6px 8px', color: T.text, fontWeight: FW.bold }}>{name}</td>
+                  <td style={{ padding: '6px 8px', color: T.textSub }}>
                     {p.sign}
-                    <span style={{ color: C.dimmer, fontSize: 9 }}> {p.degree.toFixed(1)}</span>
+                    <span style={{ color: T.muted, fontSize: FS.caption }}> {p.degree.toFixed(1)}</span>
                   </td>
-                  <td style={{ padding: '5px 6px', color: C.sub, fontVariantNumeric: 'tabular-nums' }}>H{p.house}</td>
-                  <td style={{ padding: '5px 6px', color: C.dim, fontSize: 9 }}>{p.nakshatra}</td>
-                  <td style={{ padding: '5px 6px', color: C.dim, fontSize: 9 }}>{p.pada}</td>
-                  <td style={{ padding: '5px 6px' }}>
-                    <span style={{ color: dc, fontSize: 9, fontWeight: 700 }}>
-                      {p.dignity.replace(/_/g, ' ')}
+                  <td style={{ padding: '6px 8px', color: T.textSub, fontVariantNumeric: 'tabular-nums' }}>H{p.house}</td>
+                  <td style={{ padding: '6px 8px', color: T.muted,   fontSize: FS.caption }}>{p.nakshatra}</td>
+                  <td style={{ padding: '6px 8px', color: T.muted,   fontSize: FS.caption }}>{p.pada}</td>
+                  <td style={{ padding: '6px 8px' }}>
+                    <span style={{ color: dc, fontSize: FS.caption, fontWeight: FW.bold }}>
+                      {p.dignity.replace(/_/g,' ')}
                     </span>
                   </td>
-                  <td style={{ padding: '5px 6px', color: retro ? C.orange : C.dimmer, fontSize: 9, fontWeight: retro ? 700 : 400 }}>
-                    {retro ? 'R' : '-'}
+                  <td style={{ padding: '6px 8px', color: p.retrograde ? '#F97316' : T.border, fontSize: FS.caption, fontWeight: p.retrograde ? FW.heavy : FW.regular }}>
+                    {p.retrograde ? 'R' : '—'}
                   </td>
                 </tr>
               )
@@ -312,55 +317,65 @@ function PlanetsTab({ planets }: { planets: Record<string, Planet> }) {
         </table>
       </div>
 
-      <SectionHeader label="D9 NAVAMSA (CORE DESTINY CHART)" />
-      <div style={{ color: C.dim, fontSize: 9, marginBottom: 6 }}>
-        The Navamsa reveals the deeper karmic blueprint of the entity.
-      </div>
-      {/* Navamsa signs are in divisional_charts.D9 */}
+      <SectionLabel text="D9 Navamsa — Core Destiny Chart" />
+      <p style={{ fontSize: FS.body, color: T.textSub, lineHeight: 1.55, margin: 0 }}>
+        The Navamsa chart reveals the deeper karmic structure of the entity's purpose.
+        It is considered the most important divisional chart for qualitative assessment.
+      </p>
     </div>
   )
 }
 
 function HousesTab({ houses }: { houses: Record<string, HouseData> }) {
-  const HOUSE_ORDER = ['2H','5H','8H','10H','11H']
-  const labels: Record<string, string> = {
-    '2H':  '2H — Wealth / Balance Sheet',
-    '5H':  '5H — Speculation / R&D',
-    '8H':  '8H — Volatility / M&A',
-    '10H': '10H — Management / Reputation',
-    '11H': '11H — Revenue / Profits',
+  const HOUSE_LABELS: Record<string, string> = {
+    '2H':  '2nd House  —  Wealth / Balance Sheet',
+    '5H':  '5th House  —  Speculation / R&D',
+    '8H':  '8th House  —  Volatility / M&A Events',
+    '10H': '10th House  —  Management / Reputation',
+    '11H': '11th House  —  Revenue / Profits',
   }
-
   return (
     <div>
-      <div style={{ color: C.dim, fontSize: 9, marginBottom: 10, lineHeight: 1.5 }}>
-        Financial houses show the strength of key operational areas.
-        Green = strong lord; Red = weak/debilitated lord.
-      </div>
-      {HOUSE_ORDER.map(hk => {
+      <p style={{ fontSize: FS.body, color: T.textSub, lineHeight: 1.5, margin: '0 0 12px' }}>
+        Financial houses show the operational strength of key corporate areas.
+      </p>
+      {['2H','5H','8H','10H','11H'].map(hk => {
         const h = houses[hk]
         if (!h) return null
-        const sc = HOUSE_STRENGTH_COLOR[h.strength] ?? C.sub
+        const sc = HOUSE_STRENGTH_COLOR[h.strength] ?? T.textSub
         return (
           <div key={hk} style={{
-            marginBottom: 10, padding: '10px 12px', borderRadius: 6,
-            background: '#0a0f1a', border: `1px solid ${C.border}`,
+            marginBottom: 10, padding: '10px 14px', borderRadius: 6,
+            background: T.cell, border: `1px solid ${T.border}`,
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: C.text }}>{labels[hk] ?? hk}</span>
-              <Tag text={h.strength.toUpperCase()} color={sc} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <span style={{ fontSize: FS.body, fontWeight: FW.bold, color: T.text }}>
+                {HOUSE_LABELS[hk] ?? hk}
+              </span>
+              <span style={{
+                padding: '2px 9px', borderRadius: 10,
+                fontSize: FS.caption, fontWeight: FW.bold,
+                background: `${sc}18`, border: `1px solid ${sc}44`, color: sc,
+                letterSpacing: 0.4, flexShrink: 0, marginLeft: 8,
+              }}>
+                {h.strength.replace(/-/g,' ')}
+              </span>
             </div>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 9, color: C.dim }}>Sign: <span style={{ color: C.sub }}>{h.sign}</span></span>
-              <span style={{ fontSize: 9, color: C.dim }}>Lord: <span style={{ color: DIGNITY_COLOR[h.lord_dignity] ?? C.sub }}>{h.lord}</span></span>
-              {h.lord_house && (
-                <span style={{ fontSize: 9, color: C.dim }}>Lord in: <span style={{ color: C.sub }}>H{h.lord_house}</span></span>
-              )}
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 4 }}>
+              <span style={{ fontSize: FS.caption, color: T.muted }}>
+                Sign: <span style={{ color: T.textSub }}>{h.sign}</span>
+              </span>
+              <span style={{ fontSize: FS.caption, color: T.muted }}>
+                Lord: <span style={{ color: DIGNITY_COLOR[h.lord_dignity] ?? T.textSub, fontWeight: FW.bold }}>{h.lord}</span>
+                {h.lord_house && <span style={{ color: T.muted }}> in H{h.lord_house}</span>}
+              </span>
               {h.occupants.length > 0 && (
-                <span style={{ fontSize: 9, color: C.dim }}>Occupants: <span style={{ color: C.blue }}>{h.occupants.join(', ')}</span></span>
+                <span style={{ fontSize: FS.caption, color: T.muted }}>
+                  Occupants: <span style={{ color: T.blue }}>{h.occupants.join(', ')}</span>
+                </span>
               )}
             </div>
-            <div style={{ fontSize: 9, color: C.dimmer, marginTop: 4 }}>{h.signification}</div>
+            <div style={{ fontSize: FS.caption, color: T.muted }}>{h.signification}</div>
           </div>
         )
       })}
@@ -369,70 +384,74 @@ function HousesTab({ houses }: { houses: Record<string, HouseData> }) {
 }
 
 function DashaTab({ dasha, interp }: { dasha: KundliData['current_dasha']; interp: Interpretation }) {
-  const DASHA_COLOR: Record<string, string> = {
-    Sun: C.amber, Moon: C.blue, Mars: C.red, Mercury: C.green, Jupiter: C.teal,
-    Venus: C.purple, Saturn: C.orange, Rahu: '#E879F9', Ketu: '#94A3B8',
-  }
-
   return (
     <div>
-      <SectionHeader label="CURRENT PERIOD" />
+      <SectionLabel text="Current Period" />
       {[
-        { label: 'Mahadasha (major)',          d: dasha.mahadasha },
-        { label: 'Antardasha (sub)',            d: dasha.antardasha },
-        { label: 'Pratyantardasha (micro)',     d: dasha.pratyantardasha },
+        { label: 'Mahadasha (major period)',       d: dasha.mahadasha        },
+        { label: 'Antardasha (sub-period)',         d: dasha.antardasha       },
+        { label: 'Pratyantardasha (micro-period)', d: dasha.pratyantardasha  },
       ].map(({ label, d }) => {
-        const c = DASHA_COLOR[d.planet] ?? C.sub
+        const c = DASHA_COLOR[d.planet] ?? T.textSub
         return (
-          <div key={label} style={{ marginBottom: 8, padding: '8px 10px', borderRadius: 5, background: '#0a0f1a', border: `1px solid ${C.border}` }}>
+          <div key={label} style={{
+            marginBottom: 8, padding: '10px 14px', borderRadius: 6,
+            background: T.cell, border: `1px solid ${T.border}`,
+          }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 9, color: C.dim }}>{label}</span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: c }}>{d.planet}</span>
+              <span style={{ fontSize: FS.caption, color: T.muted }}>{label}</span>
+              <span style={{ fontSize: FS.md, fontWeight: FW.heavy, color: c }}>{d.planet}</span>
             </div>
-            <div style={{ fontSize: 9, color: C.dimmer, marginTop: 2 }}>
-              {d.start_date} — {d.end_date}
+            <div style={{ fontSize: FS.caption, color: T.muted, marginTop: 3 }}>
+              {d.start_date}  —  {d.end_date}
             </div>
           </div>
         )
       })}
 
-      <SectionHeader label="DASHA OUTLOOK (NEXT 4 PERIODS)" />
+      <SectionLabel text="Dasha Outlook" />
       {interp.dasha_outlook.map((outlook, i) => (
-        <div key={i} style={{ marginBottom: 8, padding: '7px 10px', borderRadius: 5, background: '#0a0f1a', border: `1px solid ${C.border}` }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-            <span style={{ fontSize: 10, fontWeight: 700, color: C.text }}>{outlook.period}</span>
-            <span style={{ fontSize: 9, color: C.dim }}>{outlook.start} — {outlook.end}</span>
+        <div key={i} style={{
+          marginBottom: 8, padding: '9px 14px', borderRadius: 6,
+          background: T.cell, border: `1px solid ${T.border}`,
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+            <span style={{ fontSize: FS.body, fontWeight: FW.bold, color: T.text }}>{outlook.period}</span>
+            <span style={{ fontSize: FS.caption, color: T.muted }}>{outlook.start?.slice(0,4)}–{outlook.end?.slice(0,4)}</span>
           </div>
           {outlook.outlook && (
-            <div style={{ fontSize: 9, color: C.sub, lineHeight: 1.4 }}>{outlook.outlook}</div>
+            <div style={{ fontSize: FS.body, color: T.textSub, lineHeight: 1.45 }}>{outlook.outlook}</div>
           )}
         </div>
       ))}
 
-      <SectionHeader label="MAHADASHA TIMELINE" />
+      <SectionLabel text="Mahadasha Timeline" />
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 9 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ borderBottom: `1px solid ${C.border}` }}>
-              <th style={{ padding: '3px 6px', textAlign: 'left', color: C.dim }}>Planet</th>
-              <th style={{ padding: '3px 6px', textAlign: 'left', color: C.dim }}>Start</th>
-              <th style={{ padding: '3px 6px', textAlign: 'left', color: C.dim }}>End</th>
+            <tr style={{ borderBottom: `1px solid ${T.border}` }}>
+              <th style={{ padding: '4px 8px', textAlign: 'left', color: T.muted, fontSize: FS.caption, fontWeight: FW.bold }}>Planet</th>
+              <th style={{ padding: '4px 8px', textAlign: 'left', color: T.muted, fontSize: FS.caption, fontWeight: FW.bold }}>Start</th>
+              <th style={{ padding: '4px 8px', textAlign: 'left', color: T.muted, fontSize: FS.caption, fontWeight: FW.bold }}>End</th>
             </tr>
           </thead>
           <tbody>
             {dasha.all_mahadashas.slice(0, 9).map((m, i) => {
-              const c   = DASHA_COLOR[m.planet] ?? C.sub
-              const now = new Date().getFullYear()
-              const s   = parseInt(m.start_date?.slice(0, 4) ?? '0')
-              const e   = parseInt(m.end_date?.slice(0, 4) ?? '9999')
-              const isCurrent = s <= now && now <= e
+              const c       = DASHA_COLOR[m.planet] ?? T.textSub
+              const nowYear = new Date().getFullYear()
+              const sYear   = parseInt(m.start_date?.slice(0,4) ?? '0')
+              const eYear   = parseInt(m.end_date?.slice(0,4) ?? '9999')
+              const active  = sYear <= nowYear && nowYear <= eYear
               return (
-                <tr key={i} style={{ background: isCurrent ? '#0d1a12' : 'transparent', borderBottom: `1px solid ${C.border}22` }}>
-                  <td style={{ padding: '4px 6px', color: c, fontWeight: isCurrent ? 800 : 400 }}>
-                    {m.planet}{isCurrent ? ' *' : ''}
+                <tr key={i} style={{
+                  background: active ? `${T.green}0a` : 'transparent',
+                  borderBottom: `1px solid ${T.border}22`,
+                }}>
+                  <td style={{ padding: '5px 8px', color: c, fontWeight: active ? FW.heavy : FW.regular }}>
+                    {m.planet}{active ? '  ◀' : ''}
                   </td>
-                  <td style={{ padding: '4px 6px', color: C.dim, fontVariantNumeric: 'tabular-nums' }}>{m.start_date?.slice(0,7)}</td>
-                  <td style={{ padding: '4px 6px', color: C.dim, fontVariantNumeric: 'tabular-nums' }}>{m.end_date?.slice(0,7)}</td>
+                  <td style={{ padding: '5px 8px', color: T.textSub, fontSize: FS.caption, fontVariantNumeric: 'tabular-nums' }}>{m.start_date?.slice(0,7)}</td>
+                  <td style={{ padding: '5px 8px', color: T.textSub, fontSize: FS.caption, fontVariantNumeric: 'tabular-nums' }}>{m.end_date?.slice(0,7)}</td>
                 </tr>
               )
             })}
@@ -445,9 +464,12 @@ function DashaTab({ dasha, interp }: { dasha: KundliData['current_dasha']; inter
 
 function GannTab({ gann }: { gann: GannData | null }) {
   if (!gann) {
-    return <div style={{ color: C.dim, fontSize: 10, padding: '20px 0', textAlign: 'center' }}>Gann data not available</div>
+    return (
+      <div style={{ color: T.muted, fontSize: FS.body, padding: '24px 0', textAlign: 'center' }}>
+        Gann data not available for this symbol.
+      </div>
+    )
   }
-
   const so9    = gann.square_of_9
   const levels = gann.gann_levels
   const cycles = gann.time_cycles
@@ -455,52 +477,66 @@ function GannTab({ gann }: { gann: GannData | null }) {
 
   return (
     <div>
-      <SectionHeader label="SQUARE OF 9" />
-      <InfoRow label="Price Degree" value={`${so9.current_degree.toFixed(1)} deg`} valueColor={C.amber} />
-      <InfoRow label="Nearest Cardinal" value={so9.nearest_angle} valueColor={C.blue} />
+      <SectionLabel text="Square of 9" />
+      <InfoRow label="Price degree"     value={`${so9.current_degree.toFixed(1)}°`} valueColor={T.amber} />
+      <InfoRow label="Nearest cardinal" value={so9.nearest_angle}                   valueColor={T.blue}  />
 
-      <SectionHeader label="KEY PRICE LEVELS" />
-      {levels.key_r1 && <InfoRow label="R1 (next resistance)" value={levels.key_r1.toFixed(1)} valueColor={C.red} />}
-      {levels.key_s1 && <InfoRow label="S1 (next support)"    value={levels.key_s1.toFixed(1)} valueColor={C.green} />}
-
-      <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+      <SectionLabel text="Key Price Levels" />
+      <div style={{ display: 'flex', gap: 10 }}>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 9, color: C.dim, marginBottom: 4 }}>RESISTANCE LEVELS</div>
+          <div style={{ fontSize: FS.caption, color: T.muted, marginBottom: 6, fontWeight: FW.bold, textTransform: 'uppercase' as const, letterSpacing: 0.8 }}>
+            Resistance
+          </div>
           {levels.resistance.map((r, i) => (
-            <div key={i} style={{ padding: '3px 6px', borderRadius: 3, background: '#1c0000', border: `1px solid ${C.red}22`, marginBottom: 3, fontSize: 10, color: C.red, fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>
+            <div key={i} style={{
+              padding: '5px 10px', borderRadius: 4, marginBottom: 4,
+              background: `${T.red}0e`, border: `1px solid ${T.red}33`,
+              color: T.red, fontSize: FS.body, fontWeight: FW.bold,
+              fontVariantNumeric: 'tabular-nums', textAlign: 'right',
+            }}>
               {r.toFixed(2)}
             </div>
           ))}
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 9, color: C.dim, marginBottom: 4 }}>SUPPORT LEVELS</div>
+          <div style={{ fontSize: FS.caption, color: T.muted, marginBottom: 6, fontWeight: FW.bold, textTransform: 'uppercase' as const, letterSpacing: 0.8 }}>
+            Support
+          </div>
           {levels.support.map((s, i) => (
-            <div key={i} style={{ padding: '3px 6px', borderRadius: 3, background: '#052e16', border: `1px solid ${C.green}22`, marginBottom: 3, fontSize: 10, color: C.green, fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>
+            <div key={i} style={{
+              padding: '5px 10px', borderRadius: 4, marginBottom: 4,
+              background: `${T.green}0e`, border: `1px solid ${T.green}33`,
+              color: T.green, fontSize: FS.body, fontWeight: FW.bold,
+              fontVariantNumeric: 'tabular-nums', textAlign: 'right',
+            }}>
               {s.toFixed(2)}
             </div>
           ))}
         </div>
       </div>
 
-      <SectionHeader label="SOLAR TIME CYCLES" />
-      <InfoRow label="Sun Position" value={`${cycles.current_sun_degree.toFixed(1)} deg sidereal`} />
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 4 }}>
+      <SectionLabel text="Solar Time Cycles" />
+      <InfoRow label="Sun position" value={`${cycles.current_sun_degree.toFixed(1)}° sidereal`} />
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
         {Object.entries(cycles.fixed_future_dates).map(([label, date]) => (
-          <div key={label} style={{ padding: '4px 8px', borderRadius: 4, background: '#0a0f1a', border: `1px solid ${C.border}`, fontSize: 9 }}>
-            <span style={{ color: C.dim }}>{label}</span>
-            <span style={{ color: C.sub, marginLeft: 4, fontVariantNumeric: 'tabular-nums' }}>{date}</span>
+          <div key={label} style={{
+            padding: '5px 10px', borderRadius: 5,
+            background: T.cell, border: `1px solid ${T.border}`,
+          }}>
+            <span style={{ fontSize: FS.caption, color: T.muted }}>{label}  </span>
+            <span style={{ fontSize: FS.caption, color: T.textSub, fontVariantNumeric: 'tabular-nums', fontWeight: FW.bold }}>{date}</span>
           </div>
         ))}
       </div>
 
-      <SectionHeader label="PLANETARY PRICE LINES (×1 factor)" />
+      <SectionLabel text="Planetary Price Lines  (1× factor)" />
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 9 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ borderBottom: `1px solid ${C.border}` }}>
-              <th style={{ padding: '3px 6px', textAlign: 'left', color: C.dim }}>Planet</th>
-              <th style={{ padding: '3px 6px', textAlign: 'right', color: C.dim }}>Lon</th>
-              <th style={{ padding: '3px 6px', textAlign: 'right', color: C.dim }}>Base Price</th>
+            <tr style={{ borderBottom: `1px solid ${T.border}` }}>
+              <th style={{ padding: '4px 8px', textAlign: 'left',  color: T.muted, fontSize: FS.caption, fontWeight: FW.bold }}>Planet</th>
+              <th style={{ padding: '4px 8px', textAlign: 'right', color: T.muted, fontSize: FS.caption, fontWeight: FW.bold }}>Longitude</th>
+              <th style={{ padding: '4px 8px', textAlign: 'right', color: T.muted, fontSize: FS.caption, fontWeight: FW.bold }}>Base Price</th>
             </tr>
           </thead>
           <tbody>
@@ -508,10 +544,10 @@ function GannTab({ gann }: { gann: GannData | null }) {
               const pl = plines?.[planet]
               if (!pl) return null
               return (
-                <tr key={planet} style={{ borderBottom: `1px solid ${C.border}11` }}>
-                  <td style={{ padding: '3px 6px', color: C.sub }}>{planet}</td>
-                  <td style={{ padding: '3px 6px', color: C.dim, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{pl.longitude.toFixed(1)}</td>
-                  <td style={{ padding: '3px 6px', color: C.amber, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{pl.base_price.toFixed(1)}</td>
+                <tr key={planet} style={{ borderBottom: `1px solid ${T.border}11` }}>
+                  <td style={{ padding: '5px 8px', color: T.textSub, fontSize: FS.body }}>{planet}</td>
+                  <td style={{ padding: '5px 8px', color: T.muted,   fontSize: FS.caption, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{pl.longitude.toFixed(1)}</td>
+                  <td style={{ padding: '5px 8px', color: T.amber,   fontSize: FS.body,    textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: FW.bold }}>{pl.base_price.toFixed(1)}</td>
                 </tr>
               )
             })}
@@ -523,25 +559,28 @@ function GannTab({ gann }: { gann: GannData | null }) {
 }
 
 function ReportTab({ kundli, interp }: { kundli: KundliData; interp: Interpretation }) {
+  const cfg = ACTION_CFG[interp.signal] ?? ACTION_CFG.HOLD
+  const scoreColor = interp.astro_score >= 30 ? T.green : interp.astro_score >= 5 ? T.blue : interp.astro_score >= -10 ? T.amber : T.red
+
   return (
     <div>
-      <SectionHeader label="FINANCIAL SIGNAL SUMMARY" />
-      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+      <SectionLabel text="Financial Signal" />
+      <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
         <div style={{
-          flex: 1, padding: '10px 12px', borderRadius: 6, background: '#0a0f1a', border: `1px solid ${C.border}`,
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          flex: 1, padding: '14px', borderRadius: 6,
+          background: T.cell, border: `1px solid ${T.border}`,
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
         }}>
-          <span style={{ fontSize: 9, color: C.dim, marginBottom: 3 }}>VEDIC SIGNAL</span>
-          <span style={{ fontSize: 16, fontWeight: 900, color: (ACTION_CFG[interp.signal] ?? ACTION_CFG.HOLD).color }}>
-            {interp.signal}
-          </span>
+          <span style={{ fontSize: FS.caption, color: T.muted, marginBottom: 5, letterSpacing: 0.8, textTransform: 'uppercase' as const }}>Vedic Signal</span>
+          <span style={{ fontSize: FS['2xl'], fontWeight: FW.black, color: cfg.color }}>{interp.signal}</span>
         </div>
         <div style={{
-          flex: 1, padding: '10px 12px', borderRadius: 6, background: '#0a0f1a', border: `1px solid ${C.border}`,
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          flex: 1, padding: '14px', borderRadius: 6,
+          background: T.cell, border: `1px solid ${T.border}`,
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
         }}>
-          <span style={{ fontSize: 9, color: C.dim, marginBottom: 3 }}>ASTRO SCORE</span>
-          <span style={{ fontSize: 16, fontWeight: 900, color: interp.astro_score >= 20 ? C.green : interp.astro_score >= 0 ? C.blue : C.red, fontVariantNumeric: 'tabular-nums' }}>
+          <span style={{ fontSize: FS.caption, color: T.muted, marginBottom: 5, letterSpacing: 0.8, textTransform: 'uppercase' as const }}>Astro Score</span>
+          <span style={{ fontSize: FS['2xl'], fontWeight: FW.black, color: scoreColor, fontVariantNumeric: 'tabular-nums' }}>
             {interp.astro_score > 0 ? '+' : ''}{interp.astro_score.toFixed(0)}
           </span>
         </div>
@@ -549,29 +588,29 @@ function ReportTab({ kundli, interp }: { kundli: KundliData; interp: Interpretat
 
       {interp.narrative && (
         <div style={{
-          padding: '10px 12px', borderRadius: 6, background: '#08101c',
-          border: `1px solid ${C.border}`, marginBottom: 12, lineHeight: 1.6,
-          color: C.sub, fontSize: 10,
+          padding: '12px 14px', borderRadius: 6, marginBottom: 14,
+          background: T.cell, border: `1px solid ${T.border}`,
+          color: T.textSub, fontSize: FS.body, lineHeight: 1.6,
         }}>
           {interp.narrative}
         </div>
       )}
 
-      <SectionHeader label="BULLISH FACTORS" />
+      <SectionLabel text="Bullish Factors" />
       {interp.bullish_factors.map((f, i) => (
-        <div key={i} style={{ display: 'flex', gap: 6, marginBottom: 6, alignItems: 'flex-start' }}>
-          <span style={{ color: C.green, fontSize: 9, marginTop: 2, flexShrink: 0 }}>+</span>
-          <span style={{ fontSize: 10, color: C.sub, lineHeight: 1.4 }}>{f}</span>
+        <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 7, alignItems: 'flex-start' }}>
+          <span style={{ color: T.green, fontSize: FS.label, marginTop: 1, flexShrink: 0, fontWeight: FW.black }}>+</span>
+          <span style={{ fontSize: FS.body, color: T.textSub, lineHeight: 1.5 }}>{f}</span>
         </div>
       ))}
 
       {interp.bearish_factors.length > 0 && (
         <>
-          <SectionHeader label="BEARISH FACTORS" />
+          <SectionLabel text="Bearish Factors" />
           {interp.bearish_factors.map((f, i) => (
-            <div key={i} style={{ display: 'flex', gap: 6, marginBottom: 6, alignItems: 'flex-start' }}>
-              <span style={{ color: C.red, fontSize: 9, marginTop: 2, flexShrink: 0 }}>-</span>
-              <span style={{ fontSize: 10, color: C.sub, lineHeight: 1.4 }}>{f}</span>
+            <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 7, alignItems: 'flex-start' }}>
+              <span style={{ color: T.red, fontSize: FS.label, marginTop: 1, flexShrink: 0, fontWeight: FW.black }}>−</span>
+              <span style={{ fontSize: FS.body, color: T.textSub, lineHeight: 1.5 }}>{f}</span>
             </div>
           ))}
         </>
@@ -579,18 +618,19 @@ function ReportTab({ kundli, interp }: { kundli: KundliData; interp: Interpretat
 
       {interp.yogas && interp.yogas.length > 0 && (
         <>
-          <SectionHeader label="ACTIVE YOGAS" />
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-            {interp.yogas.map((y, i) => (
-              <Tag key={i} text={y} color={C.purple} />
-            ))}
+          <SectionLabel text="Active Yogas" />
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+            {interp.yogas.map((y, i) => <Tag key={i} text={y} color={T.purple} />)}
           </div>
         </>
       )}
 
-      <div style={{ color: C.dimmer, fontSize: 8, borderTop: `1px solid ${C.dimmer}22`, paddingTop: 6, marginTop: 12 }}>
-        Computed: {kundli.computed_date}. Vedic astrology uses Lahiri ayanamsha + Whole Sign houses.
-        This signal is supplementary — always verify with fundamentals and technicals.
+      <div style={{
+        color: T.muted, fontSize: FS.caption,
+        borderTop: `1px solid ${T.border}`, paddingTop: 10, marginTop: 14, lineHeight: 1.5,
+      }}>
+        Computed: {kundli.computed_date}. Uses Swiss Ephemeris with Lahiri ayanamsha + Whole Sign houses.
+        Supplementary to technical and fundamental analysis.
       </div>
     </div>
   )
@@ -598,98 +638,114 @@ function ReportTab({ kundli, interp }: { kundli: KundliData; interp: Interpretat
 
 // ── Main Card ─────────────────────────────────────────────────────────────────
 
-interface Props {
-  symbol: string
-}
-
-export function KundliCard({ symbol }: Props) {
+export function KundliCard({ symbol }: { symbol: string }) {
   const [activeTab, setActiveTab] = useState<Tab>('Overview')
-  const [expanded, setExpanded]   = useState(false)
+  const [expanded,  setExpanded]  = useState(false)
 
   const { data, isLoading, error } = useQuery<KundliResponse>({
     queryKey: ['kundli', symbol],
     queryFn:  () => api.get(`/stocks/${symbol}/kundli?include_gann=true&generate_narrative=false`).then(r => r.data),
-    staleTime: 3600_000,  // cache 1 hour
+    staleTime: 3_600_000,
     retry: false,
     enabled: expanded,
   })
 
-  const actionBadgeCfg = data
-    ? (ACTION_CFG[data.interpretation?.signal] ?? ACTION_CFG.HOLD)
-    : ACTION_CFG.HOLD
+  const signal   = data?.interpretation?.signal
+  const actionCfg = ACTION_CFG[signal ?? ''] ?? ACTION_CFG.HOLD
 
   return (
-    <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 8, marginBottom: 16 }}>
-      {/* Header row (always visible) */}
+    <div style={{
+      background: T.panel, border: `1px solid ${T.border}`, borderRadius: 8, marginBottom: 16,
+    }}>
+      {/* ── Collapsed header (always visible) ── */}
       <div
-        style={{ padding: '10px 14px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+        role="button"
         onClick={() => setExpanded(e => !e)}
+        style={{ padding: '11px 16px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
       >
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ color: C.sub, fontSize: 9, fontWeight: 700, letterSpacing: 1 }}>VEDIC KUNDLI + GANN</span>
-            <span style={{ color: C.dimmer, fontSize: 9 }}>IPO natal chart analysis</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+            <span style={{ color: T.muted, fontSize: FS.caption, fontWeight: FW.heavy, letterSpacing: 1.4, textTransform: 'uppercase' as const }}>
+              Vedic Kundli + Gann
+            </span>
+            <span style={{ color: T.muted, fontSize: FS.caption }}>IPO natal chart analysis</span>
           </div>
           {data && (
-            <div style={{ color: C.dim, fontSize: 9, marginTop: 2 }}>
-              Lagna: {data.kundli.lagna.sign} | Mahadasha: {data.kundli.current_dasha.mahadasha.planet}
+            <div style={{ color: T.muted, fontSize: FS.caption }}>
+              Lagna: <span style={{ color: T.textSub, fontWeight: FW.bold }}>{data.kundli.lagna.sign}</span>
+              {'  |  '}
+              Mahadasha: <span style={{ color: T.amber, fontWeight: FW.bold }}>{data.kundli.current_dasha.mahadasha.planet}</span>
+              {' until '}
+              <span style={{ color: T.muted }}>{data.kundli.current_dasha.mahadasha.end_date}</span>
             </div>
           )}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {data && (
-            <div style={{ padding: '3px 10px', borderRadius: 4, background: actionBadgeCfg.bg, border: `1px solid ${actionBadgeCfg.border}`, color: actionBadgeCfg.color, fontSize: 10, fontWeight: 700 }}>
-              {data.interpretation?.signal ?? '--'}
+            <div style={{
+              padding: '4px 12px', borderRadius: 5,
+              background: actionCfg.bg, border: `1px solid ${actionCfg.border}`,
+              color: actionCfg.color, fontSize: FS.label, fontWeight: FW.heavy,
+            }}>
+              {signal}
             </div>
           )}
-          <span style={{ color: C.dim, fontSize: 11 }}>{expanded ? 'v' : '>'}</span>
+          <span style={{ color: T.muted, fontSize: FS.label, fontWeight: FW.bold }}>
+            {expanded ? '▲' : '▼'}
+          </span>
         </div>
       </div>
 
-      {/* Expanded content */}
+      {/* ── Expanded content ── */}
       {expanded && (
-        <div style={{ borderTop: `1px solid ${C.border}`, padding: 14 }}>
+        <div style={{ borderTop: `1px solid ${T.border}`, padding: '14px 16px' }}>
           {isLoading && (
-            <div style={{ color: C.dim, fontSize: 11, padding: '20px 0', textAlign: 'center' }}>
-              Computing Kundli...
+            <div style={{ color: T.muted, fontSize: FS.body, padding: '24px 0', textAlign: 'center' }}>
+              Computing Kundli…
             </div>
           )}
 
           {error && (
-            <div style={{ color: C.red, fontSize: 10, padding: '10px 0' }}>
-              Failed to load Kundli. The engine may need to be run first.
+            <div style={{
+              color: T.red, fontSize: FS.body, padding: '10px 14px', borderRadius: 5,
+              background: `${T.red}0e`, border: `1px solid ${T.red}33`,
+            }}>
+              Failed to load Kundli. Check that the backend is running and the symbol exists in equity_master.
             </div>
           )}
 
           {data && (
             <>
-              {/* Signal badge + score bar */}
-              <div style={{ marginBottom: 12 }}>
-                <ScoreBar score={data.interpretation?.astro_score ?? data.kundli.astro_score} />
-              </div>
+              <ScoreBar score={data.interpretation?.astro_score ?? data.kundli.astro_score} />
 
               {/* Tab bar */}
-              <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${C.border}`, marginBottom: 12, overflowX: 'auto' }}>
+              <div style={{ display: 'flex', borderBottom: `1px solid ${T.border}`, marginBottom: 14, overflowX: 'auto' }}>
                 {TABS.map(tab => (
-                  <button key={tab} onClick={() => setActiveTab(tab)} style={{
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    padding: '5px 10px', fontSize: 9, fontWeight: 700, letterSpacing: 0.5,
-                    color: activeTab === tab ? C.text : C.dim,
-                    borderBottom: activeTab === tab ? `2px solid ${C.blue}` : '2px solid transparent',
-                    marginBottom: -1, flexShrink: 0,
-                  }}>
-                    {tab.toUpperCase()}
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      padding: '7px 12px',
+                      fontSize: FS.caption, fontWeight: FW.bold, letterSpacing: 0.6,
+                      textTransform: 'uppercase' as const,
+                      color: activeTab === tab ? T.text : T.muted,
+                      borderBottom: activeTab === tab ? `2px solid ${T.blue}` : '2px solid transparent',
+                      marginBottom: -1, flexShrink: 0, transition: 'color 0.15s',
+                    }}
+                  >
+                    {tab}
                   </button>
                 ))}
               </div>
 
               {/* Tab content */}
-              {activeTab === 'Overview'  && <OverviewTab kundli={data.kundli} interp={data.interpretation} />}
-              {activeTab === 'Planets'   && <PlanetsTab planets={data.kundli.planets} />}
-              {activeTab === 'Houses'    && <HousesTab houses={data.kundli.financial_houses} />}
-              {activeTab === 'Dasha'     && <DashaTab dasha={data.kundli.current_dasha} interp={data.interpretation} />}
-              {activeTab === 'Gann'      && <GannTab gann={data.gann} />}
-              {activeTab === 'Report'    && <ReportTab kundli={data.kundli} interp={data.interpretation} />}
+              {activeTab === 'Overview'  && <OverviewTab  kundli={data.kundli} interp={data.interpretation} />}
+              {activeTab === 'Planets'   && <PlanetsTab   planets={data.kundli.planets} />}
+              {activeTab === 'Houses'    && <HousesTab    houses={data.kundli.financial_houses} />}
+              {activeTab === 'Dasha'     && <DashaTab     dasha={data.kundli.current_dasha} interp={data.interpretation} />}
+              {activeTab === 'Gann'      && <GannTab      gann={data.gann} />}
+              {activeTab === 'Report'    && <ReportTab    kundli={data.kundli} interp={data.interpretation} />}
             </>
           )}
         </div>

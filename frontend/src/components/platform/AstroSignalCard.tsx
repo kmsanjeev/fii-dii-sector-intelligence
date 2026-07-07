@@ -1,14 +1,13 @@
 /**
  * AstroSignalCard — Phase AF-3
  * Displays AstroFinance planetary intelligence for a stock's sector.
- *
- * Knowledge source: 6 financial astrology books including Banerjee (Indian/Vedic
- * sector-planet mapping), Pesavento (aspect theory), and Almanac 2023 (cycle frameworks).
+ * Uses platform design tokens (T / FS / FW) throughout.
  */
 
 import React from 'react'
+import { T, FS, FW } from '../../styles/tokens'
 
-// ── Types ────────────────────────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 export interface AstroSignal {
   sector:              string
@@ -33,55 +32,77 @@ export interface AstroSignal {
   reversal_note:       string | null
 }
 
-// ── Config ───────────────────────────────────────────────────────────────────
+// ── Action config ─────────────────────────────────────────────────────────────
 
-const ACTION_CFG: Record<string, { color: string; bg: string; border: string; label: string }> = {
-  BUY:     { color: '#4ADE80', bg: '#052e16', border: '#16a34a', label: 'BUY' },
-  HOLD:    { color: '#60A5FA', bg: '#0c1a2e', border: '#2563eb', label: 'HOLD' },
-  CAUTION: { color: '#FBBF24', bg: '#1c1500', border: '#d97706', label: 'CAUTION' },
-  EXIT:    { color: '#F97316', bg: '#1c0a00', border: '#ea580c', label: 'EXIT' },
-  AVOID:   { color: '#F87171', bg: '#1c0000', border: '#dc2626', label: 'AVOID' },
+const ACTION_CFG: Record<string, { color: string; bg: string; border: string }> = {
+  BUY:     { color: T.green,  bg: `${T.green}14`,  border: `${T.green}55`  },
+  HOLD:    { color: T.blue,   bg: `${T.blue}14`,   border: `${T.blue}55`   },
+  CAUTION: { color: T.amber,  bg: `${T.amber}14`,  border: `${T.amber}55`  },
+  EXIT:    { color: '#F97316', bg: '#F9731614',     border: '#F9731655'     },
+  AVOID:   { color: T.red,    bg: `${T.red}14`,    border: `${T.red}55`    },
 }
 
 const PLANET_EMOJI: Record<string, string> = {
-  Sun: 'O', Moon: ')', Mercury: '*', Venus: 'V', Mars: 'M',
-  Jupiter: 'J', Saturn: 'S', Rahu: 'R', Ketu: 'K',
-  Uranus: 'U', Neptune: 'N', Pluto: 'P',
-}
-
-const MOON_PHASE_LABEL: Record<string, { icon: string; label: string }> = {
-  NEW_MOON:       { icon: 'N', label: 'New Moon' },
-  WAXING_CRESCENT:{ icon: 'C', label: 'Waxing' },
-  FIRST_QUARTER:  { icon: 'Q', label: '1st Quarter' },
-  WAXING_GIBBOUS: { icon: 'G', label: 'Waxing Gibbous' },
-  FULL_MOON:      { icon: 'F', label: 'Full Moon' },
-  WANING_GIBBOUS: { icon: 'g', label: 'Waning Gibbous' },
-  LAST_QUARTER:   { icon: 'q', label: 'Last Quarter' },
-  WANING_CRESCENT:{ icon: 'c', label: 'Waning' },
+  Sun: 'Su', Moon: 'Mo', Mercury: 'Me', Venus: 'Ve', Mars: 'Ma',
+  Jupiter: 'Ju', Saturn: 'Sa', Rahu: 'Ra', Ketu: 'Ke',
 }
 
 const STATE_COLOR: Record<string, string> = {
-  EXALTED:    '#4ADE80',
-  OWN_SIGN:   '#60A5FA',
-  NEUTRAL:    '#94A3B8',
-  WEAK:       '#FBBF24',
-  DEBILITATED:'#F87171',
-  RETROGRADE: '#F97316',
+  EXALTED:     T.green,
+  OWN_SIGN:    T.blue,
+  NEUTRAL:     T.textSub,
+  WEAK:        T.amber,
+  DEBILITATED: T.red,
+  RETROGRADE:  '#F97316',
 }
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+const MOON_PHASE_LABEL: Record<string, string> = {
+  NEW_MOON:        'New Moon',
+  WAXING_CRESCENT: 'Waxing Crescent',
+  FIRST_QUARTER:   '1st Quarter',
+  WAXING_GIBBOUS:  'Waxing Gibbous',
+  FULL_MOON:       'Full Moon',
+  WANING_GIBBOUS:  'Waning Gibbous',
+  LAST_QUARTER:    'Last Quarter',
+  WANING_CRESCENT: 'Waning Crescent',
+}
+
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+function SectionLabel({ text }: { text: string }) {
+  return (
+    <div style={{
+      fontSize: FS.caption, fontWeight: FW.heavy, letterSpacing: 1.4,
+      textTransform: 'uppercase' as const, color: T.muted,
+      borderBottom: `1px solid ${T.border}`, paddingBottom: 5, marginBottom: 8, marginTop: 12,
+    }}>
+      {text}
+    </div>
+  )
+}
+
+function InfoRow({ label, value, valueColor }: { label: string; value: string; valueColor?: string }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+      <span style={{ color: T.muted, fontSize: FS.caption, flexShrink: 0, minWidth: 110 }}>{label}</span>
+      <span style={{ color: valueColor ?? T.textSub, fontSize: FS.caption, fontWeight: FW.medium, textAlign: 'right', maxWidth: '55%' }}>
+        {value}
+      </span>
+    </div>
+  )
+}
 
 function PlanetChip({ name, state }: { name: string; state?: string }) {
-  const color = state ? (STATE_COLOR[state] ?? '#94A3B8') : '#94A3B8'
-  const emoji = PLANET_EMOJI[name] ?? name[0]
+  const color = state ? (STATE_COLOR[state] ?? T.textSub) : T.textSub
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 4,
-      padding: '2px 8px', borderRadius: 12, fontSize: 10, fontWeight: 700,
+      padding: '3px 9px', borderRadius: 12,
+      fontSize: FS.caption, fontWeight: FW.bold,
       background: `${color}18`, border: `1px solid ${color}44`, color,
-      letterSpacing: 0.5, marginRight: 4,
+      letterSpacing: 0.4, marginRight: 4, marginBottom: 4,
     }}>
-      <span style={{ fontFamily: 'monospace', fontSize: 11 }}>{emoji}</span>
+      <span style={{ fontFamily: 'monospace', fontSize: FS.caption }}>{PLANET_EMOJI[name] ?? name.slice(0, 2)}</span>
       {name}
     </span>
   )
@@ -90,191 +111,159 @@ function PlanetChip({ name, state }: { name: string; state?: string }) {
 function RetroWarning({ planet }: { planet: string }) {
   return (
     <span style={{
-      padding: '2px 7px', borderRadius: 3, fontSize: 9, fontWeight: 700,
-      background: '#3d1c00', border: '1px solid #ea580c44', color: '#F97316',
-      letterSpacing: 0.5,
+      padding: '3px 8px', borderRadius: 4,
+      fontSize: FS.caption, fontWeight: FW.bold,
+      background: `#F9731618`, border: `1px solid #F9731644`, color: '#F97316',
+      letterSpacing: 0.5, marginRight: 4,
     }}>
-      {planet} RETROGRADE
+      {planet} RETRO
     </span>
   )
 }
 
-function InfoRow({ label, value, valueColor }: { label: string; value: string; valueColor?: string }) {
+function AstroScoreBar({ score, color }: { score: number; color: string }) {
+  const pct = Math.min(100, Math.max(2, (score + 100) / 2))
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-      <span style={{ color: '#475569', fontSize: 10 }}>{label}</span>
-      <span style={{ color: valueColor ?? '#94A3B8', fontSize: 10, fontWeight: 600, textAlign: 'right', maxWidth: '60%' }}>
-        {value}
-      </span>
-    </div>
-  )
-}
-
-// ── Score Bar ────────────────────────────────────────────────────────────────
-
-function AstroScoreBar({ score }: { score: number }) {
-  const pct = (score + 100) / 2  // -100..+100 -> 0..100
-  const color = score >= 20 ? '#4ADE80' : score >= 0 ? '#60A5FA' : score >= -20 ? '#FBBF24' : '#F87171'
-  return (
-    <div style={{ marginBottom: 10 }}>
+    <div style={{ marginBottom: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-        <span style={{ color: '#475569', fontSize: 9, letterSpacing: 0.5 }}>ASTRO SCORE</span>
-        <span style={{ color, fontSize: 11, fontWeight: 700 }}>
+        <span style={{ color: T.muted, fontSize: FS.caption, letterSpacing: 0.8, fontWeight: FW.bold, textTransform: 'uppercase' as const }}>
+          Astro Score
+        </span>
+        <span style={{ color, fontSize: FS.label, fontWeight: FW.heavy, fontVariantNumeric: 'tabular-nums' }}>
           {score > 0 ? '+' : ''}{score.toFixed(0)} / 100
         </span>
       </div>
-      <div style={{ height: 4, background: '#1E2332', borderRadius: 2, overflow: 'hidden' }}>
-        <div style={{
-          height: '100%', width: `${Math.max(2, pct)}%`,
-          background: color, borderRadius: 2,
-          transition: 'width 0.5s ease',
-        }} />
+      <div style={{ height: 5, background: T.border, borderRadius: 3, overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 3, transition: 'width 0.5s ease' }} />
       </div>
     </div>
   )
 }
 
-// ── Main Card ────────────────────────────────────────────────────────────────
+// ── Main Card ─────────────────────────────────────────────────────────────────
 
-interface Props {
-  astro: AstroSignal
-}
-
-export function AstroSignalCard({ astro }: Props) {
-  const cfg = ACTION_CFG[astro.astro_action] ?? ACTION_CFG.HOLD
-  const moonInfo = MOON_PHASE_LABEL[astro.moon_phase] ?? { icon: '~', label: astro.moon_phase }
-  const stateColor = STATE_COLOR[astro.planet_state] ?? '#94A3B8'
+export function AstroSignalCard({ astro }: { astro: AstroSignal }) {
+  const cfg       = ACTION_CFG[astro.astro_action] ?? ACTION_CFG.HOLD
+  const stateColor = STATE_COLOR[astro.planet_state] ?? T.textSub
+  const scoreColor = astro.astro_score >= 20 ? T.green
+                   : astro.astro_score >= 0  ? T.blue
+                   : astro.astro_score >= -20 ? T.amber : T.red
+  const moonLabel  = MOON_PHASE_LABEL[astro.moon_phase] ?? astro.moon_phase
 
   return (
     <div style={{
-      background: '#0D1117', border: '1px solid #1E2332', borderRadius: 8,
+      background: T.panel, border: `1px solid ${T.border}`, borderRadius: 8,
       padding: 16, marginBottom: 16,
     }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+      {/* ── Header ── */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-            <span style={{ color: '#94A3B8', fontSize: 9, fontWeight: 700, letterSpacing: 1 }}>
-              ASTRO SIGNAL
+            <span style={{ color: T.muted, fontSize: FS.caption, fontWeight: FW.heavy, letterSpacing: 1.4, textTransform: 'uppercase' as const }}>
+              Astro Signal
             </span>
-            <span style={{ color: '#334155', fontSize: 9 }}>
-              {astro.as_of_date}
-            </span>
+            <span style={{ color: T.muted, fontSize: FS.caption }}>{astro.as_of_date}</span>
           </div>
-          <div style={{ color: '#475569', fontSize: 9, letterSpacing: 0.3 }}>
-            Planetary intelligence based on Financial Astrology principles
+          <div style={{ color: T.textSub, fontSize: FS.caption }}>
+            Sector: <span style={{ color: T.text, fontWeight: FW.bold }}>{astro.sector}</span>
           </div>
         </div>
-        {/* Action Badge */}
         <div style={{
-          padding: '5px 14px', borderRadius: 4, border: `1px solid ${cfg.border}`,
-          background: cfg.bg, color: cfg.color, fontSize: 11, fontWeight: 700,
-          letterSpacing: 1, flexShrink: 0,
+          padding: '5px 14px', borderRadius: 5,
+          background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color,
+          fontSize: FS.label, fontWeight: FW.heavy, letterSpacing: 1, flexShrink: 0,
         }}>
-          {cfg.label}
+          {astro.astro_action}
         </div>
       </div>
 
-      {/* Score bar */}
-      <AstroScoreBar score={astro.astro_score} />
+      {/* ── Score bar ── */}
+      <AstroScoreBar score={astro.astro_score} color={scoreColor} />
 
-      {/* Reason */}
+      {/* ── Reason ── */}
       <div style={{
-        padding: '6px 10px', borderRadius: 4, background: `${cfg.border}11`,
-        border: `1px solid ${cfg.border}33`, marginBottom: 12,
-        color: cfg.color, fontSize: 10, lineHeight: 1.5,
+        padding: '8px 12px', borderRadius: 5,
+        background: `${cfg.color}0e`, border: `1px solid ${cfg.border}`,
+        color: T.text, fontSize: FS.body, lineHeight: 1.55, marginBottom: 14,
       }}>
         {astro.astro_reason}
       </div>
 
-      {/* Planet row */}
-      <div style={{ marginBottom: 12 }}>
-        <div style={{ color: '#475569', fontSize: 9, letterSpacing: 0.5, marginBottom: 5 }}>
-          RULING PLANET(S)
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
-          {astro.ruling_planets.split(', ').map(p => (
-            <PlanetChip
-              key={p}
-              name={p.trim()}
-              state={p.trim() === astro.primary_planet ? astro.planet_state : undefined}
-            />
-          ))}
-        </div>
+      {/* ── Ruling planets ── */}
+      <SectionLabel text="Ruling Planets" />
+      <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: 4 }}>
+        {astro.ruling_planets.split(', ').map(p => (
+          <PlanetChip
+            key={p}
+            name={p.trim()}
+            state={p.trim() === astro.primary_planet ? astro.planet_state : undefined}
+          />
+        ))}
       </div>
 
-      {/* Retrograde warnings */}
+      {/* ── Retrograde warnings ── */}
       {(astro.planet_retrograde || astro.mercury_retrograde || astro.venus_retrograde) && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 12 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 6, marginBottom: 10 }}>
           {astro.planet_retrograde && astro.primary_planet !== 'Rahu' && astro.primary_planet !== 'Ketu' && (
             <RetroWarning planet={astro.primary_planet} />
           )}
-          {astro.mercury_retrograde && !astro.planet_retrograde && (
-            <RetroWarning planet="Mercury" />
-          )}
-          {astro.venus_retrograde && (
-            <RetroWarning planet="Venus" />
-          )}
+          {astro.mercury_retrograde && !astro.planet_retrograde && <RetroWarning planet="Mercury" />}
+          {astro.venus_retrograde && <RetroWarning planet="Venus" />}
         </div>
       )}
 
-      {/* Planetary details grid */}
-      <div style={{ borderTop: '1px solid #1E2332', paddingTop: 10, marginBottom: 10 }}>
-        <InfoRow
-          label={`${astro.primary_planet} Position`}
-          value={`${astro.planet_sign} — ${astro.planet_state}`}
-          valueColor={stateColor}
-        />
-        <InfoRow
-          label="Key Aspects"
-          value={astro.key_aspects || 'None significant'}
-          valueColor="#94A3B8"
-        />
-        <InfoRow
-          label="Moon Phase"
-          value={`${moonInfo.icon} ${moonInfo.label}${astro.moon_illumination ? ` (${astro.moon_illumination}%)` : ''}`}
-          valueColor={astro.moon_phase === 'NEW_MOON' || astro.moon_phase === 'FULL_MOON' ? '#FBBF24' : '#94A3B8'}
-        />
-        <InfoRow
-          label="Jupiter / Saturn"
-          value={`${astro.jupiter_sign || '?'} / ${astro.saturn_sign || '?'}`}
-        />
-        <InfoRow
-          label="Market Astro Signal"
-          value={astro.market_astro_signal || 'UNKNOWN'}
-          valueColor={
-            astro.market_astro_signal === 'BULLISH' ? '#4ADE80' :
-            astro.market_astro_signal === 'BEARISH' ? '#F87171' :
-            astro.market_astro_signal?.includes('POSITIVE') ? '#60A5FA' :
-            '#FBBF24'
-          }
-        />
-      </div>
+      {/* ── Planet details ── */}
+      <SectionLabel text="Planet Details" />
+      <InfoRow
+        label={`${astro.primary_planet} position`}
+        value={`${astro.planet_sign}  —  ${astro.planet_state}`}
+        valueColor={stateColor}
+      />
+      <InfoRow
+        label="Key aspects"
+        value={astro.key_aspects || 'None significant'}
+      />
+      <InfoRow
+        label="Moon phase"
+        value={`${moonLabel}${astro.moon_illumination ? ` (${astro.moon_illumination}%)` : ''}`}
+        valueColor={astro.moon_phase === 'FULL_MOON' || astro.moon_phase === 'NEW_MOON' ? T.amber : T.textSub}
+      />
+      <InfoRow label="Jupiter / Saturn" value={`${astro.jupiter_sign || '?'}  /  ${astro.saturn_sign || '?'}`} />
+      <InfoRow
+        label="Market astro signal"
+        value={astro.market_astro_signal || 'UNKNOWN'}
+        valueColor={
+          astro.market_astro_signal === 'BULLISH'            ? T.green
+          : astro.market_astro_signal === 'BEARISH'          ? T.red
+          : astro.market_astro_signal?.includes('POSITIVE')  ? T.blue
+          : T.amber
+        }
+      />
 
-      {/* Eclipse / reversal note */}
+      {/* ── Alerts ── */}
       {astro.eclipse_active && (
         <div style={{
-          padding: '5px 10px', borderRadius: 3, background: '#2d1200',
-          border: '1px solid #92400e', color: '#FBBF24', fontSize: 9,
-          fontWeight: 600, letterSpacing: 0.5, marginBottom: 8,
+          marginTop: 10, padding: '6px 10px', borderRadius: 4,
+          background: `${T.amber}14`, border: `1px solid ${T.amber}44`,
+          color: T.amber, fontSize: FS.caption, fontWeight: FW.bold, letterSpacing: 0.4,
         }}>
-          ECLIPSE ACTIVE — High volatility zone. Ketu eclipse = downtrend warning.
+          ECLIPSE ACTIVE — High volatility zone
         </div>
       )}
       {astro.reversal_note && (
         <div style={{
-          padding: '5px 10px', borderRadius: 3, background: '#1e1600',
-          border: '1px solid #78350f', color: '#FCD34D', fontSize: 9,
-          fontWeight: 600, letterSpacing: 0.3, marginBottom: 8,
+          marginTop: 6, padding: '6px 10px', borderRadius: 4,
+          background: `${T.amber}0e`, border: `1px solid ${T.amber}33`,
+          color: T.textSub, fontSize: FS.caption, lineHeight: 1.5,
         }}>
           {astro.reversal_note}
         </div>
       )}
 
-      {/* Footer disclaimer */}
-      <div style={{ color: '#1E2D3D', fontSize: 8, borderTop: '1px solid #0f172a', paddingTop: 6, marginTop: 6 }}>
-        Astro signals are supplementary to technical & fundamental analysis.
-        Based on Vedic (Indian) planet-sector mapping per Banerjee (2009) + Western aspects per Pesavento (2015).
+      {/* ── Footer ── */}
+      <div style={{ color: T.muted, fontSize: FS.caption, borderTop: `1px solid ${T.border}`, paddingTop: 8, marginTop: 12 }}>
+        Based on Vedic planet-sector mapping (Banerjee 2009) + Western aspects (Pesavento 2015).
+        Supplementary to technical and fundamental analysis.
       </div>
     </div>
   )
