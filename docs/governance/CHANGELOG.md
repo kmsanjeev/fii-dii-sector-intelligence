@@ -6,6 +6,62 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.17.0
+
+Phase NEWS -- Dashboard Global News Intelligence Feed
+
+Date: 2026-07-07
+
+Status: Completed
+
+Commit: 1e4a1c6
+
+---
+
+## Summary
+
+Real-time global market news section added to Dashboard, placed between
+F&O Participant Flows and Sector Heatmap. Fetches from 9 RSS sources in parallel
+(CNBC, Reuters, Yahoo Finance, ET Markets, Livemint, Moneycontrol, Business Standard)
+with 30-minute server-side caching. No API keys required.
+
+## New Files
+
+### `backend/routers/news.py` -- async RSS aggregator
+- 9 global feeds: CNBC Markets, Reuters Business, Reuters Markets, Yahoo Finance,
+  ET Markets, ET Top, Business Standard, Moneycontrol, Livemint
+- httpx.AsyncClient + asyncio.gather for concurrent parallel fetch (all feeds at once)
+- xml.etree.ElementTree RSS parsing (zero extra dependencies)
+- In-memory TTL cache: 1800s (30 min) with automatic refresh
+- Sentiment engine: POSITIVE / NEGATIVE / NEUTRAL via keyword sets
+- Region tagger: INDIA / GLOBAL per feed source
+- Category tagger: EQUITIES / MACRO / FLOWS / EARNINGS / COMMODITIES / FOREX / IPO / CRYPTO / OTHER
+- Dedup by URL, sorted by published_ts desc, 50-item cap
+- GET /api/news endpoint
+
+## Modified Files
+
+### `backend/main.py`
+- Added news.router import and include_router registration
+
+### `frontend/src/api/client.ts`
+- Added NewsItem type (title, url, source, published, published_ts, summary, sentiment, region, category)
+- Added NewsResponse type + fetchNews() function
+
+### `frontend/src/pages/Dashboard.tsx`
+- Added NewsSection component with:
+  * Category filter bar (ALL + 8 categories) with color-coded buttons
+  * Region filter (ALL / INDIA / GLOBAL) tabs
+  * Responsive auto-fill grid (minmax 260px cards)
+  * NewsCard: source + region + category badges, 3-line headline,
+    sentiment badge (green/red/grey), relative time, external link icon
+  * "Show 12 / Show all N articles" toggle
+  * Cache-age display + manual Refresh button
+  * 5-minute auto-refetch via useQuery
+- Placed NewsSection between Row 3 (F&O Flows) and Row 4 (Sector Heatmap)
+
+---
+
 # Version 4.16.0
 
 Phase KU -- Vedic Kundli + W.D. Gann Intelligence Layer
