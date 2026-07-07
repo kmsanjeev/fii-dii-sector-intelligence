@@ -271,6 +271,21 @@ export const fetchHealth        = () => api.get('/health').then(r => r.data)
 export const fetchDataStatus    = () => api.get('/data/status').then(r => r.data)
 export const fetchEngineList    = () => api.get('/data/engines').then(r => r.data)
 
+// Phase News — RSS aggregator
+export type NewsItem = {
+  title:        string
+  url:          string
+  source:       string
+  published:    string   // ISO 8601
+  published_ts: number   // unix timestamp
+  summary:      string
+  sentiment:    'POSITIVE' | 'NEGATIVE' | 'NEUTRAL'
+  region:       'INDIA' | 'GLOBAL' | 'US' | 'ASIA'
+  category:     string   // EQUITIES | MACRO | COMMODITIES | FOREX | FLOWS | EARNINGS | IPO | OTHER
+}
+export type NewsResponse = { items: NewsItem[]; cached_at: number; count: number }
+export const fetchNews = () => api.get<NewsResponse>('/news').then(r => r.data)
+
 // Phase 14 — AI Chat (separate instance with longer timeout for multi-round Groq tool calls)
 const chatApi = axios.create({ baseURL: '/api', timeout: 60000 })
 export type ChatResponseData = { reply: string; session_id: string; intent: string }

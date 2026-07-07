@@ -2,12 +2,13 @@
  * Dashboard — Professional infographic redesign
  * Design system: high-contrast text, rich navy card palette, visual data encoding
  */
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import {
   fetchMarketContext, fetchParticipantLatest, fetchSectors,
-  fetchWatchlist, fetchCatalysts, fetchDeals,
-  type MarketContext, type ParticipantLatest, type Sector,
+  fetchWatchlist, fetchCatalysts, fetchDeals, fetchNews,
+  type MarketContext, type ParticipantLatest, type Sector, type NewsItem,
 } from '../api/client'
 import { ScoreGauge }   from '../components/platform/ScoreGauge'
 import { CapFlowBadge } from '../components/platform/CapFlowBadge'
@@ -737,6 +738,205 @@ function EmergeCard({ stock }: { stock: import('../api/client').Stock }) {
   )
 }
 
+// ─── News Section ─────────────────────────────────────────────────────────────
+
+const SENT_STYLE: Record<string, React.CSSProperties> = {
+  POSITIVE: { background: '#061A0E', color: '#22D35E', border: '1px solid #22D35E44' },
+  NEGATIVE: { background: '#1A0408', color: '#F44B4B', border: '1px solid #F44B4B44' },
+  NEUTRAL:  { background: '#0E1420', color: '#64748B', border: '1px solid #1E2D44'   },
+}
+const CAT_COLOR: Record<string, string> = {
+  EQUITIES:    '#3BAEF0',
+  MACRO:       '#F5A524',
+  COMMODITIES: '#C668E8',
+  FOREX:       '#22D35E',
+  FLOWS:       '#60A5FA',
+  EARNINGS:    '#FB923C',
+  IPO:         '#E879F9',
+  CRYPTO:      '#FACC15',
+  OTHER:       '#64748B',
+}
+
+function _relTime(ts: number): string {
+  const diff = Math.floor(Date.now() / 1000) - ts
+  if (diff < 60)   return `${diff}s ago`
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+  if (diff < 86400)return `${Math.floor(diff / 3600)}h ago`
+  return `${Math.floor(diff / 86400)}d ago`
+}
+
+const ALL_CATS = ['ALL', 'EQUITIES', 'MACRO', 'FLOWS', 'EARNINGS', 'COMMODITIES', 'FOREX', 'IPO', 'OTHER']
+
+function NewsCard({ item }: { item: NewsItem }) {
+  const catColor = CAT_COLOR[item.category] ?? '#64748B'
+  return (
+    <a
+      href={item.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ textDecoration: 'none', display: 'block' }}
+    >
+      <div style={{
+        ...CARD,
+        padding: '14px',
+        display: 'flex', flexDirection: 'column', gap: 8,
+        transition: 'all 0.18s', height: '100%', boxSizing: 'border-box',
+      }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = '#2D4A6B'; e.currentTarget.style.boxShadow = '0 4px 16px #0008'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = '#1E2D44'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none' }}
+      >
+        {/* Top meta row */}
+        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{
+            fontSize: 8, fontWeight: 700, padding: '2px 5px', borderRadius: 3,
+            background: '#0A1628', color: C.blue, border: `1px solid ${C.blue}44`,
+            textTransform: 'uppercase', letterSpacing: 0.5, whiteSpace: 'nowrap',
+          }}>{item.source}</span>
+          <span style={{
+            fontSize: 8, fontWeight: 700, padding: '2px 5px', borderRadius: 3,
+            background: item.region === 'INDIA' ? '#0A1A08' : '#040E22',
+            color: item.region === 'INDIA' ? '#22D35E' : '#3BAEF0',
+            border: `1px solid ${item.region === 'INDIA' ? '#22D35E' : '#3BAEF0'}44`,
+          }}>{item.region}</span>
+          <span style={{
+            fontSize: 8, fontWeight: 700, padding: '2px 5px', borderRadius: 3,
+            background: `${catColor}14`, color: catColor, border: `1px solid ${catColor}44`,
+          }}>{item.category}</span>
+        </div>
+
+        {/* Headline */}
+        <div style={{
+          color: C.h1, fontSize: 12, fontWeight: 700, lineHeight: 1.45,
+          display: '-webkit-box',
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+          flex: 1,
+        }}>{item.title}</div>
+
+        {/* Bottom row: sentiment + time + link icon */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{
+            fontSize: 8, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
+            ...SENT_STYLE[item.sentiment],
+          }}>{item.sentiment}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span style={{ color: C.dim, fontSize: 9 }}>{_relTime(item.published_ts)}</span>
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style={{ opacity: 0.4 }}>
+              <path d="M5 2H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V7M8 1h3m0 0v3m0-3L5.5 6.5" stroke={C.muted} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </a>
+  )
+}
+
+function NewsSection() {
+  const [cat, setCat]         = useState('ALL')
+  const [region, setRegion]   = useState<'ALL'|'INDIA'|'GLOBAL'>('ALL')
+  const [showAll, setShowAll] = useState(false)
+
+  const { data, isLoading, refetch, dataUpdatedAt } = useQuery({
+    queryKey: ['news'],
+    queryFn:  fetchNews,
+    refetchInterval: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+  })
+
+  const items = data?.items ?? []
+  const filtered = items.filter(it =>
+    (cat === 'ALL'    || it.category === cat) &&
+    (region === 'ALL' || it.region === region),
+  )
+  const displayed = showAll ? filtered : filtered.slice(0, 12)
+
+  const cacheAge = data?.cached_at
+    ? Math.round((Date.now() / 1000 - data.cached_at) / 60)
+    : null
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={LABEL}>MARKET NEWS &amp; INTELLIGENCE</div>
+          {cacheAge !== null && (
+            <span style={{ color: C.dim, fontSize: 9 }}>
+              cached {cacheAge}m ago
+            </span>
+          )}
+        </div>
+        <button
+          onClick={() => refetch()}
+          style={{
+            background: 'transparent', border: `1px solid #1E2D44`, borderRadius: 5,
+            color: C.blue, fontSize: 10, fontWeight: 600, padding: '4px 10px',
+            cursor: 'pointer',
+          }}
+        >Refresh</button>
+      </div>
+
+      {/* Filters */}
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+        {/* Region */}
+        {(['ALL', 'INDIA', 'GLOBAL'] as const).map(r => (
+          <button key={r} onClick={() => setRegion(r)} style={{
+            background: region === r ? '#1E3A5F' : 'transparent',
+            border: `1px solid ${region === r ? '#3BAEF0' : '#1E2D44'}`,
+            borderRadius: 4, color: region === r ? C.blue : C.muted,
+            fontSize: 9, fontWeight: 700, padding: '3px 8px', cursor: 'pointer',
+            letterSpacing: 0.5,
+          }}>{r}</button>
+        ))}
+        <div style={{ width: 1, height: 14, background: '#1E2D44', margin: '0 2px' }} />
+        {/* Category */}
+        {ALL_CATS.map(c => (
+          <button key={c} onClick={() => setCat(c)} style={{
+            background: cat === c ? `${CAT_COLOR[c] ?? '#3BAEF0'}22` : 'transparent',
+            border: `1px solid ${cat === c ? (CAT_COLOR[c] ?? '#3BAEF0') + '66' : '#1E2D44'}`,
+            borderRadius: 4,
+            color: cat === c ? (CAT_COLOR[c] ?? C.blue) : C.muted,
+            fontSize: 9, fontWeight: 700, padding: '3px 8px', cursor: 'pointer',
+            letterSpacing: 0.3,
+          }}>{c}</button>
+        ))}
+      </div>
+
+      {/* Grid */}
+      {isLoading ? (
+        <div style={{ ...CARD, padding: 32, textAlign: 'center', color: C.dim, fontSize: 12 }}>
+          Fetching news from global sources...
+        </div>
+      ) : filtered.length === 0 ? (
+        <div style={{ ...CARD, padding: 32, textAlign: 'center', color: C.dim, fontSize: 12 }}>
+          No news items available for the selected filter.
+        </div>
+      ) : (
+        <>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+            gap: 8,
+          }}>
+            {displayed.map((it, i) => <NewsCard key={`${it.url}-${i}`} item={it} />)}
+          </div>
+          {filtered.length > 12 && (
+            <div style={{ textAlign: 'center' }}>
+              <button onClick={() => setShowAll(v => !v)} style={{
+                background: 'transparent', border: `1px solid #1E2D44`, borderRadius: 5,
+                color: C.blue, fontSize: 11, fontWeight: 600, padding: '6px 20px', cursor: 'pointer',
+              }}>
+                {showAll ? 'Show less' : `Show all ${filtered.length} articles`}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 
 export function Dashboard() {
@@ -776,6 +976,9 @@ export function Dashboard() {
 
       {/* Row 3: Participant Flow Bars */}
       {flows && part && <FlowBars flows={flows} part={part} isMobile={isMobile} />}
+
+      {/* Row 3B: News Section */}
+      <NewsSection />
 
       {/* Row 4: Sector Heatmap + Side Panel */}
       {allSectors.length > 0 && (
