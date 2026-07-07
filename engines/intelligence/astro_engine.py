@@ -569,38 +569,82 @@ class AstroEngine:
             retrograde = primary_pos.get("retrograde", False)
             state = primary_pos.get("state_label", "NEUTRAL")
 
-            # Specific retrograde warnings per books
+            # Plain-English reason text for each condition
             mercury_retro = positions.get("Mercury", {}).get("retrograde", False)
+            sign_name = primary_pos.get("sign", "")
             if primary_planet in ("Mercury", "Rahu") and mercury_retro:
                 action = "CAUTION"
-                reason = "Mercury retrograde -- avoid new positions in Mercury-ruled sectors"
+                reason = (
+                    f"Mercury is moving backward (retrograde) today -- this disrupts "
+                    f"communication, contracts, and decision-making in {sector} stocks. "
+                    f"Avoid opening new positions until Mercury turns direct."
+                )
             elif retrograde and primary_planet not in ("Rahu", "Ketu"):
                 action = "EXIT"
-                reason = f"{primary_planet} retrograde -- ruling planet moving backward"
+                reason = (
+                    f"{primary_planet} -- the planet governing {sector} stocks -- is retrograde "
+                    f"(moving backward) in {sign_name}. A retrograde ruling planet weakens sector "
+                    f"momentum and signals a higher risk of corrections or consolidation."
+                )
             elif state == "DEBILITATED":
                 action = "AVOID"
-                reason = f"{primary_planet} debilitated in {primary_pos.get('sign', '')} -- very weak"
+                reason = (
+                    f"{primary_planet} (ruler of {sector}) is in {sign_name} -- its weakest zodiac "
+                    f"position, where it has minimal positive energy to support sector performance. "
+                    f"Strong astrological headwind for {sector} stocks."
+                )
             elif eclipse_info["eclipse_active"] and eclipse_info["eclipse_type"] == "KETU":
                 action = "AVOID"
-                reason = "Ketu eclipse active -- downtrend warning for all sectors"
+                reason = (
+                    "A Ketu eclipse is active -- this signals sudden downward pressure and "
+                    "uncertainty across sectors. High-risk zone; avoid new positions and "
+                    "consider reducing exposure."
+                )
             elif eclipse_info["eclipse_active"] and eclipse_info["eclipse_type"] == "RAHU":
                 action = "HOLD"
-                reason = "Rahu eclipse -- uptrend potential but high volatility"
+                reason = (
+                    "A Rahu eclipse is active -- uptrend potential exists but volatility is "
+                    "elevated. Sudden reversals are possible. Hold existing positions with "
+                    "tight stop-losses; avoid chasing momentum."
+                )
             elif astro_score >= 25:
                 action = "BUY"
-                reason = f"{primary_planet} strong in {primary_pos.get('sign', '')} with benefic aspects"
+                state_desc = {
+                    "EXALTED": "at peak strength", "OWN_SIGN": "strong in its own sign"
+                }.get(state, "in a favorable position")
+                reason = (
+                    f"{primary_planet} is {state_desc} in {sign_name} and receiving supportive "
+                    f"planetary aspects. Favorable astrological conditions -- a planetary tailwind "
+                    f"for {sector} stocks."
+                )
             elif astro_score >= 5:
                 action = "HOLD"
-                reason = "Neutral to positive planetary alignment"
+                reason = (
+                    f"Planetary alignment for {sector} is mildly positive. {primary_planet} in "
+                    f"{sign_name} faces no major obstacles. Suitable for holding existing "
+                    f"positions; no strong entry or exit signal from astrology."
+                )
             elif astro_score >= -15:
                 action = "HOLD"
-                reason = "Mixed planetary signals -- no strong direction"
+                reason = (
+                    f"Mixed planetary signals for {sector}: {primary_planet} in {sign_name} "
+                    f"faces both supportive and challenging aspects. No clear directional bias "
+                    f"from astrology -- monitor price action carefully."
+                )
             elif astro_score >= -35:
                 action = "CAUTION"
-                reason = f"{primary_planet} under pressure from malefic aspects"
+                reason = (
+                    f"{primary_planet} (ruler of {sector}) in {sign_name} is under pressure from "
+                    f"challenging planetary alignments today. The sector may underperform the "
+                    f"broader market. Consider reducing position sizes or tightening stop-losses."
+                )
             else:
                 action = "EXIT"
-                reason = f"{primary_planet} under severe malefic influence"
+                reason = (
+                    f"{primary_planet} (ruler of {sector}) in {sign_name} faces severe stress "
+                    f"from multiple adverse planetary positions. Strong astrological headwind -- "
+                    f"Vedic astrology signals caution or reduced exposure for {sector} stocks."
+                )
 
             # Build key aspects summary
             key_asps = []

@@ -283,6 +283,29 @@ function OverviewTab({ kundli, interp }: { kundli: KundliData; interp: Interpret
           <span style={{ fontSize: FS.body, color: T.textSub, lineHeight: 1.5 }}>{f}</span>
         </div>
       ))}
+
+      {/* Context: what the Kundli score measures vs AstroSignal */}
+      <div style={{
+        marginTop: 14, padding: '12px 14px', borderRadius: 6,
+        background: `${T.purple}09`, border: `1px solid ${T.purple}20`,
+      }}>
+        <div style={{
+          fontSize: FS.caption, color: T.purple, fontWeight: FW.heavy,
+          letterSpacing: 1, textTransform: 'uppercase' as const, marginBottom: 6,
+        }}>
+          What the Kundli score measures
+        </div>
+        <div style={{ fontSize: FS.body, color: T.textSub, lineHeight: 1.6, marginBottom: 8 }}>
+          This score is based on the company's <span style={{ color: T.text, fontWeight: FW.bold }}>natal birth chart</span> — the exact planetary positions at the time of its IPO ({kundli.entity.inception_date}). It reflects the intrinsic astrological quality of the company's founding moment and is a fixed, stock-specific reading.
+        </div>
+        <div style={{
+          fontSize: FS.body, color: T.textSub, lineHeight: 1.6,
+          paddingTop: 8, borderTop: `1px solid ${T.border}`,
+        }}>
+          <span style={{ color: T.amber, fontWeight: FW.bold }}>Why this may differ from the Astro Signal score:</span>
+          {' '}The Astro Signal card (above) measures today's planetary positions for the sector's ruling planets — a dynamic, daily reading that applies equally to all stocks in the sector. This Kundli score reflects only this company's natal planetary configuration and does not change day to day. A company can have a strong natal chart yet face a weak sector planetary period today, or vice versa. Both are valid and complementary.
+        </div>
+      </div>
     </div>
   )
 }
