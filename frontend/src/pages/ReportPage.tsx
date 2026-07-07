@@ -648,7 +648,7 @@ export function ReportPage() {
               label="Smart Money" size={88}
             />
             <ArcGauge value={Number(tec?.technical_score ?? null) || null} label="Technical" size={88} />
-            <DivergingGauge value={kundli?.astro_score ?? Number(ast?.astro_score ?? null) || null} label="Vedic Astro" size={88} />
+            <DivergingGauge value={kundli?.astro_score ?? (Number(ast?.astro_score ?? null) || null)} label="Vedic Astro" size={88} />
           </div>
         </div>
 
