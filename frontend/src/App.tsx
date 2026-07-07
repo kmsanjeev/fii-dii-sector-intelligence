@@ -19,6 +19,7 @@ import { ExecutionPage } from './pages/ExecutionPage'
 import { LoginPage } from './pages/LoginPage'
 import { AdminPage } from './pages/AdminPage'
 import { ThemesPage } from './pages/ThemesPage'
+import { ReportPage } from './pages/ReportPage'
 import './index.css'
 
 const queryClient = new QueryClient({
@@ -56,6 +57,8 @@ export default function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/themes" element={<ThemesPage />} />
+            <Route path="/report/:symbol" element={<ReportPage />} />
+            <Route path="/report" element={<ReportPage />} />
           </Routes>
         </AppShell>
       </BrowserRouter>
