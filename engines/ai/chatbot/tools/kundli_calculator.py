@@ -74,6 +74,27 @@ DASHA_YEARS = {
 DASHA_SEQUENCE = ["Ketu","Venus","Sun","Moon","Mars","Rahu","Jupiter","Saturn","Mercury"]
 TOTAL_DASHA_YEARS = 120
 
+# ── Panchang constants ────────────────────────────────────────────────────────
+TITHI_NAMES = [
+    "Pratipada","Dwitiya","Tritiya","Chaturthi","Panchami","Shashthi",
+    "Saptami","Ashtami","Navami","Dashami","Ekadashi","Dwadashi",
+    "Trayodashi","Chaturdashi","Purnima",                              # Shukla 1-15
+    "Pratipada","Dwitiya","Tritiya","Chaturthi","Panchami","Shashthi",
+    "Saptami","Ashtami","Navami","Dashami","Ekadashi","Dwadashi",
+    "Trayodashi","Chaturdashi","Amavasya",                             # Krishna 16-30
+]
+YOGA_NAMES = [
+    "Vishkambha","Priti","Ayushman","Saubhagya","Shobhana","Atiganda",
+    "Sukarma","Dhriti","Shula","Ganda","Vriddhi","Dhruva","Vyaghata",
+    "Harshana","Vajra","Siddhi","Vyatipata","Variyana","Parigha",
+    "Shiva","Siddha","Sadhya","Shubha","Shukla","Brahma","Indra","Vaidhriti",
+]
+KARANA_MOVABLE = ["Bava","Balava","Kaulava","Taitila","Garaja","Vanija","Vishti"]
+VARA_DAYS  = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+VARA_LORDS = ["Sun","Moon","Mars","Mercury","Jupiter","Venus","Saturn"]
+# Navamsa (D9) first-navamsa sign index by rashi element
+_D9_START  = {0:0, 1:9, 2:6, 3:3, 4:0, 5:9, 6:6, 7:3, 8:0, 9:9, 10:6, 11:3}
+
 # ── City coordinate lookup ────────────────────────────────────────────────────
 CITY_COORDS: dict[str, tuple[float, float]] = {
     "mumbai":(19.0760,72.8777),"delhi":(28.6139,77.2090),"new delhi":(28.6139,77.2090),
@@ -132,6 +153,61 @@ CITY_COORDS: dict[str, tuple[float, float]] = {
     "vancouver":(49.2827,-123.1207),"san francisco":(37.7749,-122.4194),
     "los angeles":(34.0522,-118.2437),"chicago":(41.8781,-87.6298),
     "washington":(38.9072,-77.0369),
+}
+
+
+# ── Lal Kitab Farmans (upaya remedies by planet) ─────────────────────────────
+_LAL_KITAB: dict[str, dict] = {
+    "Sun":     {"weak":["Donate wheat, copper or jaggery to the poor on Sundays",
+                        "Offer Surya Arghya (water) daily at sunrise facing east",
+                        "Feed monkeys or a red cow with jaggery on Sundays"],
+                "h":{6:"Avoid ego; worship Sun deity and superiors with respect",
+                     8:"Donate copper items on Sundays; stay away from alcohol",
+                     12:"Help the visually impaired; donate to hospitals on Sundays"}},
+    "Moon":    {"weak":["Feed crows or fish with rice and milk every Monday",
+                        "Keep a small silver item (coin or ring) near head while sleeping",
+                        "Offer white flowers or milk to the Moon on Mondays"],
+                "h":{6:"Respect mother; serve cows and women on Mondays",
+                     8:"Float milk in a river on Monday; keep silver in wallet",
+                     12:"Donate white items to elderly women on Mondays"}},
+    "Mars":    {"weak":["Feed sweet chapati (with jaggery) to dogs on Tuesdays",
+                        "Donate red lentils (masoor dal) and copper on Tuesdays",
+                        "Plant red flowers at home; keep a red cloth in the house"],
+                "h":{1:"Donate red items on Tuesday; control anger consciously",
+                     2:"Feed animals before eating your own meals daily",
+                     4:"Plant a pomegranate tree at your home",
+                     7:"Observe fast on Tuesdays; worship Lord Hanuman",
+                     8:"Offer sindoor to Hanuman every Tuesday morning",
+                     12:"Donate blood; feed red-coloured food to cows on Tuesdays"}},
+    "Mercury": {"weak":["Feed green vegetables or grass to cows on Wednesdays",
+                        "Donate green moong dal or green cloth on Wednesdays",
+                        "Keep a green emerald-coloured object in your workspace"],
+                "h":{}},
+    "Jupiter": {"weak":["Donate yellow items (turmeric, chickpeas, cloth) on Thursdays",
+                        "Apply tilak of turmeric or sandalwood on forehead on Thursdays",
+                        "Respect your Guru, teachers, father and all elder figures"],
+                "h":{6:"Donate yellow items to teachers; touch the feet of Guru",
+                     8:"Never accept bribes or unethical money; stay principled",
+                     12:"Donate to ashrams, temples or spiritual institutions"}},
+    "Venus":   {"weak":["Donate white items (sugar, rice, white cloth) on Fridays",
+                        "Donate to women's charities or provide for young girls on Friday",
+                        "Serve your spouse or mother with unconditional devotion"],
+                "h":{}},
+    "Saturn":  {"weak":["Feed mustard oil and black sesame (til) to crows on Saturdays",
+                        "Donate black cloth and urad dal to the needy on Saturdays",
+                        "Serve the elderly, poor, disabled or homeless people selflessly",
+                        "Pour mustard oil at the base of a peepal tree on Saturdays"],
+                "h":{1:"Donate shoes or slippers to the poor on Saturday",
+                     4:"Keep or feed stray black dogs; plant a peepal tree near home",
+                     7:"Serve your spouse selflessly; dissolve ego in relationships"}},
+    "Rahu":    {"weak":["Feed ants with sugar or wheat flour every day",
+                        "Keep a multi-coloured blanket in the home",
+                        "Donate a coconut wrapped in a cloth to a temple"],
+                "h":{}},
+    "Ketu":    {"weak":["Donate spotted or multi-coloured blankets to the poor",
+                        "Feed stray dogs and cats every day",
+                        "Perform Pitru Tarpan (ancestor water offering) on Amavasya"],
+                "h":{}},
 }
 
 
@@ -300,24 +376,32 @@ def _vimshottari(moon_nak_idx: int, elapsed: float, birth_utc: datetime) -> dict
     # Antardasha
     antardasha = {}
     pratyantardasha = {}
+    all_ads: list[dict] = []
     maha_pl = cur_maha["planet"]
     maha_start = datetime.strptime(cur_maha["start_date"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
     maha_idx = DASHA_SEQUENCE.index(maha_pl)
 
     ad_cur = maha_start
     for i in range(len(DASHA_SEQUENCE)):
-        ad_pl = DASHA_SEQUENCE[(maha_idx + i) % len(DASHA_SEQUENCE)]
+        ad_pl  = DASHA_SEQUENCE[(maha_idx + i) % len(DASHA_SEQUENCE)]
         ad_yrs = DASHA_YEARS[maha_pl] * DASHA_YEARS[ad_pl] / TOTAL_DASHA_YEARS
         ad_end = ad_cur + timedelta(days=ad_yrs * 365.25)
-        if ad_cur <= today <= ad_end:
+        is_now = ad_cur <= today <= ad_end
+        all_ads.append({
+            "planet":     ad_pl,
+            "start_date": ad_cur.strftime("%Y-%m-%d"),
+            "end_date":   ad_end.strftime("%Y-%m-%d"),
+            "years":      round(ad_yrs, 2),
+            "is_current": is_now,
+        })
+        if is_now and not antardasha:
             antardasha = {"planet": ad_pl,
                           "start_date": ad_cur.strftime("%Y-%m-%d"),
                           "end_date":   ad_end.strftime("%Y-%m-%d")}
-            # Pratyantardasha
             pa_cur = ad_cur
-            ad_i = DASHA_SEQUENCE.index(ad_pl)
+            ad_i   = DASHA_SEQUENCE.index(ad_pl)
             for j in range(len(DASHA_SEQUENCE)):
-                pa_pl = DASHA_SEQUENCE[(ad_i + j) % len(DASHA_SEQUENCE)]
+                pa_pl  = DASHA_SEQUENCE[(ad_i + j) % len(DASHA_SEQUENCE)]
                 pa_yrs = DASHA_YEARS[maha_pl] * DASHA_YEARS[ad_pl] * DASHA_YEARS[pa_pl] / (TOTAL_DASHA_YEARS ** 2)
                 pa_end = pa_cur + timedelta(days=pa_yrs * 365.25)
                 if pa_cur <= today <= pa_end:
@@ -326,14 +410,14 @@ def _vimshottari(moon_nak_idx: int, elapsed: float, birth_utc: datetime) -> dict
                                        "end_date":   pa_end.strftime("%Y-%m-%d")}
                     break
                 pa_cur = pa_end
-            break
         ad_cur = ad_end
 
     return {
-        "mahadasha":       cur_maha,
-        "antardasha":      antardasha,
-        "pratyantardasha": pratyantardasha,
-        "all_mahadashas":  all_mds,
+        "mahadasha":        cur_maha,
+        "antardasha":       antardasha,
+        "pratyantardasha":  pratyantardasha,
+        "all_mahadashas":   all_mds,
+        "all_antardashas":  all_ads,
     }
 
 
@@ -646,6 +730,10 @@ def _build_formatted_report(
     dasha: dict, all_houses: dict, fh: dict, yogas: list,
     drishti: list, bull: list, bear: list, narr: str,
     score: float, action: str,
+    panchang: Optional[dict] = None,
+    doshas: Optional[list] = None,
+    vargas: Optional[dict] = None,
+    remedies: Optional[list] = None,
 ) -> str:
     """Build a complete pre-formatted Vedic Kundli report as text."""
     lines: list[str] = []
@@ -662,6 +750,21 @@ def _build_formatted_report(
     lines.append(f"  UTC Time    : {birth_details.get('utc_datetime','')}")
     lines.append(f"  Ayanamsha   : {birth_details.get('ayanamsha',0):.4f} deg ({birth_details.get('ayanamsha_type','')})")
     lines.append("")
+
+    # Panchang
+    if panchang:
+        lines += ["PANCHANG  (VEDIC ALMANAC -- 5 LIMBS)", dash]
+        t  = panchang.get("tithi",    {})
+        nk = panchang.get("nakshatra",{})
+        yg = panchang.get("yoga",     {})
+        kr = panchang.get("karana",   {})
+        vr = panchang.get("vara",     {})
+        lines.append(f"  Tithi     : {t.get('number','')} - {t.get('name','')}  [{t.get('phase','')}]")
+        lines.append(f"  Nakshatra : {nk.get('name','')} Pada {nk.get('pada','')}  (lord: {nk.get('lord','')})")
+        lines.append(f"  Yoga      : {yg.get('number','')} - {yg.get('name','')}")
+        lines.append(f"  Karana    : {kr.get('number','')} - {kr.get('name','')}  ({kr.get('type','')})")
+        lines.append(f"  Vara      : {vr.get('name','')}  (lord: {vr.get('lord','')})")
+        lines.append("")
 
     # Lagna
     lines += ["LAGNA (ASCENDANT)", dash]
@@ -710,13 +813,23 @@ def _build_formatted_report(
         pp = prat.get("planet","")
         lines.append(f"  Pratyantardasha: {pp:<10} ends {prat.get('end_date','')[:10]}")
     lines.append("")
-    lines.append("  Mahadasha Timeline:")
+    lines.append("  Mahadasha Timeline (120-year Vimshottari cycle):")
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     for m in (dasha.get("all_mahadashas") or [])[:12]:
-        marker = "  <-- NOW" if (
-            m.get("start_date","") <= datetime.now(timezone.utc).strftime("%Y-%m-%d") <= m.get("end_date","")
-        ) else ""
+        marker = "  <-- NOW" if m.get("start_date","") <= today_str <= m.get("end_date","") else ""
         lines.append(f"    {m.get('planet',''):<10} {m.get('start_date','')[:10]} to {m.get('end_date','')[:10]}{marker}")
     lines.append("")
+
+    # Antardasha timeline within current Mahadasha
+    all_ads = dasha.get("all_antardashas") or []
+    if all_ads and maha:
+        lines.append(f"  Antardasha Timeline (within {maha.get('planet','')} Mahadasha):")
+        lines.append(f"  {'Antardasha':<12}  {'Start':<12}  {'End':<12}  {'Yrs':>5}")
+        lines.append(f"  {'-'*12}  {'-'*12}  {'-'*12}  {'-'*5}")
+        for ad in all_ads:
+            marker = "  <-- NOW" if ad.get("is_current") else ""
+            lines.append(f"  {ad.get('planet',''):<12}  {ad.get('start_date','')[:10]}  {ad.get('end_date','')[:10]}  {ad.get('years',0):>5.2f}{marker}")
+        lines.append("")
 
     # Yogas
     lines += ["ACTIVE YOGAS", dash]
@@ -734,6 +847,21 @@ def _build_formatted_report(
             lines.append(f"      Effect: {y.get('effect','')}")
     if not yogas:
         lines.append("  No major yogas detected in this chart.")
+    lines.append("")
+
+    # Doshas
+    lines += ["DOSHAS  (AFFLICTIONS & WARNINGS)", dash]
+    if doshas:
+        for d in doshas:
+            sev = d.get("severity","").upper()
+            lines.append(f"  [{sev}]  {d.get('name','')}  (Planets: {d.get('planets','')} in H{d.get('house','')})")
+            lines.append(f"    {d.get('description','')}")
+        lines.append("")
+        lines.append("  Dosha Remedies (see Lal Kitab Farmans section below for full list):")
+        for d in doshas:
+            lines.append(f"    {d.get('name','')} -> {d.get('remedy','')}")
+    else:
+        lines.append("  No classic doshas detected in this chart.")
     lines.append("")
 
     # All 12 houses
@@ -773,6 +901,26 @@ def _build_formatted_report(
         lines.append(f"    Strength   : {hd.get('strength','moderate').upper()}")
         lines.append(f"    Signif.    : {hd.get('signification','')}")
         lines.append("")
+
+    # Divisional charts
+    if vargas:
+        lines += ["DIVISIONAL CHARTS  (VARGA)", dash]
+        d9 = vargas.get("d9_navamsa", [])
+        d10 = vargas.get("d10_dasamsa", [])
+        if d9:
+            lines.append("  D9 - NAVAMSA  (Soul's Journey | Marriage | Dharma | Spiritual Path)")
+            lines.append(f"  {'Planet':<10}  {'Rashi (D1)':<15}  {'Navamsa Sign (D9)':<18}  Lord")
+            lines.append(f"  {'-'*10}  {'-'*15}  {'-'*18}  {'-'*8}")
+            for r in d9:
+                lines.append(f"  {r.get('planet',''):<10}  {r.get('rashi',''):<15}  {r.get('navamsa_sign',''):<18}  {r.get('navamsa_lord','')}")
+            lines.append("")
+        if d10:
+            lines.append("  D10 - DASAMSA  (Career | Public Status | Professional Life)")
+            lines.append(f"  {'Planet':<10}  {'Rashi (D1)':<15}  {'Dasamsa Sign (D10)':<18}  Lord")
+            lines.append(f"  {'-'*10}  {'-'*15}  {'-'*18}  {'-'*8}")
+            for r in d10:
+                lines.append(f"  {r.get('planet',''):<10}  {r.get('rashi',''):<15}  {r.get('dasamsa_sign',''):<18}  {r.get('dasamsa_lord','')}")
+            lines.append("")
 
     # Drishti
     lines += ["PLANETARY ASPECTS  (VEDIC DRISHTI)", dash]
@@ -816,11 +964,272 @@ def _build_formatted_report(
     if line_buf.strip():
         lines.append(line_buf)
     lines.append("")
+    # Lal Kitab Remedies
+    if remedies:
+        lines += ["LAL KITAB REMEDIES  (FARMANS / UPAYAS)", dash]
+        lines.append("  Practical remedies for chart afflictions (Lal Kitab tradition, 1939-1952).")
+        lines.append("  These are charitable deeds, not superstition -- most involve giving or serving.")
+        lines.append("")
+        for idx, rem in enumerate(remedies, 1):
+            lines.append(f"  [{idx}] {rem.get('reason','')}")
+            for farman in rem.get("farmans", []):
+                lines.append(f"      - {farman}")
+            lines.append("")
+        lines.append("  Ethical note: Remedies are positive actions (charity, service, worship).")
+        lines.append("  They supplement -- never replace -- professional and practical guidance.")
+        lines.append("")
+
     lines.append("  NOTE: Chart computed via PyEphem + Lahiri ayanamsha. Dignities are")
     lines.append("  calculated (not paraphrased). For major decisions, consult a Jyotishi.")
     lines.append(sep)
 
     return "\n".join(lines)
+
+
+def _compute_panchang(sun_sid_lon: float, moon_sid_lon: float, birth_local: datetime) -> dict:
+    """Compute the five Panchang limbs at birth: Tithi, Nakshatra, Yoga, Karana, Vara.
+    birth_local must be the local (IST or timezone-aware) birth datetime so that Vara reflects the local date."""
+    diff = (moon_sid_lon - sun_sid_lon) % 360.0
+
+    # Tithi: every 12 degrees of Moon-Sun elongation
+    tithi_idx = int(diff / 12.0)               # 0-29
+    tithi_num = tithi_idx + 1                  # 1-30
+    tithi_name = TITHI_NAMES[tithi_idx]
+    tithi_phase = "Shukla (waxing)" if tithi_num <= 15 else "Krishna (waning)"
+
+    # Moon Nakshatra (already in planets, but re-derive for panchang completeness)
+    moon_nak = _nakshatra_info(moon_sid_lon)
+
+    # Yoga: (Sun + Moon) combined longitude / 13.333 deg per yoga
+    yoga_lon = (sun_sid_lon + moon_sid_lon) % 360.0
+    yoga_idx = int(yoga_lon * 27.0 / 360.0) % 27  # 0-26
+    yoga_name = YOGA_NAMES[yoga_idx]
+
+    # Karana: every 6 degrees of elongation
+    karana_num = int(diff / 6.0) + 1           # 1-60
+    if karana_num == 1:
+        karana_name, karana_type = "Kimstughna", "fixed"
+    elif 2 <= karana_num <= 57:
+        karana_name = KARANA_MOVABLE[(karana_num - 2) % 7]
+        karana_type = "movable"
+    elif karana_num == 58:
+        karana_name, karana_type = "Shakuni", "fixed"
+    elif karana_num == 59:
+        karana_name, karana_type = "Chatushpada", "fixed"
+    else:
+        karana_name, karana_type = "Naga", "fixed"
+
+    # Vara (weekday): use LOCAL birth date (not UTC). Python weekday 0=Mon...6=Sun → Sun=0 via (wd+1)%7
+    vara_idx  = (birth_local.weekday() + 1) % 7
+    vara_name = VARA_DAYS[vara_idx]
+    vara_lord = VARA_LORDS[vara_idx]
+
+    return {
+        "tithi":     {"number": tithi_num, "name": tithi_name, "phase": tithi_phase},
+        "nakshatra": {"name": moon_nak["name"], "pada": moon_nak["pada"], "lord": moon_nak["lord"]},
+        "yoga":      {"number": yoga_idx + 1, "name": yoga_name},
+        "karana":    {"number": karana_num, "name": karana_name, "type": karana_type},
+        "vara":      {"name": vara_name, "lord": vara_lord},
+    }
+
+
+def _doshas(planets: dict, lagna_idx: int) -> list[dict]:
+    """Detect classic Vedic doshas: Manglik, Shani, Guru-Chandal, Surya-Chandal, Shani-Chandra."""
+    out = []
+    mars   = planets.get("Mars",    {})
+    saturn = planets.get("Saturn",  {})
+    moon   = planets.get("Moon",    {})
+    rahu   = planets.get("Rahu",    {})
+    jupiter= planets.get("Jupiter", {})
+    sun    = planets.get("Sun",     {})
+
+    mars_h   = mars.get("house",    0)
+    sat_h    = saturn.get("house",  0)
+    moon_h   = moon.get("house",    0)
+    rahu_h   = rahu.get("house",    0)
+    jup_h    = jupiter.get("house", 0)
+    sun_h    = sun.get("house",     0)
+
+    # Manglik Dosha (Kuja Dosha): Mars in H1, H2, H4, H7, H8, H12
+    if mars_h in (1, 2, 4, 7, 8, 12):
+        out.append({
+            "name": "Manglik Dosha (Kuja Dosha)",
+            "planets": "Mars",
+            "house": mars_h,
+            "description": (
+                f"Mars in H{mars_h} — traditionally inauspicious for marriage; "
+                "can cause friction in partnerships unless partner is also Manglik."
+            ),
+            "severity": "moderate",
+            "remedy": "Marry someone who is also Manglik; perform Mangal path on Tuesdays; donate red lentils",
+        })
+
+    # Shani Dosha: Saturn in H1, H4, H7 from Lagna
+    if sat_h in (1, 4, 7):
+        out.append({
+            "name": "Shani Dosha",
+            "planets": "Saturn",
+            "house": sat_h,
+            "description": (
+                f"Saturn in H{sat_h} (Kendra from Lagna) — delays, obstacles, slow rewards; "
+                "strong discipline develops through adversity."
+            ),
+            "severity": "moderate",
+            "remedy": "Worship Lord Shiva on Saturdays; donate sesame oil and black items on Saturday",
+        })
+
+    # Shani Dosha from Moon: Saturn in 4th or 7th from Moon (if not already captured above)
+    if moon_h and sat_h:
+        sat_from_moon = (sat_h - moon_h) % 12 + 1
+        if sat_from_moon in (4, 7) and sat_h not in (1, 4, 7):
+            out.append({
+                "name": "Shani Dosha (from Moon)",
+                "planets": "Saturn",
+                "house": sat_h,
+                "description": (
+                    f"Saturn is H{sat_from_moon} from Moon — emotional restrictions, "
+                    "delays in domestic happiness, strained relationship with mother."
+                ),
+                "severity": "mild",
+                "remedy": "Chant Shani Stotra on Saturdays; feed crows and fish on Saturdays",
+            })
+
+    # Surya Chandal Dosha: Sun + Rahu in same house
+    if sun_h and rahu_h and sun_h == rahu_h:
+        out.append({
+            "name": "Surya Chandal Dosha",
+            "planets": "Sun + Rahu",
+            "house": sun_h,
+            "description": (
+                f"Sun and Rahu conjunct in H{sun_h} — ego conflicts with ambition; "
+                "challenges with authority figures, father; unconventional self-expression."
+            ),
+            "severity": "moderate",
+            "remedy": "Donate wheat and copper on Sundays; offer Surya Arghya daily at sunrise",
+        })
+
+    # Guru Chandal Dosha: Jupiter + Rahu in same house
+    if jup_h and rahu_h and jup_h == rahu_h:
+        out.append({
+            "name": "Guru Chandal Dosha",
+            "planets": "Jupiter + Rahu",
+            "house": jup_h,
+            "description": (
+                f"Jupiter and Rahu conjunct in H{jup_h} — wisdom distorted by worldly desire; "
+                "ethical conflicts; unconventional beliefs or teachers in life."
+            ),
+            "severity": "significant",
+            "remedy": "Donate yellow cloth and turmeric on Thursdays; respect all teachers sincerely",
+        })
+
+    # Shani-Chandra Yoga: Moon + Saturn in same house
+    if moon_h and sat_h and moon_h == sat_h:
+        out.append({
+            "name": "Shani-Chandra Yoga",
+            "planets": "Moon + Saturn",
+            "house": moon_h,
+            "description": (
+                f"Moon and Saturn conjunct in H{moon_h} — emotional suppression, melancholy tendency, "
+                "difficult early relationship with mother; develops stoic resilience over time."
+            ),
+            "severity": "moderate",
+            "remedy": "Feed crows and black sesame on Saturdays; worship Lord Shiva on Mondays",
+        })
+
+    return out
+
+
+def _navamsa_sign(sidereal_lon: float) -> str:
+    """D9 Navamsa sign: each sign has 9 parts of 3d20m. Fire=start Aries, Earth=Capricorn, Air=Libra, Water=Cancer."""
+    sign_idx    = int(sidereal_lon / 30.0) % 12
+    deg_in_sign = sidereal_lon % 30.0
+    navamsa_num = int(deg_in_sign * 9.0 / 30.0)   # 0-8
+    return SIGNS[(_D9_START[sign_idx] + navamsa_num) % 12]
+
+
+def _dasamsa_sign(sidereal_lon: float) -> str:
+    """D10 Dasamsa sign: 10 parts of 3 deg each. Odd signs start from same; even from 9th sign."""
+    sign_idx    = int(sidereal_lon / 30.0) % 12
+    deg_in_sign = sidereal_lon % 30.0
+    dasamsa_num = int(deg_in_sign / 3.0)           # 0-9
+    start = sign_idx if sign_idx % 2 == 0 else (sign_idx + 8) % 12
+    return SIGNS[(start + dasamsa_num) % 12]
+
+
+def _compute_vargas(planets_out: dict) -> dict:
+    """Compute D9 (Navamsa) and D10 (Dasamsa) for all 9 planets."""
+    ORDER = ["Sun","Moon","Mars","Mercury","Jupiter","Venus","Saturn","Rahu","Ketu"]
+    d9, d10 = [], []
+    for pname in ORDER:
+        pd = planets_out.get(pname)
+        if pd is None:
+            continue
+        lon = pd.get("longitude", 0.0)
+        d9_sign  = _navamsa_sign(lon)
+        d10_sign = _dasamsa_sign(lon)
+        d9.append({"planet": pname, "rashi": pd.get("sign",""), "navamsa_sign": d9_sign,
+                   "navamsa_lord": SIGN_RULERS[d9_sign]})
+        d10.append({"planet": pname, "rashi": pd.get("sign",""), "dasamsa_sign": d10_sign,
+                    "dasamsa_lord": SIGN_RULERS[d10_sign]})
+    return {"d9_navamsa": d9, "d10_dasamsa": d10}
+
+
+def _lal_kitab_remedies(planets: dict, doshas: list, yogas: list) -> list[dict]:
+    """Generate Lal Kitab farmans based on chart afflictions (debilitated/enemy planets, doshas, Kaal Sarp)."""
+    out: list[dict] = []
+    seen: set[str] = set()
+
+    # Weak/debilitated/enemy planets
+    for pname, pdata in planets.items():
+        dignity = pdata.get("dignity", "neutral")
+        house   = pdata.get("house", 0)
+        if dignity not in ("debilitated", "enemy"):
+            continue
+        pl_rem = _LAL_KITAB.get(pname, {})
+        farmans: list[str] = list(pl_rem.get("weak", []))[:2]
+        house_rem = pl_rem.get("h", {}).get(house)
+        if house_rem:
+            farmans.append(house_rem)
+        if farmans:
+            key = f"{pname}_weak"
+            if key not in seen:
+                seen.add(key)
+                out.append({
+                    "planet": pname,
+                    "reason": f"{pname} is {dignity} in H{house} ({pdata.get('sign','')})",
+                    "farmans": farmans,
+                })
+
+    # Dosha-specific remedies
+    for d in doshas:
+        pnames = d.get("planets", "")
+        key = f"dosha_{d.get('name','')}"
+        if key not in seen:
+            seen.add(key)
+            rem = d.get("remedy", "")
+            if rem:
+                out.append({
+                    "planet": pnames,
+                    "reason": d.get("name", ""),
+                    "farmans": [rem],
+                })
+
+    # Kaal Sarp Yoga
+    for y in yogas:
+        if y.get("name") == "Kaal Sarp Yoga" and "kaal_sarp" not in seen:
+            seen.add("kaal_sarp")
+            out.append({
+                "planet": "Rahu/Ketu",
+                "reason": "Kaal Sarp Yoga",
+                "farmans": [
+                    "Perform Kaal Sarp Dosh Nivaran Puja at a Shiva temple (especially Trimbakeshwar)",
+                    "Offer milk and water on a Shiva lingam every Monday",
+                    "Feed a snake idol or image with milk on Nag Panchami",
+                    "Donate multi-coloured blankets and black items on Saturdays",
+                ],
+            })
+
+    return out
 
 
 def _vedic_name(sign: str) -> str:
@@ -964,12 +1373,20 @@ def compute_personal_kundli(
             "signification": _FH_SIG[hnum],
         }
 
-    yogas        = _yogas(planets_out, lagna_idx)
+    yogas         = _yogas(planets_out, lagna_idx)
     score, action = _astro_score_and_action(planets_out, dasha)
-    bull, bear   = _factors(planets_out, dasha, fh)
-    narr         = _narrative(lagna, planets_out, dasha, yogas, score, action)
-    all_houses   = _all_12_houses(planets_out, lagna_idx)
-    drishti      = _compute_drishti(planets_out)
+    bull, bear    = _factors(planets_out, dasha, fh)
+    narr          = _narrative(lagna, planets_out, dasha, yogas, score, action)
+    all_houses    = _all_12_houses(planets_out, lagna_idx)
+    drishti       = _compute_drishti(planets_out)
+
+    # New: Panchang, Doshas, Divisional Charts, Lal Kitab remedies
+    sun_sid_lon   = planets_out.get("Sun",  {}).get("longitude", 0.0)
+    moon_sid_lon  = planets_out.get("Moon", {}).get("longitude", 0.0)
+    panchang      = _compute_panchang(sun_sid_lon, moon_sid_lon, birth_local)
+    doshas        = _doshas(planets_out, lagna_idx)
+    vargas        = _compute_vargas(planets_out)
+    remedies      = _lal_kitab_remedies(planets_out, doshas, yogas)
 
     entity = {
         "type": "person",
@@ -992,22 +1409,27 @@ def compute_personal_kundli(
     formatted_report = _build_formatted_report(
         entity, birth_details, lagna, planets_out, dasha,
         all_houses, fh, yogas, drishti, bull, bear, narr, score, action,
+        panchang=panchang, doshas=doshas, vargas=vargas, remedies=remedies,
     )
 
     return {
-        "entity":          entity,
-        "birth_details":   birth_details,
-        "lagna":           lagna,
-        "planets":         planets_out,
-        "current_dasha":   dasha,
-        "all_houses":      all_houses,
-        "financial_houses":fh,
-        "planetary_aspects":drishti,
-        "yogas":           yogas,
-        "astro_score":     score,
-        "astro_action":    action,
-        "bullish_factors": bull,
-        "bearish_factors": bear,
-        "narrative":       narr,
-        "formatted_report":formatted_report,
+        "entity":            entity,
+        "birth_details":     birth_details,
+        "panchang":          panchang,
+        "lagna":             lagna,
+        "planets":           planets_out,
+        "current_dasha":     dasha,
+        "all_houses":        all_houses,
+        "financial_houses":  fh,
+        "planetary_aspects": drishti,
+        "vargas":            vargas,
+        "yogas":             yogas,
+        "doshas":            doshas,
+        "lal_kitab_remedies":remedies,
+        "astro_score":       score,
+        "astro_action":      action,
+        "bullish_factors":   bull,
+        "bearish_factors":   bear,
+        "narrative":         narr,
+        "formatted_report":  formatted_report,
     }
