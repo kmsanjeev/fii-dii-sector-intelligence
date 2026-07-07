@@ -189,8 +189,9 @@ function Tag({ text, color }: { text: string; color: string }) {
 }
 
 function ScoreBar({ score }: { score: number }) {
-  const pct   = Math.min(100, Math.max(2, (score + 100) / 2))
-  const color = score >= 30 ? T.green : score >= 5 ? T.blue : score >= -10 ? T.amber : T.red
+  const color   = score >= 30 ? T.green : score >= 5 ? T.blue : score >= -10 ? T.amber : T.red
+  const absPct  = Math.min(50, Math.abs(score) / 100 * 50)   // 0–50% from centre
+  const positive = score >= 0
   return (
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -201,8 +202,22 @@ function ScoreBar({ score }: { score: number }) {
           {score > 0 ? '+' : ''}{score.toFixed(0)}
         </span>
       </div>
-      <div style={{ height: 5, background: T.border, borderRadius: 3, overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 3, transition: 'width 0.5s ease' }} />
+      {/* Diverging bar — 0 at centre; negative fills left, positive fills right */}
+      <div style={{ height: 5, background: T.border, borderRadius: 3, position: 'relative', overflow: 'hidden' }}>
+        {/* centre tick */}
+        <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1, background: T.borderHi, zIndex: 1 }} />
+        {/* fill */}
+        {positive ? (
+          <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: `${absPct}%`, background: color, borderRadius: '0 3px 3px 0', transition: 'width 0.5s ease' }} />
+        ) : (
+          <div style={{ position: 'absolute', right: '50%', top: 0, bottom: 0, width: `${absPct}%`, background: color, borderRadius: '3px 0 0 3px', transition: 'width 0.5s ease' }} />
+        )}
+      </div>
+      {/* axis labels */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+        <span style={{ color: T.muted, fontSize: FS.caption }}>−100</span>
+        <span style={{ color: T.muted, fontSize: FS.caption }}>0</span>
+        <span style={{ color: T.muted, fontSize: FS.caption }}>+100</span>
       </div>
     </div>
   )
