@@ -342,3 +342,42 @@ def get_corporate_catalysts(upcoming_days: int = 30) -> list[dict]:
         df = df[(df[date_col] >= today) & (df[date_col] <= cutoff)]
         df = df.sort_values(date_col)
     return [_row_to_dict(r) for _, r in df.head(50).iterrows()]
+
+
+# ------------------------------------------------------------------
+# Personal Kundli tool
+# ------------------------------------------------------------------
+
+def generate_personal_kundli(
+    date_of_birth: str,
+    time_of_birth: str,
+    place_name: str,
+    latitude:  Optional[float] = None,
+    longitude: Optional[float] = None,
+    timezone_offset_hours: float = 5.5,
+) -> dict:
+    """
+    Compute a complete Vedic natal chart for a person.
+    Uses PyEphem + Lahiri ayanamsha + whole-sign houses + Vimshottari dasha.
+
+    Args:
+        date_of_birth: "DD-MM-YYYY" or "YYYY-MM-DD"
+        time_of_birth: "HH:MM" or "HH:MM:SS" (24-hr local time). "unknown" if not known.
+        place_name: City of birth (auto lat/lon lookup for 80+ Indian + global cities)
+        latitude/longitude: Optional override if city not found
+        timezone_offset_hours: UTC offset (default 5.5 = IST)
+    """
+    try:
+        from engines.ai.chatbot.tools.kundli_calculator import compute_personal_kundli
+        return compute_personal_kundli(
+            date_of_birth=date_of_birth,
+            time_of_birth=time_of_birth,
+            place_name=place_name,
+            latitude=latitude,
+            longitude=longitude,
+            timezone_offset_hours=timezone_offset_hours,
+        )
+    except ImportError as e:
+        return {"error": f"kundli_calculator module missing: {e}. Ensure ephem is installed: py -3.11 -m pip install ephem"}
+    except Exception as e:
+        return {"error": f"Kundli computation failed: {e}"}

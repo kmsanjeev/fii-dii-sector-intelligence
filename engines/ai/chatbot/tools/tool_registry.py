@@ -251,6 +251,56 @@ TOOLS: list[dict] = [
             "required": [],
         },
     },
+    {
+        "name": "generate_personal_kundli",
+        "description": (
+            "Generate a complete Vedic (Jyotish) natal birth chart for a PERSON based on their "
+            "date of birth, time of birth, and place of birth. "
+            "Returns: Lagna (Ascendant), all 9 planetary positions with sign/house/nakshatra/dignity, "
+            "Vimshottari Dasha timeline (current Mahadasha/Antardasha/Pratyantardasha), "
+            "financial houses analysis (2H wealth, 5H speculation, 8H transformation, 10H career, 11H income), "
+            "active Yogas (Hamsa, Gaja Kesari, Dhana, Kaal Sarp, etc.), "
+            "and a complete bullish/bearish life factor analysis with narrative. "
+            "ALWAYS use this tool when a user asks for their Kundli, horoscope, birth chart, "
+            "Janam Kundali, or provides date/time/place of birth for personal chart reading. "
+            "Uses Lahiri ayanamsha (sidereal zodiac) and whole-sign house system. "
+            "For IST birthplace, timezone_offset_hours=5.5 (default). "
+            "City lookup covers 80+ Indian cities and 30+ global cities. "
+            "If city is not found, ask the user for latitude and longitude."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "date_of_birth": {
+                    "type": "string",
+                    "description": "Date of birth in DD-MM-YYYY or YYYY-MM-DD format. Example: '15-08-1985' or '1985-08-15'",
+                },
+                "time_of_birth": {
+                    "type": "string",
+                    "description": "Time of birth in HH:MM (24-hour) format. Example: '14:30'. Use 'unknown' if time is not known.",
+                    "default": "unknown",
+                },
+                "place_name": {
+                    "type": "string",
+                    "description": "City of birth. Examples: 'Mumbai', 'Delhi', 'Jaipur', 'London', 'Dubai'. Used for lat/lon lookup.",
+                },
+                "latitude": {
+                    "type": "number",
+                    "description": "Optional: Geographic latitude in decimal degrees (N positive). Overrides place_name lookup.",
+                },
+                "longitude": {
+                    "type": "number",
+                    "description": "Optional: Geographic longitude in decimal degrees (E positive). Overrides place_name lookup.",
+                },
+                "timezone_offset_hours": {
+                    "type": "number",
+                    "description": "UTC timezone offset in hours. Default 5.5 for IST. Use 0 for London, 4 for Dubai, 8 for Singapore.",
+                    "default": 5.5,
+                },
+            },
+            "required": ["date_of_birth", "place_name"],
+        },
+    },
 ]
 
 # Map tool name -> python function
@@ -268,6 +318,7 @@ from engines.ai.chatbot.tools.data_tools import (
     get_top_corporate_confidence,
     get_corporate_catalysts,
     get_astro_signal,
+    generate_personal_kundli,
 )
 
 TOOL_FUNCTIONS: dict[str, callable] = {
@@ -284,4 +335,5 @@ TOOL_FUNCTIONS: dict[str, callable] = {
     "get_top_corporate_confidence": get_top_corporate_confidence,
     "get_corporate_catalysts":    get_corporate_catalysts,
     "get_astro_signal":           get_astro_signal,
+    "generate_personal_kundli":   generate_personal_kundli,
 }

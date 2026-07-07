@@ -43,6 +43,16 @@ INTENT_KEYWORDS = {
         "benefic", "malefic", "exalted", "debilitated", "cycle",
         "financial astrology", "astrology",
     ],
+    "KUNDLI": [
+        "kundli", "kundali", "janam kundli", "janam kundali", "birth chart",
+        "natal chart", "horoscope", "date of birth", "dob", "born on",
+        "born in", "time of birth", "place of birth", "lagna", "ascendant",
+        "rashi", "my chart", "my kundli", "prepare kundli", "make kundli",
+        "generate kundli", "check kundli", "read my chart", "birth time",
+        "janma kundali", "janma rashi", "janampatrika", "jatakam",
+        "dasha", "mahadasha", "antardasha", "vimshottari", "yoga in my chart",
+        "my lagna", "my rashi", "personal chart", "personal horoscope",
+    ],
 }
 
 
@@ -61,6 +71,10 @@ def detect_intent(user_message: str) -> Intent:
     symbol_match = re.search(r"\b([A-Z][A-Z0-9&]{1,14})\b", user_message)
     entity = symbol_match.group(1) if symbol_match else None
 
+    # Hard override: if message contains date+place patterns, treat as KUNDLI
+    if _contains_birth_info(text):
+        return Intent("KUNDLI", entity, 0.9)
+
     scores = {intent: 0 for intent in INTENT_KEYWORDS}
     for intent, keywords in INTENT_KEYWORDS.items():
         for kw in keywords:
@@ -75,6 +89,14 @@ def detect_intent(user_message: str) -> Intent:
 
     confidence = min(1.0, best_score / 3.0)
     return Intent(best_intent, entity, confidence)
+
+
+def _contains_birth_info(text: str) -> bool:
+    """Return True if message contains date of birth + place patterns."""
+    import re
+    has_date = bool(re.search(r'\b\d{1,2}[-/]\d{1,2}[-/]\d{2,4}\b|\b\d{4}[-/]\d{1,2}[-/]\d{1,2}\b', text))
+    has_place = any(kw in text for kw in ["born in", "place of birth", "birthplace", "birth place", "from ", "city", "mumbai", "delhi", "bangalore", "hyderabad", "chennai", "kolkata", "pune", "jaipur", "london", "dubai", "singapore"])
+    return has_date and has_place
 
 
 def get_system_prompt(intent: Intent) -> str:
@@ -132,6 +154,29 @@ def get_system_prompt(intent: Intent) -> str:
             "Rahu eclipse = uptrend potential; Ketu eclipse = downtrend warning. "
             "Retrograde ruling planet = EXIT that sector. Moon waxing = bullish tendency. "
             "Combine astro signals with technical and flow data for conviction."
+        ),
+        "KUNDLI": (
+            " You are an expert Vedic astrologer (Jyotishi). "
+            "ALWAYS call generate_personal_kundli() FIRST with the user's date, time, and place of birth. "
+            "NEVER say you cannot generate a kundli — you have a full Vedic calculation engine. "
+            "The tool returns: Lagna sign, all 9 planet positions (sign, house, nakshatra, dignity), "
+            "current Vimshottari Dasha (Mahadasha/Antardasha), financial houses (2H/5H/8H/10H/11H), "
+            "active yogas, bullish/bearish life factors, and a narrative. "
+            "If the user has NOT provided date/time/place, ask for exactly: "
+            "(1) Date of birth (DD-MM-YYYY), (2) Time of birth (HH:MM, 24-hr), (3) City of birth. "
+            "Time is optional — say so if user doesn't know it, and set time_of_birth='unknown'. "
+            "After calling the tool, present the full reading: "
+            "  1. Birth Details (date, time, place, Lagna, ayanamsha) "
+            "  2. Planetary Table — all 9 planets with sign, house, nakshatra, pada, dignity "
+            "  3. Current Dasha — Mahadasha planet + end date, Antardasha + end date "
+            "  4. Active Yogas and their effects "
+            "  5. Financial Houses — 2H, 5H, 8H, 10H, 11H strength and analysis "
+            "  6. Bullish and Bearish life factors "
+            "  7. Narrative summary + Dasha outlook "
+            "Use authentic Vedic terminology: Lagna, Rashi, Graha, Bhava, Nakshatra, Dasha, Yoga. "
+            "For financial life guidance: connect 2H (wealth), 5H (speculation), 10H (career), 11H (income). "
+            "Be specific: cite planet, sign, house, dignity in every interpretation. "
+            "Do NOT give generic astrology advice — base everything strictly on the computed chart data."
         ),
     }
 
