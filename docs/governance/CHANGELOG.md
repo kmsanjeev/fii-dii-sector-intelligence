@@ -6,6 +6,68 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.18.0
+
+Phase PULSE -- Intelligence Ticker (Social Pulse horizontal auto-scroll)
+
+Date: 2026-07-07
+
+Status: Completed
+
+Commit: 71552a2
+
+---
+
+## Summary
+
+Horizontally auto-scrolling Intelligence Ticker added to Dashboard above the
+News Section. Shows 15 named "handles" (4 direct RSS + 11 synthetic topic clusters)
+each with up to 5 latest items. No X/Twitter API required -- uses official government,
+central bank RSS feeds plus keyword-filtered news pool for guaranteed coverage.
+
+## Architecture: 2-tier hybrid
+
+### Tier 1 -- Direct official feeds (confirmed live)
+- @FedReserve: Federal Reserve press releases
+- @ECB: European Central Bank speeches + press releases
+- @BBCWorld: BBC World News RSS
+- @BBCBusiness: BBC Business RSS
+
+### Tier 2 -- Synthetic topic clusters (keyword-filtered from news pool)
+15 unique handles covering: Geopolitical, India Policy (PMO/RBI/SEBI),
+US Markets, Corporate India (Reliance/Tata/HDFC/Infosys/Adani),
+Commodities & FX, Global Macro, Earnings Season, Market Movers,
+India Deals & Defence, Energy & Climate, Tech & AI.
+All 15 handles verified live (5 items each) in pre-commit test.
+
+## New Files
+
+### `backend/routers/social_pulse.py`
+- GET /api/social-pulse -> { handles, active, total, cached_at }
+- 20 RSS feeds fetched in parallel via asyncio.gather
+- Pools all items, deduplicates by title, then filters per handle keywords
+- Direct handle results from official feeds bypass keyword filter
+- 30-min in-memory TTL cache
+
+## Modified Files
+
+### `backend/main.py` -- social_pulse.router at /api/social-pulse
+
+### `frontend/src/api/client.ts`
+- SocialPulseItem, SocialPulseHandle, SocialPulseResponse types
+- fetchSocialPulse() function
+
+### `frontend/src/pages/Dashboard.tsx`
+- SocialPulse component with HandleCard sub-component
+- CSS @keyframes pulse-scroll infinite horizontal animation
+- Cards triplicated for seamless loop; speed proportional to handle count
+- PAUSE/RESUME button; left/right fade-mask gradient edges
+- HandleCard: category-colored left border + avatar circle + items list
+  with sentiment dots (green/red/grey) and relative time
+- Placed between F&O Participant Flows and News Section (Row 3B)
+
+---
+
 # Version 4.17.0
 
 Phase NEWS -- Dashboard Global News Intelligence Feed
