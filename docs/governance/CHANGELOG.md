@@ -6,6 +6,99 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.16.0
+
+Phase KU -- Vedic Kundli + W.D. Gann Intelligence Layer
+
+Date: 2026-07-07
+
+Status: Completed
+
+Commit: fdd9b29
+
+---
+
+## Summary
+
+Full Vedic natal chart (Kundli) system using Swiss Ephemeris (pyswisseph) with
+Lahiri ayanamsha. Covers stocks (IPO date), humans, and country inception charts.
+W.D. Gann Square of 9, planetary price lines, and solar time cycles integrated.
+6-tab UI card in StocksPage. All data lazy-loaded via API on user request.
+
+## New Files
+
+### `engines/intelligence/kundli_engine.py` -- KU-1
+- pyswisseph with Lahiri ayanamsha (Sidm_LAHIRI) + Whole Sign houses
+- 9 Vedic grahas (Sun through Saturn) + Rahu/Ketu (True Node)
+- Divisional charts D1/D2/D3/D4/D7/D9/D10/D11/D12/D16/D20/D30/D60
+- Vimshottari Dasha to Pratyantardasha level (120-year cycle, all 27 nakshatras)
+- Planetary dignities: exalted/moolatrikona/own_sign/friendly/neutral/enemy/debilitated
+- Special aspects: Mars (4th/8th), Jupiter (5th/9th), Saturn (3rd/10th)
+- Yoga detection: Gaja Kesari, Dhana, Raja, Viparita Raja, Neecha Bhanga, Kemdrum, Kala Sarpa, Parivartana
+- Financial house analysis: 2H(wealth), 5H(speculation), 8H(volatility), 10H(management), 11H(revenue)
+- Transit analysis: current planetary positions vs natal chart
+- IPO Kundli: 9 exchange registries (NSE/BSE/NYSE/NASDAQ/LSE/TSE/SSE/HKEX/SGX/ASX)
+- Country inception charts: India/USA/UK/China/Japan/Germany/Pakistan/Russia/France/Brazil
+- Batch runner: per-symbol JSON cache + kundli_signals.csv summary
+
+### `engines/intelligence/gann_engine.py` -- KU-2
+- Square of 9: degree(N) = MOD((sqrt(N)*180 - 225), 360)
+- Support/resistance: (sqrt(P) +/- angle/180)^2 at all 8 compass angles
+- Gann Fan: 7 angle lines (4x1, 3x1, 2x1, 1x1, 1x2, 1x3, 1x4)
+- Planetary Lines: geocentric sidereal lon -> price mapping (configurable price_factor)
+- Solar time cycles: 90/180/270/360-day turning points from Aries ingress
+- Price-time convergence zones: within 20% price of planetary level within 90 days
+- Batch: gann_signals.csv with SO9 degree, R1/S1 for all stocks
+
+### `engines/intelligence/kundli_interpretator.py` -- KU-3
+- Rule-based bullish/bearish factor extraction from kundli dict
+- 9 dasha financial interpretations per planet (Venus FMCG, Jupiter banking, etc.)
+- Yoga financial scoring (+25 Dhana to -15 Kemdrum)
+- Jupiter/Saturn transit triggers (return, opposition)
+- Signal: STRONG_BUY / BUY / HOLD / CAUTION / EXIT / AVOID
+- LLM narrative via llm_client.py (on-demand, not batched)
+
+### `backend/routers/kundli.py` -- KU-4
+- GET /api/stocks/{symbol}/kundli -- natal chart with JSON cache fallback
+- POST /api/kundli/human -- human natal chart
+- GET /api/kundli/country/{name} -- country inception chart
+- GET /api/kundli/gann/{symbol} -- Gann analysis at current price
+- GET /api/kundli/gann/market/planetary-lines -- all planetary price lines
+- GET /api/kundli/bulk/status -- bulk run status
+- POST /api/kundli/bulk/run -- trigger background bulk computation
+
+### `frontend/src/components/platform/KundliCard.tsx` -- KU-5
+- 6 tabs: Overview | Planets | Houses | Dasha | Gann | Report
+- Lazy-loaded: API call only fires on user expand (no cold-load penalty)
+- Planets table: sign, house, nakshatra, pada, dignity, retrograde
+- Financial houses: strength badge, lord dignity, occupants
+- Dasha tab: current period + outlook + full mahadasha timeline table
+- Gann tab: SO9 degree, R/S levels, solar cycles, planetary price lines table
+- Report tab: signal badge, score, bullish/bearish factors, narrative
+
+## Modified Files
+
+- `backend/main.py`: registered kundli router
+- `engines/orchestration/daily_refresh.py`: KU_kundli_engine + KU_gann_engine stages added
+- `frontend/src/pages/StocksPage.tsx`: KundliCard added after ASTRO SIGNAL section
+
+## Outputs
+
+- `data/intelligence/kundli/` -- per-symbol JSON natal charts (created on first bulk run)
+- `data/intelligence/kundli_signals.csv` -- summary: lagna, mahadasha, yogas, signal per stock
+- `data/intelligence/gann_signals.csv` -- SO9 degree, R1/S1 per stock at current price
+
+## Technical Notes
+
+- pyswisseph is the Swiss Ephemeris Python binding; swe.SIDM_LAHIRI for Lahiri ayanamsha
+- Whole Sign houses: Ascendant sign = 1st house, each sign = next house
+- Navamsa (D9): movable=same, fixed=9th from, dual=5th from; each segment = 3deg20min
+- Vimshottari: 120-year cycle; nakshatra->lord->balance determines starting dasha
+- Gann: verified formula; test at 2800 gives R1=2853, S1=2747 (degree=299.7, Southeast)
+- RELIANCE (listing 2000-11-18): Sagittarius Lagna, Venus Mahadasha until 2032, Parivartana yoga
+
+---
+
 # Version 4.15.0
 
 Phase AF -- AstroFinance Intelligence Layer
