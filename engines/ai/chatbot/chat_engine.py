@@ -27,7 +27,7 @@ from engines.ai.chatbot.tools.tool_registry import TOOLS, TOOL_FUNCTIONS
 
 logger = get_logger(__name__)
 
-MAX_TOKENS      = 4096   # increased: kundli + detailed reports need headroom
+MAX_TOKENS      = 8192   # increased: detailed reports need headroom
 MAX_TOOL_ROUNDS = 4
 COOLDOWN_S      = 300   # 5 min before retrying a rate-limited provider
 
@@ -244,6 +244,16 @@ class ChatEngine:
                 except json.JSONDecodeError:
                     args = {}
                 result = self._call_tool(tc.function.name, args)
+
+                # Direct bypass for kundli: return formatted_report WITHOUT sending to LLM.
+                # This avoids MAX_TOKENS truncation of the comprehensive multi-section report.
+                if tc.function.name == "generate_personal_kundli":
+                    report = result.get("formatted_report", "")
+                    if report:
+                        return {"status": "ok", "reply": report}
+                    elif result.get("error"):
+                        return {"status": "ok", "reply": f"Kundli computation failed: {result['error']}"}
+
                 messages.append({
                     "role":         "tool",
                     "tool_call_id": tc.id,

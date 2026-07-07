@@ -12,6 +12,11 @@ from typing import Optional
 
 import ephem
 
+try:
+    from engines.ai.chatbot.tools.kundli_interpreter import generate_life_readings as _gen_life
+except Exception:
+    _gen_life = None  # graceful fallback if import fails
+
 # ── Zodiac / Sign constants ───────────────────────────────────────────────────
 SIGNS = [
     "Aries","Taurus","Gemini","Cancer","Leo","Virgo",
@@ -1411,6 +1416,22 @@ def compute_personal_kundli(
         all_houses, fh, yogas, drishti, bull, bear, narr, score, action,
         panchang=panchang, doshas=doshas, vargas=vargas, remedies=remedies,
     )
+
+    # Append comprehensive life readings (BPHS-based narratives for all life areas)
+    if _gen_life is not None:
+        try:
+            _life_input = {
+                "planets":    planets_out,
+                "lagna":      lagna,
+                "all_houses": all_houses,
+                "dasha":      dasha,
+                "yogas":      yogas,
+            }
+            life_block = _gen_life(_life_input)
+            if life_block:
+                formatted_report = formatted_report + "\n" + life_block
+        except Exception:
+            pass  # never let interpreter errors break the main report
 
     return {
         "entity":            entity,
