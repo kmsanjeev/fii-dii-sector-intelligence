@@ -7,7 +7,7 @@
  * Download PDF button also triggers print dialog with PDF preset hint.
  */
 
-import { useEffect, useRef, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -190,131 +190,29 @@ function caDisplay(a: CorpAction): string {
   return a.subject.slice(0, 14)
 }
 
-// ── Print CSS injected into document head ──────────────────────────────────
+// ── CSS injected into the new print window (no AppShell interference) ──────
 
-const PRINT_CSS = `
-@media print {
-  @page {
-    size: A4 portrait;
-    margin: 12mm 14mm;
-  }
-
-  * {
+const PRINT_WINDOW_CSS = `
+  @page { size: A4 portrait; margin: 12mm 14mm; }
+  *, *::before, *::after {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
+    box-sizing: border-box;
   }
-
-  body, html {
-    background: #ffffff !important;
+  html, body {
+    margin: 0; padding: 0;
+    background: #0A0D14;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 12px;
   }
-
-  /* Hide navigation shell and AppShell elements */
-  nav, aside, header[class*="shell"], footer[class*="shell"],
-  [class*="sidebar"], [class*="navbar"], [class*="topbar"],
-  [data-no-print], .no-print {
-    display: none !important;
-  }
-
-  /* Page layout */
-  .report-root {
-    background: #ffffff !important;
-    color: #111827 !important;
-    padding: 0 !important;
-    max-width: 100% !important;
-  }
-
-  /* Print toolbar hidden */
-  .report-toolbar {
-    display: none !important;
-  }
-
-  /* Report header */
-  .report-header {
-    background: #1e3a5f !important;
-    color: #ffffff !important;
-    padding: 14px 16px !important;
-    border-radius: 0 !important;
-    border-bottom: 3px solid #3b82f6 !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* Cards: white bg, dark border */
-  .r-card {
-    background: #f8fafc !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 6px !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-    margin-bottom: 8px !important;
-  }
-
-  .r-card > div:first-child {
-    background: #f1f5f9 !important;
-    color: #374151 !important;
-    border-bottom: 1px solid #d1d5db !important;
-  }
-
-  /* Section dividers */
-  .r-divider {
-    page-break-after: avoid !important;
-    break-after: avoid !important;
-  }
-
-  /* Score strip tiles */
-  .score-tile {
-    background: #f8fafc !important;
-    border: 1px solid #d1d5db !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* Fund tiles */
-  .fund-tile-inner {
-    background: #f8fafc !important;
-    border: 1px solid #d1d5db !important;
-  }
-
-  /* Text colors in print */
-  .print-text-dark {
-    color: #111827 !important;
-  }
-
-  /* Tables */
-  table {
-    border-collapse: collapse !important;
-    width: 100% !important;
-  }
-
-  th, td {
-    border: 1px solid #e5e7eb !important;
-    padding: 4px 8px !important;
-    color: #111827 !important;
-    font-size: 9pt !important;
-  }
-
-  th {
-    background: #f1f5f9 !important;
-    font-weight: 700 !important;
-  }
-
-  /* Page break hints */
-  .pb-before {
-    page-break-before: always !important;
-    break-before: page !important;
-  }
-
-  .pb-avoid {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* OHLCV bar in print */
-  .ohlcv-bar-bg {
-    background: #e5e7eb !important;
-  }
-}
+  img { max-width: 100%; }
+  .no-print { display: none !important; }
+  .pb-before { page-break-before: always; break-before: page; }
+  .pb-avoid  { page-break-inside: avoid; break-inside: avoid; }
+  .r-card    { page-break-inside: avoid; break-inside: avoid; }
+  .r-divider { page-break-after: avoid; break-after: avoid; }
+  .score-tile { page-break-inside: avoid; break-inside: avoid; }
 `
 
 // ── Main component ─────────────────────────────────────────────────────────
@@ -322,21 +220,6 @@ const PRINT_CSS = `
 export function ReportPage() {
   const { symbol: urlSym } = useParams<{ symbol?: string }>()
   const symbol = (urlSym ?? '').toUpperCase()
-
-  // Inject print CSS once
-  const cssInjected = useRef(false)
-  useEffect(() => {
-    if (cssInjected.current) return
-    cssInjected.current = true
-    const style = document.createElement('style')
-    style.id = 'report-print-css'
-    style.textContent = PRINT_CSS
-    document.head.appendChild(style)
-    return () => {
-      const el = document.getElementById('report-print-css')
-      if (el) el.remove()
-    }
-  }, [])
 
   // ── Data queries ─────────────────────────────────────────────────────────
 
@@ -400,7 +283,32 @@ export function ReportPage() {
 
   // ── Print handlers ────────────────────────────────────────────────────────
 
-  const handlePrint = () => window.print()
+  const handlePrint = () => {
+    const el = document.getElementById('report-printable')
+    if (!el) { window.print(); return }
+
+    const win = window.open('', '_blank', 'width=900,height=1200')
+    if (!win) { window.print(); return }   // popup blocked → fall back
+
+    win.document.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>${symbol} — Stock Intelligence Report</title>
+  <style>${PRINT_WINDOW_CSS}</style>
+</head>
+<body>${el.innerHTML}</body>
+</html>`)
+    win.document.close()
+
+    // Wait for sub-resources (fonts, inline SVGs) then print
+    const doPrint = () => { win.focus(); win.print() }
+    if (win.document.readyState === 'complete') {
+      setTimeout(doPrint, 250)
+    } else {
+      win.addEventListener('load', () => setTimeout(doPrint, 250))
+    }
+  }
 
   // ── No symbol state ───────────────────────────────────────────────────────
 
@@ -499,7 +407,7 @@ export function ReportPage() {
         In the print dialog, select <strong style={{ color: P.amber }}>Save as PDF</strong> to download as PDF file. Optimised for A4 paper.
       </div>
 
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '16px 16px 0' }}>
+      <div id="report-printable" style={{ maxWidth: 1100, margin: '0 auto', padding: '16px 16px 0' }}>
 
         {/* ══ REPORT HEADER ═══════════════════════════════════════════════════ */}
         <div
