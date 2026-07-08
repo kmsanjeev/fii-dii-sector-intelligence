@@ -20,6 +20,7 @@ import { LoginPage } from './pages/LoginPage'
 import { AdminPage } from './pages/AdminPage'
 import { ThemesPage } from './pages/ThemesPage'
 import { ReportPage } from './pages/ReportPage'
+import { FullChartPage } from './pages/FullChartPage'
 import './index.css'
 
 const queryClient = new QueryClient({
@@ -35,32 +36,40 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AppShell>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/sectors" element={<SectorsPage />} />
-            <Route path="/sectors/:sector" element={<SectorDetailPage />} />
-            <Route path="/watchlist" element={<WatchlistPage />} />
-            <Route path="/stocks/:symbol" element={<StocksPage />} />
-            <Route path="/participant" element={<ParticipantPage />} />
-            <Route path="/corporate" element={<CorporatePage />} />
-            <Route path="/chat" element={<ChatPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/stocks" element={<StocksPage />} />
-            <Route path="/charts" element={<StocksPage />} />
-            <Route path="/data" element={<DataControlPage />} />
-            <Route path="/portfolio" element={<PortfolioPage />} />
-            <Route path="/backtest" element={<BacktestPage />} />
-            <Route path="/broker" element={<BrokerPage />} />
-            <Route path="/research" element={<ResearchPage />} />
-            <Route path="/execution" element={<ExecutionPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/admin" element={<AdminPage />} />
-            <Route path="/themes" element={<ThemesPage />} />
-            <Route path="/report/:symbol" element={<ReportPage />} />
-            <Route path="/report" element={<ReportPage />} />
-          </Routes>
-        </AppShell>
+        <Routes>
+          {/* Full-page chart — no AppShell nav bar */}
+          <Route path="/fullchart/:symbol" element={<FullChartPage />} />
+
+          {/* All other pages — wrapped in AppShell */}
+          <Route path="*" element={
+            <AppShell>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/sectors" element={<SectorsPage />} />
+                <Route path="/sectors/:sector" element={<SectorDetailPage />} />
+                <Route path="/watchlist" element={<WatchlistPage />} />
+                <Route path="/stocks/:symbol" element={<StocksPage />} />
+                <Route path="/participant" element={<ParticipantPage />} />
+                <Route path="/corporate" element={<CorporatePage />} />
+                <Route path="/chat" element={<ChatPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/stocks" element={<StocksPage />} />
+                <Route path="/charts" element={<StocksPage />} />
+                <Route path="/data" element={<DataControlPage />} />
+                <Route path="/portfolio" element={<PortfolioPage />} />
+                <Route path="/backtest" element={<BacktestPage />} />
+                <Route path="/broker" element={<BrokerPage />} />
+                <Route path="/research" element={<ResearchPage />} />
+                <Route path="/execution" element={<ExecutionPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/admin" element={<AdminPage />} />
+                <Route path="/themes" element={<ThemesPage />} />
+                <Route path="/report/:symbol" element={<ReportPage />} />
+                <Route path="/report" element={<ReportPage />} />
+              </Routes>
+            </AppShell>
+          } />
+        </Routes>
       </BrowserRouter>
     </QueryClientProvider>
   )

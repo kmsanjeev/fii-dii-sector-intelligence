@@ -1495,6 +1495,19 @@ export function StocksPage() {
             <button onClick={resetChart} style={{ padding: '4px 9px', borderRadius: 4, fontSize: 10, cursor: 'pointer', border: `1px solid ${P.border}`, background: 'transparent', color: P.dim, marginLeft: 4 }}>
               Reset
             </button>
+            {symbol && (
+              <button
+                onClick={() => navigate(`/fullchart/${symbol}?tf=${tf}`)}
+                title="Open full-page chart"
+                style={{
+                  marginLeft: 'auto', padding: '4px 10px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
+                  border: `1px solid ${P.blue}`, background: P.blue + '18', color: P.blue,
+                  fontWeight: 600, letterSpacing: '0.04em',
+                }}
+              >
+                [+] Full Chart
+              </button>
+            )}
           </div>
 
           {/* Chart canvas */}
