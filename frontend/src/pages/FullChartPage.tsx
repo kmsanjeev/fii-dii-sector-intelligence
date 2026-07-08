@@ -347,7 +347,7 @@ function SettingsPanel({ settings, onChange }: {
         <button onClick={() => upd({ ...DEFAULT_SETTINGS })} style={{ padding: '2px 7px', borderRadius: 3, fontSize: 9, cursor: 'pointer', border: `1px solid ${C.dim}`, background: 'transparent', color: C.sub }}>Reset</button>
       </div>
 
-      {/* ── Presets */}
+      {/* Presets */}
       <Section title="Presets" />
       <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.border}`, display: 'flex', gap: 6 }}>
         <button onClick={() => upd({ ...TV_PRESET })} style={{
@@ -368,7 +368,7 @@ function SettingsPanel({ settings, onChange }: {
         </button>
       </div>
 
-      {/* ── Candle Type */}
+      {/* Candle Type */}
       <Section title="Candle Style" />
       <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.border}`, display: 'flex', flexWrap: 'wrap', gap: 5 }}>
         {CANDLE_TYPES.map(ct => (
@@ -382,7 +382,7 @@ function SettingsPanel({ settings, onChange }: {
         ))}
       </div>
 
-      {/* ── Candle Colors */}
+      {/* Candle Colors */}
       <Section title="Candle Colors" />
       {([
         ['Bullish (Up)',   'upColor',       'upWickColor'  ],
@@ -402,13 +402,13 @@ function SettingsPanel({ settings, onChange }: {
         <div style={{ fontSize: 9, color: C.dim }}>Left swatch = wick, right = body. Changing body also updates wick.</div>
       </div>
 
-      {/* ── Grid */}
+      {/* Grid */}
       <Section title="Grid" />
       <div style={row}><span style={lbl}>Horizontal</span><div style={ctrl}><Toggle value={settings.showGridH} onChange={v => upd({ showGridH: v })} /></div></div>
       <div style={row}><span style={lbl}>Vertical</span>  <div style={ctrl}><Toggle value={settings.showGridV} onChange={v => upd({ showGridV: v })} /></div></div>
       <div style={row}><span style={lbl}>Grid Color</span><div style={ctrl}><ColorSwatch value={settings.gridColor} onChange={v => upd({ gridColor: v })} /></div></div>
 
-      {/* ── Font */}
+      {/* Font */}
       <Section title="Font" />
       <div style={{ padding: '6px 12px', borderBottom: `1px solid ${C.border}` }}>
         <div style={{ fontSize: 10, color: C.sub, marginBottom: 4 }}>Family</div>
@@ -431,7 +431,7 @@ function SettingsPanel({ settings, onChange }: {
         </select>
       </div>
 
-      {/* ── Axes */}
+      {/* Axes */}
       <Section title="Axes" />
       <div style={row}><span style={lbl}>Text Color</span> <div style={ctrl}><ColorSwatch value={settings.axisTextColor} onChange={v => upd({ axisTextColor: v })} /></div></div>
       <div style={row}><span style={lbl}>Line Color</span> <div style={ctrl}><ColorSwatch value={settings.axisLineColor} onChange={v => upd({ axisLineColor: v })} /></div></div>
@@ -449,12 +449,12 @@ function SettingsPanel({ settings, onChange }: {
         </div>
       </div>
 
-      {/* ── Crosshair */}
+      {/* Crosshair */}
       <Section title="Crosshair" />
       <div style={row}><span style={lbl}>Line Color</span>    <div style={ctrl}><ColorSwatch value={settings.crosshairColor}  onChange={v => upd({ crosshairColor: v })} /></div></div>
       <div style={row}><span style={lbl}>Label Background</span><div style={ctrl}><ColorSwatch value={settings.crosshairTextBg} onChange={v => upd({ crosshairTextBg: v })} /></div></div>
 
-      {/* ── Price Marks */}
+      {/* Price Marks */}
       <Section title="Price Marks" />
       <div style={row}><span style={lbl}>Last Price Line</span><div style={ctrl}><Toggle value={settings.showLastPrice} onChange={v => upd({ showLastPrice: v })} /></div></div>
       <div style={row}><span style={lbl}>High / Low Labels</span><div style={ctrl}><Toggle value={settings.showHighLow} onChange={v => upd({ showHighLow: v })} /></div></div>
@@ -479,6 +479,7 @@ function SettingsPanel({ settings, onChange }: {
 
 const WL_KEY = 'cfip-wl'
 type WLEntry = { id: string; name: string; symbols: string[] }
+type PriceData = { ltp: number; change: number; pct: number }
 
 function loadWL(): WLEntry[] {
   try {
@@ -492,27 +493,84 @@ function saveWL(wls: WLEntry[]) {
 }
 
 function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavigate: (s: string) => void }) {
-  const [wls,      setWls]      = useState<WLEntry[]>(loadWL)
-  const [activeId, setActiveId] = useState<string>(() => loadWL()[0]?.id ?? 'default')
-  const [addVal,   setAddVal]   = useState('')
-  const [renaming, setRenaming] = useState(false)
-  const [rnVal,    setRnVal]    = useState('')
+  const [wls,         setWls]         = useState<WLEntry[]>(loadWL)
+  const [activeId,    setActiveId]    = useState<string>(() => loadWL()[0]?.id ?? 'default')
+  const [addVal,      setAddVal]      = useState('')
+  const [renaming,    setRenaming]    = useState(false)
+  const [rnVal,       setRnVal]       = useState('')
+  const [suggestions, setSuggestions] = useState<{ ticker: string; name: string }[]>([])
+  const [showDrop,    setShowDrop]    = useState(false)
+  const [priceMap,    setPriceMap]    = useState<Record<string, PriceData>>({})
+
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pollTimerRef   = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const active = wls.find(w => w.id === activeId) ?? wls[0]
   const upd = (next: WLEntry[]) => { setWls(next); saveWL(next) }
-  const addSym = () => {
-    const s = addVal.trim().toUpperCase(); if (!s || !active) return
+
+  const addSym = (sym?: string) => {
+    const s = (sym ?? addVal).trim().toUpperCase(); if (!s || !active) return
     if (!active.symbols.includes(s)) upd(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, s] } : w))
-    setAddVal('')
+    setAddVal(''); setSuggestions([]); setShowDrop(false)
   }
   const removeSym = (s: string) => upd(wls.map(w => w.id === active.id ? { ...w, symbols: w.symbols.filter(x => x !== s) } : w))
-  const newList  = () => { const id = Date.now().toString(); const nx = [...wls, { id, name: `List ${wls.length + 1}`, symbols: [] }]; upd(nx); setActiveId(id) }
-  const delList  = () => { if (wls.length <= 1) return; const nx = wls.filter(w => w.id !== active.id); upd(nx); setActiveId(nx[0].id) }
-  const commitRn = () => { const n = rnVal.trim(); if (n) upd(wls.map(w => w.id === active.id ? { ...w, name: n } : w)); setRenaming(false) }
+  const newList   = () => { const id = Date.now().toString(); const nx = [...wls, { id, name: `List ${wls.length + 1}`, symbols: [] }]; upd(nx); setActiveId(id) }
+  const delList   = () => { if (wls.length <= 1) return; const nx = wls.filter(w => w.id !== active.id); upd(nx); setActiveId(nx[0].id) }
+  const commitRn  = () => { const n = rnVal.trim(); if (n) upd(wls.map(w => w.id === active.id ? { ...w, name: n } : w)); setRenaming(false) }
   const btn = (color = C.sub): React.CSSProperties => ({ padding: '3px 7px', borderRadius: 3, fontSize: 10, cursor: 'pointer', border: `1px solid ${color}33`, background: 'transparent', color })
+
+  // Debounced symbol search for autocomplete dropdown
+  const handleAddInput = (v: string) => {
+    const val = v.toUpperCase()
+    setAddVal(val)
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current)
+    if (!val.trim()) { setSuggestions([]); setShowDrop(false); return }
+    searchTimerRef.current = setTimeout(async () => {
+      try {
+        const r = await api.get<{ symbols: { SYMBOL: string; COMPANY_NAME: string }[] }>(
+          '/charts/symbols', { params: { q: val.trim() } }
+        )
+        const syms = (r.data.symbols ?? []).map(s => ({ ticker: s.SYMBOL, name: s.COMPANY_NAME ?? s.SYMBOL }))
+        setSuggestions(syms); setShowDrop(syms.length > 0)
+      } catch { setSuggestions([]); setShowDrop(false) }
+    }, 250)
+  }
+
+  // Fetch last-bar price data for a list of symbols
+  const fetchPrices = useCallback(async (syms: string[]) => {
+    if (!syms.length) return
+    const results = await Promise.allSettled(
+      syms.map(s => api.get<{ bars: Array<{ close: number }> }>('/charts/ohlcv', { params: { symbol: s, timeframe: '1D' } }))
+    )
+    const map: Record<string, PriceData> = {}
+    results.forEach((r, i) => {
+      if (r.status !== 'fulfilled') return
+      const bars = r.value.data?.bars ?? []
+      if (bars.length < 2) return
+      const ltp    = bars[bars.length - 1].close
+      const prev   = bars[bars.length - 2].close
+      const change = ltp - prev
+      const pct    = prev ? (change / prev) * 100 : 0
+      map[syms[i]] = { ltp, change, pct }
+    })
+    setPriceMap(prev => ({ ...prev, ...map }))
+  }, [])
+
+  // Refresh prices when active watchlist symbols change, and poll every 60s
+  const symbolsKey = JSON.stringify(active?.symbols ?? [])
+  useEffect(() => {
+    const syms = active?.symbols ?? []
+    fetchPrices(syms)
+    if (pollTimerRef.current) clearInterval(pollTimerRef.current)
+    pollTimerRef.current = setInterval(() => fetchPrices(syms), 60_000)
+    return () => { if (pollTimerRef.current) clearInterval(pollTimerRef.current) }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [symbolsKey, fetchPrices])
 
   return (
     <div style={{ width: 240, flexShrink: 0, borderLeft: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', background: C.panel }}>
+
+      {/* List tabs header */}
       <div style={{ padding: '8px 10px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 6 }}>
           <span style={{ fontSize: 10, fontWeight: 700, color: C.text, letterSpacing: '0.08em', flex: 1 }}>WATCHLISTS</span>
@@ -530,6 +588,8 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
           ))}
         </div>
       </div>
+
+      {/* Active list name / rename */}
       <div style={{ padding: '6px 10px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
         {renaming ? (
           <div style={{ display: 'flex', gap: 4 }}>
@@ -545,28 +605,105 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
           </div>
         )}
       </div>
+
+      {/* Symbol rows — TradingView style with LTP + change */}
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {active?.symbols.length === 0 && (
-          <div style={{ padding: '20px 10px', textAlign: 'center', color: C.dim, fontSize: 10 }}>No symbols yet.<br />Add below.</div>
+          <div style={{ padding: '20px 10px', textAlign: 'center', color: C.dim, fontSize: 10 }}>No symbols yet.<br />Search below to add.</div>
         )}
-        {active?.symbols.map(s => (
-          <div key={s} style={{ display: 'flex', alignItems: 'center', padding: '5px 10px', borderBottom: `1px solid ${C.border}`, background: s === currentSym.toUpperCase() ? C.blue + '11' : 'transparent' }}>
-            <button onClick={() => onNavigate(s)} style={{ flex: 1, textAlign: 'left', background: 'transparent', border: 'none', color: s === currentSym.toUpperCase() ? C.blue : C.text, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'monospace', letterSpacing: '0.06em' }}>{s}</button>
-            <button onClick={() => removeSym(s)} style={{ background: 'transparent', border: 'none', color: C.dim, cursor: 'pointer', fontSize: 13, padding: '0 2px' }}>x</button>
-          </div>
-        ))}
+        {active?.symbols.map(s => {
+          const pd = priceMap[s]
+          const isActive = s === currentSym.toUpperCase()
+          const priceColor = pd
+            ? (pd.change > 0 ? C.green : pd.change < 0 ? C.red : C.text)
+            : C.text
+          return (
+            <div key={s} style={{
+              display: 'flex', alignItems: 'center', padding: '6px 8px 6px 10px',
+              borderBottom: `1px solid ${C.border}22`,
+              background: isActive ? C.blue + '11' : 'transparent',
+              cursor: 'pointer',
+            }}
+              onClick={() => onNavigate(s)}
+            >
+              {/* Left: ticker + change% */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', letterSpacing: '0.06em', color: isActive ? C.blue : C.text }}>{s}</div>
+                {pd && (
+                  <div style={{ fontSize: 9, marginTop: 1, color: priceColor }}>
+                    {pd.pct >= 0 ? '+' : ''}{pd.pct.toFixed(2)}%
+                  </div>
+                )}
+              </div>
+              {/* Right: LTP + abs change */}
+              <div style={{ textAlign: 'right', marginRight: 4, flexShrink: 0 }}>
+                {pd ? (
+                  <>
+                    <div style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: priceColor }}>{pd.ltp.toFixed(2)}</div>
+                    <div style={{ fontSize: 9, color: priceColor }}>{pd.change >= 0 ? '+' : ''}{pd.change.toFixed(2)}</div>
+                  </>
+                ) : (
+                  <div style={{ fontSize: 10, color: C.dim }}>--</div>
+                )}
+              </div>
+              <button
+                onClick={e => { e.stopPropagation(); removeSym(s) }}
+                style={{ background: 'transparent', border: 'none', color: C.dim, cursor: 'pointer', fontSize: 13, padding: '0 2px', flexShrink: 0 }}
+              >x</button>
+            </div>
+          )
+        })}
       </div>
+
+      {/* Add symbol with autocomplete */}
       <div style={{ padding: '8px 10px', borderTop: `1px solid ${C.border}`, flexShrink: 0 }}>
+        {/* Quick-add current chart symbol */}
         {currentSym && active && !active.symbols.includes(currentSym.toUpperCase()) && (
-          <button onClick={() => upd(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, currentSym.toUpperCase()] } : w))}
-            style={{ width: '100%', marginBottom: 6, padding: '4px', borderRadius: 3, fontSize: 10, border: `1px solid ${C.green}44`, background: C.green + '11', color: C.green, cursor: 'pointer', fontFamily: 'monospace' }}>
+          <button
+            onClick={() => upd(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, currentSym.toUpperCase()] } : w))}
+            style={{ width: '100%', marginBottom: 6, padding: '4px', borderRadius: 3, fontSize: 10, border: `1px solid ${C.green}44`, background: C.green + '11', color: C.green, cursor: 'pointer', fontFamily: 'monospace' }}
+          >
             + Add {currentSym.toUpperCase()}
           </button>
         )}
-        <div style={{ display: 'flex', gap: 4 }}>
-          <input value={addVal} onChange={e => setAddVal(e.target.value.toUpperCase())} onKeyDown={e => e.key === 'Enter' && addSym()} placeholder="Symbol..."
-            style={{ flex: 1, padding: '4px 6px', borderRadius: 3, border: `1px solid ${C.border}`, background: C.cell, color: C.text, fontSize: 11, fontFamily: 'monospace', outline: 'none' }} />
-          <button onClick={addSym} style={{ padding: '4px 9px', borderRadius: 3, fontSize: 10, border: `1px solid ${C.blue}`, background: C.blue + '22', color: C.blue, cursor: 'pointer' }}>Add</button>
+        {/* Search input with dropdown — dropdown pops upward */}
+        <div style={{ position: 'relative' }}>
+          {showDrop && suggestions.length > 0 && (
+            <div style={{
+              position: 'absolute', bottom: 'calc(100% + 4px)', left: 0, right: 0,
+              background: C.cell, border: `1px solid ${C.border}`, borderRadius: 4,
+              boxShadow: '0 -6px 16px rgba(0,0,0,0.5)', zIndex: 200,
+              maxHeight: 220, overflowY: 'auto',
+            }}>
+              {suggestions.slice(0, 15).map(sg => (
+                <div
+                  key={sg.ticker}
+                  onMouseDown={() => addSym(sg.ticker)}
+                  style={{ padding: '7px 10px', cursor: 'pointer', borderBottom: `1px solid ${C.border}22`, display: 'flex', alignItems: 'center', gap: 8 }}
+                  onMouseEnter={e => (e.currentTarget.style.background = C.blue + '22')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: C.text, minWidth: 70, flexShrink: 0 }}>{sg.ticker}</span>
+                  <span style={{ fontSize: 10, color: C.sub, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sg.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 4 }}>
+            <input
+              value={addVal}
+              onChange={e => handleAddInput(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') addSym()
+                if (e.key === 'Escape') { setSuggestions([]); setShowDrop(false) }
+              }}
+              onBlur={() => setTimeout(() => setShowDrop(false), 150)}
+              onFocus={() => suggestions.length > 0 && setShowDrop(true)}
+              placeholder="Search symbol..."
+              style={{ flex: 1, padding: '4px 6px', borderRadius: 3, border: `1px solid ${C.border}`, background: C.cell, color: C.text, fontSize: 11, fontFamily: 'monospace', outline: 'none' }}
+            />
+            <button onClick={() => addSym()} style={{ padding: '4px 9px', borderRadius: 3, fontSize: 10, border: `1px solid ${C.blue}`, background: C.blue + '22', color: C.blue, cursor: 'pointer' }}>Add</button>
+          </div>
         </div>
       </div>
     </div>
@@ -590,7 +727,22 @@ export function FullChartPage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const proRef       = useRef<KLineChartPro | null>(null)
 
-  // ── Create / destroy chart when symbol changes ──────────────────────────────
+  // Fix KLineChart Pro v0.1.1 CSS bug: list text color var has 3 dashes (typo) —
+  // inject a corrected rule once so the symbol-search modal shows results visibly.
+  useEffect(() => {
+    const id = 'klinechart-pro-fix'
+    if (!document.getElementById(id)) {
+      const style = document.createElement('style')
+      style.id = id
+      style.textContent = [
+        '.klinecharts-pro-list { color: var(--klinecharts-pro-text-color) !important; }',
+        '.klinecharts-pro-symbol-search-modal-list li { color: var(--klinecharts-pro-text-color) !important; }',
+      ].join('\n')
+      document.head.appendChild(style)
+    }
+  }, [])
+
+  // Create / destroy chart when symbol changes
   useEffect(() => {
     if (!containerRef.current || !sym) return
     containerRef.current.innerHTML = ''
@@ -612,21 +764,17 @@ export function FullChartPage() {
       styles:            buildStyles(settings) as any,
       drawingBarVisible: true,
       mainIndicators:    ['EMA'],
-      subIndicators:     ['VOL', 'MACD', 'RSI'],
+      subIndicators:     ['MACD', 'RSI'],   // VOL removed — added to main pane below
       datafeed:          new OurDatafeed(),
     })
 
-    // ── P1: Symbol URL sync ──────────────────────────────────────────────────
-    // When user searches and selects a symbol via Pro's built-in UI, navigate to
-    // the new symbol URL instead of letting Pro update internally. This keeps the
-    // URL in sync and the Back button correct.
+    // Symbol URL sync: when user picks from Pro's built-in search, navigate to new URL
     pro.setSymbol = (symbol: SymbolInfo) => {
       const tf = pro.getPeriod()?.text ?? '1D'
       navigate(`/fullchart/${symbol.ticker.toUpperCase()}?tf=${tf}`, { replace: true })
     }
 
-    // ── P3: Period URL sync ──────────────────────────────────────────────────
-    // Keep ?tf= in the URL current so a page refresh restores the same period.
+    // Period URL sync: keep ?tf= current so page refresh restores the same period
     const origSetPeriod = pro.setPeriod.bind(pro)
     pro.setPeriod = (period: Period) => {
       origSetPeriod(period)
@@ -634,6 +782,15 @@ export function FullChartPage() {
     }
 
     proRef.current = pro
+
+    // Add VOL to the main (candle) pane — TradingView style volume overlay
+    setTimeout(() => {
+      try {
+        const ca = (pro as any)._chartApi
+        if (ca?.createIndicator) ca.createIndicator('VOL', true, { id: 'candle_pane' })
+      } catch { /* ignore — may not be supported in all Pro builds */ }
+    }, 200)
+
     setLoading(false)
 
     return () => {
@@ -645,12 +802,26 @@ export function FullChartPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sym])
 
-  // ── Apply settings live ─────────────────────────────────────────────────────
+  // Apply settings changes live
   useEffect(() => {
     if (!proRef.current) return
     try { proRef.current.setStyles(buildStyles(settings) as any) } catch { /* ignore */ }
     saveSettings(settings)
   }, [settings])
+
+  // ResizeObserver — trigger chart resize immediately when container dimensions change
+  // (prevents the lag when Settings / Watchlist panels open or close)
+  useEffect(() => {
+    if (!containerRef.current) return
+    const observer = new ResizeObserver(() => {
+      try {
+        const ca = (proRef.current as any)?._chartApi
+        if (ca?.resize) ca.resize()
+      } catch { /* ignore */ }
+    })
+    observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [])
 
   const handleSettings = useCallback((patch: Partial<ChartSettings>) => {
     setSettings(prev => ({ ...prev, ...patch }))
@@ -661,7 +832,7 @@ export function FullChartPage() {
     navigate(`/fullchart/${s.toUpperCase()}?tf=${tf}`)
   }, [navigate])
 
-  // ── Snapshot ────────────────────────────────────────────────────────────────
+  // Snapshot — composite canvas → PNG download
   const takeSnapshot = useCallback(() => {
     const container = containerRef.current; if (!container) return
     try {
@@ -695,7 +866,7 @@ export function FullChartPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', background: C.bg, overflow: 'hidden', fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
 
-      {/* ── Top bar */}
+      {/* Top bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 14px', background: C.panel, borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
         <button onClick={() => navigate(-1)} style={{ padding: '4px 10px', borderRadius: 4, border: `1px solid ${C.border}`, background: 'transparent', color: C.sub, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
           &larr; Back
@@ -716,7 +887,7 @@ export function FullChartPage() {
         <button onClick={() => { setShowWL(v => !v); setShowSettings(false) }} style={topBtn(showWL, C.purple)}>Watchlist</button>
       </div>
 
-      {/* ── Content row */}
+      {/* Content row — chart + optional side panels */}
       <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden' }}>
         <div ref={containerRef} style={{ flex: 1, minWidth: 0, minHeight: 0 }} />
         {showSettings && <SettingsPanel settings={settings} onChange={handleSettings} />}
