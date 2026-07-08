@@ -19,6 +19,15 @@ def _safe_float(val, default: float = 0.0) -> float:
         return default
 
 
+def _nullable_float(val) -> float | None:
+    """Return None for NaN/inf/missing — used where 0.0 would be a misleading default."""
+    try:
+        f = float(val)
+        return None if math.isnan(f) or math.isinf(f) else round(f, 2)
+    except (TypeError, ValueError):
+        return None
+
+
 def _clean_records(records: list) -> list:
     return [
         {k: (None if isinstance(v, float) and math.isnan(v) else v) for k, v in rec.items()}
@@ -72,11 +81,11 @@ def get_sectors():
         records.append({
             "sector":            sector,
             "rotation_signal":   str(row.get("rotation_signal", "")),
-            "combined_score":    _safe_float(row.get("combined_score")),
-            "FII_flow_score":    _safe_float(row.get("FII_flow_score")),
-            "DII_flow_score":    _safe_float(row.get("DII_flow_score")),
-            "Smart_Money_Score": _safe_float(row.get("Smart_Money_Score")),
-            "fpi_score":         _safe_float(row.get("fpi_score")),
+            "combined_score":    _nullable_float(row.get("combined_score")),
+            "FII_flow_score":    _nullable_float(row.get("FII_flow_score")),
+            "DII_flow_score":    _nullable_float(row.get("DII_flow_score")),
+            "Smart_Money_Score": _nullable_float(row.get("Smart_Money_Score")),
+            "fpi_score":         _safe_float(row.get("fpi_score")),   # 0.0 is correct default
             "last_date":         str(row.get("last_date", "")),
             # FPI ownership fields
             "fpi_signal":        fpi_data.get("fpi_signal", ""),
@@ -88,11 +97,32 @@ def get_sectors():
             "qoq_auc_delta_pct": fpi_data.get("qoq_auc_delta_pct"),
         })
 
-    records.sort(key=lambda r: (r["combined_score"] or 0), reverse=True)
+    # Cross-sectional relative score: rank sectors by combined_score today → rescale to ±100.
+    # Best sector = +100, worst = -100, regime-neutral — always readable regardless of
+    # whether FII is net buying or net selling across the board.
+    valid = [(i, r) for i, r in enumerate(records) if r["combined_score"] is not None]
+    valid.sort(key=lambda x: x[1]["combined_score"])          # ascending: worst → best
+    n = len(valid)
+    for rank_idx, (orig_idx, _) in enumerate(valid):
+        rel = round((rank_idx / (n - 1)) * 200 - 100, 1) if n > 1 else 0.0
+        records[orig_idx]["relative_score"] = rel
+    for r in records:
+        if "relative_score" not in r:
+            r["relative_score"] = None
+
+    records.sort(key=lambda r: (r["relative_score"] or -200), reverse=True)
+
+    # FII regime: fraction of sectors with negative FII_flow_score → context for UI
+    fii_scores = [r["FII_flow_score"] for r in records if r["FII_flow_score"] is not None]
+    fii_neg_pct = round(sum(1 for s in fii_scores if s < 0) / len(fii_scores) * 100) if fii_scores else 0
+    fii_regime = "NET_SELLER" if fii_neg_pct >= 70 else "NET_BUYER" if fii_neg_pct <= 30 else "MIXED"
+
     return {
-        "sectors":   _clean_records(records),
-        "count":     len(records),
-        "fpi_date":  list(fpi.values())[0]["fpi_date"] if fpi else None,
+        "sectors":     _clean_records(records),
+        "count":       len(records),
+        "fpi_date":    list(fpi.values())[0]["fpi_date"] if fpi else None,
+        "fii_regime":  fii_regime,
+        "fii_neg_pct": fii_neg_pct,
     }
 
 
@@ -209,12 +239,12 @@ def get_sector_detail(sector: str):
     return {
         "sector":            str(row.get("sector", "")),
         "rotation_signal":   str(row.get("rotation_signal", "")),
-        "combined_score":    _safe_float(row.get("combined_score")),
-        "FII_flow_score":    _safe_float(row.get("FII_flow_score")),
-        "DII_flow_score":    _safe_float(row.get("DII_flow_score")),
-        "Smart_Money_Score": _safe_float(row.get("Smart_Money_Score")),
+        "combined_score":    _nullable_float(row.get("combined_score")),
+        "FII_flow_score":    _nullable_float(row.get("FII_flow_score")),
+        "DII_flow_score":    _nullable_float(row.get("DII_flow_score")),
+        "Smart_Money_Score": _nullable_float(row.get("Smart_Money_Score")),
         "fpi_score":         _safe_float(row.get("fpi_score")),
-        "price_momentum_score": _safe_float(row.get("price_momentum_score")),
+        "price_momentum_score": _nullable_float(row.get("price_momentum_score")),
         "last_date":         str(row.get("last_date", "")),
         # FPI ownership block
         "fpi_signal":        fpi.get("fpi_signal", ""),

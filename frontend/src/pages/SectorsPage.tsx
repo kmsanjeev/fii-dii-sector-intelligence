@@ -4,8 +4,6 @@ import { fetchSectors, type Sector } from '../api/client'
 import { Link } from 'react-router-dom'
 import { T } from '../styles/tokens'
 
-// ─── Page palette (aliases from shared tokens) ─────────────────────────────────
-
 const C = {
   bg:       T.bg,
   card:     T.cell,
@@ -20,37 +18,79 @@ const C = {
   blue:     T.fii,
 }
 
-// ─── Signal config — covers ALL actual values from the engine ─────────────────
-
 const SIGNAL_CFG: Record<string, { color: string; bg: string; label: string; order: number }> = {
-  EARLY_ROTATION: { color: '#22D35E', bg: '#052E1688', label: 'Early Rotation', order: 1 },
-  LEADING:        { color: '#10B981', bg: '#064E3B55', label: 'Leading',         order: 2 },
-  MOMENTUM:       { color: '#3BAEF0', bg: '#0C2A4055', label: 'Momentum',        order: 3 },
-  BUILDING:       { color: '#60A5FA', bg: '#1E3A5F55', label: 'Building',        order: 4 },
-  PRICE_LED:      { color: '#F5A524', bg: '#45260055', label: 'Price-Led',       order: 5 },
-  NEUTRAL:        { color: '#7B90A8', bg: '#1E2D4455', label: 'Neutral',         order: 6 },
-  LAGGING:        { color: '#FB923C', bg: '#3A140055', label: 'Lagging',         order: 7 },
-  DISTRIBUTION:   { color: '#F44B4B', bg: '#45090955', label: 'Distribution',    order: 8 },
-  DECLINING:      { color: '#DC2626', bg: '#3B0A0A55', label: 'Declining',       order: 9 },
+  EARLY_ROTATION:     { color: '#22D35E', bg: '#052E1688', label: 'Early Rotation',     order: 1 },
+  STRONG_ACCUMULATION:{ color: '#10B981', bg: '#064E3B55', label: 'Strong Accum.',      order: 2 },
+  LEADING:            { color: '#10B981', bg: '#064E3B55', label: 'Leading',             order: 3 },
+  MOMENTUM:           { color: '#3BAEF0', bg: '#0C2A4055', label: 'Momentum',            order: 4 },
+  PRICE_LED:          { color: '#F5A524', bg: '#45260055', label: 'Price-Led',           order: 5 },
+  NEUTRAL:            { color: '#7B90A8', bg: '#1E2D4455', label: 'Neutral',             order: 6 },
+  DISTRIBUTION:       { color: '#F44B4B', bg: '#45090955', label: 'Distribution',        order: 7 },
+  DECLINING:          { color: '#DC2626', bg: '#3B0A0A55', label: 'Declining',           order: 8 },
 }
 
 function sigCfg(sig: string) {
   return SIGNAL_CFG[sig] ?? { color: C.muted, bg: '#1E2D4455', label: sig.replace(/_/g,' '), order: 99 }
 }
 
-// ─── Bidirectional flow bar ────────────────────────────────────────────────────
+// ─── Relative score bar (fills from center, colour by sign) ──────────────────
 
-function FlowBar({ value, color }: { value: number; color: string }) {
-  const halfPct = Math.min(50, Math.abs(value) / 100 * 50)
+function RelBar({ value }: { value: number }) {
+  const pct   = Math.min(50, Math.abs(value) / 100 * 50)
+  const color = value >= 0 ? '#22D35E' : '#F44B4B'
   return (
     <div style={{ height: 3, background: '#1A2740', borderRadius: 2, position: 'relative' }}>
       <div style={{
         position: 'absolute', height: '100%', borderRadius: 2, background: color,
         ...(value >= 0
-          ? { left: '50%', width: `${halfPct}%` }
-          : { right: '50%', width: `${halfPct}%` }),
+          ? { left: '50%', width: `${pct}%` }
+          : { right: '50%', width: `${pct}%` }),
       }} />
       <div style={{ position: 'absolute', left: '50%', top: -1, width: 1, height: 5, background: '#2D4A6B' }} />
+    </div>
+  )
+}
+
+// ─── Compact sub-bar (FII / DII / SM) ────────────────────────────────────────
+
+function FlowBar({ value, color }: { value: number; color: string }) {
+  const pct = Math.min(50, Math.abs(value) / 100 * 50)
+  return (
+    <div style={{ height: 2, background: '#1A2740', borderRadius: 2, position: 'relative' }}>
+      <div style={{
+        position: 'absolute', height: '100%', borderRadius: 2,
+        background: value >= 0 ? color : '#F44B4B',
+        ...(value >= 0 ? { left: '50%', width: `${pct}%` } : { right: '50%', width: `${pct}%` }),
+      }} />
+      <div style={{ position: 'absolute', left: '50%', top: -1, width: 1, height: 4, background: '#2D4A6B' }} />
+    </div>
+  )
+}
+
+// ─── FPI signal chip ─────────────────────────────────────────────────────────
+
+const FPI_COLOR: Record<string, string> = {
+  STRONG_ACCUMULATION: '#22D35E',
+  ACCUMULATION:        '#10B981',
+  NEUTRAL:             '#7B90A8',
+  DISTRIBUTION:        '#F44B4B',
+  STRONG_DISTRIBUTION: '#DC2626',
+}
+
+function FpiChip({ signal, auc_pct }: { signal: string; auc_pct: number | null | undefined }) {
+  if (!signal) return null
+  const color = FPI_COLOR[signal] ?? '#7B90A8'
+  const label = signal.replace('STRONG_', 'STR. ').replace('_', ' ')
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
+      <span style={{
+        fontSize: 7, fontWeight: 800, padding: '1px 5px', borderRadius: 2,
+        background: `${color}18`, color, border: `1px solid ${color}44`,
+        letterSpacing: 0.5,
+      }}>FPI {label}</span>
+      {auc_pct != null && (
+        <span style={{ color: C.dim, fontSize: 8 }}>{auc_pct.toFixed(1)}% AUC</span>
+      )}
     </div>
   )
 }
@@ -58,20 +98,23 @@ function FlowBar({ value, color }: { value: number; color: string }) {
 // ─── Sector card ──────────────────────────────────────────────────────────────
 
 function SectorCard({ s }: { s: Sector }) {
-  const cfg   = sigCfg(s.rotation_signal)
-  const score = s.combined_score ?? 0
-  const fii   = s.FII_flow_score ?? 0
-  const dii   = s.DII_flow_score ?? 0
-  const sm    = s.Smart_Money_Score ?? 0
+  const cfg = sigCfg(s.rotation_signal)
+  const rel  = s.relative_score ?? 0        // primary: cross-sectional ±100
+  const zsc  = s.combined_score             // secondary: z-score based
+  const fii  = s.FII_flow_score ?? 0
+  const dii  = s.DII_flow_score ?? 0
+  const sm   = s.Smart_Money_Score ?? 0
+  const relColor = rel >= 0 ? C.bull : C.bear
 
   return (
     <Link to={`/sectors/${s.sector}`} style={{ textDecoration: 'none' }}>
-      <div style={{
-        background: C.card, borderRadius: 8, cursor: 'pointer',
-        border: `1px solid #1E2D44`,
-        borderTop: `3px solid ${cfg.color}`,
-        padding: 14, transition: 'transform 0.12s, box-shadow 0.12s',
-      }}
+      <div
+        style={{
+          background: C.card, borderRadius: 8, cursor: 'pointer',
+          border: `1px solid #1E2D44`,
+          borderTop: `3px solid ${cfg.color}`,
+          padding: 14, transition: 'transform 0.12s, box-shadow 0.12s',
+        }}
         onMouseEnter={e => {
           e.currentTarget.style.transform = 'translateY(-2px)'
           e.currentTarget.style.boxShadow = `0 4px 20px ${cfg.color}22`
@@ -81,39 +124,65 @@ function SectorCard({ s }: { s: Sector }) {
           e.currentTarget.style.boxShadow = 'none'
         }}
       >
-        {/* Header row */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-          <div>
-            <div style={{ color: C.primary, fontSize: 12, fontWeight: 800, letterSpacing: 0.3, marginBottom: 4 }}>
-              {s.sector.replace(/_/g, ' ')}
-            </div>
-            <span style={{
-              fontSize: 8, fontWeight: 700, padding: '2px 7px', borderRadius: 3,
-              background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.color}44`,
-              letterSpacing: 0.8, textTransform: 'uppercase',
-            }}>
-              {cfg.label}
-            </span>
-          </div>
+        {/* Header: sector name + signal badge */}
+        <div style={{ marginBottom: 8 }}>
           <div style={{
-            fontSize: 20, fontWeight: 900, fontFamily: 'monospace',
-            color: score >= 0 ? C.bull : C.bear, lineHeight: 1,
+            color: C.primary, fontSize: 12, fontWeight: 800,
+            letterSpacing: 0.3, marginBottom: 4,
           }}>
-            {score >= 0 ? '+' : ''}{score.toFixed(1)}
+            {s.sector.replace(/_/g, ' ')}
+          </div>
+          <span style={{
+            fontSize: 8, fontWeight: 700, padding: '2px 7px', borderRadius: 3,
+            background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.color}44`,
+            letterSpacing: 0.8, textTransform: 'uppercase',
+          }}>
+            {cfg.label}
+          </span>
+        </div>
+
+        {/* Relative score — primary big number */}
+        <div style={{
+          display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4,
+        }}>
+          <span style={{
+            fontSize: 26, fontWeight: 900, fontFamily: 'monospace',
+            color: relColor, lineHeight: 1,
+          }}>
+            {rel >= 0 ? '+' : ''}{rel.toFixed(0)}
+          </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <span style={{ color: C.dim, fontSize: 8, fontWeight: 600 }}>relative rank</span>
+            {zsc != null && (
+              <span style={{ color: C.dim, fontSize: 8 }}>
+                z: {zsc >= 0 ? '+' : ''}{zsc.toFixed(1)}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Flow indicators */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {[
-            { label: 'FII', val: fii, color: '#3BAEF0', desc: 'Foreign funds' },
-            { label: 'DII', val: dii, color: '#9B7BEA', desc: 'Domestic MFs' },
-            { label: 'SM',  val: sm,  color: '#22D35E', desc: 'Smart money' },
-          ].map(({ label, val, color, desc }) => (
+        {/* Relative bar */}
+        <div style={{ marginBottom: 8 }}>
+          <RelBar value={rel} />
+        </div>
+
+        {/* FPI signal (if available) */}
+        <FpiChip signal={s.fpi_signal ?? ''} auc_pct={s.auc_pct_of_total} />
+
+        {/* FII / DII / SM bars */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginTop: 8 }}>
+          {([
+            { label: 'FII', val: fii, color: '#3BAEF0' },
+            { label: 'DII', val: dii, color: '#9B7BEA' },
+            { label: 'SM',  val: sm,  color: '#22D35E' },
+          ] as const).map(({ label, val, color }) => (
             <div key={label}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-                <span style={{ color: C.dim, fontSize: 8, fontWeight: 700 }}>{label} ({desc})</span>
-                <span style={{ color: val >= 0 ? color : C.bear, fontSize: 9, fontWeight: 700 }}>
+                <span style={{ color: C.dim, fontSize: 8, fontWeight: 700 }}>{label}</span>
+                <span style={{
+                  color: val >= 0 ? color : C.bear,
+                  fontSize: 8, fontWeight: 700,
+                }}>
                   {val >= 0 ? '+' : ''}{val.toFixed(1)}
                 </span>
               </div>
@@ -126,7 +195,7 @@ function SectorCard({ s }: { s: Sector }) {
   )
 }
 
-// ─── Signal group header ───────────────────────────────────────────────────────
+// ─── Signal group header ──────────────────────────────────────────────────────
 
 function GroupHeader({ signal, count }: { signal: string; count: number }) {
   const cfg = sigCfg(signal)
@@ -138,6 +207,31 @@ function GroupHeader({ signal, count }: { signal: string; count: number }) {
       </span>
       <span style={{ color: C.dim, fontSize: 10 }}>— {count} sector{count !== 1 ? 's' : ''}</span>
       <div style={{ flex: 1, height: 1, background: `${cfg.color}25` }} />
+    </div>
+  )
+}
+
+// ─── Regime badge ─────────────────────────────────────────────────────────────
+
+function RegimeBadge({ regime, negPct }: { regime: string; negPct: number }) {
+  const cfg = regime === 'NET_SELLER'
+    ? { color: '#F44B4B', bg: '#2D0A0A', label: 'FII: NET SELLER' }
+    : regime === 'NET_BUYER'
+    ? { color: '#22D35E', bg: '#052E16', label: 'FII: NET BUYER' }
+    : { color: '#F5A524', bg: '#2A1800', label: 'FII: MIXED' }
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 8,
+      padding: '5px 12px', borderRadius: 5,
+      background: cfg.bg, border: `1px solid ${cfg.color}44`,
+    }}>
+      <div style={{ width: 6, height: 6, borderRadius: '50%', background: cfg.color }} />
+      <span style={{ color: cfg.color, fontSize: 10, fontWeight: 800, letterSpacing: 0.8 }}>
+        {cfg.label}
+      </span>
+      <span style={{ color: C.dim, fontSize: 9 }}>
+        {negPct}% of sectors under selling pressure
+      </span>
     </div>
   )
 }
@@ -159,24 +253,25 @@ export function SectorsPage() {
     </div>
   )
 
-  const all = data?.sectors ?? []
-  const positive = all.filter(s => (s.combined_score ?? 0) >= 0).length
+  const all      = data?.sectors ?? []
+  const regime   = (data as any)?.fii_regime ?? 'MIXED'
+  const negPct   = (data as any)?.fii_neg_pct ?? 0
+  const positive = all.filter(s => (s.relative_score ?? 0) >= 0).length
 
-  // Sort by signal order then by combined score descending
+  // Sort by signal order then relative_score descending
   const sorted = [...all].sort((a, b) => {
     const ao = sigCfg(a.rotation_signal).order
     const bo = sigCfg(b.rotation_signal).order
     if (ao !== bo) return ao - bo
-    return (b.combined_score ?? 0) - (a.combined_score ?? 0)
+    return (b.relative_score ?? 0) - (a.relative_score ?? 0)
   })
 
   const filtered = sorted.filter(s => {
-    if (filter === 'positive') return (s.combined_score ?? 0) >= 0
-    if (filter === 'negative') return (s.combined_score ?? 0) < 0
+    if (filter === 'positive') return (s.relative_score ?? 0) >= 0
+    if (filter === 'negative') return (s.relative_score ?? 0) < 0
     return true
   })
 
-  // Group by signal
   const groups: Record<string, Sector[]> = {}
   for (const s of filtered) {
     const sig = s.rotation_signal || 'NEUTRAL'
@@ -189,52 +284,55 @@ export function SectorsPage() {
   )
 
   const topSector = all.length > 0
-    ? all.reduce((best, s) => (s.combined_score ?? -Infinity) > (best.combined_score ?? -Infinity) ? s : best, all[0])
+    ? all.reduce((best, s) =>
+        (s.relative_score ?? -Infinity) > (best.relative_score ?? -Infinity) ? s : best, all[0])
     : null
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-      {/* ── Page header ──────────────────────────────────────────────────────── */}
+      {/* ── Page header ───────────────────────────────────────────────── */}
       <div style={{
         background: C.card, border: C.border, borderRadius: 8,
         padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap',
       }}>
         <div style={{ flex: 1 }}>
-          <div style={{ color: C.secondary, fontSize: 10, fontWeight: 700, letterSpacing: 2, marginBottom: 5 }}>
+          <div style={{ color: C.secondary, fontSize: 10, fontWeight: 700, letterSpacing: 2, marginBottom: 6 }}>
             SECTOR ROTATION INTELLIGENCE — {all.length} SECTORS TRACKED
           </div>
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
             <span style={{ color: C.bull, fontSize: 14, fontWeight: 800 }}>{positive}</span>
-            <span style={{ color: C.muted, fontSize: 11 }}>sectors in positive territory</span>
+            <span style={{ color: C.muted, fontSize: 11 }}>sectors relatively preferred</span>
             <span style={{ color: C.bear, fontSize: 14, fontWeight: 800 }}>{all.length - positive}</span>
-            <span style={{ color: C.muted, fontSize: 11 }}>sectors under flow pressure</span>
+            <span style={{ color: C.muted, fontSize: 11 }}>sectors under relative pressure</span>
             {topSector && (
               <>
                 <span style={{ color: C.dim }}>|</span>
                 <span style={{ color: C.muted, fontSize: 11 }}>
-                  Best: <span style={{ color: C.bull, fontWeight: 700 }}>{topSector.sector.replace(/_/g,' ')}</span>
-                  {' '}({topSector.combined_score != null ? `+${topSector.combined_score.toFixed(1)}` : '--'})
+                  Top: <span style={{ color: C.bull, fontWeight: 700 }}>{topSector.sector.replace(/_/g,' ')}</span>
+                  {' '}({topSector.relative_score != null ? (topSector.relative_score >= 0 ? '+' : '') + topSector.relative_score.toFixed(0) : '--'})
                 </span>
               </>
             )}
           </div>
         </div>
 
+        <RegimeBadge regime={regime} negPct={negPct} />
+
         {/* Filter chips */}
         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
           {([
-            { key: 'all',      label: `All (${all.length})`,         activeColor: '#1E3A5F', activeText: C.secondary },
-            { key: 'positive', label: `Positive (${positive})`,       activeColor: '#052E16', activeText: C.bull },
-            { key: 'negative', label: `Negative (${all.length - positive})`, activeColor: '#2D0A0A', activeText: C.bear },
-          ] as const).map(({ key, label, activeColor, activeText }) => (
+            { key: 'all',      label: `All (${all.length})`,         ac: '#1E3A5F', at: C.secondary },
+            { key: 'positive', label: `Top Half (${positive})`,       ac: '#052E16', at: C.bull },
+            { key: 'negative', label: `Bottom Half (${all.length - positive})`, ac: '#2D0A0A', at: C.bear },
+          ] as const).map(({ key, label, ac, at }) => (
             <button key={key}
               onClick={() => setFilter(key)}
               style={{
                 padding: '5px 12px', borderRadius: 5, border: C.border, cursor: 'pointer',
                 fontSize: 10, fontWeight: 700, letterSpacing: 0.5,
-                background: filter === key ? activeColor : 'transparent',
-                color: filter === key ? activeText : C.dim,
+                background: filter === key ? ac : 'transparent',
+                color: filter === key ? at : C.dim,
                 transition: 'all 0.15s',
               }}
             >
@@ -244,17 +342,31 @@ export function SectorsPage() {
         </div>
       </div>
 
-      {/* ── Legend / how to read ─────────────────────────────────────────────── */}
+      {/* ── How to read ───────────────────────────────────────────────── */}
       <div style={{
         background: '#0A1220', border: '1px solid #1E3A5F', borderLeft: `4px solid ${C.blue}`,
         borderRadius: 6, padding: '10px 16px', display: 'flex', gap: 20, flexWrap: 'wrap',
       }}>
-        <span style={{ color: C.blue, fontSize: 10, fontWeight: 700, letterSpacing: 1, alignSelf: 'center' }}>HOW TO READ</span>
+        <span style={{ color: C.blue, fontSize: 10, fontWeight: 700, letterSpacing: 1, alignSelf: 'center' }}>
+          HOW TO READ
+        </span>
         {[
-          { key: 'Score', desc: 'Combined sector score. Positive = capital is flowing into this sector.' },
-          { key: 'FII',   desc: 'Foreign funds (global money) buying (+) or selling (-).' },
-          { key: 'DII',   desc: 'Indian MFs & insurance companies buying (+) or selling (-).' },
-          { key: 'SM',    desc: 'Smart Money = sophisticated traders. Leading indicator for price direction.' },
+          {
+            key: 'Relative Rank',
+            desc: 'Cross-sectional score ±100. +100 = most preferred sector today, -100 = most avoided. Always readable regardless of market regime.',
+          },
+          {
+            key: 'z (Z-Score)',
+            desc: 'Measures FII positioning vs each sector\'s own 1-year baseline. Negative when FII holds less than historical average — useful for spotting conviction moves.',
+          },
+          {
+            key: 'FPI',
+            desc: 'Real FPI ownership from NSDL/CDSL fortnightly AUC reports. Accumulation = FPI growing ownership. Most direct ownership signal.',
+          },
+          {
+            key: 'FII / DII / SM',
+            desc: 'F&O positioning z-scores per participant. SM (Smart Money) = FII+PRO average. Positive = above their own 1Y average in this sector.',
+          },
         ].map(({ key, desc }) => (
           <div key={key} style={{ display: 'flex', gap: 5 }}>
             <span style={{ color: C.secondary, fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap' }}>{key}:</span>
@@ -263,13 +375,13 @@ export function SectorsPage() {
         ))}
       </div>
 
-      {/* ── Grouped sector cards ─────────────────────────────────────────────── */}
+      {/* ── Grouped sector cards ──────────────────────────────────────── */}
       {sortedGroups.map(([signal, sectors]) => (
         <section key={signal}>
           <GroupHeader signal={signal} count={sectors.length} />
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
             gap: 10,
           }}>
             {sectors.map(s => <SectorCard key={s.sector} s={s} />)}

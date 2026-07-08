@@ -37,13 +37,20 @@ export type MarketContext = MarketRegime & {
 export type Sector = {
   sector:            string
   rotation_signal:   string
-  combined_score:    number | null
+  combined_score:    number | null   // z-score vs 252D baseline, ±100 scale
+  relative_score:    number | null   // cross-sectional rank, ±100 (best sector = +100)
   FII_flow_score:    number | null
   DII_flow_score:    number | null
   Smart_Money_Score: number | null
+  fpi_score?:        number | null
+  fpi_signal?:       string
+  auc_pct_of_total?: number | null
+  auc_z?:            number | null
+  net_z?:            number | null
   price_momentum_score?: number | null
   nse_index?:        string
   last_date:         string
+  fpi_date?:         string
 }
 
 export type TechnicalIndicators = {
