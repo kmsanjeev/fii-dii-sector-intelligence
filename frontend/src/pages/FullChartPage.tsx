@@ -65,11 +65,23 @@ function periodToTF(p: Period): string {
 }
 
 // ── Bar time string → Unix ms ─────────────────────────────────────────────────
+//
+// KLineChart Pro's built-in timezone list skips UTC+5:30 entirely (jumps from
+// UTC+5 Ashkhabad to UTC+6 Almaty), so "Asia/Kolkata" is unavailable in the
+// picker UI. We use chart timezone = "UTC" instead, then bake IST into the
+// timestamps by stripping any tz-offset and appending Z — so "09:15 IST"
+// renders as "09:15" on the UTC axis, which is exactly what NSE users expect.
 
 function barTimeToMs(t: string | number): number {
   if (typeof t === 'number') return t > 1e12 ? t : t * 1000
-  // "2026-07-08" or "2026-07-08T09:15:00"
-  return new Date(t.includes('T') ? t : t + 'T00:00:00Z').getTime()
+  if (t.includes('T')) {
+    // Strip tz offset (+05:30, +00:00, Z) and force UTC so the clock reading
+    // matches IST wall-clock time (09:15 → shows "09:15" not "03:45").
+    const bare = t.replace(/([+-]\d{2}:\d{2}|Z)$/, '')
+    return new Date(bare + 'Z').getTime()
+  }
+  // "2026-07-08" — daily bar: UTC midnight keeps the date label correct.
+  return new Date(t + 'T00:00:00Z').getTime()
 }
 
 // ── Custom Datafeed — wires our /charts/ohlcv API ───────────────────────────
@@ -314,7 +326,7 @@ export function FullChartPage() {
       container:       containerRef.current,
       theme:           'dark',
       locale:          'en-US',
-      timezone:        'Asia/Kolkata',
+      timezone:        'UTC',
       symbol: {
         ticker:    sym.toUpperCase(),
         shortName: sym.toUpperCase(),
