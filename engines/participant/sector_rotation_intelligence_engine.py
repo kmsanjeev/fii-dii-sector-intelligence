@@ -37,15 +37,18 @@ from engines.common.logger import get_logger
 logger = get_logger("sector_rotation_intelligence")
 
 INTELLIGENCE_DIR   = cfg.INTELLIGENCE_DIR
+FPI_SIGNALS_FILE   = cfg.FPI_DIR / "fpi_sector_signals.csv"
 FLOW_SCORES_FILE   = INTELLIGENCE_DIR / "sector_flow_scores.csv"
 INDEX_STRENGTH     = INTELLIGENCE_DIR / "index_strength.csv"
 SECTOR_ROTATION    = INTELLIGENCE_DIR / "sector_rotation.csv"
 SNAPSHOT_OUTPUT    = INTELLIGENCE_DIR / "sector_rotation_intelligence.csv"
 HISTORY_OUTPUT     = INTELLIGENCE_DIR / "sector_rotation_history.csv"
 
-# Weights for combined score
-FLOW_WEIGHT  = 0.60   # participant flows are leading indicator
-PRICE_WEIGHT = 0.40   # price momentum confirms
+# Combined score weights (must sum to 1.0)
+# FPI AUC ownership is the most direct forward-looking signal
+FLOW_WEIGHT  = 0.40   # F&O participant flows (daily)
+FPI_WEIGHT   = 0.35   # FPI sector AUC ownership (fortnightly)
+PRICE_WEIGHT = 0.25   # NSE index price momentum (daily)
 
 # Map NSE index names → platform sectors (best-fit mapping)
 NSE_TO_PLATFORM = {
@@ -135,12 +138,18 @@ class SectorRotationIntelligenceEngine:
 
         flow_scores = self._load_flow_scores()
         price_map   = self._build_price_map()
+        fpi_map     = self._load_fpi_signals()
 
         if flow_scores.empty:
             logger.error("[6C] sector_flow_scores.csv is empty — run Phase 6B first")
             return False
 
-        history  = self._compute_history(flow_scores, price_map)
+        if fpi_map:
+            logger.info("[6C] FPI signals loaded: %d sectors", len(fpi_map))
+        else:
+            logger.info("[6C] No FPI signals available — using 2-factor mode")
+
+        history  = self._compute_history(flow_scores, price_map, fpi_map)
         snapshot = self._build_snapshot(history)
 
         self._save_atomic(history,  HISTORY_OUTPUT)
@@ -163,6 +172,31 @@ class SectorRotationIntelligenceEngine:
         logger.info("[6C] Flow scores: %d rows, %s → %s",
                     len(df), df["date"].min(), df["date"].max())
         return df
+
+    def _load_fpi_signals(self) -> dict:
+        """
+        Load latest FPI sector signal scores (fortnightly data).
+        Returns {sector_normalized: signal_score} using the most recent available date.
+        Returns empty dict if file unavailable.
+        """
+        if not FPI_SIGNALS_FILE.exists():
+            return {}
+        try:
+            fpi = pd.read_csv(FPI_SIGNALS_FILE, parse_dates=["date"])
+            if fpi.empty:
+                return {}
+            # Use the single most recent date where we have signals
+            latest = fpi["date"].max()
+            recent = fpi[fpi["date"] == latest].copy()
+            # Normalise signal_score to ±100 scale (z-score-like values from signal engine)
+            # signal_score is in range roughly ±3 (z-score); scale to ±100
+            recent["fpi_norm"] = (recent["signal_score"].fillna(0) * 33).clip(-100, 100)
+            fpi_map = dict(zip(recent["sector_normalized"], recent["fpi_norm"]))
+            logger.info("[6C] FPI signal map: %d sectors, date=%s", len(fpi_map), latest.date())
+            return fpi_map
+        except Exception as exc:
+            logger.warning("[6C] Could not load FPI signals: %s", exc)
+            return {}
 
     def _build_price_map(self) -> dict[str, float]:
         """Build sector → price_momentum_score from NSE index files."""
@@ -198,16 +232,22 @@ class SectorRotationIntelligenceEngine:
     # Compute
     # ------------------------------------------------------------------
     def _compute_history(self, flow_scores: pd.DataFrame,
-                         price_map: dict[str, float]) -> pd.DataFrame:
+                         price_map: dict, fpi_map: dict) -> pd.DataFrame:
         """
-        Merge per-date flow scores with price momentum and compute combined signal.
-        Price momentum is from a point-in-time snapshot — applied as a constant offset
-        to the historical time-series (it refreshes when Phase 3 engines re-run).
+        Merge per-date flow scores with price momentum and FPI ownership signals.
+
+        3-factor combined score:
+          F&O participant flows  (FLOW_WEIGHT 40%)  — daily, leading
+          FPI sector AUC signal  (FPI_WEIGHT 35%)   — fortnightly, direct ownership
+          NSE index price mom    (PRICE_WEIGHT 25%) — daily, lagging confirmation
         """
         df = flow_scores.copy()
 
-        # Map sector → price momentum score (constant for now)
+        # Map sector → price momentum score
         df["price_momentum_score"] = df["sector"].map(price_map).fillna(0.0)
+
+        # Map sector → FPI ownership signal score (fortnightly, latest date)
+        df["fpi_score"] = df["sector"].map(fpi_map).fillna(0.0)
 
         # Best-fit NSE index name for reference
         reverse_map = {}
@@ -215,19 +255,30 @@ class SectorRotationIntelligenceEngine:
             reverse_map.setdefault(plat, nse_idx)  # first match
         df["nse_index"] = df["sector"].map(reverse_map).fillna("")
 
-        # Combined score: flow-weighted + price-weighted
-        # Normalise price_momentum_score to same ±100 scale as flow scores
+        # Normalise price_momentum_score to ±100 scale
         df["price_norm"] = df["price_momentum_score"].clip(-10, 10) / 10 * 100
         fii_score = pd.to_numeric(df.get("FII_flow_score", np.nan), errors="coerce")
-        df["combined_score"] = (
-            fii_score * FLOW_WEIGHT
-            + df["price_norm"] * PRICE_WEIGHT
-        ).round(2)
 
-        # Rotation signal and alignment (using Smart Money score vs price)
+        if fpi_map:
+            # 3-factor combined score
+            df["combined_score"] = (
+                fii_score              * FLOW_WEIGHT
+                + df["fpi_score"]      * FPI_WEIGHT
+                + df["price_norm"]     * PRICE_WEIGHT
+            ).round(2)
+        else:
+            # 2-factor fallback (no FPI data available)
+            df["combined_score"] = (
+                fii_score * (FLOW_WEIGHT + FPI_WEIGHT * 0.5)
+                + df["price_norm"] * (PRICE_WEIGHT + FPI_WEIGHT * 0.5)
+            ).round(2)
+
+        # Rotation signal uses FPI score as the primary "flow" signal when available
+        # (FPI ownership is more direct than F&O proxy)
         smart = pd.to_numeric(df.get("Smart_Money_Score", np.nan), errors="coerce")
+        flow_for_signal = df["fpi_score"] if fpi_map else smart
         df["rotation_signal"]       = [_rotation_signal(s, p) for s, p in
-                                        zip(smart, df["price_momentum_score"])]
+                                        zip(flow_for_signal, df["price_momentum_score"])]
         df["capital_flow_alignment"] = [_alignment(f, p) for f, p in
                                          zip(fii_score, df["price_momentum_score"])]
 
@@ -239,7 +290,7 @@ class SectorRotationIntelligenceEngine:
         keep = ["date", "sector", "nse_index",
                 "FII_flow_score", "DII_flow_score", "PRO_flow_score", "CLIENT_flow_score",
                 "Smart_Money_Score", "Retail_Score",
-                "price_momentum_score", "combined_score",
+                "fpi_score", "price_momentum_score", "combined_score",
                 "rotation_signal", "capital_flow_alignment", "flow_rank"]
         keep = [c for c in keep if c in df.columns]
         return df[keep].sort_values(["date", "flow_rank"]).reset_index(drop=True)
@@ -273,7 +324,7 @@ class SectorRotationIntelligenceEngine:
     def _print_summary(self, snap: pd.DataFrame):
         print()
         print("=" * 72)
-        print("SECTOR ROTATION INTELLIGENCE ENGINE — PHASE 6C COMPLETE")
+        print("SECTOR ROTATION INTELLIGENCE ENGINE -- PHASE 6C COMPLETE")
         print("=" * 72)
         if snap.empty:
             print("  No data")
@@ -281,7 +332,7 @@ class SectorRotationIntelligenceEngine:
         print(f"Snapshot date : {snap['last_date'].iloc[0]}")
         print(f"Sectors       : {len(snap)}")
         print()
-        print(f"{'Rank':<5} {'Sector':<22} {'FII':>7} {'Smart':>7} {'Price':>7} "
+        print(f"{'Rank':<5} {'Sector':<22} {'FII':>7} {'FPI':>7} {'Price':>7} "
               f"{'Combined':>9} {'Signal':<22} {'Align'}")
         print("-" * 90)
         for _, r in snap.iterrows():
@@ -289,7 +340,7 @@ class SectorRotationIntelligenceEngine:
             print(f"{0 if pd.isna(_rank) else int(_rank):<5} "
                   f"{r['sector']:<22} "
                   f"{r.get('FII_flow_score', 0):>+7.1f} "
-                  f"{r.get('Smart_Money_Score', 0):>+7.1f} "
+                  f"{r.get('fpi_score', 0):>+7.1f} "
                   f"{r.get('price_momentum_score', 0):>+7.2f} "
                   f"{r.get('combined_score', 0):>+9.1f} "
                   f"{r.get('rotation_signal', 'N/A'):<22} "
