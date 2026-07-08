@@ -341,6 +341,15 @@ class ShareholdingEngine:
                     base["public_pct"] = parsed.get("public_pct") or base["public_pct"]
                     if parsed.get("promoter_pct"):
                         base["promoter_pct"] = parsed["promoter_pct"]
+                    # Detect 0-1 fractional scale vs 0-100 percentage scale.
+                    # NSE XBRL format changed: some newer filings store values as
+                    # decimals (0.5001 = 50.01%) instead of percentages (50.01).
+                    # If sum of all available pct fields < 2.0, it's fraction scale.
+                    _pcts = [base.get(k) for k in ("promoter_pct","fii_pct","dii_pct","public_pct") if base.get(k) is not None]
+                    if len(_pcts) >= 2 and sum(_pcts) < 2.0:
+                        for k in ("promoter_pct", "fii_pct", "dii_pct", "public_pct"):
+                            if base.get(k) is not None:
+                                base[k] = round(base[k] * 100, 4)
                     return base
                 except Exception as e:
                     wait = cfg.RETRY_DELAY * (2 ** attempt)
