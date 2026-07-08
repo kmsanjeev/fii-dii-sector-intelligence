@@ -300,7 +300,7 @@ function DMARow({ label, dma, close, color }: { label: string; dma: number | nul
       <div style={{ flex: 1, height: 3, background: P.border, borderRadius: 2, maxWidth: 80 }}>
         <div style={{ width: `${Math.min(100, Math.abs(diff) / 20 * 100)}%`, height: '100%', background: color, opacity: diff >= 0 ? 1 : 0.4, borderRadius: 2 }} />
       </div>
-      <span style={{ fontSize: 8, color, fontWeight: 700, minWidth: 20 }}>{diff >= 0 ? 'ABV' : 'BLW'}</span>
+      <span style={{ fontSize: 10, color, fontWeight: 700, minWidth: 20 }}>{diff >= 0 ? 'ABV' : 'BLW'}</span>
     </div>
   )
 }
@@ -648,16 +648,16 @@ function NewsArticleRow({ art, last }: { art: NewsArticle; last: boolean }) {
         {/* date + sentiment */}
         <div style={{ minWidth: 72, flexShrink: 0 }}>
           <div style={{ fontSize: 10, color: T.muted, fontFamily: 'monospace', marginBottom: 3 }}>{art.date}</div>
-          <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3, background: sentColor + '18', color: sentColor, border: `1px solid ${sentColor}33` }}>{art.sentiment || 'NEUTRAL'}</span>
+          <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3, background: sentColor + '18', color: sentColor, border: `1px solid ${sentColor}33` }}>{art.sentiment || 'NEUTRAL'}</span>
         </div>
         {/* headline + source */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 11, color: P.text, lineHeight: 1.4, marginBottom: 3 }}>{art.headline}</div>
-          <div style={{ fontSize: 9, color: P.dim }}>{art.source.replace(/_/g, ' ')}</div>
+          <div style={{ fontSize: 10, color: P.dim }}>{art.source.replace(/_/g, ' ')}</div>
         </div>
         {/* buttons */}
         <div style={{ flexShrink: 0, display: 'flex', gap: 5, alignSelf: 'center' }}>
-          <button onClick={handleSummarise} style={{ display: 'flex', alignItems: 'center', gap: 3, padding: '3px 7px', borderRadius: 3, cursor: 'pointer', border: `1px solid ${P.amber}50`, background: open ? P.amber + '22' : P.amber + '10', color: P.amber, fontSize: 9, fontWeight: 700 }}>
+          <button onClick={handleSummarise} style={{ display: 'flex', alignItems: 'center', gap: 3, padding: '3px 7px', borderRadius: 3, cursor: 'pointer', border: `1px solid ${P.amber}50`, background: open ? P.amber + '22' : P.amber + '10', color: P.amber, fontSize: 10, fontWeight: 700 }}>
             {loading ? <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>⟳</span> : 'AI'}
           </button>
           <a href={art.link} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '4px 7px', borderRadius: 3, background: P.blue + '18', color: P.blue, border: `1px solid ${P.blue}40`, textDecoration: 'none' }}>
@@ -990,7 +990,7 @@ function KeyLevelsCard({ kl, close }: { kl: KeyLevels; close: number }) {
           { label: 'ATR (14D)',   value: kl.atr_14 != null ? `₹${kl.atr_14.toFixed(1)}` : '--', color: P.sub },
         ].map(({ label, value, color }) => (
           <div key={label}>
-            <div style={{ fontSize: 9, color: P.dim, letterSpacing: 0.5, marginBottom: 3 }}>{label}</div>
+            <div style={{ fontSize: 10, color: P.dim, letterSpacing: 0.5, marginBottom: 3 }}>{label}</div>
             <div style={{ fontSize: 11, fontWeight: 800, color, fontFamily: 'monospace' }}>{value}</div>
           </div>
         ))}
@@ -1428,27 +1428,39 @@ export function StocksPage() {
             <Chip label={`F&O: ${f.oi_signal.replace(/_/g, ' ')}`} color={f.oi_signal.includes('LONG') ? P.green : P.red} />
           )}
           <a href={`https://www.nseindia.com/get-quotes/equity?symbol=${symbol}`} target="_blank" rel="noopener noreferrer"
-            style={{ fontSize: 9, color: P.blue, textDecoration: 'none', border: `1px solid ${P.litBdr}`, padding: '2px 7px', borderRadius: 3 }}>
-            NSE ↗
+            style={{ fontSize: 10, color: P.blue, textDecoration: 'none', border: `1px solid ${P.litBdr}`, padding: '2px 7px', borderRadius: 3 }}>
+            NSE
           </a>
         </div>
 
-        {/* Score chips (right-aligned) */}
-        <div style={{ display: 'flex', gap: 14, marginLeft: 'auto', alignItems: 'center', flexShrink: 0 }}>
-          {detail && <ScoreGauge score={detail.bull_run_score} size={52} />}
-          {detail?.ml_scores?.ml_bull_run_score != null && (
-            <div style={{ textAlign: 'center' }}>
-              <ScoreGauge score={detail.ml_scores.ml_bull_run_score} size={44} />
-              <div style={{ fontSize: 8, color: P.dim, marginTop: 2 }}>ML</div>
-            </div>
-          )}
-          {detail?.ml_scores?.forward_return_score != null && (
-            <div style={{ textAlign: 'center' }}>
-              <ScoreGauge score={detail.ml_scores.forward_return_score} size={44} />
-              <div style={{ fontSize: 8, color: P.amber, marginTop: 2, fontWeight: 700 }}>FWD</div>
-            </div>
-          )}
-        </div>
+        {/* Score chips — 8-score panel matching the printed report */}
+        {detail && (
+          <div style={{ display: 'flex', gap: 8, marginLeft: 'auto', alignItems: 'flex-start', flexShrink: 0, flexWrap: 'wrap' }}>
+            {([
+              { label: 'Bull Run',    value: detail.bull_run_score,                                        signed: false },
+              { label: 'Price',       value: detail.components?.price_score,                               signed: false },
+              { label: 'ML Bull',     value: detail.ml_scores?.ml_bull_run_score,                          signed: false },
+              { label: 'ML Accum.',   value: detail.ml_scores?.accumulation_score,                         signed: false },
+              { label: 'Sector Flow', value: detail.components?.sector_flow_score,                         signed: false },
+              { label: 'Deal',        value: detail.components?.deal_score,                                signed: false },
+              { label: 'Valuation',   value: detail.fundamentals?.valuation_score != null ? Number(detail.fundamentals.valuation_score) : undefined, signed: false },
+              { label: 'Astro',       value: detail.astro?.astro_score,                                    signed: true  },
+            ] as { label: string; value: number | null | undefined; signed: boolean }[])
+              .filter(s => s.value != null)
+              .map(({ label, value, signed }) => {
+                const displayVal = signed
+                  ? Math.max(0, Math.min(100, ((value as number) + 100) / 2))
+                  : value as number
+                return (
+                  <div key={label} style={{ textAlign: 'center', minWidth: 52 }}>
+                    <ScoreGauge score={displayVal} size={52} />
+                    <div style={{ fontSize: 10, color: P.sub, marginTop: 3, fontWeight: 600 }}>{label}</div>
+                  </div>
+                )
+              })
+            }
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 16 }}>
@@ -1621,8 +1633,8 @@ export function StocksPage() {
                           <div style={{ height: 3, background: P.border, borderRadius: 2, margin: '6px 0' }}>
                             <div style={{ width: `${value}%`, height: '100%', background: c, borderRadius: 2 }} />
                           </div>
-                          <div style={{ color: P.sub, fontSize: 9 }}>{label}</div>
-                          <div style={{ color: P.dim, fontSize: 8 }}>{sub}</div>
+                          <div style={{ color: P.sub, fontSize: 10, fontWeight: 600 }}>{label}</div>
+                          <div style={{ color: P.dim, fontSize: 10 }}>{sub}</div>
                         </div>
                       )
                     })}
@@ -1653,8 +1665,8 @@ export function StocksPage() {
                         <div style={{ height: 3, background: P.border, borderRadius: 2, margin: '6px 0' }}>
                           <div style={{ width: `${value}%`, height: '100%', background: c, borderRadius: 2 }} />
                         </div>
-                        <div style={{ color: P.sub, fontSize: 9 }}>{label}</div>
-                        <div style={{ color: P.dim, fontSize: 8 }}>{sub}</div>
+                        <div style={{ color: P.sub, fontSize: 10, fontWeight: 600 }}>{label}</div>
+                        <div style={{ color: P.dim, fontSize: 10 }}>{sub}</div>
                       </div>
                     )
                   })}
@@ -1682,7 +1694,7 @@ export function StocksPage() {
                     </div>
                     {t.high_52w != null && t.low_52w != null && (
                       <div style={{ marginBottom: 14 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: P.dim, marginBottom: 5 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: P.dim, marginBottom: 5 }}>
                           <span>52W Low ₹{t.low_52w.toFixed(0)}</span>
                           <span>52W High ₹{t.high_52w.toFixed(0)}</span>
                         </div>
@@ -1702,7 +1714,7 @@ export function StocksPage() {
                     <DMARow label="20 DMA"  dma={t.dma_20}  close={close} color={P.blue} />
                     <DMARow label="50 DMA"  dma={t.dma_50}  close={close} color="#A78BFA" />
                     <DMARow label="200 DMA" dma={t.dma_200} close={close} color={P.amber} />
-                    {t.as_of_date && <div style={{ fontSize: 9, color: P.dim, marginTop: 8 }}>as of {t.as_of_date}</div>}
+                    {t.as_of_date && <div style={{ fontSize: 10, color: P.dim, marginTop: 8 }}>as of {t.as_of_date}</div>}
                   </SectionCard>
                 </div>
               )}
@@ -1860,7 +1872,7 @@ export function StocksPage() {
                         <thead>
                           <tr>
                             {['Period', 'Promoter', 'FII', 'DII', 'Signal'].map(h => (
-                              <th key={h} style={{ padding: '4px 8px', textAlign: h === 'Period' ? 'left' : 'right', color: P.dim, fontSize: 8, fontWeight: 700, letterSpacing: 1, borderBottom: `1px solid ${P.border}` }}>{h}</th>
+                              <th key={h} style={{ padding: '4px 8px', textAlign: h === 'Period' ? 'left' : 'right', color: P.dim, fontSize: 10, fontWeight: 700, letterSpacing: 1, borderBottom: `1px solid ${P.border}` }}>{h}</th>
                             ))}
                           </tr>
                         </thead>
@@ -1877,12 +1889,12 @@ export function StocksPage() {
                                   return (
                                     <td key={k} style={{ padding: '5px 8px', textAlign: 'right', color: P.text, fontVariantNumeric: 'tabular-nums' }}>
                                       {val != null ? `${(+val).toFixed(2)}%` : '--'}
-                                      {delta != null && <span style={{ color: +delta >= 0 ? P.green : P.red, marginLeft: 4, fontSize: 9 }}>{+delta >= 0 ? '+' : ''}{(+delta).toFixed(2)}</span>}
+                                      {delta != null && <span style={{ color: +delta >= 0 ? P.green : P.red, marginLeft: 4, fontSize: 10 }}>{+delta >= 0 ? '+' : ''}{(+delta).toFixed(2)}</span>}
                                     </td>
                                   )
                                 })}
                                 <td style={{ padding: '5px 8px', textAlign: 'right' }}>
-                                  {sig_ && <span style={{ fontSize: 8, fontWeight: 700, color: sc, padding: '1px 5px', background: sc + '18', border: `1px solid ${sc}33`, borderRadius: 3 }}>{sig_.replace(/_/g, ' ')}</span>}
+                                  {sig_ && <span style={{ fontSize: 10, fontWeight: 700, color: sc, padding: '2px 6px', background: sc + '18', border: `1px solid ${sc}33`, borderRadius: 3 }}>{sig_.replace(/_/g, ' ')}</span>}
                                 </td>
                               </tr>
                             )
