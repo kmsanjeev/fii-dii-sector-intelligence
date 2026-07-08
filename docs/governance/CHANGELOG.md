@@ -6,6 +6,73 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.19.0
+
+Phase FPI -- NSDL/CDSL/SEBI Fortnightly FPI Sector Engine + 3-Factor Sector Rotation
+
+Date: 2026-07-08
+
+Status: Completed
+
+Commit: 41a403a
+
+---
+
+## Summary
+
+Added a 14-year FPI sector ownership time-series (Apr 2012 - Jun 2026) by scraping
+NSDL/CDSL/SEBI fortnightly sector-wise FPI AUC reports. Upgraded the sector rotation
+engine from a 2-factor proxy (F&O flow + price) to a 3-factor model using direct
+FPI ownership data. Enables EARLY_ROTATION detection -- when FPI accumulates a sector
+before F&O or price reflects it.
+
+## New Files
+
+- engines/fpi/sector_fpi_engine.py  -- HTML scraper for 3 sources:
+  NSDL static files (2018-19, 2025-26), CDSL (2012-2023), SEBI (2012-2014);
+  unified N-formula column parser; UTF-16LE decoding for older CDSL files;
+  incremental with recovery queue; 8690 rows, 284 dates fetched
+
+- engines/fpi/fpi_sector_signal_engine.py  -- Rolling Z-scores (26-fortnight window)
+  on AUC and net investment; aggregates multiple raw-name variants per sector;
+  outputs STRONG_ACCUMULATION / DISTRIBUTION signals with continuous score
+
+- data/reference/sector_nsdl_mapping.csv  -- 90+ raw sector name variants mapped
+  to platform taxonomy (NSDL, CDSL, SEBI name differences across 14 years)
+
+## Modified Files
+
+- engines/participant/sector_rotation_intelligence_engine.py:
+  Added _load_fpi_signals() method; upgraded combined score to 3 factors:
+  F&O flow 40% + FPI AUC 35% + price momentum 25%; EARLY_ROTATION signal now
+  fires when FPI accumulates while F&O still bearish (e.g. INFRASTRUCTURE at
+  FPI=+39.9, FII=-65.4 on 2026-07-03)
+
+- engines/orchestration/daily_refresh.py:
+  Added FPI_A_sector_fpi_fetch and FPI_B_sector_fpi_signals stages before 6C
+
+- engines/common/config.py: added FPI_DIR = NSE_DIR / 'fpi'
+
+## Data Coverage
+
+- 8690 rows, 284 fortnightly dates from 2012-04-15 to 2026-06-30
+- Source mix: CDSL 4852 rows (2012-Jun 2023), NSDL 3838 rows (2018-19, 2025-26)
+- 58 dates in recovery queue (Jul 2023 - Apr 2025 gap: both CDSL and NSDL blocked)
+- 136 unique raw sector names normalized to 17 platform sectors
+
+## Sector Signals as of 2026-07-03
+
+| Sector | AUC Z52 | Net Z52 | Signal |
+|--------|---------|---------|--------|
+| INFRASTRUCTURE | +0.42 | +2.00 | ACCUMULATION |
+| FINANCIAL_SERVICES | +0.68 | +0.23 | NEUTRAL |
+| FMCG | -2.01 | -1.33 | STRONG_DISTRIBUTION |
+| IT | -2.11 | -0.86 | DISTRIBUTION |
+| METAL | +1.74 | -2.06 | DISTRIBUTION |
+| CEMENT | -0.48 | -2.25 | DISTRIBUTION |
+
+---
+
 # Version 4.18.0
 
 Phase PULSE -- Intelligence Ticker (Social Pulse horizontal auto-scroll)
