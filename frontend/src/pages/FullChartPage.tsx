@@ -10,6 +10,7 @@ import type { Datafeed, SymbolInfo, Period, DatafeedSubscribeCallback } from '@k
 import type { KLineData } from 'klinecharts'
 import { dispose } from 'klinecharts'
 import '@klinecharts/pro/dist/klinecharts-pro.css'
+import '../indicators/customIndicators'   // registers VWAP, Supertrend, HMA into Pro's picker
 import { api } from '../api/client'
 
 // ── Periods ───────────────────────────────────────────────────────────────────
