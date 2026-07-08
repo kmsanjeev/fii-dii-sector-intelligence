@@ -1,32 +1,39 @@
 /**
- * FullChartPage — full-viewport trading chart
- * Route: /fullchart/:symbol   (rendered outside AppShell — no nav bar)
+ * FullChartPage — full-viewport chart powered by KLineChart Pro
+ * Route: /fullchart/:symbol  (outside AppShell — no nav bar)
+ *
+ * KLineChart Pro handles: period selector, indicator panel,
+ * drawing tools bar, multi-pane layout, 30+ built-in indicators.
+ * We add: thin top bar, snapshot, watchlist panel.
  */
 
-import {
-  useEffect, useRef, useState, useCallback,
-} from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import {
-  createChart, ColorType,
-  CandlestickSeries, HistogramSeries, LineSeries,
-  type IChartApi, type ISeriesApi, type Time,
-} from 'lightweight-charts'
-import { api, fetchStockCorpActions } from '../api/client'
+import { KLineChartPro } from '@klinecharts/pro'
+import type { Datafeed, SymbolInfo, Period, DatafeedSubscribeCallback } from '@klinecharts/pro'
+import type { KLineData } from 'klinecharts'
+import { dispose } from 'klinecharts'
+import '@klinecharts/pro/dist/klinecharts-pro.css'
+import { api } from '../api/client'
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+// ── Constants ────────────────────────────────────────────────────────────────
 
-type TF = '5M' | '15M' | '1H' | '1D' | '1W' | '1M' | '3M'
-type Bar = { time: string | number; open: number; high: number; low: number; close: number; volume: number }
-type OhlcvResp = { bars: Bar[]; count: number; from: string | number | null; to: string | number | null }
+const PERIODS: Period[] = [
+  { multiplier: 5,  timespan: 'minute', text: '5M'  },
+  { multiplier: 15, timespan: 'minute', text: '15M' },
+  { multiplier: 60, timespan: 'minute', text: '1H'  },
+  { multiplier: 1,  timespan: 'day',    text: '1D'  },
+  { multiplier: 1,  timespan: 'week',   text: '1W'  },
+  { multiplier: 1,  timespan: 'month',  text: '1M'  },
+  { multiplier: 3,  timespan: 'month',  text: '3M'  },
+]
 
-const INTRADAY    = new Set<TF>(['5M', '15M', '1H'])
-const TF_INTRA: TF[] = ['5M', '15M', '1H']
-const TF_DAILY: TF[] = ['1D', '1W', '1M', '3M']
-const DEFAULT_BARS: Record<TF, number> = { '5M': 200, '15M': 200, '1H': 180, '1D': 180, '1W': 52, '1M': 24, '3M': 16 }
+const TF_TO_PERIOD: Record<string, Period> = {
+  '5M':  PERIODS[0], '15M': PERIODS[1], '1H':  PERIODS[2],
+  '1D':  PERIODS[3], '1W':  PERIODS[4], '1M':  PERIODS[5], '3M': PERIODS[6],
+}
 
-// ── Theme ─────────────────────────────────────────────────────────────────────
+// ── Theme palette — matches the platform's dark theme ────────────────────────
 
 const C = {
   bg:     '#0A0D14',
@@ -41,85 +48,98 @@ const C = {
   amber:  '#F59E0B',
   blue:   '#3B82F6',
   purple: '#A78BFA',
-  teal:   '#14B8A6',
 }
 
-// ── Indicator math ────────────────────────────────────────────────────────────
+// ── Period → our TF string ────────────────────────────────────────────────────
 
-function calcEma(closes: number[], period: number): (number | null)[] {
-  const k = 2 / (period + 1)
-  const out: (number | null)[] = new Array(closes.length).fill(null)
-  let val: number | null = null
-  for (let i = 0; i < closes.length; i++) {
-    if (i < period - 1) continue
-    if (val === null) {
-      val = closes.slice(0, period).reduce((a, b) => a + b, 0) / period
-    } else {
-      val = closes[i] * k + val * (1 - k)
-    }
-    out[i] = +val.toFixed(4)
+function periodToTF(p: Period): string {
+  if (p.timespan === 'minute' && p.multiplier === 5)  return '5M'
+  if (p.timespan === 'minute' && p.multiplier === 15) return '15M'
+  if (p.timespan === 'minute' && p.multiplier === 60) return '1H'
+  if (p.timespan === 'hour'   && p.multiplier === 1)  return '1H'
+  if (p.timespan === 'day')                            return '1D'
+  if (p.timespan === 'week')                           return '1W'
+  if (p.timespan === 'month'  && p.multiplier === 1)  return '1M'
+  if (p.timespan === 'month'  && p.multiplier === 3)  return '3M'
+  return '1D'
+}
+
+// ── Bar time string → Unix ms ─────────────────────────────────────────────────
+
+function barTimeToMs(t: string | number): number {
+  if (typeof t === 'number') return t > 1e12 ? t : t * 1000
+  // "2026-07-08" or "2026-07-08T09:15:00"
+  return new Date(t.includes('T') ? t : t + 'T00:00:00Z').getTime()
+}
+
+// ── Custom Datafeed — wires our /charts/ohlcv API ───────────────────────────
+
+class OurDatafeed implements Datafeed {
+  private _timers = new Map<string, ReturnType<typeof setInterval>>()
+
+  async searchSymbols(search?: string): Promise<SymbolInfo[]> {
+    if (!search || search.trim().length < 1) return []
+    try {
+      const r = await api.get<{ symbols: { SYMBOL: string; COMPANY_NAME: string }[] }>(
+        '/charts/symbols', { params: { q: search.trim().toUpperCase() } }
+      )
+      return (r.data.symbols ?? []).map(s => ({
+        ticker:    s.SYMBOL,
+        shortName: s.SYMBOL,
+        name:      s.COMPANY_NAME ?? s.SYMBOL,
+        exchange:  'NSE',
+        market:    'stocks',
+      }))
+    } catch { return [] }
   }
-  return out
-}
 
-function calcBB(closes: number[], period = 20, mult = 2) {
-  const upper: (number | null)[] = []
-  const lower: (number | null)[] = []
-  for (let i = 0; i < closes.length; i++) {
-    if (i < period - 1) { upper.push(null); lower.push(null); continue }
-    const sl = closes.slice(i - period + 1, i + 1)
-    const sma = sl.reduce((a, b) => a + b, 0) / period
-    const std = Math.sqrt(sl.reduce((a, b) => a + (b - sma) ** 2, 0) / period)
-    upper.push(+(sma + mult * std).toFixed(4))
-    lower.push(+(sma - mult * std).toFixed(4))
+  async getHistoryKLineData(
+    symbol: SymbolInfo, period: Period,
+    _from: number, _to: number,   // we fetch full history, ignoring range
+  ): Promise<KLineData[]> {
+    const tf = periodToTF(period)
+    try {
+      const r = await api.get<{ bars: Array<{ time: string | number; open: number; high: number; low: number; close: number; volume: number }> }>(
+        '/charts/ohlcv', { params: { symbol: symbol.ticker, timeframe: tf } }
+      )
+      return (r.data.bars ?? []).map(b => ({
+        timestamp: barTimeToMs(b.time),
+        open:  b.open,
+        high:  b.high,
+        low:   b.low,
+        close: b.close,
+        volume: b.volume ?? 0,
+      }))
+    } catch { return [] }
   }
-  return { upper, lower }
-}
 
-function calcRSI(closes: number[], period = 14): (number | null)[] {
-  const out: (number | null)[] = new Array(closes.length).fill(null)
-  if (closes.length < period + 1) return out
-  let avgGain = 0, avgLoss = 0
-  for (let i = 1; i <= period; i++) {
-    const d = closes[i] - closes[i - 1]
-    if (d > 0) avgGain += d; else avgLoss += -d
+  subscribe(symbol: SymbolInfo, period: Period, callback: DatafeedSubscribeCallback): void {
+    // Poll every 60 s for the latest bar (no WebSocket backend yet)
+    const key = `${symbol.ticker}_${period.text}`
+    this._timers.set(key, setInterval(async () => {
+      try {
+        const tf = periodToTF(period)
+        const r  = await api.get<{ bars: any[] }>('/charts/ohlcv', { params: { symbol: symbol.ticker, timeframe: tf } })
+        const bars = r.data.bars ?? []
+        if (!bars.length) return
+        const last = bars[bars.length - 1]
+        callback({
+          timestamp: barTimeToMs(last.time),
+          open: last.open, high: last.high, low: last.low, close: last.close,
+          volume: last.volume ?? 0,
+        })
+      } catch { /* ignore */ }
+    }, 60_000))
   }
-  avgGain /= period; avgLoss /= period
-  out[period] = +(100 - 100 / (1 + avgGain / (avgLoss || 1e-10))).toFixed(2)
-  for (let i = period + 1; i < closes.length; i++) {
-    const d = closes[i] - closes[i - 1]
-    const g = d > 0 ? d : 0
-    const l = d < 0 ? -d : 0
-    avgGain = (avgGain * (period - 1) + g) / period
-    avgLoss = (avgLoss * (period - 1) + l) / period
-    out[i] = +(100 - 100 / (1 + avgGain / (avgLoss || 1e-10))).toFixed(2)
+
+  unsubscribe(symbol: SymbolInfo, period: Period): void {
+    const key = `${symbol.ticker}_${period.text}`
+    const t = this._timers.get(key)
+    if (t) { clearInterval(t); this._timers.delete(key) }
   }
-  return out
 }
 
-// ── Time helper ───────────────────────────────────────────────────────────────
-
-function toPeriodStart(dateStr: string, tf: TF): string {
-  if (tf === '1D' || INTRADAY.has(tf)) return dateStr
-  const d = new Date(dateStr + 'T00:00:00Z')
-  if (tf === '1W') { const o = d.getUTCDay() === 0 ? 6 : d.getUTCDay() - 1; d.setUTCDate(d.getUTCDate() - o) }
-  else if (tf === '1M') d.setUTCDate(1)
-  else if (tf === '3M') d.setUTCMonth(Math.floor(d.getUTCMonth() / 3) * 3, 1)
-  return d.toISOString().slice(0, 10)
-}
-
-function fmtNum(v: number | null | undefined, digits = 2): string {
-  if (v == null) return '--'
-  return v.toLocaleString('en-IN', { minimumFractionDigits: digits, maximumFractionDigits: digits })
-}
-function fmtVol(v: number | null | undefined): string {
-  if (v == null) return '--'
-  if (v >= 1e7) return `${(v / 1e7).toFixed(2)}Cr`
-  if (v >= 1e5) return `${(v / 1e5).toFixed(2)}L`
-  return v.toFixed(0)
-}
-
-// ── Watchlist persistence ─────────────────────────────────────────────────────
+// ── Watchlist localStorage helpers ────────────────────────────────────────────
 
 const WL_KEY = 'cfip-wl'
 type WLEntry = { id: string; name: string; symbols: string[] }
@@ -127,14 +147,10 @@ type WLEntry = { id: string; name: string; symbols: string[] }
 function loadWL(): WLEntry[] {
   try {
     const raw = localStorage.getItem(WL_KEY)
-    if (raw) {
-      const parsed = JSON.parse(raw) as WLEntry[]
-      if (Array.isArray(parsed) && parsed.length) return parsed
-    }
+    if (raw) { const p = JSON.parse(raw); if (Array.isArray(p) && p.length) return p }
   } catch { /* ignore */ }
   return [{ id: 'default', name: 'My Watchlist', symbols: [] }]
 }
-
 function saveWL(wls: WLEntry[]) {
   try { localStorage.setItem(WL_KEY, JSON.stringify(wls)) } catch { /* ignore */ }
 }
@@ -146,115 +162,59 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
   const [activeId, setActiveId] = useState<string>(() => loadWL()[0]?.id ?? 'default')
   const [addVal,   setAddVal]   = useState('')
   const [renaming, setRenaming] = useState(false)
-  const [renameVal,setRenameVal]= useState('')
-  const addRef = useRef<HTMLInputElement>(null)
+  const [rnVal,    setRnVal]    = useState('')
 
   const active = wls.find(w => w.id === activeId) ?? wls[0]
+  function upd(next: WLEntry[]) { setWls(next); saveWL(next) }
 
-  function update(next: WLEntry[]) { setWls(next); saveWL(next) }
-
-  function addSymbol() {
-    const s = addVal.trim().toUpperCase()
-    if (!s || !active) return
-    if (!active.symbols.includes(s)) {
-      update(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, s] } : w))
-    }
+  function addSym() {
+    const s = addVal.trim().toUpperCase(); if (!s || !active) return
+    if (!active.symbols.includes(s)) upd(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, s] } : w))
     setAddVal('')
   }
+  function removeSym(s: string) { upd(wls.map(w => w.id === active.id ? { ...w, symbols: w.symbols.filter(x => x !== s) } : w)) }
+  function newList()  { const id = Date.now().toString(), n = `List ${wls.length + 1}`, nx = [...wls, { id, name: n, symbols: [] }]; upd(nx); setActiveId(id) }
+  function delList()  { if (wls.length <= 1) return; const nx = wls.filter(w => w.id !== active.id); upd(nx); setActiveId(nx[0].id) }
+  function commitRn() { const n = rnVal.trim(); if (n) upd(wls.map(w => w.id === active.id ? { ...w, name: n } : w)); setRenaming(false) }
 
-  function removeSymbol(s: string) {
-    update(wls.map(w => w.id === active.id ? { ...w, symbols: w.symbols.filter(x => x !== s) } : w))
-  }
-
-  function newList() {
-    const id  = Date.now().toString()
-    const name = `Watchlist ${wls.length + 1}`
-    const next = [...wls, { id, name, symbols: [] }]
-    update(next)
-    setActiveId(id)
-  }
-
-  function deleteList() {
-    if (wls.length <= 1) return
-    const next = wls.filter(w => w.id !== active.id)
-    update(next)
-    setActiveId(next[0].id)
-  }
-
-  function commitRename() {
-    const n = renameVal.trim()
-    if (n) update(wls.map(w => w.id === active.id ? { ...w, name: n } : w))
-    setRenaming(false)
-  }
-
-  function addCurrentSym() {
-    if (!currentSym || !active) return
-    if (!active.symbols.includes(currentSym)) {
-      update(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, currentSym] } : w))
-    }
-  }
-
-  const btnStyle = (color = C.sub): React.CSSProperties => ({
-    padding: '3px 7px', borderRadius: 3, fontSize: 10, cursor: 'pointer',
-    border: `1px solid ${color}33`, background: 'transparent', color,
-  })
+  const btn = (color = C.sub): React.CSSProperties => ({ padding: '3px 7px', borderRadius: 3, fontSize: 10, cursor: 'pointer', border: `1px solid ${color}33`, background: 'transparent', color })
 
   return (
-    <div style={{
-      width: 240, flexShrink: 0, borderLeft: `1px solid ${C.border}`,
-      display: 'flex', flexDirection: 'column', background: C.panel, overflow: 'hidden',
-    }}>
-
-      {/* Watchlist selector */}
+    <div style={{ width: 240, flexShrink: 0, borderLeft: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', background: C.panel, overflow: 'hidden' }}>
+      {/* List tabs + New/Del */}
       <div style={{ padding: '8px 10px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 6 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: C.text, letterSpacing: '0.08em' }}>WATCHLISTS</span>
-          <div style={{ flex: 1 }} />
-          <button onClick={newList}       title="New watchlist" style={btnStyle(C.green)}>+ New</button>
-          {wls.length > 1 && (
-            <button onClick={deleteList}  title="Delete this watchlist" style={btnStyle(C.red)}>Del</button>
-          )}
+          <span style={{ fontSize: 10, fontWeight: 700, color: C.text, letterSpacing: '0.08em', flex: 1 }}>WATCHLISTS</span>
+          <button onClick={newList} style={btn(C.green)}>+ New</button>
+          {wls.length > 1 && <button onClick={delList} style={btn(C.red)}>Del</button>}
         </div>
-
-        {/* Watchlist tabs */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
           {wls.map(w => (
             <button key={w.id} onClick={() => { setActiveId(w.id); setRenaming(false) }} style={{
               padding: '3px 8px', borderRadius: 3, fontSize: 10, cursor: 'pointer',
               border: `1px solid ${activeId === w.id ? C.blue : C.border}`,
               background: activeId === w.id ? C.blue + '22' : 'transparent',
-              color: activeId === w.id ? C.blue : C.sub,
-              fontWeight: activeId === w.id ? 700 : 400,
+              color: activeId === w.id ? C.blue : C.sub, fontWeight: activeId === w.id ? 700 : 400,
               maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>{w.name}</button>
           ))}
         </div>
       </div>
 
-      {/* Active list header */}
+      {/* Active list header / rename */}
       <div style={{ padding: '6px 10px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
         {renaming ? (
           <div style={{ display: 'flex', gap: 4 }}>
-            <input
-              value={renameVal} onChange={e => setRenameVal(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') commitRename(); if (e.key === 'Escape') setRenaming(false) }}
-              autoFocus
-              style={{
-                flex: 1, padding: '3px 6px', borderRadius: 3, border: `1px solid ${C.blue}`,
-                background: C.cell, color: C.text, fontSize: 10, fontFamily: 'monospace',
-              }}
-            />
-            <button onClick={commitRename} style={btnStyle(C.green)}>OK</button>
-            <button onClick={() => setRenaming(false)} style={btnStyle(C.sub)}>X</button>
+            <input value={rnVal} onChange={e => setRnVal(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') commitRn(); if (e.key === 'Escape') setRenaming(false) }}
+              autoFocus style={{ flex: 1, padding: '3px 6px', borderRadius: 3, border: `1px solid ${C.blue}`, background: C.cell, color: C.text, fontSize: 10, fontFamily: 'monospace' }} />
+            <button onClick={commitRn} style={btn(C.green)}>OK</button>
+            <button onClick={() => setRenaming(false)} style={btn(C.sub)}>X</button>
           </div>
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: C.text, flex: 1,
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {active?.name}
-            </span>
-            <button onClick={() => { setRenaming(true); setRenameVal(active?.name ?? '') }}
-              style={btnStyle(C.sub)} title="Rename">Rename</button>
+            <span style={{ fontSize: 11, fontWeight: 700, color: C.text, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{active?.name}</span>
+            <button onClick={() => { setRenaming(true); setRnVal(active?.name ?? '') }} style={btn(C.sub)}>Rename</button>
           </div>
         )}
       </div>
@@ -262,597 +222,231 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
       {/* Symbol list */}
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {active?.symbols.length === 0 && (
-          <div style={{ padding: '20px 10px', textAlign: 'center', color: C.dim, fontSize: 10 }}>
-            No symbols yet.<br />Add using the field below.
-          </div>
+          <div style={{ padding: '20px 10px', textAlign: 'center', color: C.dim, fontSize: 10 }}>No symbols yet.<br />Add below.</div>
         )}
         {active?.symbols.map(s => (
-          <div key={s} style={{
-            display: 'flex', alignItems: 'center', padding: '5px 10px',
-            borderBottom: `1px solid ${C.border}`,
-            background: s === currentSym.toUpperCase() ? C.blue + '11' : 'transparent',
-          }}>
-            <button
-              onClick={() => onNavigate(s)}
-              style={{
-                flex: 1, textAlign: 'left', background: 'transparent', border: 'none',
-                color: s === currentSym.toUpperCase() ? C.blue : C.text,
-                fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'monospace',
-                letterSpacing: '0.06em',
-              }}
-            >{s}</button>
-            <button
-              onClick={() => removeSymbol(s)}
-              style={{ background: 'transparent', border: 'none', color: C.dim, cursor: 'pointer', fontSize: 13, padding: '0 2px' }}
-              title="Remove"
-            >x</button>
+          <div key={s} style={{ display: 'flex', alignItems: 'center', padding: '5px 10px', borderBottom: `1px solid ${C.border}`, background: s === currentSym.toUpperCase() ? C.blue + '11' : 'transparent' }}>
+            <button onClick={() => onNavigate(s)} style={{ flex: 1, textAlign: 'left', background: 'transparent', border: 'none', color: s === currentSym.toUpperCase() ? C.blue : C.text, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'monospace', letterSpacing: '0.06em' }}>{s}</button>
+            <button onClick={() => removeSym(s)} style={{ background: 'transparent', border: 'none', color: C.dim, cursor: 'pointer', fontSize: 13, padding: '0 2px' }} title="Remove">x</button>
           </div>
         ))}
       </div>
 
-      {/* Add symbol */}
+      {/* Add field */}
       <div style={{ padding: '8px 10px', borderTop: `1px solid ${C.border}`, flexShrink: 0 }}>
         {currentSym && active && !active.symbols.includes(currentSym.toUpperCase()) && (
-          <button onClick={addCurrentSym} style={{
-            width: '100%', marginBottom: 6, padding: '4px', borderRadius: 3, fontSize: 10,
-            border: `1px solid ${C.green}44`, background: C.green + '11', color: C.green,
-            cursor: 'pointer', fontFamily: 'monospace',
-          }}>
-            + Add {currentSym.toUpperCase()} to list
+          <button onClick={() => { if (!active.symbols.includes(currentSym.toUpperCase())) upd(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, currentSym.toUpperCase()] } : w)) }}
+            style={{ width: '100%', marginBottom: 6, padding: '4px', borderRadius: 3, fontSize: 10, border: `1px solid ${C.green}44`, background: C.green + '11', color: C.green, cursor: 'pointer', fontFamily: 'monospace' }}>
+            + Add {currentSym.toUpperCase()}
           </button>
         )}
         <div style={{ display: 'flex', gap: 4 }}>
-          <input
-            ref={addRef}
-            value={addVal}
-            onChange={e => setAddVal(e.target.value.toUpperCase())}
-            onKeyDown={e => e.key === 'Enter' && addSymbol()}
-            placeholder="Symbol..."
-            style={{
-              flex: 1, padding: '4px 6px', borderRadius: 3, border: `1px solid ${C.border}`,
-              background: C.cell, color: C.text, fontSize: 11, fontFamily: 'monospace',
-              outline: 'none',
-            }}
-          />
-          <button onClick={addSymbol} style={{
-            padding: '4px 9px', borderRadius: 3, fontSize: 10,
-            border: `1px solid ${C.blue}`, background: C.blue + '22', color: C.blue,
-            cursor: 'pointer',
-          }}>Add</button>
+          <input value={addVal} onChange={e => setAddVal(e.target.value.toUpperCase())} onKeyDown={e => e.key === 'Enter' && addSym()} placeholder="Symbol..."
+            style={{ flex: 1, padding: '4px 6px', borderRadius: 3, border: `1px solid ${C.border}`, background: C.cell, color: C.text, fontSize: 11, fontFamily: 'monospace', outline: 'none' }} />
+          <button onClick={addSym} style={{ padding: '4px 9px', borderRadius: 3, fontSize: 10, border: `1px solid ${C.blue}`, background: C.blue + '22', color: C.blue, cursor: 'pointer' }}>Add</button>
         </div>
       </div>
     </div>
   )
 }
 
-// ── Toolbar button ────────────────────────────────────────────────────────────
+// ── Chart styles — platform dark theme applied to KLineChart Pro ──────────────
 
-function TogBtn({ label, active, color, onClick }: { label: string; active: boolean; color: string; onClick: () => void }) {
-  return (
-    <button onClick={onClick} style={{
-      padding: '4px 10px', borderRadius: 4, fontSize: 10, fontWeight: active ? 700 : 400,
-      cursor: 'pointer', border: `1px solid ${active ? color : C.border}`,
-      background: active ? color + '22' : 'transparent', color: active ? color : C.sub,
-      transition: 'all .12s',
-    }}>{label}</button>
-  )
+const CHART_STYLES = {
+  grid: {
+    horizontal: { color: '#1E2332' },
+    vertical:   { color: '#1E2332' },
+  },
+  candle: {
+    bar: {
+      upColor:       '#22C55E',
+      downColor:     '#EF4444',
+      noChangeColor: '#64748B',
+    },
+    area: { lineColor: '#3B82F6', backgroundColor: [{ offset: 0, color: '#3B82F620' }, { offset: 1, color: '#3B82F600' }] },
+  },
+  indicator: {
+    ohlc: { upColor: '#22C55E', downColor: '#EF4444', noChangeColor: '#64748B' },
+  },
+  xAxis: {
+    axisLine:    { color: '#1E2332' },
+    tickLine:    { color: '#1E2332' },
+    tickText:    { color: '#64748B' },
+  },
+  yAxis: {
+    axisLine:    { color: '#1E2332' },
+    tickLine:    { color: '#1E2332' },
+    tickText:    { color: '#64748B' },
+  },
+  crosshair: {
+    horizontal: { line: { color: '#374151' }, text: { backgroundColor: '#1C2130', color: '#E2E8F0', borderColor: '#374151' } },
+    vertical:   { line: { color: '#374151' }, text: { backgroundColor: '#1C2130', color: '#E2E8F0', borderColor: '#374151' } },
+  },
 }
 
-// ── RSI level lines ────────────────────────────────────────────────────────────
-
-const RSI_LEVELS = [70, 50, 30]
-
-// ── Main component ────────────────────────────────────────────────────────────
+// ── FullChartPage ─────────────────────────────────────────────────────────────
 
 export function FullChartPage() {
-  const { symbol: sym = '' }    = useParams<{ symbol: string }>()
-  const [searchParams]          = useSearchParams()
-  const navigate                = useNavigate()
-  const initTf                  = (searchParams.get('tf') as TF) || '1D'
+  const { symbol: sym = '' } = useParams<{ symbol: string }>()
+  const [searchParams]       = useSearchParams()
+  const navigate             = useNavigate()
+  const initTf               = searchParams.get('tf') ?? '1D'
 
-  const [tf,          setTf]         = useState<TF>(initTf)
-  const [showE20,     setShowE20]    = useState(true)
-  const [showE50,     setShowE50]    = useState(true)
-  const [showE200,    setShowE200]   = useState(true)
-  const [showBB,      setShowBB]     = useState(false)
-  const [showRSI,     setShowRSI]    = useState(true)
-  const [showWL,      setShowWL]     = useState(false)
-  const [snapFlash,   setSnapFlash]  = useState(false)
+  const [showWL,     setShowWL]     = useState(false)
+  const [snapFlash,  setSnapFlash]  = useState(false)
+  const [loading,    setLoading]    = useState(true)
 
-  const [legend, setLegend] = useState<{
-    o: number; h: number; l: number; c: number; v: number
-    e20: number | null; e50: number | null; e200: number | null; rsi: number | null
-  } | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const proRef       = useRef<KLineChartPro | null>(null)
 
-  // ── DOM refs ────────────────────────────────────────────────────────────────
-  const mainDiv   = useRef<HTMLDivElement>(null)
-  const rsiDiv    = useRef<HTMLDivElement>(null)  // ALWAYS mounted — toggled via height
-
-  // ── Chart API refs ──────────────────────────────────────────────────────────
-  const mainChart  = useRef<IChartApi | null>(null)
-  const rsiChart   = useRef<IChartApi | null>(null)
-  const syncingRef = useRef(false)
-
-  // ── Series refs ─────────────────────────────────────────────────────────────
-  const sr = useRef<{
-    candle?:   ISeriesApi<'Candlestick', Time>
-    vol?:      ISeriesApi<'Histogram', Time>
-    e20?:      ISeriesApi<'Line', Time>
-    e50?:      ISeriesApi<'Line', Time>
-    e200?:     ISeriesApi<'Line', Time>
-    bbU?:      ISeriesApi<'Line', Time>
-    bbL?:      ISeriesApi<'Line', Time>
-    rsiLine?:  ISeriesApi<'Line', Time>
-  }>({})
-
-  // ── Computed indicator arrays (in-sync with OHLCV) ──────────────────────────
-  const indRef = useRef<{
-    e20: (number | null)[]; e50: (number | null)[]; e200: (number | null)[]
-    bbU: (number | null)[]; bbL: (number | null)[]
-    rsi: (number | null)[]
-    times: string[]
-  }>({ e20: [], e50: [], e200: [], bbU: [], bbL: [], rsi: [], times: [] })
-
-  // ── Data fetching ────────────────────────────────────────────────────────────
-
-  const { data: ohlcv, isLoading } = useQuery({
-    queryKey: ['fullchart-ohlcv', sym, tf],
-    queryFn:  () => api.get<OhlcvResp>('/charts/ohlcv', { params: { symbol: sym.toUpperCase(), timeframe: tf } }).then(r => r.data),
-    enabled:  !!sym,
-  })
-
-  const { data: caData } = useQuery({
-    queryKey: ['fullchart-ca', sym],
-    queryFn:  () => fetchStockCorpActions(sym.toUpperCase(), 5),
-    enabled:  !!sym,
-  })
-
-  // ── Chart creation (once) ────────────────────────────────────────────────────
-
+  // ── Create / destroy chart whenever symbol changes ──────────────────────────
   useEffect(() => {
-    if (!mainDiv.current || !rsiDiv.current) return
+    if (!containerRef.current || !sym) return
 
-    const baseOpts = {
-      layout: { background: { type: ColorType.Solid, color: C.bg }, textColor: C.sub, fontSize: 10, fontFamily: 'monospace' },
-      grid:   { vertLines: { color: C.border }, horzLines: { color: C.border } },
-      crosshair: { vertLine: { labelBackgroundColor: C.cell }, horzLine: { labelBackgroundColor: C.cell } },
-      rightPriceScale: { borderColor: C.border },
-      handleScroll: true, handleScale: true,
-    }
+    // Clear any previous chart
+    if (containerRef.current) containerRef.current.innerHTML = ''
+    proRef.current = null
+    setLoading(true)
 
-    // Main chart
-    const mc = createChart(mainDiv.current, {
-      ...baseOpts,
-      autoSize: true,
-      timeScale: { borderColor: C.border, timeVisible: false, secondsVisible: false },
+    const initPeriod = TF_TO_PERIOD[initTf] ?? TF_TO_PERIOD['1D']
+
+    const pro = new KLineChartPro({
+      container:       containerRef.current,
+      theme:           'dark',
+      locale:          'en-US',
+      timezone:        'Asia/Kolkata',
+      symbol: {
+        ticker:    sym.toUpperCase(),
+        shortName: sym.toUpperCase(),
+        name:      sym.toUpperCase(),
+        exchange:  'NSE',
+        market:    'stocks',
+        priceCurrency: 'INR',
+      },
+      period:  initPeriod,
+      periods: PERIODS,
+      styles:  CHART_STYLES as any,
+      drawingBarVisible: true,
+      mainIndicators: ['EMA'],
+      subIndicators:  ['VOL', 'MACD'],
+      datafeed: new OurDatafeed(),
     })
 
-    const candle = mc.addSeries(CandlestickSeries, {
-      upColor: C.green, downColor: C.red, borderVisible: false,
-      wickUpColor: C.green, wickDownColor: C.red,
-    })
-    const vol = mc.addSeries(HistogramSeries, { priceScaleId: 'vol' })
-    vol.priceScale().applyOptions({ scaleMargins: { top: 0.85, bottom: 0 } })
-
-    const e20  = mc.addSeries(LineSeries, { color: C.blue,   lineWidth: 1, priceLineVisible: false, crosshairMarkerVisible: false })
-    const e50  = mc.addSeries(LineSeries, { color: C.purple, lineWidth: 1, priceLineVisible: false, crosshairMarkerVisible: false })
-    const e200 = mc.addSeries(LineSeries, { color: C.amber,  lineWidth: 1, priceLineVisible: false, crosshairMarkerVisible: false })
-    const bbU  = mc.addSeries(LineSeries, { color: C.teal, lineWidth: 1, lineStyle: 1, priceLineVisible: false, crosshairMarkerVisible: false, visible: false })
-    const bbL  = mc.addSeries(LineSeries, { color: C.teal, lineWidth: 1, lineStyle: 1, priceLineVisible: false, crosshairMarkerVisible: false, visible: false })
-
-    sr.current = { candle, vol, e20, e50, e200, bbU, bbL }
-    mainChart.current = mc
-
-    // RSI chart (always created; container height controls visibility)
-    const rc = createChart(rsiDiv.current, {
-      ...baseOpts,
-      autoSize: true,
-      timeScale: { borderColor: C.border, timeVisible: false, secondsVisible: false },
-      rightPriceScale: { borderColor: C.border, scaleMargins: { top: 0.1, bottom: 0.1 } },
-    })
-
-    const rsiLine = rc.addSeries(LineSeries, { color: C.amber, lineWidth: 1, priceLineVisible: false })
-    for (const lvl of RSI_LEVELS) {
-      rsiLine.createPriceLine({
-        price: lvl,
-        color:  lvl === 50 ? C.dim : lvl === 70 ? C.red + '88' : C.green + '88',
-        lineWidth: 1, lineStyle: lvl === 50 ? 2 : 1,
-        axisLabelVisible: true, title: lvl === 50 ? '' : String(lvl),
-      })
-    }
-    sr.current.rsiLine = rsiLine
-    rsiChart.current = rc
-
-    // ── Time-based range sync (fixes RSI alignment issue) ─────────────────────
-    // Use time-based (not logical) sync so RSI bars align with candlestick bars
-    // regardless of RSI having fewer data points (null for first 14 bars).
-    mc.timeScale().subscribeVisibleTimeRangeChange(range => {
-      if (syncingRef.current || !range) return
-      syncingRef.current = true
-      try { rc.timeScale().setVisibleRange(range) } catch { /* ignore */ }
-      syncingRef.current = false
-    })
-    rc.timeScale().subscribeVisibleTimeRangeChange(range => {
-      if (syncingRef.current || !range) return
-      syncingRef.current = true
-      try { mc.timeScale().setVisibleRange(range) } catch { /* ignore */ }
-      syncingRef.current = false
-    })
-
-    // ── Crosshair sync + legend ───────────────────────────────────────────────
-    mc.subscribeCrosshairMove(param => {
-      if (param.time) {
-        try { rc.setCrosshairPosition(50, param.time, rsiLine) } catch { /* ignore */ }
-      } else {
-        try { rc.clearCrosshairPosition() } catch { /* ignore */ }
-      }
-
-      if (!param.time || !param.seriesData) { setLegend(null); return }
-      const cd = param.seriesData.get(candle) as { open: number; high: number; low: number; close: number } | undefined
-      const vd = param.seriesData.get(vol) as { value: number } | undefined
-      if (!cd) return
-
-      const timeStr = typeof param.time === 'string' ? param.time : String(param.time)
-      const idx = indRef.current.times.indexOf(timeStr)
-      setLegend({
-        o: cd.open, h: cd.high, l: cd.low, c: cd.close, v: vd?.value ?? 0,
-        e20:  idx >= 0 ? indRef.current.e20[idx]  : null,
-        e50:  idx >= 0 ? indRef.current.e50[idx]  : null,
-        e200: idx >= 0 ? indRef.current.e200[idx] : null,
-        rsi:  idx >= 0 ? indRef.current.rsi[idx]  : null,
-      })
-    })
-    rc.subscribeCrosshairMove(param => {
-      if (param.time) {
-        try { mc.setCrosshairPosition(0, param.time, candle) } catch { /* ignore */ }
-      } else {
-        try { mc.clearCrosshairPosition() } catch { /* ignore */ }
-      }
-    })
+    proRef.current = pro
+    setLoading(false)
 
     return () => {
-      mc.remove(); rc.remove()
-      mainChart.current = rsiChart.current = null
-      sr.current = {}
+      // Dispose underlying klinecharts instance via the private _chartApi ref
+      const chartApi = (pro as any)?._chartApi
+      if (chartApi) {
+        try { dispose(chartApi) } catch { /* ignore */ }
+      }
+      if (containerRef.current) containerRef.current.innerHTML = ''
+      proRef.current = null
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [sym])
 
-  // ── Update timeframe on TF change ─────────────────────────────────────────
-  useEffect(() => {
-    const vis = INTRADAY.has(tf)
-    mainChart.current?.applyOptions({ timeScale: { timeVisible: false } })
-    rsiChart.current?.applyOptions({ timeScale: { timeVisible: vis } })
-  }, [tf])
+  // ── Watchlist navigation → change symbol ───────────────────────────────────
+  const goSymbol = useCallback((s: string) => {
+    // setPeriod on existing instance so it doesn't flicker
+    const tf = proRef.current?.getPeriod()?.text ?? '1D'
+    navigate(`/fullchart/${s.toUpperCase()}?tf=${tf}`)
+  }, [navigate])
 
-  // ── Feed data to charts when OHLCV loads ─────────────────────────────────
-
-  useEffect(() => {
-    const { candle, vol, e20: s20, e50: s50, e200: s200, bbU: sBBU, bbL: sBBL, rsiLine } = sr.current
-    if (!candle || !ohlcv?.bars?.length) return
-
-    const bars = ohlcv.bars
-    const times = bars.map(b => typeof b.time === 'string' ? toPeriodStart(b.time, tf) : String(b.time))
-    const closes = bars.map(b => b.close)
-
-    candle.setData(bars.map((b, i) => ({ time: times[i] as Time, open: b.open, high: b.high, low: b.low, close: b.close })))
-    vol?.setData(bars.map((b, i) => ({
-      time: times[i] as Time, value: b.volume ?? 0,
-      color: b.close >= b.open ? C.green + '55' : C.red + '55',
-    })))
-
-    // Compute indicators
-    const e20v  = calcEma(closes, 20)
-    const e50v  = calcEma(closes, 50)
-    const e200v = calcEma(closes, 200)
-    const { upper: bbUv, lower: bbLv } = calcBB(closes)
-    const rsiV  = calcRSI(closes)
-
-    indRef.current = { e20: e20v, e50: e50v, e200: e200v, bbU: bbUv, bbL: bbLv, rsi: rsiV, times }
-
-    const toS = (vals: (number | null)[]) =>
-      vals.flatMap((v, i) => v != null ? [{ time: times[i] as Time, value: v }] : [])
-
-    s20?.setData(toS(e20v))
-    s50?.setData(toS(e50v))
-    s200?.setData(toS(e200v))
-    sBBU?.setData(toS(bbUv))
-    sBBL?.setData(toS(bbLv))
-    rsiLine?.setData(toS(rsiV))
-
-    // Set initial logical range on main chart, then sync RSI via time range
-    const n = bars.length
-    mainChart.current?.timeScale().setVisibleLogicalRange({ from: Math.max(0, n - DEFAULT_BARS[tf]), to: n + 2 })
-    requestAnimationFrame(() => {
-      const tr = mainChart.current?.timeScale().getVisibleRange()
-      if (tr) {
-        try { rsiChart.current?.timeScale().setVisibleRange(tr) } catch { /* ignore */ }
-      }
-    })
-  }, [ohlcv, tf])
-
-  // ── Corporate action markers ──────────────────────────────────────────────
-
-  useEffect(() => {
-    const { candle } = sr.current
-    if (!candle || !caData?.actions?.length) return
-    const CA_CFG: Record<string, { color: string }> = {
-      DIVIDEND: { color: C.amber }, BONUS:   { color: C.green  },
-      SPLIT:    { color: C.blue  }, BUYBACK: { color: C.purple },
-      RIGHTS:   { color: C.teal  },
-    }
-    try {
-      const markers = caData.actions
-        .filter(a => CA_CFG[a.action_type])
-        .map(a => {
-          const label = a.action_type === 'DIVIDEND' && a.dividend_rs != null ? `D${a.dividend_rs}`
-                      : a.action_type === 'BONUS'    && a.bonus_ratio  != null ? `B${a.bonus_ratio}`
-                      : a.action_type === 'SPLIT'    && a.split_new_fv != null ? `S`
-                      : a.action_type[0]
-          return {
-            time: a.ex_date.slice(0, 10) as Time,
-            position: 'belowBar' as const, shape: 'circle' as const,
-            color: CA_CFG[a.action_type].color, text: label, size: 0.8,
-          }
-        })
-        .sort((a, b) => String(a.time).localeCompare(String(b.time)))
-      candle.setMarkers(markers)
-    } catch { /* cosmetic */ }
-  }, [caData])
-
-  // ── Indicator toggles ─────────────────────────────────────────────────────
-
-  useEffect(() => { sr.current.e20?.applyOptions({ visible: showE20 }) }, [showE20])
-  useEffect(() => { sr.current.e50?.applyOptions({ visible: showE50 }) }, [showE50])
-  useEffect(() => { sr.current.e200?.applyOptions({ visible: showE200 }) }, [showE200])
-  useEffect(() => {
-    sr.current.bbU?.applyOptions({ visible: showBB })
-    sr.current.bbL?.applyOptions({ visible: showBB })
-  }, [showBB])
-
-  // When RSI becomes visible again: sync its time range to main chart so it
-  // covers the same window (fixes the "blank after toggle" issue).
-  useEffect(() => {
-    if (!showRSI) return
-    requestAnimationFrame(() => {
-      const tr = mainChart.current?.timeScale().getVisibleRange()
-      if (tr) {
-        try { rsiChart.current?.timeScale().setVisibleRange(tr) } catch { /* ignore */ }
-      }
-    })
-  }, [showRSI])
-
-  // ── Reset view ─────────────────────────────────────────────────────────────
-
-  const resetView = useCallback(() => {
-    const n = ohlcv?.bars?.length ?? 0
-    if (!n) return
-    mainChart.current?.timeScale().setVisibleLogicalRange({ from: Math.max(0, n - DEFAULT_BARS[tf]), to: n + 2 })
-    requestAnimationFrame(() => {
-      const tr = mainChart.current?.timeScale().getVisibleRange()
-      if (tr) { try { rsiChart.current?.timeScale().setVisibleRange(tr) } catch { /* ignore */ } }
-    })
-  }, [ohlcv, tf])
-
-  // ── Snapshot ──────────────────────────────────────────────────────────────
-
+  // ── Snapshot — composite all chart canvases by screen position ─────────────
   const takeSnapshot = useCallback(() => {
+    const container = containerRef.current
+    if (!container) return
     try {
-      const mainCanvas = (mainChart.current as any)?.takeScreenshot?.() as HTMLCanvasElement | undefined
-      if (!mainCanvas) return
+      const rect     = container.getBoundingClientRect()
+      const canvases = Array.from(container.querySelectorAll('canvas'))
+        .filter(c => c.width > 100 && c.height > 50)
+      if (!canvases.length) return
 
-      let finalCanvas: HTMLCanvasElement = mainCanvas
+      const out = document.createElement('canvas')
+      out.width  = Math.round(rect.width)
+      out.height = Math.round(rect.height)
+      const ctx = out.getContext('2d')!
+      ctx.fillStyle = C.bg
+      ctx.fillRect(0, 0, out.width, out.height)
 
-      if (showRSI && rsiChart.current) {
+      for (const c of canvases) {
+        const cr = c.getBoundingClientRect()
+        const x  = Math.round(cr.left - rect.left)
+        const y  = Math.round(cr.top  - rect.top)
         try {
-          const rsiCanvas = (rsiChart.current as any)?.takeScreenshot?.() as HTMLCanvasElement | undefined
-          if (rsiCanvas) {
-            const combined = document.createElement('canvas')
-            combined.width  = mainCanvas.width
-            combined.height = mainCanvas.height + rsiCanvas.height
-            const ctx = combined.getContext('2d')
-            if (ctx) {
-              ctx.fillStyle = C.bg
-              ctx.fillRect(0, 0, combined.width, combined.height)
-              ctx.drawImage(mainCanvas, 0, 0)
-              ctx.drawImage(rsiCanvas, 0, mainCanvas.height)
-              finalCanvas = combined
-            }
-          }
-        } catch { /* use main only */ }
+          ctx.drawImage(c, x, y, Math.round(cr.width), Math.round(cr.height))
+        } catch { /* cross-origin safety */ }
       }
 
-      const url = finalCanvas.toDataURL('image/png')
+      const url = out.toDataURL('image/png')
       const a   = document.createElement('a')
       a.href     = url
-      a.download = `${sym.toUpperCase()}-${tf}-${new Date().toISOString().slice(0, 10)}.png`
+      a.download = `${sym.toUpperCase()}-${new Date().toISOString().slice(0, 10)}.png`
       document.body.appendChild(a); a.click(); document.body.removeChild(a)
       setSnapFlash(true); setTimeout(() => setSnapFlash(false), 800)
     } catch { /* ignore */ }
-  }, [sym, tf, showRSI])
+  }, [sym])
 
-  // ── Navigate to another symbol (watchlist click) ──────────────────────────
-
-  const goSymbol = useCallback((s: string) => {
-    navigate(`/fullchart/${s.toUpperCase()}?tf=${tf}`)
-  }, [navigate, tf])
-
-  // ── Legend values ─────────────────────────────────────────────────────────
-
-  const rsiVal   = legend?.rsi
-  const rsiColor = rsiVal == null ? C.sub
-    : rsiVal >= 70 ? C.red : rsiVal >= 55 ? C.green : rsiVal >= 45 ? C.sub : rsiVal >= 30 ? C.amber : '#FF6060'
-
-  // ── Render ────────────────────────────────────────────────────────────────
-
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', background: C.bg, overflow: 'hidden', fontFamily: 'monospace' }}>
 
-      {/* ── Toolbar ──────────────────────────────────────────────────────── */}
+      {/* ── Top bar ─────────────────────────────────────────────────────── */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px',
-        background: C.panel, borderBottom: `1px solid ${C.border}`, flexWrap: 'wrap', flexShrink: 0,
+        display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px',
+        background: C.panel, borderBottom: `1px solid ${C.border}`, flexShrink: 0,
+        flexWrap: 'wrap',
       }}>
         {/* Back */}
         <button onClick={() => navigate(-1)} style={{
-          padding: '4px 9px', borderRadius: 4, border: `1px solid ${C.border}`,
+          padding: '4px 10px', borderRadius: 4, border: `1px solid ${C.border}`,
           background: 'transparent', color: C.sub, cursor: 'pointer', fontSize: 11,
         }}>&larr; Back</button>
 
         {/* Symbol */}
-        <span style={{ fontSize: 14, fontWeight: 900, color: C.text, letterSpacing: 2, minWidth: 90 }}>
+        <span style={{ fontSize: 15, fontWeight: 900, color: C.text, letterSpacing: 2, minWidth: 90 }}>
           {sym.toUpperCase()}
         </span>
 
         <div style={{ width: 1, height: 16, background: C.border }} />
 
-        {/* TF — Intraday */}
-        {TF_INTRA.map(t => (
-          <button key={t} onClick={() => setTf(t)} style={{
-            padding: '3px 8px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
-            border: `1px solid ${tf === t ? C.blue : C.border}`,
-            background: tf === t ? C.blue + '22' : 'transparent',
-            color: tf === t ? C.blue : C.sub, fontWeight: tf === t ? 700 : 400,
-          }}>{t}</button>
-        ))}
+        <span style={{ fontSize: 10, color: C.sub }}>NSE</span>
+        <span style={{ fontSize: 10, color: C.sub }}>INR</span>
 
-        <div style={{ width: 1, height: 14, background: C.border }} />
+        {loading && <span style={{ fontSize: 10, color: C.amber }}>Loading...</span>}
 
-        {/* TF — Daily+ */}
-        {TF_DAILY.map(t => (
-          <button key={t} onClick={() => setTf(t)} style={{
-            padding: '3px 8px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
-            border: `1px solid ${tf === t ? C.green : C.border}`,
-            background: tf === t ? C.green + '22' : 'transparent',
-            color: tf === t ? C.green : C.sub, fontWeight: tf === t ? 700 : 400,
-          }}>{t}</button>
-        ))}
-
-        <div style={{ width: 1, height: 14, background: C.border }} />
-
-        {/* Indicator toggles */}
-        <TogBtn label="EMA 20"  active={showE20}  color={C.blue}   onClick={() => setShowE20(v  => !v)} />
-        <TogBtn label="EMA 50"  active={showE50}  color={C.purple} onClick={() => setShowE50(v  => !v)} />
-        <TogBtn label="EMA 200" active={showE200} color={C.amber}  onClick={() => setShowE200(v => !v)} />
-        <TogBtn label="BB"      active={showBB}   color={C.teal}   onClick={() => setShowBB(v   => !v)} />
-        <TogBtn label="RSI"     active={showRSI}  color={C.amber}  onClick={() => setShowRSI(v  => !v)} />
-
-        <div style={{ width: 1, height: 14, background: C.border }} />
-
-        <button onClick={resetView} style={{
-          padding: '3px 8px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
-          border: `1px solid ${C.border}`, background: 'transparent', color: C.dim,
-        }}>Reset</button>
-
-        {/* Spacer */}
+        {/* Right-side actions */}
         <div style={{ flex: 1 }} />
 
         {/* Snapshot */}
-        <button
-          onClick={takeSnapshot}
-          title="Save chart as PNG"
-          style={{
-            padding: '4px 10px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
-            border: `1px solid ${snapFlash ? C.green : C.border}`,
-            background: snapFlash ? C.green + '22' : 'transparent',
-            color: snapFlash ? C.green : C.sub,
-            transition: 'all .2s',
-          }}
-        >{snapFlash ? 'Saved!' : 'Snapshot'}</button>
+        <button onClick={takeSnapshot} title="Save chart as PNG" style={{
+          padding: '4px 12px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
+          border: `1px solid ${snapFlash ? C.green : C.border}`,
+          background: snapFlash ? C.green + '22' : 'transparent',
+          color: snapFlash ? C.green : C.sub, transition: 'all .2s',
+        }}>{snapFlash ? 'Saved!' : 'Snapshot PNG'}</button>
 
         {/* Watchlist toggle */}
-        <TogBtn label="Watchlist" active={showWL} color={C.purple} onClick={() => setShowWL(v => !v)} />
-
-        {isLoading && <span style={{ fontSize: 10, color: C.sub }}>Loading...</span>}
+        <button onClick={() => setShowWL(v => !v)} style={{
+          padding: '4px 12px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
+          border: `1px solid ${showWL ? C.purple : C.border}`,
+          background: showWL ? C.purple + '22' : 'transparent',
+          color: showWL ? C.purple : C.sub, fontWeight: showWL ? 700 : 400,
+        }}>
+          {showWL ? 'Hide Watchlist' : 'Watchlist'}
+        </button>
       </div>
 
-      {/* ── OHLCV Legend bar ─────────────────────────────────────────────── */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 14, padding: '4px 12px',
-        background: C.cell, borderBottom: `1px solid ${C.border}`, fontSize: 10, flexShrink: 0,
-        fontVariantNumeric: 'tabular-nums', minHeight: 26,
-      }}>
-        {legend ? (
-          <>
-            <span style={{ color: C.dim }}>O</span>
-            <span style={{ color: C.text }}>{fmtNum(legend.o)}</span>
-            <span style={{ color: C.dim }}>H</span>
-            <span style={{ color: C.green }}>{fmtNum(legend.h)}</span>
-            <span style={{ color: C.dim }}>L</span>
-            <span style={{ color: C.red }}>{fmtNum(legend.l)}</span>
-            <span style={{ color: C.dim }}>C</span>
-            <span style={{ color: legend.c >= legend.o ? C.green : C.red, fontWeight: 700 }}>{fmtNum(legend.c)}</span>
-            <span style={{ color: C.dim }}>Vol</span>
-            <span style={{ color: C.text }}>{fmtVol(legend.v)}</span>
-            <div style={{ width: 1, height: 12, background: C.border }} />
-            {showE20  && legend.e20  != null && <><span style={{ color: C.blue   }}>EMA20</span><span style={{ color: C.text }}>{fmtNum(legend.e20)}</span></>}
-            {showE50  && legend.e50  != null && <><span style={{ color: C.purple }}>EMA50</span><span style={{ color: C.text }}>{fmtNum(legend.e50)}</span></>}
-            {showE200 && legend.e200 != null && <><span style={{ color: C.amber  }}>EMA200</span><span style={{ color: C.text }}>{fmtNum(legend.e200)}</span></>}
-            {showRSI && rsiVal != null && (
-              <>
-                <div style={{ width: 1, height: 12, background: C.border }} />
-                <span style={{ color: C.dim }}>RSI</span>
-                <span style={{ color: rsiColor, fontWeight: 700 }}>{fmtNum(rsiVal, 1)}</span>
-                <span style={{ color: rsiColor, fontSize: 9 }}>
-                  {rsiVal >= 70 ? 'OVERBOUGHT' : rsiVal >= 55 ? 'BULLISH' : rsiVal >= 45 ? 'NEUTRAL' : rsiVal >= 30 ? 'BEARISH' : 'OVERSOLD'}
-                </span>
-              </>
-            )}
-          </>
-        ) : (
-          <span style={{ color: C.dim }}>Hover chart to see OHLCV values</span>
-        )}
-      </div>
+      {/* ── Content row ─────────────────────────────────────────────────── */}
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'row', overflow: 'hidden' }}>
 
-      {/* ── Content row (charts + watchlist side by side) ─────────────────── */}
-      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'row' }}>
-
-        {/* Charts column */}
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-
-          {/* Main chart — fills remaining height */}
-          <div ref={mainDiv} style={{ flex: 1, minHeight: 0 }} />
-
-          {/* RSI pane — ALWAYS MOUNTED; height 0 when hidden.
-              This is the fix for the toggle bug: if we conditionally unmount,
-              the rsiDiv ref points to a new DOM node after remount but rsiChart
-              still holds a reference to the old (now detached) container. */}
-          <div style={{
-            flexShrink: 0,
-            borderTop: showRSI ? `1px solid ${C.border}` : 'none',
-            overflow: 'hidden',
-          }}>
-            {showRSI && (
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 10,
-                padding: '3px 12px', background: C.cell, fontSize: 9, color: C.dim,
-              }}>
-                <span style={{ fontWeight: 700, letterSpacing: '0.08em' }}>RSI (14)</span>
-                <span style={{ color: C.red + 'BB' }}>Overbought &gt;70</span>
-                <span style={{ color: C.green + 'BB' }}>Oversold &lt;30</span>
-              </div>
-            )}
-            {/* rsiDiv height drives the RSI chart height via autoSize */}
-            <div ref={rsiDiv} style={{ height: showRSI ? 130 : 0 }} />
-          </div>
-        </div>
+        {/* KLineChart Pro renders into this container */}
+        <div ref={containerRef} style={{ flex: 1, minWidth: 0, minHeight: 0 }} />
 
         {/* Watchlist panel */}
-        {showWL && (
-          <WatchlistPanel currentSym={sym} onNavigate={goSymbol} />
-        )}
-      </div>
-
-      {/* ── Status bar ───────────────────────────────────────────────────── */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 14, padding: '4px 12px',
-        background: C.panel, borderTop: `1px solid ${C.border}`, fontSize: 10, color: C.dim, flexShrink: 0,
-      }}>
-        <span style={{ color: C.sub, fontWeight: 700 }}>{sym.toUpperCase()}</span>
-        <span>TF: <span style={{ color: C.text }}>{tf}</span></span>
-        {ohlcv && <span>{ohlcv.count} bars</span>}
-        <div style={{ flex: 1 }} />
-        <span>Capital Flow Intelligence Platform</span>
+        {showWL && <WatchlistPanel currentSym={sym} onNavigate={goSymbol} />}
       </div>
     </div>
   )
