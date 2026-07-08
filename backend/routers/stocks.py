@@ -1076,6 +1076,33 @@ def get_stock_detail(symbol: str):
                 "vs_dma_200":     _safe(r.get("vs_dma_200")),
                 "trend_signal":   str(r.get("trend_signal", "")),
                 "vol_20d_avg":    _safe(r.get("vol_20d_avg")),
+                # RSI
+                "rsi":            _safe(r.get("rsi")),
+                "rsi_signal":     str(r.get("rsi_signal", "")),
+                # MACD
+                "macd_line":      _safe(r.get("macd_line")),
+                "macd_signal":    _safe(r.get("macd_signal")),
+                "macd_hist":      _safe(r.get("macd_hist")),
+                "macd_cross":     str(r.get("macd_cross", "")),
+                # ATR
+                "atr_14":         _safe(r.get("atr_14")),
+                "atr_pct":        _safe(r.get("atr_pct")),
+                # Bollinger Bands
+                "bb_upper":       _safe(r.get("bb_upper")),
+                "bb_lower":       _safe(r.get("bb_lower")),
+                "bb_mid":         _safe(r.get("bb_mid")),
+                "bb_pct":         _safe(r.get("bb_pct")),
+                "bb_width":       _safe(r.get("bb_width")),
+                "bb_signal":      str(r.get("bb_signal", "")),
+                "bb_squeeze":     bool(r.get("bb_squeeze", False)),
+                # OBV
+                "obv_signal":     str(r.get("obv_signal", "")),
+                # ADX
+                "adx":            _safe(r.get("adx")),
+                "adx_plus_di":    _safe(r.get("adx_plus_di")),
+                "adx_minus_di":   _safe(r.get("adx_minus_di")),
+                "adx_strength":   str(r.get("adx_strength", "")),
+                "adx_direction":  str(r.get("adx_direction", "")),
                 "as_of_date":     str(r.get("as_of_date", "")),
             }
 

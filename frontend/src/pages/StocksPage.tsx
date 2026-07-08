@@ -1686,47 +1686,155 @@ export function StocksPage() {
 
             <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'start' }}>
               {t && (
-                <div style={{ flex: '1 1 280px', minWidth: 260 }}>
+                <div style={{ flex: '2 1 400px', minWidth: 340 }}>
                   <SectionCard title="Technical Indicators" accentColor={trendColor}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
-                      <Chip label={t.trend_signal?.replace(/_/g, ' ') ?? 'N/A'} color={trendColor} size={11} />
-                      {t.vol_20d_avg != null && <span style={{ color: P.sub, fontSize: 10 }}>Avg Vol {(t.vol_20d_avg / 1e5).toFixed(1)}L shares/day</span>}
+
+                    {/* ── Header: trend chip + vol ── */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+                        <Chip label={t.trend_signal?.replace(/_/g, ' ') ?? 'N/A'} color={trendColor} size={11} />
+                        {t.adx_strength && (
+                          <Chip
+                            label={t.adx != null ? `ADX ${t.adx.toFixed(0)} ${t.adx_strength.replace(/_/g, ' ')}` : t.adx_strength.replace(/_/g, ' ')}
+                            color={t.adx_strength === 'STRONG_TREND' ? P.green : t.adx_strength === 'MODERATE_TREND' ? P.amber : P.dim}
+                            size={10}
+                          />
+                        )}
+                      </div>
+                      {t.vol_20d_avg != null && <span style={{ color: P.sub, fontSize: 10 }}>Avg Vol {(t.vol_20d_avg / 1e5).toFixed(1)}L/day</span>}
                     </div>
+
+                    {/* ── 52W Range slider ── */}
                     {t.high_52w != null && t.low_52w != null && (
-                      <div style={{ marginBottom: 14 }}>
+                      <div style={{ marginBottom: 12 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: P.dim, marginBottom: 5 }}>
                           <span>52W Low ₹{t.low_52w.toFixed(0)}</span>
                           <span>52W High ₹{t.high_52w.toFixed(0)}</span>
                         </div>
                         <div style={{ height: 6, background: '#1A2740', borderRadius: 3, position: 'relative' }}>
                           {(() => {
-                            const pos = (close - t.low_52w!) / (t.high_52w! - t.low_52w!) * 100
+                            const pos = Math.max(0, Math.min(100, (close - t.low_52w!) / (t.high_52w! - t.low_52w!) * 100))
+                            const dotC = pos >= 80 ? P.green : pos >= 40 ? P.amber : P.red
                             return (
                               <>
-                                <div style={{ width: `${pos}%`, height: '100%', background: `linear-gradient(to right, ${P.border}, ${P.green}55)`, borderRadius: 3 }} />
-                                <div style={{ position: 'absolute', top: -4, left: `${pos}%`, width: 14, height: 14, borderRadius: '50%', background: pos >= 80 ? P.green : pos >= 40 ? P.amber : P.red, transform: 'translateX(-50%)', border: `2px solid ${P.bg}`, boxShadow: `0 0 8px ${pos >= 80 ? P.green : pos >= 40 ? P.amber : P.red}88` }} />
+                                <div style={{ width: `${pos}%`, height: '100%', background: `linear-gradient(to right, ${P.border}, ${dotC}55)`, borderRadius: 3 }} />
+                                <div style={{ position: 'absolute', top: -4, left: `${pos}%`, width: 14, height: 14, borderRadius: '50%', background: dotC, transform: 'translateX(-50%)', border: `2px solid ${P.bg}`, boxShadow: `0 0 8px ${dotC}88` }} />
                               </>
                             )
                           })()}
                         </div>
                       </div>
                     )}
+
+                    {/* ── DMA rows ── */}
                     <DMARow label="20 DMA"  dma={t.dma_20}  close={close} color={P.blue} />
                     <DMARow label="50 DMA"  dma={t.dma_50}  close={close} color="#A78BFA" />
                     <DMARow label="200 DMA" dma={t.dma_200} close={close} color={P.amber} />
-                    {t.as_of_date && <div style={{ fontSize: 10, color: P.dim, marginTop: 8 }}>as of {t.as_of_date}</div>}
+
+                    {/* ── Momentum grid ── */}
+                    <SectionDivider label="MOMENTUM" />
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 4 }}>
+
+                      {/* RSI */}
+                      {t.rsi != null && (() => {
+                        const rsiC = t.rsi >= 70 ? P.red : t.rsi >= 55 ? P.green : t.rsi >= 45 ? P.sub : t.rsi >= 30 ? P.amber : '#FF6060'
+                        return (
+                          <div style={{ background: P.cell, borderRadius: 6, padding: '8px 10px', border: `1px solid ${P.border}` }}>
+                            <div style={{ fontSize: 10, color: P.dim, fontWeight: 700, letterSpacing: '0.08em' }}>RSI (14)</div>
+                            <div style={{ fontSize: 20, fontWeight: 800, color: rsiC, marginTop: 3, fontVariantNumeric: 'tabular-nums' }}>{t.rsi.toFixed(1)}</div>
+                            <div style={{ fontSize: 10, color: rsiC, marginTop: 1 }}>{t.rsi_signal.replace(/_/g, ' ')}</div>
+                            <div style={{ marginTop: 5, height: 3, background: '#1A2740', borderRadius: 2 }}>
+                              <div style={{ width: `${t.rsi}%`, height: '100%', background: rsiC, borderRadius: 2 }} />
+                            </div>
+                          </div>
+                        )
+                      })()}
+
+                      {/* MACD */}
+                      {t.macd_line != null && (() => {
+                        const macdC = t.macd_cross?.includes('BULLISH') ? P.green : t.macd_cross?.includes('BEARISH') ? P.red : P.sub
+                        const isCross = t.macd_cross === 'BULLISH_CROSS' || t.macd_cross === 'BEARISH_CROSS'
+                        return (
+                          <div style={{ background: P.cell, borderRadius: 6, padding: '8px 10px', border: `1px solid ${isCross ? macdC + '55' : P.border}` }}>
+                            <div style={{ fontSize: 10, color: P.dim, fontWeight: 700, letterSpacing: '0.08em' }}>MACD</div>
+                            <div style={{ fontSize: 14, fontWeight: 800, color: macdC, marginTop: 3, fontVariantNumeric: 'tabular-nums' }}>
+                              {t.macd_hist != null ? `${t.macd_hist >= 0 ? '+' : ''}${t.macd_hist.toFixed(2)}` : '--'}
+                            </div>
+                            <div style={{ fontSize: 10, color: macdC, marginTop: 1 }}>
+                              {isCross ? t.macd_cross!.replace(/_/g, ' ') : (t.macd_hist != null && t.macd_hist >= 0 ? 'Histogram +' : 'Histogram -')}
+                            </div>
+                            <div style={{ fontSize: 9, color: P.dim, marginTop: 2 }}>
+                              L {t.macd_line.toFixed(1)} | S {t.macd_signal?.toFixed(1) ?? '--'}
+                            </div>
+                          </div>
+                        )
+                      })()}
+
+                      {/* Bollinger Bands */}
+                      {t.bb_pct != null && (() => {
+                        const bbC = t.bb_signal === 'NEAR_UPPER' ? P.red : t.bb_signal === 'NEAR_LOWER' ? P.green : t.bb_signal === 'SQUEEZE' ? P.amber : P.sub
+                        return (
+                          <div style={{ background: P.cell, borderRadius: 6, padding: '8px 10px', border: `1px solid ${t.bb_squeeze ? P.amber + '66' : P.border}` }}>
+                            <div style={{ fontSize: 10, color: P.dim, fontWeight: 700, letterSpacing: '0.08em' }}>BB %B{t.bb_squeeze ? ' SQUEEZE' : ''}</div>
+                            <div style={{ fontSize: 20, fontWeight: 800, color: bbC, marginTop: 3, fontVariantNumeric: 'tabular-nums' }}>{t.bb_pct.toFixed(0)}%</div>
+                            <div style={{ fontSize: 10, color: bbC, marginTop: 1 }}>{t.bb_signal.replace(/_/g, ' ')}</div>
+                            <div style={{ marginTop: 5, height: 3, background: '#1A2740', borderRadius: 2 }}>
+                              <div style={{ width: `${Math.min(100, Math.max(0, t.bb_pct))}%`, height: '100%', background: bbC, borderRadius: 2 }} />
+                            </div>
+                          </div>
+                        )
+                      })()}
+                    </div>
+
+                    {/* ── Volatility + Volume row ── */}
+                    <SectionDivider label="VOLATILITY & VOLUME" />
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 4 }}>
+
+                      {/* ATR */}
+                      {t.atr_14 != null && (
+                        <div style={{ background: P.cell, borderRadius: 6, padding: '8px 10px', border: `1px solid ${P.border}` }}>
+                          <div style={{ fontSize: 10, color: P.dim, fontWeight: 700, letterSpacing: '0.08em' }}>ATR (14)</div>
+                          <div style={{ fontSize: 16, fontWeight: 800, color: P.text, marginTop: 3, fontVariantNumeric: 'tabular-nums' }}>₹{t.atr_14.toFixed(1)}</div>
+                          <div style={{ fontSize: 10, color: P.sub, marginTop: 1 }}>{t.atr_pct != null ? `${t.atr_pct.toFixed(2)}% of price` : 'daily range'}</div>
+                        </div>
+                      )}
+
+                      {/* OBV */}
+                      {t.obv_signal && (
+                        <div style={{ background: P.cell, borderRadius: 6, padding: '8px 10px', border: `1px solid ${P.border}` }}>
+                          <div style={{ fontSize: 10, color: P.dim, fontWeight: 700, letterSpacing: '0.08em' }}>OBV FLOW</div>
+                          <div style={{ fontSize: 13, fontWeight: 800, color: t.obv_signal === 'ACCUMULATING' ? P.green : P.red, marginTop: 5 }}>
+                            {t.obv_signal === 'ACCUMULATING' ? 'ACCUMULATING' : 'DISTRIBUTING'}
+                          </div>
+                          <div style={{ fontSize: 10, color: P.sub, marginTop: 1 }}>volume direction 20D</div>
+                        </div>
+                      )}
+
+                      {/* ADX +DI / -DI */}
+                      {t.adx != null && t.adx_plus_di != null && (
+                        <div style={{ background: P.cell, borderRadius: 6, padding: '8px 10px', border: `1px solid ${P.border}` }}>
+                          <div style={{ fontSize: 10, color: P.dim, fontWeight: 700, letterSpacing: '0.08em' }}>ADX / DI</div>
+                          <div style={{ fontSize: 16, fontWeight: 800, color: P.text, marginTop: 3, fontVariantNumeric: 'tabular-nums' }}>{t.adx.toFixed(1)}</div>
+                          <div style={{ display: 'flex', gap: 8, marginTop: 2 }}>
+                            <span style={{ fontSize: 10, color: P.green }}>+DI {t.adx_plus_di.toFixed(1)}</span>
+                            <span style={{ fontSize: 10, color: P.red }}>-DI {t.adx_minus_di?.toFixed(1) ?? '--'}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {t.as_of_date && <div style={{ fontSize: 10, color: P.dim, marginTop: 10 }}>as of {t.as_of_date}</div>}
                   </SectionCard>
                 </div>
               )}
 
-              {detail.key_levels && detail.key_levels.conf_res_1 != null && (
-                <div style={{ flex: '1 1 280px', minWidth: 260 }}>
+              {/* Key Levels + F&O stacked on the right */}
+              <div style={{ flex: '1 1 260px', minWidth: 240, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {detail.key_levels && detail.key_levels.conf_res_1 != null && (
                   <KeyLevelsCard kl={detail.key_levels} close={close} />
-                </div>
-              )}
+                )}
 
-              {f && f.oi_signal && (
-                <div style={{ flex: '1 1 240px', minWidth: 220 }}>
+                {f && f.oi_signal && (
                   <SectionCard title="Futures & Options" accentColor={f.oi_signal.includes('LONG') ? P.green : P.red}>
                     {(() => {
                       const OI_MAP: Record<string, string> = { LONG_BUILDUP: P.green, SHORT_BUILDUP: P.red, LONG_UNWINDING: P.amber, SHORT_COVERING: P.teal }
@@ -1734,19 +1842,19 @@ export function StocksPage() {
                       const c = OI_MAP[f.oi_signal] ?? P.sub
                       return (
                         <>
-                          <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', marginBottom: 10 }}>
+                          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 10 }}>
                             <div><div style={LABEL}>Signal</div><div style={{ marginTop: 5 }}><Chip label={f.oi_signal.replace(/_/g, ' ')} color={c} size={11} /></div></div>
-                            {f.futures_oi != null && <div><div style={LABEL}>Open Interest</div><div style={{ fontSize: 16, fontWeight: 800, color: P.text, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{(f.futures_oi / 1e6).toFixed(2)}M</div></div>}
-                            {f.oi_1d != null && <div><div style={LABEL}>1D Change</div><div style={{ fontSize: 16, fontWeight: 800, color: f.oi_1d >= 0 ? P.green : P.red, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{f.oi_1d >= 0 ? '+' : ''}{f.oi_1d.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div></div>}
-                            {f.oi_5d != null && <div><div style={LABEL}>5D Change</div><div style={{ fontSize: 16, fontWeight: 800, color: f.oi_5d >= 0 ? P.green : P.red, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{f.oi_5d >= 0 ? '+' : ''}{f.oi_5d.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div></div>}
+                            {f.futures_oi != null && <div><div style={LABEL}>Open Interest</div><div style={{ fontSize: 15, fontWeight: 800, color: P.text, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{(f.futures_oi / 1e6).toFixed(2)}M</div></div>}
+                            {f.oi_1d != null && <div><div style={LABEL}>1D OI Chg</div><div style={{ fontSize: 15, fontWeight: 800, color: f.oi_1d >= 0 ? P.green : P.red, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{f.oi_1d >= 0 ? '+' : ''}{f.oi_1d.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div></div>}
+                            {f.oi_5d != null && <div><div style={LABEL}>5D OI Chg</div><div style={{ fontSize: 15, fontWeight: 800, color: f.oi_5d >= 0 ? P.green : P.red, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{f.oi_5d >= 0 ? '+' : ''}{f.oi_5d.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div></div>}
                           </div>
                           {OI_TEXT[f.oi_signal] && <div style={{ fontSize: 11, color: c, background: c + '12', border: `1px solid ${c}33`, padding: '7px 10px', borderRadius: 5 }}>{OI_TEXT[f.oi_signal]}</div>}
                         </>
                       )
                     })()}
                   </SectionCard>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
             {/* ══ FUNDAMENTALS & VALUATION ════════════════════════════════════ */}

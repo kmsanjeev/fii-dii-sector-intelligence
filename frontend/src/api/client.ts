@@ -67,6 +67,33 @@ export type TechnicalIndicators = {
   vs_dma_200:    number | null
   trend_signal:  string
   vol_20d_avg:   number | null
+  // RSI
+  rsi:           number | null
+  rsi_signal:    string
+  // MACD
+  macd_line:     number | null
+  macd_signal:   number | null
+  macd_hist:     number | null
+  macd_cross:    string
+  // ATR
+  atr_14:        number | null
+  atr_pct:       number | null
+  // Bollinger Bands
+  bb_upper:      number | null
+  bb_lower:      number | null
+  bb_mid:        number | null
+  bb_pct:        number | null
+  bb_width:      number | null
+  bb_signal:     string
+  bb_squeeze:    boolean
+  // OBV
+  obv_signal:    string
+  // ADX
+  adx:           number | null
+  adx_plus_di:   number | null
+  adx_minus_di:  number | null
+  adx_strength:  string
+  adx_direction: string
   as_of_date:    string
 }
 
