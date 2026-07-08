@@ -94,7 +94,7 @@ function FundTile({
         padding: '6px 12px',
         borderBottom: '1px solid rgba(255,255,255,0.08)',
       }}>
-        <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: 9, fontWeight: 800, letterSpacing: 1.5, textTransform: 'uppercase' }}>
+        <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: 10, fontWeight: 800, letterSpacing: 1.5, textTransform: 'uppercase' }}>
           {label}
         </div>
       </div>
@@ -107,7 +107,7 @@ function FundTile({
           {value}
         </div>
         {subtext && (
-          <div style={{ color: C.muted, fontSize: 9, marginTop: 4, letterSpacing: 0.3 }}>
+          <div style={{ color: C.muted, fontSize: 10, marginTop: 4, letterSpacing: 0.3 }}>
             {subtext}
           </div>
         )}
@@ -291,12 +291,13 @@ function AnalystInsights({ insights }: { insights?: string[] }) {
 
 // ─── Score chip ───────────────────────────────────────────────────────────────
 
-function ScoreChip({ label, value, sub }: { label: string; value: number; sub?: string }) {
+function ScoreChip({ label, value, sub, signed }: { label: string; value: number; sub?: string; signed?: boolean }) {
+  const displayValue = signed ? Math.max(0, Math.min(100, (value + 100) / 2)) : value
   return (
-    <div style={{ textAlign: 'center' }}>
-      <ScoreGauge score={value} size={64} />
-      <div style={{ color: C.secondary, fontSize: 9, marginTop: 4 }}>{label}</div>
-      {sub && <div style={{ color: C.dim, fontSize: 8 }}>{sub}</div>}
+    <div style={{ textAlign: 'center', minWidth: 60 }}>
+      <ScoreGauge score={displayValue} size={60} />
+      <div style={{ color: C.secondary, fontSize: 10, marginTop: 4, fontWeight: 600, letterSpacing: 0.3 }}>{label}</div>
+      {sub && <div style={{ color: C.muted, fontSize: 10 }}>{sub}</div>}
     </div>
   )
 }
@@ -324,7 +325,7 @@ function DMARow({ label, value, close, color }: {
           height: '100%', borderRadius: 2, background: color, opacity: above ? 1 : 0.4,
         }} />
       </div>
-      <span style={{ fontSize: 8, color, fontWeight: 700 }}>{above ? 'ABV' : 'BLW'}</span>
+      <span style={{ fontSize: 10, color, fontWeight: 700 }}>{above ? 'ABV' : 'BLW'}</span>
     </div>
   )
 }
@@ -360,7 +361,7 @@ function TechSection({ t, close }: { t: TechnicalIndicators; close: number }) {
       {/* 52W range bar */}
       {t.high_52w != null && t.low_52w != null && (
         <div style={{ marginBottom: 14 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: C.muted, marginBottom: 5 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: C.muted, marginBottom: 5 }}>
             <span>52W Low  &#8377;{t.low_52w.toFixed(0)}</span>
             <span>52W High &#8377;{t.high_52w.toFixed(0)}</span>
           </div>
@@ -398,7 +399,7 @@ function TechSection({ t, close }: { t: TechnicalIndicators; close: number }) {
       <DMARow label="50 DMA"  value={t.dma_50}  close={close} color="#A78BFA" />
       <DMARow label="200 DMA" value={t.dma_200} close={close} color="#F5A524" />
 
-      <div style={{ color: C.dim, fontSize: 9, marginTop: 8 }}>as of {t.as_of_date}</div>
+      <div style={{ color: C.dim, fontSize: 10, marginTop: 8 }}>as of {t.as_of_date}</div>
     </Card>
   )
 }
@@ -467,7 +468,7 @@ function SHPBar({ label, pctVal, color, desc }: { label: string; pctVal: number 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
         <div>
           <span style={{ color: C.secondary, fontSize: 11, fontWeight: 600 }}>{label}</span>
-          {desc && <span style={{ color: C.dim, fontSize: 9, marginLeft: 6 }}>{desc}</span>}
+          {desc && <span style={{ color: C.dim, fontSize: 10, marginLeft: 6 }}>{desc}</span>}
         </div>
         <span style={{ color, fontSize: 13, fontWeight: 800 }}>{pctVal.toFixed(2)}%</span>
       </div>
@@ -537,7 +538,7 @@ function NewsCard({ news }: { news: Record<string, unknown> }) {
         </div>
       )}
       {news.top_theme && (
-        <div style={{ marginTop: 8, fontSize: 9, color: C.blue }}>
+        <div style={{ marginTop: 8, fontSize: 10, color: C.blue }}>
           Top theme: {String(news.top_theme).replace(/_/g, ' ')}
         </div>
       )}
@@ -581,12 +582,12 @@ function InsiderCard({ insider }: { insider: Record<string, unknown> }) {
         </div>
       </div>
       {insider.acquirers && (
-        <div style={{ fontSize: 9, color: C.muted, lineHeight: 1.5 }}>
+        <div style={{ fontSize: 10, color: C.muted, lineHeight: 1.5 }}>
           Insiders: {String(insider.acquirers).split('|').slice(0, 3).join(', ')}
         </div>
       )}
       {insider.latest_date && (
-        <div style={{ fontSize: 9, color: C.dim, marginTop: 4 }}>Last transaction: {String(insider.latest_date)}</div>
+        <div style={{ fontSize: 10, color: C.dim, marginTop: 4 }}>Last transaction: {String(insider.latest_date)}</div>
       )}
     </Card>
   )
@@ -650,7 +651,7 @@ function ConcallCard({ concall }: { concall: Record<string, unknown> }) {
         </div>
       )}
       {concall.themes && (
-        <div style={{ marginTop: 8, fontSize: 9, color: C.blue }}>
+        <div style={{ marginTop: 8, fontSize: 10, color: C.blue }}>
           Themes: {String(concall.themes).replace(/,/g, ' · ').replace(/_/g, ' ')}
         </div>
       )}
@@ -689,7 +690,7 @@ function ConsensusCard({ con }: { con: Record<string, unknown> }) {
             <div style={{ width: `${score}%`, height: '100%', background: `linear-gradient(to right, ${sc}88, ${sc})`, borderRadius: 3 }} />
           </div>
           <span style={{
-            fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 3,
+            fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 3,
             background: lbg, color: lfg,
           }}>{label.replace(/_/g, ' ')}</span>
         </div>
@@ -705,7 +706,7 @@ function ConsensusCard({ con }: { con: Record<string, unknown> }) {
               background: C.bgDeep, border: C.border, borderRadius: 5,
               padding: '6px 8px', opacity: active ? 1 : 0.4,
             }}>
-              <div style={{ fontSize: 8, color: C.muted, marginBottom: 3 }}>{lbl}</div>
+              <div style={{ fontSize: 10, color: C.muted, marginBottom: 3 }}>{lbl}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <div style={{ flex: 1, height: 4, background: '#1E2D44', borderRadius: 2 }}>
                   <div style={{
@@ -724,7 +725,7 @@ function ConsensusCard({ con }: { con: Record<string, unknown> }) {
       </div>
 
       {sigs.length > 0 && (
-        <div style={{ fontSize: 9, color: C.dim }}>
+        <div style={{ fontSize: 10, color: C.dim }}>
           Signals active: {sigs.join(' · ')}
         </div>
       )}
@@ -803,13 +804,13 @@ function AnnItem({ ann, last }: { ann: Announcement; last: boolean }) {
       <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
         {/* Left: date + score */}
         <div style={{ minWidth: 68, flexShrink: 0 }}>
-          <div style={{ color: C.dim, fontSize: 9, fontFamily: 'monospace', marginBottom: 3 }}>
+          <div style={{ color: C.muted, fontSize: 10, fontFamily: 'monospace', marginBottom: 3 }}>
             {ann.date.slice(0, 10)}
           </div>
           {ann.signal_score != null && (
             <div style={{
-              display: 'inline-block', fontSize: 8, fontWeight: 700,
-              padding: '1px 5px', borderRadius: 2,
+              display: 'inline-block', fontSize: 10, fontWeight: 700,
+              padding: '2px 6px', borderRadius: 2,
               background: scoreColor + '18', color: scoreColor,
               border: `1px solid ${scoreColor}33`,
             }}>
@@ -822,7 +823,7 @@ function AnnItem({ ann, last }: { ann: Announcement; last: boolean }) {
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ marginBottom: 3 }}>
             <span style={{
-              fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 2,
+              fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 2,
               background: typeColor + '18', color: typeColor,
               border: `1px solid ${typeColor}33`, letterSpacing: 0.5,
             }}>
@@ -848,7 +849,7 @@ function AnnItem({ ann, last }: { ann: Announcement; last: boolean }) {
                 padding: '3px 7px', borderRadius: 3, cursor: 'pointer',
                 border: `1px solid ${C.neutral}50`,
                 background: open ? C.neutral + '22' : C.neutral + '10',
-                color: C.neutral, fontSize: 9, fontWeight: 700,
+                color: C.neutral, fontSize: 10, fontWeight: 700,
               }}
             >
               {loading
@@ -982,7 +983,7 @@ export function StockDetailPage() {
             <CapFlowBadge label={data.label} />
             {trendColor && t?.trend_signal && t.trend_signal !== 'INSUFFICIENT_DATA' && (
               <span style={{
-                fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 3,
+                fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 3,
                 border: `1px solid ${trendColor}44`, color: trendColor, background: `${trendColor}18`,
               }}>
                 {t.trend_signal.replace(/_/g, ' ')}
@@ -990,7 +991,7 @@ export function StockDetailPage() {
             )}
             {hasFno && f && (
               <span style={{
-                fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 3,
+                fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 3,
                 border: `1px solid ${f.oi_signal === 'LONG_BUILDUP' ? '#22D35E44' : '#F44B4B44'}`,
                 color: f.oi_signal === 'LONG_BUILDUP' ? C.bull : C.bear,
                 background: f.oi_signal === 'LONG_BUILDUP' ? '#052e1688' : '#45090955',
@@ -999,28 +1000,37 @@ export function StockDetailPage() {
               </span>
             )}
             {data.sector_rotation_signal && (
-              <span style={{ fontSize: 9, color: C.muted, padding: '2px 6px', border: C.border, borderRadius: 3 }}>
+              <span style={{ fontSize: 10, color: C.muted, padding: '2px 6px', border: C.border, borderRadius: 3 }}>
                 Sector: {data.sector_rotation_signal.replace(/_/g, ' ')}
               </span>
             )}
             <a
               href={`https://www.nseindia.com/get-quotes/equity?symbol=${data.symbol}`}
               target="_blank" rel="noopener noreferrer"
-              style={{ fontSize: 9, color: C.blue, textDecoration: 'none', border: '1px solid #1E3A5F', padding: '2px 7px', borderRadius: 3, marginLeft: 4 }}
+              style={{ fontSize: 10, color: C.blue, textDecoration: 'none', border: '1px solid #1E3A5F', padding: '2px 7px', borderRadius: 3, marginLeft: 4 }}
             >
               NSE
             </a>
           </div>
         </div>
 
-        {/* Score gauges */}
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexShrink: 0 }}>
-          <ScoreChip label="Bull Run" value={data.bull_run_score} sub={data.market_regime} />
+        {/* Score gauges — 8-score panel matching the printed report */}
+        <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', flexShrink: 0, flexWrap: 'wrap' }}>
+          <ScoreChip label="Bull Run"    value={data.bull_run_score}                                          sub={data.market_regime} />
+          <ScoreChip label="Price"       value={c.price_score} />
           {data.ml_scores?.ml_bull_run_score != null && (
-            <ScoreChip label="ML Score" value={data.ml_scores.ml_bull_run_score} />
+            <ScoreChip label="ML Bull"   value={data.ml_scores.ml_bull_run_score} />
           )}
           {data.ml_scores?.accumulation_score != null && (
-            <ScoreChip label="Accum." value={data.ml_scores.accumulation_score} />
+            <ScoreChip label="ML Accum." value={data.ml_scores.accumulation_score} />
+          )}
+          <ScoreChip label="Sector Flow" value={c.sector_flow_score} />
+          <ScoreChip label="Deal"        value={c.deal_score} />
+          {data.fundamentals?.valuation_score != null && (
+            <ScoreChip label="Valuation" value={Number(data.fundamentals.valuation_score)} />
+          )}
+          {data.astro?.astro_score != null && (
+            <ScoreChip label="Astro"     value={data.astro.astro_score} signed sub={data.astro.astro_action} />
           )}
         </div>
       </div>
@@ -1058,8 +1068,8 @@ export function StockDetailPage() {
                   padding: '10px 8px', textAlign: 'center',
                 }}>
                   <ScoreGauge score={value} size={56} />
-                  <div style={{ color: C.secondary, fontSize: 9, marginTop: 5 }}>{label}</div>
-                  <div style={{ color: C.dim, fontSize: 8, marginTop: 2 }}>{sub}</div>
+                  <div style={{ color: C.secondary, fontSize: 10, marginTop: 5, fontWeight: 600 }}>{label}</div>
+                  <div style={{ color: C.muted, fontSize: 10, marginTop: 2 }}>{sub}</div>
                 </div>
               ))}
             </div>
@@ -1067,11 +1077,11 @@ export function StockDetailPage() {
               display: 'flex', gap: 10, flexWrap: 'wrap',
               padding: '8px 10px', background: C.bgDeep, borderRadius: 5, border: C.border,
             }}>
-              <span style={{ color: C.muted, fontSize: 9 }}>Regime: <span style={{ color: C.secondary }}>{data.market_regime}</span></span>
+              <span style={{ color: C.muted, fontSize: 10 }}>Regime: <span style={{ color: C.secondary }}>{data.market_regime}</span></span>
               <span style={{ color: C.dim }}>|</span>
-              <span style={{ color: C.muted, fontSize: 9 }}>Multiplier: <span style={{ color: C.secondary }}>x{data.regime_multiplier.toFixed(2)}</span></span>
+              <span style={{ color: C.muted, fontSize: 10 }}>Multiplier: <span style={{ color: C.secondary }}>x{data.regime_multiplier.toFixed(2)}</span></span>
               <span style={{ color: C.dim }}>|</span>
-              <span style={{ color: C.muted, fontSize: 9 }}>as of {data.as_of_date}</span>
+              <span style={{ color: C.muted, fontSize: 10 }}>as of {data.as_of_date}</span>
             </div>
           </Card>
 
@@ -1088,7 +1098,7 @@ export function StockDetailPage() {
                   background: C.bgDeep, border: C.border, borderRadius: 6,
                   padding: '12px 8px', textAlign: 'center',
                 }}>
-                  <div style={{ color: C.muted, fontSize: 9, marginBottom: 6 }}>{label}</div>
+                  <div style={{ color: C.muted, fontSize: 10, marginBottom: 6 }}>{label}</div>
                   <div style={{
                     fontSize: 16, fontWeight: 800,
                     color: isMult ? C.blue : (value ?? 0) >= 0 ? C.bull : C.bear,
@@ -1131,7 +1141,7 @@ export function StockDetailPage() {
               <span style={{ color: C.neutral, fontWeight: 700, fontSize: 13 }}>{data.catalyst.event_date}</span>
               <span style={{ color: C.secondary, fontSize: 12 }}>{data.catalyst.purpose_type}</span>
               {data.catalyst.catalyst_score != null && (
-                <span style={{ color: C.dim, fontSize: 9, marginLeft: 'auto' }}>
+                <span style={{ color: C.dim, fontSize: 10, marginLeft: 'auto' }}>
                   score {data.catalyst.catalyst_score.toFixed(0)}
                 </span>
               )}
@@ -1170,7 +1180,7 @@ export function StockDetailPage() {
                         <th key={h} style={{
                           padding: '5px 6px', color: C.secondary, fontWeight: 700,
                           textAlign: h === 'Quarter' || h === 'Signal' ? 'left' : 'right',
-                          borderBottom: '1px solid #1E2D44', fontSize: 9, letterSpacing: 0.8,
+                          borderBottom: '1px solid #1E2D44', fontSize: 10, letterSpacing: 0.8,
                         }}>{h}</th>
                       ))}
                     </tr>
@@ -1186,7 +1196,7 @@ export function StockDetailPage() {
                           <span>
                             <span style={{ color: C.primary }}>{pn.toFixed(1)}%</span>
                             {dn != null && i > 0 && (
-                              <span style={{ color: dc(dn), fontSize: 9 }}>
+                              <span style={{ color: dc(dn), fontSize: 10 }}>
                                 {' '}{dn >= 0 ? '+' : ''}{dn.toFixed(1)}
                               </span>
                             )}
@@ -1211,7 +1221,7 @@ export function StockDetailPage() {
                         }}>
                           <td style={{ padding: '5px 6px', color: latest ? C.h1 : C.muted, fontWeight: latest ? 700 : 400 }}>
                             {String(q.period)}
-                            {latest && <span style={{ color: C.bull, fontSize: 8, marginLeft: 4 }}>LATEST</span>}
+                            {latest && <span style={{ color: C.bull, fontSize: 10, marginLeft: 4 }}>LATEST</span>}
                           </td>
                           <td style={{ padding: '5px 6px', textAlign: 'right' }}>{fmt(q.promoter_pct, q.promoter_delta)}</td>
                           <td style={{ padding: '5px 6px', textAlign: 'right' }}>{fmt(q.fii_pct, q.fii_delta)}</td>
@@ -1219,7 +1229,7 @@ export function StockDetailPage() {
                           <td style={{ padding: '5px 6px' }}>
                             {sig && i > 0 && (
                               <span style={{
-                                fontSize: 8, fontWeight: 700, padding: '1px 4px',
+                                fontSize: 10, fontWeight: 700, padding: '2px 5px',
                                 borderRadius: 2, color: SIG[sig] ?? C.muted,
                                 border: `1px solid ${SIG[sig] ?? C.muted}55`,
                                 whiteSpace: 'nowrap',
@@ -1258,7 +1268,7 @@ export function StockDetailPage() {
                     </div>
                     {lbl && (
                       <span style={{
-                        fontSize: 9, fontWeight: 700, padding: '2px 8px',
+                        fontSize: 10, fontWeight: 700, padding: '2px 8px',
                         borderRadius: 3, background: lbg, color: lfg,
                       }}>{lbl}</span>
                     )}
@@ -1273,7 +1283,7 @@ export function StockDetailPage() {
                     <div key={label} style={{
                       background: C.bgDeep, border: C.border, borderRadius: 5, padding: '7px 8px', textAlign: 'center',
                     }}>
-                      <div style={{ color: C.muted, fontSize: 8, marginBottom: 3 }}>{label}</div>
+                      <div style={{ color: C.muted, fontSize: 10, marginBottom: 3 }}>{label}</div>
                       <div style={{ color: C.secondary, fontSize: 12, fontWeight: 700 }}>{value}</div>
                     </div>
                   ))}
