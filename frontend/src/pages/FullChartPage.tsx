@@ -10,7 +10,7 @@ import type { Datafeed, SymbolInfo, Period, DatafeedSubscribeCallback } from '@k
 import type { KLineData } from 'klinecharts'
 import { dispose } from 'klinecharts'
 import '@klinecharts/pro/dist/klinecharts-pro.css'
-import '../indicators/customIndicators'   // registers VWAP, Supertrend, HMA into Pro's picker
+import '../indicators/customIndicators'   // registers VWAP, Supertrend, HMA, VOLMain
 import { api } from '../api/client'
 
 // ── Periods ───────────────────────────────────────────────────────────────────
@@ -62,8 +62,6 @@ function periodToTF(p: Period): string {
 }
 
 // ── Bar time → Unix ms ────────────────────────────────────────────────────────
-// KLineChart Pro's picker skips UTC+5:30; chart is set to UTC and IST times are
-// baked in directly so "09:15 IST" renders as "09:15" on the UTC axis.
 
 function barTimeToMs(t: string | number): number {
   if (typeof t === 'number') return t > 1e12 ? t : t * 1000
@@ -146,7 +144,6 @@ export interface ChartSettings {
   showHighLow:     boolean
 }
 
-// TradingView canonical dark palette
 const TV_PRESET: ChartSettings = {
   candleType:    'candle_solid',
   upColor:       '#26a69a',
@@ -169,7 +166,6 @@ const TV_PRESET: ChartSettings = {
   showHighLow:     true,
 }
 
-// Platform signature palette
 const PLATFORM_PRESET: ChartSettings = {
   candleType:    'candle_solid',
   upColor:       '#22C55E',
@@ -340,49 +336,28 @@ function SettingsPanel({ settings, onChange }: {
 
   return (
     <div style={{ width: 260, flexShrink: 0, borderLeft: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', background: C.panel, overflowY: 'auto' }}>
-
-      {/* Header */}
       <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
         <span style={{ fontSize: 11, fontWeight: 700, color: C.text, letterSpacing: '0.06em', flex: 1 }}>Chart Settings</span>
         <button onClick={() => upd({ ...DEFAULT_SETTINGS })} style={{ padding: '2px 7px', borderRadius: 3, fontSize: 9, cursor: 'pointer', border: `1px solid ${C.dim}`, background: 'transparent', color: C.sub }}>Reset</button>
       </div>
 
-      {/* Presets */}
       <Section title="Presets" />
       <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.border}`, display: 'flex', gap: 6 }}>
-        <button onClick={() => upd({ ...TV_PRESET })} style={{
-          flex: 1, padding: '6px 4px', borderRadius: 4, fontSize: 10, cursor: 'pointer', fontWeight: isTV ? 700 : 400,
-          border: `1px solid ${isTV ? C.green : C.border}`,
-          background: isTV ? C.green + '18' : 'transparent', color: isTV ? C.green : C.sub,
-        }}>
-          <div style={{ width: 10, height: 10, borderRadius: 2, background: '#26a69a', display: 'inline-block', marginRight: 5, verticalAlign: 'middle' }} />
-          TradingView
+        <button onClick={() => upd({ ...TV_PRESET })} style={{ flex: 1, padding: '6px 4px', borderRadius: 4, fontSize: 10, cursor: 'pointer', fontWeight: isTV ? 700 : 400, border: `1px solid ${isTV ? C.green : C.border}`, background: isTV ? C.green + '18' : 'transparent', color: isTV ? C.green : C.sub }}>
+          <div style={{ width: 10, height: 10, borderRadius: 2, background: '#26a69a', display: 'inline-block', marginRight: 5, verticalAlign: 'middle' }} />TradingView
         </button>
-        <button onClick={() => upd({ ...PLATFORM_PRESET })} style={{
-          flex: 1, padding: '6px 4px', borderRadius: 4, fontSize: 10, cursor: 'pointer', fontWeight: isPlt ? 700 : 400,
-          border: `1px solid ${isPlt ? C.purple : C.border}`,
-          background: isPlt ? C.purple + '18' : 'transparent', color: isPlt ? C.purple : C.sub,
-        }}>
-          <div style={{ width: 10, height: 10, borderRadius: 2, background: '#22C55E', display: 'inline-block', marginRight: 5, verticalAlign: 'middle' }} />
-          Platform
+        <button onClick={() => upd({ ...PLATFORM_PRESET })} style={{ flex: 1, padding: '6px 4px', borderRadius: 4, fontSize: 10, cursor: 'pointer', fontWeight: isPlt ? 700 : 400, border: `1px solid ${isPlt ? C.purple : C.border}`, background: isPlt ? C.purple + '18' : 'transparent', color: isPlt ? C.purple : C.sub }}>
+          <div style={{ width: 10, height: 10, borderRadius: 2, background: '#22C55E', display: 'inline-block', marginRight: 5, verticalAlign: 'middle' }} />Platform
         </button>
       </div>
 
-      {/* Candle Type */}
       <Section title="Candle Style" />
       <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.border}`, display: 'flex', flexWrap: 'wrap', gap: 5 }}>
         {CANDLE_TYPES.map(ct => (
-          <button key={ct.value} onClick={() => upd({ candleType: ct.value })} style={{
-            padding: '4px 10px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
-            border: `1px solid ${settings.candleType === ct.value ? C.blue : C.border}`,
-            background: settings.candleType === ct.value ? C.blue + '22' : 'transparent',
-            color: settings.candleType === ct.value ? C.blue : C.sub,
-            fontWeight: settings.candleType === ct.value ? 700 : 400,
-          }}>{ct.label}</button>
+          <button key={ct.value} onClick={() => upd({ candleType: ct.value })} style={{ padding: '4px 10px', borderRadius: 4, fontSize: 10, cursor: 'pointer', border: `1px solid ${settings.candleType === ct.value ? C.blue : C.border}`, background: settings.candleType === ct.value ? C.blue + '22' : 'transparent', color: settings.candleType === ct.value ? C.blue : C.sub, fontWeight: settings.candleType === ct.value ? 700 : 400 }}>{ct.label}</button>
         ))}
       </div>
 
-      {/* Candle Colors */}
       <Section title="Candle Colors" />
       {([
         ['Bullish (Up)',   'upColor',       'upWickColor'  ],
@@ -393,22 +368,19 @@ function SettingsPanel({ settings, onChange }: {
           <span style={lbl}>{label}</span>
           <div style={ctrl}>
             {wickKey && <ColorSwatch value={(settings as any)[wickKey]} onChange={v => upd({ [wickKey]: v } as any)} />}
-            <ColorSwatch value={(settings as any)[key]}
-              onChange={v => upd(wickKey ? { [key]: v, [wickKey]: v } as any : { [key]: v } as any)} />
+            <ColorSwatch value={(settings as any)[key]} onChange={v => upd(wickKey ? { [key]: v, [wickKey]: v } as any : { [key]: v } as any)} />
           </div>
         </div>
       ))}
       <div style={{ padding: '4px 12px 6px', borderBottom: `1px solid ${C.border}` }}>
-        <div style={{ fontSize: 9, color: C.dim }}>Left swatch = wick, right = body. Changing body also updates wick.</div>
+        <div style={{ fontSize: 9, color: C.dim }}>Left swatch = wick, right = body.</div>
       </div>
 
-      {/* Grid */}
       <Section title="Grid" />
       <div style={row}><span style={lbl}>Horizontal</span><div style={ctrl}><Toggle value={settings.showGridH} onChange={v => upd({ showGridH: v })} /></div></div>
       <div style={row}><span style={lbl}>Vertical</span>  <div style={ctrl}><Toggle value={settings.showGridV} onChange={v => upd({ showGridV: v })} /></div></div>
       <div style={row}><span style={lbl}>Grid Color</span><div style={ctrl}><ColorSwatch value={settings.gridColor} onChange={v => upd({ gridColor: v })} /></div></div>
 
-      {/* Font */}
       <Section title="Font" />
       <div style={{ padding: '6px 12px', borderBottom: `1px solid ${C.border}` }}>
         <div style={{ fontSize: 10, color: C.sub, marginBottom: 4 }}>Family</div>
@@ -421,8 +393,7 @@ function SettingsPanel({ settings, onChange }: {
           <span style={{ fontSize: 10, color: C.sub, flex: 1 }}>Size</span>
           <span style={{ fontSize: 11, fontWeight: 700, color: C.text }}>{settings.fontSize}px</span>
         </div>
-        <input type="range" min={9} max={16} value={settings.fontSize} onChange={e => upd({ fontSize: Number(e.target.value) })}
-          style={{ width: '100%', accentColor: C.blue, cursor: 'pointer' }} />
+        <input type="range" min={9} max={16} value={settings.fontSize} onChange={e => upd({ fontSize: Number(e.target.value) })} style={{ width: '100%', accentColor: C.blue, cursor: 'pointer' }} />
       </div>
       <div style={{ padding: '6px 12px', borderBottom: `1px solid ${C.border}` }}>
         <div style={{ fontSize: 10, color: C.sub, marginBottom: 4 }}>Weight</div>
@@ -431,7 +402,6 @@ function SettingsPanel({ settings, onChange }: {
         </select>
       </div>
 
-      {/* Axes */}
       <Section title="Axes" />
       <div style={row}><span style={lbl}>Text Color</span> <div style={ctrl}><ColorSwatch value={settings.axisTextColor} onChange={v => upd({ axisTextColor: v })} /></div></div>
       <div style={row}><span style={lbl}>Line Color</span> <div style={ctrl}><ColorSwatch value={settings.axisLineColor} onChange={v => upd({ axisLineColor: v })} /></div></div>
@@ -439,38 +409,141 @@ function SettingsPanel({ settings, onChange }: {
         <span style={lbl}>Y-Axis Side</span>
         <div style={ctrl}>
           {(['Left', 'Right'] as const).map(side => (
-            <button key={side} onClick={() => upd({ yAxisRight: side === 'Right' })} style={{
-              padding: '3px 10px', borderRadius: 3, fontSize: 10, cursor: 'pointer',
-              border: `1px solid ${(side === 'Right') === settings.yAxisRight ? C.orange : C.border}`,
-              background: (side === 'Right') === settings.yAxisRight ? C.orange + '22' : 'transparent',
-              color: (side === 'Right') === settings.yAxisRight ? C.orange : C.sub,
-            }}>{side}</button>
+            <button key={side} onClick={() => upd({ yAxisRight: side === 'Right' })} style={{ padding: '3px 10px', borderRadius: 3, fontSize: 10, cursor: 'pointer', border: `1px solid ${(side === 'Right') === settings.yAxisRight ? C.orange : C.border}`, background: (side === 'Right') === settings.yAxisRight ? C.orange + '22' : 'transparent', color: (side === 'Right') === settings.yAxisRight ? C.orange : C.sub }}>{side}</button>
           ))}
         </div>
       </div>
 
-      {/* Crosshair */}
       <Section title="Crosshair" />
       <div style={row}><span style={lbl}>Line Color</span>    <div style={ctrl}><ColorSwatch value={settings.crosshairColor}  onChange={v => upd({ crosshairColor: v })} /></div></div>
       <div style={row}><span style={lbl}>Label Background</span><div style={ctrl}><ColorSwatch value={settings.crosshairTextBg} onChange={v => upd({ crosshairTextBg: v })} /></div></div>
 
-      {/* Price Marks */}
       <Section title="Price Marks" />
       <div style={row}><span style={lbl}>Last Price Line</span><div style={ctrl}><Toggle value={settings.showLastPrice} onChange={v => upd({ showLastPrice: v })} /></div></div>
       <div style={row}><span style={lbl}>High / Low Labels</span><div style={ctrl}><Toggle value={settings.showHighLow} onChange={v => upd({ showHighLow: v })} /></div></div>
 
       <div style={{ flex: 1 }} />
-
-      {/* Preview bar */}
       <div style={{ padding: '10px 12px', borderTop: `1px solid ${C.border}`, flexShrink: 0 }}>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           <div style={{ width: 10, height: 18, borderRadius: 2, background: settings.upColor }} />
           <div style={{ width: 10, height: 18, borderRadius: 2, background: settings.downColor }} />
-          <span style={{ fontSize: settings.fontSize, fontFamily: settings.fontFamily, fontWeight: settings.fontWeight, color: settings.axisTextColor, marginLeft: 4 }}>
-            09:15 NSE
-          </span>
+          <span style={{ fontSize: settings.fontSize, fontFamily: settings.fontFamily, fontWeight: settings.fontWeight, color: settings.axisTextColor, marginLeft: 4 }}>09:15 NSE</span>
         </div>
       </div>
+    </div>
+  )
+}
+
+// ── Symbol Search Bar — top-bar live search with keyboard navigation ───────────
+// Replaces the plain ticker text. KLineChart Pro v0.1.1 uses the DOM `change`
+// event internally (fires on blur/Enter only), so its built-in search can't do
+// live-as-you-type. This custom component sits in the top bar and solves that.
+
+type SymHit = { ticker: string; name: string }
+
+function SymbolSearchBar({ currentSym, onSelect }: { currentSym: string; onSelect: (sym: string) => void }) {
+  const [open,    setOpen]    = useState(false)
+  const [query,   setQuery]   = useState('')
+  const [results, setResults] = useState<SymHit[]>([])
+  const [selIdx,  setSelIdx]  = useState(-1)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const fetchResults = useCallback(async (q: string) => {
+    if (!q.trim()) { setResults([]); return }
+    try {
+      const r = await api.get<{ symbols: { SYMBOL: string; COMPANY_NAME: string }[] }>(
+        '/charts/symbols', { params: { q: q.trim().toUpperCase() } }
+      )
+      setResults((r.data.symbols ?? []).map(s => ({ ticker: s.SYMBOL, name: s.COMPANY_NAME ?? s.SYMBOL })))
+    } catch { setResults([]) }
+  }, [])
+
+  const openSearch = () => {
+    setQuery(currentSym.toUpperCase())
+    setOpen(true)
+    setSelIdx(-1)
+    setTimeout(() => { inputRef.current?.select(); fetchResults(currentSym) }, 0)
+  }
+
+  const closeSearch = () => { setOpen(false); setResults([]); setSelIdx(-1) }
+
+  const pick = (ticker?: string) => {
+    const sym = ticker
+      ?? (selIdx >= 0 ? results[selIdx]?.ticker : undefined)
+      ?? query.trim().toUpperCase()
+    if (sym) onSelect(sym)
+    closeSearch()
+  }
+
+  const handleInput = (v: string) => {
+    setQuery(v.toUpperCase())
+    setSelIdx(-1)
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => fetchResults(v), 180)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); setSelIdx(i => Math.min(i + 1, results.length - 1)) }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setSelIdx(i => Math.max(i - 1, -1)) }
+    else if (e.key === 'Enter')  { e.preventDefault(); pick() }
+    else if (e.key === 'Escape') { e.preventDefault(); closeSearch() }
+  }
+
+  if (!open) {
+    return (
+      <span
+        onClick={openSearch}
+        title="Click to search symbol"
+        style={{ fontSize: 14, fontWeight: 700, color: C.text, letterSpacing: 1, cursor: 'text', padding: '3px 6px', borderRadius: 3, border: `1px solid transparent`, userSelect: 'none' }}
+        onMouseEnter={e => (e.currentTarget.style.borderColor = C.border)}
+        onMouseLeave={e => (e.currentTarget.style.borderColor = 'transparent')}
+      >
+        {currentSym.toUpperCase()}
+      </span>
+    )
+  }
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <input
+        ref={inputRef}
+        autoFocus
+        value={query}
+        onChange={e => handleInput(e.target.value)}
+        onKeyDown={handleKeyDown}
+        onBlur={() => setTimeout(closeSearch, 180)}
+        placeholder="Symbol..."
+        style={{
+          width: 160, padding: '3px 8px', borderRadius: 4,
+          border: `2px solid ${C.blue}`, background: C.cell, color: C.text,
+          fontSize: 13, fontWeight: 700, fontFamily: 'monospace', outline: 'none', letterSpacing: 1,
+        }}
+      />
+      {results.length > 0 && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 4px)', left: 0, minWidth: 360,
+          background: C.cell, border: `1px solid ${C.border}`, borderRadius: 4,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.6)', zIndex: 2000,
+          maxHeight: 320, overflowY: 'auto',
+        }}>
+          {results.slice(0, 20).map((r, i) => (
+            <div
+              key={r.ticker}
+              onMouseDown={() => pick(r.ticker)}
+              onMouseEnter={() => setSelIdx(i)}
+              style={{
+                padding: '8px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12,
+                borderBottom: `1px solid ${C.border}22`,
+                background: i === selIdx ? C.blue + '28' : 'transparent',
+              }}
+            >
+              <span style={{ fontSize: 13, fontWeight: 700, fontFamily: 'monospace', color: i === selIdx ? C.blue : C.text, minWidth: 90, flexShrink: 0 }}>{r.ticker}</span>
+              <span style={{ fontSize: 11, color: C.sub, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -478,7 +551,7 @@ function SettingsPanel({ settings, onChange }: {
 // ── Watchlist ─────────────────────────────────────────────────────────────────
 
 const WL_KEY = 'cfip-wl'
-type WLEntry = { id: string; name: string; symbols: string[] }
+type WLEntry  = { id: string; name: string; symbols: string[] }
 type PriceData = { ltp: number; change: number; pct: number }
 
 function loadWL(): WLEntry[] {
@@ -498,8 +571,9 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
   const [addVal,      setAddVal]      = useState('')
   const [renaming,    setRenaming]    = useState(false)
   const [rnVal,       setRnVal]       = useState('')
-  const [suggestions, setSuggestions] = useState<{ ticker: string; name: string }[]>([])
+  const [suggestions, setSuggestions] = useState<SymHit[]>([])
   const [showDrop,    setShowDrop]    = useState(false)
+  const [dropSelIdx,  setDropSelIdx]  = useState(-1)
   const [priceMap,    setPriceMap]    = useState<Record<string, PriceData>>({})
 
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -508,35 +582,68 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
   const active = wls.find(w => w.id === activeId) ?? wls[0]
   const upd = (next: WLEntry[]) => { setWls(next); saveWL(next) }
 
+  // Multi-symbol aware add: split addVal by space / comma / newline
   const addSym = (sym?: string) => {
-    const s = (sym ?? addVal).trim().toUpperCase(); if (!s || !active) return
-    if (!active.symbols.includes(s)) upd(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, s] } : w))
-    setAddVal(''); setSuggestions([]); setShowDrop(false)
+    if (!active) return
+    if (sym) {
+      // Single symbol from autocomplete click or keyboard selection
+      const s = sym.trim().toUpperCase()
+      if (s && !active.symbols.includes(s)) {
+        upd(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, s] } : w))
+      }
+    } else {
+      // Parse multiple tokens from the text input (comma / space / newline)
+      const tokens = addVal
+        .split(/[\s,\n\r]+/)
+        .map(t => t.trim().toUpperCase())
+        .filter(Boolean)
+      if (!tokens.length) return
+      const toAdd = tokens.filter(t => !active.symbols.includes(t))
+      if (toAdd.length) {
+        upd(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, ...toAdd] } : w))
+      }
+    }
+    setAddVal(''); setSuggestions([]); setShowDrop(false); setDropSelIdx(-1)
   }
+
   const removeSym = (s: string) => upd(wls.map(w => w.id === active.id ? { ...w, symbols: w.symbols.filter(x => x !== s) } : w))
   const newList   = () => { const id = Date.now().toString(); const nx = [...wls, { id, name: `List ${wls.length + 1}`, symbols: [] }]; upd(nx); setActiveId(id) }
   const delList   = () => { if (wls.length <= 1) return; const nx = wls.filter(w => w.id !== active.id); upd(nx); setActiveId(nx[0].id) }
   const commitRn  = () => { const n = rnVal.trim(); if (n) upd(wls.map(w => w.id === active.id ? { ...w, name: n } : w)); setRenaming(false) }
   const btn = (color = C.sub): React.CSSProperties => ({ padding: '3px 7px', borderRadius: 3, fontSize: 10, cursor: 'pointer', border: `1px solid ${color}33`, background: 'transparent', color })
 
-  // Debounced symbol search for autocomplete dropdown
+  // Show autocomplete only when user is typing a single token (no separators)
   const handleAddInput = (v: string) => {
-    const val = v.toUpperCase()
-    setAddVal(val)
+    setAddVal(v.toUpperCase())
     if (searchTimerRef.current) clearTimeout(searchTimerRef.current)
-    if (!val.trim()) { setSuggestions([]); setShowDrop(false); return }
+    const trimmed = v.trim()
+    const isMulti = /[\s,]/.test(trimmed)   // spaces or commas = multi-symbol mode
+    if (!trimmed || isMulti) { setSuggestions([]); setShowDrop(false); return }
     searchTimerRef.current = setTimeout(async () => {
       try {
         const r = await api.get<{ symbols: { SYMBOL: string; COMPANY_NAME: string }[] }>(
-          '/charts/symbols', { params: { q: val.trim() } }
+          '/charts/symbols', { params: { q: trimmed.toUpperCase() } }
         )
         const syms = (r.data.symbols ?? []).map(s => ({ ticker: s.SYMBOL, name: s.COMPANY_NAME ?? s.SYMBOL }))
-        setSuggestions(syms); setShowDrop(syms.length > 0)
+        setSuggestions(syms)
+        setShowDrop(syms.length > 0)
+        setDropSelIdx(-1)
       } catch { setSuggestions([]); setShowDrop(false) }
-    }, 250)
+    }, 200)
   }
 
-  // Fetch last-bar price data for a list of symbols
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (showDrop && suggestions.length) {
+      if (e.key === 'ArrowDown')  { e.preventDefault(); setDropSelIdx(i => Math.min(i + 1, suggestions.length - 1)); return }
+      if (e.key === 'ArrowUp')    { e.preventDefault(); setDropSelIdx(i => Math.max(i - 1, -1)); return }
+      if (e.key === 'Enter')      { e.preventDefault(); dropSelIdx >= 0 ? addSym(suggestions[dropSelIdx].ticker) : addSym(); return }
+      if (e.key === 'Escape')     { setSuggestions([]); setShowDrop(false); setDropSelIdx(-1); return }
+    } else {
+      if (e.key === 'Enter') addSym()
+    }
+  }
+
+  // Fetch last-bar price data for watchlist symbols
   const fetchPrices = useCallback(async (syms: string[]) => {
     if (!syms.length) return
     const results = await Promise.allSettled(
@@ -556,7 +663,6 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
     setPriceMap(prev => ({ ...prev, ...map }))
   }, [])
 
-  // Refresh prices when active watchlist symbols change, and poll every 60s
   const symbolsKey = JSON.stringify(active?.symbols ?? [])
   useEffect(() => {
     const syms = active?.symbols ?? []
@@ -570,7 +676,7 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
   return (
     <div style={{ width: 240, flexShrink: 0, borderLeft: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', background: C.panel }}>
 
-      {/* List tabs header */}
+      {/* List tabs */}
       <div style={{ padding: '8px 10px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 6 }}>
           <span style={{ fontSize: 10, fontWeight: 700, color: C.text, letterSpacing: '0.08em', flex: 1 }}>WATCHLISTS</span>
@@ -579,12 +685,7 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
           {wls.map(w => (
-            <button key={w.id} onClick={() => { setActiveId(w.id); setRenaming(false) }} style={{
-              padding: '3px 8px', borderRadius: 3, fontSize: 10, cursor: 'pointer',
-              border: `1px solid ${activeId === w.id ? C.blue : C.border}`,
-              background: activeId === w.id ? C.blue + '22' : 'transparent',
-              color: activeId === w.id ? C.blue : C.sub, fontWeight: activeId === w.id ? 700 : 400,
-            }}>{w.name}</button>
+            <button key={w.id} onClick={() => { setActiveId(w.id); setRenaming(false) }} style={{ padding: '3px 8px', borderRadius: 3, fontSize: 10, cursor: 'pointer', border: `1px solid ${activeId === w.id ? C.blue : C.border}`, background: activeId === w.id ? C.blue + '22' : 'transparent', color: activeId === w.id ? C.blue : C.sub, fontWeight: activeId === w.id ? 700 : 400 }}>{w.name}</button>
           ))}
         </div>
       </div>
@@ -593,8 +694,7 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
       <div style={{ padding: '6px 10px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
         {renaming ? (
           <div style={{ display: 'flex', gap: 4 }}>
-            <input value={rnVal} onChange={e => setRnVal(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') commitRn(); if (e.key === 'Escape') setRenaming(false) }}
-              autoFocus style={{ flex: 1, padding: '3px 6px', borderRadius: 3, border: `1px solid ${C.blue}`, background: C.cell, color: C.text, fontSize: 10, fontFamily: 'monospace' }} />
+            <input value={rnVal} onChange={e => setRnVal(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') commitRn(); if (e.key === 'Escape') setRenaming(false) }} autoFocus style={{ flex: 1, padding: '3px 6px', borderRadius: 3, border: `1px solid ${C.blue}`, background: C.cell, color: C.text, fontSize: 10, fontFamily: 'monospace' }} />
             <button onClick={commitRn} style={btn(C.green)}>OK</button>
             <button onClick={() => setRenaming(false)} style={btn(C.sub)}>X</button>
           </div>
@@ -609,81 +709,53 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
       {/* Symbol rows — TradingView style with LTP + change */}
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {active?.symbols.length === 0 && (
-          <div style={{ padding: '20px 10px', textAlign: 'center', color: C.dim, fontSize: 10 }}>No symbols yet.<br />Search below to add.</div>
+          <div style={{ padding: '20px 10px', textAlign: 'center', color: C.dim, fontSize: 10 }}>
+            No symbols yet.<br />Search below or paste multiple separated by spaces/commas.
+          </div>
         )}
         {active?.symbols.map(s => {
           const pd = priceMap[s]
           const isActive = s === currentSym.toUpperCase()
-          const priceColor = pd
-            ? (pd.change > 0 ? C.green : pd.change < 0 ? C.red : C.text)
-            : C.text
+          const clr = pd ? (pd.change > 0 ? C.green : pd.change < 0 ? C.red : C.text) : C.text
           return (
-            <div key={s} style={{
-              display: 'flex', alignItems: 'center', padding: '6px 8px 6px 10px',
-              borderBottom: `1px solid ${C.border}22`,
-              background: isActive ? C.blue + '11' : 'transparent',
-              cursor: 'pointer',
-            }}
-              onClick={() => onNavigate(s)}
-            >
-              {/* Left: ticker + change% */}
+            <div key={s} style={{ display: 'flex', alignItems: 'center', padding: '6px 8px 6px 10px', borderBottom: `1px solid ${C.border}22`, background: isActive ? C.blue + '11' : 'transparent', cursor: 'pointer' }} onClick={() => onNavigate(s)}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', letterSpacing: '0.06em', color: isActive ? C.blue : C.text }}>{s}</div>
-                {pd && (
-                  <div style={{ fontSize: 9, marginTop: 1, color: priceColor }}>
-                    {pd.pct >= 0 ? '+' : ''}{pd.pct.toFixed(2)}%
-                  </div>
-                )}
+                {pd && <div style={{ fontSize: 9, marginTop: 1, color: clr }}>{pd.pct >= 0 ? '+' : ''}{pd.pct.toFixed(2)}%</div>}
               </div>
-              {/* Right: LTP + abs change */}
               <div style={{ textAlign: 'right', marginRight: 4, flexShrink: 0 }}>
                 {pd ? (
                   <>
-                    <div style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: priceColor }}>{pd.ltp.toFixed(2)}</div>
-                    <div style={{ fontSize: 9, color: priceColor }}>{pd.change >= 0 ? '+' : ''}{pd.change.toFixed(2)}</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: clr }}>{pd.ltp.toFixed(2)}</div>
+                    <div style={{ fontSize: 9, color: clr }}>{pd.change >= 0 ? '+' : ''}{pd.change.toFixed(2)}</div>
                   </>
-                ) : (
-                  <div style={{ fontSize: 10, color: C.dim }}>--</div>
-                )}
+                ) : <div style={{ fontSize: 10, color: C.dim }}>--</div>}
               </div>
-              <button
-                onClick={e => { e.stopPropagation(); removeSym(s) }}
-                style={{ background: 'transparent', border: 'none', color: C.dim, cursor: 'pointer', fontSize: 13, padding: '0 2px', flexShrink: 0 }}
-              >x</button>
+              <button onClick={e => { e.stopPropagation(); removeSym(s) }} style={{ background: 'transparent', border: 'none', color: C.dim, cursor: 'pointer', fontSize: 13, padding: '0 2px', flexShrink: 0 }}>x</button>
             </div>
           )
         })}
       </div>
 
-      {/* Add symbol with autocomplete */}
+      {/* Add symbols — supports single (with autocomplete) or multi (paste) */}
       <div style={{ padding: '8px 10px', borderTop: `1px solid ${C.border}`, flexShrink: 0 }}>
-        {/* Quick-add current chart symbol */}
         {currentSym && active && !active.symbols.includes(currentSym.toUpperCase()) && (
-          <button
-            onClick={() => upd(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, currentSym.toUpperCase()] } : w))}
-            style={{ width: '100%', marginBottom: 6, padding: '4px', borderRadius: 3, fontSize: 10, border: `1px solid ${C.green}44`, background: C.green + '11', color: C.green, cursor: 'pointer', fontFamily: 'monospace' }}
-          >
+          <button onClick={() => upd(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, currentSym.toUpperCase()] } : w))} style={{ width: '100%', marginBottom: 6, padding: '4px', borderRadius: 3, fontSize: 10, border: `1px solid ${C.green}44`, background: C.green + '11', color: C.green, cursor: 'pointer', fontFamily: 'monospace' }}>
             + Add {currentSym.toUpperCase()}
           </button>
         )}
-        {/* Search input with dropdown — dropdown pops upward */}
+        {/* Input with autocomplete dropdown popping upward */}
         <div style={{ position: 'relative' }}>
           {showDrop && suggestions.length > 0 && (
-            <div style={{
-              position: 'absolute', bottom: 'calc(100% + 4px)', left: 0, right: 0,
-              background: C.cell, border: `1px solid ${C.border}`, borderRadius: 4,
-              boxShadow: '0 -6px 16px rgba(0,0,0,0.5)', zIndex: 200,
-              maxHeight: 220, overflowY: 'auto',
-            }}>
-              {suggestions.slice(0, 15).map(sg => (
+            <div style={{ position: 'absolute', bottom: 'calc(100% + 4px)', left: 0, right: 0, background: C.cell, border: `1px solid ${C.border}`, borderRadius: 4, boxShadow: '0 -6px 16px rgba(0,0,0,0.5)', zIndex: 200, maxHeight: 220, overflowY: 'auto' }}>
+              {suggestions.slice(0, 15).map((sg, i) => (
                 <div
                   key={sg.ticker}
                   onMouseDown={() => addSym(sg.ticker)}
-                  style={{ padding: '7px 10px', cursor: 'pointer', borderBottom: `1px solid ${C.border}22`, display: 'flex', alignItems: 'center', gap: 8 }}
-                  onMouseEnter={e => (e.currentTarget.style.background = C.blue + '22')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  onMouseEnter={() => setDropSelIdx(i)}
+                  style={{ padding: '7px 10px', cursor: 'pointer', borderBottom: `1px solid ${C.border}22`, display: 'flex', alignItems: 'center', gap: 8, background: i === dropSelIdx ? C.blue + '28' : 'transparent' }}
                 >
-                  <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: C.text, minWidth: 70, flexShrink: 0 }}>{sg.ticker}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: i === dropSelIdx ? C.blue : C.text, minWidth: 70, flexShrink: 0 }}>{sg.ticker}</span>
                   <span style={{ fontSize: 10, color: C.sub, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sg.name}</span>
                 </div>
               ))}
@@ -693,17 +765,19 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
             <input
               value={addVal}
               onChange={e => handleAddInput(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter') addSym()
-                if (e.key === 'Escape') { setSuggestions([]); setShowDrop(false) }
-              }}
-              onBlur={() => setTimeout(() => setShowDrop(false), 150)}
+              onKeyDown={handleKeyDown}
+              onBlur={() => setTimeout(() => setShowDrop(false), 160)}
               onFocus={() => suggestions.length > 0 && setShowDrop(true)}
-              placeholder="Search symbol..."
+              placeholder="Symbol or paste multiple..."
               style={{ flex: 1, padding: '4px 6px', borderRadius: 3, border: `1px solid ${C.border}`, background: C.cell, color: C.text, fontSize: 11, fontFamily: 'monospace', outline: 'none' }}
             />
             <button onClick={() => addSym()} style={{ padding: '4px 9px', borderRadius: 3, fontSize: 10, border: `1px solid ${C.blue}`, background: C.blue + '22', color: C.blue, cursor: 'pointer' }}>Add</button>
           </div>
+          {/[\s,]/.test(addVal.trim()) && addVal.trim() && (
+            <div style={{ fontSize: 9, color: C.amber, marginTop: 3 }}>
+              {addVal.trim().split(/[\s,\n\r]+/).filter(Boolean).length} symbols — press Add or Enter to add all
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -727,22 +801,21 @@ export function FullChartPage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const proRef       = useRef<KLineChartPro | null>(null)
 
-  // Fix KLineChart Pro v0.1.1 CSS bug: list text color var has 3 dashes (typo) —
-  // inject a corrected rule once so the symbol-search modal shows results visibly.
+  // Fix KLineChart Pro v0.1.1 CSS bug: list text color var has 3 dashes (typo)
   useEffect(() => {
     const id = 'klinechart-pro-fix'
     if (!document.getElementById(id)) {
-      const style = document.createElement('style')
-      style.id = id
-      style.textContent = [
+      const s = document.createElement('style')
+      s.id = id
+      s.textContent = [
         '.klinecharts-pro-list { color: var(--klinecharts-pro-text-color) !important; }',
         '.klinecharts-pro-symbol-search-modal-list li { color: var(--klinecharts-pro-text-color) !important; }',
       ].join('\n')
-      document.head.appendChild(style)
+      document.head.appendChild(s)
     }
   }, [])
 
-  // Create / destroy chart when symbol changes
+  // Create / destroy chart on symbol change
   useEffect(() => {
     if (!containerRef.current || !sym) return
     containerRef.current.innerHTML = ''
@@ -763,18 +836,19 @@ export function FullChartPage() {
       periods:           PERIODS,
       styles:            buildStyles(settings) as any,
       drawingBarVisible: true,
-      mainIndicators:    ['EMA'],
-      subIndicators:     ['MACD', 'RSI'],   // VOL removed — added to main pane below
-      datafeed:          new OurDatafeed(),
+      // VOLMain renders volume bars at the bottom of the price pane (custom draw)
+      mainIndicators: ['EMA', 'VOLMain'],
+      subIndicators:  ['MACD', 'RSI'],
+      datafeed:       new OurDatafeed(),
     })
 
-    // Symbol URL sync: when user picks from Pro's built-in search, navigate to new URL
+    // Symbol URL sync
     pro.setSymbol = (symbol: SymbolInfo) => {
       const tf = pro.getPeriod()?.text ?? '1D'
       navigate(`/fullchart/${symbol.ticker.toUpperCase()}?tf=${tf}`, { replace: true })
     }
 
-    // Period URL sync: keep ?tf= current so page refresh restores the same period
+    // Period URL sync
     const origSetPeriod = pro.setPeriod.bind(pro)
     pro.setPeriod = (period: Period) => {
       origSetPeriod(period)
@@ -782,15 +856,6 @@ export function FullChartPage() {
     }
 
     proRef.current = pro
-
-    // Add VOL to the main (candle) pane — TradingView style volume overlay
-    setTimeout(() => {
-      try {
-        const ca = (pro as any)._chartApi
-        if (ca?.createIndicator) ca.createIndicator('VOL', true, { id: 'candle_pane' })
-      } catch { /* ignore — may not be supported in all Pro builds */ }
-    }, 200)
-
     setLoading(false)
 
     return () => {
@@ -802,15 +867,14 @@ export function FullChartPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sym])
 
-  // Apply settings changes live
+  // Apply settings live
   useEffect(() => {
     if (!proRef.current) return
     try { proRef.current.setStyles(buildStyles(settings) as any) } catch { /* ignore */ }
     saveSettings(settings)
   }, [settings])
 
-  // ResizeObserver — trigger chart resize immediately when container dimensions change
-  // (prevents the lag when Settings / Watchlist panels open or close)
+  // ResizeObserver — instant chart resize when Settings / Watchlist panels toggle
   useEffect(() => {
     if (!containerRef.current) return
     const observer = new ResizeObserver(() => {
@@ -832,7 +896,7 @@ export function FullChartPage() {
     navigate(`/fullchart/${s.toUpperCase()}?tf=${tf}`)
   }, [navigate])
 
-  // Snapshot — composite canvas → PNG download
+  // Composite canvas → PNG snapshot
   const takeSnapshot = useCallback(() => {
     const container = containerRef.current; if (!container) return
     try {
@@ -867,14 +931,15 @@ export function FullChartPage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', background: C.bg, overflow: 'hidden', fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
 
       {/* Top bar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 14px', background: C.panel, borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 14px', background: C.panel, borderBottom: `1px solid ${C.border}`, flexShrink: 0, position: 'relative', zIndex: 1000 }}>
         <button onClick={() => navigate(-1)} style={{ padding: '4px 10px', borderRadius: 4, border: `1px solid ${C.border}`, background: 'transparent', color: C.sub, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
           &larr; Back
         </button>
 
         <div style={{ width: 1, height: 14, background: C.border }} />
 
-        <span style={{ fontSize: 14, fontWeight: 700, color: C.text, letterSpacing: 1 }}>{sym.toUpperCase()}</span>
+        {/* Live symbol search replaces the static ticker display */}
+        <SymbolSearchBar currentSym={sym} onSelect={goSymbol} />
         <span style={{ fontSize: 10, color: C.sub }}>NSE</span>
         <span style={{ fontSize: 10, color: C.dim }}>·</span>
         <span style={{ fontSize: 10, color: C.sub }}>INR</span>

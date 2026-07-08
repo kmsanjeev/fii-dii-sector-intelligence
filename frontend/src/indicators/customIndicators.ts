@@ -10,7 +10,7 @@
  */
 
 import { registerIndicator, IndicatorSeries } from 'klinecharts'
-import type { KLineData, Indicator } from 'klinecharts'
+import type { KLineData, Indicator, IndicatorDrawParams } from 'klinecharts'
 
 // ── VWAP ─────────────────────────────────────────────────────────────────────
 // Resets at each UTC date boundary (≈ NSE session start for daily charts).
@@ -177,3 +177,62 @@ function hma(closes: number[], period: number): (number | null)[] {
   wmaOfRaw.forEach((v, j) => { result[firstValid + j] = v })
   return result
 }
+
+// ── VOLMain — volume bars on the main price pane ──────────────────────────────
+// Uses the indicator `draw` callback to paint semi-transparent bars at the
+// bottom 20% of the candle pane. Returns `true` from draw so klinecharts skips
+// all default figure rendering (no values are placed on the price Y-axis).
+
+registerIndicator<Record<string, never>>({
+  name:      'VOLMain',
+  shortName: 'V',
+  series:    IndicatorSeries.Price,  // stays in the main (candle) pane
+  calcParams: [],
+  figures:   [],  // no default figure rendering — we handle everything in draw()
+  calc(dataList: KLineData[]) {
+    // Must return same-length array; values are unused (draw() handles rendering)
+    return dataList.map(() => ({} as Record<string, never>))
+  },
+  draw(params: IndicatorDrawParams<Record<string, never>>): boolean {
+    const { ctx, kLineDataList, visibleRange, bounding, barSpace, xAxis } = params
+    const { from, to } = visibleRange
+
+    // Find max volume in the visible window for normalisation
+    let maxVol = 0
+    for (let i = from; i <= to; i++) {
+      const v = kLineDataList[i]?.volume ?? 0
+      if (v > maxVol) maxVol = v
+    }
+    if (!maxVol) return true
+
+    // Reserve bottom 20% of pane height for volume bars
+    const volZoneH = bounding.height * 0.20
+    // bounding.bottom is the absolute Y of the pane's bottom edge in canvas coords
+    const bottom = bounding.bottom
+
+    for (let i = from; i <= to; i++) {
+      const bar = kLineDataList[i]
+      if (!bar) continue
+      const vol = bar.volume ?? 0
+      if (!vol) continue
+
+      const h = (vol / maxVol) * volZoneH
+      // xAxis.convertToPixel(barIndex) → canvas X at the bar's centre
+      const x = xAxis.convertToPixel(i)
+      const isUp = bar.close >= bar.open
+
+      ctx.fillStyle = isUp
+        ? 'rgba(38,166,154,0.40)'   // teal — bullish
+        : 'rgba(239,83,80,0.40)'    // red  — bearish
+
+      ctx.fillRect(
+        Math.round(x - barSpace.halfBar),
+        Math.round(bottom - h),
+        Math.max(Math.round(barSpace.bar), 1),
+        Math.max(Math.round(h), 1)
+      )
+    }
+
+    return true  // tell klinecharts: we handled all drawing for this indicator
+  },
+})
