@@ -1879,8 +1879,23 @@ export function StocksPage() {
                         <tbody>
                           {trends.map((r, i) => {
                             const sig_ = String(r.conviction_signal ?? '')
-                            const sc = sig_.includes('ACCUMULATION') ? P.green : sig_.includes('DISTRIBUTION') ? P.red : P.dim
+                            const sc = sig_.includes('ACCUMULATION') ? P.green
+                                     : sig_.includes('SELLING') || sig_.includes('DISTRIBUTION') ? P.red
+                                     : sig_.includes('DIVERGENCE') ? P.amber
+                                     : P.dim
+                            // Detect data gap: consecutive periods should differ by 1 FY quarter
+                            const fyIdx = (p: string) => { const m = p.match(/Q(\d)FY(\d+)/); return m ? +m[2]*4 + +m[1] : 0 }
+                            const prevPeriod = i > 0 ? String(trends[i-1]?.period ?? '') : ''
+                            const showGap = i > 0 && (fyIdx(String(r.period ?? '')) - fyIdx(prevPeriod)) > 1
                             return (
+                              <>
+                              {showGap && (
+                                <tr key={`gap-${i}`}>
+                                  <td colSpan={5} style={{ padding: '3px 8px', fontSize: 10, color: P.dim, fontStyle: 'italic', borderBottom: `1px dashed ${P.border}`, textAlign: 'center' }}>
+                                    data unavailable for intermediate quarters
+                                  </td>
+                                </tr>
+                              )}
                               <tr key={i} style={{ borderBottom: `1px solid ${P.border}20` }}>
                                 <td style={{ padding: '5px 8px', color: P.sub, fontFamily: 'monospace', fontSize: 10 }}>{String(r.period ?? '')}</td>
                                 {(['promoter_pct', 'fii_pct', 'dii_pct'] as const).map(k => {
@@ -1897,6 +1912,7 @@ export function StocksPage() {
                                   {sig_ && <span style={{ fontSize: 10, fontWeight: 700, color: sc, padding: '2px 6px', background: sc + '18', border: `1px solid ${sc}33`, borderRadius: 3 }}>{sig_.replace(/_/g, ' ')}</span>}
                                 </td>
                               </tr>
+                              </>
                             )
                           })}
                         </tbody>
