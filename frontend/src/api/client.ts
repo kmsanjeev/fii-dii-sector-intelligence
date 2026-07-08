@@ -271,23 +271,24 @@ export const fetchHealth        = () => api.get('/health').then(r => r.data)
 export const fetchDataStatus    = () => api.get('/data/status').then(r => r.data)
 export const fetchEngineList    = () => api.get('/data/engines').then(r => r.data)
 
-// Social Pulse — intelligence ticker
+// Social Pulse -- X (Twitter) intelligence ticker
 export type SocialPulseItem = {
   title:         string
   url:           string
   published_ts:  number
   published_rel: string
   sentiment:     'POSITIVE' | 'NEGATIVE' | 'NEUTRAL'
+  impact_score:  number
 }
 export type SocialPulseHandle = {
   handle:       string
   display_name: string
-  avatar:       string   // 2-3 char abbreviation
+  avatar:       string   // 2-4 char abbreviation
   category:     string
   region:       'INDIA' | 'GLOBAL'
   item_count:   number
   items:        SocialPulseItem[]
-  is_direct:    boolean
+  is_x:         boolean
 }
 export type SocialPulseResponse = {
   handles:   SocialPulseHandle[]

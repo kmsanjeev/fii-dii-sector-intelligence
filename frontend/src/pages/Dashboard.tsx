@@ -742,15 +742,19 @@ function EmergeCard({ stock }: { stock: import('../api/client').Stock }) {
 // ─── Social Pulse Ticker ─────────────────────────────────────────────────────
 
 const CAT_ACCENT: Record<string, string> = {
-  CENTRAL_BANK: '#C668E8',
-  GOVERNMENT:   '#F5A524',
-  REGULATORY:   '#3BAEF0',
-  GEOPOLITICAL: '#F44B4B',
-  CORPORATE:    '#22D35E',
-  MARKET:       '#22D3EE',
-  COMMODITIES:  '#FB923C',
-  MACRO:        '#818CF8',
-  GLOBAL:       '#60A5FA',
+  INDIA_GOVT:      '#10B981',   // emerald  — Indian ministers
+  INDIA_REGULATOR: '#3B82F6',   // blue     — SEBI / RBI
+  G20_LEADER:      '#F59E0B',   // amber    — G20 heads of state
+  MULTILATERAL:    '#6366F1',   // indigo   — IMF / World Bank
+  GEOPOLITICAL:    '#EF4444',   // red      — NATO / conflict
+}
+
+const CAT_LABEL: Record<string, string> = {
+  INDIA_GOVT:      'INDIA GOVT',
+  INDIA_REGULATOR: 'REGULATOR',
+  G20_LEADER:      'G20 LEADER',
+  MULTILATERAL:    'MULTILATERAL',
+  GEOPOLITICAL:    'GEOPOLITICAL',
 }
 
 const SENT_DOT: Record<string, string> = {
@@ -760,80 +764,104 @@ const SENT_DOT: Record<string, string> = {
 }
 
 function HandleCard({ h }: { h: SocialPulseHandle }) {
-  const accent = CAT_ACCENT[h.category] ?? '#64748B'
-  const regionColor = h.region === 'INDIA' ? '#22D35E' : '#3BAEF0'
+  const accent   = CAT_ACCENT[h.category] ?? '#64748B'
+  const catLabel = CAT_LABEL[h.category] ?? h.category
 
   return (
     <div style={{
       flexShrink: 0,
-      width: 230,
-      height: 188,
+      width: 260,
+      height: 210,
       background: C.bg,
-      border: `1px solid ${accent}33`,
+      border: `1px solid ${accent}28`,
       borderLeft: `3px solid ${accent}`,
       borderRadius: 8,
-      padding: '10px 12px',
+      padding: '11px 13px',
       display: 'flex',
       flexDirection: 'column',
       gap: 7,
       boxSizing: 'border-box',
     }}>
-      {/* Card header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+      {/* Header: avatar + name + X badge + category */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <div style={{
           flexShrink: 0,
-          width: 32, height: 32, borderRadius: 16,
-          background: `${accent}22`,
-          border: `1px solid ${accent}66`,
+          width: 34, height: 34, borderRadius: 6,
+          background: `${accent}18`,
+          border: `1px solid ${accent}44`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: accent, fontSize: 9, fontWeight: 900, letterSpacing: 0.3,
+          color: accent, fontSize: 8, fontWeight: 900, letterSpacing: 0.2,
+          textAlign: 'center', lineHeight: 1.1,
         }}>{h.avatar}</div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ color: C.h1, fontSize: 11, fontWeight: 800, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-            {h.display_name}
-          </div>
-          <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
-            <span style={{ color: accent, fontSize: 8, fontWeight: 700 }}>{h.handle}</span>
+          <div style={{
+            color: C.h1, fontSize: 11, fontWeight: 800,
+            overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+          }}>{h.display_name}</div>
+          <div style={{ display: 'flex', gap: 5, marginTop: 2, alignItems: 'center' }}>
+            {/* X (Twitter) icon marker */}
             <span style={{
-              fontSize: 7, fontWeight: 700, padding: '1px 4px', borderRadius: 2,
-              background: `${regionColor}18`, color: regionColor,
-            }}>{h.region}</span>
+              fontSize: 7, fontWeight: 900, color: '#fff',
+              background: '#000', borderRadius: 3, padding: '1px 3px', lineHeight: 1.4,
+            }}>X</span>
+            <span style={{ color: accent, fontSize: 8, fontWeight: 700 }}>{h.handle}</span>
           </div>
         </div>
+        <span style={{
+          flexShrink: 0,
+          fontSize: 7, fontWeight: 800, padding: '2px 5px', borderRadius: 3,
+          background: `${accent}14`, color: accent, border: `1px solid ${accent}3A`,
+          letterSpacing: 0.4, whiteSpace: 'nowrap',
+        }}>{catLabel}</span>
       </div>
 
       {/* Divider */}
-      <div style={{ height: 1, background: `${accent}22` }} />
+      <div style={{ height: 1, background: `${accent}1A` }} />
 
-      {/* Items */}
-      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 5 }}>
+      {/* Tweet list */}
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 6 }}>
         {h.items.slice(0, 3).map((it, i) => (
           <a
             key={i}
-            href={it.url || '#'}
-            target="_blank"
+            href={it.url || undefined}
+            target={it.url ? '_blank' : undefined}
             rel="noopener noreferrer"
-            style={{ textDecoration: 'none', display: 'flex', gap: 5, alignItems: 'flex-start' }}
+            style={{ textDecoration: 'none', display: 'flex', gap: 6, alignItems: 'flex-start' }}
           >
+            {/* Impact + sentiment dot */}
             <div style={{
-              flexShrink: 0, width: 5, height: 5, borderRadius: '50%',
-              background: SENT_DOT[it.sentiment] ?? '#64748B',
-              marginTop: 4,
-            }} />
+              flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
+              marginTop: 2,
+            }}>
+              <div style={{
+                width: 5, height: 5, borderRadius: '50%',
+                background: SENT_DOT[it.sentiment] ?? '#64748B',
+              }} />
+              {it.impact_score >= 3 && (
+                <div style={{
+                  width: 5, height: 3, borderRadius: 1,
+                  background: it.sentiment === 'NEGATIVE' ? '#EF4444' : '#10B981',
+                  opacity: 0.7,
+                }} />
+              )}
+            </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{
-                color: C.primary, fontSize: 10, lineHeight: 1.35,
+                color: it.url ? C.primary : C.secondary,
+                fontSize: 10, lineHeight: 1.38,
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
               }}>{it.title}</div>
-              <div style={{ color: C.dim, fontSize: 8, marginTop: 1 }}>{it.published_rel}</div>
+              <div style={{ color: C.dim, fontSize: 8, marginTop: 1 }}>{it.published_rel} ago</div>
             </div>
           </a>
         ))}
         {h.items.length === 0 && (
-          <div style={{ color: C.dim, fontSize: 10, marginTop: 4 }}>No recent updates</div>
+          <div style={{ color: C.dim, fontSize: 10, marginTop: 6, fontStyle: 'italic' }}>
+            No market-impacting tweets
+          </div>
         )}
       </div>
     </div>
@@ -872,7 +900,7 @@ function SocialPulse() {
       {/* Header row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={LABEL}>INTELLIGENCE TICKER</div>
+          <div style={LABEL}>X INTELLIGENCE TICKER</div>
           {/* Live dot */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div style={{
@@ -899,8 +927,12 @@ function SocialPulse() {
         >{paused ? 'RESUME' : 'PAUSE'}</button>
       </div>
 
-      {/* Scrolling track */}
-      <div style={{ overflow: 'hidden', position: 'relative' }}>
+      {/* Scrolling track — pauses on hover */}
+      <div
+        style={{ overflow: 'hidden', position: 'relative' }}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
         {/* Fade edges */}
         <div style={{
           position: 'absolute', left: 0, top: 0, bottom: 0, width: 40,

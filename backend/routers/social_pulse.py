@@ -1,391 +1,341 @@
 """
-Social Pulse Router -- Market-moving social intelligence ticker
-Strategy: 2-tier approach
-  Tier 1 (direct): Official RSS from confirmed-working government/CB sources
-  Tier 2 (synthetic): Topic-cluster "virtual handles" built by filtering ALL
-    news feeds -- guarantees every card shows data even when direct feeds fail.
+Social Pulse Router -- X (Twitter) Intelligence Ticker
+Scans curated X handles of Indian ministers, G20 leaders, and global market movers
+for tweets that can disrupt Indian or global market sentiment.
 
-GET /api/social-pulse -> { handles: list[HandleFeed], cached_at: int }
+Fetch path: nitter.net RSS -> fallback nitter instances (no Twitter API key required).
+Impact filter: only tweets with market_impact_score >= category threshold surface.
+
+GET /api/social-pulse          -> { handles, active, total, cached_at }
+GET /api/social-pulse?refresh  -> force re-fetch (bypasses 15-min cache)
 """
-
 from __future__ import annotations
+
 import asyncio
+import concurrent.futures
+import logging
 import re
+import sys
 import time
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from email.utils import parsedate_to_datetime
+from pathlib import Path
 
 import httpx
 from fastapi import APIRouter
 
+log = logging.getLogger("social_pulse")
+
 router = APIRouter(prefix="/api/social-pulse", tags=["social_pulse"])
 
+# ── Config ────────────────────────────────────────────────────────────────────
 _UA      = "Mozilla/5.0 (compatible; MarketIntelBot/1.0)"
-_TIMEOUT = 8.0
-_TTL     = 1800   # 30-min cache
-_PER_HANDLE = 5
+_TIMEOUT = 12.0
+_TTL     = 900    # 15-min cache (tweets move fast)
+_PER     = 5      # max tweets per handle to surface
 
-# ── All news feeds (superset; drawn from both news.py + additional) ───────────
-
-_ALL_FEEDS = [
-    # Confirmed working
-    {"url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114",
-     "source": "CNBC Markets",     "region": "GLOBAL"},
-    {"url": "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
-     "source": "ET Markets",       "region": "INDIA"},
-    {"url": "https://www.livemint.com/rss/markets",
-     "source": "Livemint",         "region": "INDIA"},
-    {"url": "https://economictimes.indiatimes.com/industry/rssfeeds/13352306.cms",
-     "source": "ET Industry",      "region": "INDIA"},
-    {"url": "https://economictimes.indiatimes.com/markets/stocks/news/rssfeeds/2146842.cms",
-     "source": "ET Corporate",     "region": "INDIA"},
-    {"url": "https://economictimes.indiatimes.com/rssfeedsdefault.cms",
-     "source": "ET Top",           "region": "INDIA"},
-    # Central banks (confirmed working in tests)
-    {"url": "https://www.federalreserve.gov/feeds/press_all.xml",
-     "source": "Federal Reserve",  "region": "GLOBAL"},
-    {"url": "https://www.ecb.europa.eu/rss/press.html",
-     "source": "ECB",              "region": "GLOBAL"},
-    # BBC (highly reliable)
-    {"url": "https://feeds.bbci.co.uk/news/business/rss.xml",
-     "source": "BBC Business",     "region": "GLOBAL"},
-    {"url": "https://feeds.bbci.co.uk/news/world/rss.xml",
-     "source": "BBC World",        "region": "GLOBAL"},
-    # Additional Indian
-    {"url": "https://www.moneycontrol.com/rss/economy.xml",
-     "source": "Moneycontrol",     "region": "INDIA"},
-    {"url": "https://www.moneycontrol.com/rss/business.xml",
-     "source": "Moneycontrol Biz", "region": "INDIA"},
-    {"url": "https://www.business-standard.com/rss/markets-106.rss",
-     "source": "Business Standard","region": "INDIA"},
-    {"url": "https://www.business-standard.com/rss/economy-policy-102.rss",
-     "source": "BS Economy",       "region": "INDIA"},
-    # CNBC additional sections
-    {"url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664",
-     "source": "CNBC World",       "region": "GLOBAL"},
-    {"url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10001147",
-     "source": "CNBC Finance",     "region": "GLOBAL"},
-    # Reuters (try — some sections still work)
-    {"url": "https://feeds.reuters.com/reuters/businessNews",
-     "source": "Reuters Business", "region": "GLOBAL"},
-    {"url": "https://feeds.reuters.com/reuters/worldNews",
-     "source": "Reuters World",    "region": "GLOBAL"},
-    {"url": "https://feeds.reuters.com/reuters/INtopNews",
-     "source": "Reuters India",    "region": "INDIA"},
-    # Yahoo Finance
-    {"url": "https://finance.yahoo.com/news/rssindex",
-     "source": "Yahoo Finance",    "region": "GLOBAL"},
+# Nitter instances (tried in order)
+_NITTER = [
+    "https://nitter.net",
+    "https://nitter.poast.org",
+    "https://nitter.lucahammer.com",
+    "https://nitter.1d4.us",
 ]
 
-# ── Direct real handles (small curated set confirmed to work) ─────────────────
+_ROOT = Path(__file__).resolve().parent.parent.parent
 
-_DIRECT_HANDLES = [
-    {
-        "handle":       "@FedReserve",
-        "display_name": "Federal Reserve",
-        "avatar":       "FED",
-        "category":     "CENTRAL_BANK",
-        "region":       "GLOBAL",
-        "url": "https://www.federalreserve.gov/feeds/press_all.xml",
-    },
-    {
-        "handle":       "@ECB",
-        "display_name": "European Central Bank",
-        "avatar":       "ECB",
-        "category":     "CENTRAL_BANK",
-        "region":       "GLOBAL",
-        "url": "https://www.ecb.europa.eu/rss/press.html",
-    },
-    {
-        "handle":       "@BBCWorld",
-        "display_name": "BBC World",
-        "avatar":       "BBC",
-        "category":     "GEOPOLITICAL",
-        "region":       "GLOBAL",
-        "url": "https://feeds.bbci.co.uk/news/world/rss.xml",
-    },
-    {
-        "handle":       "@BBCBusiness",
-        "display_name": "BBC Business",
-        "avatar":       "BBC",
-        "category":     "GLOBAL",
-        "region":       "GLOBAL",
-        "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
-    },
-]
+# ── Handle Registry (X handles only) ─────────────────────────────────────────
+# All entries are X/Twitter accounts.  Company press rooms live in the News section.
+# min_score: tweets scoring below this are silently dropped (too low impact).
+#   0 = show all (use for regulators where every post is market-relevant)
+#   1 = show anything mentioning policy/trade/rates
+#   2 = show only high-signal tweets (use for very active handles like elonmusk)
 
-# ── Synthetic handle definitions (keyword-filter against pooled news) ─────────
-# keywords: ANY match in title (case-insensitive) includes the item
-# priority determines order in final list
-
-_SYNTHETIC_HANDLES = [
+_HANDLES = [
+    # ── Indian Government ─────────────────────────────────────────────────────
     {
-        "handle":       "@Geopolitical",
-        "display_name": "Geopolitical Intel",
-        "avatar":       "GEO",
-        "category":     "GEOPOLITICAL",
-        "region":       "GLOBAL",
-        "keywords": [
-            "war", "conflict", "sanction", "tension", "missile", "nuclear",
-            "iran", "russia", "ukraine", "china", "taiwan", "israel",
-            "hamas", "middle east", "nato", "border", "ceasefire", "coup",
-            "trade war", "tariff", "embargo", "military",
-        ],
+        "handle": "@narendramodi",  "twitter": "narendramodi",
+        "display_name": "PM Modi",
+        "avatar": "MOD",  "category": "INDIA_GOVT",      "region": "INDIA",
+        "min_score": 1,
+        "desc": "PM India -- bilateral deals, infra, economic policy",
     },
     {
-        "handle":       "@PMO_RBI_SEBI",
-        "display_name": "India Policy",
-        "avatar":       "IND",
-        "category":     "GOVERNMENT",
-        "region":       "INDIA",
-        "keywords": [
-            "rbi", "sebi", "modi", "pmo", "rupee", "budget", "finance minister",
-            "nirmala", "repo rate", "monetary policy", "inflation india",
-            "ministry of finance", "fdi", "msme", "gst", "disinvestment",
-            "government india", "india gdp", "niti aayog",
-        ],
+        "handle": "@nsitharaman",   "twitter": "nsitharaman",
+        "display_name": "FM Sitharaman",
+        "avatar": "NST",  "category": "INDIA_GOVT",      "region": "INDIA",
+        "min_score": 1,
+        "desc": "Finance Minister -- budget, taxes, capital markets",
     },
     {
-        "handle":       "@USMarkets",
-        "display_name": "US Markets",
-        "avatar":       "US",
-        "category":     "MARKET",
-        "region":       "GLOBAL",
-        "keywords": [
-            "s&p 500", "dow jones", "nasdaq", "powell", "fed rate",
-            "federal reserve", "us gdp", "us inflation", "wall street",
-            "treasury", "jobs report", "nonfarm", "us economy",
-            "interest rate", "rate cut", "rate hike",
-        ],
+        "handle": "@PMOIndia",      "twitter": "PMOIndia",
+        "display_name": "PMO India",
+        "avatar": "PMO",  "category": "INDIA_GOVT",      "region": "INDIA",
+        "min_score": 1,
+        "desc": "Official PMO statements on policy & economy",
     },
     {
-        "handle":       "@CorporateIndia",
-        "display_name": "Corporate India",
-        "avatar":       "COR",
-        "category":     "CORPORATE",
-        "region":       "INDIA",
-        "keywords": [
-            "reliance", "tata", "infosys", "wipro", "hdfc", "icici", "sbi",
-            "adani", "bajaj", "airtel", "hul", "itc", "kotak", "axis bank",
-            "ril", "tcs", "l&t", "maruti", "ongc", "ntpc", "power grid",
-            "sun pharma", "dr reddy", "dmart", "zomato", "paytm", "nykaa",
-        ],
+        "handle": "@PiyushGoyal",   "twitter": "PiyushGoyal",
+        "display_name": "Min. Goyal",
+        "avatar": "PGY",  "category": "INDIA_GOVT",      "region": "INDIA",
+        "min_score": 1,
+        "desc": "Commerce & Industry Minister -- trade deals, FDI, exports",
     },
     {
-        "handle":       "@Commodities",
-        "display_name": "Commodities & FX",
-        "avatar":       "CMD",
-        "category":     "COMMODITIES",
-        "region":       "GLOBAL",
-        "keywords": [
-            "crude oil", "brent", "wti", "gold price", "silver",
-            "copper", "aluminium", "steel", "commodity", "metals",
-            "usd/inr", "dollar rupee", "forex", "currency", "opec",
-            "oil price", "natural gas",
-        ],
+        "handle": "@nitin_gadkari", "twitter": "nitin_gadkari",
+        "display_name": "Min. Gadkari",
+        "avatar": "GDK",  "category": "INDIA_GOVT",      "region": "INDIA",
+        "min_score": 1,
+        "desc": "Roads/Transport Minister -- infra projects, EV policy",
     },
     {
-        "handle":       "@GlobalMacro",
-        "display_name": "Global Macro",
-        "avatar":       "MAC",
-        "category":     "MACRO",
-        "region":       "GLOBAL",
-        "keywords": [
-            "global gdp", "imf", "world bank", "recession", "inflation",
-            "ecb rate", "boe", "bank of japan", "china economy", "oecd",
-            "global trade", "supply chain", "emerging market",
-            "developing economies", "g7", "g20", "davos",
-        ],
+        "handle": "@DrSJaishankar", "twitter": "DrSJaishankar",
+        "display_name": "EAM Jaishankar",
+        "avatar": "EAM",  "category": "INDIA_GOVT",      "region": "INDIA",
+        "min_score": 1,
+        "desc": "External Affairs -- geopolitics affecting India",
+    },
+    # ── Indian Regulators ────────────────────────────────────────────────────
+    {
+        "handle": "@SEBI_India",    "twitter": "SEBI_India",
+        "display_name": "SEBI",
+        "avatar": "SBI",  "category": "INDIA_REGULATOR", "region": "INDIA",
+        "min_score": 0,   # all SEBI posts are market-relevant
+        "desc": "Markets regulator -- circulars, F&O rules, listing norms",
     },
     {
-        "handle":       "@Earnings",
-        "display_name": "Earnings Season",
-        "avatar":       "EPS",
-        "category":     "EARNINGS",
-        "region":       "INDIA",
-        "keywords": [
-            "quarterly results", "q1 results", "q2 results", "q3 results", "q4 results",
-            "profit rises", "profit falls", "net profit", "revenue", "ebitda",
-            "earnings beat", "earnings miss", "results today", "financial results",
-        ],
+        "handle": "@RBI",           "twitter": "RBI",
+        "display_name": "RBI",
+        "avatar": "RBI",  "category": "INDIA_REGULATOR", "region": "INDIA",
+        "min_score": 0,   # all RBI posts are market-relevant
+        "desc": "Monetary policy, repo rate, rupee, banking sector",
+    },
+    # ── G20 Leaders & Global Market Movers ───────────────────────────────────
+    {
+        "handle": "@POTUS",          "twitter": "POTUS",
+        "display_name": "US President",
+        "avatar": "US",   "category": "G20_LEADER",      "region": "GLOBAL",
+        "min_score": 1,
+        "desc": "US President -- tariffs, sanctions, India-US trade",
     },
     {
-        "handle":       "@MktMovers",
-        "display_name": "Market Movers",
-        "avatar":       "MOV",
-        "category":     "MARKET",
-        "region":       "INDIA",
-        "keywords": [
-            "nifty", "sensex", "bse", "nse", "rally", "sell-off", "circuit",
-            "52-week high", "52-week low", "fii buy", "fii sell", "dii",
-            "bulk deal", "block deal", "ipo listing", "upper circuit", "lower circuit",
-        ],
+        "handle": "@realDonaldTrump","twitter": "realDonaldTrump",
+        "display_name": "Donald Trump",
+        "avatar": "DJT",  "category": "G20_LEADER",      "region": "GLOBAL",
+        "min_score": 1,
+        "desc": "Tariffs, crypto, geopolitics -- major market mover",
     },
     {
-        "handle":       "@IndiaDeal",
-        "display_name": "India Deals & Defence",
-        "avatar":       "DEF",
-        "category":     "GEOPOLITICAL",
-        "region":       "INDIA",
-        "keywords": [
-            "india deal", "india agreement", "india sign", "defence deal",
-            "missile", "aircraft", "submarine", "india defence", "arms deal",
-            "indonesia", "bangladesh", "vietnam", "india us", "india china",
-            "bilateral", "mou", "joint venture india", "foreign investment india",
-        ],
+        "handle": "@elonmusk",       "twitter": "elonmusk",
+        "display_name": "Elon Musk",
+        "avatar": "ELN",  "category": "G20_LEADER",      "region": "GLOBAL",
+        "min_score": 2,   # very active -- filter harder
+        "desc": "Tesla, SpaceX, DOGE, AI, crypto -- enormous market-moving handle",
+    },
+    # ── Multilateral / Economic Bodies ───────────────────────────────────────
+    {
+        "handle": "@IMFNews",        "twitter": "IMFNews",
+        "display_name": "IMF",
+        "avatar": "IMF",  "category": "MULTILATERAL",    "region": "GLOBAL",
+        "min_score": 1,
+        "desc": "Global outlook, India GDP forecasts, currency, debt",
     },
     {
-        "handle":       "@EnergyClimate",
-        "display_name": "Energy & Climate",
-        "avatar":       "ENG",
-        "category":     "COMMODITIES",
-        "region":       "GLOBAL",
-        "keywords": [
-            "solar", "wind energy", "renewable", "ev", "electric vehicle",
-            "climate", "carbon", "green energy", "coal", "uranium",
-            "energy transition", "power sector", "battery", "lithium",
-        ],
-    },
-    {
-        "handle":       "@TechGlobal",
-        "display_name": "Tech & AI",
-        "avatar":       "TEC",
-        "category":     "CORPORATE",
-        "region":       "GLOBAL",
-        "keywords": [
-            "artificial intelligence", "ai ", "openai", "nvidia", "meta ai",
-            "google ai", "microsoft ai", "semiconductor", "chip ban",
-            "tech layoff", "apple", "amazon", "alphabet", "tesla",
-            "startup", "unicorn", "vc funding",
-        ],
+        "handle": "@NATO",           "twitter": "NATO",
+        "display_name": "NATO",
+        "avatar": "NAT",  "category": "GEOPOLITICAL",    "region": "GLOBAL",
+        "min_score": 1,
+        "desc": "Military alliances, conflict signals -- crude oil, defense stocks",
     },
 ]
 
-# ── Sentiment ─────────────────────────────────────────────────────────────────
+# ── Market Impact Scorer ──────────────────────────────────────────────────────
+# Score  2 per HIGH keyword, 1 per MED keyword.
+# High-negative → NEGATIVE sentiment; High-positive → POSITIVE; else NEUTRAL.
 
-_POS = frozenset([
-    "rally", "surge", "gain", "rise", "jump", "soar", "bull", "strong",
-    "robust", "growth", "profit", "positive", "upgrade", "outperform",
-    "beat", "inflow", "recovery", "rebound", "boost", "advance",
-    "deal", "agreement", "peace", "cooperation", "sign",
-])
-_NEG = frozenset([
-    "fall", "drop", "decline", "plunge", "crash", "sell", "bear", "weak",
-    "loss", "downgrade", "deficit", "recession", "concern", "risk",
-    "warning", "outflow", "slowdown", "conflict", "war", "sanction",
-    "tension", "missile", "slump", "tumble",
-])
+_HIGH_NEG = frozenset({
+    "war", "attack", "missile", "bomb", "nuclear", "sanction", "sanctions",
+    "ban", "crisis", "recession", "collapse", "default", "blockade",
+    "terror", "conflict", "invasion", "escalation", "strike", "ceasefire",
+    "coup", "assassination", "arrested", "detained",
+})
+_HIGH_POS = frozenset({
+    "deal", "agreement", "signed", "treaty", "invest", "investment",
+    "reform", "stimulus", "alliance", "partnership", "bilateral",
+    "cooperation", "fdi", "approved", "launch", "boost", "record",
+})
+_MED = frozenset({
+    "tariff", "tariffs", "rate", "rates", "inflation", "gdp", "policy",
+    "budget", "trade", "rupee", "dollar", "crude", "oil", "interest",
+    "growth", "export", "import", "subsidy", "tax", "regulation",
+    "rbi", "sebi", "fed", "central bank", "monetary", "fiscal",
+    "debt", "deficit", "banking", "market", "economy", "economic",
+    "jobs", "employment", "unemployment", "supply chain",
+})
+
+
+def _score(text: str) -> int:
+    t = text.lower()
+    return (sum(2 for w in _HIGH_NEG if w in t) +
+            sum(2 for w in _HIGH_POS if w in t) +
+            sum(1 for w in _MED if w in t))
+
 
 def _sentiment(text: str) -> str:
     t = text.lower()
-    pos = sum(1 for w in _POS if w in t)
-    neg = sum(1 for w in _NEG if w in t)
+    neg = sum(1 for w in _HIGH_NEG if w in t)
+    pos = sum(1 for w in _HIGH_POS if w in t)
     if pos > neg:  return "POSITIVE"
     if neg > pos:  return "NEGATIVE"
     return "NEUTRAL"
 
 # ── Date helpers ──────────────────────────────────────────────────────────────
 
-def _parse_dt(raw: str) -> tuple[str, int]:
+def _parse_dt(raw: str) -> int:
     if not raw:
-        ts = int(time.time())
-        return datetime.utcfromtimestamp(ts).strftime("%Y-%m-%dT%H:%M:%SZ"), ts
+        return int(time.time())
     try:
-        dt = parsedate_to_datetime(raw)
-        ts = int(dt.timestamp())
-        return dt.strftime("%Y-%m-%dT%H:%M:%SZ"), ts
+        return int(parsedate_to_datetime(raw).timestamp())
     except Exception:
         pass
-    for fmt in ("%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S%z"):
+    for fmt in ("%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S%z",
+                "%Y-%m-%dT%H:%M:%S.%fZ"):
         try:
-            dt = datetime.strptime(raw, fmt)
-            ts = int(dt.timestamp())
-            return dt.strftime("%Y-%m-%dT%H:%M:%SZ"), ts
+            return int(datetime.strptime(raw, fmt).timestamp())
         except Exception:
             pass
-    ts = int(time.time())
-    return datetime.utcfromtimestamp(ts).strftime("%Y-%m-%dT%H:%M:%SZ"), ts
+    return int(time.time())
 
-def _rel_time(ts: int) -> str:
-    diff = int(time.time()) - ts
-    if diff < 60:    return f"{diff}s"
-    if diff < 3600:  return f"{diff // 60}m"
-    if diff < 86400: return f"{diff // 3600}h"
-    return f"{diff // 86400}d"
 
-# ── RSS parser ─────────────────────────────────────────────────────────────────
+def _rel(ts: int) -> str:
+    d = int(time.time()) - ts
+    if d < 60:    return f"{d}s"
+    if d < 3600:  return f"{d // 60}m"
+    if d < 86400: return f"{d // 3600}h"
+    return f"{d // 86400}d"
 
-_HTML_RE = re.compile(r"<[^>]+>")
+# ── Nitter RSS parser ─────────────────────────────────────────────────────────
+
+_HTML = re.compile(r"<[^>]+>")
+# Patterns to skip
+_SKIP_RE = re.compile(r"^Pinned:\s*", re.IGNORECASE)
+# Prefix cleaner: "R: " or "RT by @handle: " at start of title
+_RT_PREFIX = re.compile(r"^R(?:T by @\w+)?:\s*", re.IGNORECASE)
 
 
 @dataclass
-class PulseItem:
+class TweetItem:
     title:         str
     url:           str
     published_ts:  int
     published_rel: str
     sentiment:     str
+    impact_score:  int
 
 
-def _parse_rss(xml_bytes: bytes) -> list[PulseItem]:
-    items: list[PulseItem] = []
+def _strip(s: str) -> str:
+    return _HTML.sub("", s or "").strip()
+
+
+def _parse_nitter(xml_bytes: bytes, min_score: int) -> list[TweetItem]:
+    items: list[TweetItem] = []
     try:
         root = ET.fromstring(xml_bytes)
     except ET.ParseError:
         return items
 
     for el in root.iter("item"):
-        title_el = el.find("title")
-        link_el  = el.find("link")
-        date_el  = el.find("pubDate")
+        te = el.find("title")
+        raw = _strip(te.text or "") if te is not None else ""
+        if not raw or _SKIP_RE.match(raw):
+            continue
 
-        title = (title_el.text or "").strip() if title_el is not None else ""
-        url   = (link_el.text  or "").strip() if link_el  is not None else ""
-        date_raw = (date_el.text or "").strip() if date_el is not None else ""
-
+        # Clean "R: " / "RT by @handle: " prefix from nitter titles
+        title = _RT_PREFIX.sub("", raw).strip()
         if not title:
             continue
 
-        _, pub_ts = _parse_dt(date_raw)
-        items.append(PulseItem(
+        le = el.find("link")
+        url = (_strip(le.text or "") if le is not None else "")
+
+        de = el.find("pubDate")
+        ts = _parse_dt((de.text or "").strip() if de is not None else "")
+
+        impact = _score(title)
+        if impact < min_score:
+            continue
+
+        items.append(TweetItem(
             title=title,
             url=url,
-            published_ts=pub_ts,
-            published_rel=_rel_time(pub_ts),
+            published_ts=ts,
+            published_rel=_rel(ts),
             sentiment=_sentiment(title),
+            impact_score=impact,
         ))
 
     items.sort(key=lambda x: x.published_ts, reverse=True)
     return items
 
-# ── Async fetch ───────────────────────────────────────────────────────────────
+# ── Nitter fetch with instance fallback ──────────────────────────────────────
 
-async def _fetch(client: httpx.AsyncClient, url: str) -> list[PulseItem]:
-    try:
-        r = await client.get(url, timeout=_TIMEOUT)
-        r.raise_for_status()
-        return _parse_rss(r.content)
-    except Exception:
-        return []
+def _fetch_x(h: dict) -> dict:
+    """Fetch tweets for a single X handle via nitter RSS (sync, thread-safe)."""
+    twitter = h["twitter"]
+    min_sc  = h.get("min_score", 1)
+    hdrs    = {
+        "User-Agent": _UA,
+        "Accept": "application/rss+xml, application/xml, text/xml, */*",
+    }
+    items: list[TweetItem] = []
+    fetched = False
 
-def _make_handle(defn: dict, items: list[PulseItem]) -> dict:
+    for instance in _NITTER:
+        url = f"{instance}/{twitter}/rss"
+        for attempt in range(2):
+            try:
+                if attempt:
+                    time.sleep(0.5)
+                with httpx.Client(headers=hdrs, follow_redirects=True,
+                                  timeout=_TIMEOUT) as client:
+                    r = client.get(url)
+                if r.status_code == 429:
+                    break          # rate-limited on this instance, try next
+                r.raise_for_status()
+                items   = _parse_nitter(r.content, min_sc)[:_PER]
+                fetched = True
+                break
+            except Exception as exc:
+                last = f"{type(exc).__name__}: {exc}"
+                continue
+        if fetched:
+            break
+
+    if not fetched:
+        try:
+            log.warning("social_pulse FAIL %s: all nitter instances failed", h["handle"])
+        except Exception:
+            pass
+
     return {
-        "handle":       defn["handle"],
-        "display_name": defn["display_name"],
-        "avatar":       defn["avatar"],
-        "category":     defn["category"],
-        "region":       defn["region"],
+        "handle":       h["handle"],
+        "display_name": h["display_name"],
+        "avatar":       h["avatar"],
+        "category":     h["category"],
+        "region":       h["region"],
+        "desc":         h.get("desc", ""),
         "item_count":   len(items),
         "items":        [asdict(it) for it in items],
-        "is_direct":    True,
+        "is_x":         True,
     }
 
-# ── Cache ─────────────────────────────────────────────────────────────────────
+# ── Cache & thread pool ───────────────────────────────────────────────────────
 
 _cache_ts:   float      = 0.0
 _cache_data: list[dict] = []
+_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=16)
 
 
 async def _get_pulse() -> list[dict]:
@@ -393,78 +343,26 @@ async def _get_pulse() -> list[dict]:
     if time.time() - _cache_ts < _TTL and _cache_data:
         return _cache_data
 
-    hdrs = {
-        "User-Agent": _UA,
-        "Accept": "application/rss+xml, application/xml, text/xml, */*",
-    }
-    all_urls = [f["url"] for f in _ALL_FEEDS] + [h["url"] for h in _DIRECT_HANDLES]
-    # Deduplicate URLs (direct handles may overlap with ALL_FEEDS)
-    seen_urls: set[str] = set()
-    unique_urls: list[str] = []
-    for u in all_urls:
-        if u not in seen_urls:
-            seen_urls.add(u)
-            unique_urls.append(u)
+    loop    = asyncio.get_running_loop()
+    futures = [loop.run_in_executor(_POOL, _fetch_x, h) for h in _HANDLES]
+    results = list(await asyncio.gather(*futures))
 
-    async with httpx.AsyncClient(headers=hdrs, follow_redirects=True) as client:
-        raw_results: list[list[PulseItem]] = await asyncio.gather(
-            *[_fetch(client, u) for u in unique_urls]
-        )
-
-    url_to_items: dict[str, list[PulseItem]] = {
-        u: items for u, items in zip(unique_urls, raw_results)
-    }
-
-    # ── Pool all items for synthetic handles ──────────────────────────────────
-    pool: list[PulseItem] = []
-    seen_titles: set[str] = set()
-    for items in raw_results:
-        for it in items:
-            key = it.title.lower()[:60]
-            if key not in seen_titles:
-                seen_titles.add(key)
-                pool.append(it)
-    pool.sort(key=lambda x: x.published_ts, reverse=True)
-
-    # ── Build direct handle cards ─────────────────────────────────────────────
-    handles: list[dict] = []
-    for defn in _DIRECT_HANDLES:
-        items = url_to_items.get(defn["url"], [])[:_PER_HANDLE]
-        handles.append(_make_handle(defn, items))
-
-    # ── Build synthetic (topic-cluster) handle cards ──────────────────────────
-    for defn in _SYNTHETIC_HANDLES:
-        kws = defn["keywords"]
-        matched: list[PulseItem] = []
-        for it in pool:
-            t = it.title.lower()
-            if any(k in t for k in kws):
-                matched.append(it)
-            if len(matched) >= _PER_HANDLE:
-                break
-        handles.append({
-            "handle":       defn["handle"],
-            "display_name": defn["display_name"],
-            "avatar":       defn["avatar"],
-            "category":     defn["category"],
-            "region":       defn["region"],
-            "item_count":   len(matched),
-            "items":        [asdict(it) for it in matched],
-            "is_direct":    False,
-        })
-
-    _cache_data = handles
+    _cache_data = results
     _cache_ts   = time.time()
     return _cache_data
-
 
 # ── Endpoint ──────────────────────────────────────────────────────────────────
 
 @router.get("")
-async def get_social_pulse():
-    """Social intelligence ticker -- official + topic-cluster handles."""
+async def get_social_pulse(refresh: bool = False):
+    """X (Twitter) intelligence ticker: Indian ministers, G20 leaders, global movers.
+    Only surfaces tweets with market impact score above per-handle threshold.
+    Pass ?refresh=true to force a cache bypass."""
+    global _cache_ts
+    if refresh:
+        _cache_ts = 0.0
     handles = await _get_pulse()
-    active = sum(1 for h in handles if h["item_count"] > 0)
+    active  = sum(1 for h in handles if h["item_count"] > 0)
     return {
         "handles":   handles,
         "active":    active,
