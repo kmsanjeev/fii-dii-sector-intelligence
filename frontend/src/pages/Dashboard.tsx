@@ -529,8 +529,11 @@ function SectorHeatmap({ sectors, isMobile }: { sectors: Sector[]; isMobile: boo
       {/* Grid — 3 cols desktop / 2 cols mobile */}
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: 6 }}>
         {sectors.map(s => {
-          const st = SIG[s.rotation_signal] ?? SIG['NEUTRAL']
-          const score = s.combined_score
+          const st  = SIG[s.rotation_signal] ?? SIG['NEUTRAL']
+          const rel = s.relative_score   // cross-sectional ±100
+          const z   = s.combined_score   // z-score vs 252D baseline
+          const relColor = rel != null ? (rel >= 0 ? C.bull : C.bear) : C.muted
+          const zColor   = z   != null ? (z   >= 0 ? C.bull : C.bear) : C.muted
           return (
             <Link key={s.sector} to={`/sectors/${s.sector}`} style={{ textDecoration: 'none' }}>
               <div style={{
@@ -538,27 +541,51 @@ function SectorHeatmap({ sectors, isMobile }: { sectors: Sector[]; isMobile: boo
                 border: `1px solid ${st.text}33`,
                 boxShadow: st.glow !== 'transparent' ? `0 0 12px ${st.glow}` : 'none',
                 borderRadius: 7, padding: '10px 12px',
-                transition: 'all 0.18s',
-                cursor: 'pointer',
+                transition: 'all 0.18s', cursor: 'pointer',
               }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = `${st.text}88`; e.currentTarget.style.transform = 'translateY(-1px)' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = `${st.text}33`; e.currentTarget.style.transform = 'none' }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ color: C.primary, fontSize: 11, fontWeight: 700, flex: 1, marginRight: 8 }}>
-                    {s.sector.replace(/_/g, ' ')}
-                  </div>
-                  {score != null && (
-                    <div style={{ color: score >= 0 ? C.bull : C.bear, fontSize: 12, fontWeight: 800, fontFamily: 'monospace', flexShrink: 0 }}>
-                      {score >= 0 ? '+' : ''}{Number(score).toFixed(0)}
-                    </div>
-                  )}
+                {/* Sector name */}
+                <div style={{ color: C.h1, fontSize: FS.body, fontWeight: FW.heavy, marginBottom: 7 }}>
+                  {s.sector.replace(/_/g, ' ')}
                 </div>
+
+                {/* Two scores side by side */}
+                <div style={{ display: 'flex', gap: 8, marginBottom: 7 }}>
+                  {/* Relative Rank */}
+                  <div style={{
+                    flex: 1, background: '#ffffff08', borderRadius: 5, padding: '5px 7px',
+                    borderLeft: `2px solid ${relColor}`,
+                  }}>
+                    <div style={{ color: relColor, fontSize: FS.lg, fontWeight: FW.black, fontFamily: 'monospace', lineHeight: 1 }}>
+                      {rel != null ? (rel >= 0 ? '+' : '') + rel.toFixed(0) : '--'}
+                    </div>
+                    <div style={{ color: C.muted, fontSize: FS.caption, fontWeight: FW.bold, letterSpacing: 0.8, marginTop: 3 }}>
+                      RELATIVE
+                    </div>
+                  </div>
+
+                  {/* Z-Score */}
+                  <div style={{
+                    flex: 1, background: '#ffffff08', borderRadius: 5, padding: '5px 7px',
+                    borderLeft: `2px solid ${zColor}55`,
+                  }}>
+                    <div style={{ color: zColor, fontSize: FS.lg, fontWeight: FW.black, fontFamily: 'monospace', lineHeight: 1 }}>
+                      {z != null ? (z >= 0 ? '+' : '') + z.toFixed(1) : '--'}
+                    </div>
+                    <div style={{ color: C.muted, fontSize: FS.caption, fontWeight: FW.bold, letterSpacing: 0.8, marginTop: 3 }}>
+                      Z-SCORE
+                    </div>
+                  </div>
+                </div>
+
+                {/* Signal badge */}
                 <div style={{
-                  display: 'inline-block', marginTop: 5,
+                  display: 'inline-block',
                   background: st.badge, color: st.text,
-                  fontSize: 8, fontWeight: 700, padding: '2px 6px',
-                  borderRadius: 3, letterSpacing: 0.5,
+                  fontSize: FS.caption, fontWeight: FW.bold,
+                  padding: '2px 7px', borderRadius: 3, letterSpacing: 0.6,
                 }}>
                   {s.rotation_signal.replace(/_/g, ' ')}
                 </div>

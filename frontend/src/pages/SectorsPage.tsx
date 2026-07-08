@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchSectors, type Sector } from '../api/client'
 import { Link } from 'react-router-dom'
-import { T } from '../styles/tokens'
+import { T, FS, FW } from '../styles/tokens'
 
 const C = {
   bg:       T.bg,
@@ -80,16 +80,19 @@ const FPI_COLOR: Record<string, string> = {
 function FpiChip({ signal, auc_pct }: { signal: string; auc_pct: number | null | undefined }) {
   if (!signal) return null
   const color = FPI_COLOR[signal] ?? '#7B90A8'
-  const label = signal.replace('STRONG_', 'STR. ').replace('_', ' ')
+  const label = signal.replace('STRONG_', 'STR. ').replace(/_/g, ' ')
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
       <span style={{
-        fontSize: 7, fontWeight: 800, padding: '1px 5px', borderRadius: 2,
-        background: `${color}18`, color, border: `1px solid ${color}44`,
-        letterSpacing: 0.5,
+        fontSize: FS.label, fontWeight: FW.bold,
+        padding: '2px 7px', borderRadius: 3,
+        background: `${color}18`, color,
+        border: `1px solid ${color}44`, letterSpacing: 0.5,
       }}>FPI {label}</span>
       {auc_pct != null && (
-        <span style={{ color: C.dim, fontSize: 8 }}>{auc_pct.toFixed(1)}% AUC</span>
+        <span style={{ color: C.secondary, fontSize: FS.label, fontWeight: FW.medium }}>
+          {auc_pct.toFixed(1)}% AUC
+        </span>
       )}
     </div>
   )
@@ -98,22 +101,24 @@ function FpiChip({ signal, auc_pct }: { signal: string; auc_pct: number | null |
 // ─── Sector card ──────────────────────────────────────────────────────────────
 
 function SectorCard({ s }: { s: Sector }) {
-  const cfg = sigCfg(s.rotation_signal)
-  const rel  = s.relative_score ?? 0        // primary: cross-sectional ±100
-  const zsc  = s.combined_score             // secondary: z-score based
-  const fii  = s.FII_flow_score ?? 0
-  const dii  = s.DII_flow_score ?? 0
-  const sm   = s.Smart_Money_Score ?? 0
-  const relColor = rel >= 0 ? C.bull : C.bear
+  const cfg      = sigCfg(s.rotation_signal)
+  const rel      = s.relative_score          // cross-sectional ±100, primary
+  const zsc      = s.combined_score          // z-score vs 252D baseline, secondary
+  const fii      = s.FII_flow_score  ?? 0
+  const dii      = s.DII_flow_score  ?? 0
+  const sm       = s.Smart_Money_Score ?? 0
+  const relColor = rel != null ? (rel >= 0 ? C.bull : C.bear) : C.muted
+  const zColor   = zsc != null ? (zsc >= 0 ? C.bull : C.bear) : C.muted
 
   return (
     <Link to={`/sectors/${s.sector}`} style={{ textDecoration: 'none' }}>
       <div
         style={{
           background: C.card, borderRadius: 8, cursor: 'pointer',
-          border: `1px solid #1E2D44`,
+          border: `1px solid ${T.border}`,
           borderTop: `3px solid ${cfg.color}`,
-          padding: 14, transition: 'transform 0.12s, box-shadow 0.12s',
+          padding: '14px 14px 12px',
+          transition: 'transform 0.12s, box-shadow 0.12s',
         }}
         onMouseEnter={e => {
           e.currentTarget.style.transform = 'translateY(-2px)'
@@ -124,64 +129,101 @@ function SectorCard({ s }: { s: Sector }) {
           e.currentTarget.style.boxShadow = 'none'
         }}
       >
-        {/* Header: sector name + signal badge */}
-        <div style={{ marginBottom: 8 }}>
-          <div style={{
-            color: C.primary, fontSize: 12, fontWeight: 800,
-            letterSpacing: 0.3, marginBottom: 4,
-          }}>
-            {s.sector.replace(/_/g, ' ')}
-          </div>
-          <span style={{
-            fontSize: 8, fontWeight: 700, padding: '2px 7px', borderRadius: 3,
-            background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.color}44`,
-            letterSpacing: 0.8, textTransform: 'uppercase',
-          }}>
-            {cfg.label}
-          </span>
+        {/* Sector name */}
+        <div style={{
+          color: C.h1, fontSize: FS.body, fontWeight: FW.heavy,
+          letterSpacing: 0.3, marginBottom: 6,
+        }}>
+          {s.sector.replace(/_/g, ' ')}
         </div>
 
-        {/* Relative score — primary big number */}
-        <div style={{
-          display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4,
+        {/* Signal badge */}
+        <span style={{
+          display: 'inline-block',
+          fontSize: FS.label, fontWeight: FW.bold,
+          padding: '3px 8px', borderRadius: 3,
+          background: cfg.bg, color: cfg.color,
+          border: `1px solid ${cfg.color}44`,
+          letterSpacing: 0.8, textTransform: 'uppercase',
+          marginBottom: 12,
         }}>
-          <span style={{
-            fontSize: 26, fontWeight: 900, fontFamily: 'monospace',
-            color: relColor, lineHeight: 1,
+          {cfg.label}
+        </span>
+
+        {/* Two big scores side by side */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+          {/* Relative Rank */}
+          <div style={{
+            flex: 1, background: '#ffffff06', borderRadius: 6,
+            padding: '8px 10px', borderLeft: `3px solid ${relColor}`,
           }}>
-            {rel >= 0 ? '+' : ''}{rel.toFixed(0)}
-          </span>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <span style={{ color: C.dim, fontSize: 8, fontWeight: 600 }}>relative rank</span>
-            {zsc != null && (
-              <span style={{ color: C.dim, fontSize: 8 }}>
-                z: {zsc >= 0 ? '+' : ''}{zsc.toFixed(1)}
-              </span>
-            )}
+            <div style={{
+              color: relColor, fontSize: FS['2xl'], fontWeight: FW.black,
+              fontFamily: 'monospace', lineHeight: 1, marginBottom: 4,
+            }}>
+              {rel != null ? (rel >= 0 ? '+' : '') + rel.toFixed(0) : '--'}
+            </div>
+            <div style={{
+              color: C.muted, fontSize: FS.label, fontWeight: FW.bold,
+              letterSpacing: 1, textTransform: 'uppercase',
+            }}>
+              Relative Rank
+            </div>
+            <div style={{ color: C.secondary, fontSize: FS.caption, marginTop: 2 }}>
+              vs all {s.relative_score != null ? '27' : '--'} sectors today
+            </div>
+          </div>
+
+          {/* Z-Score */}
+          <div style={{
+            flex: 1, background: '#ffffff06', borderRadius: 6,
+            padding: '8px 10px', borderLeft: `3px solid ${zColor}55`,
+          }}>
+            <div style={{
+              color: zColor, fontSize: FS['2xl'], fontWeight: FW.black,
+              fontFamily: 'monospace', lineHeight: 1, marginBottom: 4,
+            }}>
+              {zsc != null ? (zsc >= 0 ? '+' : '') + zsc.toFixed(1) : '--'}
+            </div>
+            <div style={{
+              color: C.muted, fontSize: FS.label, fontWeight: FW.bold,
+              letterSpacing: 1, textTransform: 'uppercase',
+            }}>
+              Z-Score
+            </div>
+            <div style={{ color: C.secondary, fontSize: FS.caption, marginTop: 2 }}>
+              vs own 1-year avg
+            </div>
           </div>
         </div>
 
         {/* Relative bar */}
-        <div style={{ marginBottom: 8 }}>
-          <RelBar value={rel} />
+        <div style={{ marginBottom: 10 }}>
+          <RelBar value={rel ?? 0} />
         </div>
 
-        {/* FPI signal (if available) */}
+        {/* FPI signal */}
         <FpiChip signal={s.fpi_signal ?? ''} auc_pct={s.auc_pct_of_total} />
 
+        {/* Divider */}
+        <div style={{ height: 1, background: T.border, margin: '10px 0 8px' }} />
+
         {/* FII / DII / SM bars */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginTop: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {([
-            { label: 'FII', val: fii, color: '#3BAEF0' },
-            { label: 'DII', val: dii, color: '#9B7BEA' },
-            { label: 'SM',  val: sm,  color: '#22D35E' },
+            { label: 'FII (Foreign)', val: fii, color: T.fii },
+            { label: 'DII (Domestic)', val: dii, color: T.dii },
+            { label: 'Smart Money',    val: sm,  color: T.green },
           ] as const).map(({ label, val, color }) => (
             <div key={label}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-                <span style={{ color: C.dim, fontSize: 8, fontWeight: 700 }}>{label}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                <span style={{ color: C.secondary, fontSize: FS.label, fontWeight: FW.bold }}>
+                  {label}
+                </span>
                 <span style={{
                   color: val >= 0 ? color : C.bear,
-                  fontSize: 8, fontWeight: 700,
+                  fontSize: FS.label, fontWeight: FW.heavy,
+                  fontFamily: 'monospace',
                 }}>
                   {val >= 0 ? '+' : ''}{val.toFixed(1)}
                 </span>
@@ -205,7 +247,7 @@ function GroupHeader({ signal, count }: { signal: string; count: number }) {
       <span style={{ color: cfg.color, fontSize: 11, fontWeight: 800, letterSpacing: 1.5, textTransform: 'uppercase' }}>
         {cfg.label}
       </span>
-      <span style={{ color: C.dim, fontSize: 10 }}>— {count} sector{count !== 1 ? 's' : ''}</span>
+      <span style={{ color: C.muted, fontSize: FS.label }}>— {count} sector{count !== 1 ? 's' : ''}</span>
       <div style={{ flex: 1, height: 1, background: `${cfg.color}25` }} />
     </div>
   )
@@ -215,22 +257,22 @@ function GroupHeader({ signal, count }: { signal: string; count: number }) {
 
 function RegimeBadge({ regime, negPct }: { regime: string; negPct: number }) {
   const cfg = regime === 'NET_SELLER'
-    ? { color: '#F44B4B', bg: '#2D0A0A', label: 'FII: NET SELLER' }
+    ? { color: T.red,   bg: '#2D0A0A', label: 'FII: NET SELLER' }
     : regime === 'NET_BUYER'
-    ? { color: '#22D35E', bg: '#052E16', label: 'FII: NET BUYER' }
-    : { color: '#F5A524', bg: '#2A1800', label: 'FII: MIXED' }
+    ? { color: T.green, bg: '#052E16', label: 'FII: NET BUYER' }
+    : { color: T.amber, bg: '#2A1800', label: 'FII: MIXED' }
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8,
-      padding: '5px 12px', borderRadius: 5,
+      padding: '6px 14px', borderRadius: 5,
       background: cfg.bg, border: `1px solid ${cfg.color}44`,
     }}>
-      <div style={{ width: 6, height: 6, borderRadius: '50%', background: cfg.color }} />
-      <span style={{ color: cfg.color, fontSize: 10, fontWeight: 800, letterSpacing: 0.8 }}>
+      <div style={{ width: 7, height: 7, borderRadius: '50%', background: cfg.color, flexShrink: 0 }} />
+      <span style={{ color: cfg.color, fontSize: FS.label, fontWeight: FW.heavy, letterSpacing: 0.8 }}>
         {cfg.label}
       </span>
-      <span style={{ color: C.dim, fontSize: 9 }}>
-        {negPct}% of sectors under selling pressure
+      <span style={{ color: C.muted, fontSize: FS.label }}>
+        {negPct}% sectors under selling pressure
       </span>
     </div>
   )
