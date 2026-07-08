@@ -935,6 +935,9 @@ export function FullChartPage() {
         <button onClick={() => navigate(-1)} style={{ padding: '4px 10px', borderRadius: 4, border: `1px solid ${C.border}`, background: 'transparent', color: C.sub, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
           &larr; Back
         </button>
+        <button onClick={() => navigate(`/stocks/${sym.toUpperCase()}`)} style={{ padding: '4px 10px', borderRadius: 4, border: `1px solid ${C.border}`, background: 'transparent', color: C.sub, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
+          Stock Page
+        </button>
 
         <div style={{ width: 1, height: 14, background: C.border }} />
 
