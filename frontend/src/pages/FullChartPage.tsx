@@ -1,10 +1,6 @@
 /**
  * FullChartPage — full-viewport chart powered by KLineChart Pro
  * Route: /fullchart/:symbol  (outside AppShell)
- *
- * KLineChart Pro handles: period selector, indicator panel,
- * drawing tools bar, multi-pane layout, 30+ built-in indicators.
- * We add: top bar, snapshot, watchlist panel, live chart settings.
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react'
@@ -32,25 +28,25 @@ const TF_TO_PERIOD: Record<string, Period> = {
   '1D': PERIODS[3], '1W':  PERIODS[4], '1M': PERIODS[5], '3M': PERIODS[6],
 }
 
-// ── UI palette ────────────────────────────────────────────────────────────────
+// ── UI palette — TradingView dark ─────────────────────────────────────────────
 
 const C = {
-  bg:     '#0A0D14',
-  panel:  '#141720',
-  cell:   '#1C2130',
-  border: '#1E2332',
-  text:   '#E2E8F0',
-  sub:    '#64748B',
-  dim:    '#374151',
-  green:  '#22C55E',
-  red:    '#EF4444',
-  amber:  '#F59E0B',
-  blue:   '#3B82F6',
-  purple: '#A78BFA',
-  orange: '#F97316',
+  bg:     '#131722',
+  panel:  '#1e222d',
+  cell:   '#2a2e39',
+  border: '#2a2e39',
+  text:   '#d1d4dc',
+  sub:    '#787b86',
+  dim:    '#434651',
+  green:  '#26a69a',
+  red:    '#ef5350',
+  amber:  '#f7a600',
+  blue:   '#1976d2',
+  purple: '#7b61ff',
+  orange: '#f97316',
 }
 
-// ── Period → TF string ────────────────────────────────────────────────────────
+// ── Period → TF ───────────────────────────────────────────────────────────────
 
 function periodToTF(p: Period): string {
   if (p.timespan === 'minute' && p.multiplier === 5)  return '5M'
@@ -65,10 +61,8 @@ function periodToTF(p: Period): string {
 }
 
 // ── Bar time → Unix ms ────────────────────────────────────────────────────────
-//
-// KLineChart Pro's timezone picker skips UTC+5:30 (jumps from UTC+5 Ashkhabad
-// to UTC+6 Almaty). We set the chart to UTC and bake IST wall-clock times in
-// directly, so "09:15 IST" shows as "09:15" on the UTC axis.
+// KLineChart Pro's picker skips UTC+5:30; chart is set to UTC and IST times are
+// baked in directly so "09:15 IST" renders as "09:15" on the UTC axis.
 
 function barTimeToMs(t: string | number): number {
   if (typeof t === 'number') return t > 1e12 ? t : t * 1000
@@ -123,42 +117,59 @@ class OurDatafeed implements Datafeed {
 
   unsubscribe(symbol: SymbolInfo, period: Period): void {
     const key = `${symbol.ticker}_${period.text}`
-    const t = this._timers.get(key)
-    if (t) { clearInterval(t); this._timers.delete(key) }
+    const t = this._timers.get(key); if (t) { clearInterval(t); this._timers.delete(key) }
   }
 }
 
 // ── Chart Settings ────────────────────────────────────────────────────────────
 
 export interface ChartSettings {
-  // Candle
   candleType:    'candle_solid' | 'candle_stroke' | 'ohlc' | 'area'
   upColor:       string
   downColor:     string
   noChangeColor: string
   upWickColor:   string
   downWickColor: string
-  // Grid
-  showGridH: boolean
-  showGridV: boolean
-  gridColor: string
-  // Font
-  fontFamily: string
-  fontSize:   number
-  fontWeight: string
-  // Axes
+  showGridH:     boolean
+  showGridV:     boolean
+  gridColor:     string
+  fontFamily:    string
+  fontSize:      number
+  fontWeight:    string
   axisTextColor: string
   axisLineColor: string
   yAxisRight:    boolean
-  // Crosshair
   crosshairColor:  string
   crosshairTextBg: string
-  // Marks
-  showLastPrice: boolean
-  showHighLow:   boolean
+  showLastPrice:   boolean
+  showHighLow:     boolean
 }
 
-const DEFAULT_SETTINGS: ChartSettings = {
+// TradingView canonical dark palette
+const TV_PRESET: ChartSettings = {
+  candleType:    'candle_solid',
+  upColor:       '#26a69a',
+  downColor:     '#ef5350',
+  noChangeColor: '#999999',
+  upWickColor:   '#26a69a',
+  downWickColor: '#ef5350',
+  showGridH:     true,
+  showGridV:     false,
+  gridColor:     '#1e222d',
+  fontFamily:    "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  fontSize:      11,
+  fontWeight:    'normal',
+  axisTextColor: '#b2b5be',
+  axisLineColor: '#2a2e39',
+  yAxisRight:    true,
+  crosshairColor:  '#758696',
+  crosshairTextBg: '#131722',
+  showLastPrice:   true,
+  showHighLow:     true,
+}
+
+// Platform signature palette
+const PLATFORM_PRESET: ChartSettings = {
   candleType:    'candle_solid',
   upColor:       '#22C55E',
   downColor:     '#EF4444',
@@ -180,6 +191,7 @@ const DEFAULT_SETTINGS: ChartSettings = {
   showHighLow:     true,
 }
 
+const DEFAULT_SETTINGS = TV_PRESET
 const SETTINGS_KEY = 'cfip-chart-settings'
 
 function loadSettings(): ChartSettings {
@@ -230,12 +242,14 @@ function buildStyles(s: ChartSettings): object {
           text: { show: s.showLastPrice, ...font },
         },
       },
-      tooltip: {
-        text: { ...font, color: s.axisTextColor },
-      },
+      tooltip: { text: { ...font, color: s.axisTextColor } },
     },
     indicator: {
       ohlc: { upColor: s.upColor, downColor: s.downColor, noChangeColor: s.noChangeColor },
+      lastValueMark: {
+        show: true,
+        text: { show: true, ...font, color: s.axisTextColor, borderColor: s.axisLineColor, backgroundColor: s.crosshairTextBg },
+      },
       tooltip: { text: { ...font, color: s.axisTextColor } },
     },
     xAxis: {
@@ -266,19 +280,19 @@ function buildStyles(s: ChartSettings): object {
 // ── Settings Panel ────────────────────────────────────────────────────────────
 
 const FONT_FAMILIES = [
-  { label: 'Monospace (default)',    value: 'monospace' },
-  { label: 'System UI (sans-serif)', value: 'system-ui, -apple-system, sans-serif' },
-  { label: 'Courier New',            value: "'Courier New', monospace" },
-  { label: 'Arial',                  value: "'Arial', sans-serif" },
-  { label: 'Georgia (serif)',        value: "'Georgia', serif" },
-  { label: 'Verdana',                value: "'Verdana', sans-serif" },
+  { label: 'System UI (TradingView)',  value: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" },
+  { label: 'Monospace (platform)',     value: 'monospace' },
+  { label: 'Courier New',             value: "'Courier New', monospace" },
+  { label: 'Arial',                   value: "'Arial', sans-serif" },
+  { label: 'Georgia (serif)',         value: "'Georgia', serif" },
+  { label: 'Verdana',                 value: "'Verdana', sans-serif" },
 ]
 
 const FONT_WEIGHTS = [
-  { label: 'Normal (400)',  value: 'normal' },
-  { label: 'Medium (500)',  value: '500' },
-  { label: 'SemiBold (600)',value: '600' },
-  { label: 'Bold (700)',    value: 'bold' },
+  { label: 'Normal',    value: 'normal' },
+  { label: 'Medium',    value: '500' },
+  { label: 'SemiBold',  value: '600' },
+  { label: 'Bold',      value: 'bold' },
 ]
 
 const CANDLE_TYPES: { label: string; value: ChartSettings['candleType'] }[] = [
@@ -292,52 +306,64 @@ function SettingsPanel({ settings, onChange }: {
   settings: ChartSettings
   onChange: (patch: Partial<ChartSettings>) => void
 }) {
-  const upd = (patch: Partial<ChartSettings>) => onChange(patch)
+  const upd = onChange
 
-  // Row layout helpers
-  const row: React.CSSProperties = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 12px', borderBottom: `1px solid ${C.border}` }
-  const label: React.CSSProperties = { fontSize: 10, color: C.sub, whiteSpace: 'nowrap', flex: 1, letterSpacing: '0.03em' }
-  const ctrl: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }
+  const row: React.CSSProperties = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', borderBottom: `1px solid ${C.border}` }
+  const lbl: React.CSSProperties = { fontSize: 11, color: C.sub, flex: 1 }
+  const ctrl: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 6 }
 
   const Section = ({ title }: { title: string }) => (
-    <div style={{ padding: '8px 12px 4px', background: C.cell, borderBottom: `1px solid ${C.border}` }}>
+    <div style={{ padding: '7px 12px 5px', background: C.cell + 'aa', borderBottom: `1px solid ${C.border}` }}>
       <span style={{ fontSize: 9, fontWeight: 800, color: C.blue, letterSpacing: '0.12em', textTransform: 'uppercase' }}>{title}</span>
     </div>
   )
 
   const ColorSwatch = ({ value, onChange: oc }: { value: string; onChange: (v: string) => void }) => (
-    <label style={{ cursor: 'pointer', position: 'relative', display: 'inline-block' }}>
-      <div style={{ width: 22, height: 22, borderRadius: 4, background: value, border: `2px solid ${C.border}`, cursor: 'pointer' }} />
+    <label style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}>
+      <div style={{ width: 22, height: 22, borderRadius: 4, background: value, border: `2px solid ${C.border}` }} />
       <input type="color" value={value} onChange={e => oc(e.target.value)}
-        style={{ position: 'absolute', top: 0, left: 0, opacity: 0, width: '100%', height: '100%', cursor: 'pointer' }} />
+        style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%' }} />
     </label>
   )
 
   const Toggle = ({ value, onChange: oc }: { value: boolean; onChange: (v: boolean) => void }) => (
-    <div onClick={() => oc(!value)} style={{
-      width: 34, height: 18, borderRadius: 9, cursor: 'pointer', position: 'relative', flexShrink: 0,
-      background: value ? C.green : C.dim, transition: 'background .2s',
-    }}>
-      <div style={{
-        position: 'absolute', top: 2, left: value ? 16 : 2, width: 14, height: 14, borderRadius: '50%',
-        background: C.text, transition: 'left .2s',
-      }} />
+    <div onClick={() => oc(!value)} style={{ width: 34, height: 18, borderRadius: 9, cursor: 'pointer', position: 'relative', background: value ? C.green : C.dim, transition: 'background .2s' }}>
+      <div style={{ position: 'absolute', top: 2, left: value ? 16 : 2, width: 14, height: 14, borderRadius: '50%', background: C.text, transition: 'left .2s' }} />
     </div>
   )
 
-  const sel: React.CSSProperties = {
-    padding: '3px 6px', borderRadius: 3, border: `1px solid ${C.border}`,
-    background: C.cell, color: C.text, fontSize: 10, cursor: 'pointer', outline: 'none',
-  }
+  const sel: React.CSSProperties = { padding: '3px 6px', borderRadius: 3, border: `1px solid ${C.border}`, background: C.cell, color: C.text, fontSize: 10, cursor: 'pointer', outline: 'none', width: '100%' }
+
+  const isTV  = JSON.stringify(settings) === JSON.stringify(TV_PRESET)
+  const isPlt = JSON.stringify(settings) === JSON.stringify(PLATFORM_PRESET)
 
   return (
     <div style={{ width: 260, flexShrink: 0, borderLeft: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', background: C.panel, overflowY: 'auto' }}>
 
       {/* Header */}
-      <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.border}`, flexShrink: 0, display: 'flex', alignItems: 'center' }}>
-        <span style={{ fontSize: 10, fontWeight: 800, color: C.text, letterSpacing: '0.1em', textTransform: 'uppercase', flex: 1 }}>Chart Settings</span>
-        <button onClick={() => upd({ ...DEFAULT_SETTINGS })} style={{ padding: '2px 8px', borderRadius: 3, fontSize: 9, cursor: 'pointer', border: `1px solid ${C.dim}`, background: 'transparent', color: C.sub }}>
-          Reset
+      <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: C.text, letterSpacing: '0.06em', flex: 1 }}>Chart Settings</span>
+        <button onClick={() => upd({ ...DEFAULT_SETTINGS })} style={{ padding: '2px 7px', borderRadius: 3, fontSize: 9, cursor: 'pointer', border: `1px solid ${C.dim}`, background: 'transparent', color: C.sub }}>Reset</button>
+      </div>
+
+      {/* ── Presets */}
+      <Section title="Presets" />
+      <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.border}`, display: 'flex', gap: 6 }}>
+        <button onClick={() => upd({ ...TV_PRESET })} style={{
+          flex: 1, padding: '6px 4px', borderRadius: 4, fontSize: 10, cursor: 'pointer', fontWeight: isTV ? 700 : 400,
+          border: `1px solid ${isTV ? C.green : C.border}`,
+          background: isTV ? C.green + '18' : 'transparent', color: isTV ? C.green : C.sub,
+        }}>
+          <div style={{ width: 10, height: 10, borderRadius: 2, background: '#26a69a', display: 'inline-block', marginRight: 5, verticalAlign: 'middle' }} />
+          TradingView
+        </button>
+        <button onClick={() => upd({ ...PLATFORM_PRESET })} style={{
+          flex: 1, padding: '6px 4px', borderRadius: 4, fontSize: 10, cursor: 'pointer', fontWeight: isPlt ? 700 : 400,
+          border: `1px solid ${isPlt ? C.purple : C.border}`,
+          background: isPlt ? C.purple + '18' : 'transparent', color: isPlt ? C.purple : C.sub,
+        }}>
+          <div style={{ width: 10, height: 10, borderRadius: 2, background: '#22C55E', display: 'inline-block', marginRight: 5, verticalAlign: 'middle' }} />
+          Platform
         </button>
       </div>
 
@@ -357,96 +383,66 @@ function SettingsPanel({ settings, onChange }: {
 
       {/* ── Candle Colors */}
       <Section title="Candle Colors" />
-
-      <div style={row}>
-        <span style={label}>Bullish (Up)</span>
-        <div style={ctrl}>
-          <ColorSwatch value={settings.upColor}   onChange={v => upd({ upColor: v, upWickColor: v })} />
+      {([
+        ['Bullish (Up)',   'upColor',       'upWickColor'  ],
+        ['Bearish (Down)', 'downColor',     'downWickColor'],
+        ['No-change',      'noChangeColor', null           ],
+      ] as const).map(([label, key, wickKey]) => (
+        <div key={key} style={row}>
+          <span style={lbl}>{label}</span>
+          <div style={ctrl}>
+            {wickKey && <ColorSwatch value={(settings as any)[wickKey]} onChange={v => upd({ [wickKey]: v } as any)} />}
+            <ColorSwatch value={(settings as any)[key]}
+              onChange={v => upd(wickKey ? { [key]: v, [wickKey]: v } as any : { [key]: v } as any)} />
+          </div>
         </div>
-      </div>
-      <div style={row}>
-        <span style={label}>Bearish (Down)</span>
-        <div style={ctrl}>
-          <ColorSwatch value={settings.downColor} onChange={v => upd({ downColor: v, downWickColor: v })} />
-        </div>
-      </div>
-      <div style={row}>
-        <span style={label}>No-change</span>
-        <div style={ctrl}>
-          <ColorSwatch value={settings.noChangeColor} onChange={v => upd({ noChangeColor: v })} />
-        </div>
-      </div>
-      <div style={row}>
-        <span style={label}>Up Wick</span>
-        <div style={ctrl}>
-          <ColorSwatch value={settings.upWickColor}   onChange={v => upd({ upWickColor: v })} />
-        </div>
-      </div>
-      <div style={row}>
-        <span style={label}>Down Wick</span>
-        <div style={ctrl}>
-          <ColorSwatch value={settings.downWickColor} onChange={v => upd({ downWickColor: v })} />
-        </div>
+      ))}
+      <div style={{ padding: '4px 12px 6px', borderBottom: `1px solid ${C.border}` }}>
+        <div style={{ fontSize: 9, color: C.dim }}>Left swatch = wick, right = body. Changing body also updates wick.</div>
       </div>
 
       {/* ── Grid */}
       <Section title="Grid" />
-      <div style={row}>
-        <span style={label}>Horizontal Lines</span>
-        <div style={ctrl}><Toggle value={settings.showGridH} onChange={v => upd({ showGridH: v })} /></div>
-      </div>
-      <div style={row}>
-        <span style={label}>Vertical Lines</span>
-        <div style={ctrl}><Toggle value={settings.showGridV} onChange={v => upd({ showGridV: v })} /></div>
-      </div>
-      <div style={row}>
-        <span style={label}>Grid Color</span>
-        <div style={ctrl}><ColorSwatch value={settings.gridColor} onChange={v => upd({ gridColor: v })} /></div>
-      </div>
+      <div style={row}><span style={lbl}>Horizontal</span><div style={ctrl}><Toggle value={settings.showGridH} onChange={v => upd({ showGridH: v })} /></div></div>
+      <div style={row}><span style={lbl}>Vertical</span>  <div style={ctrl}><Toggle value={settings.showGridV} onChange={v => upd({ showGridV: v })} /></div></div>
+      <div style={row}><span style={lbl}>Grid Color</span><div style={ctrl}><ColorSwatch value={settings.gridColor} onChange={v => upd({ gridColor: v })} /></div></div>
 
       {/* ── Font */}
       <Section title="Font" />
       <div style={{ padding: '6px 12px', borderBottom: `1px solid ${C.border}` }}>
         <div style={{ fontSize: 10, color: C.sub, marginBottom: 4 }}>Family</div>
-        <select value={settings.fontFamily} onChange={e => upd({ fontFamily: e.target.value })} style={{ ...sel, width: '100%' }}>
+        <select value={settings.fontFamily} onChange={e => upd({ fontFamily: e.target.value })} style={sel}>
           {FONT_FAMILIES.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
         </select>
       </div>
       <div style={{ padding: '6px 12px', borderBottom: `1px solid ${C.border}` }}>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
           <span style={{ fontSize: 10, color: C.sub, flex: 1 }}>Size</span>
-          <span style={{ fontSize: 11, fontWeight: 700, color: C.text, minWidth: 22, textAlign: 'right' }}>{settings.fontSize}px</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: C.text }}>{settings.fontSize}px</span>
         </div>
         <input type="range" min={9} max={16} value={settings.fontSize} onChange={e => upd({ fontSize: Number(e.target.value) })}
           style={{ width: '100%', accentColor: C.blue, cursor: 'pointer' }} />
       </div>
       <div style={{ padding: '6px 12px', borderBottom: `1px solid ${C.border}` }}>
         <div style={{ fontSize: 10, color: C.sub, marginBottom: 4 }}>Weight</div>
-        <select value={settings.fontWeight} onChange={e => upd({ fontWeight: e.target.value })} style={{ ...sel, width: '100%' }}>
+        <select value={settings.fontWeight} onChange={e => upd({ fontWeight: e.target.value })} style={sel}>
           {FONT_WEIGHTS.map(w => <option key={w.value} value={w.value}>{w.label}</option>)}
         </select>
       </div>
 
       {/* ── Axes */}
       <Section title="Axes" />
+      <div style={row}><span style={lbl}>Text Color</span> <div style={ctrl}><ColorSwatch value={settings.axisTextColor} onChange={v => upd({ axisTextColor: v })} /></div></div>
+      <div style={row}><span style={lbl}>Line Color</span> <div style={ctrl}><ColorSwatch value={settings.axisLineColor} onChange={v => upd({ axisLineColor: v })} /></div></div>
       <div style={row}>
-        <span style={label}>Text Color</span>
-        <div style={ctrl}><ColorSwatch value={settings.axisTextColor} onChange={v => upd({ axisTextColor: v })} /></div>
-      </div>
-      <div style={row}>
-        <span style={label}>Line Color</span>
-        <div style={ctrl}><ColorSwatch value={settings.axisLineColor} onChange={v => upd({ axisLineColor: v })} /></div>
-      </div>
-      <div style={row}>
-        <span style={label}>Y-Axis Side</span>
+        <span style={lbl}>Y-Axis Side</span>
         <div style={ctrl}>
-          {(['left', 'right'] as const).map(side => (
-            <button key={side} onClick={() => upd({ yAxisRight: side === 'right' })} style={{
+          {(['Left', 'Right'] as const).map(side => (
+            <button key={side} onClick={() => upd({ yAxisRight: side === 'Right' })} style={{
               padding: '3px 10px', borderRadius: 3, fontSize: 10, cursor: 'pointer',
-              border: `1px solid ${(side === 'right') === settings.yAxisRight ? C.orange : C.border}`,
-              background: (side === 'right') === settings.yAxisRight ? C.orange + '22' : 'transparent',
-              color: (side === 'right') === settings.yAxisRight ? C.orange : C.sub,
-              textTransform: 'capitalize',
+              border: `1px solid ${(side === 'Right') === settings.yAxisRight ? C.orange : C.border}`,
+              background: (side === 'Right') === settings.yAxisRight ? C.orange + '22' : 'transparent',
+              color: (side === 'Right') === settings.yAxisRight ? C.orange : C.sub,
             }}>{side}</button>
           ))}
         </div>
@@ -454,36 +450,23 @@ function SettingsPanel({ settings, onChange }: {
 
       {/* ── Crosshair */}
       <Section title="Crosshair" />
-      <div style={row}>
-        <span style={label}>Line Color</span>
-        <div style={ctrl}><ColorSwatch value={settings.crosshairColor}  onChange={v => upd({ crosshairColor: v })} /></div>
-      </div>
-      <div style={row}>
-        <span style={label}>Label Background</span>
-        <div style={ctrl}><ColorSwatch value={settings.crosshairTextBg} onChange={v => upd({ crosshairTextBg: v })} /></div>
-      </div>
+      <div style={row}><span style={lbl}>Line Color</span>    <div style={ctrl}><ColorSwatch value={settings.crosshairColor}  onChange={v => upd({ crosshairColor: v })} /></div></div>
+      <div style={row}><span style={lbl}>Label Background</span><div style={ctrl}><ColorSwatch value={settings.crosshairTextBg} onChange={v => upd({ crosshairTextBg: v })} /></div></div>
 
       {/* ── Price Marks */}
       <Section title="Price Marks" />
-      <div style={row}>
-        <span style={label}>Last Price Line</span>
-        <div style={ctrl}><Toggle value={settings.showLastPrice} onChange={v => upd({ showLastPrice: v })} /></div>
-      </div>
-      <div style={row}>
-        <span style={label}>High / Low Labels</span>
-        <div style={ctrl}><Toggle value={settings.showHighLow} onChange={v => upd({ showHighLow: v })} /></div>
-      </div>
+      <div style={row}><span style={lbl}>Last Price Line</span><div style={ctrl}><Toggle value={settings.showLastPrice} onChange={v => upd({ showLastPrice: v })} /></div></div>
+      <div style={row}><span style={lbl}>High / Low Labels</span><div style={ctrl}><Toggle value={settings.showHighLow} onChange={v => upd({ showHighLow: v })} /></div></div>
 
-      {/* Spacer */}
       <div style={{ flex: 1 }} />
 
-      {/* Footer preview */}
+      {/* Preview bar */}
       <div style={{ padding: '10px 12px', borderTop: `1px solid ${C.border}`, flexShrink: 0 }}>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-          <div style={{ width: 12, height: 20, borderRadius: 2, background: settings.upColor }} />
-          <div style={{ width: 12, height: 20, borderRadius: 2, background: settings.downColor }} />
+          <div style={{ width: 10, height: 18, borderRadius: 2, background: settings.upColor }} />
+          <div style={{ width: 10, height: 18, borderRadius: 2, background: settings.downColor }} />
           <span style={{ fontSize: settings.fontSize, fontFamily: settings.fontFamily, fontWeight: settings.fontWeight, color: settings.axisTextColor, marginLeft: 4 }}>
-            09:15 — 15:30 NSE
+            09:15 NSE
           </span>
         </div>
       </div>
@@ -515,20 +498,20 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
   const [rnVal,    setRnVal]    = useState('')
 
   const active = wls.find(w => w.id === activeId) ?? wls[0]
-  function upd(next: WLEntry[]) { setWls(next); saveWL(next) }
-  function addSym() {
+  const upd = (next: WLEntry[]) => { setWls(next); saveWL(next) }
+  const addSym = () => {
     const s = addVal.trim().toUpperCase(); if (!s || !active) return
     if (!active.symbols.includes(s)) upd(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, s] } : w))
     setAddVal('')
   }
-  function removeSym(s: string) { upd(wls.map(w => w.id === active.id ? { ...w, symbols: w.symbols.filter(x => x !== s) } : w)) }
-  function newList()  { const id = Date.now().toString(), nx = [...wls, { id, name: `List ${wls.length + 1}`, symbols: [] }]; upd(nx); setActiveId(id) }
-  function delList()  { if (wls.length <= 1) return; const nx = wls.filter(w => w.id !== active.id); upd(nx); setActiveId(nx[0].id) }
-  function commitRn() { const n = rnVal.trim(); if (n) upd(wls.map(w => w.id === active.id ? { ...w, name: n } : w)); setRenaming(false) }
+  const removeSym = (s: string) => upd(wls.map(w => w.id === active.id ? { ...w, symbols: w.symbols.filter(x => x !== s) } : w))
+  const newList  = () => { const id = Date.now().toString(); const nx = [...wls, { id, name: `List ${wls.length + 1}`, symbols: [] }]; upd(nx); setActiveId(id) }
+  const delList  = () => { if (wls.length <= 1) return; const nx = wls.filter(w => w.id !== active.id); upd(nx); setActiveId(nx[0].id) }
+  const commitRn = () => { const n = rnVal.trim(); if (n) upd(wls.map(w => w.id === active.id ? { ...w, name: n } : w)); setRenaming(false) }
   const btn = (color = C.sub): React.CSSProperties => ({ padding: '3px 7px', borderRadius: 3, fontSize: 10, cursor: 'pointer', border: `1px solid ${color}33`, background: 'transparent', color })
 
   return (
-    <div style={{ width: 240, flexShrink: 0, borderLeft: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', background: C.panel, overflow: 'hidden' }}>
+    <div style={{ width: 240, flexShrink: 0, borderLeft: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', background: C.panel }}>
       <div style={{ padding: '8px 10px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 6 }}>
           <span style={{ fontSize: 10, fontWeight: 700, color: C.text, letterSpacing: '0.08em', flex: 1 }}>WATCHLISTS</span>
@@ -597,11 +580,11 @@ export function FullChartPage() {
   const navigate             = useNavigate()
   const initTf               = searchParams.get('tf') ?? '1D'
 
-  const [settings,    setSettings]    = useState<ChartSettings>(loadSettings)
-  const [showWL,      setShowWL]      = useState(false)
-  const [showSettings,setShowSettings]= useState(false)
-  const [snapFlash,   setSnapFlash]   = useState(false)
-  const [loading,     setLoading]     = useState(true)
+  const [settings,     setSettings]     = useState<ChartSettings>(loadSettings)
+  const [showWL,       setShowWL]       = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  const [snapFlash,    setSnapFlash]    = useState(false)
+  const [loading,      setLoading]      = useState(true)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const proRef       = useRef<KLineChartPro | null>(null)
@@ -618,6 +601,7 @@ export function FullChartPage() {
       theme:      'dark',
       locale:     'en-US',
       timezone:   'UTC',
+      watermark:  'NSE',
       symbol: {
         ticker: sym.toUpperCase(), shortName: sym.toUpperCase(),
         name: sym.toUpperCase(), exchange: 'NSE', market: 'stocks', priceCurrency: 'INR',
@@ -627,9 +611,26 @@ export function FullChartPage() {
       styles:            buildStyles(settings) as any,
       drawingBarVisible: true,
       mainIndicators:    ['EMA'],
-      subIndicators:     ['VOL', 'MACD'],
+      subIndicators:     ['VOL', 'MACD', 'RSI'],
       datafeed:          new OurDatafeed(),
     })
+
+    // ── P1: Symbol URL sync ──────────────────────────────────────────────────
+    // When user searches and selects a symbol via Pro's built-in UI, navigate to
+    // the new symbol URL instead of letting Pro update internally. This keeps the
+    // URL in sync and the Back button correct.
+    pro.setSymbol = (symbol: SymbolInfo) => {
+      const tf = pro.getPeriod()?.text ?? '1D'
+      navigate(`/fullchart/${symbol.ticker.toUpperCase()}?tf=${tf}`, { replace: true })
+    }
+
+    // ── P3: Period URL sync ──────────────────────────────────────────────────
+    // Keep ?tf= in the URL current so a page refresh restores the same period.
+    const origSetPeriod = pro.setPeriod.bind(pro)
+    pro.setPeriod = (period: Period) => {
+      origSetPeriod(period)
+      navigate(`/fullchart/${sym.toUpperCase()}?tf=${period.text}`, { replace: true })
+    }
 
     proRef.current = pro
     setLoading(false)
@@ -643,19 +644,17 @@ export function FullChartPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sym])
 
-  // ── Apply settings live (no chart recreate) ─────────────────────────────────
+  // ── Apply settings live ─────────────────────────────────────────────────────
   useEffect(() => {
     if (!proRef.current) return
     try { proRef.current.setStyles(buildStyles(settings) as any) } catch { /* ignore */ }
     saveSettings(settings)
   }, [settings])
 
-  // ── Settings change handler ─────────────────────────────────────────────────
   const handleSettings = useCallback((patch: Partial<ChartSettings>) => {
     setSettings(prev => ({ ...prev, ...patch }))
   }, [])
 
-  // ── Watchlist navigation ────────────────────────────────────────────────────
   const goSymbol = useCallback((s: string) => {
     const tf = proRef.current?.getPeriod()?.text ?? '1D'
     navigate(`/fullchart/${s.toUpperCase()}?tf=${tf}`)
@@ -665,12 +664,11 @@ export function FullChartPage() {
   const takeSnapshot = useCallback(() => {
     const container = containerRef.current; if (!container) return
     try {
-      const rect     = container.getBoundingClientRect()
+      const rect = container.getBoundingClientRect()
       const canvases = Array.from(container.querySelectorAll('canvas')).filter(c => c.width > 100 && c.height > 50)
       if (!canvases.length) return
       const out = document.createElement('canvas')
-      out.width  = Math.round(rect.width)
-      out.height = Math.round(rect.height)
+      out.width = Math.round(rect.width); out.height = Math.round(rect.height)
       const ctx = out.getContext('2d')!
       ctx.fillStyle = C.bg; ctx.fillRect(0, 0, out.width, out.height)
       for (const c of canvases) {
@@ -685,45 +683,40 @@ export function FullChartPage() {
     } catch { /* ignore */ }
   }, [sym])
 
-  // ── Top bar button style ────────────────────────────────────────────────────
-  const topBtn = (active: boolean, activeColor = C.blue): React.CSSProperties => ({
+  const topBtn = (active: boolean, color = C.blue): React.CSSProperties => ({
     padding: '4px 11px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
-    border: `1px solid ${active ? activeColor : C.border}`,
-    background: active ? activeColor + '22' : 'transparent',
-    color: active ? activeColor : C.sub, fontWeight: active ? 700 : 400,
+    border: `1px solid ${active ? color : C.border}`,
+    background: active ? color + '1a' : 'transparent',
+    color: active ? color : C.sub, fontWeight: active ? 700 : 400,
+    fontFamily: 'inherit',
   })
 
-  // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', background: C.bg, overflow: 'hidden', fontFamily: 'monospace' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', background: C.bg, overflow: 'hidden', fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
 
       {/* ── Top bar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', background: C.panel, borderBottom: `1px solid ${C.border}`, flexShrink: 0, flexWrap: 'wrap' }}>
-        <button onClick={() => navigate(-1)} style={{ padding: '4px 10px', borderRadius: 4, border: `1px solid ${C.border}`, background: 'transparent', color: C.sub, cursor: 'pointer', fontSize: 11 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 14px', background: C.panel, borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
+        <button onClick={() => navigate(-1)} style={{ padding: '4px 10px', borderRadius: 4, border: `1px solid ${C.border}`, background: 'transparent', color: C.sub, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
           &larr; Back
         </button>
-        <span style={{ fontSize: 15, fontWeight: 900, color: C.text, letterSpacing: 2, minWidth: 90 }}>{sym.toUpperCase()}</span>
-        <div style={{ width: 1, height: 16, background: C.border }} />
+
+        <div style={{ width: 1, height: 14, background: C.border }} />
+
+        <span style={{ fontSize: 14, fontWeight: 700, color: C.text, letterSpacing: 1 }}>{sym.toUpperCase()}</span>
         <span style={{ fontSize: 10, color: C.sub }}>NSE</span>
+        <span style={{ fontSize: 10, color: C.dim }}>·</span>
         <span style={{ fontSize: 10, color: C.sub }}>INR</span>
+
         {loading && <span style={{ fontSize: 10, color: C.amber }}>Loading...</span>}
         <div style={{ flex: 1 }} />
 
-        <button onClick={takeSnapshot} style={{ ...topBtn(snapFlash, C.green) }}>
-          {snapFlash ? 'Saved!' : 'Snapshot'}
-        </button>
-
-        <button onClick={() => { setShowSettings(v => !v); if (showWL) setShowWL(false) }} style={topBtn(showSettings, C.orange)}>
-          Settings
-        </button>
-
-        <button onClick={() => { setShowWL(v => !v); if (showSettings) setShowSettings(false) }} style={topBtn(showWL, C.purple)}>
-          {showWL ? 'Hide Watchlist' : 'Watchlist'}
-        </button>
+        <button onClick={takeSnapshot} style={topBtn(snapFlash, C.green)}>{snapFlash ? 'Saved!' : 'Snapshot'}</button>
+        <button onClick={() => { setShowSettings(v => !v); setShowWL(false) }} style={topBtn(showSettings, C.orange)}>Settings</button>
+        <button onClick={() => { setShowWL(v => !v); setShowSettings(false) }} style={topBtn(showWL, C.purple)}>Watchlist</button>
       </div>
 
       {/* ── Content row */}
-      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'row', overflow: 'hidden' }}>
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden' }}>
         <div ref={containerRef} style={{ flex: 1, minWidth: 0, minHeight: 0 }} />
         {showSettings && <SettingsPanel settings={settings} onChange={handleSettings} />}
         {showWL       && <WatchlistPanel currentSym={sym} onNavigate={goSymbol} />}
