@@ -57,6 +57,8 @@ SOURCES = {
     "quarterly_results":      cfg.NSE_DIR / "results" / "quarterly_results.csv",
     "theme_intelligence":     cfg.INTELLIGENCE_DIR / "theme_intelligence.csv",
     "theme_tagging":          cfg.REFERENCE_DIR / "theme_tagging.csv",
+    # Phase FPI — NSDL/CDSL/SEBI sector FPI ownership signals
+    "fpi_signals":            cfg.FPI_DIR / "fpi_sector_signals.csv",
     # Phase AF — AstroFinance Intelligence
     "astro_signals":          cfg.INTELLIGENCE_DIR / "astro_signals.csv",
     # Phase F — Alt-data intelligence
