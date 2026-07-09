@@ -48,6 +48,30 @@ _CHAT_PROVIDERS = [
         "extra_headers": {},
     },
     {
+        # Free tier: 1B tokens/month, 1 req/s -- huge; good function calling
+        "name":    "Mistral",
+        "env_var": "MISTRAL_API_KEY",
+        "base_url": "https://api.mistral.ai/v1",
+        "model":   "mistral-small-latest",
+        "extra_headers": {},
+    },
+    {
+        # Free with any GitHub personal access token (models:read scope)
+        "name":    "GitHubModels",
+        "env_var": "GITHUB_MODELS_TOKEN",
+        "base_url": "https://models.inference.ai.azure.com",
+        "model":   "gpt-4o-mini",
+        "extra_headers": {},
+    },
+    {
+        # Free tier Llama 3.3 70B, ~10-30 RPM, very fast inference
+        "name":    "SambaNova",
+        "env_var": "SAMBANOVA_API_KEY",
+        "base_url": "https://api.sambanova.ai/v1",
+        "model":   "Meta-Llama-3.3-70B-Instruct",
+        "extra_headers": {},
+    },
+    {
         "name":    "OpenRouter",
         "env_var": "OPENROUTER_API_KEY",
         "base_url": "https://openrouter.ai/api/v1",
@@ -59,8 +83,11 @@ _CHAT_PROVIDERS = [
     {
         "name":    "Cerebras",
         "env_var": "CEREBRAS_API_KEY",
+        # gemma-4-31b is the only confirmed-working free-tier model (llama
+        # models 404 on Cerebras free tier -- verified in logs 2026-07-09).
+        # Tool calling may degrade; tool_use_failed handler covers that.
         "base_url": "https://api.cerebras.ai/v1",
-        "model":   "llama-3.3-70b",
+        "model":   "gemma-4-31b",
         "extra_headers": {},
     },
 ]

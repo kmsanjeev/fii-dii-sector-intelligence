@@ -6,6 +6,70 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.32.0
+
+Phase KU-2 -- Global Geocoding + Kundli Life Guide + LLM Provider Expansion
+
+Date: 2026-07-09
+
+Status: Completed
+
+---
+
+## Summary
+
+Kundli tool now resolves ANY city worldwide (fixes the reported Bokaro error);
+the report gains a plain-English Life Guide (good/bad periods, Sade Sati,
+layman summary, top remedies); chatbot provider fallback verified live and
+strengthened -- Cerebras model fixed (was permanently 404) and three new
+free providers added as key-gated slots.
+
+## New Features
+
+- engines/ai/chatbot/tools/geocoder.py: 3-tier lookup -- built-in dict ->
+  learned cache (data/reference/city_coords_cache.csv, grows per lookup) ->
+  geopy/Nominatim (OpenStreetMap, global, no API key, 1.1s politeness,
+  ASCII-sanitized names). Offline failure degrades to the manual lat/long
+  path -- never breaks kundli generation. geopy installed.
+- engines/ai/chatbot/tools/kundli_life_guide.py: computed (no-LLM) sections
+  appended to every kundli report:
+  GOOD & BAD PERIODS (next ~20y of mahadashas rated EXCELLENT/GOOD/MIXED/
+  CHALLENGING from functional lordship for the lagna + dignity + house +
+  natural character, with plain-English reasons + advice per period, plus
+  upcoming antardasha mini-ratings); SADE SATI CHECK (live transit Saturn
+  vs natal Moon, phase + approximate remaining time + do's); WHAT THIS
+  MEANS FOR YOU (outer/inner self, current chapter, best + careful windows,
+  top 3 simple remedies, honest closing note).
+- tool_registry: kundli tool description updated -- LLM no longer told to
+  ask for lat/long when a city is unfamiliar.
+
+## Fixed
+
+- chat_engine Cerebras model llama-3.3-70b -> gemma-4-31b (llama models 404
+  on Cerebras free tier -- last-resort provider had been permanently dead;
+  same bug class as llm_client fix d5821f4)
+
+## LLM Provider Expansion (key-gated -- activate by adding .env keys)
+
+- Mistral (mistral-small-latest, free 1B tokens/month)  MISTRAL_API_KEY
+- GitHub Models (gpt-4o-mini, free with GitHub PAT)     GITHUB_MODELS_TOKEN
+- SambaNova (Meta-Llama-3.3-70B, free tier, fast)       SAMBANOVA_API_KEY
+- Added to both chat_engine._CHAT_PROVIDERS and llm_client._PROVIDERS
+- New chain: Groq -> Gemini -> Mistral -> GitHubModels -> SambaNova ->
+  OpenRouter -> Cerebras (chat); llm_client analogous
+
+## Verification
+
+- Bokaro kundli generates (29K-char report incl. Life Guide); city cached
+- Life Guide internally consistent (Sagittarius lagna: Venus lords H6 ->
+  MIXED; Saturn-in-Pisces vs Cancer Moon -> Sade Sati NOT ACTIVE)
+- Live fallback test: Groq forced to cooldown -> Gemini rate-limited (real)
+  -> OpenRouter rate-limited (real) -> Cerebras ANSWERED with fixed model.
+  Log evidence showed all-4-exhausted events at 22:39 + 23:50 confirming
+  the user's report -- new providers directly address this.
+
+---
+
 # Version 4.31.2
 
 Fix -- Backup panel false DRIVE NOT FOUND on stale backend

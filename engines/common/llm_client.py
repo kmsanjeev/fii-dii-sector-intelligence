@@ -68,6 +68,27 @@ _PROVIDERS = [
         "extra_headers": {},
     },
     {
+        "name":         "Mistral",
+        "env_var":      "MISTRAL_API_KEY",
+        "base_url":     "https://api.mistral.ai/v1",
+        "model":        "mistral-small-latest",   # free tier: 1B tokens/month, 1 req/s
+        "extra_headers": {},
+    },
+    {
+        "name":         "GitHubModels",
+        "env_var":      "GITHUB_MODELS_TOKEN",
+        "base_url":     "https://models.inference.ai.azure.com",
+        "model":        "gpt-4o-mini",            # free with GitHub PAT (models:read)
+        "extra_headers": {},
+    },
+    {
+        "name":         "SambaNova",
+        "env_var":      "SAMBANOVA_API_KEY",
+        "base_url":     "https://api.sambanova.ai/v1",
+        "model":        "Meta-Llama-3.3-70B-Instruct",  # free tier, fast
+        "extra_headers": {},
+    },
+    {
         "name":         "OpenRouter",
         "env_var":      "OPENROUTER_API_KEY",
         "base_url":     "https://openrouter.ai/api/v1",

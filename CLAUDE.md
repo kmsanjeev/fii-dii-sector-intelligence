@@ -251,6 +251,9 @@ anthropic==0.113.0                                     # Phase 14
 TELEGRAM_BOT_TOKEN    Phase 9  (live and tested)
 TELEGRAM_CHAT_ID      Phase 9  (live and tested)
 ANTHROPIC_API_KEY     Phase 14, 16
+MISTRAL_API_KEY       Phase KU-2 (optional; free 1B tok/mo at console.mistral.ai)
+GITHUB_MODELS_TOKEN   Phase KU-2 (optional; GitHub PAT w/ models:read scope)
+SAMBANOVA_API_KEY     Phase KU-2 (optional; free Llama 3.3 70B at cloud.sambanova.ai)
 ADMIN_EMAIL           Phase 25 (optional; default: admin@localhost)
 ADMIN_PASSWORD        Phase 25 (optional; default: admin123 — change before enabling auth in prod)
 ```

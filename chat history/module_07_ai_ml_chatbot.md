@@ -63,3 +63,38 @@ API key read from `os.getenv("ANTHROPIC_API_KEY")` — never hardcoded.
 3. CB-1 intent router can be built as a stub for early testing with mock agent responses
 
 ---
+
+---
+
+## Session 2026-07-09 — Phase KU-2: Geocoding + Life Guide + Provider Expansion
+
+**Geocoding (fixes Bokaro-not-found):**
+- tools/geocoder.py: built-in CITY_COORDS -> learned cache
+  (data/reference/city_coords_cache.csv) -> geopy/Nominatim (global, keyless,
+  1.1s throttle, India-biased retry, ASCII-sanitized names). Failure degrades
+  to manual lat/long path. geopy installed in py -3.11.
+- _get_city_coords now calls resolve_city() with builtin dict as tier 1.
+
+**Life Guide (tools/kundli_life_guide.py, appended to formatted_report):**
+- Mahadasha favorability scoring: functional lordship for lagna (trikona
+  +1.5/lord, trik -1.5, kendra +0.5, 3/11 -0.5) + dignity (+2 exalted /
+  -2 debilitated) + occupied house (trik -1) + natural character.
+  Labels EXCELLENT >=2.5, GOOD >=1, MIXED >=-1, CHALLENGING below.
+- Sade Sati: transit Saturn (computed live via _compute_positions(now) +
+  Lahiri ayanamsha) vs natal Moon sign; 12th/1st/2nd = phases 1/2/3;
+  4th/8th = dhaiyya. Plain-English notes + do lists.
+- Layman summary: outer/inner self, current chapter rating, best window
+  (softened wording when best is only MIXED), careful window, top 3 remedies.
+- All computed, no LLM, ASCII-only.
+
+**Chatbot provider chain:**
+- BUG FIX: Cerebras chat model llama-3.3-70b 404s on free tier (logs proved
+  last-resort provider permanently dead) -> gemma-4-31b (confirmed working).
+- NEW key-gated providers in chat_engine + llm_client: Mistral
+  (mistral-small-latest, 1B tok/mo), GitHub Models (gpt-4o-mini, GitHub PAT),
+  SambaNova (Meta-Llama-3.3-70B). Env: MISTRAL_API_KEY, GITHUB_MODELS_TOKEN,
+  SAMBANOVA_API_KEY.
+- LIVE VERIFIED: forced Groq cooldown -> Gemini rate-limited (real) ->
+  OpenRouter rate-limited (real) -> Cerebras answered. Log archaeology found
+  two all-providers-exhausted events same day (22:39, 23:50) -- user report
+  confirmed; expansion directly addresses it.

@@ -265,8 +265,9 @@ TOOLS: list[dict] = [
             "Janam Kundali, or provides date/time/place of birth for personal chart reading. "
             "Uses Lahiri ayanamsha (sidereal zodiac) and whole-sign house system. "
             "For IST birthplace, timezone_offset_hours=5.5 (default). "
-            "City lookup covers 80+ Indian cities and 30+ global cities. "
-            "If city is not found, ask the user for latitude and longitude."
+            "City lookup works GLOBALLY: built-in list, learned cache, then online "
+            "OpenStreetMap geocoding -- any city or town worldwide resolves automatically. "
+            "Only ask for latitude/longitude if the tool returns a lookup error."
         ),
         "input_schema": {
             "type": "object",

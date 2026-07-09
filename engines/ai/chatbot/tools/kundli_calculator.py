@@ -217,6 +217,16 @@ _LAL_KITAB: dict[str, dict] = {
 
 
 def _get_city_coords(place: str) -> Optional[tuple[float, float]]:
+    """Built-in dict -> learned cache -> Nominatim (global, online).
+    Falls back through the chain silently; None only if every tier fails."""
+    try:
+        from engines.ai.chatbot.tools.geocoder import resolve_city
+        hit = resolve_city(place, builtin=CITY_COORDS)
+        if hit:
+            return (hit[0], hit[1])
+    except Exception:
+        # Geocoder must never break kundli generation -- fall through
+        pass
     key = place.strip().lower()
     if key in CITY_COORDS:
         return CITY_COORDS[key]
@@ -1308,8 +1318,10 @@ def compute_personal_kundli(
         if coords is None:
             return {
                 "error": (
-                    f"City '{place_name}' not found. Please provide latitude and longitude. "
-                    f"Example: latitude=28.6139, longitude=77.2090 for New Delhi."
+                    f"City '{place_name}' could not be located (checked built-in list, "
+                    f"local cache and online OpenStreetMap lookup -- the internet may be "
+                    f"down or the spelling unusual). Please provide latitude and longitude "
+                    f"directly. Example: latitude=28.6139, longitude=77.2090 for New Delhi."
                 )
             }
         lat, lon = coords
@@ -1432,6 +1444,20 @@ def compute_personal_kundli(
                 formatted_report = formatted_report + "\n" + life_block
         except Exception:
             pass  # never let interpreter errors break the main report
+
+    # Append plain-English Life Guide: good/bad periods, sade sati, summary (KU-2)
+    try:
+        from engines.ai.chatbot.tools.kundli_life_guide import build_life_guide
+        now_utc = datetime.now(timezone.utc)
+        now_trop = _compute_positions(now_utc)
+        now_ayan = _lahiri_ayanamsha(ephem.julian_date(ephem.Date(now_utc.strftime("%Y/%m/%d %H:%M:%S"))))
+        sat_sid  = _sidereal(now_trop["Saturn"]["lon"], now_ayan)
+        transit_saturn_sign = _sign_of(sat_sid)
+        guide_lines = build_life_guide(planets_out, lagna, dasha, remedies, transit_saturn_sign)
+        if guide_lines:
+            formatted_report = formatted_report + "\n" + "\n".join(guide_lines)
+    except Exception:
+        pass  # life guide must never break the main report
 
     return {
         "entity":            entity,
