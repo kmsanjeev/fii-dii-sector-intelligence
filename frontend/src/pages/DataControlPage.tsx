@@ -679,6 +679,176 @@ function BackfillPanel({
   )
 }
 
+// ── Backup Panel (Phase R1-D1) ────────────────────────────────────────────────
+
+type BackupStatus = {
+  target:          string
+  drive_available: boolean
+  last_run:        string | null
+  last_result:     'VERIFIED' | 'FAILED' | 'NEVER_RUN'
+  verified_dirs:   string[]
+  schedule:        string
+}
+
+function BackupPanel() {
+  const [status,  setStatus]  = useState<BackupStatus | null>(null)
+  const [running, setRunning] = useState(false)
+  const [log,     setLog]     = useState<string[]>([])
+  const [showLog, setShowLog] = useState(false)
+  const logRef = useRef<HTMLDivElement>(null)
+  const esRef  = useRef<EventSource | null>(null)
+
+  const loadStatus = async () => {
+    try {
+      const r = await fetch(`${BASE}/api/data/backup/status`)
+      if (r.ok) setStatus(await r.json())
+    } catch { /* ignore */ }
+  }
+  useEffect(() => { loadStatus() }, [])
+
+  const runBackup = () => {
+    esRef.current?.close()
+    setRunning(true)
+    setLog(['Starting backup pipeline...'])
+    setShowLog(true)
+    const es = new EventSource(`${BASE}/api/data/run/pipeline_backup`)
+    esRef.current = es
+    es.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data)
+        if (data.ping) return
+        if (data.line !== undefined) {
+          setLog(prev => [...prev, data.line as string])
+          if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight
+        }
+        if (data.all_done) {
+          es.close(); esRef.current = null
+          setRunning(false)
+          loadStatus()
+        }
+      } catch { /* ignore */ }
+    }
+    es.onerror = () => { es.close(); esRef.current = null; setRunning(false); loadStatus() }
+  }
+
+  const stopBackup = () => {
+    esRef.current?.close()
+    esRef.current = null
+    killBackend()
+    setRunning(false)
+  }
+
+  const resultColor =
+    status?.last_result === 'VERIFIED' ? '#22C55E'
+    : status?.last_result === 'FAILED' ? '#EF4444'
+    : '#64748B'
+
+  return (
+    <div style={{
+      backgroundColor: '#141720', border: '1px solid #1E2332',
+      borderRadius: 6, padding: 16, marginBottom: 28,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+        <h2 style={{ color: '#E2E8F0', fontSize: 13, fontWeight: 700, letterSpacing: 2, margin: 0 }}>
+          DATA BACKUP
+        </h2>
+        <div style={{ flex: 1, height: 1, background: '#1E2332' }} />
+        <span style={{ fontSize: 10, color: '#64748B' }}>
+          Mirrors raw data to external drive — also runs {status?.schedule?.toLowerCase() ?? 'weekly'}
+        </span>
+        {running && (
+          <button onClick={stopBackup} style={{
+            padding: '3px 14px', borderRadius: 4,
+            border: '1px solid #EF4444', backgroundColor: '#EF444422',
+            color: '#EF4444', cursor: 'pointer', fontSize: 10, fontWeight: 700,
+          }}>STOP</button>
+        )}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
+        {/* Drive status */}
+        <div style={{ fontSize: 11 }}>
+          <span style={{ color: '#64748B' }}>Target: </span>
+          <span style={{ color: '#94A3B8', fontFamily: 'monospace' }}>{status?.target ?? '--'}</span>
+          <span style={{
+            marginLeft: 8, fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 10,
+            color:      status?.drive_available ? '#22C55E' : '#EF4444',
+            border:     `1px solid ${status?.drive_available ? '#22C55E' : '#EF4444'}55`,
+            background: (status?.drive_available ? '#22C55E' : '#EF4444') + '15',
+          }}>
+            {status?.drive_available ? 'DRIVE CONNECTED' : 'DRIVE NOT FOUND'}
+          </span>
+        </div>
+
+        {/* Last run */}
+        <div style={{ fontSize: 11 }}>
+          <span style={{ color: '#64748B' }}>Last backup: </span>
+          <span style={{ color: resultColor, fontWeight: 700 }}>
+            {status?.last_result === 'NEVER_RUN' ? 'never run' : `${status?.last_result}`}
+          </span>
+          {status?.last_run && <span style={{ color: '#64748B' }}> · {status.last_run}</span>}
+        </div>
+
+        <div style={{ flex: 1 }} />
+
+        <button
+          onClick={runBackup}
+          disabled={running || !status?.drive_available}
+          title={!status?.drive_available ? 'Plug in the external drive first' : 'Mirror + verify raw data now'}
+          style={{
+            padding: '5px 18px', borderRadius: 4,
+            border: '1px solid #22C55E',
+            backgroundColor: running ? '#22C55E22' : 'transparent',
+            color: running || !status?.drive_available ? '#33415588' : '#22C55E',
+            cursor: running || !status?.drive_available ? 'not-allowed' : 'pointer',
+            fontSize: 11, fontWeight: 700,
+          }}
+        >
+          {running ? 'Backing up...' : 'Run Backup Now'}
+        </button>
+        {log.length > 0 && !running && (
+          <button onClick={() => setShowLog(v => !v)} style={{
+            padding: '5px 12px', borderRadius: 4, border: '1px solid #334155',
+            backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer', fontSize: 10,
+          }}>{showLog ? 'Hide Log' : 'Log'}</button>
+        )}
+      </div>
+
+      {/* Verified dirs from last run */}
+      {(status?.verified_dirs?.length ?? 0) > 0 && (
+        <div style={{ marginTop: 10, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {status!.verified_dirs.map((d, i) => (
+            <span key={i} style={{
+              fontSize: 9, padding: '2px 8px', borderRadius: 3,
+              color: d.includes('MISMATCH') ? '#EF4444' : '#64748B',
+              border: '1px solid #1E2332', background: '#0A0D14', fontFamily: 'monospace',
+            }}>{d}</span>
+          ))}
+        </div>
+      )}
+
+      {/* Live stream log */}
+      {showLog && log.length > 0 && (
+        <div ref={logRef} style={{
+          marginTop: 10, backgroundColor: '#0A0D14', border: '1px solid #1E2332',
+          borderRadius: 4, padding: 8, maxHeight: 200, overflowY: 'auto',
+          fontFamily: 'monospace', fontSize: 10, color: '#94A3B8', whiteSpace: 'pre-wrap',
+        }}>
+          {log.map((line, i) => (
+            <div key={i} style={{
+              color: line.includes('ERROR') || line.includes('FAIL') || line.includes('MISMATCH') ? '#EF4444'
+                   : line.includes('VERIFIED') || line.includes('COMPLETE') ? '#22C55E'
+                   : line.startsWith('---') ? '#3B82F6'
+                   : '#94A3B8',
+            }}>{line || ' '}</div>
+          ))}
+          {running && <div style={{ color: '#F59E0B' }}>... running ...</div>}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export function DataControlPage() {
@@ -764,6 +934,9 @@ export function DataControlPage() {
       <DailyPipelinePanel allStatus={allStatus} />
 
       <BackfillPanel allStatus={allStatus} onRunComplete={refetch} />
+
+      {/* Data Backup — manual trigger for backup.ps1 (Phase R1-D1) */}
+      <BackupPanel />
 
     </div>
   )

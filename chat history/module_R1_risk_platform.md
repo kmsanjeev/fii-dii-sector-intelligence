@@ -217,3 +217,22 @@ data\NSE\bhavcopy (15,952 files, 17.6 GB). CLAUDE.md fixed.
 
 ### AUDIT FULLY CLOSED: R1+R2+R3+R4+D1 all shipped. Deferred by design:
 second intraday source (future acquisition phase), Redis Streams.
+
+---
+
+## Session 2026-07-09 (later) — D1b: Manual Backup Pipeline in Data Control GUI
+
+- engines/ops/backup_runner.py: Python wrapper streaming backup.ps1 (the SSE
+  engine runner only spawns python scripts -- wrapper avoids special-casing)
+- data_ops.py: backup_raw_data engine + pipeline_backup alias +
+  GET /api/data/backup/status (parses last run from logs/backup.log; walks
+  backwards to most recent END marker; dedupes verified dirs)
+- DataControlPage BackupPanel: drive badge, last-run status, verified-dir
+  chips, Run Backup Now (disabled when drive absent), live SSE log, STOP
+- BUG FOUND BY PROBE: two concurrent backup.ps1 runs interleave logs and
+  contend on robocopy. FIX: Global named mutex FiiDiiRawDataBackup in
+  backup.ps1 -- second instance exits 1 with clear message. Matters because
+  manual GUI run + Sunday scheduled task could overlap.
+- Verified: wrapper exit 0 end-to-end; concurrency probe (parallel run
+  refused while first completed); status endpoint 7 deduped dirs;
+  suite 267/267; tsc + build clean.

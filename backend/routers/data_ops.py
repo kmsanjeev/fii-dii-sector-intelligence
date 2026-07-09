@@ -220,6 +220,11 @@ ENGINES = {
         "script": "alerts/alert_engine.py",
         "phase": "9",
     },
+    "backup_raw_data": {
+        "label": "Raw Data Backup (external drive)",
+        "script": "engines/ops/backup_runner.py",
+        "phase": "Backup",
+    },
 }
 
 ACQUISITION_PIPELINE = [
@@ -238,6 +243,7 @@ BACKFILL_PIPELINE = [
     "shp_acquisition", "shp_acquisition_full",
     "stock_history_full",
 ]
+BACKUP_PIPELINE = ["backup_raw_data"]
 PIPELINE_SEQUENCE = ACQUISITION_PIPELINE + INTELLIGENCE_PIPELINE
 
 
@@ -533,6 +539,57 @@ def list_engines():
     return {k: {"label": v["label"], "phase": v["phase"]} for k, v in ENGINES.items()}
 
 
+# ── Backup status (Phase R1-D1) ───────────────────────────────────────────────
+
+BACKUP_TARGET = Path(r"F:\Projects\fii-dii-backup")
+
+
+@router.get("/backup/status")
+def backup_status():
+    """Last backup result parsed from logs/backup.log + target drive presence."""
+    log_file = ROOT / "logs" / "backup.log"
+    result = {
+        "target":          str(BACKUP_TARGET),
+        "drive_available": BACKUP_TARGET.drive != "" and Path(BACKUP_TARGET.drive + "\\").exists(),
+        "last_run":        None,
+        "last_result":     "NEVER_RUN",
+        "verified_dirs":   [],
+        "schedule":        "Weekly, Sunday 08:00 (Task Scheduler)",
+    }
+    if not log_file.exists():
+        return result
+
+    try:
+        lines = log_file.read_text(encoding="utf-8", errors="replace").splitlines()
+    except Exception:
+        return result
+
+    # Walk backwards to the most recent run's END marker, collect its VERIFIED lines
+    verified: list[str] = []
+    for line in reversed(lines):
+        if "=== BACKUP COMPLETE AND VERIFIED ===" in line:
+            result["last_result"] = "VERIFIED"
+            result["last_run"]    = line[:19]
+        elif "=== BACKUP FINISHED WITH ERRORS ===" in line:
+            result["last_result"] = "FAILED"
+            result["last_run"]    = line[:19]
+        elif result["last_result"] != "NEVER_RUN" and "VERIFIED  data\\" in line:
+            verified.append(line.split("VERIFIED  ", 1)[1])
+        elif result["last_result"] != "NEVER_RUN" and "=== BACKUP START" in line:
+            break   # reached the start of the most recent run
+        if result["last_result"] != "NEVER_RUN" and "MISMATCH" in line:
+            verified.append(line.split("  ", 2)[-1])
+    # Dedupe defensively (pre-guard logs may contain interleaved runs)
+    seen: set = set()
+    dirs = []
+    for d in reversed(verified):
+        if d not in seen:
+            seen.add(d)
+            dirs.append(d)
+    result["verified_dirs"] = dirs
+    return result
+
+
 # ── SSE engine runner ─────────────────────────────────────────────────────────
 
 def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
@@ -555,6 +612,8 @@ def _run_engine_sse(engine_name: str) -> Generator[str, None, None]:
         engines_to_run = INTELLIGENCE_PIPELINE
     elif engine_name == "pipeline_backfill":
         engines_to_run = BACKFILL_PIPELINE
+    elif engine_name == "pipeline_backup":
+        engines_to_run = BACKUP_PIPELINE
     else:
         engines_to_run = [engine_name]
 

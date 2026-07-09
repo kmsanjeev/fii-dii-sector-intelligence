@@ -6,6 +6,51 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.31.1
+
+Phase R1-D1b -- Manual Backup Pipeline in Data Control GUI
+
+Date: 2026-07-09
+
+Status: Completed
+
+---
+
+## Summary
+
+The raw-data backup is now a manually runnable pipeline on the Data Control
+page, with live streaming output, drive-presence detection, and last-run
+verification status. Also hardened backup.ps1 with a machine-wide
+single-instance mutex after a probe showed concurrent runs interleave logs.
+
+## New Features
+
+- engines/ops/backup_runner.py (NEW): Python wrapper streaming backup.ps1
+  output so the existing SSE engine runner can execute it
+- data_ops.py: ENGINES entry backup_raw_data + pipeline_backup alias;
+  GET /api/data/backup/status (target, drive_available, last run result,
+  per-directory verification badges parsed from logs/backup.log, deduped)
+- DataControlPage: DATA BACKUP panel -- DRIVE CONNECTED/NOT FOUND badge,
+  last-backup result + timestamp, verified-directory chips, Run Backup Now
+  (disabled when drive absent) with live streaming log, STOP support
+
+## Fixed
+
+- backup.ps1: Global named mutex (FiiDiiRawDataBackup) -- a second instance
+  now refuses with a clear message instead of interleaving robocopy output
+  with a running backup (found by concurrency probe; manual GUI run vs
+  Sunday scheduled run could have collided)
+
+## Verification
+
+- Wrapper end-to-end: exit 0, COMPLETE AND VERIFIED streamed
+- Concurrency probe: parallel second run exits 1 with clear message while
+  first completes verified
+- Status endpoint: 7 deduped verified dirs, correct timestamp/drive state
+- Suite 267/267; tsc + vite build clean
+
+---
+
 # Version 4.31.0
 
 Phase R1-D1 -- Raw Data Backup Automation (external drive)

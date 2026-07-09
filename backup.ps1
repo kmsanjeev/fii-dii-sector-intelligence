@@ -32,6 +32,15 @@ $DataRoot   = Join-Path $SourceRoot "data"
 $LogDir     = Join-Path $SourceRoot "logs"
 $LogFile    = Join-Path $LogDir "backup.log"
 
+# ── Single-instance guard ─────────────────────────────────────────────────────
+# Concurrent runs (manual + scheduled) would interleave logs and contend on
+# robocopy targets. A named mutex is machine-wide and self-cleaning on crash.
+$mutex = New-Object System.Threading.Mutex($false, "Global\FiiDiiRawDataBackup")
+if (-not $mutex.WaitOne(0)) {
+    Write-Host "Another backup is already running -- exiting."
+    exit 1
+}
+
 $Dirs = @("NSE", "historical", "reference", "portfolio", "execution", "research", "auth")
 
 if (-not (Test-Path $LogDir)) { New-Item -ItemType Directory -Force $LogDir | Out-Null }
@@ -99,7 +108,9 @@ foreach ($d in $Dirs) {
 
 if ($failed) {
     Write-Log "=== BACKUP FINISHED WITH ERRORS ==="
+    $mutex.ReleaseMutex()
     exit 1
 }
 Write-Log "=== BACKUP COMPLETE AND VERIFIED ==="
+$mutex.ReleaseMutex()
 exit 0
