@@ -6,6 +6,54 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.27.0
+
+Phase R1 -- Portfolio Risk Foundation (VaR / Expected Shortfall)
+
+Date: 2026-07-09
+
+Status: Completed
+
+---
+
+## Summary
+
+First quantitative risk layer for the platform, closing the Critical gap found in the
+institutional completeness audit (zero VaR/ES/covariance math existed anywhere).
+New engines/risk/ package computes historical + parametric VaR, Expected Shortfall,
+and per-position component risk from the parquet price cache; results exposed via
+/api/risk and a new PORTFOLIO RISK panel on the Portfolio page.
+
+## New Features
+
+- engines/risk/portfolio_risk_engine.py: historical VaR (95/99, 1d/10d), parametric
+  VaR (Ledoit-Wolf shrunk covariance), ES 97.5/99 (Basel convention), component VaR
+  (Euler decomposition), annualized vol, max drawdown, beta vs equal-weighted NIFTY 50
+- Pipeline stage R1_portfolio_risk added to daily refresh (after 20_portfolio)
+- backend/routers/risk.py: GET /api/risk/portfolio, POST /api/risk/refresh
+- PortfolioPage RISK panel: VaR/ES cards, risk-contribution bars vs capital weight,
+  risk-heavy flags, excluded-symbol warnings, on-demand refresh
+- backtest/metrics.py additive upgrade: sortino, profit_factor, avg_win, avg_loss,
+  max_drawdown
+
+## New Files
+
+- engines/risk/__init__.py, engines/risk/portfolio_risk_engine.py
+- backend/routers/risk.py
+- chat history/module_R1_risk_platform.md
+
+## Modified Files
+
+- engines/backtest/metrics.py, engines/orchestration/daily_refresh.py
+- backend/main.py, frontend/src/pages/PortfolioPage.tsx
+
+## Deferred
+
+- D1 backup automation (external drive) -- kept in pipeline backlog
+- Phases R2 (stress testing + factor model), R3 (Monte Carlo), R4 (TCA)
+
+---
+
 # Version 4.26.0
 
 Phase CH-Pro -- KLineChart Pro Full Capability Implementation

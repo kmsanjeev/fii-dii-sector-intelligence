@@ -87,6 +87,8 @@ STAGES = [
     ("13C_bm25_indexer",            "engines.ai.knowledge.bm25_indexer",                     "BM25 Indexer",                          30),
     # Portfolio overlay (fresh intelligence applied to holdings)
     ("20_portfolio",                "engines.portfolio.portfolio_engine",                    "Portfolio Intelligence Rebuild",        30),
+    # Portfolio risk (VaR/ES/component risk; depends on 1F cache + 20 positions)
+    ("R1_portfolio_risk",           "engines.risk.portfolio_risk_engine",                    "Portfolio Risk (VaR/ES)",               60),
     # Alerts — always last, fires on fully-refreshed intelligence
     ("9_alert_engine",              "alerts.alert_engine",                                   "Alert Engine (Telegram push)",          60),
 ]
@@ -106,7 +108,7 @@ STAGE_SECTIONS = {
                                 "AF_astro_engine",
                                 "KU_kundli_engine", "KU_gann_engine",
                                 "13A_document_builder", "13B_faiss_indexer", "13C_bm25_indexer",
-                                "20_portfolio", "9_alert_engine"],
+                                "20_portfolio", "R1_portfolio_risk", "9_alert_engine"],
 }
 
 # ── Shared state (guarded by _lock) ──────────────────────────────────────────

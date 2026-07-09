@@ -41,6 +41,41 @@ type Analytics = {
 
 type Portfolio = { analytics: Analytics; positions: Position[] }
 
+type RiskSnapshot = {
+  run_date:            string
+  portfolio_value:     number
+  n_positions:         number
+  n_excluded:          number
+  common_days:         number
+  var_hist_95_1d:      number
+  var_hist_99_1d:      number
+  var_hist_95_10d:     number
+  var_hist_99_10d:     number
+  var_param_95_1d:     number
+  var_param_99_1d:     number
+  es_hist_975_1d:      number
+  es_hist_99_1d:       number
+  vol_annualized_pct:  number
+  beta_vs_nifty50_ew:  number | null
+  max_drawdown_pct:    number
+}
+
+type RiskComponent = {
+  symbol:                string
+  sector:                string
+  weight_pct:            number | null
+  standalone_vol_pct:    number | null
+  component_var_95_1d:   number | null
+  risk_contribution_pct: number | null
+  status:                string
+}
+
+type RiskData = {
+  snapshot:   RiskSnapshot
+  components: RiskComponent[]
+  history:    { run_date: string; var_hist_95_1d: number; es_hist_975_1d: number }[]
+}
+
 // ── API helpers ───────────────────────────────────────────────────────────────
 
 async function fetchPortfolio(): Promise<Portfolio> {
@@ -452,6 +487,9 @@ export function PortfolioPage() {
       {/* Transaction history */}
       {showTxns && <TransactionHistory />}
 
+      {/* Portfolio risk — Phase R1 */}
+      {pos.length >= 2 && <RiskPanel />}
+
       {/* Empty state */}
       {!isLoading && pos.length === 0 && (
         <div style={{
@@ -571,6 +609,184 @@ function TransactionHistory() {
           </tbody>
         </table>
       </div>
+    </div>
+  )
+}
+
+// ── Portfolio Risk panel (Phase R1: VaR / ES / component risk) ────────────────
+
+function riskFmt(v: number | null | undefined): string {
+  if (v == null) return '--'
+  return v >= 1000 ? `Rs ${(v / 1000).toFixed(1)}K` : `Rs ${v.toFixed(0)}`
+}
+
+function RiskPanel() {
+  const qc = useQueryClient()
+
+  const { data, isLoading, error } = useQuery<RiskData>({
+    queryKey: ['portfolio_risk'],
+    queryFn: async () => {
+      const r = await fetch(`${API}/api/risk/portfolio`)
+      if (r.status === 404 || r.status === 422) throw new Error('NO_DATA')
+      if (!r.ok) throw new Error('Failed to load risk data')
+      return r.json()
+    },
+    staleTime: 5 * 60_000,
+    retry: false,
+    refetchOnWindowFocus: false,
+  })
+
+  const refresh = useMutation({
+    mutationFn: async () => {
+      const r = await fetch(`${API}/api/risk/refresh`, { method: 'POST' })
+      if (!r.ok) {
+        const e = await r.json()
+        throw new Error(e.detail || 'Risk refresh failed')
+      }
+      return r.json()
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['portfolio_risk'] }),
+  })
+
+  const s     = data?.snapshot
+  const comps = (data?.components ?? []).filter(c => c.status === 'OK')
+  const excl  = (data?.components ?? []).filter(c => c.status !== 'OK')
+  const noData = (error as Error | null)?.message === 'NO_DATA'
+
+  // % of portfolio value for color-coding VaR severity
+  const varPct = s ? (s.var_hist_95_1d / s.portfolio_value) * 100 : 0
+  const varColor = varPct > 3 ? '#EF4444' : varPct > 1.8 ? '#F59E0B' : '#22C55E'
+
+  return (
+    <div style={{
+      background: '#141720', border: '1px solid #1E2332',
+      borderRadius: 6, padding: 16, marginBottom: 20,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, letterSpacing: 2 }}>
+          PORTFOLIO RISK — VaR / EXPECTED SHORTFALL
+          {s && <span style={{ color: '#475569', fontWeight: 400, marginLeft: 10, letterSpacing: 0 }}>
+            as of {s.run_date} · {s.common_days} trading days · 95%/99% confidence
+          </span>}
+        </div>
+        <button
+          onClick={() => refresh.mutate()}
+          disabled={refresh.isPending}
+          style={{ ...ghostBtn, borderColor: '#3B82F6', color: refresh.isPending ? '#334155' : '#3B82F6' }}
+        >
+          {refresh.isPending ? 'Computing...' : 'Refresh Risk'}
+        </button>
+      </div>
+
+      {isLoading && <div style={{ color: '#64748B', fontSize: 11, padding: 12 }}>Loading risk data...</div>}
+
+      {noData && !isLoading && (
+        <div style={{ color: '#64748B', fontSize: 11, padding: 12 }}>
+          No risk snapshot yet. Click <span style={{ color: '#3B82F6' }}>Refresh Risk</span> to compute
+          VaR from current positions (needs 2+ positions with 60+ trading days of history).
+        </div>
+      )}
+      {refresh.isError && (
+        <div style={{ color: '#EF4444', fontSize: 10, padding: '0 0 8px' }}>{(refresh.error as Error).message}</div>
+      )}
+
+      {s && (
+        <>
+          {/* Headline risk cards */}
+          <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+            <SummaryCard
+              label="VaR 95% · 1 DAY"
+              value={riskFmt(s.var_hist_95_1d)}
+              color={varColor}
+              sub={`${varPct.toFixed(2)}% of portfolio · param ${riskFmt(s.var_param_95_1d)}`}
+            />
+            <SummaryCard
+              label="VaR 99% · 1 DAY"
+              value={riskFmt(s.var_hist_99_1d)}
+              color={varColor}
+              sub={`10-day: ${riskFmt(s.var_hist_99_10d)} (sqrt-scaled)`}
+            />
+            <SummaryCard
+              label="EXP. SHORTFALL 97.5%"
+              value={riskFmt(s.es_hist_975_1d)}
+              color="#F59E0B"
+              sub={`ES 99%: ${riskFmt(s.es_hist_99_1d)} · avg loss beyond VaR`}
+            />
+            <SummaryCard
+              label="ANNUALIZED VOL"
+              value={`${s.vol_annualized_pct.toFixed(1)}%`}
+              sub={s.beta_vs_nifty50_ew != null ? `beta ${s.beta_vs_nifty50_ew.toFixed(2)} vs NIFTY50 (EW)` : 'beta unavailable'}
+            />
+            <SummaryCard
+              label="MAX DRAWDOWN (2Y)"
+              value={`${s.max_drawdown_pct.toFixed(1)}%`}
+              color={s.max_drawdown_pct < -25 ? '#EF4444' : s.max_drawdown_pct < -15 ? '#F59E0B' : '#E2E8F0'}
+              sub="synthetic curve of current holdings"
+            />
+          </div>
+
+          {/* Component risk: weight vs risk contribution */}
+          {comps.length > 0 && (
+            <div>
+              <div style={{ color: '#64748B', fontSize: 10, letterSpacing: 1, marginBottom: 8 }}>
+                RISK CONTRIBUTION BY POSITION (component VaR, Euler decomposition)
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+                {comps
+                  .slice()
+                  .sort((a, b) => (b.risk_contribution_pct ?? 0) - (a.risk_contribution_pct ?? 0))
+                  .map(c => {
+                    const rc = c.risk_contribution_pct ?? 0
+                    const wt = c.weight_pct ?? 0
+                    const hot = rc > wt * 1.35   // contributes disproportionate risk
+                    return (
+                      <div key={c.symbol}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, marginBottom: 3 }}>
+                          <span style={{ color: '#E2E8F0', fontWeight: 600 }}>
+                            {c.symbol}
+                            <span style={{ color: '#475569', fontWeight: 400, marginLeft: 8 }}>{c.sector}</span>
+                            {hot && <span style={{ color: '#F59E0B', marginLeft: 8 }}>risk-heavy</span>}
+                          </span>
+                          <span style={{ color: '#64748B' }}>
+                            {riskFmt(c.component_var_95_1d)} · risk {rc.toFixed(1)}% vs weight {wt.toFixed(1)}%
+                            · vol {c.standalone_vol_pct?.toFixed(0)}%
+                          </span>
+                        </div>
+                        <div style={{ position: 'relative', height: 6, background: '#1E2332', borderRadius: 3 }}>
+                          <div style={{
+                            width: `${Math.min(rc, 100)}%`, height: 6, borderRadius: 3,
+                            background: hot ? '#F59E0B' : '#3B82F6', transition: 'width 0.5s',
+                          }} />
+                          {/* weight marker for visual weight-vs-risk comparison */}
+                          <div style={{
+                            position: 'absolute', top: -2, left: `${Math.min(wt, 100)}%`,
+                            width: 2, height: 10, background: '#94A3B8',
+                          }} />
+                        </div>
+                      </div>
+                    )
+                  })}
+              </div>
+              <div style={{ color: '#475569', fontSize: 9, marginTop: 6 }}>
+                Bar = share of portfolio risk · grey tick = capital weight. Bar past the tick = position adds more risk than capital.
+              </div>
+            </div>
+          )}
+
+          {/* Excluded symbols warning */}
+          {excl.length > 0 && (
+            <div style={{
+              marginTop: 12, padding: '8px 12px', borderRadius: 4,
+              border: '1px solid #F59E0B44', background: '#F59E0B11',
+              color: '#F59E0B', fontSize: 10,
+            }}>
+              Excluded from risk math ({excl.length}): {excl.map(e =>
+                `${e.symbol} (${e.status.replace('EXCLUDED_', '').replace('_', ' ').toLowerCase()})`
+              ).join(', ')} — VaR understates true portfolio risk.
+            </div>
+          )}
+        </>
+      )}
     </div>
   )
 }

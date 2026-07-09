@@ -74,7 +74,9 @@ data/intelligence/
 |-- technical_indicators.csv             2717 rows  52W H/L, 20/50/200 DMA, trend_signal (Phase A)
 |-- fno_intelligence.csv                  211 rows  per-stock futures OI + oi_signal (Phase A)
 |-- market_context.json                             market PCR + regime pulse (Phase A)
-`-- trade_conviction_scores.csv          2406 rows  7-factor conviction score + action (Phase C)
+|-- trade_conviction_scores.csv          2406 rows  7-factor conviction score + action (Phase C)
+|-- portfolio_risk.csv                              VaR 95/99, ES, vol, beta, maxDD per run date (Phase R1)
+`-- portfolio_risk_components.csv                   per-position component VaR + risk contribution (Phase R1)
 data/NSE/shareholding/
 |-- quarterly_shp.csv                    7228 rows  Q2FY25-Q1FY26 FII/DII/promoter % (Phase 15C)
 |-- holding_trends.csv                              QoQ promoter/FII/DII deltas (Phase 16)
@@ -128,6 +130,7 @@ data/NSE/shareholding/
 | TI    | Technical Indicators Upgrade  | COMPLETE 100%    | RSI, MACD, ATR, BB, OBV, ADX added to technical_engine.py + StocksPage 3-layer card |
 | SH    | Shareholding History Fix      | COMPLETE 100%    | XBRL fraction-scale auto-detect; 76,170 rows; 8-quarter trend cards in StocksPage |
 | UI-S  | Sectors + Social Pulse UI     | COMPLETE 100%    | Relative cross-sectional score, FII regime badge, heatmap dual-score fix, X/Nitter card |
+| R1    | Portfolio Risk Foundation     | COMPLETE 100%    | engines/risk/portfolio_risk_engine.py; VaR/ES/component risk; /api/risk; Portfolio RISK panel; backup (D1) deferred to external drive |
 
 ## CURRENT PLATFORM STATUS (2026-07-09)
 **ALL 25 CORE PHASES + A/B/C/CH/TI/SH/UI-S COMPLETE.** Full investment operating system is live.
