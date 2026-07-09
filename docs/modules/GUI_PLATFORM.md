@@ -96,14 +96,20 @@ Built in Phase CH. Rendered outside AppShell (full-viewport, no sidebar).
 - VWAP: session-resetting at UTC date boundary; IndicatorSeries.Price
 - Supertrend(7,3): Wilder ATR; teal bull / red bear with null gaps for segment coloring
 - HMA(9): Hull MA via double WMA; lag-reduced smooth line
-- VOLMain: canvas draw() on price pane (IndicatorSeries.Price + figures:[]);
-  paints 20% bottom zone bars via bounding.bottom + xAxis.convertToPixel(barIndex);
-  returns true from draw() to skip default rendering
+- VOLMain: canvas draw() on price pane; 20% bottom zone bars; returns true from draw()
+- CorpActions: triangle markers (D/B/S/R/X) at bar bottom; module-level store populated
+  via setCorpActions(actions) after chart init; fetched from /api/stocks/{sym}/corp_actions
+- AlertLines: horizontal dashed lines at user alert prices via yAxis.convertToPixel(price);
+  orange badge label on right edge; module-level store via setAlertPrices(prices)
 
-**Settings Panel:** candle type, up/down colors, grid, font size, axes, crosshair (setStyles())
+**Settings Panel:** candle type (6 types incl. Up/Dn Hollow), colors, grid, font, axes, Y-axis scale (Normal/Percentage/Log), crosshair, main/sub indicator toggles (setStyles())
 
 **Watchlist Panel:** localStorage cfip-wl; multi-list; LTP + abs change + change% (60s poll);
   multi-symbol add (space/comma/newline delimiters); autocomplete with arrow key nav
+
+**Timezone:** Asia/Kolkata (fixed from UTC in v4.26.0)
+
+**Datafeed pagination:** from/to Unix ms -> from_date/to_date YYYY-MM-DD for daily+ bars
 
 **Known Library Bugs Worked Around:**
 - Pro v0.1.1 CSS: `var(---klinecharts-pro-text-color)` (3 dashes) -> inject override CSS on mount

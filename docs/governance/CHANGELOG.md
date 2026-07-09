@@ -6,6 +6,47 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.26.0
+
+Phase CH-Pro -- KLineChart Pro Full Capability Implementation
+
+Date: 2026-07-09
+
+Status: Completed
+
+Commits: 1d8424a
+
+---
+
+## Summary
+
+Raised KLineChart Pro chart utilization from ~60% to ~90% of available library capability.
+Added 9 new features across 3 files: corporate action markers, alert price lines,
+timezone fix, datafeed pagination, extended candle types, Y-axis scale modes,
+light theme, indicator persistence, and expanded SymbolInfo fields.
+
+## New Features
+
+- CorpActions indicator: colored triangle markers (D/B/S/R/X) at bar bottom for
+  dividends, bonus, splits, rights, buybacks; fetched from /api/stocks/{sym}/corp_actions
+- AlertLines indicator: horizontal dashed orange lines at user-defined prices using
+  yAxis.convertToPixel(); per-symbol localStorage persistence (cfip-alerts-v1)
+- + Alert button in top bar: add price alerts interactively; badge chips with click-to-remove
+- Light theme: LIGHT_PRESET + theme toggle button; calls pro.setTheme('light'/'dark')
+- Y-axis scale: Normal / Percentage / Log radio in Settings panel
+- Extended candle types: Up Hollow (candle_up_stroke) + Dn Hollow (candle_down_stroke)
+- Indicator persistence: cfip-indicators-v2; main/sub toggles in Settings panel
+- Datafeed pagination: from/to Unix ms -> YYYY-MM-DD for daily+ requests (uses new backend params)
+- Timezone fix: timezone: 'UTC' -> 'Asia/Kolkata' in Pro constructor
+
+## Modified Files
+
+- frontend/src/indicators/customIndicators.ts -- CorpActions + AlertLines indicators + 4 exports
+- frontend/src/pages/FullChartPage.tsx -- 9 new features; LIGHT_PRESET; Y-axis; indicator toggles
+- backend/routers/charts.py -- from_date/to_date query params on /api/charts/ohlcv
+
+---
+
 # Version 4.25.0
 
 Phase CH-Fix -- KLineChart Pro Bug Fixes + Watchlist Polish + Stock Page Nav
