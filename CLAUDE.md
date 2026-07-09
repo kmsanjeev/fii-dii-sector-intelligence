@@ -35,7 +35,7 @@ data/
 |   |-- corporate_actions/        <- 1999-2026, 28 YYYY.csv files (COMPLETE)
 |   |-- results/                  <- quarterly_results.csv (Phase 15 COMPLETE: 4181 rows)
 |   `-- shareholding/             <- quarterly_shp.csv (4 quarters Q2FY25-Q1FY26, 7228 rows)
-|-- bhavcopy/equity/1995-2026/    <- LEGACY location, 7813 files (USE FOR ML + momentum)
+|-- (data/bhavcopy REMOVED)       <- legacy dir consolidated into data/NSE/bhavcopy (verified 2026-07-09)
 |-- BSE/                          <- Future, no engines yet
 |-- cache/stock_history/          <- Per-symbol OHLCV parquet (config: STOCK_HISTORY_CACHE)
 |-- historical/institutional/     <- positioning history + cash flows (LIVE)
@@ -43,7 +43,8 @@ data/
 `-- reference/                    <- sector/theme/classification CSVs
 ```
 **WARNING:** `data/NSE Data/` (with space) does NOT exist — fix any engine referencing it.
-**WARNING:** `data/bhavcopy/` is the LEGACY location. New engines write to `data/NSE/bhavcopy/` via config.
+**NOTE:** legacy `data/bhavcopy/` no longer exists — full archive lives in `data/NSE/bhavcopy/` (15,952 files, 17.6 GB).
+**BACKUP:** `backup.ps1` mirrors raw dirs to `F:\Projects\fii-dii-backup` weekly (Task Scheduler, Sun 08:00). Run manually after large acquisitions.
 
 ## INTELLIGENCE OUTPUTS (current as of 2026-07-09)
 ```
@@ -138,7 +139,7 @@ data/NSE/shareholding/
 | TI    | Technical Indicators Upgrade  | COMPLETE 100%    | RSI, MACD, ATR, BB, OBV, ADX added to technical_engine.py + StocksPage 3-layer card |
 | SH    | Shareholding History Fix      | COMPLETE 100%    | XBRL fraction-scale auto-detect; 76,170 rows; 8-quarter trend cards in StocksPage |
 | UI-S  | Sectors + Social Pulse UI     | COMPLETE 100%    | Relative cross-sectional score, FII regime badge, heatmap dual-score fix, X/Nitter card |
-| R1    | Portfolio Risk Foundation     | COMPLETE 100%    | engines/risk/portfolio_risk_engine.py; VaR/ES/component risk; /api/risk; Portfolio RISK panel; backup (D1) deferred to external drive |
+| R1    | Portfolio Risk Foundation     | COMPLETE 100%    | engines/risk/portfolio_risk_engine.py; VaR/ES/component risk; /api/risk; Portfolio RISK panel; D1 backup COMPLETE (backup.ps1 -> F:, weekly Sun 08:00) |
 | R2    | Stress Testing + Factor Model | COMPLETE 100%    | stress_test_engine.py (2008/2013/2018/2020 replay + shocks); factor_model_engine.py (Barra-lite, NIFTY 500); test suite repaired 267/267 |
 | R3    | Monte Carlo Simulation        | COMPLETE 100%    | monte_carlo_engine.py; 100k correlated paths ~5s; antithetic + seeded; orchestrator/worker seam for future distributed grid; /api/risk/simulate |
 | R4    | Execution Quality (TCA)       | COMPLETE 100%    | tca_engine.py + order_slicer.py; arrival price on all orders; ADV participation warning; ExecutionPage TCA tab; risk roadmap COMPLETE |

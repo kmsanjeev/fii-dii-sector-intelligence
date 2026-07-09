@@ -185,3 +185,35 @@ Order Slicer tool with plan preview
 
 ### RISK ROADMAP COMPLETE: R1 + R2 + R3 + R4 all shipped.
 Only D1 (backup.ps1 -> external drive) remains from the original audit plan.
+
+---
+
+## Session 2026-07-09 (later) — Phase R1-D1: Backup Automation (COMPLETE)
+
+User plugged external drive; target F:\Projects (143 GB free).
+
+**Discovery correction:** CLAUDE.md's "legacy data\bhavcopy, 7813 files" was
+STALE -- directory does not exist; full archive consolidated in
+data\NSE\bhavcopy (15,952 files, 17.6 GB). CLAUDE.md fixed.
+
+**backup.ps1 (repo root):**
+- robocopy /MIR per directory: NSE, historical, reference, portfolio,
+  execution, research, auth -> F:\Projects\fii-dii-backup\data\
+- Excluded (rebuildable/secrets): intelligence, cache, backtest, aggregated,
+  logs, .env
+- Post-run verify: file count + total bytes per dir, source vs target;
+  exit 1 on robocopy >=8 or any mismatch; audit log logs\backup.log
+- /MIR ONLY into the dedicated fii-dii-backup subfolder (never F:\Projects
+  root -- /MIR deletes target extras)
+
+**Scheduled Task:** "FII-DII Weekly Raw Data Backup", Sundays 08:00 IST
+(G-A-04), StartWhenAvailable; registered via Register-ScheduledTask
+(schtasks.exe /TR quoting fails under PowerShell -- use the cmdlets).
+
+### Verification
+- First full run: 38,109 files / 20.0 GB in 11 min, all 7 dirs VERIFIED
+- Idempotency probe: second run = 10s scan-only no-op, exit 0
+- Next scheduled run: Sun 2026-07-12 08:00
+
+### AUDIT FULLY CLOSED: R1+R2+R3+R4+D1 all shipped. Deferred by design:
+second intraday source (future acquisition phase), Redis Streams.

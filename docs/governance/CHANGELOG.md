@@ -6,6 +6,56 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.31.0
+
+Phase R1-D1 -- Raw Data Backup Automation (external drive)
+
+Date: 2026-07-09
+
+Status: Completed
+
+---
+
+## Summary
+
+Closes the last Critical finding from the institutional audit: the irreplaceable
+raw data archive (30 years of bhavcopy + institutional history) now mirrors to
+an external drive weekly with byte-level verification. This was deferred from
+Phase R1 until the user's external drive was available.
+
+## New Features
+
+- backup.ps1 (repo root): robocopy /MIR of data\NSE, historical, reference,
+  portfolio, execution, research, auth to F:\Projects\fii-dii-backup;
+  post-run verify compares file count + total bytes per directory;
+  full audit trail in logs\backup.log; exit 1 on any failure or mismatch.
+  Excluded by design: data\intelligence, data\cache, data\backtest (all
+  rebuildable), .env (secrets stay local).
+- Windows Scheduled Task "FII-DII Weekly Raw Data Backup": Sundays 08:00
+  (outside market hours, G-A-04), StartWhenAvailable for missed runs.
+
+## Docs Corrected
+
+- CLAUDE.md: legacy data\bhavcopy\ no longer exists -- archive consolidated
+  into data\NSE\bhavcopy (15,952 files, 17.6 GB); stale path notes fixed.
+
+## Verification
+
+- First full run: 38,109 files / 20.0 GB mirrored in 11 min, all 7 dirs
+  VERIFIED (count + bytes match)
+- Idempotency: second run 10s scan-only no-op, exit 0
+- Scheduled task registered; next run Sun 2026-07-12 08:00
+
+## Audit Status
+
+ALL findings from the institutional completeness audit now closed or
+explicitly deferred: R1 VaR/ES, R2 stress + factors, R3 Monte Carlo,
+R4 TCA + slicing, D1 backup. Remaining (documented, deliberate): second
+intraday data source (future acquisition phase), Redis Streams (no
+intraday consumer yet).
+
+---
+
 # Version 4.30.0
 
 Phase R4 -- Execution Quality: TCA + Order Slicing
