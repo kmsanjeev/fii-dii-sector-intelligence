@@ -98,3 +98,34 @@ API key read from `os.getenv("ANTHROPIC_API_KEY")` — never hardcoded.
   OpenRouter rate-limited (real) -> Cerebras answered. Log archaeology found
   two all-providers-exhausted events same day (22:39, 23:50) -- user report
   confirmed; expansion directly addresses it.
+
+---
+
+## Session 2026-07-10 — Phase KU-3: Kundli Depth Rework
+
+User review of a real chart (1979 Nalanda, Libra lagna) found: repetitive
+preset sentences (same lord-in-house text in 4 sections), internal
+contradiction (Saturn dasha = karmic test vs Life Guide GOOD), truncated
+house significations, shallow non-personalised depth.
+
+**Root causes + fixes:**
+1. FUNCTIONAL NATURE was missing: for Libra lagna Saturn is YOGAKARAKA
+   (kendra+trikona lord). New _functional_nature() + _YOGAKARAKA_BY_LAGNA in
+   kundli_calculator; _dasha_interpretation weighs functional role above sign
+   dignity; career-timing + combined-dasha readings + Life Guide rating all
+   share it -> no more self-contradiction.
+2. REPETITION: _lord_sentence per-report dedupe (_EMITTED_LORDS): full text ->
+   first-clause essence -> suppressed. Dignity prefixes rotate alternates.
+3. TRUNCATION: house significations moved to full-width covers: line.
+4. COMBUSTION detection (classical orbs) added to calculator; shows in table
+   (C flag), watch-outs, Life Guide scoring, excluded from window advice.
+5. HONEST VERDICTS: central _SECTION_META + _section_verdict in interpreter --
+   every section ends with Clearly positive / Watch out for naming actual
+   chart factors both ways.
+6. TIMING WINDOWS: _favourable_windows -- real dasha date ranges for career/
+   wealth/marriage from relevant lords+karakas (combust lords excluded).
+
+Verified on both archetypes (yogakaraka chart + plain chart); suite 267/267.
+GOTCHA: kundli_calculator imports kundli_interpreter at module load -- any
+interpreter->calculator import MUST be lazy (inside function) to avoid a
+circular import.

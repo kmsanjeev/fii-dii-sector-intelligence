@@ -721,9 +721,59 @@ def _all_12_houses(planets: dict, lagna_idx: int) -> dict:
     return houses
 
 
-def _dasha_interpretation(planet: str, dignity: str) -> str:
-    """Return a short interpretation of a dasha planet based on its natal dignity."""
-    positive = dignity in ("exalted","own_sign","moolatrikona","friendly")
+# ── Functional nature by lagna (KU-3) ─────────────────────────────────────────
+# Classical yogakaraka: one planet lording both a kendra (4/7/10) and a
+# trikona (5/9) for the lagna -- the chart's single most productive planet.
+_YOGAKARAKA_BY_LAGNA = {
+    "Taurus": "Saturn", "Libra": "Saturn",
+    "Cancer": "Mars",   "Leo":   "Mars",
+    "Capricorn": "Venus", "Aquarius": "Venus",
+}
+
+
+def _houses_lorded(planet: str, lagna_sign: str) -> list[int]:
+    """Whole-sign houses this planet lords for the given lagna (empty for nodes)."""
+    if planet in ("Rahu", "Ketu"):
+        return []
+    lagna_idx = SIGNS.index(lagna_sign)
+    return sorted(
+        ((SIGNS.index(s) - lagna_idx) % 12) + 1
+        for s, lord in SIGN_RULERS.items() if lord == planet
+    )
+
+
+def _functional_nature(planet: str, lagna_sign: str) -> tuple[str, str]:
+    """(nature_code, plain_text) of a planet FOR THIS LAGNA.
+    Classical hierarchy: yogakaraka > trikona lord > kendra lord > trik lord."""
+    if _YOGAKARAKA_BY_LAGNA.get(lagna_sign) == planet:
+        return ("YOGAKARAKA",
+                f"{planet} is the YOGAKARAKA for {lagna_sign} lagna -- the single most "
+                f"productive planet in this chart; its periods build career and fortune "
+                f"even when its sign placement looks weak")
+    lorded = _houses_lorded(planet, lagna_sign)
+    if not lorded:
+        return ("NODE", f"{planet} gives results of its sign lord and conjunctions")
+    trikona = [h for h in lorded if h in (1, 5, 9)]
+    trik    = [h for h in lorded if h in (6, 8, 12)]
+    kendra  = [h for h in lorded if h in (4, 7, 10)]
+    if trikona and not trik:
+        return ("BENEFIC", f"{planet} lords house(s) {lorded} -- a functional benefic "
+                           f"for {lagna_sign} lagna; its periods generally uplift")
+    if trik and not trikona:
+        return ("MALEFIC", f"{planet} lords house(s) {lorded} -- a functional malefic "
+                           f"for {lagna_sign} lagna; its periods demand caution")
+    if trikona and trik:
+        return ("MIXED", f"{planet} lords house(s) {lorded} -- mixed duty for "
+                         f"{lagna_sign} lagna; its periods give with one hand and test with the other")
+    if kendra:
+        return ("NEUTRAL", f"{planet} lords kendra house(s) {lorded} -- broadly neutral-to-supportive")
+    return ("NEUTRAL", f"{planet} lords house(s) {lorded} -- mild influence for this lagna")
+
+
+def _dasha_interpretation(planet: str, dignity: str, lagna_sign: str = "") -> str:
+    """Dasha reading that weighs FUNCTIONAL nature (by lagna) above sign dignity.
+    Classical rule: a yogakaraka in an unfriendly sign still delivers its promise
+    with friction, while a trik lord exalted still carries its portfolio's costs."""
     themes = {
         "Sun":     "authority, government service, leadership, vitality",
         "Moon":    "emotions, mother, property, mental peace, public dealings",
@@ -736,8 +786,29 @@ def _dasha_interpretation(planet: str, dignity: str) -> str:
         "Ketu":    "spirituality, detachment, research, losses, moksha",
     }
     th = themes.get(planet, "general life themes")
-    tone = "favourable period for" if positive else "karmic test period — challenges in"
-    return f"{tone} {th}"
+    strong_dig = dignity in ("exalted", "own_sign", "moolatrikona", "friendly")
+
+    nature = ""
+    if lagna_sign in SIGNS:
+        nature, _ = _functional_nature(planet, lagna_sign)
+
+    if nature == "YOGAKARAKA":
+        if strong_dig:
+            return f"your chart's BEST period type (yogakaraka, well-placed) -- strong rise in {th}"
+        return (f"a strongly PRODUCTIVE period despite the weak sign placement -- {planet} is "
+                f"your yogakaraka: expect real gains in {th}, earned through friction and patience")
+    if nature == "BENEFIC":
+        return (f"favourable period for {th}" if strong_dig else
+                f"net-positive period for {th}, though the weak placement slows delivery")
+    if nature == "MALEFIC":
+        return (f"testing period around {th} -- the strong placement softens but does not "
+                f"remove the challenges" if strong_dig else
+                f"karmic test period -- expect obstacles around {th}; consolidate, do not expand")
+    if nature == "MIXED":
+        return f"two-sided period: genuine progress in {th} alongside recurring tests"
+    # Nodes / neutral
+    return (f"favourable period for {th}" if strong_dig
+            else f"uneven period for {th}; results improve with discipline")
 
 
 def _build_formatted_report(
@@ -788,25 +859,36 @@ def _build_formatted_report(
     lines.append(f"  Sign   : {lagna.get('sign','')} ({_vedic_name(lagna.get('sign',''))})")
     lines.append(f"  Degree : {lagna.get('degree',0):.2f} deg  in  {lagna.get('sign','')}")
     lines.append(f"  Lord   : {lagna_lord}  — H{ll_data.get('house','?')}, {ll_data.get('sign','')}, {ll_data.get('dignity','neutral')}")
+    yk = _YOGAKARAKA_BY_LAGNA.get(lagna.get("sign", ""))
+    if yk:
+        yk_d = planets.get(yk, {})
+        lines.append(f"  Yogakaraka : {yk} (rules a kendra AND a trikona for this lagna --")
+        lines.append(f"               your chart's most productive planet; currently in H{yk_d.get('house','?')}, {yk_d.get('sign','')})")
     lines.append("")
 
     # Planetary table
     lines += ["PLANETARY POSITIONS  (GRAHA STHITI)", dash]
-    lines.append(f"  {'Planet':<10}  {'Sign':<14}  {'Deg':>6}  H   {'Nakshatra':<20}  P  {'Dignity':<14}  R")
-    lines.append(f"  {'-'*10}  {'-'*14}  {'-'*6}  --  {'-'*20}  -  {'-'*14}  -")
+    lines.append(f"  {'Planet':<10}  {'Sign':<14}  {'Deg':>6}  H   {'Nakshatra':<20}  P  {'Dignity':<14}  Flags")
+    lines.append(f"  {'-'*10}  {'-'*14}  {'-'*6}  --  {'-'*20}  -  {'-'*14}  -----")
     ORDER = ["Sun","Moon","Mars","Mercury","Jupiter","Venus","Saturn","Rahu","Ketu"]
+    combust_planets = []
     for pname in ORDER:
         pd = planets.get(pname)
         if pd is None:
             continue
-        retro = "R" if pd.get("retrograde") else "-"
+        flags = ("R" if pd.get("retrograde") else "") + ("C" if pd.get("combust") else "")
+        if pd.get("combust"):
+            combust_planets.append(pname)
         vname = _vedic_name(pd.get("sign",""))
         sign_str = f"{pd.get('sign','')} ({vname})" if vname else pd.get("sign","")
         lines.append(
             f"  {pname:<10}  {sign_str:<14}  {pd.get('degree',0):>6.2f}  {pd.get('house',''):>2}  "
-            f"{pd.get('nakshatra',''):<20}  {pd.get('pada','')}  {pd.get('dignity','neutral'):<14}  {retro}"
+            f"{pd.get('nakshatra',''):<20}  {pd.get('pada','')}  {pd.get('dignity','neutral'):<14}  {flags or '-'}"
         )
-    lines.append("  Key: H = House (Whole Sign)  |  P = Pada  |  R = Retrograde")
+    lines.append("  Key: H = House (Whole Sign)  |  P = Pada  |  R = Retrograde  |  C = Combust (too close to Sun)")
+    if combust_planets:
+        lines.append(f"  Combust: {', '.join(combust_planets)} -- a combust planet's outward expression is")
+        lines.append("  weakened (its themes need conscious extra effort), though inner qualities remain.")
     lines.append("")
 
     # Dasha
@@ -819,7 +901,10 @@ def _build_formatted_report(
         mp_dg = planets.get(mp,{}).get("dignity","neutral")
         mp_h  = planets.get(mp,{}).get("house","?")
         lines.append(f"  Mahadasha      : {mp:<10} ends {maha.get('end_date','')[:10]}  [H{mp_h}, {mp_dg}]")
-        lines.append(f"  Interpretation : {_dasha_interpretation(mp, mp_dg)}")
+        lines.append(f"  Interpretation : {_dasha_interpretation(mp, mp_dg, lagna.get('sign',''))}")
+        if lagna.get("sign") in SIGNS:
+            _, fn_text = _functional_nature(mp, lagna["sign"])
+            lines.append(f"  Functional role: {fn_text}")
     if ant:
         ap = ant.get("planet","")
         ap_dg = planets.get(ap,{}).get("dignity","neutral")
@@ -879,18 +964,19 @@ def _build_formatted_report(
         lines.append("  No classic doshas detected in this chart.")
     lines.append("")
 
-    # All 12 houses
+    # All 12 houses (signification on its own line -- never truncated)
     lines += ["ALL 12 HOUSES  (BHAVA ANALYSIS)", dash]
-    lines.append(f"  {'H':<3}  {'Sign':<14}  {'Lord':<8}  {'Lord-H':<7}  {'Occupants':<24}  {'Strength':<8}  Signification")
-    lines.append(f"  {'-'*3}  {'-'*14}  {'-'*8}  {'-'*7}  {'-'*24}  {'-'*8}  {'-'*20}")
+    lines.append(f"  {'H':<3}  {'Sign':<14}  {'Lord':<8}  {'Lord-H':<7}  {'Occupants':<24}  Strength")
+    lines.append(f"  {'-'*3}  {'-'*14}  {'-'*8}  {'-'*7}  {'-'*24}  {'-'*8}")
     for hnum in range(1, 13):
         hd = all_houses.get(f"H{hnum}", {})
-        occ_str = ", ".join(hd.get("occupants",[]))[:22] or "--"
+        occ_str = ", ".join(hd.get("occupants",[])) or "--"
         lord_h  = str(hd.get("lord_house") or "?")
         lines.append(
             f"  {hnum:<3}  {hd.get('sign',''):<14}  {hd.get('lord',''):<8}  "
-            f"H{lord_h:<6}  {occ_str:<24}  {hd.get('strength',''):<8}  {hd.get('signification','')[:40]}"
+            f"H{lord_h:<6}  {occ_str:<24}  {hd.get('strength','')}"
         )
+        lines.append(f"       covers: {hd.get('signification','')}")
     lines.append("")
 
     # Financial houses (detailed)
@@ -1365,6 +1451,19 @@ def compute_personal_kundli(
             "dignity":       dg,
             "retrograde":    tp["retrograde"],
         }
+
+    # Combustion (asta): planet within orb of the Sun loses expressive power (KU-3)
+    _COMBUST_ORB = {"Moon": 12.0, "Mars": 17.0, "Mercury": 14.0,
+                    "Jupiter": 11.0, "Venus": 10.0, "Saturn": 15.0}
+    sun_lon = planets_out.get("Sun", {}).get("longitude", 0.0)
+    for name, pd_ in planets_out.items():
+        orb = _COMBUST_ORB.get(name)
+        if orb is None:
+            pd_["combust"] = False
+            continue
+        gap = abs(pd_["longitude"] - sun_lon)
+        gap = min(gap, 360.0 - gap)
+        pd_["combust"] = gap <= orb
 
     # Moon nakshatra → dasha
     moon_sid = _sidereal(trop["Moon"]["lon"], ayanamsha)

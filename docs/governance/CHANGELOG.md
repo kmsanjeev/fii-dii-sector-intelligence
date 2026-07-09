@@ -6,6 +6,64 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.33.0
+
+Phase KU-3 -- Kundli Depth Rework (personalisation, honesty, de-duplication)
+
+Date: 2026-07-10
+
+Status: Completed
+
+---
+
+## Summary
+
+Rework of the kundli interpretation engine after user review found repetitive
+preset text, internal contradictions, truncated output and shallow depth.
+The engine now weighs FUNCTIONAL nature (what a planet does for THIS lagna)
+above raw sign dignity, detects combustion, de-duplicates cross-section text,
+and states both positive and negative findings plainly in every section.
+
+## Fixed
+
+- CONTRADICTION: Saturn dasha called 'karmic test' in three places while the
+  Life Guide rated it GOOD -- for Libra/Taurus lagnas Saturn is the YOGAKARAKA
+  (rules a kendra AND trikona), classically the chart's most productive
+  planet. All layers (dasha interpretation, career timing, combined reading,
+  Life Guide rating) now share functional-nature logic and agree.
+- REPETITION: the same lord-in-house sentence was pasted verbatim into up to
+  4 sections. _lord_sentence now de-duplicates per report: 1st use full text,
+  2nd use first-clause essence marked as covered, 3rd+ suppressed. Heavy
+  dignity prefixes rotate through varied phrasings. Old worst-offender phrase
+  count: 8+ -> 2 per report.
+- TRUNCATION: ALL 12 HOUSES signification was sliced at 40 chars; now printed
+  in full on its own 'covers:' line per house.
+
+## New Depth (all computed, chart-specific)
+
+- COMBUSTION (asta) detection with classical orbs per planet; flagged in the
+  planetary table (C flag + plain-English note), in section watch-outs, in
+  Life Guide period ratings, and excluded from favourable-window suggestions.
+  (The reviewed 1979 chart has combust Mars -- previously invisible.)
+- YOGAKARAKA + functional nature engine in kundli_calculator
+  (_functional_nature): yogakaraka > trikona lord > kendra lord > trik lord;
+  surfaced in LAGNA section, dasha interpretation, career timing, verdicts.
+- HONEST VERDICTS: every life-area section now ends with
+  'Clearly positive :' and 'Watch out for    :' lines naming the specific
+  strongest and weakest chart factors -- both sides always stated.
+- TIMING WINDOWS: career / wealth / marriage sections list concrete dasha
+  date ranges (favourable antardasha/mahadasha of the relevant lords and
+  karakas within ~15 years) instead of 'at the appropriate life stage'.
+
+## Verification
+
+- 1979 Nalanda chart (Libra, yogakaraka case): contradiction gone, combust
+  Mars flagged, 12 verdict pairs, 3 timing-window lines, dedupe confirmed
+- 1985 Bokaro chart (Sagittarius, no yogakaraka): regression-clean
+- Suite 267/267
+
+---
+
 # Version 4.32.0
 
 Phase KU-2 -- Global Geocoding + Kundli Life Guide + LLM Provider Expansion

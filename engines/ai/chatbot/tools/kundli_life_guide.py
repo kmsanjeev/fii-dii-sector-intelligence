@@ -61,11 +61,23 @@ def _houses_lorded(planet: str, lagna_sign: str) -> list[int]:
     ]
 
 
+_YOGAKARAKA_BY_LAGNA = {
+    "Taurus": "Saturn", "Libra": "Saturn",
+    "Cancer": "Mars",   "Leo":   "Mars",
+    "Capricorn": "Venus", "Aquarius": "Venus",
+}
+
+
 def _rate_dasha(planet: str, planets: dict, lagna_sign: str) -> tuple[float, str, list[str]]:
     """Score a dasha lord's favourability. Returns (score, label, reasons)."""
     pd = planets.get(planet, {})
     score = 0.0
     reasons: list[str] = []
+
+    # Yogakaraka: the single most productive planet for this lagna
+    if _YOGAKARAKA_BY_LAGNA.get(lagna_sign) == planet:
+        score += 2.0
+        reasons.append("it is your chart's YOGAKARAKA -- the most productive planet for your lagna")
 
     # Functional lordship for this lagna
     lorded = _houses_lorded(planet, lagna_sign)
@@ -100,6 +112,11 @@ def _rate_dasha(planet: str, planets: dict, lagna_sign: str) -> tuple[float, str
         reasons.append(f"sits in house {house} (a testing placement)")
     elif house in (1, 4, 5, 7, 9, 10):
         score += 0.75
+
+    # Combustion mutes a period's delivery
+    if pd.get("combust"):
+        score -= 0.75
+        reasons.append("it is combust (too close to the Sun) -- expression is muted")
 
     # Natural character
     if planet in NATURAL_BENEFICS:

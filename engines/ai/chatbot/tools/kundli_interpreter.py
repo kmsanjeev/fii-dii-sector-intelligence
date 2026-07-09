@@ -478,12 +478,44 @@ def _karaka_area_sentence(planet: str, house: int, dignity: str, retrograde: boo
     return _planet_sentence(planet, house, dignity, retrograde)
 
 
+# Per-report repetition tracker: the same lord-placement must not be pasted
+# verbatim into multiple sections (KU-3). Reset in generate_life_readings().
+_EMITTED_LORDS: dict[tuple, int] = {}
+
+# Rotating alternates so the same dignity does not stamp identical lead-ins
+_DIGNITY_ALTS = {
+    "enemy": ["In an unfriendly sign -- extra effort needed; ",
+              "Uncomfortably placed -- ", "Working against the grain -- "],
+    "debilitated": ["At its weakest sign -- ", "Struggling for expression -- "],
+}
+
+
 def _lord_sentence(house_num: int, lord_house: int, dignity: str) -> str:
-    """Return lord-in-house reading."""
+    """Lord-in-house reading with cross-section de-duplication:
+    1st use  -> full interpretation
+    2nd use  -> first clause only, marked as already covered
+    3rd+ use -> suppressed (empty) so sections stop echoing each other."""
     base = LORD_IN_HOUSE.get(house_num, {}).get(lord_house, "")
     if not base:
         return ""
+    key = (house_num, lord_house)
+    count = _EMITTED_LORDS.get(key, 0)
+    _EMITTED_LORDS[key] = count + 1
+
+    if count >= 2:
+        return ""
+    if count == 1:
+        first_clause = base.split(";")[0].strip().rstrip(".")
+        return (f"H{house_num} lord in H{lord_house} (detailed earlier) -- "
+                f"for this area the essence is: {first_clause.lower()}.")
+
     prefix = _DIGNITY_PREFIX.get(dignity, "")
+    # Vary heavy negative prefixes after their first appearance anywhere
+    if dignity in _DIGNITY_ALTS:
+        used = sum(v for k, v in _EMITTED_LORDS.items()) - 1
+        alts = _DIGNITY_ALTS[dignity]
+        if used > 0:
+            prefix = alts[used % len(alts)]
     return f"H{house_num} lord in H{lord_house} -- {prefix}{base}"
 
 
@@ -679,11 +711,25 @@ def _read_career(planets: dict, lagna: dict, all_houses: dict, dasha: dict) -> s
                  + _planet_sentence("Sun", sun.get("house", 0), sun.get("dignity", "neutral"), sun.get("retrograde", False)))
 
     # D10 hint — career timing in terms of current Mahadasha
+    # Functional nature for the lagna outranks raw dignity (KU-3): a yogakaraka
+    # or functional-benefic mahadasha is a career-building period even when the
+    # planet's sign placement is weak.
     _mp = maha.get("planet", "")
     _mp_until = str(maha.get("end_date", ""))[:7]
     _mp_dig = planets.get(_mp, {}).get("dignity", "neutral")
     if _mp:
-        if _mp_dig in ("exalted", "own_sign", "moolatrikona", "friendly"):
+        _fn = ""
+        try:
+            from engines.ai.chatbot.tools.kundli_calculator import _functional_nature
+            _fn, _ = _functional_nature(_mp, lagna.get("sign", ""))
+        except Exception:
+            pass
+        if _fn == "YOGAKARAKA":
+            _timing = (f"The current {_mp} Mahadasha (until {_mp_until}) is THE career-building "
+                       f"period of this chart -- {_mp} is your yogakaraka. Progress may feel slow "
+                       f"({_mp_dig} placement adds friction) but every disciplined year of this "
+                       f"period compounds into lasting professional standing.")
+        elif _mp_dig in ("exalted", "own_sign", "moolatrikona", "friendly") or _fn == "BENEFIC":
             _timing = (f"The current {_mp} Mahadasha (until {_mp_until}) is favourable for career: "
                        + _DASHA_THEMES.get(_mp, ("growth and opportunity", ""))[0] + ".")
         else:
@@ -1080,11 +1126,29 @@ def _read_current_period(planets: dict, lagna: dict, dasha: dict) -> str:
     ap_h    = ap_data.get("house", 0)
     positive_dg = {"exalted", "own_sign", "moolatrikona", "friendly"}
 
+    # -- Functional nature for this lagna outranks raw sign dignity (KU-3) --
+    fn_code, fn_text = "", ""
+    try:
+        from engines.ai.chatbot.tools.kundli_calculator import _functional_nature
+        if lagna.get("sign"):
+            fn_code, fn_text = _functional_nature(mp, lagna["sign"])
+    except Exception:
+        pass
+
     # -- Period headers (concise — no theme text here, theme text appears ONCE below) --
     if mp:
-        mp_label = "favourable" if mp_dg in positive_dg else "karmic (requires patience)"
+        if fn_code == "YOGAKARAKA":
+            mp_label = "yogakaraka -- your most productive period type"
+        elif fn_code == "BENEFIC":
+            mp_label = "functional benefic for your lagna"
+        elif fn_code == "MALEFIC":
+            mp_label = "functional malefic -- caution period"
+        else:
+            mp_label = "favourable" if mp_dg in positive_dg else "karmic (requires patience)"
         parts.append(f"Mahadasha: {mp} (until {str(maha.get('end_date',''))[:7]}) -- "
                      f"{mp} is in H{mp_h} ({mp_data.get('sign','')}) with {mp_dg} dignity [{mp_label}].")
+        if fn_text:
+            parts.append(f"Functional note: {fn_text}.")
 
     if ap:
         ap_label = "supportive" if ap_dg in positive_dg else "challenging"
@@ -1098,20 +1162,35 @@ def _read_current_period(planets: dict, lagna: dict, dasha: dict) -> str:
     # -- Combined synthesised reading (theme text appears ONCE here only) --
     if mp and ap:
         parts.append(f"Synthesised {mp}/{ap} reading:")
-        parts.append("  " + _combined_dasha_reading(mp, ap, mp_dg, ap_dg, mp_h, ap_h, planets))
+        parts.append("  " + _combined_dasha_reading(mp, ap, mp_dg, ap_dg, mp_h, ap_h, planets,
+                                                    yogakaraka=(fn_code == "YOGAKARAKA")))
 
     return "\n".join(f"  {p}" if i > 0 else p for i, p in enumerate(parts))
 
 
 def _combined_dasha_reading(mp: str, ap: str, mp_dg: str, ap_dg: str,
-                            mp_h: int, ap_h: int, planets: dict) -> str:
+                            mp_h: int, ap_h: int, planets: dict,
+                            yogakaraka: bool = False) -> str:
     positive = {"exalted", "own_sign", "moolatrikona", "friendly"}
-    mp_pos = mp_dg in positive
-    ap_pos = ap_dg in positive
+    # A yogakaraka dasha lord behaves as functionally positive even in a weak
+    # sign (classical rule) -- prevents the report contradicting itself (KU-3)
+    mp_pos = (mp_dg in positive) or yogakaraka
+    ap_pos = (ap_dg in positive) or (yogakaraka and ap == mp)
     same_planet = (mp == ap)
 
     mp_themes = _DASHA_THEMES.get(mp, ("positive themes", "challenging themes"))
     ap_themes = _DASHA_THEMES.get(ap, ("positive themes", "challenging themes"))
+
+    if same_planet and yogakaraka:
+        planet_sign = planets.get(mp, {}).get("sign", "")
+        friction = ("" if mp_dg in positive else
+                    f" Its {mp_dg} sign placement adds friction -- gains arrive later than "
+                    f"deserved and demand persistence -- but it does not cancel the promise.")
+        return (f"{mp}/{mp} (double dasha of your YOGAKARAKA) is the most constructive "
+                f"period type this chart can run: concentrated progress in {mp_themes[0]}. "
+                f"With {mp} in H{mp_h} ({planet_sign}), career and long-term standing are "
+                f"actively being built now.{friction} Commit to the long game: what is "
+                f"started and sustained in this period becomes this life's foundation.")
 
     if same_planet:
         # When Mahadasha and Antardasha are the same planet, the themes are identical.
@@ -1208,6 +1287,139 @@ def _ordinal(n: int) -> str:
 #  MAIN EXPORT: generate_life_readings
 # ═══════════════════════════════════════════════════════════════════════════════
 
+# Per-section key factors for the honest verdict + timing engine (KU-3).
+# Index-aligned with the sections list in generate_life_readings.
+_SECTION_META = [
+    {"houses": [1],      "karakas": ["Sun", "Moon"],            "topic": "personality and vitality"},
+    {"houses": [4, 5, 9],"karakas": ["Mercury", "Jupiter"],     "topic": "education"},
+    {"houses": [10, 6],  "karakas": ["Saturn", "Sun"],          "topic": "career",
+     "window_houses": [10], "window_karakas": ["Sun", "Saturn"]},
+    {"houses": [2, 11, 5],"karakas": ["Jupiter", "Venus"],      "topic": "wealth",
+     "window_houses": [2, 11], "window_karakas": ["Jupiter"]},
+    {"houses": [7, 5],   "karakas": ["Venus", "Mars"],          "topic": "marriage and love",
+     "window_houses": [7], "window_karakas": ["Venus"]},
+    {"houses": [5],      "karakas": ["Jupiter"],                "topic": "children"},
+    {"houses": [1, 6, 8],"karakas": ["Mars", "Saturn", "Moon"], "topic": "health"},
+    {"houses": [4, 2],   "karakas": ["Moon", "Venus"],          "topic": "home and family"},
+    {"houses": [3, 11],  "karakas": ["Mars"],                   "topic": "siblings and courage"},
+    {"houses": [9],      "karakas": ["Sun", "Jupiter"],         "topic": "fortune and father"},
+    {"houses": [12, 9, 5],"karakas": ["Ketu", "Jupiter"],       "topic": "spiritual growth"},
+    {"houses": [1, 8],   "karakas": ["Saturn"],                 "topic": "longevity"},
+    None,   # current-period section carries its own synthesis
+]
+
+_STRONG_DIG = {"exalted", "own_sign", "moolatrikona"}
+_WEAK_DIG   = {"enemy", "debilitated"}
+
+
+def _section_verdict(meta: dict, planets: dict, lagna: dict, all_houses: dict) -> list[str]:
+    """Two honest lines per section: the clearest strength AND the clearest
+    weakness, stated plainly. Nothing hidden in either direction."""
+    topic = meta["topic"]
+    pos: list[str] = []
+    neg: list[str] = []
+
+    seen: set = set()
+    for h in meta["houses"]:
+        hd = all_houses.get(f"H{h}", {})
+        if hd.get("strength") == "strong":
+            pos.append(f"your {_ordinal(h)} house is strong")
+        elif hd.get("strength") == "weak":
+            neg.append(f"your {_ordinal(h)} house is weak -- {topic} needs deliberate effort")
+        for occ in hd.get("occupants", []):
+            if occ in seen:
+                continue
+            seen.add(occ)
+            pd = planets.get(occ, {})
+            if pd.get("dignity") in _STRONG_DIG:
+                pos.append(f"{occ} ({pd.get('dignity')}) sits in your {_ordinal(h)} house")
+            elif pd.get("dignity") in _WEAK_DIG:
+                neg.append(f"{occ} is {pd.get('dignity')} in your {_ordinal(h)} house")
+            if pd.get("combust"):
+                neg.append(f"{occ} is combust (too close to the Sun) -- its themes here are muted")
+
+    for k in meta["karakas"]:
+        if k in seen:
+            continue
+        pd = planets.get(k, {})
+        if pd.get("dignity") in _STRONG_DIG:
+            pos.append(f"{k}, the natural significator of {topic}, is {pd.get('dignity')}")
+        elif pd.get("dignity") in _WEAK_DIG:
+            neg.append(f"{k}, the natural significator of {topic}, is {pd.get('dignity')}")
+        if pd.get("combust") and f"{k} is combust" not in " ".join(neg):
+            neg.append(f"{k} is combust -- express its qualities consciously, they do not flow automatically")
+
+    # Yogakaraka involvement is always worth naming
+    try:
+        from engines.ai.chatbot.tools.kundli_calculator import _YOGAKARAKA_BY_LAGNA
+        yk = _YOGAKARAKA_BY_LAGNA.get(lagna.get("sign", ""))
+        if yk and yk in meta["karakas"]:
+            pos.insert(0, f"{yk} is your chart's yogakaraka -- its involvement here is a genuine asset")
+    except Exception:
+        pass
+
+    out = []
+    out.append("  Clearly positive : " + ("; ".join(pos[:2]) if pos
+               else "no outstanding strength here -- results track effort"))
+    out.append("  Watch out for    : " + ("; ".join(neg[:2]) if neg
+               else "no major affliction touches this area"))
+    return out
+
+
+def _favourable_windows(meta: dict, planets: dict, lagna: dict, dasha: dict) -> list[str]:
+    """Concrete dasha date windows favourable for this life area (next ~15y)."""
+    from datetime import datetime, timezone
+    if not meta.get("window_houses") and not meta.get("window_karakas"):
+        return []
+
+    relevant = set(meta.get("window_karakas", []))
+    lagna_sign = lagna.get("sign", "")
+    for h in meta.get("window_houses", []):
+        relevant.add(_house_lord(lagna_sign, h))
+
+    def _is_favourable(pl: str) -> bool:
+        pd = planets.get(pl, {})
+        if pd.get("combust"):
+            return False   # a combust lord cannot deliver its window's promise
+        dg = pd.get("dignity", "neutral")
+        if dg in _STRONG_DIG or dg == "friendly":
+            return True
+        try:
+            from engines.ai.chatbot.tools.kundli_calculator import _functional_nature
+            code, _ = _functional_nature(pl, lagna_sign)
+            return code in ("YOGAKARAKA", "BENEFIC")
+        except Exception:
+            return False
+
+    today = datetime.now(timezone.utc)
+    horizon_year = today.year + 15
+    windows: list[str] = []
+
+    for ad in dasha.get("all_antardashas", []):
+        if ad.get("end_date", "") < today.strftime("%Y-%m-%d"):
+            continue
+        if int(ad.get("start_date", "9999")[:4]) > horizon_year:
+            continue
+        if ad["planet"] in relevant and _is_favourable(ad["planet"]):
+            windows.append(f"{ad['start_date'][:7]} to {ad['end_date'][:7]} ({ad['planet']} antardasha)")
+        if len(windows) >= 3:
+            break
+    if not windows:
+        for md in dasha.get("all_mahadashas", []):
+            if md.get("end_date", "") < today.strftime("%Y-%m-%d"):
+                continue
+            if int(md.get("start_date", "9999")[:4]) > horizon_year:
+                continue
+            if md["planet"] in relevant and _is_favourable(md["planet"]):
+                windows.append(f"{md['start_date'][:7]} to {md['end_date'][:7]} ({md['planet']} mahadasha)")
+            if len(windows) >= 2:
+                break
+
+    if not windows:
+        return []
+    return [f"  Favourable windows: {'; '.join(windows)} -- act on {meta['topic']} plans in these stretches."]
+
+
 def generate_life_readings(calc_result: dict) -> str:
     """
     Generate comprehensive life-area narrative readings from a kundli_calculator result dict.
@@ -1227,6 +1439,9 @@ def generate_life_readings(calc_result: dict) -> str:
 
     if not planets or not lagna:
         return ""
+
+    # Fresh de-duplication state per report (KU-3)
+    _EMITTED_LORDS.clear()
 
     sep  = "=" * 52
     dash = "-" * 52
@@ -1250,14 +1465,20 @@ def generate_life_readings(calc_result: dict) -> str:
         _read_current_period(planets, lagna, dasha),
     ]
 
-    for section in sections:
+    for idx, section in enumerate(sections):
         if not section.strip():
             continue
         first_line, *rest = section.split("\n")
         lines.append(f"{first_line}")
         lines.append(dash)
         for r in rest:
-            lines.append(r)
+            if r.strip():   # drop lines emptied by de-duplication
+                lines.append(r)
+        # Honest verdicts + concrete timing windows per life area (KU-3)
+        meta = _SECTION_META[idx] if idx < len(_SECTION_META) else None
+        if meta:
+            lines.extend(_section_verdict(meta, planets, lagna, all_houses))
+            lines.extend(_favourable_windows(meta, planets, lagna, dasha))
         lines.append("")
 
     lines.append(sep)
