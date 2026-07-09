@@ -6,6 +6,297 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.25.0
+
+Phase CH-Fix -- KLineChart Pro Bug Fixes + Watchlist Polish + Stock Page Nav
+
+Date: 2026-07-09
+
+Status: Completed
+
+Commits: 3c2ba0f, 383455e, 1bac08b
+
+---
+
+## Summary
+
+Resolved all known defects in the KLineChart Pro integration discovered during QA.
+Five root bugs fixed: volume bars invisible (wrong indicator placement), symbol search
+results invisible (Pro library CSS variable typo with 3 dashes), watchlist autocomplete
+not firing as-you-type (Pro binds "change" not "input" event), chart resize lag when
+panels open/close, and watchlist missing LTP prices.
+
+Second pass fixed multi-symbol add (space/comma/newline delimiters now parsed correctly),
+added a custom SymbolSearchBar in the top bar with live-as-you-type search and full
+arrow-key navigation, registered VOLMain (custom canvas draw indicator on price pane),
+and wired watchlist keyboard navigation (ArrowUp/Down/Enter/Escape).
+
+Added Stock Page button that navigates from /fullchart/:symbol back to /stocks/:symbol.
+
+## Root Causes Documented
+
+- KLineChart Pro v0.1.1 CSS bug: `.klinecharts-pro-list` uses `var(---klinecharts-pro-text-color)`
+  (three dashes = undefined variable). Text color falls back to black on dark modal -- invisible.
+  Fix: inject override CSS on mount targeting the correct 2-dash variable name.
+- Pro v0.1.1 input bug: `c5` component binds `addEventListener("change", ...)` not `"input"`.
+  DOM `change` event fires only on blur/Enter -- never on keystroke. Cannot patch without
+  forking Pro. Fix: built `SymbolSearchBar` component in the top bar that does debounced
+  API search on every keystroke, with keyboard nav independent of Pro.
+- VOLMain: `IndicatorSeries.Volume` conflicts with price pane. Fix: use `IndicatorSeries.Price`
+  + `figures: []` + custom `draw()` callback that paints bars at `bounding.bottom` via
+  `xAxis.convertToPixel(barIndex)`. Returns `true` to skip all default rendering.
+
+## New Files
+
+- frontend/src/indicators/customIndicators.ts -- VOLMain moved here from FullChartPage;
+  full indicator registry (VWAP, Supertrend, HMA, VOLMain) in one side-effect import
+
+## Modified Files
+
+- frontend/src/pages/FullChartPage.tsx:
+  * CSS fix injection on mount (3-dash Pro typo)
+  * SymbolSearchBar component: debounced 180ms API search, ArrowDown/Up/Enter/Escape nav,
+    click-outside close with 180ms onBlur delay (onMouseDown fires before onBlur)
+  * WatchlistPanel: multi-symbol tokenization via `/[\s,\n\r]+/` split;
+    suppress autocomplete when input contains space/comma (multi-symbol mode);
+    keyboard nav (ArrowDown/Up/Enter/Escape) in autocomplete dropdown
+  * WatchlistPanel: LTP + abs change + change% fetched from daily bars, polled 60s
+  * ResizeObserver on chart container: `_chartApi.resize()` on every dimension change
+  * Stock Page button: `navigate('/stocks/:symbol')` button in top bar
+  * VOLMain indicator in mainIndicators list (no _chartApi hack needed)
+
+---
+
+# Version 4.24.0
+
+Phase CH-v2 -- KLineChart Pro Migration + Custom Indicators + TradingView Style
+
+Date: 2026-07-09
+
+Status: Completed
+
+Commits: 298304b, 5825cba, bc9c79b, 3d9f54d, ce1ef01
+
+---
+
+## Summary
+
+Replaced the lightweight-charts v1 chart implementation with KLineChart Pro v0.1.1
+(klinecharts v9.8.12 core). Pro provides 30+ built-in indicators, drawing tools,
+multi-pane layout, a built-in period selector, and a native toolbar -- eliminating
+the need to hand-build all chart UI.
+
+Implemented a full Datafeed adapter (searchSymbols, getHistoryKLineData, subscribe/
+unsubscribe). Fixed the IST timezone registration issue (Asia/Kolkata absent from Pro's
+hardcoded tz list -- registered manually with the correct UTC+5:30 offset).
+
+Added a live settings panel for candle type, up/down colors, grid, font size, axis labels,
+and crosshair style. Applied TradingView dark preset tokens and closed 6 remaining feature
+gaps (snapshot button, period labels, drawing tools wiring, etc.).
+
+Registered 3 custom indicators for the NSE context:
+- VWAP: session-resetting, resets at UTC date boundary for each timeframe
+- Supertrend (7, 3): Wilder ATR-based, teal bull / red bear lines with null gaps
+- HMA (9): Hull Moving Average via double WMA; lag-reduced, smooth
+
+## New Files
+
+- frontend/src/lib/customIndicators.ts -- VWAP, Supertrend, HMA (later moved to
+  frontend/src/indicators/customIndicators.ts in v4.25.0 refactor)
+
+## Modified Files
+
+- frontend/package.json: added klinecharts@9.8.12 + @klinecharts/pro@0.1.1
+- frontend/src/pages/FullChartPage.tsx:
+  * Full rewrite: KLineChartPro constructor with OurDatafeed, CHART_STYLES tokens
+  * Period mapping: 5M/15M/1H/1D/1W/1M/3M -> Period objects
+  * IST timezone fix: manual registration with UTC+5:30 before Pro init
+  * Live settings panel: 8 configurable options, calls pro.setStyles() on change
+  * TradingView dark preset applied via setStyles() call
+  * Snapshot: canvas compositing (getBoundingClientRect) -> PNG download
+  * WatchlistPanel: localStorage cfip-wl, multi-list, rename kept from v1
+  * mainIndicators: ['EMA', 'VOLMain']; subIndicators: ['MACD', 'RSI']
+  * dispose() + innerHTML reset on unmount and symbol change
+
+---
+
+# Version 4.23.0
+
+Phase CH-v1 -- Full-Page TradingView-Style Chart (lightweight-charts)
+
+Date: 2026-07-09
+
+Status: Completed (superseded by v4.24.0 KLineChart Pro migration)
+
+Commits: d031de1, 25be351
+
+---
+
+## Summary
+
+Built the first full-page chart implementation at /fullchart/:symbol using
+lightweight-charts. Rendered a candlestick + volume histogram with three toggleable
+overlay indicators (EMA 20/50/200, Bollinger Bands 20/2) and a synced RSI(14) sub-pane.
+All indicator math computed client-side (EMA, BB, Wilder RSI smoothing).
+
+Added corporate action markers (D/B/S/R), a 7-timeframe selector, a live OHLCV + indicator
+legend on crosshair hover, and an expand button on StocksPage that opens the chart from
+the current timeframe.
+
+Fixed RSI sync issues and toggle state bugs in a follow-up commit; added Snapshot (PNG)
+and a Watchlist panel with localStorage persistence.
+
+This implementation was superseded by the KLineChart Pro migration (v4.24.0) after
+recognising that maintaining indicator rendering, drawing tools, and toolbar state
+from scratch was not the right long-term approach for a professional chart.
+
+## New Files
+
+- frontend/src/pages/FullChartPage.tsx -- 537 lines, full-viewport route outside AppShell
+
+## Modified Files
+
+- frontend/src/App.tsx: /fullchart/:symbol route added, rendered outside AppShell (no nav bar)
+- frontend/src/pages/StocksPage.tsx: [+] Full Chart button in chart toolbar
+
+---
+
+# Version 4.22.0
+
+Phase TI -- Technical Indicators: RSI, MACD, ATR, Bollinger Bands, OBV, ADX
+
+Date: 2026-07-08
+
+Status: Completed
+
+Commits: 27bfe9b, ccfbe6e
+
+---
+
+## Summary
+
+Extended the technical engine with 6 additional indicators grouped into three layers:
+Trend Structure (ADX), Momentum (RSI, MACD, BB), and Volatility & Volume (ATR, OBV).
+Each indicator carries a label/signal field suitable for display without requiring
+the frontend to interpret raw numbers.
+
+Redesigned the Technical Indicators card in StocksPage into a 3-layer grid layout
+matching the institutional trading framework: Trend -> Momentum -> Execution.
+
+Also ran a full data pipeline refresh to bring bhavcopy and all derived intelligence
+outputs up to 2026-07-08.
+
+## New Indicator Fields (technical_indicators.csv)
+
+- RSI (14, Wilder): rsi_14, rsi_signal (OVERBOUGHT/BULLISH/NEUTRAL/BEARISH/OVERSOLD)
+- MACD (12,26,9): macd_line, macd_signal_line, macd_hist, macd_crossover (BULLISH_CROSS/BEARISH_CROSS/NEUTRAL)
+- ATR (14, Wilder): atr_14, atr_pct (as % of price, for stop-loss sizing)
+- Bollinger Bands (20,2): bb_upper, bb_lower, bb_mid, bb_pct_b, bb_bandwidth, bb_squeeze (bool)
+- OBV: obv_slope_20d (ACCUMULATING/DISTRIBUTING)
+- ADX (14): adx_14, adx_strength (STRONG/MODERATE/RANGING), plus_di_14, minus_di_14
+
+## Modified Files
+
+- engines/intelligence/technical_engine.py: added 6 indicator computation blocks; 2718 symbols
+- backend/routers/stocks.py: expose all new indicator fields in /api/stocks/{symbol}
+- frontend/src/api/client.ts: extend TechnicalIndicators type with 18 new fields
+- frontend/src/pages/StocksPage.tsx: redesigned Technical card into 3-layer grid
+
+---
+
+# Version 4.21.0
+
+Phase SH -- Stocks Page 8-Score Panel + 5-Quarter Shareholding Trends
+
+Date: 2026-07-08
+
+Status: Completed
+
+Commits: 334d539, 72ed4c8, f34bf04, b9308b7
+
+---
+
+## Summary
+
+Two parallel upgrades to the stock detail page:
+
+First, the header score panel was expanded from 4 to 8 scores to match the printed
+intelligence report: Bull Run, Price, ML Bull, ML Accum., Sector Flow, Deal, Valuation,
+and Astro. The Astro score (range +/-100) is normalised to 0-100 for the ScoreGauge.
+All typography violations (fontSize < 10) were fixed across the entire StocksPage --
+over 15 elements updated to minimum 10px for legibility.
+
+Second, shareholding history was extended to 5-quarter holding trend cards with QoQ
+delta indicators. The XBRL fraction-scale bug was fixed: NSE changed the filing format
+in newer quarters (Q2FY26+) to store percentages as 0-1 fractions instead of 0-100 values.
+Auto-detection added (if field sum < 2.0 and >= 2 non-null fields, multiply by 100).
+Historical data was corrected for 76,170 rows; holding_trends.csv rebuilt to 14,264 rows
+covering 8 consecutive quarters per symbol (Q1FY25-Q4FY26).
+
+## Modified Files
+
+- frontend/src/pages/StockDetailPage.tsx:
+  * 8-score header panel (Bull Run, Price, ML Bull, ML Accum., Sector Flow, Deal, Valuation, Astro)
+  * Astro score normalisation from +/-100 -> 0-100 for ScoreGauge
+  * ScoreChip: label fontSize 9->10, sub fontSize 8->10, fontWeight 600
+  * 15+ fontSize violations fixed (FundTile, DMARow, TechSection, AnnItem, ConsensusCard,
+    BullRun breakdown, PricePerformance, HoldingTrends, Management tiles, News/Insider/Concall)
+  * C.dim replaced with C.muted for readable date/count text
+- frontend/src/pages/StocksPage.tsx:
+  * 8-score panel added (matching StockDetailPage)
+  * All fontSize < 10 violations removed
+- engines/fundamentals/shareholding_engine.py:
+  * XBRL fraction scale auto-detection in _parse_one()
+  * 76,170 rows historical data recalculated with correct scale
+
+---
+
+# Version 4.20.0
+
+Phase UI-S -- Social Pulse Card Fix + Sectors Intelligence Upgrades
+
+Date: 2026-07-08
+
+Status: Completed
+
+Commits: 5f5f2f1, bf4ff0d, d0800b8, 844ebf3
+
+---
+
+## Summary
+
+Fixed the Social Pulse card on Dashboard -- frontend types were misaligned with the
+X/Nitter backend (missing impact_score field, wrong is_direct -> is_x rename, new
+category constants). Widened HandleCard to 260px, added X badge and category chip.
+
+Exposed the Phase FPI sector FPI signals (built in v4.19.0) through two frontend-facing
+upgrades on the Sectors page:
+- Relative cross-sectional score: each sector's combined flow score shown as a
+  percentile rank vs all other sectors, with a colour-coded regime badge (BULLISH/
+  BEARISH/NEUTRAL) and FII regime indicator sourced from participant_intelligence.csv
+- Dashboard heatmap: fixed dual-score rendering bug where both flow and momentum
+  scores were showing the same value; added legible typography to heatmap cards
+  (min 11px on all labels, contrast-safe colour tokens)
+
+## Modified Files
+
+- backend/routers/social_pulse.py: added impact_score, is_x, new category constants;
+  frontend type contract aligned
+- frontend/src/api/client.ts: add impact_score field; rename is_direct -> is_x;
+  add INDIA_GOVT/INDIA_REGULATOR/G20_LEADER/MULTILATERAL/GEOPOLITICAL category types
+- frontend/src/pages/Dashboard.tsx:
+  * HandleCard: X badge, category chip, 260px width, cleaner avatar styling
+  * New CAT_ACCENT + CAT_LABEL colour maps for the 5 new categories
+  * Heatmap dual-score fix: sector_score and momentum_score now read from correct fields
+  * Card typography: all text >= 11px, high-contrast muted tokens
+- backend/routers/sectors.py: added fpi_signals join to sector rotation endpoint;
+  relative cross-sectional score (percentile rank among all 29 sectors) in response
+- frontend/src/pages/Sectors.tsx: FII regime badge (green BULLISH / red BEARISH /
+  grey NEUTRAL) based on participant_intelligence regime field; relative score column
+  added to sector table; colour coding on cross-sectional scores
+
+---
+
 # Version 4.19.0
 
 Phase FPI -- NSDL/CDSL/SEBI Fortnightly FPI Sector Engine + 3-Factor Sector Rotation

@@ -45,7 +45,7 @@ data/
 **WARNING:** `data/NSE Data/` (with space) does NOT exist — fix any engine referencing it.
 **WARNING:** `data/bhavcopy/` is the LEGACY location. New engines write to `data/NSE/bhavcopy/` via config.
 
-## INTELLIGENCE OUTPUTS (current as of 2026-07-02)
+## INTELLIGENCE OUTPUTS (current as of 2026-07-09)
 ```
 data/intelligence/
 |-- participant_flow_scores.csv          2581 rows  FII/DII/PRO/CLIENT OI+Volume z-scores
@@ -81,7 +81,7 @@ data/NSE/shareholding/
 `-- board_announcements.csv               527 rows  classified board announcements (Phase 16)
 ```
 
-## PHASE STATUS (2026-07-02)
+## PHASE STATUS (2026-07-09)
 | Phase | Name                          | Status           | Notes |
 |-------|-------------------------------|------------------|-------|
 | 1     | Foundation Layer              | COMPLETE 100%    | bhavcopy import, equity master |
@@ -105,11 +105,11 @@ data/NSE/shareholding/
 | 8B    | Bull Run Probability Engine   | COMPLETE 100%    | 225 EMERGING, regime NEUTRAL x0.90 |
 | 9     | Alert System (Telegram)       | COMPLETE 100%    | 10 alert types (P1-P10), APScheduler, cooldown + per-type caps |
 | 10    | FastAPI Backend               | COMPLETE 100%    | 20 endpoints, port 8001, WebSocket live ticker |
-| 11    | React GUI                     | COMPLETE 100%    | 14 pages incl. Charts, Portfolio, Backtest, Broker, Research, Execution, Admin |
+| 11    | React GUI                     | COMPLETE 100%    | 15 pages incl. FullChart (KLineChart Pro), Stocks 8-score panel, Sectors FII badge |
 | 12    | ML Intelligence Layer         | COMPLETE 100%    | XGBoost+LightGBM, 24 features, 4 model outputs |
 | 13    | RAG Knowledge Base            | COMPLETE 100%    | FAISS+BM25, 6 domain indexes, hybrid RRF retrieval |
 | 14    | Chatbot (Claude API)          | COMPLETE 100%    | 4 agents, tool registry, /api/chat endpoint |
-| 15    | Financial Results + SHP       | COMPLETE 100%    | 4181 XBRL rows, 2084 symbols; 4 quarters shareholding |
+| 15    | Financial Results + SHP       | COMPLETE 100%    | 4181 XBRL rows, 2084 symbols; 8 quarters shareholding (76,170 rows) |
 | 15B   | Extended Financials Engine    | COMPLETE 100%    | OPM%, ROCE%, Book Value/share, Sales Growth CAGR; engine: extended_financials_engine.py; output: extended_financials.csv |
 | 16    | Management Intelligence       | COMPLETE 100%    | 3 engines: holding trends, announcements, sentiment |
 | 17    | Symbol Change History         | COMPLETE 100%    | 1038 symbol renames; engines/foundation/symbol_change_engine.py |
@@ -124,9 +124,13 @@ data/NSE/shareholding/
 | A     | Technical + F&O Intelligence  | COMPLETE 100%    | engines/intelligence/technical_engine.py + fno_engine.py; market pulse dashboard |
 | B     | Trade Intelligence Card       | COMPLETE 100%    | frontend/.../TradeIntelligenceCard.tsx; 7-factor entry/exit synthesis |
 | C     | Trade Conviction Alerts       | COMPLETE 100%    | engines/intelligence/trade_conviction_engine.py (server-side score port); alerts P9/P10 |
+| CH    | KLineChart Pro Chart          | COMPLETE 100%    | /fullchart/:symbol; KLineChart Pro v0.1.1; VWAP/Supertrend/HMA/VOLMain; watchlist; settings |
+| TI    | Technical Indicators Upgrade  | COMPLETE 100%    | RSI, MACD, ATR, BB, OBV, ADX added to technical_engine.py + StocksPage 3-layer card |
+| SH    | Shareholding History Fix      | COMPLETE 100%    | XBRL fraction-scale auto-detect; 76,170 rows; 8-quarter trend cards in StocksPage |
+| UI-S  | Sectors + Social Pulse UI     | COMPLETE 100%    | Relative cross-sectional score, FII regime badge, heatmap dual-score fix, X/Nitter card |
 
-## CURRENT PLATFORM STATUS (2026-07-02)
-**ALL 25 CORE PHASES + A/B/C COMPLETE.** Full investment operating system is live.
+## CURRENT PLATFORM STATUS (2026-07-09)
+**ALL 25 CORE PHASES + A/B/C/CH/TI/SH/UI-S COMPLETE.** Full investment operating system is live.
 - Backend: `py -3.11 -m uvicorn backend.main:app --port 8001 --reload`
 - Frontend: `npm run dev` in `frontend/` (Vite at http://localhost:5173)
 - Startup: Run `./start.ps1` to launch both servers as detached background processes
