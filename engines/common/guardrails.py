@@ -681,13 +681,26 @@ def validate_gross_flows(df: pd.DataFrame, participant: str = "fii") -> None:
 
 
 def check_t1_data_lag(data_date: date, cutoff_hour: int = 18) -> bool:
-    """G-ID-01: Return True if it's safe to flag today's data as missing (after 18:00 IST)."""
+    """G-ID-01: Return True if data for data_date should be present by now.
+
+    The 18:00 IST cutoff applies only to the recent T+1 window (last 1-3
+    days, covering weekends). Deep-historical dates are always past their
+    T+1 window regardless of the current clock -- the old implementation
+    gated ALL past dates on today's hour, so historical checks flipped to
+    False every day before 18:00 (found when the suite first ran after
+    midnight)."""
     now = datetime.now(IST)
     today = now.date()
-    if data_date < today and now.hour >= cutoff_hour:
+    days_old = (today - data_date).days
+    if days_old <= 0:
+        logger.debug(f"[G-ID-01] T+1 lag check: {data_date} is today/future — not expected yet")
+        return False
+    if days_old > 3:
+        return True   # far past any T+1 window (incl. weekend lag)
+    if now.hour >= cutoff_hour:
         logger.warning(f"[G-ID-01] T+1 LAG: Data for {data_date} missing after {cutoff_hour}:00 IST — flag as missing")
         return True
-    logger.debug(f"[G-ID-01] T+1 lag check: data_date={data_date}, now={now.strftime('%H:%M IST')} — OK or too early")
+    logger.debug(f"[G-ID-01] T+1 lag check: data_date={data_date}, now={now.strftime('%H:%M IST')} — too early to flag")
     return False
 
 
