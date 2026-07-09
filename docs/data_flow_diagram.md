@@ -1,6 +1,6 @@
 # Capital Flow Intelligence Platform — Data Flow Diagram
 
-**Version:** 4.6 | **Updated:** 2026-07-02
+**Version:** 4.25 | **Updated:** 2026-07-09
 
 ---
 
@@ -24,7 +24,7 @@ NSE Archives / Live APIs
 ├── Bhavcopy F&O             NSE F&O OI + Volume 2016-2026
 ├── Corporate Actions        data/NSE/corporate_actions/        1999-2026 · 28 year files · 40,517 rows
 ├── NSE XBRL Results         NSE live API (XBRL endpoint)       4,181 quarterly P&L rows
-├── NSE Shareholding API     nselib quarterly_shp               7,228 rows Q2FY25-Q1FY26
+├── NSE Shareholding API     nselib quarterly_shp               76,170 rows Q1FY24-Q1FY26 (8 quarters)
 ├── Block / Bulk Deals       nselib bulk_deals                  12,467 deals (6M rolling)
 ├── Corporate Announcements  NSE XBRL announcement API          incremental per symbol
 ├── Symbol Change History    nsearchives symbolchange.csv       1,038 NSE symbol renames
@@ -55,7 +55,7 @@ engines/acquisition/  engines/foundation/  engines/fundamentals/
 │                                              cash_market_flows_history.csv
 │
 ├── Phase 15 financial_results_engine        → data/NSE/results/quarterly_results.csv (4181 rows)
-│            shareholding_engine             → data/NSE/shareholding/quarterly_shp.csv (7228 rows)
+│            shareholding_engine             → data/NSE/shareholding/quarterly_shp.csv (76170 rows, 8 quarters)
 │
 ├── Phase 17 symbol_change_engine            → data/NSE/equity_master/symbol_change_history.csv
 │                                              (1038 renames: IIFLWAM→360ONE etc.)
@@ -116,8 +116,8 @@ engines/participant/  engines/corporate/  engines/intelligence/  engines/managem
 │             management_sentiment_engine     → data/NSE/shareholding/management_sentiment.csv (471 rows)
 │             [input: quarterly_shp + board_announcements + Anthropic API for tone]
 │
-├── Phase A   technical_engine                → technical_indicators.csv       (2717 rows)
-│             [input: bhavcopy parquet cache]  52W H/L, 20/50/200 DMA, trend_signal
+├── Phase A/TI technical_engine               → technical_indicators.csv       (2718 rows)
+│             [input: bhavcopy parquet cache]  52W H/L, 20/50/200 DMA, RSI, MACD, ATR, BB, OBV, ADX, trend_signal
 │
 ├── Phase A   fno_engine                      → fno_intelligence.csv           (211 F&O stocks)
 │                                               market_context.json             (PCR + regime pulse)
@@ -236,7 +236,7 @@ frontend/ (React 18 + TypeScript + Vite, port 5173)
 ├── Stock Detail      /stocks/:sym   7-factor TradeIntelligenceCard + all intelligence panels
 ├── Participant       /participant   FII/DII/PRO/CLIENT cards + 90D area chart
 ├── Corporate         /corporate     Block/bulk deals + upcoming catalysts
-├── Charts            /charts        TradingView OHLCV (5M/15M/1H + 1D-5Y), IST timestamps
+├── Charts            /charts        KLineChart Pro v0.1.1 (klinecharts v9.8.12), custom indicators (VOLMain/VWAP/Supertrend/HMA), IST timestamps
 ├── Portfolio         /portfolio     Positions, P&L, sector allocation
 ├── Backtest          /backtest      Strategy replay, equity curve, Sharpe metrics
 ├── Broker            /broker        Live holdings from Dhan, enriched with platform intelligence
@@ -362,5 +362,5 @@ Telegram → TradeIntelligenceCard (frontend)
 | Cache | data/cache/stock_history/ | per-symbol OHLCV parquet |
 | Engines | engines/ | ~50+ Python files across 12 subdirectories |
 | Backend | backend/ | main.py + 15+ routers |
-| Frontend | frontend/src/ | 14 pages + ~10 components |
+| Frontend | frontend/src/ | 15+ pages + ~15 components |
 | AI indexes | data/intelligence/rag_indexes/ | FAISS .index + BM25 .pkl |

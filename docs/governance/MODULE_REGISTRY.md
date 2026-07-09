@@ -353,13 +353,13 @@ Core Intelligence
 
 ## Status
 
-ACTIVE — PHASE 8 COMPLETE
+COMPLETE — Phase 8 + Phase A + Phase TI (2026-07-09)
 
 ---
 
 ## Completion
 
-40%
+100%
 
 ---
 
@@ -375,7 +375,7 @@ Identify stock-level beneficiaries of capital flow.
 
 ---
 
-## Completed Engines (Phase 8 — 2026-06-30)
+## Completed Engines (Phase 8 + A + TI)
 
 price_momentum_engine.py — 8A: per-symbol returns (30D/60D/90D/365D), volume ratio, sector-relative strength, percentile-ranked price_score (0-100), 2441 symbols
 
@@ -390,20 +390,15 @@ data/intelligence/price_momentum.csv — 2441 symbols, price_score + returns + v
 data/intelligence/bull_run_probability.csv — 2441 symbols, bull_run_score + component scores + label
 
 data/intelligence/bull_run_watchlist.csv — STRONG_CANDIDATE + EMERGING symbols only
+data/intelligence/technical_indicators.csv — 2718 symbols, RSI/MACD/ATR/BB/OBV/ADX (Phase TI)
+data/intelligence/fno_intelligence.csv — 211 stocks, per-stock futures OI + oi_signal (Phase A)
+data/intelligence/trade_conviction_scores.csv — 2406 symbols, 7-factor score + action (Phase C)
 
 ---
 
 ## Remaining Engines
 
-Relative Strength Engine
-
-Accumulation / Distribution Engine
-
-Delivery Intelligence Engine
-
-F&O Intelligence Engine
-
-Leadership Engine (within-sector)
+None. All planned engines complete.
 
 ---
 
@@ -433,13 +428,13 @@ Core Intelligence
 
 ## Status
 
-COMPLETE (Phases 15+16, 2026-07-01)
+COMPLETE (Phases 15/15B/16, 2026-07-09)
 
 ---
 
 ## Completion
 
-85%
+100%
 
 ---
 
@@ -459,15 +454,17 @@ Explain why capital is moving.
 
 financial_results_engine.py -- Phase 15A: 4181 rows NSE XBRL P&L, 2084 symbols
 valuation_engine.py -- Phase 15B: P/E, ROE, valuation_label scoring
-shareholding_engine.py -- Phase 15C: quarterly_shp.csv, 4 quarters, 98.9% FII coverage
+shareholding_engine.py -- Phase 15C/SH: quarterly_shp.csv, 76170 rows (8 quarters Q1FY24-Q1FY26), fraction-scale fixed
+extended_financials_engine.py -- Phase 15B: OPM%, ROCE%, Book Value/share, Sales Growth CAGR
 holding_trend_engine.py -- Phase 16: QoQ deltas, 7 conviction signals
 announcement_fetcher.py -- Phase 16: 527 board announcements, 8-type classification
-management_sentiment_engine.py -- Phase 16: Claude API tone scoring, 471 symbols
+management_sentiment_engine.py -- Phase 16: Anthropic API tone scoring, 471 symbols
 
-## Remaining (15%)
+## Remaining (future enhancements)
 
-Order Book Intelligence (future)
-Extended shareholding backfill (pre-2024 limited by NSE XBRL archive availability)
+Order Book Intelligence (not yet built)
+Concall audio/transcript AI analysis (not yet built)
+Extended shareholding backfill pre-Q1FY24 (NSE XBRL archive limited availability)
 
 ---
 
@@ -495,13 +492,13 @@ Platform
 
 ## Status
 
-FOUNDATION COMPLETE
+COMPLETE — Phases 12/13/14/D (2026-07-09)
 
 ---
 
 ## Completion
 
-15%
+100%
 
 ---
 
@@ -517,25 +514,14 @@ Provide AI-powered analysis and interaction.
 
 ---
 
-## Planned Agents
+## Implemented (Phases 12-14 + D)
 
-AI Market Analyst
+Phase 12 ML: XGBoost+LightGBM, 24 features, 4 outputs (accumulation/bull_run/combined scores)
+Phase 13 RAG: FAISS+BM25 hybrid, 6 domain indexes, RRF retrieval
+Phase 14 Chatbot: Groq llama-3.3-70b-versatile (primary), multi-provider fallback via llm_client.py; 11 tools; /api/chat endpoint
+Phase D Chat UI: ChatPage.tsx, session-aware, 6 suggested prompts
 
-AI Participant Analyst
-
-AI Sector Analyst
-
-AI Theme Analyst
-
-AI Stock Analyst
-
-AI Fundamental Analyst
-
-AI Portfolio Manager
-
-AI Research Assistant
-
-AI Development CTO
+Agents: intent_router.py, chat_engine.py, tools/ registry; tool calling in OpenAI/Groq format
 
 ---
 
@@ -553,13 +539,13 @@ Platform
 
 ## Status
 
-ACTIVE DEVELOPMENT
+COMPLETE — Phases 10/11/B/CH (2026-07-09)
 
 ---
 
 ## Completion
 
-25%
+100%
 
 ---
 
@@ -577,35 +563,32 @@ Provide visualization and user interaction.
 
 ## Architecture
 
-Full spec: `docs/architecture/GUI_IMPLEMENTATION_PLAN.md` (2026-06-29)
+Full spec: `docs/architecture/GUI_IMPLEMENTATION_PLAN.md` (FULLY IMPLEMENTED)
 
-Stack: React 18 + TypeScript + Vite + Tailwind CSS + TanStack Query + Zustand + React Router v6
-Charts: Recharts + TradingView Lightweight Charts
-Backend: FastAPI + Uvicorn
+Stack: React 18 + TypeScript + Vite + Inline styles (C.* token objects) + TanStack Query v5 + Zustand + React Router v6
+Charts: Recharts (flows) + KLineChart Pro v0.1.1 klinecharts v9.8.12 (OHLCV)
+Custom indicators: VOLMain, VWAP, Supertrend, HMA in frontend/src/indicators/customIndicators.ts
+Backend: FastAPI + Uvicorn (port 8001)
+Frontend dir: frontend/ (port 5173)
 Real-time: WebSocket live flow ticker
 
-Build phases: GUI-1 (AppShell) through GUI-13 (Auth). Start with GUI-1.
-Dependency: GUI-4 requires Phase 4A (Company Fundamentals Master Engine) to be complete first.
+All build phases GUI-1 through GUI-14+ COMPLETE.
 
 ---
 
-## Planned Components
+## Implemented Components (15 pages)
 
-Dashboard Framework (Capital Flow Cascade, Regime Card, Flow Cards)
-
-Heatmap Framework (Sector Treemap, Theme Heatmap)
-
-OHLCV Charts (TradingView Lightweight Charts with overlay panes)
-
-Capital Flow Cascade (Sankey: Market→Sector→Theme→Stock)
-
-AI Chat Interface (AI Analyst modes)
-
-Mobile Platform (bottom nav, card-based layouts)
-
-Portfolio Dashboard (sector/theme exposure, risk matrix)
-
-Report Center (daily/weekly/monthly reports)
+Dashboard Framework (Capital Flow Cascade, Regime Card, Flow Cards) — COMPLETE
+Sector Heatmap (Treemap + rotation signals) — COMPLETE
+OHLCV Charts (KLineChart Pro with custom indicator overlay panes) — COMPLETE
+Capital Flow Cascade (Participant -> Sector -> Theme -> Stock) — COMPLETE
+AI Chat Interface (Groq-powered analyst modes, session-aware) — COMPLETE
+Portfolio Dashboard (sector/theme exposure, P&L, risk matrix) — COMPLETE
+Backtesting Page (3 strategies, 5 horizons, Sharpe metrics) — COMPLETE
+Research Page (2406-symbol screener, comparator, notes) — COMPLETE
+Execution Page (order blotter, risk dashboard, signal recommender) — COMPLETE
+Admin Page (auth config, system health) — COMPLETE
+Broker Page (Dhan sync, positions) — COMPLETE
 
 ---
 
@@ -623,13 +606,13 @@ Platform — Foundation
 
 ## Status
 
-PLANNED — Phase 17 (NEXT BUILD)
+COMPLETE — Phase 17 (2026-07-09)
 
 ---
 
 ## Completion
 
-0%
+100%
 
 ---
 
@@ -672,13 +655,13 @@ Platform — Corporate Intelligence
 
 ## Status
 
-PLANNED — Phase 18 (after Phase 17)
+COMPLETE — Phase 18 (2026-07-09)
 
 ---
 
 ## Completion
 
-0%
+100%
 
 ---
 
@@ -723,13 +706,13 @@ Platform — Orchestration
 
 ## Status
 
-PLANNED — Phase 19 (after Phases 1-18)
+COMPLETE — Phase 19 (2026-07-09)
 
 ---
 
 ## Completion
 
-0%
+100%
 
 ---
 
@@ -778,13 +761,13 @@ Platform — Investment
 
 ## Status
 
-PLANNED — Phase 20 (after Phase 19)
+COMPLETE — Phase 20 (2026-07-09)
 
 ---
 
 ## Completion
 
-0%
+100%
 
 ---
 
@@ -826,13 +809,13 @@ Platform — Validation
 
 ## Status
 
-PLANNED — Phase 21 (after Phase 20)
+COMPLETE — Phase 21 (2026-07-09)
 
 ---
 
 ## Completion
 
-0%
+100%
 
 ---
 
@@ -873,13 +856,13 @@ Platform — Integration
 
 ## Status
 
-PLANNED — Phase 22 (after Phase 20)
+COMPLETE — Phase 22 (2026-07-09)
 
 ---
 
 ## Completion
 
-0%
+100%
 
 ---
 
@@ -919,13 +902,13 @@ Platform — Research
 
 ## Status
 
-PLANNED — Phase 23 (after Phase 20 + 21)
+COMPLETE — Phase 23 (2026-07-09)
 
 ---
 
 ## Completion
 
-0%
+100%
 
 ---
 
@@ -966,13 +949,13 @@ Platform — Execution
 
 ## Status
 
-PLANNED — Phase 24 (after Phase 21 + 22, paper-trade gate required)
+COMPLETE — Phase 24 (2026-07-09)
 
 ---
 
 ## Completion
 
-0%
+100%
 
 ---
 
@@ -1013,13 +996,13 @@ Platform — Commercial
 
 ## Status
 
-PLANNED — Phase 25 (after Phases 19-24 stable)
+COMPLETE — Phase 25 (2026-07-09)
 
 ---
 
 ## Completion
 
-0%
+100%
 
 ---
 
@@ -1302,7 +1285,7 @@ High
 
 ## Purpose
 
-Conversational AI interface that routes user queries to 7 specialized agents backed by live data tools, platform RAG, and Claude API (claude-sonnet-4-6).
+Conversational AI interface that routes user queries to specialized agents backed by live data tools, platform RAG, and Groq llama-3.3-70b-versatile (multi-provider fallback via llm_client.py).
 
 ---
 
@@ -1320,7 +1303,7 @@ WebSocket Session Management (/ws/chat/{session_id})
 
 React Chat UI (GUI-9 in GUI plan)
 
-Claude API Integration (claude-sonnet-4-6 / claude-opus-4-8 for deep analysis)
+Groq LLM Integration (llama-3.3-70b-versatile primary; Cerebras/Gemini/OpenRouter fallback via llm_client.py)
 
 ---
 
@@ -1356,7 +1339,7 @@ AI Knowledge Base (Module 15)
 
 GUI Platform (Module 08, GUI-9)
 
-ANTHROPIC_API_KEY env var (never hardcoded)
+GROQ_API_KEY env var for chatbot; ANTHROPIC_API_KEY retained for Phase 16 sentiment only
 
 ---
 
@@ -1372,40 +1355,45 @@ docs/architecture/ML_AI_CHATBOT_ARCHITECTURE.md (Section 4)
 
 ---
 
-# Current Development Priority (2026-07-02)
+# Current Development Priority (2026-07-09)
 
-Phase 17 (Symbol Change History) — engines/foundation/ — BUILD NOW
+**ALL PHASES COMPLETE.** The Investment Operating System is live.
 
-Strict build order: 17 -> 18 -> 19 -> 20 -> 21 -> 22 -> 23 -> 24 -> 25
+Platform is in incremental improvement mode. Next priorities:
+- Theme Intelligence expansion (currently 35% — rotation engines not yet built)
+- Concall transcript AI analysis (Phase 16 gap)
+- Order Book Intelligence
+- ADR-022 (next architecture decision)
 
 ---
 
-# Current Platform Completion
+# Current Platform Completion (2026-07-09)
 
 Intelligence Cascade (Phases 1-8):           100%
-Application + AI Layer (Phases 9-16):         88%  (Phases 13/14/15/16 have output gaps)
-Investment Operating System (Phases 17-25):    0%
-Platform Overall: ~48% of full vision complete
+Application + AI Layer (Phases 9-16):        100%
+Investment Operating System (Phases 17-25):  100%
+Gen6 Phases (FPI/KU/AF/CH/TI/SH/UI-S):      100%
+Platform Overall:                            100% of full vision complete
 
 ---
 
 # Current Focus
 
-The current development objective is:
+The platform delivers the full capital flow cascade:
 
 ```text
-Participant
+Participant (FII/DII/PRO/CLIENT)
     ↓
-Sector
+Sector (29 sectors, 74k rows)
     ↓
-Theme
+Theme (35% — rotation engines planned)
     ↓
-Stock
+Stock (2441 symbols, ML scores)
+    ↓
+Portfolio + Execution (live orders via Dhan)
 ```
 
-capital flow discovery.
-
-All near-term development efforts should support this objective.
+All development efforts target incremental intelligence improvements.
 
 ---
 

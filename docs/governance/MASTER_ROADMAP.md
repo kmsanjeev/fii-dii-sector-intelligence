@@ -1,5 +1,5 @@
 # MASTER ROADMAP
-## Capital Flow Intelligence Platform | Updated 2026-07-02
+## Capital Flow Intelligence Platform | Updated 2026-07-09
 
 ---
 
@@ -120,9 +120,10 @@ Telegram bot live and tested.
 ## PHASE 10 — FastAPI Backend | COMPLETE (2026-06-30)
 16 endpoints + WebSocket. Port 8001. 60min in-memory CSV reload. start.ps1/stop.ps1 for persistent launch.
 
-## PHASE 11 — React GUI | COMPLETE (2026-07-02)
-10 pages + Charts page. TradingView OHLCV with IST timestamp correction. 5M/15M/1H intraday + 9 daily timeframes.
-Dark terminal theme. Port 5173.
+## PHASE 11 — React GUI | COMPLETE (2026-07-09)
+15 pages. KLineChart Pro v0.1.1 (klinecharts v9.8.12) OHLCV with custom indicators (VOLMain, VWAP, Supertrend, HMA).
+Inline styles via C.* token objects (no Tailwind). 5M/15M/1H intraday + 9 daily timeframes.
+Dark terminal theme. Port 5173. frontend/ directory.
 
 ## PHASE 12 — ML Intelligence Layer | COMPLETE (2026-06-30)
 4 engines: feature engineering (24 features), XGBoost accumulation, LGB+XGB bull run ensemble, daily scorer.
@@ -131,14 +132,16 @@ Dark terminal theme. Port 5173.
 ## PHASE 13 — RAG Knowledge Base | COMPLETE (2026-06-30)
 5 engines: document builder (1091 docs), BM25 indexer, FAISS indexer (6 domains), hybrid RRF retriever, daily updater.
 
-## PHASE 14 — Chatbot (Claude API) | COMPLETE (2026-06-30)
+## PHASE 14 — Chatbot (Multi-Provider LLM) | COMPLETE (2026-07-09)
 Intent router + agentic chat engine + tool registry (11 data access functions) + /api/chat endpoint.
-claude-sonnet-4-6 with RAG context injection.
+Groq llama-3.3-70b-versatile (primary) via llm_client.py multi-provider fallback chain.
+RAG context injection. parallel_tool_calls=False to prevent Llama XML function-call bug.
 
-## PHASE 15 — Financial Results + Shareholding | COMPLETE (2026-07-01)
+## PHASE 15 — Financial Results + Shareholding | COMPLETE (2026-07-09)
 NSE XBRL P&L: 4181 rows, 2084 symbols (Q2FY25+Q3FY25, 99% EQ universe).
-Shareholding: quarterly_shp.csv (7228 rows, Q2FY25-Q1FY26, 98.9% FII coverage).
+Shareholding: quarterly_shp.csv (76170 rows, Q1FY24-Q1FY26 8 quarters, fraction-scale fixed in Phase SH).
 Valuation: P/E + ROE scores, 2084 symbols.
+Extended Financials (Phase 15B): OPM%, ROCE%, Book Value/share, Sales Growth CAGR.
 
 ## PHASE 16 — Management Intelligence | COMPLETE (2026-06-30)
 3 engines: holding_trend_engine.py, announcement_fetcher.py, management_sentiment_engine.py.
@@ -196,7 +199,7 @@ Frontend: Research page
 Per-stock entry/exit synthesis, conviction scoring, technical + F&O overlays, full chat UI.
 
 ## PHASE A — Technical + F&O Intelligence | COMPLETE
-`engines/intelligence/technical_engine.py` | 52W H/L, 20/50/200 DMA, trend_signal (2717 rows)
+`engines/intelligence/technical_engine.py` | 52W H/L, 20/50/200 DMA, trend_signal (2718 rows)
 `engines/intelligence/fno_engine.py` | futures OI, 1D/5D delta, oi_signal (211 F&O stocks)
 `data/intelligence/market_context.json` | market PCR + regime pulse
 
@@ -219,19 +222,51 @@ LLM backend: Groq llama-3.3-70b-versatile (free tier, replaced Anthropic API)
 
 ---
 
-# CURRENT STATUS (2026-07-02)
+---
 
-ALL 25 CORE PHASES + A/B/C/D COMPLETE. Full investment operating system is live.
+# GENERATION 6 — AstroFinance + KLineChart Pro + Intelligence Expansion (COMPLETE 2026-07-09)
+
+## PHASE FPI — Sector FPI Fortnightly | COMPLETE
+Fortnightly sector-level FPI data. 8690 rows.
+
+## PHASE KU — Kundli + Gann Intelligence | COMPLETE
+Vedic astro + Gann angle analysis for market timing signals.
+
+## PHASE AF — AstroFinance Planetary Intelligence | COMPLETE
+`engines/astro/planetary_intelligence_layer.py` | planetary_intelligence.csv (209 rows)
+Phase AF = planetary signals integrated into daily pipeline.
+
+## PHASE CH — KLineChart Pro Charts | COMPLETE
+Replaced TradingView Lightweight Charts with klinecharts v9.8.12 (KLineChart Pro v0.1.1).
+Custom indicators: VOLMain, VWAP, Supertrend, HMA — `frontend/src/indicators/customIndicators.ts`
+Inline styles via C.* token objects (no Tailwind, no shadcn/ui, no Framer Motion).
+
+## PHASE TI — Technical Indicators Expansion | COMPLETE
+Added RSI, MACD, ATR, Bollinger Bands, OBV, ADX columns to technical_indicators.csv (2718 rows).
+
+## PHASE SH — Shareholding XBRL Fix + 8-Score Panel | COMPLETE
+Fixed fraction-scale bug in NSE XBRL parser. 76170 rows (Q1FY24-Q1FY26, 8 quarters).
+8-score panel UI added to ShareholdingPage.
+
+## PHASE UI-S — Sectors + Social Pulse UI | COMPLETE
+Updated sector dashboard with Social Pulse integration.
+
+---
+
+# CURRENT STATUS (2026-07-09)
+
+ALL 25 CORE PHASES + A/B/C/D/FPI/KU/AF/CH/TI/SH/UI-S COMPLETE. Full investment operating system is live.
 Project location: `D:\Projects\fii-dii-sector-intelligence`
 
 ```
-Gen 1  Institutional Intelligence   Phases 1-8    COMPLETE
-Gen 2  Application Layer            Phases 9-16   COMPLETE
-Gen 3  Investment Operating System  Phases 17-25  COMPLETE
-Gen 5  Trade Intelligence Layer     Phases A-D    COMPLETE
+Gen 1  Institutional Intelligence   Phases 1-8         COMPLETE
+Gen 2  Application Layer            Phases 9-16        COMPLETE
+Gen 3  Investment Operating System  Phases 17-25       COMPLETE
+Gen 5  Trade Intelligence Layer     Phases A-D         COMPLETE
+Gen 6  AstroFinance + Charts        Phases FPI/KU/AF/CH/TI/SH/UI-S  COMPLETE
 ```
 
-Next priorities (no formal phases assigned yet):
-- Daily data refresh validation (run refresh_scheduler.py manually, verify outputs)
+Ongoing:
+- Daily data refresh (refresh_scheduler.py, 18:00 IST weekdays)
 - Chat token conservation (Groq free tier: 100k tokens/day)
-- Backtest signal quality audit (run engines/backtest/ against 2025 EMERGING signals)
+- Theme Intelligence expansion (35% — rotation engines planned as next major phase)

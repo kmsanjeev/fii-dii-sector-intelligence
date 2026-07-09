@@ -1,6 +1,6 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.6 | 2026-07-02
+# Version 4.25 | 2026-07-09
 
 ---
 
@@ -16,9 +16,9 @@ This project is NOT a screener. It IS a decision intelligence platform.
 
 ---
 
-# CURRENT PLATFORM STATE (2026-07-02)
+# CURRENT PLATFORM STATE (2026-07-09)
 
-**ALL 25 CORE PHASES + A/B/C/D COMPLETE. Full investment operating system is live.**
+**ALL 25 CORE PHASES + A/B/C/D/FPI/KU/AF/CH/TI/SH/UI-S COMPLETE. Full investment operating system is live.**
 
 Project root: `D:\Projects\fii-dii-sector-intelligence`
 
@@ -75,11 +75,11 @@ Layer 6: Trade Conviction          (C)         LIVE through 2026-07-01
 |-------|------|----------|--------|
 | 9  | Alert System (Telegram)    | alerts/               | COMPLETE — 10 alert types, APScheduler, cooldown + per-type caps |
 | 10 | FastAPI Backend            | backend/              | COMPLETE — 20 endpoints, port 8001, WebSocket live ticker |
-| 11 | React GUI                  | frontend/             | COMPLETE — 14 pages, Charts, TradingView OHLCV, IST timestamps |
+| 11 | React GUI                  | frontend/             | COMPLETE — 15 pages, KLineChart Pro OHLCV, IST timestamps, inline styles |
 | 12 | ML Intelligence Layer      | engines/ml/           | COMPLETE — XGBoost+LightGBM, 24 features, 4 model outputs |
 | 13 | RAG Knowledge Base         | engines/ai/knowledge/ | COMPLETE — FAISS+BM25, 6 domain indexes, hybrid RRF retrieval |
-| 14 | Chatbot (Groq API)         | engines/ai/chatbot/   | COMPLETE — Groq llama-3.3-70b, 11 tools, /api/chat |
-| 15 | Financial Results + SHP    | engines/fundamentals/ | COMPLETE — 4181 XBRL rows, 7228 shareholding rows |
+| 14 | Chatbot (multi-provider LLM) | engines/ai/chatbot/ | COMPLETE — Groq llama-3.3-70b (primary), multi-provider fallback via llm_client.py, 11 tools, /api/chat |
+| 15 | Financial Results + SHP    | engines/fundamentals/ | COMPLETE — 4181 XBRL rows, 76170 shareholding rows (8 quarters, XBRL fraction-scale fixed) |
 | 16 | Management Intelligence    | engines/management/   | COMPLETE — holding trends, announcements, sentiment |
 
 ## Generation 4 — Investment Operating System (COMPLETE)
@@ -98,10 +98,21 @@ Layer 6: Trade Conviction          (C)         LIVE through 2026-07-01
 ## Generation 5 — Trade Intelligence Layer (COMPLETE)
 | Phase | What | Location | Status |
 |-------|------|----------|--------|
-| A | Technical + F&O Intelligence | engines/intelligence/ | COMPLETE — tech_indicators (2717), fno_intel (211), market_context.json |
+| A | Technical + F&O Intelligence | engines/intelligence/ | COMPLETE — tech_indicators (2718), fno_intel (211), market_context.json |
 | B | Trade Intelligence Card      | frontend/components/  | COMPLETE — 7-factor WHY BUY panel, _enrich_bulk() in stocks.py |
 | C | Trade Conviction Alerts      | engines/intelligence/ | COMPLETE — trade_conviction_scores (2406), P9/P10 alerts |
 | D | Chat Page (Full UI)          | frontend/pages/       | COMPLETE — 355-line ChatPage.tsx, 6 suggested prompts, session chat |
+
+## Generation 6 — Extended Intelligence (COMPLETE)
+| Phase | What | Location | Status |
+|-------|------|----------|--------|
+| FPI | FPI Sector Ownership Engine  | engines/fpi/          | COMPLETE — 8690 rows, sector_fpi_fortnightly.csv, 3-factor rotation |
+| KU  | Kundli + Gann Engine         | engines/astro/        | COMPLETE — kundli_engine.py, gann_engine.py |
+| AF  | AstroFinance Engine          | engines/intelligence/ | COMPLETE — astro_signals.csv (209 rows), planetary intelligence layer |
+| CH  | KLineChart Pro Chart         | frontend/src/         | COMPLETE — klinecharts v9.8.12, customIndicators.ts (VOLMain/VWAP/Supertrend/HMA) |
+| TI  | Technical Indicators Upgrade | engines/intelligence/ | COMPLETE — RSI/MACD/ATR/BB/OBV/ADX added, technical_indicators.csv (2718 rows) |
+| SH  | Shareholding Fix + 8-score panel | frontend/src/     | COMPLETE — XBRL fraction-scale fixed, 8-score panel in StockDetail |
+| UI-S | Sectors + Social Pulse UI   | frontend/src/         | COMPLETE — Sectors page + Social Pulse component |
 
 ---
 
@@ -113,7 +124,7 @@ Layer 6: Trade Conviction          (C)         LIVE through 2026-07-01
 | sector_rotation_intelligence.csv | 29 | rotation_signal, FII_flow_score, combined_score | 2026-07-01 |
 | bull_run_probability.csv | 2441 | bull_run_score, label, 4 component scores | 2026-07-01 |
 | bull_run_watchlist.csv | 225 | EMERGING symbols sorted by score | 2026-07-01 |
-| technical_indicators.csv | 2717 | 52W H/L, 20/50/200 DMA, trend_signal | 2026-07-01 |
+| technical_indicators.csv | 2718 | 52W H/L, 20/50/200 DMA, RSI, MACD, ATR, BB, OBV, ADX, trend_signal | 2026-07-01 |
 | fno_intelligence.csv | 211 | futures_oi, oi_signal, oi_1d, oi_5d | 2026-07-01 |
 | trade_conviction_scores.csv | 2406 | conviction_score, action (STRONG_BUY..EXIT) | 2026-07-01 |
 | institutional_deal_signals.csv | 361 | inst_net_value_cr, deal_signal | 2026-07-01 |
@@ -148,7 +159,7 @@ Layer 6: Trade Conviction          (C)         LIVE through 2026-07-01
 
 # GOVERNANCE
 
-- CHANGELOG: docs/governance/CHANGELOG.md (v4.6 is latest)
+- CHANGELOG: docs/governance/CHANGELOG.md (v4.25 is latest)
 - Module Registry: docs/governance/MODULE_REGISTRY.md
 - Guardrails: docs/governance/GUARDRAILS.md (55 rules)
 - ADRs: docs/decisions/ (ADR-001 to ADR-021; next = ADR-022)

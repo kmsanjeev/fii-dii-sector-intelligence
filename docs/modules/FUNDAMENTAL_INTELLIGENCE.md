@@ -197,7 +197,7 @@ Corporate Actions
 Location
 
 ```text
-data/NSE Data/corporate_actions/
+data/NSE/corporate_actions/
 ```
 
 ---
@@ -209,7 +209,7 @@ Quarterly Results
 Location
 
 ```text
-data/NSE Data/results/
+data/NSE/results/
 ```
 
 ---
@@ -221,7 +221,7 @@ Shareholding
 Location
 
 ```text
-data/NSE Data/shareholding/
+data/NSE/shareholding/
 ```
 
 ---
@@ -233,7 +233,7 @@ Corporate Announcements
 Location
 
 ```text
-data/NSE Data/announcements/
+data/NSE/announcements/
 ```
 
 ---
@@ -794,29 +794,20 @@ before broad market recognition.
 
 # Current Completion
 
-Estimated Completion:
+Estimated Completion: 100% (Phases 15, 15B, 16 COMPLETE — 2026-07-09)
 
-5%
+Completed Engines:
+- financial_results_engine.py (Phase 15A): 4181 rows NSE XBRL P&L, 2084 symbols
+- valuation_engine.py (Phase 15B): P/E, ROE, valuation_label scoring
+- shareholding_engine.py (Phase 15C): quarterly_shp.csv, 8 quarters, 76170 rows
+- extended_financials_engine.py (Phase 15B ext): OPM%, ROCE%, Book Value/share, Sales CAGR
+- holding_trend_engine.py (Phase 16): QoQ deltas, 7 conviction signals
+- announcement_fetcher.py (Phase 16): 527 board announcements, 8-type classification
+- management_sentiment_engine.py (Phase 16): rule-based + LLM tone score, 471 symbols
 
----
-
-# Next Milestones
-
-1. Corporate Actions Engine
-
-2. Results Intelligence Engine
-
-3. Shareholding Intelligence Engine
-
-4. Management Intelligence Engine
-
-5. Order Book Intelligence Engine
-
-6. AI Concall Analyst
-
-7. AI Annual Report Analyst
-
-8. Fundamental Dashboard
+Remaining (future):
+- Order Book Intelligence (requires integration with company-level order data)
+- AI Concall Analyst (placeholder in Phase 16 architecture — not yet triggered)
 
 ---
 

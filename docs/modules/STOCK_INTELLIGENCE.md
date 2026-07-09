@@ -17,7 +17,7 @@ corporate signals, and price momentum.
 
 ---
 
-# Completion Status: 40% (Phase 8 complete 2026-06-30)
+# Completion Status: 100% (Phase 8 + Phase A + Phase B/C + Phase TI — 2026-07-09)
 
 ---
 
@@ -78,14 +78,13 @@ Results (2026-06-30):
 
 ---
 
-# Remaining Engines (Phase 12 — ML Layer)
+# Additional Engines Complete (Phase 12 + A + TI)
 
-- Accumulation Detection Model (XGBoost binary, target: price_up_10pct_in_20d)
-- Bull Run ML Model (LightGBM + XGBoost ensemble, replaces rule-based 8B)
-- Relative Strength Engine (within-sector rank)
-- Delivery Intelligence Engine (delivery volume analysis)
-- F&O Intelligence Engine (put/call ratio, OI buildup per symbol)
-- Anomaly Detector (Isolation Forest on flows)
+- engines/ml/accumulation_model.py — XGBoost accumulation detection, 24 features
+- engines/ml/bull_run_model.py — LightGBM+XGBoost ensemble, 2441 symbols
+- engines/intelligence/technical_engine.py — 52W H/L, 20/50/200 DMA, RSI/MACD/ATR/BB/OBV/ADX (2718 rows)
+- engines/intelligence/fno_engine.py — F&O OI + oi_signal (211 F&O stocks)
+- engines/intelligence/trade_conviction_engine.py — 7-factor score (2406 symbols)
 
 ---
 

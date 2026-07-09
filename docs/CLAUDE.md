@@ -37,16 +37,16 @@ docs/
 ├── modules/                      ← Per-module specs (update when module changes)
 │   ├── INSTITUTIONAL_INTELLIGENCE.md   ← 100% complete (Phase 5 done)
 │   ├── PARTICIPANT_INTELLIGENCE.md     ← 100% complete (Phase 5+6 done)
-│   ├── SECTOR_INTELLIGENCE.md          ← 100% complete (Phase 6 done)
-│   ├── THEME_INTELLIGENCE.md           ← 35% (engines planned but not built)
-│   ├── STOCK_INTELLIGENCE.md           ← 100% complete (Phase 8 done)
-│   ├── FUNDAMENTAL_INTELLIGENCE.md     ← 85% complete (Phase 15+16 done)
-│   ├── AI_PLATFORM.md                  ← 100% complete (Phase 12-14 done)
-│   ├── GUI_PLATFORM.md                 ← 100% complete (Phase 10+11 done)
-│   └── EXECUTION_PLATFORM.md          ← 5% (Generation 4, not started)
+│   ├── SECTOR_INTELLIGENCE.md          ← 100% complete (Phase 6 + FPI done)
+│   ├── THEME_INTELLIGENCE.md           ← 35% (rotation engines planned but not built)
+│   ├── STOCK_INTELLIGENCE.md           ← 100% complete (Phase 8 + A + TI done)
+│   ├── FUNDAMENTAL_INTELLIGENCE.md     ← 100% complete (Phase 15/15B/16 done)
+│   ├── AI_PLATFORM.md                  ← 100% complete (Phase 12-14 + D done)
+│   ├── GUI_PLATFORM.md                 ← 100% complete (Phase 10+11 done, KLineChart Pro)
+│   └── EXECUTION_PLATFORM.md          ← 100% complete (Phase 20-25 done)
 │
 ├── decisions/                    ← ADR register (never delete, only supersede)
-│   └── ADR-001 through ADR-020
+│   └── ADR-001 through ADR-021 (next: ADR-022)
 │
 └── legacy/                       ← Old docs (DO NOT USE — for historical reference only)
 ```
@@ -83,9 +83,8 @@ Date: YYYY-MM-DD
 | New module | Create docs/modules/<MODULE>.md before writing code |
 | Path/naming change | DATA_ARCHITECTURE.md, CLAUDE_MASTER_DEV_GUIDE.md |
 
-## DATA_ARCHITECTURE.md FIX NEEDED
-The file currently references `data/NSE Data/` (with a space) throughout.
-Correct path is `data/NSE/`. Update when working in this file.
+## DATA_ARCHITECTURE.md PATH FIX — DONE
+All `data/NSE Data/` (with space) references corrected to `data/NSE/` (2026-07-09).
 
 ## LEGACY DOCS
 `docs/legacy/` contains superseded versions of early docs.

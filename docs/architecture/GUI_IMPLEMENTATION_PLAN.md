@@ -1,8 +1,12 @@
 # GUI Implementation Plan — Capital Flow Intelligence Platform
 
-**Status:** Architecture Approved | React + FastAPI  
-**Date:** 2026-06-29  
-**Supersedes:** `GUI_ARCHITECTURE.md` (vision doc) — this document is the build spec
+**Status:** FULLY IMPLEMENTED | React + FastAPI  
+**Date:** 2026-06-29 | **Last updated:** 2026-07-09  
+**Supersedes:** `GUI_ARCHITECTURE.md` (vision doc) — this document is the build spec  
+**IMPLEMENTATION NOTE:** Actual build differs from original plan in three areas:  
+1. Styling: inline styles via C.* token objects (NOT Tailwind CSS / shadcn / Radix / Framer Motion)  
+2. OHLCV charting: KLineChart Pro v0.1.1 (klinecharts v9.8.12) with custom indicators (NOT TradingView Lightweight Charts)  
+3. Frontend directory: `frontend/` (NOT `gui/`)
 
 ---
 
@@ -13,13 +17,14 @@
 |-------|-----------|--------|
 | Framework | React 18 + TypeScript | Component model, type safety, ecosystem |
 | Build Tool | Vite | Fast HMR, ESM, smaller bundles than CRA |
-| Styling | Tailwind CSS v3 + CSS Variables | Utility-first, dark/light theming via CSS vars |
-| Component Base | Radix UI Primitives | Headless, accessible, composable |
-| Charts | Recharts + TradingView Lightweight Charts | Recharts for flows/heatmaps; TV for OHLCV |
+| Styling | Inline styles via C.* token objects | Dark terminal theme; no Tailwind, no shadcn/ui, no Radix UI |
+| Component Base | Custom components | No Radix UI primitives — all components hand-built with inline styles |
+| Charts (flows) | Recharts | Recharts for sector heatmaps, flow charts |
+| Charts (OHLCV) | KLineChart Pro v0.1.1 (klinecharts v9.8.12) | Candlestick + custom indicators (VOLMain/VWAP/Supertrend/HMA); NOT TradingView |
 | State (server) | TanStack Query v5 (React Query) | Caching, refetch, background sync |
 | State (client) | Zustand | Lightweight, no boilerplate for UI state |
 | Routing | React Router v6 | Declarative, nested layouts |
-| Animations | Framer Motion | Smooth transitions for heatmaps and flow maps |
+| Animations | CSS transitions (inline styles) | No Framer Motion — transitions handled via inline style properties |
 | Tables | TanStack Table v8 | Virtualized, sortable, filterable |
 | Icons | Lucide React | Consistent, tree-shakeable |
 | Date Handling | date-fns | IST-aware, no Moment.js |
@@ -42,7 +47,7 @@
 
 ```
 fii-dii-sector-intelligence/
-├── gui/                              ← React frontend (new directory)
+├── frontend/                         ← React frontend (ACTUAL directory — NOT gui/)
 │   ├── public/
 │   │   ├── favicon.ico
 │   │   └── index.html
@@ -79,7 +84,7 @@ fii-dii-sector-intelligence/
 │   │   │   │   ├── SectorHeatmap.tsx ← Color-coded treemap/heatmap
 │   │   │   │   ├── FlowWaterfall.tsx ← Buy → Sell → Net waterfall chart
 │   │   │   │   ├── CapitalFlowCascade.tsx ← Market→Sector→Theme→Stock sunburst
-│   │   │   │   ├── OhlcvChart.tsx    ← TradingView Lightweight Charts
+│   │   │   │   ├── OhlcvChart.tsx    ← KLineChart Pro v0.1.1 (klinecharts v9.8.12)
 │   │   │   │   ├── AccumulationChart.tsx ← Area chart with score overlay
 │   │   │   │   ├── ParticipantPie.tsx ← FII/DII/PRO/CLIENT share pie
 │   │   │   │   └── Sparkline.tsx
@@ -132,15 +137,14 @@ fii-dii-sector-intelligence/
 │   │   │   └── constants.ts          ← API base URL, WebSocket URL
 │   │   │
 │   │   └── styles/
-│   │       └── globals.css           ← Tailwind directives + CSS variables
+│   │       └── globals.css           ← CSS variables (no Tailwind directives)
 │   │
 │   ├── package.json
 │   ├── tsconfig.json
 │   ├── vite.config.ts
-│   ├── tailwind.config.ts
 │   └── .env.example
 │
-└── api/                              ← FastAPI backend (new directory)
+└── api/                              ← FastAPI backend (actual: backend/)
     ├── main.py                       ← FastAPI app, CORS, routers
     ├── routers/
     │   ├── dashboard.py
@@ -219,21 +223,20 @@ Scale:
 
 ### Score Color Mapping (`lib/colors.ts`)
 
-```typescript
-export function scoreToColor(score: number): string {
-  if (score >= 80) return 'text-emerald-400';   // Strong accumulation
-  if (score >= 60) return 'text-green-400';      // Accumulating
-  if (score >= 40) return 'text-amber-400';      // Neutral / watch
-  if (score >= 20) return 'text-orange-400';     // Weak / caution
-  return 'text-red-400';                          // Distribution
-}
+NOTE: In the actual implementation, color tokens are defined in C.* objects (inline style token system) rather than Tailwind classes.
 
-export function scoreToBg(score: number): string {
-  if (score >= 80) return 'bg-emerald-500/20';
-  if (score >= 60) return 'bg-green-500/20';
-  if (score >= 40) return 'bg-amber-500/20';
-  if (score >= 20) return 'bg-orange-500/20';
-  return 'bg-red-500/20';
+```typescript
+// Actual implementation uses inline style objects via C.* token system, e.g.:
+// color: C.bull  (#10B981)  — accumulation / positive
+// color: C.bear  (#EF4444)  — distribution / negative
+// background: C.surface     — card backgrounds
+// The following Tailwind-class version is the original design spec only:
+export function scoreToColor(score: number): string {
+  if (score >= 80) return '#10B981'; // emerald — Strong accumulation
+  if (score >= 60) return '#22C55E'; // green   — Accumulating
+  if (score >= 40) return '#F59E0B'; // amber   — Neutral / watch
+  if (score >= 20) return '#F97316'; // orange  — Weak / caution
+  return '#EF4444';                   // red     — Distribution
 }
 ```
 
@@ -499,7 +502,7 @@ type CascadeNode = {
 ### `OhlcvChart` (StockDetail)
 
 ```typescript
-// TradingView Lightweight Charts
+// KLineChart Pro v0.1.1 (klinecharts v9.8.12)
 // Overlays:
 //   - 20 EMA (orange)
 //   - 50 EMA (blue)
@@ -691,62 +694,46 @@ xl:  1280px — wide desktop (full heatmaps)
 ## 13. Build & Dev Setup
 
 ```bash
-# Setup
-cd gui
-npm create vite@latest . -- --template react-ts
+# Setup — ACTUAL implementation (frontend/ directory)
+cd frontend
 npm install
 
-# Key packages
-npm install @tanstack/react-query @tanstack/react-table @tanstack/react-virtual
-npm install react-router-dom zustand
-npm install recharts lightweight-charts
-npm install @radix-ui/react-dialog @radix-ui/react-select @radix-ui/react-tooltip
-npm install framer-motion lucide-react sonner
-npm install react-hook-form zod @hookform/resolvers
-npm install date-fns date-fns-tz axios
-npm install -D tailwindcss postcss autoprefixer @types/node
-npx tailwindcss init -p
+# Actual packages installed (differs from original plan):
+# npm install @tanstack/react-query @tanstack/react-table @tanstack/react-virtual
+# npm install react-router-dom zustand
+# npm install recharts                  ← flows/heatmaps
+# npm install klinecharts               ← v9.8.12, OHLCV candlestick charts (NOT lightweight-charts)
+# npm install lucide-react sonner date-fns date-fns-tz axios
+# NO: @radix-ui/* framer-motion tailwindcss (NOT used in actual implementation)
 
 # Dev
 npm run dev            # Vite dev server → http://localhost:5173
-uvicorn api.main:app --reload --port 8000  # FastAPI backend
+py -3.11 -m uvicorn backend.main:app --port 8001 --reload  # FastAPI backend
 
 # Build
-npm run build          # Output: gui/dist/ → serve as static from FastAPI
+npm run build          # Output: frontend/dist/
 ```
 
 ---
 
 ## 14. Implementation Phases
 
-| Phase | Deliverable | Priority |
-|-------|------------|---------|
-| GUI-1 | AppShell (sidebar, topbar, routing) | Foundation |
-| GUI-2 | Design system (colors, typography, components) | Foundation |
-| GUI-3 | Dashboard page with mock data | First visible |
-| GUI-4 | FastAPI backend + real data wiring | Data layer |
-| GUI-5 | Sectors + Themes pages | Core intelligence |
-| GUI-6 | Stocks screener + StockDetail | Stock layer |
-| GUI-7 | Market page | Market layer |
-| GUI-8 | Portfolio page | Portfolio |
-| GUI-9 | AI Assistant (Claude API integration) | AI layer |
-| GUI-10 | Reports page | Reports |
-| GUI-11 | WebSocket live flow ticker | Real-time |
-| GUI-12 | Mobile responsiveness | Mobile |
-| GUI-13 | User mode system + Auth | Access control |
+| Phase | Deliverable | Status |
+|-------|------------|--------|
+| GUI-1 | AppShell (sidebar, topbar, routing) | COMPLETE |
+| GUI-2 | Design system (C.* tokens, inline styles, components) | COMPLETE |
+| GUI-3 | Dashboard page | COMPLETE |
+| GUI-4 | FastAPI backend + real data wiring | COMPLETE |
+| GUI-5 | Sectors + Stock pages | COMPLETE |
+| GUI-6 | Stocks screener + StockDetail with TradeIntelligenceCard | COMPLETE |
+| GUI-7 | Market + Participant pages | COMPLETE |
+| GUI-8 | Portfolio + Backtest + Broker + Research + Execution pages | COMPLETE |
+| GUI-9 | AI Chat (multi-provider LLM via Groq/Cerebras/Gemini/OpenRouter) | COMPLETE |
+| GUI-10 | Admin + Settings + Login pages | COMPLETE |
+| GUI-11 | WebSocket live flow ticker | COMPLETE |
+| GUI-B | KLineChart Pro OHLCV (Phase CH) | COMPLETE — klinecharts v9.8.12 |
+| GUI-C | Custom indicators (Phase CH) | COMPLETE — VOLMain/VWAP/Supertrend/HMA |
+| GUI-D | 8-score shareholding panel (Phase SH) | COMPLETE |
+| GUI-E | Sectors + Social Pulse UI (Phase UI-S) | COMPLETE |
 
-**Prerequisite:** Phase 4A (Company Fundamentals Master Engine) must be complete before GUI-4 (data wiring) — the frontend needs real sector/score data from the backend.
-
----
-
-## 15. Next Immediate Steps
-
-1. Create `gui/` directory structure
-2. Initialize Vite + React + TypeScript project
-3. Install all dependencies listed in Section 1
-4. Set up Tailwind with the design system variables from Section 3
-5. Build `AppShell.tsx` with sidebar + topbar
-6. Build `Dashboard.tsx` with mock data
-7. Build FastAPI `main.py` with one working endpoint (`/api/v1/dashboard/summary`)
-
-Start with: `say "start GUI-1"` to begin building the AppShell.
+All 15 pages LIVE at http://localhost:5173.

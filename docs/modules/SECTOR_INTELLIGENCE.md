@@ -671,27 +671,26 @@ before broad market recognition.
 
 # Current Completion
 
-Estimated Completion:
-
-45%
+100% — COMPLETE (Phase 6A/6B/6C + Phase AF FPI — 2026-07-09)
 
 ---
 
-# Next Milestones
+# Completed Engines
 
-1. Sector Rotation Engine
+1. sector_capital_flow_engine.py (6A) — 74269 rows, 29 sectors, FII/DII/PRO/CLIENT attribution
+2. sector_flow_score_engine.py (6B) — rolling 5D/20D/60D scores per sector
+3. sector_rotation_intelligence_engine.py (6C) — rotation_signal, combined_score, capital_flow_alignment
+4. Sector FPI Fortnightly (Phase FPI) — 8690 rows sector-level FPI data
+5. Sector Dashboard (Phase UI-S) — sectors + social pulse UI complete
 
-2. Sector Capital Flow Engine
+---
 
-3. Sector Momentum Engine
+# Outputs
 
-4. Sector Opportunity Engine
-
-5. Sector Dashboard
-
-6. Sector Infographics
-
-7. AI Sector Analyst
+data/intelligence/sector_capital_flows.csv (74269 rows, 2016-2026)
+data/intelligence/sector_flow_scores.csv (74269 rows)
+data/intelligence/sector_rotation_intelligence.csv (29 sectors snapshot)
+data/intelligence/sector_rotation_history.csv (74269 rows time series)
 
 ---
 

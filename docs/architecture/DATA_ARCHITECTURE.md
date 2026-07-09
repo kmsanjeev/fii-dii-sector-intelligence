@@ -97,7 +97,7 @@ Permanent storage of source data.
 ## Location
 
 ```text
-data/NSE Data/
+data/NSE/
 ```
 
 ---
@@ -107,7 +107,7 @@ data/NSE Data/
 ```text
 data/
 
-└── NSE Data/
+└── NSE/
 
     ├── institutional/
 
@@ -141,7 +141,7 @@ data/
 ## Structure
 
 ```text
-data/NSE Data/bhavcopy/equity/
+data/NSE/bhavcopy/equity/
 
     2025/
         bhavcopy_20250101.csv
@@ -189,7 +189,7 @@ yFinance
 ## Structure
 
 ```text
-data/NSE Data/bhavcopy/f&o/
+data/NSE/bhavcopy/f&o/
 
     2025/
     2026/
@@ -211,7 +211,7 @@ data/NSE Data/bhavcopy/f&o/
 ## Structure
 
 ```text
-data/NSE Data/institutional/
+data/NSE/institutional/
 ```
 
 ---
@@ -230,7 +230,7 @@ data/NSE Data/institutional/
 ## Structure
 
 ```text
-data/NSE Data/equity_master/
+data/NSE/equity_master/
 ```
 
 ---

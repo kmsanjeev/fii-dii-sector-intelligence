@@ -1,5 +1,5 @@
 # AI PLATFORM
-## Capital Flow Intelligence Platform | Updated 2026-06-30
+## Capital Flow Intelligence Platform | Updated 2026-07-09
 
 ---
 
@@ -10,7 +10,7 @@ Users interact via natural language. Agents access live data via tool calls back
 
 ---
 
-# Status: NOT STARTED (Phase 14, after FastAPI + RAG)
+# Status: COMPLETE (Phases 12/13/14/D — 2026-07-09)
 
 ---
 
@@ -33,7 +33,7 @@ Intent Router (classify: market / sector / stock / corporate / research)
     |
 RAG Retrieval (hybrid FAISS + BM25, 5-10 context chunks)
     |
-Agent (Claude API claude-sonnet-4-6)
+Agent (Groq llama-3.3-70b-versatile via llm_client.py multi-provider fallback)
     |
 Tool Calls (live data: get_regime, get_sector_flow, get_stock_score, etc.)
     |
@@ -69,14 +69,22 @@ get_upcoming_events(days=30)     -> catalyst calendar
 
 # LLM Configuration
 
-Default: claude-sonnet-4-6 (fast, accurate for structured data)
-Deep analysis (ResearchAgent only): claude-opus-4-8
-API key: ANTHROPIC_API_KEY from os.getenv() — NEVER hardcoded
+**Primary:** Groq `llama-3.3-70b-versatile` (free tier, 100k tokens/day)
+**Fallback chain:** Groq → Cerebras → Gemini → OpenRouter (via `engines/common/llm_client.py`)
+**Anthropic API:** retained for Phase 16 management sentiment only — NOT used for chatbot
+API keys: `GROQ_API_KEY` (chatbot), `ANTHROPIC_API_KEY` (sentiment) — from os.getenv() — NEVER hardcoded
 
 System prompt injects:
 - Current date + market regime
 - Top 3 EMERGING symbols
 - Last updated timestamps for all data sources
+
+Implementation notes:
+- Tool calling format: Groq/OpenAI function calling (converted from Anthropic format at module load)
+- `parallel_tool_calls=False` to prevent Llama XML-style function call bug
+- `MAX_TOOL_ROUNDS=3` (conserve 100k/day free tier budget)
+- 429 rate limit caught → user-readable message returned
+- `tool_use_failed` 400 error → fallback to clean prompt with tool results only
 
 ---
 

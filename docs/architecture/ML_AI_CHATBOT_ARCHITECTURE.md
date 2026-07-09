@@ -2,12 +2,12 @@
 # Capital Flow Intelligence Platform
 
 **Status:** Approved — FULLY IMPLEMENTED  
-**Date:** 2026-06-29 | **Last updated:** 2026-07-02  
-**ADR:** ADR-021 (ML Intelligence Layer), ADR-022 (RAG Knowledge Base), ADR-023 (Chatbot)
+**Date:** 2026-06-29 | **Last updated:** 2026-07-09  
+**ADR:** ADR-021 (Alert System Architecture — see docs/decisions/); ML/RAG/Chatbot ADRs pending creation as ADR-022+
 
 ---
 
-## Implementation Status (2026-07-02)
+## Implementation Status (2026-07-09)
 
 | Layer | Status | Notes |
 |-------|--------|-------|
@@ -52,7 +52,7 @@ ML INTELLIGENCE LAYER  ← NEW: prediction + scoring models
     ↓
 AI KNOWLEDGE BASE      ← NEW: RAG over all intelligence outputs
     ↓
-AI AGENT LAYER         ← ENHANCED: Claude API + tool use
+AI AGENT LAYER         ← ENHANCED: Groq LLM + tool use (multi-provider fallback)
     ↓
 CHATBOT INTERFACE      ← NEW: conversational access layer
     ↓
@@ -271,7 +271,7 @@ Retriever (Hybrid: Dense + BM25 keyword)
     ↓
 Context Assembly
     ↓
-Claude API Prompt
+LLM Prompt (Groq llama-3.3-70b-versatile via llm_client.py)
 ```
 
 ### Directory: `engines/ai/knowledge/`
@@ -338,7 +338,7 @@ Tool Resolver            ← decides if live data lookup needed
     ↓
 Knowledge Retriever      ← pulls RAG context (Module 15)
     ↓
-Claude API (Sonnet 4.6)  ← generates response with context + tools
+Groq LLM (llama-3.3-70b-versatile)  ← generates response with context + tools
     ↓
 Response Formatter       ← adds charts, tables, links inline
     ↓
@@ -366,31 +366,26 @@ engines/ai/chatbot/
 └── session.py               ← WebSocket session management
 ```
 
-### LLM: Claude API
-**Model:** `claude-sonnet-4-6` (default) / `claude-opus-4-8` (deep analysis)  
-**API key:** `os.getenv("ANTHROPIC_API_KEY")` — never hardcoded  
+### LLM: Multi-Provider Fallback via llm_client.py
+**Primary:** Groq `llama-3.3-70b-versatile` (free tier, 100k tokens/day)  
+**Fallback chain:** Groq → Cerebras → Gemini → OpenRouter  
+**Anthropic API:** retained for Phase 16 management sentiment only (not chatbot)  
 
 ```python
-# engines/ai/chatbot/agents/base_agent.py
-import anthropic
+# engines/ai/chatbot/chat_engine.py — actual implementation
+# Uses llm_client.py multi-provider fallback, NOT direct Anthropic SDK
+# Tool calling converted from Anthropic format → Groq/OpenAI format at module load:
+GROQ_TOOLS = [{"type":"function","function":{"name":t["name"],"description":t["description"],
+               "parameters":t.get("input_schema",{})}} for t in TOOLS]
 
-class BaseAgent:
-    def __init__(self, agent_name: str, system_prompt: str):
-        self.client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
-        self.model = "claude-sonnet-4-6"
-        self.system_prompt = system_prompt
-        self.max_tokens = 2048
-
-    def respond(self, user_message: str, context: str, tools: list) -> str:
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=self.max_tokens,
-            system=f"{self.system_prompt}\n\nPLATFORM CONTEXT:\n{context}",
-            messages=[{"role": "user", "content": user_message}],
-            tools=tools,
-        )
-        return response.content[0].text
+# Known quirks and mitigations:
+# - parallel_tool_calls=False (prevents Llama XML-style function call bug)
+# - MAX_TOOL_ROUNDS=3 (conserve 100k/day token budget)
+# - 429 rate limit caught → user-readable message returned
+# - tool_use_failed 400 → fallback to clean prompt with tool results only
 ```
+
+See Section "LLM Backend Change" at the top of this document for full context.
 
 ### Intent Router
 
@@ -421,7 +416,7 @@ def route(user_input: str) -> str:
 ### Tool Registry (live data access)
 
 ```python
-# tools.py — Claude API tool use spec
+# tools.py — tool registry (Groq/OpenAI function calling format)
 TOOLS = [
     {
         "name": "get_sector_flows",
@@ -577,7 +572,7 @@ engines/intelligence/ → sector scores, theme scores
 
 ```
 # AI / LLM
-anthropic>=0.25.0          # Claude API
+anthropic>=0.113.0         # Phase 16 management sentiment only (NOT chatbot — chatbot uses Groq)
 
 # ML
 scikit-learn>=1.5.0        # already present
