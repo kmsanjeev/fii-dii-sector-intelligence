@@ -29,12 +29,13 @@ router = APIRouter(prefix="/api/execution", tags=["execution"])
 # ── Request models ─────────────────────────────────────────────────────────────
 
 class ConfigUpdate(BaseModel):
-    paper_mode:             Optional[bool]  = None
-    portfolio_value:        Optional[float] = None
-    max_position_pct:       Optional[float] = None
-    max_sector_pct:         Optional[float] = None
-    min_cash_pct:           Optional[float] = None
-    allow_duplicate_orders: Optional[bool]  = None
+    paper_mode:                Optional[bool]  = None
+    portfolio_value:           Optional[float] = None
+    max_position_pct:          Optional[float] = None
+    max_sector_pct:            Optional[float] = None
+    min_cash_pct:              Optional[float] = None
+    allow_duplicate_orders:    Optional[bool]  = None
+    max_adv_participation_pct: Optional[float] = None   # Phase R4
 
 
 class RecommendRequest(BaseModel):
@@ -154,3 +155,65 @@ def refresh_security_master():
         return {"success": True, "symbols_loaded": len(mapping)}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
+
+# ── TCA + order slicing (Phase R4) ────────────────────────────────────────────
+
+@router.get("/tca")
+def get_tca():
+    """Latest TCA report: per-fill slippage vs arrival/VWAP/close + aggregates."""
+    import pandas as pd
+    from engines.common import config as cfg
+
+    report_csv  = cfg.INTELLIGENCE_DIR / "tca_report.csv"
+    summary_csv = cfg.INTELLIGENCE_DIR / "tca_summary.csv"
+    if not report_csv.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="No TCA report yet. Run POST /api/execution/tca/refresh.",
+        )
+
+    def _clean(d: dict) -> dict:
+        return {k: (None if pd.isna(v) else v) for k, v in d.items()}
+
+    report = pd.read_csv(report_csv)
+    summary = {}
+    if summary_csv.exists():
+        s = pd.read_csv(summary_csv)
+        if not s.empty:
+            summary = _clean(s.sort_values("run_date").iloc[-1].to_dict())
+    return {
+        "summary": summary,
+        "fills":   [_clean(r) for r in report.to_dict(orient="records")],
+    }
+
+
+@router.post("/tca/refresh")
+def refresh_tca():
+    """Recompute slippage for every filled order in the blotter."""
+    from engines.common import config as cfg
+    from engines.execution.tca_engine import TCAEngine
+
+    try:
+        ok = TCAEngine().run()
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"TCA failed: {exc}")
+    if not ok or not (cfg.INTELLIGENCE_DIR / "tca_report.csv").exists():
+        raise HTTPException(status_code=422, detail="No filled orders in blotter yet")
+    return get_tca()
+
+
+@router.get("/slice_plan")
+def get_slice_plan(
+    symbol: str,
+    qty: int,
+):
+    """TWAP slice plan for an order: ADV participation check + child slices."""
+    if qty <= 0:
+        raise HTTPException(status_code=400, detail="qty must be positive")
+    from engines.execution.order_slicer import build_twap_plan
+
+    plan = build_twap_plan(symbol, qty)
+    if "error" in plan:
+        raise HTTPException(status_code=404, detail=plan["error"])
+    return plan

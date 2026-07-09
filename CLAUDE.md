@@ -82,7 +82,9 @@ data/intelligence/
 |-- factor_model_summary.csv                        fit + systematic/idio decomposition per run (Phase R2)
 |-- portfolio_factor_exposure.csv                   per-factor exposure + variance contribution (Phase R2)
 |-- portfolio_mc_var.csv                            MC VaR/ES per run date x horizon, seeded (Phase R3)
-`-- portfolio_mc_distribution.csv                   60-bin simulated P&L histogram (Phase R3)
+|-- portfolio_mc_distribution.csv                   60-bin simulated P&L histogram (Phase R3)
+|-- tca_report.csv                                  per-fill slippage vs arrival/VWAP/close (Phase R4)
+`-- tca_summary.csv                                 TCA aggregates per run date (Phase R4)
 data/NSE/shareholding/
 |-- quarterly_shp.csv                    7228 rows  Q2FY25-Q1FY26 FII/DII/promoter % (Phase 15C)
 |-- holding_trends.csv                              QoQ promoter/FII/DII deltas (Phase 16)
@@ -139,6 +141,7 @@ data/NSE/shareholding/
 | R1    | Portfolio Risk Foundation     | COMPLETE 100%    | engines/risk/portfolio_risk_engine.py; VaR/ES/component risk; /api/risk; Portfolio RISK panel; backup (D1) deferred to external drive |
 | R2    | Stress Testing + Factor Model | COMPLETE 100%    | stress_test_engine.py (2008/2013/2018/2020 replay + shocks); factor_model_engine.py (Barra-lite, NIFTY 500); test suite repaired 267/267 |
 | R3    | Monte Carlo Simulation        | COMPLETE 100%    | monte_carlo_engine.py; 100k correlated paths ~5s; antithetic + seeded; orchestrator/worker seam for future distributed grid; /api/risk/simulate |
+| R4    | Execution Quality (TCA)       | COMPLETE 100%    | tca_engine.py + order_slicer.py; arrival price on all orders; ADV participation warning; ExecutionPage TCA tab; risk roadmap COMPLETE |
 
 ## CURRENT PLATFORM STATUS (2026-07-09)
 **ALL 25 CORE PHASES + A/B/C/CH/TI/SH/UI-S COMPLETE.** Full investment operating system is live.

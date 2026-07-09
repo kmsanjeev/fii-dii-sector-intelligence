@@ -29,12 +29,13 @@ logger = get_logger(__name__)
 CONFIG_FILE = cfg.DATA_DIR / "execution" / "execution_config.json"
 
 DEFAULT_CONFIG: dict = {
-    "paper_mode":             True,
-    "portfolio_value":        0.0,
-    "max_position_pct":       10.0,
-    "max_sector_pct":         25.0,
-    "min_cash_pct":           10.0,
-    "allow_duplicate_orders": False,
+    "paper_mode":                True,
+    "portfolio_value":           0.0,
+    "max_position_pct":          10.0,
+    "max_sector_pct":            25.0,
+    "min_cash_pct":              10.0,
+    "allow_duplicate_orders":    False,
+    "max_adv_participation_pct": 5.0,   # Phase R4: order size vs 20d ADV warning threshold
 }
 
 

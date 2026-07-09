@@ -34,6 +34,7 @@ _COLS = [
     "order_id", "created_at", "symbol", "sector", "exchange",
     "action", "qty", "price", "order_type",
     "status", "paper", "filled_qty", "avg_fill_price",
+    "arrival_price",
     "broker_order_id", "reject_reason", "notes",
 ]
 
@@ -53,6 +54,7 @@ class Order:
     paper:           bool
     filled_qty:      int   = 0
     avg_fill_price:  float = 0.0
+    arrival_price:   float = 0.0   # LTP at decision time -- TCA benchmark (Phase R4)
     broker_order_id: str   = ""
     reject_reason:   str   = ""
     notes:           str   = ""
@@ -62,6 +64,29 @@ class Order:
 
 def _ensure() -> None:
     EXEC_DIR.mkdir(parents=True, exist_ok=True)
+    _migrate_schema()
+
+
+def _migrate_schema() -> None:
+    """One-time migration: add arrival_price column to a pre-R4 orders.csv.
+    Old rows get arrival_price=0 -- TCA reports them as NO_ARRIVAL, never guesses."""
+    if not ORDERS_CSV.exists():
+        return
+    with open(ORDERS_CSV, newline="", encoding="utf-8") as f:
+        header = f.readline().strip()
+    if "arrival_price" in header:
+        return
+    logger.info("[OrderMgr] Migrating orders.csv schema: adding arrival_price column")
+    with open(ORDERS_CSV, newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    tmp = ORDERS_CSV.with_suffix(".tmp")
+    with open(tmp, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=_COLS)
+        w.writeheader()
+        for row in rows:
+            row.setdefault("arrival_price", "0.0")
+            w.writerow({k: row.get(k, "") for k in _COLS})
+    shutil.move(str(tmp), str(ORDERS_CSV))
 
 
 def _load_orders() -> list[Order]:
@@ -86,6 +111,7 @@ def _load_orders() -> list[Order]:
                     paper           = str(row.get("paper", "true")).lower() in ("true", "1", "yes"),
                     filled_qty      = int(row.get("filled_qty") or 0),
                     avg_fill_price  = float(row.get("avg_fill_price") or 0),
+                    arrival_price   = float(row.get("arrival_price") or 0),
                     broker_order_id = row.get("broker_order_id", ""),
                     reject_reason   = row.get("reject_reason", ""),
                     notes           = row.get("notes", ""),
@@ -180,6 +206,22 @@ def place_order(
         logger.warning("[OrderMgr] Risk FAIL %s: %s", symbol, risk.reason)
         return {"success": False, "order_id": "", "message": risk.reason}
 
+    # ADV participation check (Phase R4): soft warning, never blocks
+    adv_warning = ""
+    try:
+        from engines.execution.order_slicer import check_participation
+        part = check_participation(symbol, qty)
+        if part and part.exceeds:
+            adv_warning = (
+                f" | WARNING: order is {part.participation_pct:.1f}% of 20d ADV "
+                f"(limit {part.max_participation_pct:.0f}%) -- consider slicing "
+                f"via /api/execution/slice_plan"
+            )
+            logger.warning("[OrderMgr] ADV %s: %s x%d = %.1f%% of ADV",
+                           symbol, action, qty, part.participation_pct)
+    except Exception as exc:
+        logger.debug("[OrderMgr] ADV check skipped: %s", exc)
+
     order_id   = str(uuid.uuid4())[:8].upper()
     created_at = datetime.now(timezone.utc).isoformat()
 
@@ -199,10 +241,11 @@ def place_order(
             paper          = True,
             filled_qty     = qty,
             avg_fill_price = fill_price,
+            arrival_price  = ltp,
             notes          = notes,
         )
         _append_order(order)
-        msg = f"[PAPER] {action.upper()} {qty} {symbol} @ {fill_price:.2f} filled"
+        msg = f"[PAPER] {action.upper()} {qty} {symbol} @ {fill_price:.2f} filled" + adv_warning
         logger.info("[OrderMgr] %s", msg)
         return {"success": True, "order_id": order_id, "message": msg}
 
@@ -221,6 +264,7 @@ def place_order(
         order_type      = order_type,
         status          = status,
         paper           = False,
+        arrival_price   = ltp,
         broker_order_id = broker_oid,
         reject_reason   = err,
         notes           = notes,
@@ -228,7 +272,7 @@ def place_order(
     _append_order(order)
     if err:
         return {"success": False, "order_id": order_id, "message": err}
-    msg = f"[LIVE] {action.upper()} {qty} {symbol} placed (broker_id={broker_oid})"
+    msg = f"[LIVE] {action.upper()} {qty} {symbol} placed (broker_id={broker_oid})" + adv_warning
     logger.info("[OrderMgr] %s", msg)
     return {"success": True, "order_id": order_id, "message": msg}
 

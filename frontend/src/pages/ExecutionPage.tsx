@@ -612,10 +612,268 @@ function ConfigTab() {
   )
 }
 
+// ── TCA + Slicer Tab (Phase R4) ───────────────────────────────────────────────
+
+interface TcaSummary {
+  n_fills:                 number
+  n_with_arrival:          number
+  total_traded_value:      number
+  mean_slip_arrival_bps:   number | null
+  mean_slip_vwap_bps:      number | null
+  median_slip_vwap_bps:    number | null
+  total_cost_vwap_inr:     number | null
+  buy_mean_vwap_bps:       number | null
+  sell_mean_vwap_bps:      number | null
+  worst_fill_order_id:     string
+  worst_fill_bps:          number | null
+}
+
+interface TcaFill {
+  order_id:         string
+  fill_date:        string
+  symbol:           string
+  action:           string
+  filled_qty:       number
+  avg_fill_price:   number
+  arrival_price:    number | null
+  vwap_hlc3:        number | null
+  slip_arrival_bps: number | null
+  slip_vwap_bps:    number | null
+  slip_close_bps:   number | null
+  benchmark_status: string
+}
+
+interface SlicePlan {
+  symbol:                string
+  qty:                   number
+  adv_20d:               number
+  participation_pct:     number
+  max_participation_pct: number
+  exceeds:               boolean
+  slices_needed:         boolean
+  slices: { slice_no: number; time_ist: string; qty: number; pct_of_order: number }[]
+  note:  string
+}
+
+function slipColor(bps: number | null): string {
+  if (bps == null) return '#64748B'
+  if (bps > 25)  return '#EF4444'   // meaningful cost
+  if (bps > 0)   return '#EAB308'
+  return '#22C55E'                  // favorable
+}
+
+function TcaTab() {
+  const [summary, setSummary] = useState<TcaSummary | null>(null)
+  const [fills,   setFills]   = useState<TcaFill[]>([])
+  const [loading, setLoading] = useState(false)
+  const [msg,     setMsg]     = useState('')
+
+  const [sliceSym, setSliceSym] = useState('')
+  const [sliceQty, setSliceQty] = useState('')
+  const [plan,     setPlan]     = useState<SlicePlan | null>(null)
+  const [planErr,  setPlanErr]  = useState('')
+
+  const load = useCallback(async () => {
+    try {
+      const r = await fetch(`${API}/tca`)
+      if (r.status === 404) { setMsg('No TCA report yet — click Refresh to compute.'); return }
+      const d = await r.json()
+      if (!r.ok) { setMsg(d.detail || 'Error'); return }
+      setSummary(d.summary); setFills(d.fills ?? []); setMsg('')
+    } catch { setMsg('Failed to load TCA') }
+  }, [])
+
+  useEffect(() => { load() }, [load])
+
+  const refresh = async () => {
+    setLoading(true)
+    try {
+      const r = await fetch(`${API}/tca/refresh`, { method: 'POST' })
+      const d = await r.json()
+      if (!r.ok) { setMsg(d.detail || 'Refresh failed'); return }
+      setSummary(d.summary); setFills(d.fills ?? []); setMsg('')
+    } finally { setLoading(false) }
+  }
+
+  const fetchPlan = async () => {
+    setPlan(null); setPlanErr('')
+    const q = parseInt(sliceQty)
+    if (!sliceSym.trim() || !(q > 0)) { setPlanErr('Enter a symbol and positive qty'); return }
+    const r = await fetch(`${API}/slice_plan?symbol=${sliceSym.trim().toUpperCase()}&qty=${q}`)
+    const d = await r.json()
+    if (!r.ok) { setPlanErr(d.detail || 'Failed'); return }
+    setPlan(d)
+  }
+
+  const card: React.CSSProperties = {
+    background: '#141720', border: '1px solid #1E2332', borderRadius: 8,
+    padding: '14px 18px', flex: 1, minWidth: 150,
+  }
+  const th: React.CSSProperties = { padding: '6px 10px', textAlign: 'left', color: '#64748B', fontSize: 11, fontWeight: 600 }
+  const td: React.CSSProperties = { padding: '6px 10px', fontSize: 12 }
+  const inputSt: React.CSSProperties = {
+    background: '#0A0D14', border: '1px solid #1E2332', borderRadius: 6,
+    color: '#E2E8F0', padding: '7px 10px', fontSize: 13, outline: 'none',
+  }
+
+  return (
+    <div>
+      {/* TCA summary */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#94A3B8', letterSpacing: 1 }}>
+          TRANSACTION COST ANALYSIS
+          <span style={{ color: '#475569', fontWeight: 400, marginLeft: 10, fontSize: 11 }}>
+            positive bps = cost (bought above / sold below benchmark)
+          </span>
+        </div>
+        <button onClick={refresh} disabled={loading} style={{
+          padding: '6px 16px', borderRadius: 6, border: '1px solid #3B82F6',
+          background: 'transparent', color: loading ? '#334155' : '#3B82F6',
+          cursor: 'pointer', fontSize: 12, fontWeight: 600,
+        }}>{loading ? 'Computing...' : 'Refresh TCA'}</button>
+      </div>
+
+      {msg && <div style={{ color: '#64748B', fontSize: 12, marginBottom: 14 }}>{msg}</div>}
+
+      {summary && (
+        <div style={{ display: 'flex', gap: 12, marginBottom: 18, flexWrap: 'wrap' }}>
+          <div style={card}>
+            <div style={{ color: '#64748B', fontSize: 10, letterSpacing: 1.5, marginBottom: 6 }}>FILLS ANALYZED</div>
+            <div style={{ fontSize: 20, fontWeight: 700 }}>{summary.n_fills}</div>
+            <div style={{ color: '#64748B', fontSize: 10, marginTop: 4 }}>
+              {summary.n_with_arrival} with arrival price · {fmtINR(summary.total_traded_value)} traded
+            </div>
+          </div>
+          <div style={card}>
+            <div style={{ color: '#64748B', fontSize: 10, letterSpacing: 1.5, marginBottom: 6 }}>MEAN SLIPPAGE vs VWAP</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: slipColor(summary.mean_slip_vwap_bps) }}>
+              {summary.mean_slip_vwap_bps != null ? `${summary.mean_slip_vwap_bps > 0 ? '+' : ''}${summary.mean_slip_vwap_bps} bps` : '-'}
+            </div>
+            <div style={{ color: '#64748B', fontSize: 10, marginTop: 4 }}>
+              median {summary.median_slip_vwap_bps ?? '-'} bps · total cost {fmtINR(summary.total_cost_vwap_inr)}
+            </div>
+          </div>
+          <div style={card}>
+            <div style={{ color: '#64748B', fontSize: 10, letterSpacing: 1.5, marginBottom: 6 }}>BUY / SELL SPLIT (VWAP)</div>
+            <div style={{ fontSize: 20, fontWeight: 700 }}>
+              <span style={{ color: slipColor(summary.buy_mean_vwap_bps) }}>{summary.buy_mean_vwap_bps ?? '-'}</span>
+              <span style={{ color: '#334155', margin: '0 8px' }}>/</span>
+              <span style={{ color: slipColor(summary.sell_mean_vwap_bps) }}>{summary.sell_mean_vwap_bps ?? '-'}</span>
+            </div>
+            <div style={{ color: '#64748B', fontSize: 10, marginTop: 4 }}>mean bps per side</div>
+          </div>
+          <div style={card}>
+            <div style={{ color: '#64748B', fontSize: 10, letterSpacing: 1.5, marginBottom: 6 }}>WORST FILL</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: slipColor(summary.worst_fill_bps) }}>
+              {summary.worst_fill_bps != null ? `+${summary.worst_fill_bps} bps` : '-'}
+            </div>
+            <div style={{ color: '#64748B', fontSize: 10, marginTop: 4 }}>order {summary.worst_fill_order_id || '-'}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Fills table */}
+      {fills.length > 0 && (
+        <div style={{ background: '#141720', border: '1px solid #1E2332', borderRadius: 8, overflow: 'hidden', marginBottom: 24 }}>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 820 }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid #1E2332' }}>
+                  <th style={th}>Date</th><th style={th}>Symbol</th><th style={th}>Side</th>
+                  <th style={{ ...th, textAlign: 'right' }}>Qty</th>
+                  <th style={{ ...th, textAlign: 'right' }}>Fill</th>
+                  <th style={{ ...th, textAlign: 'right' }}>Arrival</th>
+                  <th style={{ ...th, textAlign: 'right' }}>VWAP (HLC3)</th>
+                  <th style={{ ...th, textAlign: 'right' }}>vs Arrival</th>
+                  <th style={{ ...th, textAlign: 'right' }}>vs VWAP</th>
+                  <th style={th}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {fills.map(f => (
+                  <tr key={f.order_id} style={{ borderBottom: '1px solid #1E233230' }}>
+                    <td style={{ ...td, color: '#64748B' }}>{f.fill_date}</td>
+                    <td style={{ ...td, fontWeight: 700 }}>{f.symbol}</td>
+                    <td style={{ ...td, color: f.action === 'BUY' ? '#22C55E' : '#EF4444', fontWeight: 600 }}>{f.action}</td>
+                    <td style={{ ...td, textAlign: 'right', color: '#94A3B8' }}>{f.filled_qty}</td>
+                    <td style={{ ...td, textAlign: 'right' }}>{fmt(f.avg_fill_price)}</td>
+                    <td style={{ ...td, textAlign: 'right', color: '#64748B' }}>{f.arrival_price != null ? fmt(f.arrival_price) : '-'}</td>
+                    <td style={{ ...td, textAlign: 'right', color: '#64748B' }}>{f.vwap_hlc3 != null ? fmt(f.vwap_hlc3) : '-'}</td>
+                    <td style={{ ...td, textAlign: 'right', color: slipColor(f.slip_arrival_bps), fontWeight: 600 }}>
+                      {f.slip_arrival_bps != null ? `${f.slip_arrival_bps > 0 ? '+' : ''}${f.slip_arrival_bps}` : '-'}
+                    </td>
+                    <td style={{ ...td, textAlign: 'right', color: slipColor(f.slip_vwap_bps), fontWeight: 600 }}>
+                      {f.slip_vwap_bps != null ? `${f.slip_vwap_bps > 0 ? '+' : ''}${f.slip_vwap_bps}` : '-'}
+                    </td>
+                    <td style={{ ...td, fontSize: 10, color: f.benchmark_status === 'OK' ? '#22C55E' : '#EAB308' }}>{f.benchmark_status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Order slicer tool */}
+      <div style={{ fontSize: 13, fontWeight: 700, color: '#94A3B8', letterSpacing: 1, marginBottom: 12 }}>
+        ORDER SLICER — TWAP PLAN
+        <span style={{ color: '#475569', fontWeight: 400, marginLeft: 10, fontSize: 11 }}>
+          checks order size against 20-day ADV participation limit
+        </span>
+      </div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 14, alignItems: 'center', flexWrap: 'wrap' }}>
+        <input placeholder="SYMBOL" value={sliceSym} onChange={e => setSliceSym(e.target.value.toUpperCase())} style={{ ...inputSt, width: 130 }} />
+        <input placeholder="Quantity" type="number" value={sliceQty} onChange={e => setSliceQty(e.target.value)} style={{ ...inputSt, width: 130 }} />
+        <button onClick={fetchPlan} style={{
+          padding: '7px 18px', borderRadius: 6, border: '1px solid #22C55E',
+          background: 'transparent', color: '#22C55E', cursor: 'pointer', fontSize: 12, fontWeight: 600,
+        }}>Build Plan</button>
+        {planErr && <span style={{ color: '#EF4444', fontSize: 12 }}>{planErr}</span>}
+      </div>
+
+      {plan && (
+        <div style={{ background: '#141720', border: '1px solid #1E2332', borderRadius: 8, padding: 16, maxWidth: 620 }}>
+          <div style={{ display: 'flex', gap: 20, marginBottom: 10, fontSize: 12, flexWrap: 'wrap' }}>
+            <span><span style={{ color: '#64748B' }}>20d ADV:</span> <b>{fmt(plan.adv_20d, 0)}</b></span>
+            <span><span style={{ color: '#64748B' }}>Participation:</span>{' '}
+              <b style={{ color: plan.exceeds ? '#EF4444' : '#22C55E' }}>{plan.participation_pct}%</b>
+              <span style={{ color: '#475569' }}> (limit {plan.max_participation_pct}%)</span>
+            </span>
+          </div>
+          <div style={{ color: plan.exceeds ? '#EAB308' : '#22C55E', fontSize: 12, marginBottom: plan.slices_needed ? 12 : 0 }}>
+            {plan.note}
+          </div>
+          {plan.slices_needed && (
+            <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid #1E2332' }}>
+                  <th style={th}>Slice</th><th style={th}>Release (IST)</th>
+                  <th style={{ ...th, textAlign: 'right' }}>Qty</th>
+                  <th style={{ ...th, textAlign: 'right' }}>% of Order</th>
+                </tr>
+              </thead>
+              <tbody>
+                {plan.slices.map(s => (
+                  <tr key={s.slice_no} style={{ borderBottom: '1px solid #1E233230' }}>
+                    <td style={td}>#{s.slice_no}</td>
+                    <td style={{ ...td, fontFamily: 'monospace' }}>{s.time_ist}</td>
+                    <td style={{ ...td, textAlign: 'right' }}>{fmt(s.qty, 0)}</td>
+                    <td style={{ ...td, textAlign: 'right', color: '#64748B' }}>{s.pct_of_order}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export function ExecutionPage() {
-  const [tab, setTab]     = useState<'signals' | 'queue' | 'blotter' | 'config'>('signals')
+  const [tab, setTab]     = useState<'signals' | 'queue' | 'blotter' | 'tca' | 'config'>('signals')
   const [queue, setQueue] = useState<QueueItem[]>([])
   const [paperMode, setPaperMode] = useState(true)
   const [toast, setToast] = useState('')
@@ -672,6 +930,7 @@ export function ExecutionPage() {
     { key: 'signals', label: 'Signals' },
     { key: 'queue',   label: `Queue${queue.length > 0 ? ` (${queue.length})` : ''}` },
     { key: 'blotter', label: 'Blotter' },
+    { key: 'tca',     label: 'TCA' },
     { key: 'config',  label: 'Risk Config' },
   ] as const
 
@@ -726,6 +985,7 @@ export function ExecutionPage() {
         />
       )}
       {tab === 'blotter' && <BlotterTab />}
+      {tab === 'tca'     && <TcaTab />}
       {tab === 'config'  && <ConfigTab />}
     </div>
   )

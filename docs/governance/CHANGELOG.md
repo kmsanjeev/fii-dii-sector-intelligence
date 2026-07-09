@@ -6,6 +6,57 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.30.0
+
+Phase R4 -- Execution Quality: TCA + Order Slicing
+
+Date: 2026-07-09
+
+Status: Completed
+
+---
+
+## Summary
+
+Final phase of the risk roadmap from the institutional audit. Transaction Cost
+Analysis benchmarks every filled order against arrival price, day-VWAP proxy
+and close; a TWAP order slicer checks orders against a 20-day ADV participation
+limit and produces child-slice plans. Orders now capture arrival price at
+placement (one-time orders.csv schema migration applied).
+
+## New Features
+
+- engines/execution/tca_engine.py: per-fill slippage vs ARRIVAL / VWAP (HLC/3
+  proxy -- cache carries no turnover; labeled vwap_hlc3) / CLOSE; signed bps
+  (positive = cost); aggregates incl. buy/sell split and worst fill.
+  Outputs tca_report.csv + tca_summary.csv. Pipeline stage R4_tca.
+- engines/execution/order_slicer.py: 20d ADV from parquet cache;
+  max_adv_participation_pct config (default 5%, exposed in execution config
+  API); TWAP plans (2-12 equal slices across 09:15-15:30 IST); multi-day
+  advice when even 12 slices exceed the limit
+- order_manager.py: arrival_price captured on every order (paper + live);
+  one-time schema migration for pre-R4 orders.csv (old rows -> NO_ARRIVAL,
+  never guessed); soft ADV warning appended to place_order response
+- /api/execution/tca (GET), /api/execution/tca/refresh (POST),
+  /api/execution/slice_plan (GET symbol/qty)
+- ExecutionPage: new TCA tab -- summary cards (mean/median slippage, buy/sell
+  split, worst fill), per-fill table, and Order Slicer tool with plan preview
+
+## Out of Scope (documented)
+
+- Second intraday data source: separate data-acquisition phase (NSE priority
+  rule applies); Redis Streams: deferred until something consumes intraday events
+
+## Verification
+
+- TCA on 3 real blotter fills: benchmarked OK, pre-R4 orders flagged NO_ARRIVAL
+- Slicer live: RELIANCE 500k = 3.45% ADV -> single print; GOKEX 100k = 10.5%
+  ADV -> 3 TWAP slices at 3.51% each
+- Sandboxed place_order: arrival captured, ADV warning in response message
+- Schema migration verified on live orders.csv; suite 267/267; tsc + build clean
+
+---
+
 # Version 4.29.0
 
 Phase R3 -- Monte Carlo Simulation Engine (Correlated MC VaR)

@@ -138,3 +138,50 @@ GUARDRAILS.md used as the arbiter for every code-vs-test dispute.
 - DONE: R1 VaR/ES, R2 stress + factors, R3 Monte Carlo
 - REMAINING: R4 TCA + order slicing (defer until live trading regular);
   D1 backup to external drive (user-deferred)
+
+---
+
+## Session 2026-07-09 (later) — Phase R4: Execution Quality (COMPLETE)
+
+**TCA (engines/execution/tca_engine.py):**
+- Benchmarks per filled order: ARRIVAL (arrival_price at placement), VWAP
+  (HLC/3 proxy -- parquet cache has NO turnover column, true VWAP unavailable,
+  labeled vwap_hlc3), CLOSE (same day)
+- Signed bps: positive = cost for the side. cost_inr per benchmark.
+- Pre-R4 orders (arrival_price=0) -> benchmark_status NO_ARRIVAL, never guessed
+- Outputs: tca_report.csv (per fill) + tca_summary.csv (run aggregates, deduped)
+- Pipeline stage R4_tca after R3_monte_carlo
+
+**Order slicer (engines/execution/order_slicer.py):**
+- 20d ADV from cache volume; max_adv_participation_pct config (default 5%),
+  added to execution_config.json DEFAULT_CONFIG + ConfigUpdate API model
+- TWAP plan: 2-12 equal slices spread over 09:20-15:20 IST; multi-day advice
+  when 12 slices still exceed the limit; never places orders itself
+
+**order_manager.py changes:**
+- arrival_price column added to Order dataclass + _COLS
+- One-time schema migration (_migrate_schema in _ensure): rewrites pre-R4
+  orders.csv adding the column; applied to live file (3 rows) successfully
+- place_order: captures ltp as arrival_price (paper + live paths); soft ADV
+  warning appended to response message (never blocks)
+
+**API:** GET /api/execution/tca, POST /tca/refresh, GET /slice_plan?symbol=&qty=
+**GUI:** ExecutionPage 5th tab "TCA" -- summary cards, per-fill slippage table,
+Order Slicer tool with plan preview
+
+### Verification (all against REAL data -- blotter had 3 paper fills)
+- TCA: 3 fills benchmarked; NO_ARRIVAL flagged on pre-R4 rows; negative bps
+  (favorable) since paper fills = LTP of the moment
+- Slicer: RELIANCE 500k = 3.45% of 14.5M ADV -> single print; GOKEX 100k =
+  10.54% ADV -> 3 slices @ 3.51% each (09:20/12:20/15:20)
+- Sandboxed place_order (scratchpad orders.csv): ADV warning in message,
+  arrival_price == fill for paper MARKET
+- Error paths: unknown symbol 404, negative qty 400
+- Suite 267/267; tsc + vite build clean
+
+### OUT OF SCOPE (documented in CHANGELOG)
+- Second intraday source: needs data-acquisition phase w/ NSE priority research
+- Redis Streams: nothing consumes intraday events yet
+
+### RISK ROADMAP COMPLETE: R1 + R2 + R3 + R4 all shipped.
+Only D1 (backup.ps1 -> external drive) remains from the original audit plan.
