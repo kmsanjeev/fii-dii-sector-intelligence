@@ -6,6 +6,49 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.29.0
+
+Phase R3 -- Monte Carlo Simulation Engine (Correlated MC VaR)
+
+Date: 2026-07-09
+
+Status: Completed
+
+---
+
+## Summary
+
+Third risk layer: correlated Monte Carlo VaR/ES with a full simulated P&L
+distribution. 100k paths x 2 horizons run in ~5 seconds of vectorized numpy.
+Engine is structured as orchestrator -> stateless worker -> aggregator, the
+seam for the distributed compute-grid architecture (Task 3 of the audit) --
+lifting the worker onto a queue later is a deployment change, not a rewrite.
+
+## New Features
+
+- engines/risk/monte_carlo_engine.py:
+  - Correlated daily LOG returns via Cholesky on Ledoit-Wolf covariance
+  - Zero-drift convention; 10-day horizon fully compounded (replaces R1's
+    sqrt(10) approximation)
+  - Antithetic variates (halved MC error at same compute)
+  - Deterministic per-chunk seeding -> bit-for-bit reproducible, auditable
+  - Outputs: portfolio_mc_var.csv (per horizon), portfolio_mc_distribution.csv
+    (60-bin histogram for GUI)
+- Pipeline stage R3_monte_carlo after R2b_factor_model
+- /api/risk/simulate: GET latest, POST run (?n_paths=10k-1M, validated)
+- PortfolioPage MONTE CARLO panel: paths selector, 1d/10d horizon toggle,
+  MC VaR/ES cards, P&L histogram with VaR-cut coloring (red tail bins)
+
+## Verification (10-position fixture)
+
+- 100k paths x 2 horizons: 4.7s
+- MC VaR95 1d = 9,250 vs parametric 9,379 (ratio 0.986 -- theory agreement)
+- 10d compounded VaR vs sqrt(10)-scaled: ratio 0.975 (compounding visible)
+- Same-seed re-run: bit-for-bit identical; antithetic normals sum to zero
+- ES >= VaR ordering holds at all levels; suite 267/267; tsc + build clean
+
+---
+
 # Version 4.28.0
 
 Phase R2 -- Stress Testing + Factor Model (Barra-lite) + Test Suite Repair

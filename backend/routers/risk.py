@@ -6,6 +6,8 @@ GET  /api/risk/stress           -- historical + hypothetical stress scenario res
 POST /api/risk/stress/refresh   -- rerun stress scenarios (seconds)
 GET  /api/risk/factors          -- factor model summary + portfolio factor exposures
 POST /api/risk/factors/refresh  -- re-estimate factor model (~1 min, loads NIFTY 500 cache)
+GET  /api/risk/simulate         -- latest Monte Carlo VaR results + P&L distribution
+POST /api/risk/simulate         -- run Monte Carlo simulation (?n_paths=, seconds)
 """
 
 import sys
@@ -16,7 +18,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 import pandas as pd
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
@@ -31,6 +33,8 @@ STRESS_CSV     = cfg.INTELLIGENCE_DIR / "portfolio_stress.csv"
 STRESS_DETAIL  = cfg.INTELLIGENCE_DIR / "portfolio_stress_detail.csv"
 FACTOR_SUMMARY = cfg.INTELLIGENCE_DIR / "factor_model_summary.csv"
 FACTOR_EXP     = cfg.INTELLIGENCE_DIR / "portfolio_factor_exposure.csv"
+MC_VAR_CSV     = cfg.INTELLIGENCE_DIR / "portfolio_mc_var.csv"
+MC_DIST_CSV    = cfg.INTELLIGENCE_DIR / "portfolio_mc_distribution.csv"
 
 
 def _nan_to_none(d: dict) -> dict:
@@ -170,3 +174,48 @@ def refresh_factors():
     if not ok:
         raise HTTPException(status_code=422, detail="Factor universe too small -- check stock_history cache")
     return _read_factors()
+
+
+# ── Monte Carlo simulation (Phase R3) ─────────────────────────────────────────
+
+def _read_mc() -> dict:
+    if not MC_VAR_CSV.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="No Monte Carlo results yet. Run POST /api/risk/simulate.",
+        )
+    summary = pd.read_csv(MC_VAR_CSV)
+    latest_date = summary["run_date"].max()
+    latest = summary[summary["run_date"] == latest_date]
+    dist = pd.read_csv(MC_DIST_CSV) if MC_DIST_CSV.exists() else pd.DataFrame()
+    return {
+        "results":      [_nan_to_none(r) for r in latest.to_dict(orient="records")],
+        "distribution": [_nan_to_none(r) for r in dist.to_dict(orient="records")],
+    }
+
+
+@router.get("/simulate")
+def get_simulation():
+    """Latest Monte Carlo VaR results per horizon + P&L distribution histogram."""
+    return _read_mc()
+
+
+@router.post("/simulate")
+def run_simulation(
+    n_paths: int = Query(100_000, ge=10_000, le=1_000_000,
+                         description="Simulation paths (10k-1M)"),
+):
+    """Run correlated Monte Carlo VaR on current positions. ~5s at 100k paths."""
+    from engines.risk.monte_carlo_engine import MonteCarloEngine
+
+    try:
+        ok = MonteCarloEngine(n_paths=n_paths).run()
+    except Exception as e:
+        logger.error("[RiskRouter] MC simulation failed: %s", e)
+        raise HTTPException(status_code=500, detail=f"Simulation failed: {e}")
+    if not ok or not MC_VAR_CSV.exists():
+        raise HTTPException(
+            status_code=422,
+            detail="Portfolio is empty or has < 2 positions with 60+ days history",
+        )
+    return _read_mc()

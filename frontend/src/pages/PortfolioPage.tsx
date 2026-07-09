@@ -114,6 +114,24 @@ type FactorData = {
   exposures: FactorExposure[]
 }
 
+type McResult = {
+  run_date:        string
+  horizon_days:    number
+  n_paths:         number
+  portfolio_value: number
+  mc_var_95:       number
+  mc_var_99:       number
+  mc_es_975:       number
+  mc_es_99:        number
+  pnl_std:         number
+  pnl_p01:         number
+  pnl_p99:         number
+}
+
+type McBin = { horizon_days: number; bin_left: number; bin_right: number; count: number }
+
+type McData = { results: McResult[]; distribution: McBin[] }
+
 // ── API helpers ───────────────────────────────────────────────────────────────
 
 async function fetchPortfolio(): Promise<Portfolio> {
@@ -531,6 +549,9 @@ export function PortfolioPage() {
       {/* Stress scenarios + factor decomposition — Phase R2 */}
       {pos.length >= 1 && <StressPanel />}
       {pos.length >= 1 && <FactorPanel />}
+
+      {/* Monte Carlo simulation — Phase R3 */}
+      {pos.length >= 2 && <MonteCarloPanel />}
 
       {/* Empty state */}
       {!isLoading && pos.length === 0 && (
@@ -1072,6 +1093,167 @@ function FactorPanel() {
               </div>
             ))}
           </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+// ── Monte Carlo simulation panel (Phase R3) ───────────────────────────────────
+
+const MC_PATH_CHOICES = [50_000, 100_000, 250_000]
+
+function MonteCarloPanel() {
+  const qc = useQueryClient()
+  const [nPaths,  setNPaths]  = useState(100_000)
+  const [horizon, setHorizon] = useState<1 | 10>(1)
+
+  const { data, isLoading, error } = useQuery<McData>({
+    queryKey: ['portfolio_mc'],
+    queryFn: async () => {
+      const r = await fetch(`${API}/api/risk/simulate`)
+      if (r.status === 404 || r.status === 422) throw new Error('NO_DATA')
+      if (!r.ok) throw new Error('Failed to load simulation results')
+      return r.json()
+    },
+    staleTime: 5 * 60_000,
+    retry: false,
+    refetchOnWindowFocus: false,
+  })
+
+  const simulate = useMutation({
+    mutationFn: async () => {
+      const r = await fetch(`${API}/api/risk/simulate?n_paths=${nPaths}`, { method: 'POST' })
+      if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'Simulation failed') }
+      return r.json()
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['portfolio_mc'] }),
+  })
+
+  const noData = (error as Error | null)?.message === 'NO_DATA'
+  const res  = (data?.results ?? []).find(r => r.horizon_days === horizon)
+  const bins = (data?.distribution ?? []).filter(b => b.horizon_days === horizon)
+  const maxCount = Math.max(...bins.map(b => b.count), 1)
+  const varCut = res ? -res.mc_var_95 : 0   // P&L value at the VaR95 threshold
+
+  return (
+    <div style={{
+      background: '#141720', border: '1px solid #1E2332',
+      borderRadius: 6, padding: 16, marginBottom: 20,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
+        <div style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, letterSpacing: 2 }}>
+          MONTE CARLO SIMULATION — CORRELATED P&amp;L DISTRIBUTION
+          {res && <span style={{ color: '#475569', fontWeight: 400, marginLeft: 10, letterSpacing: 0 }}>
+            {(res.n_paths / 1000).toFixed(0)}K paths · {res.run_date} · seeded (reproducible)
+          </span>}
+        </div>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <select
+            value={nPaths}
+            onChange={e => setNPaths(Number(e.target.value))}
+            style={{ ...inp, width: 100, fontSize: 10, padding: '3px 6px' }}
+          >
+            {MC_PATH_CHOICES.map(n => <option key={n} value={n}>{n / 1000}K paths</option>)}
+          </select>
+          <button
+            onClick={() => simulate.mutate()}
+            disabled={simulate.isPending}
+            style={{ ...ghostBtn, borderColor: '#22C55E', color: simulate.isPending ? '#334155' : '#22C55E' }}
+          >
+            {simulate.isPending ? 'Simulating...' : 'Run Simulation'}
+          </button>
+        </div>
+      </div>
+
+      {isLoading && <div style={{ color: '#64748B', fontSize: 11, padding: 12 }}>Loading simulation results...</div>}
+      {noData && !isLoading && (
+        <div style={{ color: '#64748B', fontSize: 11, padding: 12 }}>
+          No simulation yet. Click <span style={{ color: '#22C55E' }}>Run Simulation</span> —
+          generates correlated return paths (Ledoit-Wolf covariance, Cholesky, antithetic
+          variates) and prices the full P&amp;L distribution. Takes ~5 seconds.
+        </div>
+      )}
+      {simulate.isError && (
+        <div style={{ color: '#EF4444', fontSize: 10, padding: '0 0 8px' }}>{(simulate.error as Error).message}</div>
+      )}
+
+      {res && (
+        <>
+          {/* Horizon toggle */}
+          <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+            {([1, 10] as const).map(h => (
+              <button key={h} onClick={() => setHorizon(h)} style={{
+                padding: '3px 12px', borderRadius: 3, fontSize: 10, cursor: 'pointer',
+                border: `1px solid ${horizon === h ? '#22C55E' : '#1E2332'}`,
+                background: horizon === h ? '#22C55E18' : 'transparent',
+                color: horizon === h ? '#22C55E' : '#64748B',
+                fontWeight: horizon === h ? 700 : 400,
+              }}>{h} Day{h > 1 ? 's' : ''}</button>
+            ))}
+            <span style={{ color: '#475569', fontSize: 9, alignSelf: 'center', marginLeft: 6 }}>
+              10-day figures are fully compounded paths, not sqrt-scaled
+            </span>
+          </div>
+
+          {/* MC risk cards */}
+          <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+            <SummaryCard
+              label={`MC VaR 95% · ${horizon}D`}
+              value={riskFmt(res.mc_var_95)}
+              color="#F59E0B"
+              sub={`${(res.mc_var_95 / res.portfolio_value * 100).toFixed(2)}% of portfolio`}
+            />
+            <SummaryCard
+              label={`MC VaR 99% · ${horizon}D`}
+              value={riskFmt(res.mc_var_99)}
+              color="#EF4444"
+              sub={`${(res.mc_var_99 / res.portfolio_value * 100).toFixed(2)}% of portfolio`}
+            />
+            <SummaryCard
+              label={`MC ES 97.5% · ${horizon}D`}
+              value={riskFmt(res.mc_es_975)}
+              color="#EF4444"
+              sub={`ES 99%: ${riskFmt(res.mc_es_99)}`}
+            />
+            <SummaryCard
+              label="P&L RANGE (1-99 PCTL)"
+              value={`${riskFmt(res.pnl_p01)} / +${riskFmt(res.pnl_p99)}`}
+              sub={`std ${riskFmt(res.pnl_std)}`}
+            />
+          </div>
+
+          {/* Distribution histogram */}
+          {bins.length > 0 && (
+            <div>
+              <div style={{ color: '#64748B', fontSize: 10, letterSpacing: 1, marginBottom: 8 }}>
+                SIMULATED P&amp;L DISTRIBUTION — red bins fall beyond the 95% VaR cut
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 1, height: 110 }}>
+                {bins.map((b, i) => {
+                  const beyondVar = b.bin_right <= varCut
+                  const positive  = b.bin_left >= 0
+                  return (
+                    <div
+                      key={i}
+                      title={`${riskFmt(b.bin_left)} to ${riskFmt(b.bin_right)}: ${b.count} paths`}
+                      style={{
+                        flex: 1,
+                        height: `${Math.max(b.count / maxCount * 100, b.count > 0 ? 2 : 0)}%`,
+                        background: beyondVar ? '#EF4444' : positive ? '#22C55E88' : '#3B82F688',
+                        borderRadius: '2px 2px 0 0',
+                      }}
+                    />
+                  )
+                })}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#475569', marginTop: 4 }}>
+                <span>{riskFmt(bins[0]?.bin_left)}</span>
+                <span>0</span>
+                <span>+{riskFmt(bins[bins.length - 1]?.bin_right)}</span>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

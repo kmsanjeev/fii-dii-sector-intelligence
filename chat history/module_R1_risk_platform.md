@@ -104,3 +104,37 @@ GUARDRAILS.md used as the arbiter for every code-vs-test dispute.
 - Factor-model total vol (19.9%) vs R1 direct LW vol (13.35%) on same fixture:
   different estimators + 250d vs 500d lookback; both retained deliberately
 - tsc + vite build clean; suite 267/267
+
+---
+
+## Session 2026-07-09 (later) — Phase R3: Monte Carlo Simulation (COMPLETE)
+
+**monte_carlo_engine.py:**
+- Correlated daily LOG returns: Cholesky on Ledoit-Wolf cov of 500d log returns
+- Zero drift (short-horizon VaR convention); H daily steps compounded per path
+  (true 10d distribution, replaces R1's sqrt(10) approximation)
+- Antithetic variates (generate n/2, mirror); deterministic seeding
+  (chunk seed = BASE_SEED + horizon*1000003 + chunk_id) -> bit-for-bit repro
+- DISTRIBUTED SEAM per audit Task 3: _orchestrate (master, chunk specs of 10k
+  paths) -> _simulate_chunk (STATELESS worker, self-contained spec dict ->
+  P&L array) -> _aggregate. Worker lifts onto Redis Streams/RQ later without
+  rewrite.
+- Outputs: portfolio_mc_var.csv (run_date x horizon, deduped),
+  portfolio_mc_distribution.csv (60 bins, range clipped p0.1-p99.9)
+
+**API:** GET/POST /api/risk/simulate (?n_paths 10k-1M validated, ~5s at 100k)
+**GUI:** MONTE CARLO panel — paths selector (50/100/250K), 1d/10d toggle,
+  MC VaR/ES cards, histogram with red bins beyond the VaR95 cut
+**Pipeline:** R3_monte_carlo stage after R2b_factor_model
+
+### Verification (fixture)
+- 100k paths x 2 horizons in 4.7s single-node numpy
+- MC VaR95 1d 9,250 vs parametric 9,379 (ratio 0.986) vs historical 10,006
+- 10d compounded vs sqrt(10)-scaled: 0.975 ratio
+- Same seed -> identical results; antithetic z sums to zero exactly
+- pnl_mean slightly positive (log-normal convexity with zero log drift) — expected
+
+### Risk roadmap status after R3
+- DONE: R1 VaR/ES, R2 stress + factors, R3 Monte Carlo
+- REMAINING: R4 TCA + order slicing (defer until live trading regular);
+  D1 backup to external drive (user-deferred)
