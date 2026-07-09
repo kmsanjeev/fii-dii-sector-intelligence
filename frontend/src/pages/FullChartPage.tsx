@@ -10,7 +10,7 @@ import type { Datafeed, SymbolInfo, Period, DatafeedSubscribeCallback } from '@k
 import type { KLineData } from 'klinecharts'
 import { dispose } from 'klinecharts'
 import '@klinecharts/pro/dist/klinecharts-pro.css'
-import '../indicators/customIndicators'   // registers VWAP, Supertrend, HMA, VOLMain
+import { setCorpActions, clearCorpActions, setAlertPrices } from '../indicators/customIndicators'
 import { api } from '../api/client'
 
 // ── Periods ───────────────────────────────────────────────────────────────────
@@ -61,6 +61,8 @@ function periodToTF(p: Period): string {
   return '1D'
 }
 
+const INTRADAY_TFS = new Set(['5M', '15M', '1H'])
+
 // ── Bar time → Unix ms ────────────────────────────────────────────────────────
 
 function barTimeToMs(t: string | number): number {
@@ -86,14 +88,22 @@ class OurDatafeed implements Datafeed {
       return (r.data.symbols ?? []).map(s => ({
         ticker: s.SYMBOL, shortName: s.SYMBOL,
         name: s.COMPANY_NAME ?? s.SYMBOL, exchange: 'NSE', market: 'stocks',
+        type: 'stock', priceCurrency: 'INR', pricePrecision: 2,
       }))
     } catch { return [] }
   }
 
-  async getHistoryKLineData(symbol: SymbolInfo, period: Period, _from: number, _to: number): Promise<KLineData[]> {
+  async getHistoryKLineData(symbol: SymbolInfo, period: Period, from: number, to: number): Promise<KLineData[]> {
     try {
+      const tf = periodToTF(period)
+      // For daily+ bars, pass from/to as YYYY-MM-DD strings for range pagination
+      const params: Record<string, string> = { symbol: symbol.ticker, timeframe: tf }
+      if (!INTRADAY_TFS.has(tf) && from > 0 && to > 0) {
+        params.from_date = new Date(from).toISOString().slice(0, 10)
+        params.to_date   = new Date(to).toISOString().slice(0, 10)
+      }
       const r = await api.get<{ bars: Array<{ time: string | number; open: number; high: number; low: number; close: number; volume: number }> }>(
-        '/charts/ohlcv', { params: { symbol: symbol.ticker, timeframe: periodToTF(period) } }
+        '/charts/ohlcv', { params }
       )
       return (r.data.bars ?? []).map(b => ({
         timestamp: barTimeToMs(b.time),
@@ -123,7 +133,7 @@ class OurDatafeed implements Datafeed {
 // ── Chart Settings ────────────────────────────────────────────────────────────
 
 export interface ChartSettings {
-  candleType:    'candle_solid' | 'candle_stroke' | 'ohlc' | 'area'
+  candleType:    'candle_solid' | 'candle_stroke' | 'candle_up_stroke' | 'candle_down_stroke' | 'ohlc' | 'area'
   upColor:       string
   downColor:     string
   noChangeColor: string
@@ -138,10 +148,13 @@ export interface ChartSettings {
   axisTextColor: string
   axisLineColor: string
   yAxisRight:    boolean
+  yAxisType:     'normal' | 'percentage' | 'log'
   crosshairColor:  string
   crosshairTextBg: string
   showLastPrice:   boolean
   showHighLow:     boolean
+  lightTheme:      boolean
+  bgColor:         string
 }
 
 const TV_PRESET: ChartSettings = {
@@ -160,10 +173,13 @@ const TV_PRESET: ChartSettings = {
   axisTextColor: '#b2b5be',
   axisLineColor: '#2a2e39',
   yAxisRight:    true,
+  yAxisType:     'normal',
   crosshairColor:  '#758696',
   crosshairTextBg: '#131722',
   showLastPrice:   true,
   showHighLow:     true,
+  lightTheme:      false,
+  bgColor:         '#131722',
 }
 
 const PLATFORM_PRESET: ChartSettings = {
@@ -182,14 +198,48 @@ const PLATFORM_PRESET: ChartSettings = {
   axisTextColor: '#64748B',
   axisLineColor: '#1E2332',
   yAxisRight:    true,
+  yAxisType:     'normal',
   crosshairColor:  '#374151',
   crosshairTextBg: '#1C2130',
   showLastPrice:   true,
   showHighLow:     true,
+  lightTheme:      false,
+  bgColor:         '#0A0D14',
+}
+
+const LIGHT_PRESET: ChartSettings = {
+  candleType:    'candle_solid',
+  upColor:       '#089981',
+  downColor:     '#f23645',
+  noChangeColor: '#909090',
+  upWickColor:   '#089981',
+  downWickColor: '#f23645',
+  showGridH:     true,
+  showGridV:     false,
+  gridColor:     '#e1e4ea',
+  fontFamily:    "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  fontSize:      11,
+  fontWeight:    'normal',
+  axisTextColor: '#485060',
+  axisLineColor: '#d6dae3',
+  yAxisRight:    true,
+  yAxisType:     'normal',
+  crosshairColor:  '#9598a1',
+  crosshairTextBg: '#ffffff',
+  showLastPrice:   true,
+  showHighLow:     true,
+  lightTheme:      true,
+  bgColor:         '#ffffff',
 }
 
 const DEFAULT_SETTINGS = TV_PRESET
-const SETTINGS_KEY = 'cfip-chart-settings'
+const SETTINGS_KEY     = 'cfip-chart-settings'
+const INDICATORS_KEY   = 'cfip-indicators-v2'
+const ALERTS_KEY       = 'cfip-alerts-v1'
+
+// Ordered lists of all available indicators
+const ALL_MAIN_INDS: string[] = ['EMA', 'SMA', 'BOLL', 'VWAP', 'Supertrend', 'HMA', 'VOLMain', 'CorpActions']
+const ALL_SUB_INDS:  string[] = ['MACD', 'RSI', 'KDJ', 'CCI', 'WR', 'VOL']
 
 function loadSettings(): ChartSettings {
   try {
@@ -200,6 +250,36 @@ function loadSettings(): ChartSettings {
 }
 function saveSettings(s: ChartSettings) {
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)) } catch { /* ignore */ }
+}
+
+function loadIndicators(): { main: string[]; sub: string[] } {
+  try {
+    const raw = localStorage.getItem(INDICATORS_KEY)
+    if (raw) {
+      const p = JSON.parse(raw)
+      if (p.main && p.sub) return p
+    }
+  } catch { /* ignore */ }
+  return { main: ['EMA', 'VOLMain', 'CorpActions', 'AlertLines'], sub: ['MACD', 'RSI'] }
+}
+function saveIndicators(main: string[], sub: string[]) {
+  try { localStorage.setItem(INDICATORS_KEY, JSON.stringify({ main, sub })) } catch { /* ignore */ }
+}
+
+function loadAlerts(sym: string): number[] {
+  try {
+    const raw = localStorage.getItem(ALERTS_KEY)
+    if (raw) { const map = JSON.parse(raw); return map[sym.toUpperCase()] ?? [] }
+  } catch { /* ignore */ }
+  return []
+}
+function saveAlerts(sym: string, prices: number[]) {
+  try {
+    const raw = localStorage.getItem(ALERTS_KEY)
+    const map = raw ? JSON.parse(raw) : {}
+    map[sym.toUpperCase()] = prices
+    localStorage.setItem(ALERTS_KEY, JSON.stringify(map))
+  } catch { /* ignore */ }
 }
 
 function buildStyles(s: ChartSettings): object {
@@ -255,6 +335,7 @@ function buildStyles(s: ChartSettings): object {
       tickText: { ...font, color: s.axisTextColor },
     },
     yAxis: {
+      type:     s.yAxisType,
       position: s.yAxisRight ? 'right' : 'left',
       axisLine: { color: s.axisLineColor },
       tickLine: { color: s.axisLineColor },
@@ -293,15 +374,27 @@ const FONT_WEIGHTS = [
 ]
 
 const CANDLE_TYPES: { label: string; value: ChartSettings['candleType'] }[] = [
-  { label: 'Solid',  value: 'candle_solid'  },
-  { label: 'Hollow', value: 'candle_stroke' },
-  { label: 'OHLC',   value: 'ohlc'          },
-  { label: 'Area',   value: 'area'          },
+  { label: 'Solid',      value: 'candle_solid'      },
+  { label: 'Hollow',     value: 'candle_stroke'     },
+  { label: 'Up Hollow',  value: 'candle_up_stroke'  },
+  { label: 'Dn Hollow',  value: 'candle_down_stroke'},
+  { label: 'OHLC',       value: 'ohlc'              },
+  { label: 'Area',       value: 'area'              },
 ]
 
-function SettingsPanel({ settings, onChange }: {
+const YAXIS_TYPES: { label: string; value: ChartSettings['yAxisType'] }[] = [
+  { label: 'Normal',     value: 'normal'     },
+  { label: 'Percentage', value: 'percentage' },
+  { label: 'Log',        value: 'log'        },
+]
+
+function SettingsPanel({ settings, onChange, mainInds, subInds, onMainIndsChange, onSubIndsChange }: {
   settings: ChartSettings
   onChange: (patch: Partial<ChartSettings>) => void
+  mainInds: string[]
+  subInds: string[]
+  onMainIndsChange: (inds: string[]) => void
+  onSubIndsChange:  (inds: string[]) => void
 }) {
   const upd = onChange
 
@@ -331,8 +424,27 @@ function SettingsPanel({ settings, onChange }: {
 
   const sel: React.CSSProperties = { padding: '3px 6px', borderRadius: 3, border: `1px solid ${C.border}`, background: C.cell, color: C.text, fontSize: 10, cursor: 'pointer', outline: 'none', width: '100%' }
 
-  const isTV  = JSON.stringify(settings) === JSON.stringify(TV_PRESET)
-  const isPlt = JSON.stringify(settings) === JSON.stringify(PLATFORM_PRESET)
+  const isTV   = JSON.stringify(settings) === JSON.stringify(TV_PRESET)
+  const isPlt  = JSON.stringify(settings) === JSON.stringify(PLATFORM_PRESET)
+  const isLght = JSON.stringify(settings) === JSON.stringify(LIGHT_PRESET)
+
+  const toggleMainInd = (name: string) => {
+    // AlertLines is always on — not user-toggleable (managed via Add Alert button)
+    if (name === 'AlertLines') return
+    onMainIndsChange(
+      mainInds.includes(name)
+        ? mainInds.filter(n => n !== name)
+        : [...mainInds, name]
+    )
+  }
+
+  const toggleSubInd = (name: string) => {
+    onSubIndsChange(
+      subInds.includes(name)
+        ? subInds.filter(n => n !== name)
+        : [...subInds, name]
+    )
+  }
 
   return (
     <div style={{ width: 260, flexShrink: 0, borderLeft: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', background: C.panel, overflowY: 'auto' }}>
@@ -342,19 +454,22 @@ function SettingsPanel({ settings, onChange }: {
       </div>
 
       <Section title="Presets" />
-      <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.border}`, display: 'flex', gap: 6 }}>
-        <button onClick={() => upd({ ...TV_PRESET })} style={{ flex: 1, padding: '6px 4px', borderRadius: 4, fontSize: 10, cursor: 'pointer', fontWeight: isTV ? 700 : 400, border: `1px solid ${isTV ? C.green : C.border}`, background: isTV ? C.green + '18' : 'transparent', color: isTV ? C.green : C.sub }}>
-          <div style={{ width: 10, height: 10, borderRadius: 2, background: '#26a69a', display: 'inline-block', marginRight: 5, verticalAlign: 'middle' }} />TradingView
+      <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.border}`, display: 'flex', gap: 5 }}>
+        <button onClick={() => upd({ ...TV_PRESET })} style={{ flex: 1, padding: '5px 3px', borderRadius: 4, fontSize: 9, cursor: 'pointer', fontWeight: isTV ? 700 : 400, border: `1px solid ${isTV ? C.green : C.border}`, background: isTV ? C.green + '18' : 'transparent', color: isTV ? C.green : C.sub }}>
+          TradingView
         </button>
-        <button onClick={() => upd({ ...PLATFORM_PRESET })} style={{ flex: 1, padding: '6px 4px', borderRadius: 4, fontSize: 10, cursor: 'pointer', fontWeight: isPlt ? 700 : 400, border: `1px solid ${isPlt ? C.purple : C.border}`, background: isPlt ? C.purple + '18' : 'transparent', color: isPlt ? C.purple : C.sub }}>
-          <div style={{ width: 10, height: 10, borderRadius: 2, background: '#22C55E', display: 'inline-block', marginRight: 5, verticalAlign: 'middle' }} />Platform
+        <button onClick={() => upd({ ...PLATFORM_PRESET })} style={{ flex: 1, padding: '5px 3px', borderRadius: 4, fontSize: 9, cursor: 'pointer', fontWeight: isPlt ? 700 : 400, border: `1px solid ${isPlt ? C.purple : C.border}`, background: isPlt ? C.purple + '18' : 'transparent', color: isPlt ? C.purple : C.sub }}>
+          Platform
+        </button>
+        <button onClick={() => upd({ ...LIGHT_PRESET })} style={{ flex: 1, padding: '5px 3px', borderRadius: 4, fontSize: 9, cursor: 'pointer', fontWeight: isLght ? 700 : 400, border: `1px solid ${isLght ? C.amber : C.border}`, background: isLght ? C.amber + '18' : 'transparent', color: isLght ? C.amber : C.sub }}>
+          Light
         </button>
       </div>
 
       <Section title="Candle Style" />
       <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.border}`, display: 'flex', flexWrap: 'wrap', gap: 5 }}>
         {CANDLE_TYPES.map(ct => (
-          <button key={ct.value} onClick={() => upd({ candleType: ct.value })} style={{ padding: '4px 10px', borderRadius: 4, fontSize: 10, cursor: 'pointer', border: `1px solid ${settings.candleType === ct.value ? C.blue : C.border}`, background: settings.candleType === ct.value ? C.blue + '22' : 'transparent', color: settings.candleType === ct.value ? C.blue : C.sub, fontWeight: settings.candleType === ct.value ? 700 : 400 }}>{ct.label}</button>
+          <button key={ct.value} onClick={() => upd({ candleType: ct.value })} style={{ padding: '4px 8px', borderRadius: 4, fontSize: 10, cursor: 'pointer', border: `1px solid ${settings.candleType === ct.value ? C.blue : C.border}`, background: settings.candleType === ct.value ? C.blue + '22' : 'transparent', color: settings.candleType === ct.value ? C.blue : C.sub, fontWeight: settings.candleType === ct.value ? 700 : 400 }}>{ct.label}</button>
         ))}
       </div>
 
@@ -374,6 +489,13 @@ function SettingsPanel({ settings, onChange }: {
       ))}
       <div style={{ padding: '4px 12px 6px', borderBottom: `1px solid ${C.border}` }}>
         <div style={{ fontSize: 9, color: C.dim }}>Left swatch = wick, right = body.</div>
+      </div>
+
+      <Section title="Y-Axis Scale" />
+      <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.border}`, display: 'flex', gap: 5 }}>
+        {YAXIS_TYPES.map(yt => (
+          <button key={yt.value} onClick={() => upd({ yAxisType: yt.value })} style={{ flex: 1, padding: '4px 3px', borderRadius: 4, fontSize: 9, cursor: 'pointer', border: `1px solid ${settings.yAxisType === yt.value ? C.orange : C.border}`, background: settings.yAxisType === yt.value ? C.orange + '22' : 'transparent', color: settings.yAxisType === yt.value ? C.orange : C.sub, fontWeight: settings.yAxisType === yt.value ? 700 : 400 }}>{yt.label}</button>
+        ))}
       </div>
 
       <Section title="Grid" />
@@ -421,6 +543,30 @@ function SettingsPanel({ settings, onChange }: {
       <Section title="Price Marks" />
       <div style={row}><span style={lbl}>Last Price Line</span><div style={ctrl}><Toggle value={settings.showLastPrice} onChange={v => upd({ showLastPrice: v })} /></div></div>
       <div style={row}><span style={lbl}>High / Low Labels</span><div style={ctrl}><Toggle value={settings.showHighLow} onChange={v => upd({ showHighLow: v })} /></div></div>
+
+      <Section title="Main Indicators" />
+      <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.border}`, display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+        {ALL_MAIN_INDS.map(name => {
+          const active = mainInds.includes(name)
+          return (
+            <button key={name} onClick={() => toggleMainInd(name)} style={{ padding: '3px 8px', borderRadius: 4, fontSize: 9, cursor: 'pointer', border: `1px solid ${active ? C.green : C.border}`, background: active ? C.green + '20' : 'transparent', color: active ? C.green : C.dim, fontWeight: active ? 700 : 400 }}>
+              {name}
+            </button>
+          )
+        })}
+      </div>
+
+      <Section title="Sub Indicators" />
+      <div style={{ padding: '8px 12px', borderBottom: `1px solid ${C.border}`, display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+        {ALL_SUB_INDS.map(name => {
+          const active = subInds.includes(name)
+          return (
+            <button key={name} onClick={() => toggleSubInd(name)} style={{ padding: '3px 8px', borderRadius: 4, fontSize: 9, cursor: 'pointer', border: `1px solid ${active ? C.purple : C.border}`, background: active ? C.purple + '20' : 'transparent', color: active ? C.purple : C.dim, fontWeight: active ? 700 : 400 }}>
+              {name}
+            </button>
+          )
+        })}
+      </div>
 
       <div style={{ flex: 1 }} />
       <div style={{ padding: '10px 12px', borderTop: `1px solid ${C.border}`, flexShrink: 0 }}>
@@ -586,13 +732,11 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
   const addSym = (sym?: string) => {
     if (!active) return
     if (sym) {
-      // Single symbol from autocomplete click or keyboard selection
       const s = sym.trim().toUpperCase()
       if (s && !active.symbols.includes(s)) {
         upd(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, s] } : w))
       }
     } else {
-      // Parse multiple tokens from the text input (comma / space / newline)
       const tokens = addVal
         .split(/[\s,\n\r]+/)
         .map(t => t.trim().toUpperCase())
@@ -612,12 +756,11 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
   const commitRn  = () => { const n = rnVal.trim(); if (n) upd(wls.map(w => w.id === active.id ? { ...w, name: n } : w)); setRenaming(false) }
   const btn = (color = C.sub): React.CSSProperties => ({ padding: '3px 7px', borderRadius: 3, fontSize: 10, cursor: 'pointer', border: `1px solid ${color}33`, background: 'transparent', color })
 
-  // Show autocomplete only when user is typing a single token (no separators)
   const handleAddInput = (v: string) => {
     setAddVal(v.toUpperCase())
     if (searchTimerRef.current) clearTimeout(searchTimerRef.current)
     const trimmed = v.trim()
-    const isMulti = /[\s,]/.test(trimmed)   // spaces or commas = multi-symbol mode
+    const isMulti = /[\s,]/.test(trimmed)
     if (!trimmed || isMulti) { setSuggestions([]); setShowDrop(false); return }
     searchTimerRef.current = setTimeout(async () => {
       try {
@@ -643,7 +786,6 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
     }
   }
 
-  // Fetch last-bar price data for watchlist symbols
   const fetchPrices = useCallback(async (syms: string[]) => {
     if (!syms.length) return
     const results = await Promise.allSettled(
@@ -706,7 +848,7 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
         )}
       </div>
 
-      {/* Symbol rows — TradingView style with LTP + change */}
+      {/* Symbol rows */}
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {active?.symbols.length === 0 && (
           <div style={{ padding: '20px 10px', textAlign: 'center', color: C.dim, fontSize: 10 }}>
@@ -737,14 +879,13 @@ function WatchlistPanel({ currentSym, onNavigate }: { currentSym: string; onNavi
         })}
       </div>
 
-      {/* Add symbols — supports single (with autocomplete) or multi (paste) */}
+      {/* Add symbols */}
       <div style={{ padding: '8px 10px', borderTop: `1px solid ${C.border}`, flexShrink: 0 }}>
         {currentSym && active && !active.symbols.includes(currentSym.toUpperCase()) && (
           <button onClick={() => upd(wls.map(w => w.id === active.id ? { ...w, symbols: [...w.symbols, currentSym.toUpperCase()] } : w))} style={{ width: '100%', marginBottom: 6, padding: '4px', borderRadius: 3, fontSize: 10, border: `1px solid ${C.green}44`, background: C.green + '11', color: C.green, cursor: 'pointer', fontFamily: 'monospace' }}>
             + Add {currentSym.toUpperCase()}
           </button>
         )}
-        {/* Input with autocomplete dropdown popping upward */}
         <div style={{ position: 'relative' }}>
           {showDrop && suggestions.length > 0 && (
             <div style={{ position: 'absolute', bottom: 'calc(100% + 4px)', left: 0, right: 0, background: C.cell, border: `1px solid ${C.border}`, borderRadius: 4, boxShadow: '0 -6px 16px rgba(0,0,0,0.5)', zIndex: 200, maxHeight: 220, overflowY: 'auto' }}>
@@ -793,6 +934,9 @@ export function FullChartPage() {
   const initTf               = searchParams.get('tf') ?? '1D'
 
   const [settings,     setSettings]     = useState<ChartSettings>(loadSettings)
+  const [mainInds,     setMainInds]     = useState<string[]>(() => loadIndicators().main)
+  const [subInds,      setSubInds]      = useState<string[]>(() => loadIndicators().sub)
+  const [alertPrices,  setAlertPricesS] = useState<number[]>(() => loadAlerts(sym))
   const [showWL,       setShowWL]       = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [snapFlash,    setSnapFlash]    = useState(false)
@@ -822,23 +966,34 @@ export function FullChartPage() {
     proRef.current = null
     setLoading(true)
 
+    // Load saved alerts for this symbol
+    const savedAlerts = loadAlerts(sym)
+    setAlertPricesS(savedAlerts)
+
+    // Always include AlertLines; CorpActions conditionally from mainInds
+    const currentMainInds = loadIndicators().main
+    const activeMain = [
+      ...currentMainInds.filter(n => n !== 'AlertLines'),
+      'AlertLines',   // always present (hidden when no alerts set)
+    ]
+
     const pro = new KLineChartPro({
       container:  containerRef.current,
-      theme:      'dark',
+      theme:      loadSettings().lightTheme ? 'light' : 'dark',
       locale:     'en-US',
-      timezone:   'UTC',
+      timezone:   'Asia/Kolkata',
       watermark:  'NSE',
       symbol: {
         ticker: sym.toUpperCase(), shortName: sym.toUpperCase(),
-        name: sym.toUpperCase(), exchange: 'NSE', market: 'stocks', priceCurrency: 'INR',
-      },
+        name: sym.toUpperCase(), exchange: 'NSE', market: 'stocks',
+        type: 'stock', priceCurrency: 'INR', pricePrecision: 2,
+      } as any,
       period:            TF_TO_PERIOD[initTf] ?? TF_TO_PERIOD['1D'],
       periods:           PERIODS,
-      styles:            buildStyles(settings) as any,
+      styles:            buildStyles(loadSettings()) as any,
       drawingBarVisible: true,
-      // VOLMain renders volume bars at the bottom of the price pane (custom draw)
-      mainIndicators: ['EMA', 'VOLMain'],
-      subIndicators:  ['MACD', 'RSI'],
+      mainIndicators: activeMain,
+      subIndicators:  loadIndicators().sub,
       datafeed:       new OurDatafeed(),
     })
 
@@ -858,7 +1013,24 @@ export function FullChartPage() {
     proRef.current = pro
     setLoading(false)
 
+    // Seed alert lines immediately
+    setAlertPrices(savedAlerts)
+
+    // Fetch corporate actions after chart is ready (async, non-blocking)
+    if (currentMainInds.includes('CorpActions')) {
+      api.get<{ actions: Array<{ ex_date: string; action_type: string }> }>(
+        `/stocks/${sym.toUpperCase()}/corp_actions`, { params: { years: 10 } }
+      ).then(r => {
+        setCorpActions(r.data.actions ?? [])
+      }).catch(() => {
+        clearCorpActions()
+      })
+    } else {
+      clearCorpActions()
+    }
+
     return () => {
+      clearCorpActions()
       const chartApi = (pro as any)?._chartApi
       if (chartApi) { try { dispose(chartApi) } catch { /* ignore */ } }
       if (containerRef.current) containerRef.current.innerHTML = ''
@@ -867,12 +1039,25 @@ export function FullChartPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sym])
 
-  // Apply settings live
+  // Apply styles + theme live when settings change
   useEffect(() => {
     if (!proRef.current) return
-    try { proRef.current.setStyles(buildStyles(settings) as any) } catch { /* ignore */ }
+    try {
+      proRef.current.setStyles(buildStyles(settings) as any)
+      proRef.current.setTheme(settings.lightTheme ? 'light' : 'dark')
+    } catch { /* ignore */ }
     saveSettings(settings)
   }, [settings])
+
+  // Persist indicator selections + update alert lines when state changes
+  useEffect(() => {
+    saveIndicators(mainInds, subInds)
+  }, [mainInds, subInds])
+
+  useEffect(() => {
+    setAlertPrices(alertPrices)
+    saveAlerts(sym, alertPrices)
+  }, [alertPrices, sym])
 
   // ResizeObserver — instant chart resize when Settings / Watchlist panels toggle
   useEffect(() => {
@@ -896,6 +1081,24 @@ export function FullChartPage() {
     navigate(`/fullchart/${s.toUpperCase()}?tf=${tf}`)
   }, [navigate])
 
+  // Add alert price via browser prompt
+  const handleAddAlert = useCallback(() => {
+    const raw = window.prompt(`Set price alert for ${sym.toUpperCase()}\nEnter price (INR):`)
+    if (!raw) return
+    const price = parseFloat(raw.replace(/,/g, ''))
+    if (!isNaN(price) && price > 0) {
+      setAlertPricesS(prev => {
+        const next = prev.includes(price) ? prev : [...prev, price].sort((a, b) => a - b)
+        return next
+      })
+    }
+  }, [sym])
+
+  // Remove a specific alert
+  const handleRemoveAlert = useCallback((price: number) => {
+    setAlertPricesS(prev => prev.filter(p => p !== price))
+  }, [])
+
   // Composite canvas → PNG snapshot
   const takeSnapshot = useCallback(() => {
     const container = containerRef.current; if (!container) return
@@ -906,7 +1109,8 @@ export function FullChartPage() {
       const out = document.createElement('canvas')
       out.width = Math.round(rect.width); out.height = Math.round(rect.height)
       const ctx = out.getContext('2d')!
-      ctx.fillStyle = C.bg; ctx.fillRect(0, 0, out.width, out.height)
+      ctx.fillStyle = settings.bgColor
+      ctx.fillRect(0, 0, out.width, out.height)
       for (const c of canvases) {
         const cr = c.getBoundingClientRect()
         try { ctx.drawImage(c, Math.round(cr.left - rect.left), Math.round(cr.top - rect.top), Math.round(cr.width), Math.round(cr.height)) } catch { /* ignore */ }
@@ -917,7 +1121,7 @@ export function FullChartPage() {
       document.body.appendChild(a); a.click(); document.body.removeChild(a)
       setSnapFlash(true); setTimeout(() => setSnapFlash(false), 800)
     } catch { /* ignore */ }
-  }, [sym])
+  }, [sym, settings.bgColor])
 
   const topBtn = (active: boolean, color = C.blue): React.CSSProperties => ({
     padding: '4px 11px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
@@ -926,6 +1130,8 @@ export function FullChartPage() {
     color: active ? color : C.sub, fontWeight: active ? 700 : 400,
     fontFamily: 'inherit',
   })
+
+  const hasAlerts = alertPrices.length > 0
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', background: C.bg, overflow: 'hidden', fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
@@ -941,7 +1147,7 @@ export function FullChartPage() {
 
         <div style={{ width: 1, height: 14, background: C.border }} />
 
-        {/* Live symbol search replaces the static ticker display */}
+        {/* Live symbol search */}
         <SymbolSearchBar currentSym={sym} onSelect={goSymbol} />
         <span style={{ fontSize: 10, color: C.sub }}>NSE</span>
         <span style={{ fontSize: 10, color: C.dim }}>·</span>
@@ -949,6 +1155,37 @@ export function FullChartPage() {
 
         {loading && <span style={{ fontSize: 10, color: C.amber }}>Loading...</span>}
         <div style={{ flex: 1 }} />
+
+        {/* Alert badges + add button */}
+        {hasAlerts && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            {alertPrices.slice(0, 3).map(p => (
+              <span
+                key={p}
+                title={`Alert at ${p} — click to remove`}
+                onClick={() => handleRemoveAlert(p)}
+                style={{ fontSize: 9, padding: '2px 6px', borderRadius: 10, background: C.orange + '33', color: C.orange, border: `1px solid ${C.orange}66`, cursor: 'pointer', fontFamily: 'monospace' }}
+              >
+                {p.toFixed(2)} x
+              </span>
+            ))}
+            {alertPrices.length > 3 && (
+              <span style={{ fontSize: 9, color: C.orange }}>+{alertPrices.length - 3}</span>
+            )}
+          </div>
+        )}
+        <button onClick={handleAddAlert} style={topBtn(false, C.orange)} title="Add price alert line">
+          + Alert
+        </button>
+
+        {/* Theme toggle */}
+        <button
+          onClick={() => handleSettings(settings.lightTheme ? { ...TV_PRESET } : { ...LIGHT_PRESET })}
+          style={topBtn(settings.lightTheme, C.amber)}
+          title={settings.lightTheme ? 'Switch to dark theme' : 'Switch to light theme'}
+        >
+          {settings.lightTheme ? 'Dark' : 'Light'}
+        </button>
 
         <button onClick={takeSnapshot} style={topBtn(snapFlash, C.green)}>{snapFlash ? 'Saved!' : 'Snapshot'}</button>
         <button onClick={() => { setShowSettings(v => !v); setShowWL(false) }} style={topBtn(showSettings, C.orange)}>Settings</button>
@@ -958,8 +1195,17 @@ export function FullChartPage() {
       {/* Content row — chart + optional side panels */}
       <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden' }}>
         <div ref={containerRef} style={{ flex: 1, minWidth: 0, minHeight: 0 }} />
-        {showSettings && <SettingsPanel settings={settings} onChange={handleSettings} />}
-        {showWL       && <WatchlistPanel currentSym={sym} onNavigate={goSymbol} />}
+        {showSettings && (
+          <SettingsPanel
+            settings={settings}
+            onChange={handleSettings}
+            mainInds={mainInds}
+            subInds={subInds}
+            onMainIndsChange={setMainInds}
+            onSubIndsChange={setSubInds}
+          />
+        )}
+        {showWL && <WatchlistPanel currentSym={sym} onNavigate={goSymbol} />}
       </div>
     </div>
   )

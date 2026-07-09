@@ -19,6 +19,7 @@ import time
 import warnings
 from datetime import date, timedelta
 from pathlib import Path
+from typing import Optional
 
 _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
@@ -352,14 +353,19 @@ def _fetch_ohlcv(symbol: str, timeframe: str) -> list[dict]:
 
 @router.get("/ohlcv")
 def get_ohlcv(
-    symbol:    str = Query(...,   description="NSE equity symbol e.g. RELIANCE"),
-    timeframe: str = Query("1D", description="5M | 15M | 1H | 1D | 1W | 1M | 3M"),
+    symbol:    str            = Query(...,   description="NSE equity symbol e.g. RELIANCE"),
+    timeframe: str            = Query("1D", description="5M | 15M | 1H | 1D | 1W | 1M | 3M"),
+    from_date: Optional[str]  = Query(None, description="Start date YYYY-MM-DD (daily+ only)"),
+    to_date:   Optional[str]  = Query(None, description="End date YYYY-MM-DD (daily+ only)"),
 ):
     """
     OHLCV candlestick bars for a symbol.
 
     Daily+ timeframes use the full bhavcopy parquet cache (1995+) with a live
     nselib top-up for today's bar. Intraday uses yfinance.
+
+    from_date / to_date filter daily+ bars by date range (inclusive, YYYY-MM-DD).
+    Intraday bars are not filtered (always returns available window).
     """
     tf = timeframe.upper()
     if tf not in VALID_TIMEFRAMES:
@@ -369,6 +375,13 @@ def get_ohlcv(
         )
 
     bars = _fetch_ohlcv(symbol, tf)
+
+    # Apply date-range filter for daily+ bars (time field is "YYYY-MM-DD" string)
+    if bars and tf not in _INTRADAY:
+        if from_date:
+            bars = [b for b in bars if str(b["time"]) >= from_date]
+        if to_date:
+            bars = [b for b in bars if str(b["time"]) <= to_date]
 
     return {
         "symbol":    symbol.upper(),
