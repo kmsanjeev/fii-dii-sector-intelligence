@@ -56,11 +56,15 @@ _CHAT_PROVIDERS = [
         "extra_headers": {},
     },
     {
-        # Free with any GitHub personal access token (models:read scope)
+        # Free with a fine-grained GitHub PAT (Account permissions -> Models: Read).
+        # NOTE: models.github.ai is the current endpoint; the legacy
+        # models.inference.ai.azure.com 401s with new fine-grained tokens.
+        # Account must also have Models enabled (open any playground once at
+        # github.com/marketplace/models) or all inference calls 403.
         "name":    "GitHubModels",
         "env_var": "GITHUB_MODELS_TOKEN",
-        "base_url": "https://models.inference.ai.azure.com",
-        "model":   "gpt-4o-mini",
+        "base_url": "https://models.github.ai/inference",
+        "model":   "openai/gpt-4o-mini",
         "extra_headers": {},
     },
     {

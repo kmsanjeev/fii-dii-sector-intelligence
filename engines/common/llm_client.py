@@ -77,8 +77,8 @@ _PROVIDERS = [
     {
         "name":         "GitHubModels",
         "env_var":      "GITHUB_MODELS_TOKEN",
-        "base_url":     "https://models.inference.ai.azure.com",
-        "model":        "gpt-4o-mini",            # free with GitHub PAT (models:read)
+        "base_url":     "https://models.github.ai/inference",   # legacy azure URL 401s
+        "model":        "openai/gpt-4o-mini",     # free with GitHub PAT (models:read)
         "extra_headers": {},
     },
     {
