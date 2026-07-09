@@ -6,6 +6,32 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.31.2
+
+Fix -- Backup panel false DRIVE NOT FOUND on stale backend
+
+Date: 2026-07-09
+
+Status: Completed
+
+---
+
+## Summary
+
+User report: DATA BACKUP panel showed DRIVE NOT FOUND with the drive connected.
+Root cause: the running uvicorn predated the new /api/data/backup/status route
+(404), and the panel rendered "no status" identically to "drive absent".
+
+## Fixed
+
+- DataControlPage BackupPanel: three-state badge -- STATUS UNKNOWN (grey, with
+  an amber hint naming the cause, e.g. endpoint missing -> restart backend)
+  vs DRIVE CONNECTED vs DRIVE NOT FOUND; Run button tooltip per state
+- Backend on :8001 restarted surgically (vite untouched); endpoint verified
+  live: drive_available=true, last_result=VERIFIED
+
+---
+
 # Version 4.31.1
 
 Phase R1-D1b -- Manual Backup Pipeline in Data Control GUI

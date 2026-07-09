@@ -691,18 +691,25 @@ type BackupStatus = {
 }
 
 function BackupPanel() {
-  const [status,  setStatus]  = useState<BackupStatus | null>(null)
-  const [running, setRunning] = useState(false)
-  const [log,     setLog]     = useState<string[]>([])
-  const [showLog, setShowLog] = useState(false)
+  const [status,    setStatus]    = useState<BackupStatus | null>(null)
+  const [statusErr, setStatusErr] = useState('')
+  const [running,   setRunning]   = useState(false)
+  const [log,       setLog]       = useState<string[]>([])
+  const [showLog,   setShowLog]   = useState(false)
   const logRef = useRef<HTMLDivElement>(null)
   const esRef  = useRef<EventSource | null>(null)
 
   const loadStatus = async () => {
     try {
       const r = await fetch(`${BASE}/api/data/backup/status`)
-      if (r.ok) setStatus(await r.json())
-    } catch { /* ignore */ }
+      if (r.ok) { setStatus(await r.json()); setStatusErr(''); return }
+      // 404 = backend running an older build without this endpoint
+      setStatusErr(r.status === 404
+        ? 'Backup status endpoint not found — restart the backend (stop.ps1 / start.ps1) to load it'
+        : `Status request failed (HTTP ${r.status})`)
+    } catch {
+      setStatusErr('Backend unreachable')
+    }
   }
   useEffect(() => { loadStatus() }, [])
 
@@ -765,19 +772,36 @@ function BackupPanel() {
         )}
       </div>
 
+      {/* Status endpoint unavailable — distinct from drive-not-found */}
+      {statusErr && (
+        <div style={{
+          marginBottom: 10, padding: '6px 12px', borderRadius: 4, fontSize: 10,
+          border: '1px solid #F59E0B44', background: '#F59E0B11', color: '#F59E0B',
+        }}>
+          {statusErr}
+        </div>
+      )}
+
       <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
-        {/* Drive status */}
+        {/* Drive status — three states: unknown / connected / not found */}
         <div style={{ fontSize: 11 }}>
           <span style={{ color: '#64748B' }}>Target: </span>
-          <span style={{ color: '#94A3B8', fontFamily: 'monospace' }}>{status?.target ?? '--'}</span>
-          <span style={{
-            marginLeft: 8, fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 10,
-            color:      status?.drive_available ? '#22C55E' : '#EF4444',
-            border:     `1px solid ${status?.drive_available ? '#22C55E' : '#EF4444'}55`,
-            background: (status?.drive_available ? '#22C55E' : '#EF4444') + '15',
-          }}>
-            {status?.drive_available ? 'DRIVE CONNECTED' : 'DRIVE NOT FOUND'}
-          </span>
+          <span style={{ color: '#94A3B8', fontFamily: 'monospace' }}>{status?.target ?? 'F:\\Projects\\fii-dii-backup'}</span>
+          {status === null ? (
+            <span style={{
+              marginLeft: 8, fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 10,
+              color: '#64748B', border: '1px solid #64748B55', background: '#64748B15',
+            }}>STATUS UNKNOWN</span>
+          ) : (
+            <span style={{
+              marginLeft: 8, fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 10,
+              color:      status.drive_available ? '#22C55E' : '#EF4444',
+              border:     `1px solid ${status.drive_available ? '#22C55E' : '#EF4444'}55`,
+              background: (status.drive_available ? '#22C55E' : '#EF4444') + '15',
+            }}>
+              {status.drive_available ? 'DRIVE CONNECTED' : 'DRIVE NOT FOUND'}
+            </span>
+          )}
         </div>
 
         {/* Last run */}
@@ -794,7 +818,11 @@ function BackupPanel() {
         <button
           onClick={runBackup}
           disabled={running || !status?.drive_available}
-          title={!status?.drive_available ? 'Plug in the external drive first' : 'Mirror + verify raw data now'}
+          title={
+            status === null ? (statusErr || 'Waiting for backup status...')
+            : !status.drive_available ? 'Plug in the external drive first'
+            : 'Mirror + verify raw data now'
+          }
           style={{
             padding: '5px 18px', borderRadius: 4,
             border: '1px solid #22C55E',
