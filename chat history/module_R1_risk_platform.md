@@ -59,3 +59,48 @@ user will use an external drive; backup stays in pipeline backlog. Delivered D2-
 - Phase R2: stress testing (2008/2020 replay) + Barra-lite factor model
 - Phase R3: Monte Carlo VaR (single-node vectorized first, distributed seam later)
 - Phase R4: TCA + order slicing (when live trading is regular)
+
+---
+
+## Session 2026-07-09 (later) — Test Suite Repair + Phase R2 (COMPLETE)
+
+### Test suite: 25 pre-existing failures -> 267/267 green (commit f0ddd50)
+GUARDRAILS.md used as the arbiter for every code-vs-test dispute.
+- CODE BUGS (2): fetch_with_retry crashed on callables without __name__
+  (Mock, functools.partial); validate_shareholding_sum TypeError on others=None
+- STALE TESTS (23): G-I-02 API drift (returns RELIABLE/UNRELIABLE strings, not
+  bool), G-I-05 inverted semantics (True means STALE per spec), np.bool_
+  identity checks (`is True` fails), G-F-04 log-vs-raise contract, G-F-02
+  pytest.raises match pattern, conftest fixture missing TEST_* env vars,
+  EC-SYM-02 conceptually wrong (spin-off = distinct ISINs = both retained)
+- Context: pytest was never installed in the py -3.11 env; suite had not run
+
+### Phase R2 — Stress Testing + Factor Model
+**stress_test_engine.py:**
+- Historical: GFC_2008 (Sep-Nov 08), TAPER_2013, ILFS_2018, COVID_2020
+  (Feb 19-Mar 23); per-holding actual window return from parquet cache;
+  fallback basis SYMBOL -> SECTOR avg -> MARKET avg (NIFTY 500 universe,
+  survivorship-biased fallback explicitly labelled); basis counts in output
+- Hypothetical: MKT_DOWN_10/20, FII_EXODUS, RATE_SHOCK sector-shock maps
+**factor_model_engine.py (Barra-lite):**
+- 26-27 sector one-hots + MOMENTUM (90d ret z) + SIZE (log median 60d traded
+  value z) + VALUE (earnings yield z from data/NSE/results/valuation_scores.csv)
+- Static current exposures over 250d window; all cross-sections solved in one
+  pinv; LW factor covariance; idio var from residuals
+- Portfolio: x = wX exposures, sys var = x'Fx, idio = sum w^2 s^2, Euler
+  per-factor contributions
+- NOTE: valuation_scores.csv lives in data/NSE/results/ NOT data/intelligence/
+  (CLAUDE.md intelligence listing is aspirational there)
+**API:** /api/risk/stress + /api/risk/factors (GET + POST refresh)
+**GUI:** StressPanel (scenario cards, proxied-position warnings) + FactorPanel
+  (systematic share, top-10 factor bars) on PortfolioPage
+**Pipeline:** R2a_stress_test + R2b_factor_model after R1_portfolio_risk
+
+### Verification
+- Fixture: Covid -34.6% / GFC -29.5% (sane vs NIFTY -38%), uniform -10% shock
+  -> exactly -10.00%, basis counts sum to 9; factor model: 88.7% systematic,
+  sector exposures sum 1.000, total^2 = sys^2 + idio^2 within 2%
+- Live: factor universe 473 stocks, mean daily R2 0.14, factor_returns.csv 250d
+- Factor-model total vol (19.9%) vs R1 direct LW vol (13.35%) on same fixture:
+  different estimators + 250d vs 500d lookback; both retained deliberately
+- tsc + vite build clean; suite 267/267

@@ -6,6 +6,65 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.28.0
+
+Phase R2 -- Stress Testing + Factor Model (Barra-lite) + Test Suite Repair
+
+Date: 2026-07-09
+
+Status: Completed
+
+---
+
+## Summary
+
+Second risk layer: historical crisis replay (2008 GFC, 2013 Taper, 2018 IL&FS,
+2020 Covid) and hypothetical sector-shock scenarios on current holdings, plus a
+Barra-lite cross-sectional factor model (27 sectors + momentum/size/value over
+NIFTY 500) decomposing portfolio variance into systematic vs stock-specific.
+Also repaired the test suite: 25 pre-existing failures fixed, now 267/267 green.
+
+## New Features
+
+- engines/risk/stress_test_engine.py: 4 historical windows replayed from the
+  1995+ parquet cache with explicit fallback basis per position (SYMBOL ->
+  SECTOR avg -> MARKET avg, never hidden); 4 hypothetical sector-shock maps
+  (MKT -10/-20, FII_EXODUS, RATE_SHOCK)
+- engines/risk/factor_model_engine.py: static-exposure cross-sectional OLS over
+  250d, all days solved in one lstsq; Ledoit-Wolf factor covariance; portfolio
+  systematic/idiosyncratic split + per-factor Euler variance contributions
+- Pipeline stages R2a_stress_test + R2b_factor_model after R1_portfolio_risk
+- /api/risk/stress + /api/risk/factors (GET + POST refresh each)
+- PortfolioPage: STRESS TESTING panel (scenario cards, proxied-position
+  warnings) + FACTOR DECOMPOSITION panel (systematic share cards, top-10
+  factor contribution bars with SECTOR/STYLE badges)
+
+## Test Suite Repair (commit f0ddd50)
+
+- 2 real code bugs fixed in guardrails.py (fn.__name__ crash, others=None TypeError)
+- 23 stale tests aligned to GUARDRAILS.md spec (API drift, np.bool_ identity,
+  inverted staleness semantics, log-vs-raise contract, fixture env-var drift,
+  conceptually wrong RPOWER spin-off dedup expectation)
+
+## New Files
+
+- engines/risk/stress_test_engine.py, engines/risk/factor_model_engine.py
+
+## Modified Files
+
+- backend/routers/risk.py, engines/orchestration/daily_refresh.py
+- frontend/src/pages/PortfolioPage.tsx
+- engines/common/guardrails.py, tests/ (7 files)
+
+## Verification
+
+- Fixture (10 positions, real history): Covid replay -34.6% (NIFTY actual ~-38%),
+  GFC -29.5%, uniform -10% shock -> exactly -10.00%; factor model 88.7%
+  systematic for largecap book, sector exposures sum to 1.000, vol decomposition
+  internally consistent; live universe run: 473 stocks, R2=0.14, 250 days
+
+---
+
 # Version 4.27.0
 
 Phase R1 -- Portfolio Risk Foundation (VaR / Expected Shortfall)

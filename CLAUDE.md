@@ -76,7 +76,11 @@ data/intelligence/
 |-- market_context.json                             market PCR + regime pulse (Phase A)
 |-- trade_conviction_scores.csv          2406 rows  7-factor conviction score + action (Phase C)
 |-- portfolio_risk.csv                              VaR 95/99, ES, vol, beta, maxDD per run date (Phase R1)
-`-- portfolio_risk_components.csv                   per-position component VaR + risk contribution (Phase R1)
+|-- portfolio_risk_components.csv                   per-position component VaR + risk contribution (Phase R1)
+|-- portfolio_stress.csv + _detail.csv              crisis replay + shock scenario P&L (Phase R2)
+|-- factor_returns.csv                   250 rows   daily sector+style factor returns, NIFTY 500 (Phase R2)
+|-- factor_model_summary.csv                        fit + systematic/idio decomposition per run (Phase R2)
+`-- portfolio_factor_exposure.csv                   per-factor exposure + variance contribution (Phase R2)
 data/NSE/shareholding/
 |-- quarterly_shp.csv                    7228 rows  Q2FY25-Q1FY26 FII/DII/promoter % (Phase 15C)
 |-- holding_trends.csv                              QoQ promoter/FII/DII deltas (Phase 16)
@@ -131,6 +135,7 @@ data/NSE/shareholding/
 | SH    | Shareholding History Fix      | COMPLETE 100%    | XBRL fraction-scale auto-detect; 76,170 rows; 8-quarter trend cards in StocksPage |
 | UI-S  | Sectors + Social Pulse UI     | COMPLETE 100%    | Relative cross-sectional score, FII regime badge, heatmap dual-score fix, X/Nitter card |
 | R1    | Portfolio Risk Foundation     | COMPLETE 100%    | engines/risk/portfolio_risk_engine.py; VaR/ES/component risk; /api/risk; Portfolio RISK panel; backup (D1) deferred to external drive |
+| R2    | Stress Testing + Factor Model | COMPLETE 100%    | stress_test_engine.py (2008/2013/2018/2020 replay + shocks); factor_model_engine.py (Barra-lite, NIFTY 500); test suite repaired 267/267 |
 
 ## CURRENT PLATFORM STATUS (2026-07-09)
 **ALL 25 CORE PHASES + A/B/C/CH/TI/SH/UI-S COMPLETE.** Full investment operating system is live.

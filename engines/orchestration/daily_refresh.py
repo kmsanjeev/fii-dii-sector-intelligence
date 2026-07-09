@@ -89,6 +89,9 @@ STAGES = [
     ("20_portfolio",                "engines.portfolio.portfolio_engine",                    "Portfolio Intelligence Rebuild",        30),
     # Portfolio risk (VaR/ES/component risk; depends on 1F cache + 20 positions)
     ("R1_portfolio_risk",           "engines.risk.portfolio_risk_engine",                    "Portfolio Risk (VaR/ES)",               60),
+    # Stress scenarios + factor model (Phase R2; depend on 1F cache + 20 positions)
+    ("R2a_stress_test",             "engines.risk.stress_test_engine",                       "Stress Scenarios (2008/2020 replay)",  120),
+    ("R2b_factor_model",            "engines.risk.factor_model_engine",                      "Factor Model (Barra-lite)",            180),
     # Alerts — always last, fires on fully-refreshed intelligence
     ("9_alert_engine",              "alerts.alert_engine",                                   "Alert Engine (Telegram push)",          60),
 ]
@@ -108,7 +111,8 @@ STAGE_SECTIONS = {
                                 "AF_astro_engine",
                                 "KU_kundli_engine", "KU_gann_engine",
                                 "13A_document_builder", "13B_faiss_indexer", "13C_bm25_indexer",
-                                "20_portfolio", "R1_portfolio_risk", "9_alert_engine"],
+                                "20_portfolio", "R1_portfolio_risk", "R2a_stress_test",
+                                "R2b_factor_model", "9_alert_engine"],
 }
 
 # ── Shared state (guarded by _lock) ──────────────────────────────────────────

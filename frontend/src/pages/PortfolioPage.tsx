@@ -76,6 +76,44 @@ type RiskData = {
   history:    { run_date: string; var_hist_95_1d: number; es_hist_975_1d: number }[]
 }
 
+type StressScenario = {
+  scenario:           string
+  scenario_type:      'HISTORICAL' | 'HYPOTHETICAL'
+  label:              string
+  window_start:       string
+  window_end:         string
+  portfolio_value:    number
+  pnl:                number
+  pnl_pct:            number
+  n_symbol_basis:     number
+  n_sector_basis:     number
+  n_market_basis:     number
+  worst_position:     string
+  worst_position_pct: number
+}
+
+type FactorExposure = {
+  factor:                    string
+  factor_type:               'SECTOR' | 'STYLE'
+  exposure:                  number
+  factor_vol_annualized_pct: number
+  var_contribution_pct:      number
+}
+
+type FactorData = {
+  summary: {
+    run_date:                 string
+    universe_size:            number
+    mean_daily_r2:            number
+    n_positions_modeled:      number
+    total_vol_annualized_pct: number | null
+    systematic_vol_pct:       number | null
+    idiosyncratic_vol_pct:    number | null
+    systematic_share_pct:     number | null
+  }
+  exposures: FactorExposure[]
+}
+
 // ── API helpers ───────────────────────────────────────────────────────────────
 
 async function fetchPortfolio(): Promise<Portfolio> {
@@ -490,6 +528,10 @@ export function PortfolioPage() {
       {/* Portfolio risk — Phase R1 */}
       {pos.length >= 2 && <RiskPanel />}
 
+      {/* Stress scenarios + factor decomposition — Phase R2 */}
+      {pos.length >= 1 && <StressPanel />}
+      {pos.length >= 1 && <FactorPanel />}
+
       {/* Empty state */}
       {!isLoading && pos.length === 0 && (
         <div style={{
@@ -785,6 +827,251 @@ function RiskPanel() {
               ).join(', ')} — VaR understates true portfolio risk.
             </div>
           )}
+        </>
+      )}
+    </div>
+  )
+}
+
+// ── Stress scenario panel (Phase R2) ──────────────────────────────────────────
+
+function StressPanel() {
+  const qc = useQueryClient()
+
+  const { data, isLoading, error } = useQuery<{ scenarios: StressScenario[] }>({
+    queryKey: ['portfolio_stress'],
+    queryFn: async () => {
+      const r = await fetch(`${API}/api/risk/stress`)
+      if (r.status === 404 || r.status === 422) throw new Error('NO_DATA')
+      if (!r.ok) throw new Error('Failed to load stress data')
+      return r.json()
+    },
+    staleTime: 5 * 60_000,
+    retry: false,
+    refetchOnWindowFocus: false,
+  })
+
+  const refresh = useMutation({
+    mutationFn: async () => {
+      const r = await fetch(`${API}/api/risk/stress/refresh`, { method: 'POST' })
+      if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'Stress refresh failed') }
+      return r.json()
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['portfolio_stress'] }),
+  })
+
+  const noData    = (error as Error | null)?.message === 'NO_DATA'
+  const scenarios = data?.scenarios ?? []
+  const hist = scenarios.filter(s => s.scenario_type === 'HISTORICAL')
+  const hypo = scenarios.filter(s => s.scenario_type === 'HYPOTHETICAL')
+
+  const pnlColor = (pct: number) =>
+    pct < -25 ? '#EF4444' : pct < -12 ? '#F59E0B' : pct < 0 ? '#FBBF24' : '#22C55E'
+
+  const ScenarioCard = ({ s }: { s: StressScenario }) => (
+    <div style={{
+      background: '#0A0D14', border: '1px solid #1E2332', borderRadius: 6,
+      padding: '12px 14px', flex: '1 1 200px', minWidth: 190, maxWidth: 260,
+    }}>
+      <div style={{ color: '#94A3B8', fontSize: 10, fontWeight: 700, marginBottom: 2 }}>
+        {s.scenario.replace(/_/g, ' ')}
+      </div>
+      <div style={{ color: '#475569', fontSize: 9, marginBottom: 8, minHeight: 22 }}>{s.label}</div>
+      <div style={{ color: pnlColor(s.pnl_pct), fontSize: 22, fontWeight: 700 }}>
+        {s.pnl_pct.toFixed(1)}%
+      </div>
+      <div style={{ color: '#64748B', fontSize: 9, marginTop: 4 }}>
+        {riskFmt(Math.abs(s.pnl))} {s.pnl < 0 ? 'loss' : 'gain'}
+        {s.worst_position && <> · worst: {s.worst_position} {s.worst_position_pct.toFixed(0)}%</>}
+      </div>
+      {(s.n_sector_basis > 0 || s.n_market_basis > 0) && s.scenario_type === 'HISTORICAL' && (
+        <div style={{ color: '#F59E0B', fontSize: 9, marginTop: 3 }}>
+          {s.n_sector_basis + s.n_market_basis} position(s) proxied (no history in window)
+        </div>
+      )}
+    </div>
+  )
+
+  return (
+    <div style={{
+      background: '#141720', border: '1px solid #1E2332',
+      borderRadius: 6, padding: 16, marginBottom: 20,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, letterSpacing: 2 }}>
+          STRESS TESTING — CRISIS REPLAY &amp; SHOCK SCENARIOS
+        </div>
+        <button
+          onClick={() => refresh.mutate()}
+          disabled={refresh.isPending}
+          style={{ ...ghostBtn, borderColor: '#3B82F6', color: refresh.isPending ? '#334155' : '#3B82F6' }}
+        >
+          {refresh.isPending ? 'Computing...' : 'Refresh Stress'}
+        </button>
+      </div>
+
+      {isLoading && <div style={{ color: '#64748B', fontSize: 11, padding: 12 }}>Loading stress results...</div>}
+      {noData && !isLoading && (
+        <div style={{ color: '#64748B', fontSize: 11, padding: 12 }}>
+          No stress results yet. Click <span style={{ color: '#3B82F6' }}>Refresh Stress</span> to replay
+          2008 / 2013 / 2018 / 2020 crises and hypothetical shocks against current holdings.
+        </div>
+      )}
+      {refresh.isError && (
+        <div style={{ color: '#EF4444', fontSize: 10, padding: '0 0 8px' }}>{(refresh.error as Error).message}</div>
+      )}
+
+      {hist.length > 0 && (
+        <>
+          <div style={{ color: '#64748B', fontSize: 10, letterSpacing: 1, marginBottom: 8 }}>
+            HISTORICAL REPLAY — actual holding returns over each crisis window
+          </div>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16 }}>
+            {hist.map(s => <ScenarioCard key={s.scenario} s={s} />)}
+          </div>
+        </>
+      )}
+      {hypo.length > 0 && (
+        <>
+          <div style={{ color: '#64748B', fontSize: 10, letterSpacing: 1, marginBottom: 8 }}>
+            HYPOTHETICAL SHOCKS — sector-level shock maps on current weights
+          </div>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            {hypo.map(s => <ScenarioCard key={s.scenario} s={s} />)}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+// ── Factor decomposition panel (Phase R2) ─────────────────────────────────────
+
+function FactorPanel() {
+  const qc = useQueryClient()
+
+  const { data, isLoading, error } = useQuery<FactorData>({
+    queryKey: ['portfolio_factors'],
+    queryFn: async () => {
+      const r = await fetch(`${API}/api/risk/factors`)
+      if (r.status === 404 || r.status === 422) throw new Error('NO_DATA')
+      if (!r.ok) throw new Error('Failed to load factor data')
+      return r.json()
+    },
+    staleTime: 5 * 60_000,
+    retry: false,
+    refetchOnWindowFocus: false,
+  })
+
+  const refresh = useMutation({
+    mutationFn: async () => {
+      const r = await fetch(`${API}/api/risk/factors/refresh`, { method: 'POST' })
+      if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'Factor refresh failed') }
+      return r.json()
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['portfolio_factors'] }),
+  })
+
+  const noData = (error as Error | null)?.message === 'NO_DATA'
+  const s      = data?.summary
+  const hasPortfolio = (s?.n_positions_modeled ?? 0) > 0
+  const exposures = (data?.exposures ?? [])
+    .slice()
+    .sort((a, b) => b.var_contribution_pct - a.var_contribution_pct)
+    .slice(0, 10)
+  const maxContrib = Math.max(...exposures.map(e => Math.abs(e.var_contribution_pct)), 1)
+
+  return (
+    <div style={{
+      background: '#141720', border: '1px solid #1E2332',
+      borderRadius: 6, padding: 16, marginBottom: 20,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, letterSpacing: 2 }}>
+          FACTOR DECOMPOSITION — SYSTEMATIC vs STOCK-SPECIFIC RISK
+          {s && <span style={{ color: '#475569', fontWeight: 400, marginLeft: 10, letterSpacing: 0 }}>
+            {s.universe_size}-stock model · R² {(s.mean_daily_r2 * 100).toFixed(0)}% · {s.run_date}
+          </span>}
+        </div>
+        <button
+          onClick={() => refresh.mutate()}
+          disabled={refresh.isPending}
+          style={{ ...ghostBtn, borderColor: '#3B82F6', color: refresh.isPending ? '#334155' : '#3B82F6' }}
+          title="Re-estimates the factor model over NIFTY 500 — takes up to a minute"
+        >
+          {refresh.isPending ? 'Estimating...' : 'Refresh Factors'}
+        </button>
+      </div>
+
+      {isLoading && <div style={{ color: '#64748B', fontSize: 11, padding: 12 }}>Loading factor model...</div>}
+      {noData && !isLoading && (
+        <div style={{ color: '#64748B', fontSize: 11, padding: 12 }}>
+          No factor model yet. Click <span style={{ color: '#3B82F6' }}>Refresh Factors</span> —
+          estimates sector + momentum/size/value factor returns over the NIFTY 500.
+        </div>
+      )}
+      {refresh.isError && (
+        <div style={{ color: '#EF4444', fontSize: 10, padding: '0 0 8px' }}>{(refresh.error as Error).message}</div>
+      )}
+
+      {s && !hasPortfolio && !isLoading && (
+        <div style={{ color: '#64748B', fontSize: 11, padding: 12 }}>
+          Factor model estimated ({s.universe_size} stocks), but no holdings could be mapped
+          into the factor universe yet.
+        </div>
+      )}
+
+      {s && hasPortfolio && (
+        <>
+          <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+            <SummaryCard
+              label="SYSTEMATIC SHARE"
+              value={`${(s.systematic_share_pct ?? 0).toFixed(0)}%`}
+              color={(s.systematic_share_pct ?? 0) > 85 ? '#3B82F6' : '#E2E8F0'}
+              sub="of portfolio variance from common factors"
+            />
+            <SummaryCard
+              label="SYSTEMATIC VOL"
+              value={`${(s.systematic_vol_pct ?? 0).toFixed(1)}%`}
+              sub="market/sector/style driven (annualized)"
+            />
+            <SummaryCard
+              label="STOCK-SPECIFIC VOL"
+              value={`${(s.idiosyncratic_vol_pct ?? 0).toFixed(1)}%`}
+              sub="diversifiable idiosyncratic risk"
+            />
+          </div>
+
+          <div style={{ color: '#64748B', fontSize: 10, letterSpacing: 1, marginBottom: 8 }}>
+            TOP FACTOR CONTRIBUTIONS TO PORTFOLIO VARIANCE
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            {exposures.map(e => (
+              <div key={e.factor}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, marginBottom: 3 }}>
+                  <span style={{ color: '#E2E8F0', fontWeight: 600 }}>
+                    {e.factor.replace(/_/g, ' ')}
+                    <span style={{
+                      marginLeft: 8, fontSize: 8, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
+                      color: e.factor_type === 'STYLE' ? '#9575CD' : '#3B82F6',
+                      border: `1px solid ${e.factor_type === 'STYLE' ? '#9575CD' : '#3B82F6'}44`,
+                    }}>{e.factor_type}</span>
+                  </span>
+                  <span style={{ color: '#64748B' }}>
+                    exposure {e.exposure.toFixed(2)} · {e.var_contribution_pct.toFixed(1)}% of variance
+                  </span>
+                </div>
+                <div style={{ height: 5, background: '#1E2332', borderRadius: 3 }}>
+                  <div style={{
+                    width: `${Math.min(Math.abs(e.var_contribution_pct) / maxContrib * 100, 100)}%`,
+                    height: 5, borderRadius: 3,
+                    background: e.factor_type === 'STYLE' ? '#9575CD' : '#3B82F6',
+                    transition: 'width 0.5s',
+                  }} />
+                </div>
+              </div>
+            ))}
+          </div>
         </>
       )}
     </div>
