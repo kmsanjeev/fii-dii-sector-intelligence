@@ -108,7 +108,9 @@ def verify_file_size(path: Path, min_bytes: int) -> None:
 
 def fetch_with_retry(fn, *args, max_retries: int = 3, base_delay: float = 3.0):
     """G-A-02: Retry with exponential backoff."""
-    logger.debug(f"[G-A-02] fetch_with_retry: fn={fn.__name__}, max_retries={max_retries}")
+    # Mocks, functools.partial and other callables may lack __name__
+    fn_name = getattr(fn, "__name__", repr(fn))
+    logger.debug(f"[G-A-02] fetch_with_retry: fn={fn_name}, max_retries={max_retries}")
     for attempt in range(max_retries):
         try:
             result = fn(*args)
@@ -120,7 +122,7 @@ def fetch_with_retry(fn, *args, max_retries: int = 3, base_delay: float = 3.0):
             if attempt < max_retries - 1:
                 time.sleep(wait)
     logger.error(f"[G-A-02] All {max_retries} attempts exhausted")
-    raise RuntimeError(f"All {max_retries} retry attempts failed for {fn.__name__}")
+    raise RuntimeError(f"All {max_retries} retry attempts failed for {fn_name}")
 
 
 def save_recovery_queue(failed_items: list, queue_path: Path) -> None:
@@ -592,8 +594,10 @@ def validate_shareholding_sum(
     quarter: str = "",
     tolerance: float = 1.0,
 ) -> bool:
-    """G-F-04: Return True if holdings sum within 100% ± tolerance."""
-    total = promoter + fii + dii + public + others
+    """G-F-04: Return True if holdings sum within 100% ± tolerance.
+    None components (common for 'others' in source data) are treated as 0."""
+    components = [promoter, fii, dii, public, others]
+    total = sum(0.0 if c is None else float(c) for c in components)
     logger.debug(f"[G-F-04] validate_shareholding_sum: symbol={symbol}, total={total:.2f}%")
     if not (100.0 - tolerance <= total <= 100.0 + tolerance):
         logger.error(f"[G-F-04] Shareholding sum anomaly: {symbol} {quarter} total={total:.2f}%")

@@ -83,7 +83,7 @@ class TestCorporateActionPriceDropEdgeCases:
         })
         result = flag_large_price_moves(df, threshold=0.40)
         assert "ca_review_flag" in result.columns
-        assert result.iloc[1]["ca_review_flag"] is True
+        assert bool(result.iloc[1]["ca_review_flag"]) is True
         logger.debug("[EC-PRICE-04] PASS — 10:1 split flagged for CA review")
 
     def test_1_to_1_bonus_flagged(self):
@@ -94,7 +94,7 @@ class TestCorporateActionPriceDropEdgeCases:
             "close": [800.0, 400.0],
         })
         result = flag_large_price_moves(df, threshold=0.40)
-        assert result.iloc[1]["ca_review_flag"] is True
+        assert bool(result.iloc[1]["ca_review_flag"]) is True
         logger.debug("[EC-PRICE-05] PASS — 1:1 bonus (50% drop) flagged")
 
     def test_dividend_small_drop_not_flagged(self):

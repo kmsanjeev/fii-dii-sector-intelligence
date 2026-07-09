@@ -41,7 +41,9 @@ class TestMergerDemergerEdgeCases:
         logger.debug("[EC-SYM-01] PASS — HDFC-HDFCBANK merger dedup: HDFCBANK retained")
 
     def test_reliance_power_spin_off(self):
-        """EDGE: Spin-off creates separate symbols with different ISINs — both ACTIVE."""
+        """EDGE: Spin-off creates separate securities with DIFFERENT ISINs — dedup
+        must NOT drop either row. G-S-05 only deduplicates within the same ISIN;
+        delisting status alone is not grounds for removal here."""
         logger.debug("[EC-SYM-02] test_reliance_power_spin_off")
         df = pd.DataFrame({
             "symbol": ["RELIANCE", "RPOWER"],
@@ -49,10 +51,10 @@ class TestMergerDemergerEdgeCases:
             "status": ["ACTIVE", "DELISTED"],
         })
         result = deduplicate_isin(df)
-        # RELIANCE should remain (ACTIVE), RPOWER should be dropped (DELISTED)
-        assert len(result) == 1
-        assert result.iloc[0]["symbol"] == "RELIANCE"
-        logger.debug("[EC-SYM-02] PASS — RPOWER (delisted) filtered out")
+        # Distinct ISINs = distinct securities: both rows retained
+        assert len(result) == 2
+        assert set(result["symbol"]) == {"RELIANCE", "RPOWER"}
+        logger.debug("[EC-SYM-02] PASS — both spin-off securities retained (no shared ISIN)")
 
     def test_symbol_rename_same_isin(self):
         """EDGE: Symbol renamed (e.g. BPCL → rebranded) — same ISIN, old symbol DELISTED."""

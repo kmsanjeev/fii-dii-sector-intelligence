@@ -84,7 +84,8 @@ class TestGuardOhlcConsistency:
         df = _make_ohlcv([("2024-01-15", 100, 90, 95, 92, 5000)])  # High < Low
         result = guard_ohlc_consistency(df)
         if "ohlc_valid" in result.columns:
-            assert result.iloc[0]["ohlc_valid"] is False
+            # bool() coercion: pandas returns np.bool_, identity check vs False fails
+            assert bool(result.iloc[0]["ohlc_valid"]) is False
         logger.debug("[G-P-02] PASS — High < Low flagged")
 
     def test_high_less_than_close_flagged(self, caplog):
@@ -105,8 +106,8 @@ class TestGuardOhlcConsistency:
         ])
         result = guard_ohlc_consistency(df)
         if "ohlc_valid" in result.columns:
-            assert result.iloc[0]["ohlc_valid"] is True
-            assert result.iloc[1]["ohlc_valid"] is False
+            assert bool(result.iloc[0]["ohlc_valid"]) is True
+            assert bool(result.iloc[1]["ohlc_valid"]) is False
         logger.debug("[G-P-02] PASS")
 
 
@@ -160,7 +161,7 @@ class TestFlagLargePriceMoves:
                            "close": [200.0, 100.0]})  # -50% (1:1 bonus)
         result = flag_large_price_moves(df, threshold=0.40)
         assert "ca_review_flag" in result.columns
-        assert result.iloc[1]["ca_review_flag"] is True
+        assert bool(result.iloc[1]["ca_review_flag"]) is True
         logger.debug("[G-P-04] PASS — 50% drop flagged")
 
     def test_split_like_move_flagged(self):
@@ -169,7 +170,7 @@ class TestFlagLargePriceMoves:
         df = pd.DataFrame({"date": ["2024-01-14", "2024-01-15"],
                            "close": [1000.0, 100.0]})  # 10:1 split
         result = flag_large_price_moves(df, threshold=0.40)
-        assert result.iloc[1]["ca_review_flag"] is True
+        assert bool(result.iloc[1]["ca_review_flag"]) is True
         logger.debug("[G-P-04] PASS")
 
     def test_no_ca_flag_column_for_normal_moves(self):

@@ -151,7 +151,11 @@ def log_test_boundaries(request, test_logger):
 
 @pytest.fixture
 def mock_env_vars(monkeypatch):
-    """Inject required platform env vars for tests that need them."""
+    """Inject required platform env vars for tests that need them.
+    TEST_-prefixed vars are the documented fixture contract (tests/CLAUDE.md);
+    platform-named vars kept for tests exercising real var names."""
+    monkeypatch.setenv("TEST_TELEGRAM_TOKEN", "1234567890:AAAA-test-token")
+    monkeypatch.setenv("TEST_GOOGLE_CREDS", '{"type":"service_account"}')
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "1234567890:AAAA-test-token")
     monkeypatch.setenv("TELEGRAM_CHAT_ID", "-100123456789")
     monkeypatch.setenv("GOOGLE_CREDENTIALS", '{"type":"service_account"}')

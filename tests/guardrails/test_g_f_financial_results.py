@@ -75,9 +75,9 @@ class TestValidatePlSanity:
         logger.debug("[G-F-02] PASS — 100% PAT margin passes")
 
     def test_pat_exceeds_150pct_raises(self):
-        """GUARD: PAT > 1.5x Revenue → ValueError."""
+        """GUARD: PAT > 1.5x Revenue → ValueError (message: 'likely data error')."""
         logger.debug("[G-F-02] test_pat_exceeds_150pct_raises")
-        with pytest.raises(ValueError, match="P&L sanity"):
+        with pytest.raises(ValueError, match="likely data error"):
             validate_pl_sanity(revenue=100.0, pat=200.0, symbol="TEST", quarter="Q1FY25")
         logger.debug("[G-F-02] PASS — PAT > 1.5x Revenue raises ValueError")
 
@@ -158,31 +158,34 @@ class TestValidateShareholdingSum:
         )
         logger.debug("[G-F-04] PASS — 100.5% within tolerance")
 
-    def test_large_deviation_raises(self):
-        """GUARD: Sum = 90% → ValueError."""
-        logger.debug("[G-F-04] test_large_deviation_raises")
-        with pytest.raises(ValueError, match="shareholding sum"):
-            validate_shareholding_sum(
-                promoter=40.0, fii=20.0, dii=10.0, public=20.0, others=0.0,
-                symbol="TEST", quarter="Q1FY25"
-            )  # sum = 90%
-        logger.debug("[G-F-04] PASS — 90% sum raises ValueError")
+    def test_large_deviation_returns_false(self):
+        """GUARD: Sum = 90% → returns False + error logged (G-F-04 spec: log, not raise)."""
+        logger.debug("[G-F-04] test_large_deviation_returns_false")
+        result = validate_shareholding_sum(
+            promoter=40.0, fii=20.0, dii=10.0, public=20.0, others=0.0,
+            symbol="TEST", quarter="Q1FY25"
+        )  # sum = 90%
+        assert result is False
+        logger.debug("[G-F-04] PASS — 90% sum returns False")
 
-    def test_sum_over_101pct_raises(self):
-        """GUARD: Sum = 102% → ValueError."""
-        logger.debug("[G-F-04] test_sum_over_101pct_raises")
-        with pytest.raises(ValueError, match="shareholding sum"):
-            validate_shareholding_sum(
+    def test_sum_over_101pct_returns_false(self, caplog):
+        """GUARD: Sum = 102% → returns False + anomaly logged at ERROR."""
+        logger.debug("[G-F-04] test_sum_over_101pct_returns_false")
+        with caplog.at_level(logging.ERROR, logger="engines.common.guardrails"):
+            result = validate_shareholding_sum(
                 promoter=60.0, fii=20.0, dii=12.0, public=10.0, others=0.0,
                 symbol="TEST", quarter="Q1FY25"
             )  # sum = 102%
-        logger.debug("[G-F-04] PASS — 102% sum raises ValueError")
+        assert result is False
+        assert any("Shareholding sum anomaly" in r.message for r in caplog.records)
+        logger.debug("[G-F-04] PASS — 102% sum returns False with ERROR log")
 
     def test_others_column_handles_none(self):
-        """EDGE: others=None (often missing in source) → treated as 0."""
+        """EDGE: others=None (often missing in source) → treated as 0, sum=100 → True."""
         logger.debug("[G-F-04] test_others_column_handles_none")
-        validate_shareholding_sum(
+        result = validate_shareholding_sum(
             promoter=55.0, fii=15.0, dii=10.0, public=20.0, others=None,
             symbol="TCS", quarter="Q2FY25"
         )
+        assert result is True
         logger.debug("[G-F-04] PASS — None others handled as 0")

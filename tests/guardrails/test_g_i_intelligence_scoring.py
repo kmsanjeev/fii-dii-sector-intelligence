@@ -74,38 +74,38 @@ class TestCheckDataCoverage:
     """G-I-02: Minimum 80% data coverage required to generate scores."""
 
     def test_full_coverage_passes(self):
-        """HAPPY PATH: 252 actual / 252 expected → 100% coverage."""
+        """HAPPY PATH: 252 actual / 252 expected → 100% coverage → RELIABLE."""
         logger.debug("[G-I-02] test_full_coverage_passes")
-        result = check_data_coverage(actual=252, expected=252, symbol="TCS", min_coverage=0.80)
-        assert result is True
+        result = check_data_coverage(actual_count=252, expected_count=252, symbol="TCS", min_coverage=0.80)
+        assert result == "RELIABLE"
         logger.debug("[G-I-02] PASS")
 
     def test_exactly_80pct_passes(self):
-        """EDGE: Exactly 80% coverage → passes (boundary inclusive)."""
+        """EDGE: Exactly 80% coverage → RELIABLE (boundary inclusive per G-I-02 spec)."""
         logger.debug("[G-I-02] test_exactly_80pct_passes")
-        result = check_data_coverage(actual=80, expected=100, symbol="TCS", min_coverage=0.80)
-        assert result is True
+        result = check_data_coverage(actual_count=80, expected_count=100, symbol="TCS", min_coverage=0.80)
+        assert result == "RELIABLE"
         logger.debug("[G-I-02] PASS — 80% boundary is inclusive")
 
     def test_79pct_coverage_fails(self):
-        """GUARD: 79% coverage → below minimum → returns False."""
+        """GUARD: 79% coverage → below minimum → UNRELIABLE."""
         logger.debug("[G-I-02] test_79pct_coverage_fails")
-        result = check_data_coverage(actual=79, expected=100, symbol="TCS", min_coverage=0.80)
-        assert result is False
+        result = check_data_coverage(actual_count=79, expected_count=100, symbol="TCS", min_coverage=0.80)
+        assert result == "UNRELIABLE"
         logger.debug("[G-I-02] PASS — 79% is below minimum")
 
     def test_partial_coverage_with_real_numbers(self):
-        """REAL CASE: 198/252 trading days present → 78.6% coverage → insufficient."""
+        """REAL CASE: 198/252 trading days present → 78.6% coverage → UNRELIABLE."""
         logger.debug("[G-I-02] test_partial_coverage_with_real_numbers")
-        result = check_data_coverage(actual=198, expected=252, symbol="TCS", min_coverage=0.80)
-        assert result is False
+        result = check_data_coverage(actual_count=198, expected_count=252, symbol="TCS", min_coverage=0.80)
+        assert result == "UNRELIABLE"
         logger.debug(f"[G-I-02] PASS — 198/252 = {198/252:.1%} < 80%")
 
     def test_custom_coverage_threshold(self):
-        """CONFIG: Custom 90% threshold → 85% fails."""
+        """CONFIG: Custom 90% threshold → 85% → UNRELIABLE."""
         logger.debug("[G-I-02] test_custom_coverage_threshold")
-        result = check_data_coverage(actual=85, expected=100, symbol="TCS", min_coverage=0.90)
-        assert result is False
+        result = check_data_coverage(actual_count=85, expected_count=100, symbol="TCS", min_coverage=0.90)
+        assert result == "UNRELIABLE"
         logger.debug("[G-I-02] PASS — 85% fails at 90% threshold")
 
 
@@ -157,30 +157,30 @@ class TestEnforceScoreRange:
 class TestCheckScoreStaleness:
     """G-I-05: Score must not be based on data older than 5 trading days."""
 
-    def test_fresh_data_returns_true(self):
-        """HAPPY PATH: 2 day lag → data is fresh."""
-        logger.debug("[G-I-05] test_fresh_data_returns_true")
+    def test_fresh_data_not_stale(self):
+        """HAPPY PATH: 2 day lag → data is fresh → is_stale False (G-I-05: True means STALE)."""
+        logger.debug("[G-I-05] test_fresh_data_not_stale")
         result = check_score_staleness(source_lag_days=2, max_lag=5)
-        assert result is True
-        logger.debug("[G-I-05] PASS")
-
-    def test_stale_data_returns_false(self):
-        """GUARD: 8 day lag → score is stale."""
-        logger.debug("[G-I-05] test_stale_data_returns_false")
-        result = check_score_staleness(source_lag_days=8, max_lag=5)
         assert result is False
         logger.debug("[G-I-05] PASS")
 
+    def test_stale_data_returns_true(self):
+        """GUARD: 8 day lag → score is stale → is_stale True."""
+        logger.debug("[G-I-05] test_stale_data_returns_true")
+        result = check_score_staleness(source_lag_days=8, max_lag=5)
+        assert result is True
+        logger.debug("[G-I-05] PASS")
+
     def test_exactly_at_max_lag_is_fresh(self):
-        """EDGE: lag == max_lag (5 days) → still fresh."""
+        """EDGE: lag == max_lag (5 days) → still fresh → is_stale False."""
         logger.debug("[G-I-05] test_exactly_at_max_lag_is_fresh")
         result = check_score_staleness(source_lag_days=5, max_lag=5)
-        assert result is True
+        assert result is False
         logger.debug("[G-I-05] PASS — 5 days at boundary is fresh")
 
     def test_zero_lag_is_fresh(self):
-        """EDGE: 0 day lag → real-time data, definitely fresh."""
+        """EDGE: 0 day lag → real-time data, definitely fresh → is_stale False."""
         logger.debug("[G-I-05] test_zero_lag_is_fresh")
         result = check_score_staleness(source_lag_days=0, max_lag=5)
-        assert result is True
+        assert result is False
         logger.debug("[G-I-05] PASS")
