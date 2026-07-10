@@ -889,6 +889,13 @@ export function ChatPage() {
   }, [loading, backendSid, speak, logTurn, speakReplies, currentId])
 
   // ── Voice: push-to-talk capture ──────────────────────────────────────────────
+  // V3.1: continuous capture with OUR OWN silence endpointing. The browser's
+  // non-continuous mode ends at the first short pause, which cut users off
+  // mid-statement (reported 2026-07-11). Now: keep listening, and only finish
+  // after SILENCE_MS of quiet (or the hard cap).
+  const SILENCE_MS = 2000
+  const MAX_CAPTURE_MS = 20000
+
   const startListening = useCallback(() => {
     if (listening) { recogRef.current?.stop(); return }
     const recog = getSpeechRecognition()
@@ -899,23 +906,35 @@ export function ChatPage() {
     stopSpeaking()
     const langMeta = VOICE_LANGS.find(l => l.code === voiceLang) ?? VOICE_LANGS[0]
     recog.lang = langMeta.sttLang
-    recog.continuous = false
+    recog.continuous = true          // we decide when the user is done, not Chrome
     recog.interimResults = true
     recogRef.current = recog
     setListening(true)
 
     let finalText = ''
+    let silenceTimer: ReturnType<typeof setTimeout> | null = null
+    const armSilence = () => {
+      if (silenceTimer) clearTimeout(silenceTimer)
+      silenceTimer = setTimeout(() => { try { recog.stop() } catch { /* ignore */ } }, SILENCE_MS)
+    }
+    armSilence()   // covers the user never speaking at all
+    const hardCap = setTimeout(() => { try { recog.stop() } catch { /* ignore */ } }, MAX_CAPTURE_MS)
+
     recog.onresult = (e) => {
       let interim = ''
+      finalText = ''
       for (let i = 0; i < e.results.length; i++) {
         const res = e.results[i]
-        if (res.isFinal) finalText += res[0].transcript
+        if (res.isFinal) finalText += res[0].transcript + ' '
         else interim += res[0].transcript
       }
-      setInput(finalText || interim)   // live transcript in the input box
+      setInput((finalText + interim).trim())   // live transcript in the input box
+      armSilence()   // every sound resets the done-talking timer
     }
     recog.onerror = () => { setListening(false) }
     recog.onend = () => {
+      if (silenceTimer) clearTimeout(silenceTimer)
+      clearTimeout(hardCap)
       setListening(false)
       const spoken = finalText.trim()
       if (!spoken) return
@@ -987,9 +1006,24 @@ export function ChatPage() {
       // Chrome times continuous sessions out -- restart unless we woke or unmounted
       if (!matched && !disposed) setTimeout(() => setWakeRetry(n => n + 1), 500)
     }
-    try { recog.start() } catch { /* mic busy -- retry on next state change */ }
 
-    return () => { disposed = true; try { recog.abort() } catch { /* ignore */ } }
+    // V3.1 fix for "Veda stops responding after one reply": right after a
+    // command capture ends, the mic is still being released -- an immediate
+    // start() throws InvalidStateError, and the old code swallowed it with
+    // NO retry, leaving the wake listener permanently dead. Now we start
+    // after a short delay and schedule a retry if start still throws.
+    const startTimer = setTimeout(() => {
+      if (disposed) return
+      try { recog.start() } catch {
+        if (!disposed) setTimeout(() => setWakeRetry(n => n + 1), 800)
+      }
+    }, 350)
+
+    return () => {
+      disposed = true
+      clearTimeout(startTimer)
+      try { recog.abort() } catch { /* ignore */ }
+    }
   }, [wakeEnabled, listening, loading, voiceLang, wakeRetry, startListening, stopSpeaking])
 
   // ── Input handling ────────────────────────────────────────────────────────────

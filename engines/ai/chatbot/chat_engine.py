@@ -179,14 +179,24 @@ class ChatEngine:
             timeout=60.0,
         )
 
-    # Voice-mode addendum (Phase V2): the user HEARS the reply via TTS
+    # Voice-mode addendum (Phase V2, rewritten V3.1 after user feedback that
+    # replies sounded machine-like): the user HEARS the reply via TTS.
     _VOICE_ADDENDUM = (
-        "\n\nVOICE MODE: The user asked by voice and will HEAR your reply read "
-        "aloud. Reply in the same language the user spoke (Hindi in Devanagari "
-        "if they spoke Hindi). Lead with the direct answer in 2-4 short, "
-        "natural spoken sentences. Never rely on tables or formatting to carry "
-        "the key point -- if detail needs a table, first summarise it in "
-        "speech-friendly sentences, then add the table below for the chat."
+        "\n\nVOICE MODE -- you are Veda, speaking out loud to the user. "
+        "Talk like a sharp, friendly human analyst chatting with a colleague, "
+        "not like a report. Rules for the spoken part:\n"
+        "- Match the user's language and mixing style exactly: pure Hindi -> "
+        "Devanagari Hindi; Hinglish -> natural Hinglish; English -> English.\n"
+        "- Sound conversational: short sentences, natural connectors "
+        "('dekhiye', 'abhi', 'lekin', 'so', 'basically'), a direct opinion "
+        "where the data supports one. It is fine to start with the answer.\n"
+        "- Round numbers the way people speak them: say 'karib pandrah percent' "
+        "or 'around 15 percent', never '-15.0032'. Two or three numbers "
+        "maximum in speech -- pick the ones that matter.\n"
+        "- No headers, no bullet lists, no asterisks, no table talk in the "
+        "spoken lead. If detail truly needs a table, first give the takeaway "
+        "in one or two spoken lines, then add the table below for the chat.\n"
+        "- Keep the spoken lead to 3-5 sentences. Detail can follow after."
     )
 
     def chat(self, user_message: str, voice_mode: bool = False) -> str:

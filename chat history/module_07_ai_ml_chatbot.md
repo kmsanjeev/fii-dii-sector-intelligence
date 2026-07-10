@@ -207,3 +207,29 @@ in depth). 5 unit cases + live retest green.
   both engine and live formats; hidden when no turns).
 - openWakeWord evaluation CLOSED as deferred (rationale in VOICE_PLATFORM.md).
 - VOICE PLATFORM V1+V2+V3 COMPLETE.
+
+---
+
+## Session 2026-07-11 — V3.1: field-reported voice bug fixes
+
+User reported after real use: (1) Veda dead after one response despite wake
+attempts; (2) cut off mid-statement, responds to partial; (3) robotic tone.
+
+**Root causes + fixes:**
+1. WAKE DEATH: after command capture the mic is still releasing; the wake
+   effect called recog.start() immediately -> InvalidStateError swallowed by
+   an empty catch WITH NO RETRY -> listener permanently dead. Fix: start
+   after 350ms delay; on throw schedule wakeRetry bump (800ms).
+2. MID-STATEMENT CUTOFF: command capture used continuous=false -- Chrome
+   endpoints at the FIRST short pause. Fix: continuous=true + own silence
+   endpointing (2.0s quiet = done) + 20s hard cap; finalText rebuilt from
+   all results each event.
+3. ROBOTIC TONE: three levers --
+   a. TTS_RATE -5% (droning) -> +8% conversational pace
+   b. en voice -> en-IN-NeerjaExpressiveNeural (expressive variant found via
+      edge-tts list_voices; hi has only Swara female)
+   c. _VOICE_ADDENDUM rewritten: talk like a friendly analyst colleague,
+      match language mixing (Hinglish), natural connectors, ROUND numbers
+      as spoken, max 2-3 numbers, no headers/bullets in the spoken lead.
+   Live-verified: reply now opens 'Dekhiye, market regime abhi NEUTRAL
+   mein hai. FIIs toh thode negative hain, lekin DIIs strong buying...'

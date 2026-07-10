@@ -39,8 +39,9 @@ router = APIRouter(prefix="/api/voice", tags=["voice"])
 # ── Voice casting ─────────────────────────────────────────────────────────────
 
 VOICES: dict[str, dict] = {
-    "hi": {"voice": "hi-IN-SwaraNeural",    "label": "Swara (Hindi)"},
-    "en": {"voice": "en-IN-NeerjaNeural",   "label": "Neerja (Indian English)"},
+    "hi": {"voice": "hi-IN-SwaraNeural",             "label": "Swara (Hindi)"},
+    # Expressive variant discovered 2026-07-11 -- noticeably more natural
+    "en": {"voice": "en-IN-NeerjaExpressiveNeural",  "label": "Neerja Expressive (Indian English)"},
     "ta": {"voice": "ta-IN-PallaviNeural",  "label": "Pallavi (Tamil)"},
     "te": {"voice": "te-IN-ShrutiNeural",   "label": "Shruti (Telugu)"},
     "bn": {"voice": "bn-IN-TanishaaNeural", "label": "Tanishaa (Bengali)"},
@@ -48,7 +49,9 @@ VOICES: dict[str, dict] = {
     "gu": {"voice": "gu-IN-DhwaniNeural",   "label": "Dhwani (Gujarati)"},
 }
 DEFAULT_LANG = "hi"          # per user decision 2026-07-10
-TTS_RATE     = "-5%"         # slightly slower = precise, confident delivery
+# +8%: conversational pace. The original -5% made delivery drone-like
+# (user feedback 2026-07-11: "easily identifiable as machine talking")
+TTS_RATE     = "+8%"
 MAX_TTS_CHARS = 900          # spoken summary cap -- long tables live in the chat
 
 # Small in-memory audio cache (greetings + repeated phrases play instantly)
