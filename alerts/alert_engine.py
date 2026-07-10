@@ -60,6 +60,7 @@ P8_ANNOUNCEMENT_MOMENTUM  = "ANNOUNCEMENT_MOMENTUM"
 P9_TRADE_CONVICTION       = "TRADE_CONVICTION"
 P10_OI_SIGNAL_FLIP        = "OI_SIGNAL_FLIP"
 P11_THEME_ROTATION        = "THEME_ROTATION"
+P12_BULL_CYCLE            = "BULL_CYCLE"
 
 PRIORITY_ORDER = [
     P1_REGIME_CHANGE,
@@ -73,6 +74,7 @@ PRIORITY_ORDER = [
     P9_TRADE_CONVICTION,
     P10_OI_SIGNAL_FLIP,
     P11_THEME_ROTATION,
+    P12_BULL_CYCLE,
 ]
 
 THEME_MOMENTUM_PATH = cfg.INTELLIGENCE_DIR / "theme_momentum.csv"
@@ -127,8 +129,58 @@ class AlertEngine:
         alerts.extend(self._check_trade_conviction())
         alerts.extend(self._check_oi_signal_flip())
         alerts.extend(self._check_theme_rotation())
+        alerts.extend(self._check_bull_cycle())
 
         logger.info(f"[AlertEngine] Generated {len(alerts)} raw alerts")
+        return alerts
+
+    # ── P12: Bull Cycle Imminent (Phase SA-1) ────────────────────────────────
+    # Precision detector for stocks positioned to start their bull cycle:
+    # HIGH conviction tier (efficacy-weighted, liquidity-gated) + uptrend +
+    # within 12% of the 52-week high (the platform's strongest measured
+    # factor: IC +0.02, positive in 62% of months) + ML model agreement.
+
+    def _check_bull_cycle(self) -> list["Alert"]:
+        path = cfg.INTELLIGENCE_DIR / "conviction_screener.csv"
+        if not path.exists():
+            return []
+        df = pd.read_csv(path)
+        if df.empty:
+            return []
+
+        for c in ("conviction", "prox_52w_high_pct", "ml_bull_run_score"):
+            df[c] = pd.to_numeric(df[c], errors="coerce")
+
+        cand = df[
+            (df["tier"] == "HIGH")
+            & (df["trend_signal"].isin(["UPTREND", "STRONG_UPTREND"]))
+            & (df["prox_52w_high_pct"].between(-12.0, 0.0))
+            & (df["ml_bull_run_score"] >= 60)
+        ].sort_values("conviction", ascending=False).head(5)
+
+        alerts: list[Alert] = []
+        for _, r in cand.iterrows():
+            alerts.append(Alert(
+                alert_type=P12_BULL_CYCLE,
+                priority=2,
+                symbol=str(r["symbol"]),
+                title=f"BULL CYCLE SETUP: {r['symbol']}",
+                body=(
+                    f"{r['symbol']} ({r.get('sector','')}) @ {r.get('close','')}\n"
+                    f"Conviction {r['conviction']:.0f}/100 (HIGH tier, efficacy-weighted)\n"
+                    f"Within {abs(r['prox_52w_high_pct']):.1f}% of 52-week high | "
+                    f"{str(r['trend_signal']).replace('_',' ').lower()} | "
+                    f"ML {r['ml_bull_run_score']:.0f}\n"
+                    f"Evidence: {r.get('supporting_evidence','')}\n"
+                    f"Risk: {r.get('primary_risk','')}\n"
+                    f"Liquidity: {r.get('adv_20d_cr','')} cr/day (TWAP-safe)"
+                ),
+                score=float(r["conviction"]),
+                data_date=str(r.get("as_of_date", "")),
+            ))
+        if alerts:
+            logger.info(f"[AlertEngine] P12 bull cycle setups: "
+                        f"{[a.symbol for a in alerts]}")
         return alerts
 
     # ── P1: Regime Change ─────────────────────────────────────────────────────

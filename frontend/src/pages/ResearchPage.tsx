@@ -856,9 +856,133 @@ function NotesTab() {
   )
 }
 
+// ── Conviction Tab (Phase SA-1) ───────────────────────────────────────────────
+
+type ConvictionRow = {
+  rank: number; symbol: string; sector: string; close: number
+  conviction: number; tier: string
+  supporting_evidence: string; primary_risk: string
+  bull_run_score: number; ml_bull_run_score: number | null
+  prox_52w_high_pct: number; trend_signal: string
+  adv_20d_cr: number; regime: string; as_of_date: string
+}
+
+function ConvictionTab() {
+  const [tier, setTier] = useState<'HIGH' | 'MEDIUM' | 'ALL'>('HIGH')
+  const qc = useQueryClient()
+
+  const { data, isLoading, error } = useQuery<{ candidates: ConvictionRow[]; regime: string; as_of: string }>({
+    queryKey: ['conviction', tier],
+    queryFn: async () => {
+      const url = tier === 'ALL' ? '/api/research/conviction?limit=100'
+        : `/api/research/conviction?tier=${tier}&limit=100`
+      const r = await fetch(url)
+      if (r.status === 404) throw new Error('NO_DATA')
+      if (!r.ok) throw new Error('Failed to load conviction screen')
+      return r.json()
+    },
+    staleTime: 5 * 60_000, retry: false, refetchOnWindowFocus: false,
+  })
+
+  const refresh = useMutation({
+    mutationFn: async () => {
+      const r = await fetch('/api/research/conviction/refresh', { method: 'POST' })
+      if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'Refresh failed') }
+      return r.json()
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['conviction'] }),
+  })
+
+  const rows = data?.candidates ?? []
+  const noData = (error as Error | null)?.message === 'NO_DATA'
+  const th: React.CSSProperties = { padding: '6px 8px', textAlign: 'left', color: '#64748B', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap' }
+  const td: React.CSSProperties = { padding: '7px 8px', fontSize: 11 }
+  const tierColor = (t: string) => t === 'HIGH' ? '#22C55E' : t === 'MEDIUM' ? '#F59E0B' : '#64748B'
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
+        <span style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, letterSpacing: 1 }}>
+          HIGH-CONVICTION INVESTMENT CANDIDATES
+        </span>
+        <span style={{ color: '#475569', fontSize: 10 }}>
+          efficacy-weighted composite · liquidity-gated (1cr+/day) · regime {data?.regime ?? '--'} · {data?.as_of ?? ''}
+        </span>
+        <div style={{ flex: 1 }} />
+        {(['HIGH', 'MEDIUM', 'ALL'] as const).map(t => (
+          <button key={t} onClick={() => setTier(t)} style={{
+            padding: '3px 12px', borderRadius: 4, fontSize: 10, cursor: 'pointer', fontWeight: tier === t ? 700 : 400,
+            border: `1px solid ${tier === t ? '#22C55E' : '#1E2332'}`,
+            background: tier === t ? '#22C55E18' : 'transparent',
+            color: tier === t ? '#22C55E' : '#64748B',
+          }}>{t}</button>
+        ))}
+        <button onClick={() => refresh.mutate()} disabled={refresh.isPending} style={{
+          padding: '3px 12px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
+          border: '1px solid #3B82F6', background: 'transparent',
+          color: refresh.isPending ? '#334155' : '#3B82F6',
+        }}>{refresh.isPending ? 'Computing...' : 'Refresh'}</button>
+      </div>
+
+      {isLoading && <div style={{ color: '#64748B', fontSize: 12, padding: 30, textAlign: 'center' }}>Loading...</div>}
+      {noData && <div style={{ color: '#64748B', fontSize: 12, padding: 30, textAlign: 'center' }}>
+        No conviction screen yet — click Refresh to compute it.</div>}
+      {refresh.isError && <div style={{ color: '#EF4444', fontSize: 11, marginBottom: 8 }}>{(refresh.error as Error).message}</div>}
+
+      {rows.length > 0 && (
+        <div style={{ background: '#141720', border: '1px solid #1E2332', borderRadius: 6, overflow: 'hidden' }}>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1100 }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid #1E2332' }}>
+                  <th style={th}>#</th><th style={th}>Symbol</th><th style={th}>Sector</th>
+                  <th style={{ ...th, textAlign: 'right' }}>Close</th>
+                  <th style={{ ...th, textAlign: 'right' }}>Conviction</th>
+                  <th style={th}>Tier</th>
+                  <th style={{ ...th, textAlign: 'right' }}>vs 52wH</th>
+                  <th style={{ ...th, textAlign: 'right' }}>ADV (cr)</th>
+                  <th style={th}>Evidence</th><th style={th}>Primary Risk</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map(r => (
+                  <tr key={r.symbol} style={{ borderBottom: '1px solid #1E233230' }}>
+                    <td style={{ ...td, color: '#475569' }}>{r.rank}</td>
+                    <td style={{ ...td, fontWeight: 700 }}>
+                      <a href={`/stocks/${r.symbol}`} style={{ color: '#E2E8F0', textDecoration: 'none' }}>{r.symbol}</a>
+                    </td>
+                    <td style={{ ...td, color: '#64748B', fontSize: 10 }}>{r.sector}</td>
+                    <td style={{ ...td, textAlign: 'right', color: '#94A3B8' }}>{r.close?.toFixed(2)}</td>
+                    <td style={{ ...td, textAlign: 'right', fontWeight: 700, color: tierColor(r.tier) }}>{r.conviction?.toFixed(1)}</td>
+                    <td style={td}><span style={{
+                      fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 3,
+                      color: tierColor(r.tier), border: `1px solid ${tierColor(r.tier)}44`,
+                      background: tierColor(r.tier) + '15',
+                    }}>{r.tier}</span></td>
+                    <td style={{ ...td, textAlign: 'right', color: r.prox_52w_high_pct > -5 ? '#22C55E' : '#94A3B8' }}>
+                      {r.prox_52w_high_pct?.toFixed(1)}%</td>
+                    <td style={{ ...td, textAlign: 'right', color: '#64748B' }}>{r.adv_20d_cr?.toFixed(0)}</td>
+                    <td style={{ ...td, color: '#94A3B8', fontSize: 10, maxWidth: 320 }}>{r.supporting_evidence}</td>
+                    <td style={{ ...td, color: r.primary_risk?.startsWith('none') ? '#475569' : '#F59E0B', fontSize: 10, maxWidth: 240 }}>
+                      {r.primary_risk}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+      <div style={{ color: '#475569', fontSize: 9, marginTop: 8 }}>
+        Weights derive from measured signal efficacy (Information Coefficient on 3 years of point-in-time
+        NIFTY 500 data). No score predicts with certainty — position size and stop-losses matter more than any list.
+      </div>
+    </div>
+  )
+}
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
-type Tab = 'screener' | 'compare' | 'notes'
+type Tab = 'screener' | 'conviction' | 'compare' | 'notes'
 
 export function ResearchPage() {
   const [tab, setTab] = useState<Tab>('screener')
@@ -883,9 +1007,10 @@ export function ResearchPage() {
       </div>
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        <TabBtn label="Screener" active={tab === 'screener'} onClick={() => setTab('screener')} />
-        <TabBtn label="Compare"  active={tab === 'compare'}  onClick={() => setTab('compare')}  />
-        <TabBtn label="Notes"    active={tab === 'notes'}    onClick={() => setTab('notes')}    />
+        <TabBtn label="Screener"   active={tab === 'screener'}   onClick={() => setTab('screener')} />
+        <TabBtn label="Conviction" active={tab === 'conviction'} onClick={() => setTab('conviction')} />
+        <TabBtn label="Compare"    active={tab === 'compare'}    onClick={() => setTab('compare')}  />
+        <TabBtn label="Notes"      active={tab === 'notes'}      onClick={() => setTab('notes')}    />
       </div>
 
       {isLoading && tab === 'screener' && (
@@ -899,9 +1024,10 @@ export function ResearchPage() {
         </div>
       )}
 
-      {tab === 'screener' && stats && <ScreenerTab stats={stats} />}
-      {tab === 'compare'  && <CompareTab />}
-      {tab === 'notes'    && <NotesTab />}
+      {tab === 'screener'   && stats && <ScreenerTab stats={stats} />}
+      {tab === 'conviction' && <ConvictionTab />}
+      {tab === 'compare'    && <CompareTab />}
+      {tab === 'notes'      && <NotesTab />}
     </div>
   )
 }

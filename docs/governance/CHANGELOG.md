@@ -6,6 +6,74 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.34.0
+
+Phase SA-1 -- Signal Accuracy & High-Conviction Platform
+
+Date: 2026-07-10
+
+Status: Completed
+
+---
+
+## Summary
+
+The institutional accuracy layer the platform was missing: every signal now
+gets a measured report card (Information Coefficient, decile spread, hit
+rate) on point-in-time data; a new investment screener weights factors by
+that evidence and gates on liquidity; a new P12 alert fires on stocks
+positioned to start their bull cycle. Daily score snapshots make every
+platform signal measurable going forward.
+
+## Key Finding (from the new measurement layer)
+
+On 3 years of point-in-time NIFTY 500 data: raw 30/90d momentum had
+slightly NEGATIVE mean IC (reversal-dominated window) while proximity to
+the 52-week high was the only consistently positive factor (IC +0.022 at
+90d, positive in 62.5% of months) and DMA-trend had the best decile spread
+at 90d (+2.31%). The conviction screener weights accordingly.
+
+## New Engines
+
+- engines/research/signal_efficacy_engine.py: monthly point-in-time factor
+  reconstruction over 36 months (momentum, 52w-high proximity, DMA trend,
+  volume surge) -> forward 30/60/90d returns -> IC / decile spread / hit
+  rate per factor x horizon. Unmeasurable platform signals honestly listed
+  UNMEASURED until history accumulates. Output: signal_efficacy.csv
+- engines/research/score_snapshot_engine.py: appends 17 score columns per
+  symbol per day to history/scores_history.parquet (2,735 symbols/day) --
+  closes the platform's biggest accuracy blind spot permanently
+- engines/research/conviction_screener_engine.py: efficacy-weighted
+  composite (measured factors weighted by IC+spread, floor for negative
+  evidence, capped priors for unmeasured signals) x regime multiplier;
+  HARD GATES: 20d ADV >= 1 cr/day, price >= 20, coverage, not AVOID;
+  per-stock supporting evidence + primary risk (both sides always);
+  HIGH/MEDIUM/WATCH tiers. Output: conviction_screener.csv (1,572
+  investable candidates, 163 HIGH)
+
+## New Alert
+
+- P12_BULL_CYCLE: HIGH tier + uptrend + within 12% of 52w high (the
+  strongest measured factor) + ML >= 60 -> top 5 by conviction, 72h
+  cooldown, evidence + risk + liquidity in the message body
+
+## API + GUI
+
+- GET /api/research/conviction (+ /refresh POST), GET /api/research/efficacy
+- ResearchPage: new Conviction tab -- tier filter, evidence/risk columns,
+  52wH proximity highlighting, honest footer (no certainty claims)
+
+## Pipeline
+
+- Stages SA1_score_snapshot + SA1_conviction_screener after R4_tca
+
+## Fixed During Build
+
+- prox_52w_high units: technical_indicators stores PERCENT (-32.26), not
+  fraction -- screener evidence thresholds and output corrected
+
+---
+
 # Version 4.33.0
 
 Phase KU-3 -- Kundli Depth Rework (personalisation, honesty, de-duplication)

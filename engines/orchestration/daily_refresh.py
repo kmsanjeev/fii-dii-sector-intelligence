@@ -96,6 +96,10 @@ STAGES = [
     ("R3_monte_carlo",              "engines.risk.monte_carlo_engine",                       "Monte Carlo VaR (100k paths)",         120),
     # Transaction Cost Analysis (Phase R4; benchmarks every filled order)
     ("R4_tca",                      "engines.execution.tca_engine",                          "TCA (execution slippage)",              60),
+    # Score snapshot retention (Phase SA-1; point-in-time archive for efficacy)
+    ("SA1_score_snapshot",          "engines.research.score_snapshot_engine",                "Score Snapshot (history archive)",      60),
+    # High-conviction investment screener (Phase SA-1; efficacy-weighted)
+    ("SA1_conviction_screener",     "engines.research.conviction_screener_engine",           "Conviction Screener (invest list)",     60),
     # Alerts — always last, fires on fully-refreshed intelligence
     ("9_alert_engine",              "alerts.alert_engine",                                   "Alert Engine (Telegram push)",          60),
 ]
@@ -117,6 +121,7 @@ STAGE_SECTIONS = {
                                 "13A_document_builder", "13B_faiss_indexer", "13C_bm25_indexer",
                                 "20_portfolio", "R1_portfolio_risk", "R2a_stress_test",
                                 "R2b_factor_model", "R3_monte_carlo", "R4_tca",
+                                "SA1_score_snapshot", "SA1_conviction_screener",
                                 "9_alert_engine"],
 }
 

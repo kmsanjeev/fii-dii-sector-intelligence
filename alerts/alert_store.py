@@ -34,6 +34,7 @@ COOLDOWN_HOURS = {
     "ANNOUNCEMENT_MOMENTUM":     48,
     "TRADE_CONVICTION":          72,
     "OI_SIGNAL_FLIP":            48,
+    "BULL_CYCLE":                72,   # Phase SA-1: bull-cycle setup per symbol
 }
 
 

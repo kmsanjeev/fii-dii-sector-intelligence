@@ -71,6 +71,60 @@ def get_universe_stats():
         raise HTTPException(status_code=503, detail=str(exc))
 
 
+# ── Conviction Screener (Phase SA-1) ──────────────────────────────────────────
+
+@router.get("/conviction")
+def get_conviction_screener(
+    tier:  Optional[str] = Query(None, description="HIGH | MEDIUM | WATCH"),
+    limit: int = Query(50, ge=1, le=500),
+):
+    """Efficacy-weighted, liquidity-gated investment candidates with evidence."""
+    import pandas as pd
+    from engines.common import config as cfg
+
+    path = cfg.INTELLIGENCE_DIR / "conviction_screener.csv"
+    if not path.exists():
+        raise HTTPException(status_code=404,
+                            detail="No conviction screen yet -- run POST /api/research/conviction/refresh")
+    df = pd.read_csv(path)
+    if tier:
+        df = df[df["tier"] == tier.upper()]
+    df = df.head(limit)
+    recs = [{k: (None if pd.isna(v) else v) for k, v in r.items()}
+            for r in df.to_dict(orient="records")]
+    return {"candidates": recs, "total": len(recs),
+            "as_of": recs[0]["as_of_date"] if recs else None,
+            "regime": recs[0]["regime"] if recs else None}
+
+
+@router.post("/conviction/refresh")
+def refresh_conviction_screener():
+    """Recompute the conviction screen from the latest intelligence files."""
+    from engines.research.conviction_screener_engine import ConvictionScreenerEngine
+    try:
+        ok = ConvictionScreenerEngine().run()
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Screener failed: {exc}")
+    if not ok:
+        raise HTTPException(status_code=422, detail="Universe too small after gates -- check intelligence files")
+    return get_conviction_screener(tier=None, limit=50)
+
+
+@router.get("/efficacy")
+def get_signal_efficacy():
+    """The signal accuracy report card: IC / decile spread / hit rate per factor."""
+    import pandas as pd
+    from engines.common import config as cfg
+
+    path = cfg.INTELLIGENCE_DIR / "signal_efficacy.csv"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="No efficacy report yet")
+    df = pd.read_csv(path)
+    recs = [{k: (None if pd.isna(v) else v) for k, v in r.items()}
+            for r in df.to_dict(orient="records")]
+    return {"factors": recs}
+
+
 # ── Comparator ─────────────────────────────────────────────────────────────────
 
 @router.get("/compare")
