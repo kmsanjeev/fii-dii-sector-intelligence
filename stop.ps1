@@ -10,8 +10,11 @@
 Write-Host "Stopping Capital Flow Intelligence Platform..." -ForegroundColor Cyan
 
 # --- Backend: every uvicorn process (reloader parents AND workers) ---
+# NOTE: on Windows, uvicorn --reload launches its worker via
+# multiprocessing.spawn -- that child's command line says "spawn_main",
+# not "uvicorn", and it inherits the :8001 socket. Both patterns matter.
 $uv = Get-CimInstance Win32_Process -Filter "Name='python.exe' or Name='py.exe'" |
-    Where-Object { $_.CommandLine -match 'uvicorn' }
+    Where-Object { $_.CommandLine -match 'uvicorn|multiprocessing\.spawn' }
 foreach ($p in $uv) {
     try {
         Stop-Process -Id $p.ProcessId -Force -ErrorAction Stop

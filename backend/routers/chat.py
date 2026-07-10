@@ -67,10 +67,16 @@ async def chat(req: ChatRequest):
     AI chat endpoint. Accepts a message and optional session_id.
     Returns the assistant reply and session_id for follow-up turns.
     """
-    if not os.getenv("GROQ_API_KEY"):
+    # Any one configured provider is enough -- the engine rotates through all
+    _PROVIDER_KEYS = ("GROQ_API_KEY", "GEMINI_API_KEY", "MISTRAL_API_KEY",
+                      "GITHUB_MODELS_TOKEN", "SAMBANOVA_API_KEY",
+                      "OPENROUTER_API_KEY", "CEREBRAS_API_KEY")
+    if not any(os.getenv(k) for k in _PROVIDER_KEYS):
         raise HTTPException(
             status_code=503,
-            detail="AI chat unavailable: GROQ_API_KEY not configured. Get a free key at console.groq.com"
+            detail="AI chat unavailable: no LLM provider key configured. "
+                   "Add at least one of GROQ/GEMINI/MISTRAL/GITHUB_MODELS/"
+                   "SAMBANOVA/OPENROUTER/CEREBRAS keys to .env"
         )
 
     from engines.ai.chatbot.intent_router import detect_intent

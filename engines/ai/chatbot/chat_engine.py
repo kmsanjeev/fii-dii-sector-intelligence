@@ -271,8 +271,12 @@ class ChatEngine:
             # Execute tools and append results
             for tc in msg.tool_calls:
                 try:
-                    args = json.loads(tc.function.arguments)
+                    # json.loads("null") returns None -- some providers send
+                    # null/empty arguments for zero-arg tools; fn(**None) crashes
+                    args = json.loads(tc.function.arguments or "{}") or {}
                 except json.JSONDecodeError:
+                    args = {}
+                if not isinstance(args, dict):
                     args = {}
                 result = self._call_tool(tc.function.name, args)
 
