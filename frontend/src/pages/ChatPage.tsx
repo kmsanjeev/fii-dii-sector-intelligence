@@ -500,6 +500,35 @@ function MessageBubble({ msg }: { msg: Msg }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
+// ── Voice support (Phase V1: Veda) ────────────────────────────────────────────
+
+const VOICE_LANGS = [
+  { code: 'hi', sttLang: 'hi-IN', label: 'Hindi (Swara)' },
+  { code: 'en', sttLang: 'en-IN', label: 'English (Neerja)' },
+  { code: 'ta', sttLang: 'ta-IN', label: 'Tamil (Pallavi)' },
+  { code: 'te', sttLang: 'te-IN', label: 'Telugu (Shruti)' },
+  { code: 'bn', sttLang: 'bn-IN', label: 'Bengali (Tanishaa)' },
+]
+const VOICE_LANG_KEY = 'cfip-voice-lang'
+
+function loadVoiceLang(): string {
+  try { return localStorage.getItem(VOICE_LANG_KEY) || 'hi' } catch { return 'hi' }
+}
+
+type SpeechRecognitionLike = {
+  lang: string; continuous: boolean; interimResults: boolean
+  onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal: boolean }> }) => void) | null
+  onend: (() => void) | null
+  onerror: ((e: { error: string }) => void) | null
+  start: () => void; stop: () => void; abort: () => void
+}
+
+function getSpeechRecognition(): SpeechRecognitionLike | null {
+  const w = window as unknown as { SpeechRecognition?: new () => SpeechRecognitionLike; webkitSpeechRecognition?: new () => SpeechRecognitionLike }
+  const Ctor = w.SpeechRecognition || w.webkitSpeechRecognition
+  return Ctor ? new Ctor() : null
+}
+
 export function ChatPage() {
   // Session state
   const [sessions,   setSessions]   = useState<SavedSession[]>(() => loadSessions())
@@ -514,8 +543,17 @@ export function ChatPage() {
   const [showSlash,  setShowSlash]  = useState(false)
   const [slashFilter,setSlashFilter]= useState('')
 
+  // Voice state (Phase V1)
+  const [voiceLang,    setVoiceLang]    = useState<string>(() => loadVoiceLang())
+  const [speakReplies, setSpeakReplies] = useState(true)
+  const [listening,    setListening]    = useState(false)
+  const [speaking,     setSpeaking]     = useState(false)
+
   const bottomRef  = useRef<HTMLDivElement>(null)
   const inputRef   = useRef<HTMLTextAreaElement>(null)
+  const recogRef   = useRef<SpeechRecognitionLike | null>(null)
+  const audioRef   = useRef<HTMLAudioElement | null>(null)
+  const voiceChatsRef = useRef<Set<string>>(new Set())   // chats born from voice
 
   // ── Auto-scroll ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -619,8 +657,47 @@ export function ChatPage() {
     printSession(s)
   }
 
+  // ── Voice: speak a reply via Veda's TTS (edge-tts on the backend) ────────────
+  const speak = useCallback(async (text: string) => {
+    try {
+      audioRef.current?.pause()
+      const r = await fetch('/api/voice/tts', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, language: voiceLang }),
+      })
+      if (!r.ok) return
+      const blob = await r.blob()
+      const audio = new Audio(URL.createObjectURL(blob))
+      audioRef.current = audio
+      setSpeaking(true)
+      audio.onended = () => setSpeaking(false)
+      audio.onerror = () => setSpeaking(false)
+      await audio.play()
+    } catch { setSpeaking(false) }
+  }, [voiceLang])
+
+  const stopSpeaking = useCallback(() => {
+    audioRef.current?.pause()
+    setSpeaking(false)
+  }, [])
+
+  // ── Conversation analytics log (every turn, voice AND text) ─────────────────
+  const logTurn = useCallback((sid: string, mode: 'voice' | 'text', userMessage: string,
+                               intent: string, replyChars: number, latencyMs: number) => {
+    fetch('/api/voice/log', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session_id: sid, mode, language: voiceLang, wake_word_used: false,
+        user_message: userMessage, intent, reply_chars: replyChars,
+        latency_ms: latencyMs, tts_voice: mode === 'voice' ? voiceLang : '',
+      }),
+    }).catch(() => { /* analytics must never break chat */ })
+  }, [voiceLang])
+
   // ── Send message ─────────────────────────────────────────────────────────────
-  const send = useCallback(async (text: string) => {
+  // sidOverride: pass null to force a fresh backend session (voice-new-chat flow)
+  const send = useCallback(async (text: string, mode: 'voice' | 'text' = 'text',
+                                  sidOverride?: string | null) => {
     const trimmed = text.trim()
     if (!trimmed || loading) return
 
@@ -631,10 +708,16 @@ export function ChatPage() {
     setLoading(true)
     setApiError(null)
 
+    const sid = sidOverride !== undefined ? (sidOverride ?? undefined) : backendSid
+    const t0 = Date.now()
     try {
-      const data: ChatResponseData = await sendChat(trimmed, backendSid)
+      const data: ChatResponseData = await sendChat(trimmed, sid)
       setBackendSid(data.session_id)
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply, intent: data.intent, ts: Date.now() }])
+      logTurn(data.session_id, mode, trimmed, data.intent ?? '', data.reply.length, Date.now() - t0)
+      if (mode === 'voice' || (speakReplies && voiceChatsRef.current.has(currentId))) {
+        speak(data.reply)
+      }
     } catch (err: unknown) {
       const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
       const errText = detail ?? 'Connection error. Check that the backend is running.'
@@ -644,7 +727,55 @@ export function ChatPage() {
       setLoading(false)
       inputRef.current?.focus()
     }
-  }, [loading, backendSid])
+  }, [loading, backendSid, speak, logTurn, speakReplies, currentId])
+
+  // ── Voice: push-to-talk capture ──────────────────────────────────────────────
+  const startListening = useCallback(() => {
+    if (listening) { recogRef.current?.stop(); return }
+    const recog = getSpeechRecognition()
+    if (!recog) {
+      setApiError('Voice input needs Chrome or Edge (Web Speech API not available)')
+      return
+    }
+    stopSpeaking()
+    const langMeta = VOICE_LANGS.find(l => l.code === voiceLang) ?? VOICE_LANGS[0]
+    recog.lang = langMeta.sttLang
+    recog.continuous = false
+    recog.interimResults = true
+    recogRef.current = recog
+    setListening(true)
+
+    let finalText = ''
+    recog.onresult = (e) => {
+      let interim = ''
+      for (let i = 0; i < e.results.length; i++) {
+        const res = e.results[i]
+        if (res.isFinal) finalText += res[0].transcript
+        else interim += res[0].transcript
+      }
+      setInput(finalText || interim)   // live transcript in the input box
+    }
+    recog.onerror = () => { setListening(false) }
+    recog.onend = () => {
+      setListening(false)
+      const spoken = finalText.trim()
+      if (!spoken) return
+      // Voice conversations are recorded in their own chat: if the current
+      // chat is a text conversation with history, start a fresh one first.
+      if (messages.length > 1 && !voiceChatsRef.current.has(currentId)) {
+        const newId = genId()
+        voiceChatsRef.current.add(newId)
+        setCurrentId(newId)
+        setMessages([makeWelcome()])
+        setBackendSid(undefined)
+        setTimeout(() => send(spoken, 'voice', null), 60)
+      } else {
+        voiceChatsRef.current.add(currentId)
+        send(spoken, 'voice')
+      }
+    }
+    try { recog.start() } catch { setListening(false) }
+  }, [listening, voiceLang, messages.length, currentId, send, stopSpeaking])
 
   // ── Input handling ────────────────────────────────────────────────────────────
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -715,6 +846,27 @@ export function ChatPage() {
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {/* Voice controls (Phase V1: Veda) */}
+            <select
+              value={voiceLang}
+              onChange={e => { setVoiceLang(e.target.value); try { localStorage.setItem(VOICE_LANG_KEY, e.target.value) } catch { /* ignore */ } }}
+              title="Veda's language and voice"
+              style={{ background: '#0D1117', border: '1px solid #1E2332', borderRadius: 4, color: '#94A3B8', fontSize: 9, padding: '3px 6px', outline: 'none', cursor: 'pointer' }}
+            >
+              {VOICE_LANGS.map(l => <option key={l.code} value={l.code}>{l.label}</option>)}
+            </select>
+            <button
+              onClick={() => setSpeakReplies(v => !v)}
+              title={speakReplies ? 'Veda speaks replies in voice chats (on)' : 'Voice replies muted'}
+              style={{ background: 'transparent', border: `1px solid ${speakReplies ? '#3B82F6' : '#1E2332'}`, borderRadius: 4, color: speakReplies ? '#60A5FA' : '#334155', fontSize: 9, padding: '3px 8px', cursor: 'pointer', fontWeight: 700 }}
+            >
+              {speakReplies ? 'VOICE ON' : 'MUTED'}
+            </button>
+            {speaking && (
+              <button onClick={stopSpeaking} style={{ background: '#1E3A5F', border: '1px solid #3B82F6', borderRadius: 4, color: '#60A5FA', fontSize: 9, padding: '3px 8px', cursor: 'pointer', fontWeight: 700 }}>
+                Veda speaking... stop
+              </button>
+            )}
             <span style={{ fontSize: 9, color: '#334155' }}>Type / for quick questions</span>
             {Object.entries(INTENT_META).slice(0, 5).map(([k, v]) => (
               <span key={k} style={{ fontSize: 8, padding: '1px 5px', borderRadius: 2, border: `1px solid ${v.color}33`, color: v.color, fontWeight: 700, letterSpacing: 0.5 }}>{v.label}</span>
@@ -757,12 +909,30 @@ export function ChatPage() {
               />
             )}
             <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end' }}>
+              {/* Mic: push-to-talk (Phase V1) */}
+              <button
+                onClick={startListening}
+                disabled={loading}
+                title={listening ? 'Listening... click to stop' : `Speak to Veda (${VOICE_LANGS.find(l => l.code === voiceLang)?.label})`}
+                style={{
+                  width: 42, height: 42, borderRadius: '50%', flexShrink: 0,
+                  border: `2px solid ${listening ? '#EF4444' : '#3B82F6'}`,
+                  background: listening ? '#EF444422' : '#0D1117',
+                  color: listening ? '#EF4444' : '#60A5FA',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  fontSize: listening ? 16 : 9, fontWeight: 700,
+                  animation: listening ? 'pulse 1.2s infinite' : 'none',
+                }}
+              >
+                {listening ? '●' : 'MIC'}
+              </button>
+              <style>{'@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5);} 50% { box-shadow: 0 0 0 8px rgba(239,68,68,0);} }'}</style>
               <textarea
                 ref={inputRef}
                 value={input}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask about markets, sectors, stocks… or type / for quick questions"
+                placeholder={listening ? 'Listening... speak now' : 'Ask about markets, sectors, stocks… or type / for quick questions'}
                 rows={1}
                 style={{
                   flex: 1, resize: 'none', overflow: 'hidden',

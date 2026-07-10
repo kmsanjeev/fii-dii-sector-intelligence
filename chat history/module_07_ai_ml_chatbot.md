@@ -129,3 +129,34 @@ Verified on both archetypes (yogakaraka chart + plain chart); suite 267/267.
 GOTCHA: kundli_calculator imports kundli_interpreter at module load -- any
 interpreter->calculator import MUST be lazy (inside function) to avoid a
 circular import.
+
+---
+
+## Session 2026-07-11 — Phase V1: Veda Voice Assistant core loop (COMPLETE)
+
+Per gate-1 doc docs/modules/VOICE_PLATFORM.md. Default language: HINDI (user).
+
+**Backend (backend/routers/voice.py):**
+- /api/voice/tts: edge-tts streaming; casting hi-IN-SwaraNeural (default),
+  en-IN-NeerjaNeural, +ta/te/bn/mr/gu; rate -5%; _spoken_text sanitizer strips
+  markdown + drops table lines + caps 900 chars on sentence boundary;
+  sha1-keyed in-memory cache (64 entries) -- repeat phrase 3463ms -> 91ms
+- /api/voice/log: thread-safe CSV append -> data/chat/conversation_log.csv
+  (ts, session, mode, language, wake_word_used, user_message, intent,
+  reply_chars, latency_ms, tts_voice). NOTE: doc said parquet; CSV append
+  chosen for atomic line-appends without full-file rewrite.
+- /voices + /analytics (quick aggregate; full engine = V2)
+
+**Frontend (ChatPage):**
+- MIC push-to-talk (Web Speech API; sttLang per language; live transcript
+  into input box; red pulse animation)
+- Language picker (localStorage cfip-voice-lang, default hi), VOICE ON/MUTED,
+  speaking indicator with stop
+- send() extended: mode + sidOverride; voice replies auto-speak; voice command
+  during a text convo spawns a NEW chat (voiceChatsRef tracks voice-born chats)
+- EVERY turn (voice + text) logged via /api/voice/log
+
+**Verified:** both voices generate (first audio 0.8-1.2s); all 4 endpoints
+live; sanitizer probes pass; tsc + build clean.
+**V2 backlog:** wake word listener, spoken greeting, chat_analytics_engine
+pipeline stage, voice-mode system-prompt addendum, provider/tool fields in log.

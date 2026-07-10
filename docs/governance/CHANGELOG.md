@@ -6,6 +6,58 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.35.0
+
+Phase V1 -- Veda Voice Assistant (core voice loop)
+
+Date: 2026-07-11
+
+Status: Completed
+
+---
+
+## Summary
+
+First phase of the Veda/Adya voice assistant per docs/modules/VOICE_PLATFORM.md.
+Push-to-talk voice chat: speak in Hindi (default), English, Tamil, Telugu or
+Bengali; Veda answers in text AND a neural female voice (edge-tts). Every
+conversation turn (voice and text) is logged for demand analytics.
+
+## New Features
+
+- backend/routers/voice.py (NEW):
+  POST /api/voice/tts -- edge-tts streaming MP3; voice casting
+  hi-IN-SwaraNeural (default) / en-IN-NeerjaNeural + ta/te/bn/mr/gu;
+  rate -5%% for precise delivery; markdown/table sanitizer (tables are
+  never read aloud); 900-char spoken cap ending on sentence boundaries;
+  in-memory cache (repeat phrases: 3.5s -> 91ms)
+  POST /api/voice/log -- conversation turn log (thread-safe CSV append)
+  GET /api/voice/voices, GET /api/voice/analytics (quick aggregates)
+- ChatPage voice layer:
+  round MIC push-to-talk button (Web Speech API, live transcript in the
+  input box, red pulse while listening); language picker (Hindi default);
+  VOICE ON/MUTED toggle; 'Veda speaking... stop' control;
+  voice replies auto-play alongside the text bubble;
+  a voice command during a text conversation starts a NEW chat
+  (voice conversations are recorded separately, per requirement);
+  every send (voice AND text) logs mode/language/intent/latency
+- data/chat/conversation_log.csv -- the ML demand dataset foundation
+
+## Verification
+
+- Both cast voices generate: Hindi Swara first audio 1.24s, Neerja 0.82s
+- Live endpoints: /voices (7 languages, wake words veda/adya declared),
+  /tts 200 (60.9KB MP3, cache hit 91ms), /log + /analytics working
+- Sanitizer probes: markdown tables stripped from speech, length capped
+- tsc + vite build clean; single backend listener confirmed
+
+## Next (Phase V2)
+
+Wake word ("Veda"/"Adya") hands-free activation, spoken greetings,
+chat_analytics_engine pipeline stage, voice-mode prompt addendum.
+
+---
+
 # Version 4.34.0
 
 Phase SA-1 -- Signal Accuracy & High-Conviction Platform
