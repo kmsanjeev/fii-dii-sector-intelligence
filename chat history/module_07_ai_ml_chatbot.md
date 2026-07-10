@@ -160,3 +160,31 @@ Per gate-1 doc docs/modules/VOICE_PLATFORM.md. Default language: HINDI (user).
 live; sanitizer probes pass; tsc + build clean.
 **V2 backlog:** wake word listener, spoken greeting, chat_analytics_engine
 pipeline stage, voice-mode system-prompt addendum, provider/tool fields in log.
+
+---
+
+## Session 2026-07-11 — Phase V2: Veda wake word + demand analytics (COMPLETE)
+
+**Wake word (ChatPage):**
+- Continuous background recognition while idle (pauses during listening/
+  loading/speaking); auto-restart via wakeRetry state bump on onend
+  (Chrome kills continuous sessions); only newest result inspected
+- WAKE_WORDS: veda/adya + mis-hearings + Devanagari forms (hi-IN STT
+  returns Devanagari!)
+- On wake: pre-fetched greeting audio (per-language, instant) -> V1
+  startListening(); wakeUsedRef -> wake_word_used in the turn log
+- mic permission denial (not-allowed) auto-disables wake + persists off
+
+**Voice-mode replies:** ChatRequest.mode="voice" -> engine.chat(voice_mode=True)
+appends _VOICE_ADDENDUM (answer for the ear, user language, prose before
+tables). Live-verified: Hindi Devanagari spoken-style regime answer.
+
+**chat_analytics_engine.py:** conversation_log.csv -> chat_analytics.csv
+(INTENT/LANGUAGE/MODE/HOUR_IST/SYMBOL/SUMMARY; symbol mention extraction
+vs equity master, stopword-guarded, len>=3). Pipeline stage V2_chat_analytics.
+/api/voice/analytics prefers engine output.
+
+**BUG FOUND LIVE + FIXED:** Groq/Llama leaked '<function=get_market_regime>
+</function>' into a voice reply -- would have been READ ALOUD. _clean_reply
+regex strips artifacts in chat_engine; TTS sanitizer strips again (defence
+in depth). 5 unit cases + live retest green.

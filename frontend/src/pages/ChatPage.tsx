@@ -510,9 +510,24 @@ const VOICE_LANGS = [
   { code: 'bn', sttLang: 'bn-IN', label: 'Bengali (Tanishaa)' },
 ]
 const VOICE_LANG_KEY = 'cfip-voice-lang'
+const WAKE_KEY       = 'cfip-wake'
 
 function loadVoiceLang(): string {
   try { return localStorage.getItem(VOICE_LANG_KEY) || 'hi' } catch { return 'hi' }
+}
+function loadWakeEnabled(): boolean {
+  try { return localStorage.getItem(WAKE_KEY) !== 'off' } catch { return true }
+}
+
+// Wake words + common mis-hearings; Hindi STT returns Devanagari script
+const WAKE_WORDS = [
+  'veda', 'adya', 'vedha', 'aadya', 'vida', 'vader', 'adia',
+  'वेदा', 'वेधा', 'आद्या', 'अद्या', 'वेद',
+]
+
+const GREETINGS: Record<string, string> = {
+  hi: 'जी, बोलिए। मैं सुन रही हूँ।',
+  en: 'Yes, I am listening. How can I help?',
 }
 
 type SpeechRecognitionLike = {
@@ -543,17 +558,35 @@ export function ChatPage() {
   const [showSlash,  setShowSlash]  = useState(false)
   const [slashFilter,setSlashFilter]= useState('')
 
-  // Voice state (Phase V1)
+  // Voice state (Phase V1 + V2)
   const [voiceLang,    setVoiceLang]    = useState<string>(() => loadVoiceLang())
   const [speakReplies, setSpeakReplies] = useState(true)
   const [listening,    setListening]    = useState(false)
   const [speaking,     setSpeaking]     = useState(false)
+  const [wakeEnabled,  setWakeEnabled]  = useState<boolean>(() => loadWakeEnabled())
+  const [wakeRetry,    setWakeRetry]    = useState(0)     // bumps to restart the wake listener
 
   const bottomRef  = useRef<HTMLDivElement>(null)
   const inputRef   = useRef<HTMLTextAreaElement>(null)
   const recogRef   = useRef<SpeechRecognitionLike | null>(null)
   const audioRef   = useRef<HTMLAudioElement | null>(null)
   const voiceChatsRef = useRef<Set<string>>(new Set())   // chats born from voice
+  const wakeUsedRef   = useRef(false)                    // next turn was wake-initiated
+  const greetingRef   = useRef<string | null>(null)      // pre-fetched greeting audio URL
+
+  // Pre-fetch Veda's greeting so wake response is instant (Phase V2)
+  useEffect(() => {
+    let cancelled = false
+    const text = GREETINGS[voiceLang] ?? GREETINGS.en
+    fetch('/api/voice/tts', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, language: voiceLang }),
+    })
+      .then(r => (r.ok ? r.blob() : null))
+      .then(b => { if (b && !cancelled) greetingRef.current = URL.createObjectURL(b) })
+      .catch(() => { /* greeting is best-effort */ })
+    return () => { cancelled = true }
+  }, [voiceLang])
 
   // ── Auto-scroll ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -684,10 +717,12 @@ export function ChatPage() {
   // ── Conversation analytics log (every turn, voice AND text) ─────────────────
   const logTurn = useCallback((sid: string, mode: 'voice' | 'text', userMessage: string,
                                intent: string, replyChars: number, latencyMs: number) => {
+    const wake = wakeUsedRef.current
+    wakeUsedRef.current = false
     fetch('/api/voice/log', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        session_id: sid, mode, language: voiceLang, wake_word_used: false,
+        session_id: sid, mode, language: voiceLang, wake_word_used: wake,
         user_message: userMessage, intent, reply_chars: replyChars,
         latency_ms: latencyMs, tts_voice: mode === 'voice' ? voiceLang : '',
       }),
@@ -711,7 +746,7 @@ export function ChatPage() {
     const sid = sidOverride !== undefined ? (sidOverride ?? undefined) : backendSid
     const t0 = Date.now()
     try {
-      const data: ChatResponseData = await sendChat(trimmed, sid)
+      const data: ChatResponseData = await sendChat(trimmed, sid, mode)
       setBackendSid(data.session_id)
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply, intent: data.intent, ts: Date.now() }])
       logTurn(data.session_id, mode, trimmed, data.intent ?? '', data.reply.length, Date.now() - t0)
@@ -776,6 +811,60 @@ export function ChatPage() {
     }
     try { recog.start() } catch { setListening(false) }
   }, [listening, voiceLang, messages.length, currentId, send, stopSpeaking])
+
+  // ── Voice: hands-free wake word "Veda" / "Adya" (Phase V2) ──────────────────
+  // A lightweight continuous recognition session runs whenever the page is
+  // otherwise idle. On hearing a wake word it plays the pre-cached greeting
+  // and opens command capture. Chrome ends continuous sessions periodically;
+  // onend bumps wakeRetry to restart (auto-restart pattern).
+  useEffect(() => {
+    if (!wakeEnabled || listening || loading || speaking) return
+    const recog = getSpeechRecognition()
+    if (!recog) return
+
+    let matched = false
+    let disposed = false
+    const langMeta = VOICE_LANGS.find(l => l.code === voiceLang) ?? VOICE_LANGS[0]
+    recog.lang = langMeta.sttLang
+    recog.continuous = true
+    recog.interimResults = true
+
+    const onWake = () => {
+      matched = true
+      try { recog.abort() } catch { /* ignore */ }
+      wakeUsedRef.current = true
+      const play = greetingRef.current ? new Audio(greetingRef.current) : null
+      if (play) {
+        setSpeaking(true)
+        play.onended = () => { setSpeaking(false); startListening() }
+        play.onerror = () => { setSpeaking(false); startListening() }
+        play.play().catch(() => { setSpeaking(false); startListening() })
+      } else {
+        startListening()
+      }
+    }
+
+    recog.onresult = (e) => {
+      // Only inspect the newest result to avoid re-matching old transcript
+      const last = e.results[e.results.length - 1]
+      if (!last) return
+      const heard = (last[0]?.transcript ?? '').toLowerCase()
+      if (WAKE_WORDS.some(w => heard.includes(w))) onWake()
+    }
+    recog.onerror = (e) => {
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+        setWakeEnabled(false)
+        try { localStorage.setItem(WAKE_KEY, 'off') } catch { /* ignore */ }
+      }
+    }
+    recog.onend = () => {
+      // Chrome times continuous sessions out -- restart unless we woke or unmounted
+      if (!matched && !disposed) setTimeout(() => setWakeRetry(n => n + 1), 500)
+    }
+    try { recog.start() } catch { /* mic busy -- retry on next state change */ }
+
+    return () => { disposed = true; try { recog.abort() } catch { /* ignore */ } }
+  }, [wakeEnabled, listening, loading, speaking, voiceLang, wakeRetry, startListening])
 
   // ── Input handling ────────────────────────────────────────────────────────────
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -861,6 +950,17 @@ export function ChatPage() {
               style={{ background: 'transparent', border: `1px solid ${speakReplies ? '#3B82F6' : '#1E2332'}`, borderRadius: 4, color: speakReplies ? '#60A5FA' : '#334155', fontSize: 9, padding: '3px 8px', cursor: 'pointer', fontWeight: 700 }}
             >
               {speakReplies ? 'VOICE ON' : 'MUTED'}
+            </button>
+            <button
+              onClick={() => {
+                const next = !wakeEnabled
+                setWakeEnabled(next)
+                try { localStorage.setItem(WAKE_KEY, next ? 'on' : 'off') } catch { /* ignore */ }
+              }}
+              title={wakeEnabled ? 'Hands-free: say "Veda" or "Adya" to activate (on)' : 'Wake word off -- use the mic button'}
+              style={{ background: wakeEnabled ? '#14532D22' : 'transparent', border: `1px solid ${wakeEnabled ? '#22C55E' : '#1E2332'}`, borderRadius: 4, color: wakeEnabled ? '#4ADE80' : '#334155', fontSize: 9, padding: '3px 8px', cursor: 'pointer', fontWeight: 700 }}
+            >
+              {wakeEnabled ? 'WAKE: VEDA' : 'WAKE OFF'}
             </button>
             {speaking && (
               <button onClick={stopSpeaking} style={{ background: '#1E3A5F', border: '1px solid #3B82F6', borderRadius: 4, color: '#60A5FA', fontSize: 9, padding: '3px 8px', cursor: 'pointer', fontWeight: 700 }}>

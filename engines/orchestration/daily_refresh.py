@@ -100,6 +100,8 @@ STAGES = [
     ("SA1_score_snapshot",          "engines.research.score_snapshot_engine",                "Score Snapshot (history archive)",      60),
     # High-conviction investment screener (Phase SA-1; efficacy-weighted)
     ("SA1_conviction_screener",     "engines.research.conviction_screener_engine",           "Conviction Screener (invest list)",     60),
+    # Chat demand analytics (Phase V2; aggregates conversation_log.csv)
+    ("V2_chat_analytics",           "engines.research.chat_analytics_engine",                "Chat Analytics (demand dataset)",       60),
     # Alerts — always last, fires on fully-refreshed intelligence
     ("9_alert_engine",              "alerts.alert_engine",                                   "Alert Engine (Telegram push)",          60),
 ]
@@ -122,7 +124,7 @@ STAGE_SECTIONS = {
                                 "20_portfolio", "R1_portfolio_risk", "R2a_stress_test",
                                 "R2b_factor_model", "R3_monte_carlo", "R4_tca",
                                 "SA1_score_snapshot", "SA1_conviction_screener",
-                                "9_alert_engine"],
+                                "V2_chat_analytics", "9_alert_engine"],
 }
 
 # ── Shared state (guarded by _lock) ──────────────────────────────────────────

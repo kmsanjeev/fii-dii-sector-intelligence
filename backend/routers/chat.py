@@ -30,6 +30,7 @@ SESSION_TTL_SECONDS = 7200  # 2 hours
 class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = None
+    mode: str = "text"          # "voice" -> spoken-style replies (Phase V2)
 
 
 class ChatResponse(BaseModel):
@@ -84,7 +85,7 @@ async def chat(req: ChatRequest):
 
     try:
         session_id, engine = _get_or_create_session(req.session_id)
-        reply = engine.chat(req.message)
+        reply = engine.chat(req.message, voice_mode=(req.mode == "voice"))
     except EnvironmentError as e:
         raise HTTPException(status_code=503, detail=str(e))
     except Exception as e:

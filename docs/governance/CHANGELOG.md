@@ -6,6 +6,58 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.36.0
+
+Phase V2 -- Veda Wake Word + Chat Demand Analytics
+
+Date: 2026-07-11
+
+Status: Completed
+
+---
+
+## Summary
+
+Hands-free Veda: say "Veda" or "Adya" on the Chat page and she answers with
+her greeting and starts listening. Voice-mode replies are now written for the
+ear (spoken-style, user's language, tables summarised in prose first). The
+conversation log now feeds a daily analytics engine -- the ML demand dataset.
+
+## New Features
+
+- ChatPage wake word (Phase V2): continuous background listener (Web Speech
+  API, auto-restart on Chrome session timeouts) matching veda/adya + common
+  mis-hearings incl. Devanagari forms; on wake -> pre-cached greeting audio
+  ("Ji, boliye. Main sun rahi hoon." in Hindi default) -> command capture;
+  WAKE: VEDA / WAKE OFF toggle (persisted); wake_word_used flag in the log;
+  listener pauses while Veda speaks or a command is being processed
+- Voice-mode prompt addendum: ChatRequest.mode -> ChatEngine.chat(voice_mode)
+  appends spoken-style instructions (answer for the ear, user's language,
+  2-4 sentence lead, tables summarised in prose first)
+- engines/research/chat_analytics_engine.py (NEW): aggregates
+  conversation_log.csv into data/intelligence/chat_analytics.csv --
+  INTENT / LANGUAGE / MODE / HOUR_IST / SYMBOL (mention extraction vs equity
+  master) / SUMMARY rows with count, share, latency, last_seen. Pipeline
+  stage V2_chat_analytics. /api/voice/analytics upgraded to serve the
+  engine output (structured) with live-log fallback.
+
+## Fixed
+
+- Models occasionally leak raw function-call syntax into prose
+  (<function=get_market_regime></function> observed live in a Hindi voice
+  reply). _clean_reply strips artifacts in chat_engine before returning;
+  the TTS sanitizer strips them again (defence in depth) so Veda never
+  reads code aloud. 5 unit cases + live retest verified.
+
+## Verification
+
+- Voice-mode live: Hindi Devanagari spoken-style reply with real regime data
+- Analytics engine run: INTENT/LANGUAGE/MODE/HOUR/SUMMARY rows produced;
+  /api/voice/analytics source=engine
+- tsc + vite build clean; suite 267/267
+
+---
+
 # Version 4.35.0
 
 Phase V1 -- Veda Voice Assistant (core voice loop)

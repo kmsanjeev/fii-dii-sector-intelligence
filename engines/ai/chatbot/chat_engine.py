@@ -18,6 +18,7 @@ Security:
 
 from __future__ import annotations
 import json
+import re
 import os
 import time
 
@@ -115,6 +116,17 @@ def _to_openai_tools(anthropic_tools: list[dict]) -> list[dict]:
 OPENAI_TOOLS = _to_openai_tools(TOOLS)
 
 
+_FUNC_ARTIFACT_RE = re.compile(r"<function[=\w\-]*>.*?</function>|<function[=\w\-]*/?>|</function>",
+                               re.DOTALL)
+
+
+def _clean_reply(text: str) -> str:
+    """Strip malformed function-call syntax some models leak into prose
+    (e.g. '<function=get_market_regime></function>') -- it would otherwise
+    be displayed and read aloud by TTS."""
+    return _FUNC_ARTIFACT_RE.sub("", text or "").strip()
+
+
 def _is_rate_limit(exc: Exception) -> bool:
     msg = str(exc).lower()
     return (
@@ -167,13 +179,25 @@ class ChatEngine:
             timeout=60.0,
         )
 
-    def chat(self, user_message: str) -> str:
+    # Voice-mode addendum (Phase V2): the user HEARS the reply via TTS
+    _VOICE_ADDENDUM = (
+        "\n\nVOICE MODE: The user asked by voice and will HEAR your reply read "
+        "aloud. Reply in the same language the user spoke (Hindi in Devanagari "
+        "if they spoke Hindi). Lead with the direct answer in 2-4 short, "
+        "natural spoken sentences. Never rely on tables or formatting to carry "
+        "the key point -- if detail needs a table, first summarise it in "
+        "speech-friendly sentences, then add the table below for the chat."
+    )
+
+    def chat(self, user_message: str, voice_mode: bool = False) -> str:
         """
         Process one user turn and return the assistant's reply.
         Automatically rotates to the next provider if rate-limited.
         """
         intent       = detect_intent(user_message)
         system_prompt = get_system_prompt(intent)
+        if voice_mode:
+            system_prompt += self._VOICE_ADDENDUM
 
         rag_context = self._get_rag_context(user_message, intent)
         if rag_context:
@@ -198,9 +222,9 @@ class ChatEngine:
             result = self._run_turn(client, model, system_prompt, user_message)
 
             if result["status"] == "ok":
-                reply = result["reply"]
+                reply = _clean_reply(result["reply"])
                 self.history.append({"role": "assistant", "content": reply})
-                return reply.strip()
+                return reply
 
             if result["status"] == "rate_limited":
                 self._mark_rate_limited(provider["name"])

@@ -84,6 +84,10 @@ class LogRequest(BaseModel):
 def _spoken_text(text: str) -> str:
     """Convert a chat reply into speakable text: strip markdown noise,
     drop table blocks, cap length (long detail stays in the chat)."""
+    import re as _re
+    # Defence in depth: strip leaked function-call artifacts before speaking
+    text = _re.sub(r"<function[=\w\-]*>.*?</function>|<function[=\w\-]*/?>|</function>",
+                   "", text or "", flags=_re.DOTALL)
     lines = []
     for ln in text.splitlines():
         s = ln.strip()
@@ -188,19 +192,42 @@ def log_turn(req: LogRequest):
 
 @router.get("/analytics")
 def quick_analytics():
-    """Lightweight aggregate of the conversation log (full engine lands in V2)."""
+    """Demand analytics: prefers the V2 engine output; falls back to a live
+    aggregate of the raw log."""
     import pandas as pd
+
+    engine_csv = cfg.INTELLIGENCE_DIR / "chat_analytics.csv"
+    if engine_csv.exists():
+        a = pd.read_csv(engine_csv)
+        if not a.empty:
+            def _rows(mtype: str, limit: int = 10) -> list[dict]:
+                d = a[a["metric_type"] == mtype].head(limit)
+                return [{k: (None if pd.isna(v) else v) for k, v in r.items()}
+                        for r in d.to_dict(orient="records")]
+            summ = {r["key"]: r["count"] for _, r in a[a["metric_type"] == "SUMMARY"].iterrows()}
+            return {
+                "source":       "engine",
+                "run_date":     str(a.iloc[0]["run_date"]),
+                "summary":      summ,
+                "top_intents":  _rows("INTENT"),
+                "least_intents": _rows("INTENT", 999)[-5:],
+                "languages":    _rows("LANGUAGE"),
+                "modes":        _rows("MODE"),
+                "top_symbols":  _rows("SYMBOL"),
+                "by_hour_ist":  _rows("HOUR_IST", 24),
+            }
+
     if not CHAT_LOG_CSV.exists():
-        return {"turns": 0, "note": "no conversations logged yet"}
+        return {"source": "live", "turns": 0, "note": "no conversations logged yet"}
     df = pd.read_csv(CHAT_LOG_CSV)
     if df.empty:
-        return {"turns": 0, "note": "no conversations logged yet"}
-    top_intents = df["intent"].value_counts().head(8).to_dict()
+        return {"source": "live", "turns": 0, "note": "no conversations logged yet"}
     return {
+        "source":        "live",
         "turns":         int(len(df)),
         "sessions":      int(df["session_id"].nunique()),
         "voice_share":   round(float((df["mode"] == "voice").mean()) * 100, 1),
         "language_split": df["language"].value_counts().to_dict(),
-        "top_intents":   top_intents,
+        "top_intents":   df["intent"].value_counts().head(8).to_dict(),
         "least_intents": df["intent"].value_counts().tail(5).to_dict(),
     }
