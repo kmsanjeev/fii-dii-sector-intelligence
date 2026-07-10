@@ -6,6 +6,49 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.37.0
+
+Phase V3 -- Veda Polish: barge-in, fillers, staged speech, fallback, analytics card
+
+Date: 2026-07-11
+
+Status: Completed -- VOICE PLATFORM (V1+V2+V3) COMPLETE
+
+---
+
+## Summary
+
+Final polish phase of the Veda voice assistant. Veda can now be interrupted
+by her name, fills long waits with a spoken cue, starts speaking long answers
+in about a second (staged playback), survives TTS outages via the browser
+voice, and shows demand analytics in the chat sidebar.
+
+## New Features
+
+- BARGE-IN: the wake listener stays active while Veda speaks -- saying
+  "Veda"/"Adya" silences her instantly and opens command capture.
+  Deliberately wake-word-only (never any-speech) so her own audio through
+  the speakers cannot self-trigger.
+- SPOKEN FILLER: pre-cached "Ek kshan." / "One moment." plays when a voice
+  request exceeds 2.5s; cancelled the instant the reply arrives.
+- STAGED PLAYBACK: replies over ~220 chars split at a sentence boundary;
+  the first sentences speak while the remainder is fetched in parallel.
+  Generation counter cancels stale chains on stop/interrupt.
+- BROWSER TTS FALLBACK: if /api/voice/tts is unreachable (edge-tts outage),
+  window.speechSynthesis speaks the reply in the user language.
+- VEDA ANALYTICS sidebar card: turns, voice share, top asks, top stocks
+  (served by the V2 analytics engine).
+- openWakeWord evaluation closed as DEFERRED (documented in
+  VOICE_PLATFORM.md): needs audio-streaming pipeline + model training;
+  transcript matching is performing acceptably for single-user desktop.
+
+## Verification
+
+- tsc + vite build clean; suite 267/267; voice endpoints unchanged (V2
+  live tests still valid)
+
+---
+
 # Version 4.36.0
 
 Phase V2 -- Veda Wake Word + Chat Demand Analytics

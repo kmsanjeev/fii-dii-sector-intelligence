@@ -188,3 +188,22 @@ vs equity master, stopword-guarded, len>=3). Pipeline stage V2_chat_analytics.
 </function>' into a voice reply -- would have been READ ALOUD. _clean_reply
 regex strips artifacts in chat_engine; TTS sanitizer strips again (defence
 in depth). 5 unit cases + live retest green.
+
+---
+
+## Session 2026-07-11 — Phase V3: Veda polish (COMPLETE -- VOICE PLATFORM DONE)
+
+- BARGE-IN: wake listener no longer pauses while speaking; onWake calls
+  stopSpeaking() first. Wake-word-only interruption (any-speech would let
+  Veda self-trigger through the speakers).
+- FILLER: FILLERS per language pre-fetched like greetings (fillerRef);
+  send() sets a 2.5s timer in voice mode, cleared in finally.
+- STAGED PLAYBACK: splitForStaging (~220-char head to sentence boundary,
+  Hindi purna viram included); head+tail TTS fetched in parallel, chained
+  playback; speakGenRef generation counter cancels stale chains on
+  stopSpeaking/new speak.
+- FALLBACK: browserTtsFallback via window.speechSynthesis when /tts fails.
+- VedaAnalyticsCard in Sidebar (self-fetching /api/voice/analytics; handles
+  both engine and live formats; hidden when no turns).
+- openWakeWord evaluation CLOSED as deferred (rationale in VOICE_PLATFORM.md).
+- VOICE PLATFORM V1+V2+V3 COMPLETE.

@@ -214,11 +214,23 @@ spoken "Ek moment..." filler on long tool calls keeps the interaction alive.
 - **Result:** hands-free "Veda... what's the market regime?" end-to-end;
   demand analytics accumulating daily
 
-### Phase V3 — Polish & Resilience (optional, later)
-- openWakeWord evaluation for offline, higher-accuracy wake word
-- Spoken fillers during long tool calls; barge-in (interrupt Veda by speaking)
-- Analytics dashboard card (top requests, language split, voice usage)
-- Browser speechSynthesis fallback wiring for edge-tts outages
+### Phase V3 — Polish & Resilience — COMPLETE 2026-07-11
+- Barge-in: wake listener stays active while Veda speaks; saying her name
+  interrupts playback and opens command capture. Deliberately wake-word-only
+  (never any-speech) so her own audio through the speakers cannot self-trigger.
+- Spoken filler: pre-cached "Ek kshan." / "One moment." plays if a voice
+  request exceeds 2.5s (cancelled the moment the reply lands)
+- Staged playback: long replies split at a sentence boundary (~220 chars);
+  the head speaks while the tail is fetched in parallel -- long-answer lag
+  cut to head-generation time; generation counter cancels stale chains
+- Browser speechSynthesis fallback wired for edge-tts outages
+- VEDA ANALYTICS card in the chat sidebar: turns, voice share, top asks,
+  top stocks (from the V2 engine output)
+- openWakeWord EVALUATION OUTCOME: deferred. It requires a WebSocket
+  audio-streaming pipeline browser->backend plus custom "Veda" model
+  training; the transcript-matching wake word is performing acceptably for
+  single-user desktop use. Revisit only if wake misses become a real
+  complaint -- the integration seam (onWake) is already isolated.
 
 ---
 

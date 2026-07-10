@@ -147,6 +147,7 @@ data/NSE/shareholding/
 | R3    | Monte Carlo Simulation        | COMPLETE 100%    | monte_carlo_engine.py; 100k correlated paths ~5s; antithetic + seeded; orchestrator/worker seam for future distributed grid; /api/risk/simulate |
 | R4    | Execution Quality (TCA)       | COMPLETE 100%    | tca_engine.py + order_slicer.py; arrival price on all orders; ADV participation warning; ExecutionPage TCA tab; risk roadmap COMPLETE |
 | SA-1  | Signal Accuracy Platform      | COMPLETE 100%    | signal_efficacy (IC/decile/hit-rate), score_snapshot archive, conviction_screener (efficacy-weighted + liquidity gates), P12 BULL_CYCLE alert, Research Conviction tab |
+| V1-V3 | Veda Voice Assistant          | COMPLETE 100%    | backend/routers/voice.py (edge-tts hi-IN-Swara default); wake word Veda/Adya + barge-in; staged playback + fillers + browser fallback; conversation_log + chat_analytics engine; docs/modules/VOICE_PLATFORM.md |
 
 ## CURRENT PLATFORM STATUS (2026-07-09)
 **ALL 25 CORE PHASES + A/B/C/CH/TI/SH/UI-S COMPLETE.** Full investment operating system is live.

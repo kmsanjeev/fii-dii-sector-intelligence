@@ -394,6 +394,9 @@ function Sidebar({
         ))}
       </div>
 
+      {/* Veda demand analytics (Phase V3) */}
+      <VedaAnalyticsCard />
+
       {/* Bottom actions */}
       <div style={{ padding: '8px 12px 14px', borderTop: '1px solid #1E2332', display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0 }}>
         <button onClick={onExport} disabled={!hasChat} style={{ ...SBTN.base, ...(hasChat ? SBTN.active : SBTN.disabled) }}>
@@ -410,6 +413,55 @@ function Sidebar({
         </button>
         <input ref={importRef} type="file" accept=".json" style={{ display: 'none' }}
           onChange={e => { const f = e.target.files?.[0]; if (f) onImport(f); e.target.value = '' }} />
+      </div>
+    </div>
+  )
+}
+
+// ─── Veda demand analytics card (Phase V3) ────────────────────────────────────
+
+type VedaAnalytics = {
+  source: string
+  summary?: Record<string, number>
+  turns?: number
+  top_intents?: { key: string; count: number }[] | Record<string, number>
+  top_symbols?: { key: string; count: number }[]
+  modes?: { key: string; count: number; share_pct: number }[]
+}
+
+function VedaAnalyticsCard() {
+  const [data, setData] = useState<VedaAnalytics | null>(null)
+
+  useEffect(() => {
+    fetch('/api/voice/analytics')
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => setData(d))
+      .catch(() => { /* card is best-effort */ })
+  }, [])
+
+  if (!data) return null
+  const turns = data.summary?.total_turns ?? data.turns ?? 0
+  if (!turns) return null
+
+  const intents: { key: string; count: number }[] = Array.isArray(data.top_intents)
+    ? data.top_intents.slice(0, 3)
+    : Object.entries(data.top_intents ?? {}).slice(0, 3).map(([k, v]) => ({ key: k, count: v as number }))
+  const symbols = (data.top_symbols ?? []).slice(0, 3)
+  const voiceMode = Array.isArray(data.modes) ? data.modes.find(m => m.key === 'voice') : undefined
+
+  return (
+    <div style={{ padding: '10px 12px', borderTop: '1px solid #1E2332', flexShrink: 0 }}>
+      <div style={{ color: '#475569', fontSize: 9, fontWeight: 700, letterSpacing: 1.5, marginBottom: 6 }}>
+        VEDA ANALYTICS
+      </div>
+      <div style={{ fontSize: 9, color: '#64748B', display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <span>{turns} turns{voiceMode ? ` · ${voiceMode.share_pct}% by voice` : ''}</span>
+        {intents.length > 0 && (
+          <span>Top asks: {intents.map(i => `${i.key.toLowerCase().replace(/_/g, ' ')} (${i.count})`).join(', ')}</span>
+        )}
+        {symbols.length > 0 && (
+          <span>Top stocks: {symbols.map(s => s.key).join(', ')}</span>
+        )}
       </div>
     </div>
   )
@@ -530,6 +582,24 @@ const GREETINGS: Record<string, string> = {
   en: 'Yes, I am listening. How can I help?',
 }
 
+// Short spoken filler while a long request is processing (Phase V3)
+const FILLERS: Record<string, string> = {
+  hi: 'एक क्षण।',
+  en: 'One moment.',
+}
+
+// Split a reply for staged playback: first 1-2 sentences speak immediately
+// while the remainder is fetched in parallel (Phase V3)
+function splitForStaging(text: string): [string, string] {
+  if (text.length <= 220) return [text, '']
+  const head = text.slice(0, 260)
+  for (const stop of ['. ', '? ', '! ', '। ']) {
+    const i = head.lastIndexOf(stop)
+    if (i > 60) return [text.slice(0, i + 1), text.slice(i + 1)]
+  }
+  return [text, '']
+}
+
 type SpeechRecognitionLike = {
   lang: string; continuous: boolean; interimResults: boolean
   onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal: boolean }> }) => void) | null
@@ -574,17 +644,21 @@ export function ChatPage() {
   const wakeUsedRef   = useRef(false)                    // next turn was wake-initiated
   const greetingRef   = useRef<string | null>(null)      // pre-fetched greeting audio URL
 
-  // Pre-fetch Veda's greeting so wake response is instant (Phase V2)
+  const fillerRef = useRef<string | null>(null)          // pre-fetched filler audio URL
+
+  // Pre-fetch Veda's greeting + processing filler so both play instantly (V2/V3)
   useEffect(() => {
     let cancelled = false
-    const text = GREETINGS[voiceLang] ?? GREETINGS.en
-    fetch('/api/voice/tts', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, language: voiceLang }),
-    })
-      .then(r => (r.ok ? r.blob() : null))
-      .then(b => { if (b && !cancelled) greetingRef.current = URL.createObjectURL(b) })
-      .catch(() => { /* greeting is best-effort */ })
+    const prefetch = (text: string, target: React.MutableRefObject<string | null>) =>
+      fetch('/api/voice/tts', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, language: voiceLang }),
+      })
+        .then(r => (r.ok ? r.blob() : null))
+        .then(b => { if (b && !cancelled) target.current = URL.createObjectURL(b) })
+        .catch(() => { /* best-effort */ })
+    prefetch(GREETINGS[voiceLang] ?? GREETINGS.en, greetingRef)
+    prefetch(FILLERS[voiceLang] ?? FILLERS.en, fillerRef)
     return () => { cancelled = true }
   }, [voiceLang])
 
@@ -691,26 +765,66 @@ export function ChatPage() {
   }
 
   // ── Voice: speak a reply via Veda's TTS (edge-tts on the backend) ────────────
-  const speak = useCallback(async (text: string) => {
+  // Phase V3: staged playback (first sentences play while the rest is fetched),
+  // generation counter so stop/new-speech cancels stale chains, and a browser
+  // speechSynthesis fallback if the TTS service is unreachable.
+  const speakGenRef = useRef(0)
+
+  const fetchTtsUrl = useCallback(async (text: string): Promise<string | null> => {
     try {
-      audioRef.current?.pause()
       const r = await fetch('/api/voice/tts', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, language: voiceLang }),
       })
-      if (!r.ok) return
-      const blob = await r.blob()
-      const audio = new Audio(URL.createObjectURL(blob))
-      audioRef.current = audio
+      if (!r.ok) return null
+      return URL.createObjectURL(await r.blob())
+    } catch { return null }
+  }, [voiceLang])
+
+  const browserTtsFallback = useCallback((text: string) => {
+    try {
+      const u = new SpeechSynthesisUtterance(text.slice(0, 800))
+      u.lang = (VOICE_LANGS.find(l => l.code === voiceLang) ?? VOICE_LANGS[0]).sttLang
+      u.onend = () => setSpeaking(false)
+      u.onerror = () => setSpeaking(false)
       setSpeaking(true)
-      audio.onended = () => setSpeaking(false)
-      audio.onerror = () => setSpeaking(false)
-      await audio.play()
+      window.speechSynthesis.speak(u)
     } catch { setSpeaking(false) }
   }, [voiceLang])
 
-  const stopSpeaking = useCallback(() => {
+  const speak = useCallback(async (text: string) => {
+    const gen = ++speakGenRef.current
     audioRef.current?.pause()
+    try { window.speechSynthesis?.cancel() } catch { /* ignore */ }
+
+    const [head, tail] = splitForStaging(text)
+    const headP = fetchTtsUrl(head)
+    const tailP = tail ? fetchTtsUrl(tail) : Promise.resolve(null)
+
+    const headUrl = await headP
+    if (gen !== speakGenRef.current) return          // superseded / stopped
+    if (!headUrl) { browserTtsFallback(text); return }  // edge-tts outage
+
+    const playUrl = (url: string, onDone: () => void) => {
+      const a = new Audio(url)
+      audioRef.current = a
+      a.onended = onDone
+      a.onerror = onDone
+      a.play().catch(onDone)
+    }
+    setSpeaking(true)
+    playUrl(headUrl, async () => {
+      if (gen !== speakGenRef.current) { setSpeaking(false); return }
+      const tailUrl = await tailP
+      if (gen !== speakGenRef.current || !tailUrl) { setSpeaking(false); return }
+      playUrl(tailUrl, () => setSpeaking(false))
+    })
+  }, [fetchTtsUrl, browserTtsFallback])
+
+  const stopSpeaking = useCallback(() => {
+    speakGenRef.current += 1     // cancels any staged chain in flight
+    audioRef.current?.pause()
+    try { window.speechSynthesis?.cancel() } catch { /* ignore */ }
     setSpeaking(false)
   }, [])
 
@@ -745,8 +859,17 @@ export function ChatPage() {
 
     const sid = sidOverride !== undefined ? (sidOverride ?? undefined) : backendSid
     const t0 = Date.now()
+    // Spoken filler if a voice request runs long (Phase V3)
+    let fillerTimer: ReturnType<typeof setTimeout> | null = null
+    if (mode === 'voice' && fillerRef.current) {
+      fillerTimer = setTimeout(() => {
+        try { const a = new Audio(fillerRef.current as string); audioRef.current = a; a.play().catch(() => {}) }
+        catch { /* ignore */ }
+      }, 2500)
+    }
     try {
       const data: ChatResponseData = await sendChat(trimmed, sid, mode)
+      if (fillerTimer) { clearTimeout(fillerTimer); fillerTimer = null }
       setBackendSid(data.session_id)
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply, intent: data.intent, ts: Date.now() }])
       logTurn(data.session_id, mode, trimmed, data.intent ?? '', data.reply.length, Date.now() - t0)
@@ -759,6 +882,7 @@ export function ChatPage() {
       setApiError(errText)
       setMessages(prev => [...prev, { role: 'assistant', content: `Sorry, I could not process that. ${errText}`, ts: Date.now() }])
     } finally {
+      if (fillerTimer) clearTimeout(fillerTimer)
       setLoading(false)
       inputRef.current?.focus()
     }
@@ -812,13 +936,14 @@ export function ChatPage() {
     try { recog.start() } catch { setListening(false) }
   }, [listening, voiceLang, messages.length, currentId, send, stopSpeaking])
 
-  // ── Voice: hands-free wake word "Veda" / "Adya" (Phase V2) ──────────────────
-  // A lightweight continuous recognition session runs whenever the page is
-  // otherwise idle. On hearing a wake word it plays the pre-cached greeting
-  // and opens command capture. Chrome ends continuous sessions periodically;
-  // onend bumps wakeRetry to restart (auto-restart pattern).
+  // ── Voice: hands-free wake word "Veda" / "Adya" (Phase V2 + V3 barge-in) ────
+  // A lightweight continuous recognition session runs whenever no command is
+  // being captured or processed -- INCLUDING while Veda is speaking, so saying
+  // her name interrupts her (barge-in). Interruption is wake-word-only, never
+  // any-speech, so her own audio cannot self-trigger. Chrome ends continuous
+  // sessions periodically; onend bumps wakeRetry to restart.
   useEffect(() => {
-    if (!wakeEnabled || listening || loading || speaking) return
+    if (!wakeEnabled || listening || loading) return
     const recog = getSpeechRecognition()
     if (!recog) return
 
@@ -832,6 +957,7 @@ export function ChatPage() {
     const onWake = () => {
       matched = true
       try { recog.abort() } catch { /* ignore */ }
+      stopSpeaking()                     // barge-in: silence Veda immediately
       wakeUsedRef.current = true
       const play = greetingRef.current ? new Audio(greetingRef.current) : null
       if (play) {
@@ -864,7 +990,7 @@ export function ChatPage() {
     try { recog.start() } catch { /* mic busy -- retry on next state change */ }
 
     return () => { disposed = true; try { recog.abort() } catch { /* ignore */ } }
-  }, [wakeEnabled, listening, loading, speaking, voiceLang, wakeRetry, startListening])
+  }, [wakeEnabled, listening, loading, voiceLang, wakeRetry, startListening, stopSpeaking])
 
   // ── Input handling ────────────────────────────────────────────────────────────
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
