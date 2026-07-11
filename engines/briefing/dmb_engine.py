@@ -475,19 +475,38 @@ class DMBEngine:
 
     # ── Delivery ──────────────────────────────────────────────────────────────
 
+    @staticmethod
+    def _md_to_tg_html(text: str) -> str:
+        """Markdown -> Telegram HTML: escape first (raw < > & would make
+        Telegram reject the whole message), then **bold** -> <b>, strip
+        heading markers and leftover markdown noise."""
+        import re as _re
+        t = (text or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        t = _re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", t)
+        t = _re.sub(r"^#{1,6}\s*", "", t, flags=_re.MULTILINE)
+        t = t.replace("EXEC:", "").replace("`", "")
+        t = _re.sub(r"\n{3,}", "\n\n", t)
+        return t.strip()
+
     def _deliver(self, report_path: Path, exec_summary: str) -> None:
         try:
-            from alerts.telegram_bot import send_raw, send_document
+            from alerts.telegram_bot import send_message, send_document
+            bias = self.bias
             digest = (
-                f"DAILY MARKET BRIEF -- {self.today.strftime('%d %b %Y')}\n"
-                f"{'-' * 32}\n{exec_summary}\n\n"
-                f"NIFTY range: {self.bias.get('nifty_range', 'n/a')} | "
-                f"PCR {self.bias.get('pcr', 'n/a')} | "
-                f"VIX {self.bias.get('india_vix', 'n/a')}\n"
-                f"Full report attached."
+                f"<b>DAILY MARKET BRIEF</b> | {self.today.strftime('%a, %d %b %Y')}\n"
+                f"Bias: <b>{bias.get('bias_label', self._bias_label())}</b>"
+                f"  |  Regime: {bias.get('regime', 'n/a')}\n"
+                f"NIFTY range: <b>{bias.get('nifty_range', 'n/a')}</b>"
+                f"  |  PCR {bias.get('pcr', 'n/a')}  |  VIX {bias.get('india_vix', 'n/a')}\n"
+                f"Sectors in: {', '.join(bias.get('top_sectors', []) or ['n/a'])}\n"
+                f"Sectors out: {', '.join(bias.get('weak_sectors', []) or ['n/a'])}\n"
+                f"{'-' * 30}\n"
+                f"{self._md_to_tg_html(exec_summary)}\n"
+                f"{'-' * 30}\n"
+                f"Full report attached below."
             )
-            send_raw(digest)
-            send_document(report_path, caption=f"DMB {self.today.isoformat()}")
+            send_message(digest[:4000], parse_mode="HTML")
+            send_document(report_path, caption=f"DMB {self.today.isoformat()} -- full report")
             logger.info("[DMB] Delivered to Telegram")
         except Exception as e:
             logger.warning("[DMB] Telegram delivery failed (report still saved): %s", e)
