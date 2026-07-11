@@ -166,6 +166,56 @@ read aloud; Veda says "I've put the full table in the chat").
 
 ---
 
+# 3.5 CONVERSATION STATE MACHINE (V3.2 -- exact timings)
+
+```
+ [1. IDLE / WAKE-LISTENING]
+    A background recognizer runs whenever no command is being captured or
+    processed (it ALSO runs while Veda speaks -- that is barge-in).
+    It only reacts to wake words: veda / adya (+ variants, Devanagari).
+    Everything else you say here is IGNORED by design.
+        |
+        |  you say "Veda"
+        v
+ [2. GREETING]  (~1.5s)
+    Wake recognizer stops. Pre-cached greeting plays:
+    "Ji, boliye. Main sun rahi hoon."
+        |
+        |  greeting audio ends
+        v
+ [3. COMMAND CAPTURE]  <-- the input box shows your words live
+    - You have up to 8 SECONDS to START speaking (INITIAL_WAIT_MS).
+      If you say nothing in 8s: capture closes, an amber hint banner
+      explains it, and Veda returns to state 1 (say "Veda" again).
+    - Once you HAVE started, pauses are fine: capture only ends after
+      2 SECONDS of continuous silence (SILENCE_MS), max 25s per command.
+    - The mic button always enters this state directly (no wake needed).
+        |
+        |  2s of quiet after your statement
+        v
+ [4. THINKING]  (1-4s typical)
+    Command goes to the chat engine (intent, RAG, tools, 7-provider
+    fallback). If it runs past 2.5s Veda says "Ek kshan." (filler).
+        |
+        v
+ [5. SPEAKING + TEXT]
+    Reply renders in the chat AND speaks in Veda's voice (staged: first
+    sentences play while the rest generates). Wake listening is ACTIVE
+    during this state -- saying "Veda" interrupts her (barge-in) and
+    jumps straight to state 2.
+        |
+        |  audio ends
+        v
+    back to [1] -- say "Veda" again for the next question.
+    (Wake restart waits 350ms for mic release and retries on failure.)
+```
+
+Key user-facing rules in one line each:
+- Only "Veda"/"Adya" is heard in idle -- normal talk is ignored until you wake her.
+- After the greeting you have 8s to start; once started, 2s of silence means done.
+- You can interrupt her any time by saying her name.
+- The mic button is the always-works path (same capture, no wake word).
+
 # 4. LANGUAGE FLOW
 
 1. User sets preferred language once (settings; default: English-India).

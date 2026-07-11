@@ -889,12 +889,16 @@ export function ChatPage() {
   }, [loading, backendSid, speak, logTurn, speakReplies, currentId])
 
   // ── Voice: push-to-talk capture ──────────────────────────────────────────────
-  // V3.1: continuous capture with OUR OWN silence endpointing. The browser's
-  // non-continuous mode ends at the first short pause, which cut users off
-  // mid-statement (reported 2026-07-11). Now: keep listening, and only finish
-  // after SILENCE_MS of quiet (or the hard cap).
-  const SILENCE_MS = 2000
-  const MAX_CAPTURE_MS = 20000
+  // Capture timing (V3.2 -- fixes "no response after the greeting"):
+  //   INITIAL_WAIT_MS  window to START speaking. Must be generous: the first
+  //                    recognition result arrives 0.5-1s AFTER speech begins,
+  //                    so the previous 2s window often closed before the user
+  //                    was even heard -- capture ended empty, silently.
+  //   SILENCE_MS       once speech HAS started, this much quiet = done.
+  //   MAX_CAPTURE_MS   hard cap per command.
+  const INITIAL_WAIT_MS = 8000
+  const SILENCE_MS      = 2000
+  const MAX_CAPTURE_MS  = 25000
 
   const startListening = useCallback(() => {
     if (listening) { recogRef.current?.stop(); return }
@@ -912,15 +916,17 @@ export function ChatPage() {
     setListening(true)
 
     let finalText = ''
+    let heardAnything = false
     let silenceTimer: ReturnType<typeof setTimeout> | null = null
-    const armSilence = () => {
+    const armSilence = (ms: number) => {
       if (silenceTimer) clearTimeout(silenceTimer)
-      silenceTimer = setTimeout(() => { try { recog.stop() } catch { /* ignore */ } }, SILENCE_MS)
+      silenceTimer = setTimeout(() => { try { recog.stop() } catch { /* ignore */ } }, ms)
     }
-    armSilence()   // covers the user never speaking at all
+    armSilence(INITIAL_WAIT_MS)   // generous window to begin speaking
     const hardCap = setTimeout(() => { try { recog.stop() } catch { /* ignore */ } }, MAX_CAPTURE_MS)
 
     recog.onresult = (e) => {
+      heardAnything = true
       let interim = ''
       finalText = ''
       for (let i = 0; i < e.results.length; i++) {
@@ -929,7 +935,7 @@ export function ChatPage() {
         else interim += res[0].transcript
       }
       setInput((finalText + interim).trim())   // live transcript in the input box
-      armSilence()   // every sound resets the done-talking timer
+      armSilence(SILENCE_MS)   // speech has started: 2s of quiet = done talking
     }
     recog.onerror = () => { setListening(false) }
     recog.onend = () => {
@@ -937,7 +943,17 @@ export function ChatPage() {
       clearTimeout(hardCap)
       setListening(false)
       const spoken = finalText.trim()
-      if (!spoken) return
+      if (!spoken) {
+        // Nothing captured: reset the wake flag so it cannot mislabel the
+        // next turn, and tell the user instead of failing silently.
+        wakeUsedRef.current = false
+        if (!heardAnything) {
+          setInput('')
+          setApiError('Veda did not hear anything -- say "Veda" and speak within a few seconds, or use the mic button.')
+          setTimeout(() => setApiError(null), 6000)
+        }
+        return
+      }
       // Voice conversations are recorded in their own chat: if the current
       // chat is a text conversation with history, start a fresh one first.
       if (messages.length > 1 && !voiceChatsRef.current.has(currentId)) {
@@ -1151,10 +1167,15 @@ export function ChatPage() {
           <div ref={bottomRef} />
         </div>
 
-        {/* API error banner */}
+        {/* API error / voice hint banner */}
         {apiError && (apiError.includes('API_KEY') || apiError.includes('not configured')) && (
           <div style={{ margin: '0 20px 8px', padding: '8px 14px', borderRadius: 4, background: '#1c0000', border: '1px solid #EF444444', color: '#EF4444', fontSize: 11, flexShrink: 0 }}>
             API key is not configured — check .env and restart the backend.
+          </div>
+        )}
+        {apiError && apiError.includes('Veda') && (
+          <div style={{ margin: '0 20px 8px', padding: '8px 14px', borderRadius: 4, background: '#1a1200', border: '1px solid #F59E0B44', color: '#F59E0B', fontSize: 11, flexShrink: 0 }}>
+            {apiError}
           </div>
         )}
 
