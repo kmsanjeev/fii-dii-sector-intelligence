@@ -22,7 +22,7 @@ function SortHeader({
       onClick={onClick}
       style={{
         padding: '6px 10px', textAlign: isCentered ? 'center' : 'right',
-        fontSize: 10, fontWeight: 600,
+        fontSize: 12, fontWeight: 600,
         color: active ? (amber ? '#F59E0B' : '#22C55E') : (amber ? '#92653A' : '#64748B'),
         whiteSpace: 'nowrap', borderBottom: '1px solid #1E2332', cursor: 'pointer',
         userSelect: 'none',
@@ -73,7 +73,7 @@ function ActionBadge({ label, trend, oi, rvol, rs30, vsDma50 }: {
 
   return (
     <span style={{
-      fontSize: 8, fontWeight: 700, padding: '1px 5px', borderRadius: 2,
+      fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 2,
       border: `1px solid ${color}44`, color, background: bg,
     }}>
       {text}
@@ -93,7 +93,7 @@ function TrendBadge({ signal }: { signal?: string }) {
   const m = MAP[signal] ?? { color: '#334155', short: '?' }
   return (
     <span style={{
-      fontSize: 8, fontWeight: 700, padding: '1px 5px', borderRadius: 2,
+      fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 2,
       border: `1px solid ${m.color}44`, color: m.color, background: `${m.color}18`,
     }}>
       {m.short}
@@ -188,7 +188,7 @@ export function WatchlistPage() {
       {/* Header + filters */}
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
         <h1 className="text-lg font-bold tracking-widest" style={{ color: '#E2E8F0' }}>
-          WATCHLIST <span style={{ color: '#64748B', fontSize: 12, fontWeight: 400 }}>{data?.total ?? 0} symbols</span>
+          WATCHLIST <span style={{ color: '#64748B', fontSize: 14, fontWeight: 400 }}>{data?.total ?? 0} symbols</span>
         </h1>
 
         {/* Search */}
@@ -198,7 +198,7 @@ export function WatchlistPage() {
           placeholder="Search symbol / sector..."
           style={{
             background: '#141720', border: '1px solid #1E2332', borderRadius: 4,
-            color: '#E2E8F0', padding: '5px 10px', fontSize: 11, outline: 'none', width: 200,
+            color: '#E2E8F0', padding: '5px 10px', fontSize: 13, outline: 'none', width: 200,
           }}
         />
 
@@ -208,7 +208,7 @@ export function WatchlistPage() {
           onChange={e => { setSectorFilter(e.target.value); setPage(1) }}
           style={{
             background: '#141720', border: '1px solid #1E2332', borderRadius: 4,
-            color: sectorFilter === 'ALL' ? '#64748B' : '#E2E8F0', padding: '5px 8px', fontSize: 11,
+            color: sectorFilter === 'ALL' ? '#64748B' : '#E2E8F0', padding: '5px 8px', fontSize: 13,
           }}
         >
           {sectors.map(s => <option key={s} value={s}>{s === 'ALL' ? 'All sectors' : s}</option>)}
@@ -236,17 +236,17 @@ export function WatchlistPage() {
       {isLoading && <div className="text-center py-20" style={{ color: '#64748B' }}>Loading...</div>}
 
       <div className="overflow-x-auto">
-        <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
+        <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th style={{ padding: '6px 10px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332', whiteSpace: 'nowrap' }}>Symbol</th>
-              <th style={{ padding: '6px 10px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Sector</th>
+              <th style={{ padding: '6px 10px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332', whiteSpace: 'nowrap' }}>Symbol</th>
+              <th style={{ padding: '6px 10px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Sector</th>
               <SortHeader label="LTP"    col="close_now"     active={sortKey === 'close_now'}     dir={sortDir} onClick={() => toggleSort('close_now')} />
               <SortHeader label="Score"  col="bull_run_score"       active={sortKey === 'bull_run_score'}       dir={sortDir} onClick={() => toggleSort('bull_run_score')} />
               <SortHeader label="FWD 45D" col="forward_return_score" active={sortKey === 'forward_return_score'} dir={sortDir} onClick={() => toggleSort('forward_return_score')} amber />
-              <th style={{ padding: '6px 10px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Label</th>
-              <th style={{ padding: '6px 10px', textAlign: 'center', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Trend</th>
-              <th style={{ padding: '6px 10px', textAlign: 'center', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Action</th>
+              <th style={{ padding: '6px 10px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Label</th>
+              <th style={{ padding: '6px 10px', textAlign: 'center', fontSize: 12, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Trend</th>
+              <th style={{ padding: '6px 10px', textAlign: 'center', fontSize: 12, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Action</th>
               <SortHeader label="RS 30D"   col="rs_30d"          active={sortKey === 'rs_30d'}          dir={sortDir} onClick={() => toggleSort('rs_30d')} />
               <SortHeader label="DELIV 5D" col="delivery_5d_pct" active={sortKey === 'delivery_5d_pct'} dir={sortDir} onClick={() => toggleSort('delivery_5d_pct')} />
               <SortHeader label="RVOL"     col="rvol"            active={sortKey === 'rvol'}            dir={sortDir} onClick={() => toggleSort('rvol')} />
@@ -255,7 +255,12 @@ export function WatchlistPage() {
           </thead>
           <tbody>
             {displayed.map(s => (
-              <tr key={s.symbol} style={{ borderBottom: '1px solid #1E233220' }} className="hover:brightness-125 transition-all">
+              <tr
+                key={s.symbol}
+                style={{ borderBottom: '1px solid #1E233220', transition: 'background 0.12s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#18223A' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+              >
                 <td style={{ padding: '6px 10px', fontWeight: 700 }}>
                   <Link to={`/stocks/${s.symbol}`} style={{ color: '#E2E8F0', textDecoration: 'none' }}>
                     {s.symbol}
@@ -274,7 +279,7 @@ export function WatchlistPage() {
                   {(s as any).forward_return_score != null ? (
                     <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                       <span style={{
-                        fontSize: 12, fontWeight: 800, fontFamily: 'monospace',
+                        fontSize: 14, fontWeight: 800, fontFamily: 'monospace',
                         color: (s as any).forward_return_score >= 60 ? '#F59E0B'
                              : (s as any).forward_return_score >= 40 ? '#D97706'
                              : '#92653A',
@@ -299,7 +304,7 @@ export function WatchlistPage() {
                     {/* Distance from 50DMA -- overextension gauge (WL-1) */}
                     {(s as any).vs_dma_50 != null && (
                       <span style={{
-                        fontSize: 9, fontFamily: 'monospace',
+                        fontSize: 11, fontFamily: 'monospace',
                         color: (s as any).vs_dma_50 > 15 ? '#F59E0B'
                              : (s as any).vs_dma_50 >= 0 ? '#64748B' : '#EF4444',
                       }} title="Distance from 50-day moving average">
@@ -364,13 +369,13 @@ export function WatchlistPage() {
 
       <div className="flex gap-2 justify-center">
         {page > 1 && (
-          <button onClick={() => setPage(p => p - 1)} style={{ padding: '4px 12px', borderRadius: 4, fontSize: 11, background: '#141720', color: '#64748B', border: '1px solid #1E2332', cursor: 'pointer' }}>
+          <button onClick={() => setPage(p => p - 1)} style={{ padding: '4px 12px', borderRadius: 4, fontSize: 13, background: '#141720', color: '#64748B', border: '1px solid #1E2332', cursor: 'pointer' }}>
             Prev
           </button>
         )}
-        <span style={{ padding: '4px 12px', fontSize: 11, color: '#64748B' }}>Page {page}</span>
+        <span style={{ padding: '4px 12px', fontSize: 13, color: '#64748B' }}>Page {page}</span>
         {(data?.stocks?.length ?? 0) === PER_PAGE && (
-          <button onClick={() => setPage(p => p + 1)} style={{ padding: '4px 12px', borderRadius: 4, fontSize: 11, background: '#141720', color: '#64748B', border: '1px solid #1E2332', cursor: 'pointer' }}>
+          <button onClick={() => setPage(p => p + 1)} style={{ padding: '4px 12px', borderRadius: 4, fontSize: 13, background: '#141720', color: '#64748B', border: '1px solid #1E2332', cursor: 'pointer' }}>
             Next
           </button>
         )}
