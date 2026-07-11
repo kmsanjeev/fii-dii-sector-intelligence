@@ -33,6 +33,32 @@ def _check_credentials() -> bool:
     return True
 
 
+def send_document(file_path, caption: str = "") -> bool:
+    """Send a file as a Telegram document (Phase DMB-1). Returns True on success."""
+    if not _check_credentials():
+        return False
+    from pathlib import Path as _P
+    p = _P(file_path)
+    if not p.exists():
+        logger.error("[TelegramBot] Document not found: %s", p)
+        return False
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendDocument"
+    try:
+        with open(p, "rb") as f:
+            resp = requests.post(
+                url,
+                data={"chat_id": TELEGRAM_CHAT_ID, "caption": caption[:1024]},
+                files={"document": (p.name, f)},
+                timeout=API_TIMEOUT * 2,
+            )
+        resp.raise_for_status()
+        logger.info("[TelegramBot] Document sent: %s", p.name)
+        return True
+    except Exception as e:
+        logger.error(f"[TelegramBot] Document send failed: {e}")
+        return False
+
+
 def send_message(text: str, parse_mode: str = "HTML") -> bool:
     """Send a single Telegram message. Returns True on success."""
     if not _check_credentials():

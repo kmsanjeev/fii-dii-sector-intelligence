@@ -6,6 +6,60 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.38.0
+
+Phase DMB-1 -- Daily Market Brief (pre-market institutional briefing)
+
+Date: 2026-07-11
+
+Status: Completed
+
+---
+
+## Summary
+
+Flagship daily publication: an institutional pre-market brief generated
+automatically at 08:45 IST every trading day, saved to data/reports/ and
+delivered to Telegram (executive digest + full report attached). Covers
+24 of the user's 31 spec sections with real data; the rest are explicitly
+marked deferred (no trustworthy free source) -- the brief never invents.
+
+## New Engines (engines/briefing/)
+
+- global_snapshot_engine.py: 29 tickers via yfinance (US/Europe/Asia
+  indices, US futures, commodities, FX incl USDINR + DXY, US 10Y,
+  India VIX + CBOE VIX); failures marked UNAVAILABLE, never guessed
+- market_breadth_engine.py: A/D + up/down volume + turnover from the last
+  two equity bhavcopies; 52w-high/low counts; NIFTY/BANKNIFTY technicals
+  (RSI/MACD/DMA 20-50-200/trend/S-R) from yfinance daily history
+- index_options_engine.py: FO bhavcopy (UDiFF) nearest-expiry chain for
+  NIFTY + BANKNIFTY -- PCR, max pain, call/put OI walls, expected range
+  (walls filtered above/below spot), futures long/short buildup read
+- dmb_engine.py: the assembler -- 13 intelligence sources -> full markdown
+  report in the institutional reading order; deterministic bias engine
+  (global chg + A/D + PCR + regime); data-locked LLM synthesis for the
+  executive summary + AI intelligence section with deterministic fallback;
+  Telegram digest + document delivery
+
+## Infrastructure
+
+- telegram_bot.send_document() (multipart file upload)
+- Scheduler: second cron job 08:45 IST Mon-Fri (03:15 UTC), 30-min
+  misfire grace, runs in a worker thread
+- docs/modules/DAILY_MARKET_BRIEF.md: design + honest 31-section
+  availability matrix (deferred: macro calendar, IPO/GMP, analyst
+  ratings, India 10Y, GIFT premium, delivery %)
+
+## Verification
+
+- Live end-to-end run: 29/29 global tickers OK; breadth A/D 3.04;
+  NIFTY PCR 0.80 / max pain 24050 / range 23600-24500; BANKNIFTY walls
+  spot-filtered after a degenerate-range bug was caught live; FII/DII
+  scores + 5/20-day trends; LLM exec summary generated; Telegram digest
+  + document delivered and confirmed in logs. Suite 267/267.
+
+---
+
 # Version 4.37.0
 
 Phase V3 -- Veda Polish: barge-in, fillers, staged speech, fallback, analytics card

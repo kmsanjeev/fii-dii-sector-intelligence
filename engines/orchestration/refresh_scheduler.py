@@ -43,6 +43,23 @@ def _scheduled_run() -> None:
     logger.info("[Scheduler] %s", msg)
 
 
+def _morning_briefing_run() -> None:
+    """Called by APScheduler at 08:45 IST weekdays (Phase DMB-1).
+    Runs in a worker thread so the event loop is never blocked."""
+    import threading
+
+    def _work():
+        try:
+            from engines.briefing.dmb_engine import run_full_briefing
+            logger.info("[Scheduler] 08:45 Daily Market Brief starting")
+            run_full_briefing(deliver=True)
+            logger.info("[Scheduler] Daily Market Brief complete")
+        except Exception as e:
+            logger.error("[Scheduler] Daily Market Brief failed: %s", e)
+
+    threading.Thread(target=_work, name="dmb-briefing", daemon=True).start()
+
+
 def start_scheduler() -> None:
     """Start the APScheduler background scheduler. Call once on app startup."""
     global _scheduler
@@ -64,10 +81,18 @@ def start_scheduler() -> None:
         replace_existing=True,
         misfire_grace_time=3600,       # run up to 1h late if server was down
     )
+    # 08:45 IST = 03:15 UTC -- pre-market Daily Market Brief (Phase DMB-1)
+    _scheduler.add_job(
+        _morning_briefing_run,
+        trigger=CronTrigger(day_of_week="mon-fri", hour=3, minute=15, timezone="UTC"),
+        id="daily_market_brief",
+        name="Daily Market Brief (08:45 IST)",
+        replace_existing=True,
+        misfire_grace_time=1800,       # run up to 30 min late if machine was asleep
+    )
     _scheduler.start()
     logger.info(
-        "[Scheduler] Started — daily refresh scheduled at %02d:%02d UTC (18:00 IST) Mon-Fri",
-        _IST_HOUR_UTC, _IST_MINUTE_UTC,
+        "[Scheduler] Started — daily refresh 18:00 IST + market brief 08:45 IST, Mon-Fri",
     )
 
 
