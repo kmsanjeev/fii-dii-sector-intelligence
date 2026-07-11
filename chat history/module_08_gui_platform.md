@@ -63,3 +63,16 @@ GUI-1 through GUI-3 can proceed immediately with mock data.
 4. Hold GUI-4 until Phase 4A is complete
 
 ---
+
+---
+
+## Session 2026-07-11 — Phase WL-1: Watchlist decision metrics
+
+- watchlist_metrics_engine: nselib bhav_copy_with_delivery (works! DELIV_PER
+  + TTL_TRD_QNTY per symbol) -> raw cache data/NSE/delivery/YYYY/ immutable;
+  rvol/rs_30d (vs NIFTY 50 from index_momentum RETURN_30D)/delivery_5d_pct.
+- data_loader + _enrich_bulk merge; pipeline stage WL1 after A2.
+- WatchlistPage: RVOL (green >=2x), RS 30D, DELIV 5D, 50-DMA distance under
+  trend badge, BUY BRKOUT / LOW RISK ENTRY action triggers, CONV column.
+- GOTCHA: bhavcopy cache lacks delivery; the delivery bhavcopy is a separate
+  nselib call. index_momentum uses INDEX_NAME/RETURN_30D (caps).

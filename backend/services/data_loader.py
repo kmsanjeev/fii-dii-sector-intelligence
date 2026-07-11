@@ -52,6 +52,7 @@ SOURCES = {
     "fwd_return_scores":      cfg.INTELLIGENCE_DIR / "ml_forward_return_scores.csv",
     "technical":              cfg.INTELLIGENCE_DIR / "technical_indicators.csv",
     "fno_intel":              cfg.INTELLIGENCE_DIR / "fno_intelligence.csv",
+    "watchlist_metrics":      cfg.INTELLIGENCE_DIR / "watchlist_metrics.csv",   # Phase WL-1
     "trade_conviction":       cfg.INTELLIGENCE_DIR / "trade_conviction_scores.csv",
     "index_momentum":         cfg.INTELLIGENCE_DIR / "index_momentum.csv",
     "quarterly_results":      cfg.NSE_DIR / "results" / "quarterly_results.csv",

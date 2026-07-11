@@ -6,6 +6,58 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.39.0
+
+Phase WL-1 -- Watchlist Column Data Hydration (decision-making view)
+
+Date: 2026-07-11
+
+Status: Completed
+
+---
+
+## Summary
+
+The Watchlist table's placeholder columns now carry institutional decision
+metrics: RVOL (volume expansion), 30-day relative strength vs NIFTY 50,
+5-session delivery percentage (true absorption), distance from the 50-DMA
+(overextension gauge), algorithmic action triggers, and a conviction column.
+
+## New Engine
+
+- engines/intelligence/watchlist_metrics_engine.py: fetches security-wise
+  delivery bhavcopy via nselib (priority-1 source; raw files cached
+  immutably under data/NSE/delivery/YYYY/, existing files never refetched);
+  computes rvol = latest volume / 20d avg, rs_30d = stock ret_30d minus
+  NIFTY 50 RETURN_30D (index_momentum), delivery_5d_pct = mean DELIV_PER
+  over the last 5 sessions (>= 3 required). Pipeline stage
+  WL1_watchlist_metrics after F&O intelligence.
+
+## Backend
+
+- data_loader: watchlist_metrics source registered
+- stocks _enrich_bulk: merges rvol / rs_30d / delivery_5d_pct + vs_dma_50
+
+## Frontend (WatchlistPage)
+
+- Vol -> RVOL with green highlight at >= 2.0x
+- 30D -> RS 30D vs NIFTY (signed, colored)
+- 365D -> DELIV 5D (green >= 60, amber < 40)
+- Trend -> badge + %% distance from 50-DMA (amber warning above +15)
+- Action -> algorithmic triggers: BULL_RUN + RVOL >= 2 + RS > 0 ->
+  BUY BRKOUT; EMERGING within 3%% of 50-DMA -> LOW RISK ENTRY;
+  existing EXIT/REDUCE/STR BUY/BUY/ACCUM/HOLD/WATCH fallbacks unchanged
+- NEW CONV column (7-factor trade conviction) -- decision-view enrichment
+- All new columns sortable
+
+## Verification
+
+- Engine live: rvol/rs/delivery populated (5 delivery sessions fetched);
+  API serves all fields; EBGNG case validated the overextension gauge
+  (+31%% above 50-DMA flagged amber). tsc + build clean; suite 267/267.
+
+---
+
 # Version 4.38.0
 
 Phase DMB-1 -- Daily Market Brief (pre-market institutional briefing)
@@ -3913,3 +3965,4 @@ This remains the central objective of the platform.
 - Secondary backup repository requirement
 - Disaster recovery hierarchy
 - Metadata-only registry architecture
+

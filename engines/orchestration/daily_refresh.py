@@ -69,6 +69,8 @@ STAGES = [
     # Technical + F&O signals (depend on fresh stock_history_cache from 1F)
     ("A1_technical_indicators",     "engines.intelligence.technical_engine",                  "Technical Indicators",                  120),
     ("A2_fno_intelligence",         "engines.intelligence.fno_engine",                        "F&O Intelligence (PCR + OI signals)",   60),
+    # Watchlist decision metrics (Phase WL-1: RVOL, RS vs NIFTY, delivery 5d)
+    ("WL1_watchlist_metrics",       "engines.intelligence.watchlist_metrics_engine",          "Watchlist Metrics (RVOL/RS/delivery)", 300),
     # Price scoring (depends on 5B sector flow + 7A deals + 7C corporate confidence)
     ("8A_price_momentum",           "engines.intelligence.price_momentum_engine",             "Price Momentum",                        60),
     ("8B_bull_run_probability",     "engines.intelligence.bull_run_probability_engine",       "Bull Run Probability",                  60),
@@ -116,7 +118,8 @@ STAGE_SECTIONS = {
                                 "FPI_A_sector_fpi_fetch", "FPI_B_sector_fpi_signals", "6C_sector_rotation",
                                 "7A_block_bulk_deals", "7C_corp_action_intel", "18A_announcements",
                                 "16A_management_sentiment", "A1_technical_indicators",
-                                "A2_fno_intelligence", "8A_price_momentum", "8B_bull_run_probability",
+                                "A2_fno_intelligence", "WL1_watchlist_metrics",
+                                "8A_price_momentum", "8B_bull_run_probability",
                                 "12_ml_scorer", "C1_trade_conviction",
                                 "AF_astro_engine",
                                 "KU_kundli_engine", "KU_gann_engine",

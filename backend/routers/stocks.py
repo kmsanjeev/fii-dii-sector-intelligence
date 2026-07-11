@@ -646,8 +646,14 @@ def _enrich_bulk(df: pd.DataFrame) -> pd.DataFrame:
     """Merge technical / F&O / ML / conviction columns into a bulk stock dataframe."""
     tech_df = data_loader.get("technical")
     if tech_df is not None:
-        cols = [c for c in ["symbol", "trend_signal", "vs_dma_200", "prox_52w_high"] if c in tech_df.columns]
+        cols = [c for c in ["symbol", "trend_signal", "vs_dma_50", "vs_dma_200", "prox_52w_high"] if c in tech_df.columns]
         df = df.merge(tech_df[cols], on="symbol", how="left")
+
+    # Phase WL-1: watchlist decision metrics (RVOL, RS vs NIFTY, delivery 5d)
+    wm_df = data_loader.get("watchlist_metrics")
+    if wm_df is not None and "symbol" in wm_df.columns:
+        wm_cols = [c for c in ["symbol", "rvol", "rs_30d", "delivery_5d_pct"] if c in wm_df.columns]
+        df = df.merge(wm_df[wm_cols], on="symbol", how="left")
 
     fno_df = data_loader.get("fno_intel")
     if fno_df is not None and "symbol" in fno_df.columns and "oi_signal" in fno_df.columns:

@@ -9,7 +9,8 @@ import { Link } from 'react-router-dom'
 const LABELS   = ['ALL', 'BULL_RUN', 'EMERGING', 'ACCUMULATION', 'WATCHLIST', 'NEUTRAL', 'MARKDOWN']
 const PER_PAGE = 100
 
-type SortKey = 'bull_run_score' | 'close_now' | 'ret_30d' | 'ret_365d' | 'vol_ratio' | 'forward_return_score'
+type SortKey = 'bull_run_score' | 'close_now' | 'ret_30d' | 'ret_365d' | 'vol_ratio'
+             | 'forward_return_score' | 'rs_30d' | 'delivery_5d_pct' | 'rvol' | 'conviction_score'
 type SortDir = 'asc' | 'desc'
 
 function SortHeader({
@@ -32,8 +33,11 @@ function SortHeader({
   )
 }
 
-function ActionBadge({ label, trend, oi }: { label: string; trend?: string; oi?: string }) {
-  // Quick action signal from available bulk fields
+function ActionBadge({ label, trend, oi, rvol, rs30, vsDma50 }: {
+  label: string; trend?: string; oi?: string
+  rvol?: number | null; rs30?: number | null; vsDma50?: number | null
+}) {
+  // Algorithmic execution triggers (Phase WL-1) layered over the base signal
   const bullishTrend = trend === 'STRONG_UPTREND' || trend === 'UPTREND'
   const bearishTrend = trend === 'DOWNTREND'
   const bullishOI    = oi === 'LONG_BUILDUP' || oi === 'SHORT_COVERING'
@@ -46,7 +50,14 @@ function ActionBadge({ label, trend, oi }: { label: string; trend?: string; oi?:
   let color = '#64748B'
   let bg    = '#1E2332'
 
-  if (avoidLabel || (bearishTrend && bearishOI)) {
+  // Priority 1: institutional execution triggers (volume + RS confirmed)
+  if (strongLabel && (rvol ?? 0) >= 2.0 && (rs30 ?? -1) > 0) {
+    text = 'BUY BRKOUT'; color = '#22D35E'; bg = '#052e16'
+  } else if (label === 'EMERGING' && vsDma50 != null && Math.abs(vsDma50) <= 3.0
+             && !bearishTrend) {
+    text = 'LOW RISK ENTRY'; color = '#0EC4A0'; bg = '#023323'
+  // Priority 2: base label/trend/OI logic (unchanged fallbacks)
+  } else if (avoidLabel || (bearishTrend && bearishOI)) {
     text = 'EXIT'; color = '#EF4444'; bg = '#1c0000'
   } else if (bearishTrend || (bearishOI && !bullishTrend)) {
     text = 'REDUCE'; color = '#F97316'; bg = '#1c0a00'
@@ -236,9 +247,10 @@ export function WatchlistPage() {
               <th style={{ padding: '6px 10px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Label</th>
               <th style={{ padding: '6px 10px', textAlign: 'center', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Trend</th>
               <th style={{ padding: '6px 10px', textAlign: 'center', fontSize: 10, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332' }}>Action</th>
-              <SortHeader label="30D"   col="ret_30d"   active={sortKey === 'ret_30d'}   dir={sortDir} onClick={() => toggleSort('ret_30d')} />
-              <SortHeader label="365D"  col="ret_365d"  active={sortKey === 'ret_365d'}  dir={sortDir} onClick={() => toggleSort('ret_365d')} />
-              <SortHeader label="Vol"   col="vol_ratio" active={sortKey === 'vol_ratio'} dir={sortDir} onClick={() => toggleSort('vol_ratio')} />
+              <SortHeader label="RS 30D"   col="rs_30d"          active={sortKey === 'rs_30d'}          dir={sortDir} onClick={() => toggleSort('rs_30d')} />
+              <SortHeader label="DELIV 5D" col="delivery_5d_pct" active={sortKey === 'delivery_5d_pct'} dir={sortDir} onClick={() => toggleSort('delivery_5d_pct')} />
+              <SortHeader label="RVOL"     col="rvol"            active={sortKey === 'rvol'}            dir={sortDir} onClick={() => toggleSort('rvol')} />
+              <SortHeader label="CONV"     col="conviction_score" active={sortKey === 'conviction_score'} dir={sortDir} onClick={() => toggleSort('conviction_score')} amber />
             </tr>
           </thead>
           <tbody>
@@ -282,19 +294,67 @@ export function WatchlistPage() {
                 </td>
                 <td style={{ padding: '6px 10px' }}><CapFlowBadge label={s.label} /></td>
                 <td style={{ padding: '6px 10px', textAlign: 'center' }}>
-                  <TrendBadge signal={s.trend_signal ?? (s as any).technical?.trend_signal} />
+                  <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                    <TrendBadge signal={s.trend_signal ?? (s as any).technical?.trend_signal} />
+                    {/* Distance from 50DMA -- overextension gauge (WL-1) */}
+                    {(s as any).vs_dma_50 != null && (
+                      <span style={{
+                        fontSize: 9, fontFamily: 'monospace',
+                        color: (s as any).vs_dma_50 > 15 ? '#F59E0B'
+                             : (s as any).vs_dma_50 >= 0 ? '#64748B' : '#EF4444',
+                      }} title="Distance from 50-day moving average">
+                        {(s as any).vs_dma_50 >= 0 ? '+' : ''}{((s as any).vs_dma_50 as number).toFixed(1)}%
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td style={{ padding: '6px 10px', textAlign: 'center' }}>
                   <ActionBadge
                     label={s.label}
                     trend={s.trend_signal ?? (s as any).technical?.trend_signal}
                     oi={s.oi_signal ?? (s as any).fno?.oi_signal}
+                    rvol={(s as any).rvol}
+                    rs30={(s as any).rs_30d}
+                    vsDma50={(s as any).vs_dma_50}
                   />
                 </td>
-                <td style={{ padding: '6px 10px', textAlign: 'right' }}>{pct(s.price?.ret_30d)}</td>
-                <td style={{ padding: '6px 10px', textAlign: 'right' }}>{pct(s.price?.ret_365d)}</td>
-                <td style={{ padding: '6px 10px', textAlign: 'right', color: '#64748B' }}>
-                  {s.price?.vol_ratio != null ? `${s.price.vol_ratio.toFixed(1)}x` : '--'}
+                {/* RS 30D vs NIFTY 50 (WL-1) */}
+                <td style={{ padding: '6px 10px', textAlign: 'right' }}
+                    title="30-day return minus NIFTY 50 return">
+                  {pct((s as any).rs_30d)}
+                </td>
+                {/* 5-session average delivery % (WL-1) */}
+                <td style={{ padding: '6px 10px', textAlign: 'right' }}
+                    title="5-session average delivery percentage">
+                  {(s as any).delivery_5d_pct != null ? (
+                    <span style={{
+                      color: (s as any).delivery_5d_pct >= 60 ? '#22C55E'
+                           : (s as any).delivery_5d_pct >= 40 ? '#94A3B8' : '#F97316',
+                    }}>{((s as any).delivery_5d_pct as number).toFixed(0)}%</span>
+                  ) : <span style={{ color: '#334155' }}>--</span>}
+                </td>
+                {/* Relative volume vs 20d average (WL-1); >= 2x highlighted */}
+                <td style={{ padding: '6px 10px', textAlign: 'right' }}
+                    title="Today's volume / 20-day average volume">
+                  {(s as any).rvol != null ? (
+                    <span style={{
+                      color: (s as any).rvol >= 2.0 ? '#22D35E' : '#64748B',
+                      fontWeight: (s as any).rvol >= 2.0 ? 800 : 400,
+                      background: (s as any).rvol >= 2.0 ? '#052e16' : 'transparent',
+                      padding: '1px 5px', borderRadius: 3,
+                    }}>{((s as any).rvol as number).toFixed(1)}x</span>
+                  ) : <span style={{ color: '#334155' }}>--</span>}
+                </td>
+                {/* Conviction score (SA-1 screener) -- decision-view enrichment */}
+                <td style={{ padding: '6px 10px', textAlign: 'right' }}
+                    title="7-factor trade conviction score">
+                  {(s as any).conviction_score != null ? (
+                    <span style={{
+                      fontFamily: 'monospace', fontWeight: 700,
+                      color: (s as any).conviction_score >= 70 ? '#F59E0B'
+                           : (s as any).conviction_score >= 55 ? '#D97706' : '#64748B',
+                    }}>{((s as any).conviction_score as number).toFixed(0)}</span>
+                  ) : <span style={{ color: '#334155' }}>--</span>}
                 </td>
               </tr>
             ))}
