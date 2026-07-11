@@ -6,6 +6,36 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.40.1
+
+Phase UI-D fix -- Dashboard space management repack
+
+Date: 2026-07-12
+
+Status: Completed
+
+---
+
+## Summary
+
+Post-merge layout audit via headless Playwright screenshots found four
+dead-space offenders; the page is repacked so every card's height matches
+its content.
+
+- Regime Meter gauge SVG capped at 300px (was scaling to full column width,
+  inflating the whole row to ~430px)
+- Flow Interpretation moved out of its stretched half-row into a compact
+  card stacked under the Regime Meter
+- Universe Breadth donut enlarged to 150px; legend rows distribute evenly
+  across the card height (justify-content: space-evenly)
+- Participant history charts (FII vs DII, FPI vs MF) stacked vertically
+  beside the flow bars in one row -- heights match edge-to-edge
+- Institutional Deals rows auto-flow into responsive columns
+  (minmax 340px), shrinking the card to ~3 rows; Catalysts card keeps
+  natural height (1fr / 2fr split, align-start)
+
+---
+
 # Version 4.40.0
 
 Phase UI-D -- Dashboard Consolidation (Participant page merged)

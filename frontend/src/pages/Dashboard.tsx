@@ -208,7 +208,7 @@ function RegimeDial({ score, regime }: { score: number; regime: string }) {
   return (
     <div style={{ ...CARD, padding: '20px', display: 'flex', flexDirection: 'column' }}>
       <div style={LABEL}>REGIME METER</div>
-      <svg viewBox="0 0 240 130" width="100%" style={{ display: 'block', margin: '8px auto 0' }}>
+      <svg viewBox="0 0 240 130" width="100%" style={{ display: 'block', margin: '8px auto 0', maxWidth: 300 }}>
         <defs>
           {segs.map(({ from, stops }, i) => (
             <linearGradient key={i} id={`gr${i}`} x1="0%" y1="0%" x2="100%" y2="0%">
@@ -288,10 +288,10 @@ function BreadthDonut({ breadth }: { breadth: MarketContext['breadth'] | undefin
   })
 
   return (
-    <div style={{ ...CARD, padding: '20px' }}>
+    <div style={{ ...CARD, padding: '20px', display: 'flex', flexDirection: 'column' }}>
       <div style={LABEL}>UNIVERSE BREADTH</div>
-      <div style={{ display: 'flex', gap: 20, marginTop: 12, alignItems: 'center' }}>
-        <svg viewBox="0 0 130 130" width={130} height={130} style={{ flexShrink: 0 }}>
+      <div style={{ display: 'flex', gap: 20, marginTop: 12, alignItems: 'center', flex: 1 }}>
+        <svg viewBox="0 0 130 130" width={150} height={150} style={{ flexShrink: 0 }}>
           {/* Background track */}
           <circle cx={cx} cy={cy} r={R} fill="none"
             stroke="#1E2D44" strokeWidth={SW}
@@ -323,7 +323,7 @@ function BreadthDonut({ breadth }: { breadth: MarketContext['breadth'] | undefin
         </svg>
 
         {/* Legend — each segment links to the full list on the Watchlist page */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6, justifyContent: 'space-evenly', alignSelf: 'stretch' }}>
           {segments.map(({ key, label, color, bg, count, pct }) => {
             const pctStr = (pct * 100).toFixed(0)
             return (
@@ -562,7 +562,7 @@ function FlowInterpretation({ part }: { part: ParticipantLatest }) {
     lines.push({ text: 'Smart money selling into retail buying — distribution. High reversal risk.', color: C.bear })
 
   return (
-    <div style={{ ...CARD, padding: '20px', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ ...CARD, padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
       <div style={{ ...LABEL, marginBottom: 14 }}>FLOW INTERPRETATION</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {lines.map((l, i) => (
@@ -601,9 +601,9 @@ function ParticipantHistory({ isMobile }: { isMobile: boolean }) {
   const hasCash = chartData[0] && 'FPI_flow_5D' in chartData[0]
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: isMobile || !hasCash ? '1fr' : '1.4fr 1fr', gap: 14 }}>
+    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'column', gap: 14, height: '100%' }}>
       {/* FII vs DII flow score history */}
-      <div style={{ ...CARD, padding: '20px' }}>
+      <div style={{ ...CARD, padding: '20px', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 240 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <div style={LABEL}>FII vs DII FLOW SCORE</div>
           <div style={{ display: 'flex', gap: 6 }}>
@@ -619,7 +619,7 @@ function ParticipantHistory({ isMobile }: { isMobile: boolean }) {
             ))}
           </div>
         </div>
-        <ResponsiveContainer width="100%" height={200}>
+        <ResponsiveContainer width="100%" height="100%" minHeight={170}>
           <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="dash-fii" x1="0" y1="0" x2="0" y2="1">
@@ -644,9 +644,9 @@ function ParticipantHistory({ isMobile }: { isMobile: boolean }) {
 
       {/* FPI vs MF rolling cash flows */}
       {hasCash && (
-        <div style={{ ...CARD, padding: '20px' }}>
+        <div style={{ ...CARD, padding: '20px', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 240 }}>
           <div style={{ ...LABEL, marginBottom: 12 }}>FPI vs MF CASH (5D ROLLING, Cr)</div>
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height="100%" minHeight={170}>
             <BarChart data={chartData.slice(-60)} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
               <XAxis dataKey="date" tick={{ fontSize: 9, fill: '#64748B' }} tickLine={false} axisLine={false} interval={9} />
               <YAxis tick={{ fontSize: 9, fill: '#64748B' }} tickLine={false} axisLine={false} />
@@ -851,6 +851,7 @@ function DealsCard({ deals }: {
       {rows.length === 0 && (
         <div style={{ color: C.muted, fontSize: 11, textAlign: 'center', padding: '12px 0' }}>No significant deals</div>
       )}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', columnGap: 28 }}>
       {rows.map((d, i) => {
         const deal   = d as Record<string, unknown>
         const symbol = String(deal.symbol ?? '')
@@ -889,6 +890,7 @@ function DealsCard({ deals }: {
           </Link>
         )
       })}
+      </div>
     </div>
   )
 }
@@ -1343,13 +1345,16 @@ export function Dashboard() {
       {/* Row 1: Command Strip */}
       {ctx && <CommandStrip ctx={ctx} part={part} isMobile={isMobile} />}
 
-      {/* Row 2: Three visual instruments */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 14 }}>
-        {ctx ? <RegimeDial score={ctx.smart_money_score ?? 0} regime={ctx.regime} /> : (
-          <div style={{ ...CARD, padding: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ color: C.dim }}>Loading…</span>
-          </div>
-        )}
+      {/* Row 2: Regime + interpretation stack | Breadth | Conviction & Cash */}
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 14, alignItems: 'stretch' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {ctx ? <RegimeDial score={ctx.smart_money_score ?? 0} regime={ctx.regime} /> : (
+            <div style={{ ...CARD, padding: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: C.dim }}>Loading…</span>
+            </div>
+          )}
+          {part && <FlowInterpretation part={part} />}
+        </div>
         <BreadthDonut breadth={ctx?.breadth} />
         {part && ctx ? <ConvictionPanel part={part} cash={ctx.cash_flows} /> : (
           <div style={{ ...CARD, padding: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -1358,22 +1363,19 @@ export function Dashboard() {
         )}
       </div>
 
-      {/* Row 3: Participant Flow Bars + Interpretation */}
+      {/* Row 3: Participant Flow Bars | history charts stacked beside them */}
       {flows && part && (
-        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.8fr 1fr', gap: 14, alignItems: 'stretch' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.15fr 1fr', gap: 14, alignItems: 'stretch' }}>
           <FlowBars flows={flows} part={part} isMobile={isMobile} />
-          <FlowInterpretation part={part} />
+          <ParticipantHistory isMobile={isMobile} />
         </div>
       )}
 
-      {/* Row 4: Participant history charts */}
-      <ParticipantHistory isMobile={isMobile} />
-
-      {/* Row 5: Sector Rotation — full width, top 10 + expand */}
+      {/* Row 4: Sector Rotation — full width, top 10 + expand */}
       {allSectors.length > 0 && <SectorHeatmap sectors={allSectors} isMobile={isMobile} />}
 
-      {/* Row 6: Catalysts + Institutional Deals */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, alignItems: 'start' }}>
+      {/* Row 5: Catalysts + Institutional Deals */}
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 2fr', gap: 14, alignItems: 'start' }}>
         <CatalystsCard catalysts={catalysts} />
         <DealsCard deals={deals} />
       </div>
