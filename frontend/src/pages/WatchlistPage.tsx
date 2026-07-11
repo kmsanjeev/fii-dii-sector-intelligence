@@ -236,7 +236,35 @@ export function WatchlistPage() {
       {isLoading && <div className="text-center py-20" style={{ color: '#64748B' }}>Loading...</div>}
 
       <div className="overflow-x-auto">
-        <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
+        {/* Row-hover outline: rounded amber rectangle around the whole row.
+            HTML rows cannot take border-radius, so the outline is drawn on
+            the row's cells (top/bottom on all, sides + radii on the ends).
+            Requires border-collapse: separate. */}
+        <style>{`
+          .wl-table { border-collapse: separate; border-spacing: 0; }
+          .wl-row td {
+            border-top: 1px solid transparent;
+            border-bottom: 1px solid #1E233220;
+            transition: border-color 0.12s;
+          }
+          .wl-row td:first-child { border-left: 1px solid transparent; }
+          .wl-row td:last-child  { border-right: 1px solid transparent; }
+          .wl-row:hover td {
+            border-top-color: #F59E0BCC;
+            border-bottom-color: #F59E0BCC;
+          }
+          .wl-row:hover td:first-child {
+            border-left-color: #F59E0BCC;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+          }
+          .wl-row:hover td:last-child {
+            border-right-color: #F59E0BCC;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+          }
+        `}</style>
+        <table className="wl-table" style={{ width: '100%', fontSize: 13 }}>
           <thead>
             <tr>
               <th style={{ padding: '6px 10px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #1E2332', whiteSpace: 'nowrap' }}>Symbol</th>
@@ -255,12 +283,7 @@ export function WatchlistPage() {
           </thead>
           <tbody>
             {displayed.map(s => (
-              <tr
-                key={s.symbol}
-                style={{ borderBottom: '1px solid #1E233220', transition: 'background 0.12s' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#18223A' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
-              >
+              <tr key={s.symbol} className="wl-row">
                 <td style={{ padding: '6px 10px', fontWeight: 700 }}>
                   <Link to={`/stocks/${s.symbol}`} style={{ color: '#E2E8F0', textDecoration: 'none' }}>
                     {s.symbol}
