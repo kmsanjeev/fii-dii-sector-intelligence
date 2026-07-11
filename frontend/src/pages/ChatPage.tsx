@@ -571,11 +571,16 @@ function loadWakeEnabled(): boolean {
   try { return localStorage.getItem(WAKE_KEY) !== 'off' } catch { return true }
 }
 
-// Wake words + common mis-hearings; Hindi STT returns Devanagari script
+// Wake words + common mis-hearings; Hindi STT returns Devanagari script.
+// Extra variants added V3.3 to improve barge-in matching against TTS echo.
 const WAKE_WORDS = [
   'veda', 'adya', 'vedha', 'aadya', 'vida', 'vader', 'adia',
-  'वेदा', 'वेधा', 'आद्या', 'अद्या', 'वेद',
+  'weda', 'vaida', 'veeda', 'aadia', 'adhya',
+  'वेदा', 'वेधा', 'आद्या', 'अद्या', 'वेद', 'विदा',
 ]
+// TTS playback volume: slightly below full so the mic can still hear the
+// user's wake word over Veda's own voice from the speakers (barge-in)
+const TTS_VOLUME = 0.85
 
 const GREETINGS: Record<string, string> = {
   hi: 'जी, बोलिए। मैं सुन रही हूँ।',
@@ -807,6 +812,7 @@ export function ChatPage() {
 
     const playUrl = (url: string, onDone: () => void) => {
       const a = new Audio(url)
+      a.volume = TTS_VOLUME     // leave acoustic headroom for barge-in
       audioRef.current = a
       a.onended = onDone
       a.onerror = onDone
@@ -863,7 +869,7 @@ export function ChatPage() {
     let fillerTimer: ReturnType<typeof setTimeout> | null = null
     if (mode === 'voice' && fillerRef.current) {
       fillerTimer = setTimeout(() => {
-        try { const a = new Audio(fillerRef.current as string); audioRef.current = a; a.play().catch(() => {}) }
+        try { const a = new Audio(fillerRef.current as string); a.volume = TTS_VOLUME; audioRef.current = a; a.play().catch(() => {}) }
         catch { /* ignore */ }
       }, 2500)
     }
@@ -897,7 +903,7 @@ export function ChatPage() {
   //   SILENCE_MS       once speech HAS started, this much quiet = done.
   //   MAX_CAPTURE_MS   hard cap per command.
   const INITIAL_WAIT_MS = 8000
-  const SILENCE_MS      = 2000
+  const SILENCE_MS      = 2500   // V3.3: more patience for slow/thoughtful speech
   const MAX_CAPTURE_MS  = 25000
 
   const startListening = useCallback(() => {
@@ -996,6 +1002,7 @@ export function ChatPage() {
       wakeUsedRef.current = true
       const play = greetingRef.current ? new Audio(greetingRef.current) : null
       if (play) {
+        play.volume = TTS_VOLUME
         setSpeaking(true)
         play.onended = () => { setSpeaking(false); startListening() }
         play.onerror = () => { setSpeaking(false); startListening() }
@@ -1019,8 +1026,11 @@ export function ChatPage() {
       }
     }
     recog.onend = () => {
-      // Chrome times continuous sessions out -- restart unless we woke or unmounted
-      if (!matched && !disposed) setTimeout(() => setWakeRetry(n => n + 1), 500)
+      // Chrome times continuous sessions out -- restart unless we woke or
+      // unmounted. While Veda is speaking, her own audio makes recognition
+      // sessions churn faster, so restart quickly to keep barge-in windows
+      // as small as possible (V3.3).
+      if (!matched && !disposed) setTimeout(() => setWakeRetry(n => n + 1), 250)
     }
 
     // V3.1 fix for "Veda stops responding after one reply": right after a

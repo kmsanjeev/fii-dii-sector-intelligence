@@ -233,3 +233,27 @@ attempts; (2) cut off mid-statement, responds to partial; (3) robotic tone.
       as spoken, max 2-3 numbers, no headers/bullets in the spoken lead.
    Live-verified: reply now opens 'Dekhiye, market regime abhi NEUTRAL
    mein hai. FIIs toh thode negative hain, lekin DIIs strong buying...'
+
+---
+
+## Session 2026-07-11 — V3.3: gender grammar, symbol speech, barge-in, patience
+
+User feedback round 2:
+1. LISTEN COMPLETELY: SILENCE_MS 2000 -> 2500 (thoughtful speakers).
+2. VOICE BARGE-IN unreliable (stop button works): physics -- TTS from
+   speakers masks the wake word in the mic. Mitigations: TTS_VOLUME 0.85
+   on ALL playback (reply/greeting/filler), wake-restart cadence 500 ->
+   250ms (smaller dead windows during long replies), extra wake variants
+   (weda/vaida/veeda/aadia/adhya + Devanagari vida). Residual physics
+   documented: headphones make barge-in near-perfect.
+3. GENDER: Veda produced masculine first-person Hindi forms. Research-
+   grounded fix in _VOICE_ADDENDUM: explicit feminine paradigm
+   (-ti hoon / rahi hoon / -i perfective / -ungi / thi) with correct vs
+   wrong examples AND the third-person caveat (FII bech raha hai stays
+   masculine -- subject agreement). Live test: zero male slips,
+   sakti hoon correct, third-person raha hai correctly retained.
+4. SPECIAL CHARS: EARLY_ROTATION was spoken 'early underscore rotation'.
+   _spoken_text now: snake_case -> spaces, FII/DII -> spoken pause,
+   52-week -> 52 week, % -> percent, & -> and. CAUTION: whitespace
+   collapse must be [ \t]{2,} NOT \s{2,} -- newlines carry the
+   table-filter structure.

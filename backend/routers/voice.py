@@ -91,6 +91,19 @@ def _spoken_text(text: str) -> str:
     # Defence in depth: strip leaked function-call artifacts before speaking
     text = _re.sub(r"<function[=\w\-]*>.*?</function>|<function[=\w\-]*/?>|</function>",
                    "", text or "", flags=_re.DOTALL)
+
+    # Humanise technical tokens (V3.3): EARLY_ROTATION must be spoken as
+    # "early rotation", never "early underscore rotation". Same for slashes
+    # and hyphens inside identifier-like words, and symbol words.
+    text = _re.sub(r"(?<=\w)[_](?=\w)", " ", text)          # snake_case -> spaces
+    text = _re.sub(r"(?<=[A-Za-z])/(?=[A-Za-z])", " / ", text)  # FII/DII -> FII / DII (spoken pause)
+    text = _re.sub(r"(?<=\w)-(?=\w)", " ", text)            # 52-week -> 52 week
+    text = text.replace("%", " percent")
+    text = text.replace("&", " and ")
+    text = _re.sub(r"-{2,}|={2,}|_{2,}", " ", text)          # ruler remnants
+    text = _re.sub(r"[ \t]{2,}", " ", text)   # spaces only -- newlines must survive
+                                              # for the table-line filter below
+
     lines = []
     for ln in text.splitlines():
         s = ln.strip()
