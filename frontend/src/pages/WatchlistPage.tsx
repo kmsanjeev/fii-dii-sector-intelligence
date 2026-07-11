@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { fetchAllStocks, type Stock } from '../api/client'
 import { ScoreGauge } from '../components/platform/ScoreGauge'
@@ -90,12 +91,33 @@ function TrendBadge({ signal }: { signal?: string }) {
 }
 
 export function WatchlistPage() {
+  // Deep-linkable label filter: /watchlist?label=BULL_RUN etc.
+  // (Dashboard universe-breadth segments link here.)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const urlLabel = (searchParams.get('label') ?? '').toUpperCase()
+
   const [page,        setPage]        = useState(1)
-  const [labelFilter, setLabelFilter] = useState('EMERGING')
+  const [labelFilter, setLabelFilterState] = useState(
+    LABELS.includes(urlLabel) ? urlLabel : 'EMERGING'
+  )
+  const setLabelFilter = (l: string) => {
+    setLabelFilterState(l)
+    setPage(1)
+    setSearchParams(l === 'EMERGING' ? {} : { label: l }, { replace: true })
+  }
   const [search,      setSearch]      = useState('')
   const [sectorFilter,setSectorFilter]= useState('ALL')
   const [sortKey,     setSortKey]     = useState<SortKey>('bull_run_score')
   const [sortDir,     setSortDir]     = useState<SortDir>('desc')
+
+  // Follow URL changes made while already mounted (e.g. Dashboard link clicks)
+  useEffect(() => {
+    if (LABELS.includes(urlLabel) && urlLabel !== labelFilter) {
+      setLabelFilterState(urlLabel)
+      setPage(1)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlLabel])
 
   // Fetch all matching pages (up to 2000 symbols) for client-side sort/search
   const { data, isLoading } = useQuery({

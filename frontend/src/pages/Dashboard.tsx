@@ -123,12 +123,14 @@ function CommandStrip({ ctx, part, isMobile }: { ctx: MarketContext; part: Parti
             { k: 'accumulation', l: 'ACCUM', col: '#9575CD' },
             { k: 'markdown',     l: 'DOWN',  col: C.bear    },
           ] as const).map(({ k, l, col }) => (
-            <div key={k} style={{ textAlign: 'center' }}>
+            <Link key={k} to={`/watchlist?label=${k.toUpperCase()}`}
+              title={`Open the full ${k.replace('_', ' ')} list`}
+              style={{ textAlign: 'center', textDecoration: 'none', cursor: 'pointer' }}>
               <div style={{ color: col, fontSize: 18, fontWeight: 800, lineHeight: 1 }}>
                 {ctx.breadth![k as keyof typeof ctx.breadth]}
               </div>
               <div style={{ color: C.muted, fontSize: 9, marginTop: 3 }}>{l}</div>
-            </div>
+            </Link>
           ))}
         </div>
       ),
@@ -318,20 +320,27 @@ function BreadthDonut({ breadth }: { breadth: MarketContext['breadth'] | undefin
             fontSize="9" fontFamily="monospace">STOCKS</text>
         </svg>
 
-        {/* Legend */}
+        {/* Legend — each segment links to the full list on the Watchlist page */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
           {segments.map(({ key, label, color, bg, count, pct }) => {
             const pctStr = (pct * 100).toFixed(0)
             return (
-              <div key={key} style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                background: bg, borderRadius: 5, padding: '4px 8px',
-              }}>
+              <Link key={key} to={`/watchlist?label=${key.toUpperCase()}`}
+                title={`Open all ${count} ${label} stocks`}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  background: bg, borderRadius: 5, padding: '4px 8px',
+                  textDecoration: 'none', border: '1px solid transparent',
+                  transition: 'border-color 0.15s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = color + '66')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = 'transparent')}
+              >
                 <div style={{ width: 8, height: 8, borderRadius: 2, background: color, flexShrink: 0 }} />
                 <span style={{ color: C.secondary, fontSize: 10, flex: 1, fontWeight: 600 }}>{label}</span>
                 <span style={{ color, fontSize: 12, fontWeight: 800, fontFamily: 'monospace' }}>{count}</span>
                 <span style={{ color: C.muted, fontSize: 9, minWidth: 26, textAlign: 'right' }}>{pctStr}%</span>
-              </div>
+              </Link>
             )
           })}
         </div>
