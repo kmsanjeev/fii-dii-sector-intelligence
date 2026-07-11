@@ -6,6 +6,60 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.40.0
+
+Phase UI-D -- Dashboard Consolidation (Participant page merged)
+
+Date: 2026-07-12
+
+Status: Completed
+
+---
+
+## Summary
+
+The standalone Participant page (~80% duplicate of Dashboard content) is
+removed; its four unique elements now live on the Dashboard. The Dashboard's
+lower half is overhauled: full-width 5x2 sector rotation grid with expand,
+fixed Institutional Deals card (was rendering '--' due to field-name
+mismatch), linked Upcoming Catalysts, and removal of redundant sections
+covered by the Watchlist page.
+
+## Changes
+
+### Merged from Participant page into Dashboard (frontend/src/pages/Dashboard.tsx)
+
+- FlowInterpretation card -- rule-based FII/DII/smart-money narrative,
+  placed beside the participant flow bars it explains (1.8fr/1fr row)
+- ParticipantHistory row -- FII vs DII flow score area chart with
+  30D/90D/180D/1Y period toggle + FPI vs MF 5D-rolling cash bar chart
+- FlowBars extended: FPI/MF/Insurance/Retail cash-market z-score bars added
+  under a divider -- all 8 participants in one instrument
+- ConvictionPanel: 20-day net cash flow bars added under the 5-day ones
+
+### Dashboard overhaul
+
+- Sector Capital Rotation: full width, 5 columns x 2 rows (top 10 by
+  relative_score), SHOW ALL / SHOW TOP 10 expand toggle
+- Institutional Deals card FIXED: was reading net_value_cr/client_name/
+  trade_date which do not exist in institutional_deal_signals.csv; now
+  renders inst_net_value_cr, ACCUMULATION/DISTRIBUTION badge, dominant
+  participant, inst deal count, last_deal_date; rows link to stock page
+- Upcoming Catalysts: rows now link to /stocks/SYMBOL and show
+  catalyst_score; 8 rows (was 5)
+- Removed: Emerging Watchlist row, Top Conviction card (both fully covered
+  by the Watchlist page label filters); EmergeCard component deleted
+- New reading order: Command Strip > instruments > flows + interpretation >
+  history charts > sector rotation > catalysts + deals > X ticker > news
+
+### Removed
+
+- frontend/src/pages/ParticipantPage.tsx (deleted)
+- frontend/src/components/platform/FlowCard.tsx (deleted, orphaned)
+- /participant route now redirects to Dashboard; nav entry removed
+
+---
+
 # Version 4.39.0
 
 Phase WL-1 -- Watchlist Column Data Hydration (decision-making view)

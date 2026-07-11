@@ -6,13 +6,15 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import {
-  fetchMarketContext, fetchParticipantLatest, fetchSectors,
-  fetchWatchlist, fetchCatalysts, fetchDeals, fetchNews, fetchSocialPulse,
+  fetchMarketContext, fetchParticipantLatest, fetchParticipantHistory, fetchSectors,
+  fetchCatalysts, fetchDeals, fetchNews, fetchSocialPulse,
   type MarketContext, type ParticipantLatest, type Sector, type NewsItem,
   type SocialPulseHandle,
 } from '../api/client'
-import { ScoreGauge }   from '../components/platform/ScoreGauge'
-import { CapFlowBadge } from '../components/platform/CapFlowBadge'
+import {
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  Legend, BarChart, Bar, ReferenceLine,
+} from 'recharts'
 import { T, FS, FW } from '../styles/tokens'
 import { useMobile }    from '../hooks/useMobile'
 
@@ -361,7 +363,12 @@ function ConvictionPanel({ part, cash }: { part: ParticipantLatest; cash: Market
     { label: 'MF/DII',     value: cash.mf_5d_cr,        color: cash.mf_5d_cr >= 0 ? C.dii : C.bear },
     { label: 'Insurance',  value: cash.insurance_5d_cr,  color: cash.insurance_5d_cr >= 0 ? '#7C4DFF' : C.bear },
   ] : []
-  const maxAbs = Math.max(...flowBars.map(f => Math.abs(f.value)), 1000)
+  const flowBars20 = cash ? [
+    { label: 'FPI/FII',    value: cash.fpi_20d_cr,      color: cash.fpi_20d_cr >= 0 ? C.bull : C.bear },
+    { label: 'MF/DII',     value: cash.mf_20d_cr,       color: cash.mf_20d_cr >= 0 ? C.dii : C.bear },
+  ] : []
+  const maxAbs   = Math.max(...flowBars.map(f => Math.abs(f.value)), 1000)
+  const maxAbs20 = Math.max(...flowBars20.map(f => Math.abs(f.value)), 1000)
 
   return (
     <div style={{ ...CARD, padding: '20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -390,12 +397,15 @@ function ConvictionPanel({ part, cash }: { part: ParticipantLatest; cash: Market
         </div>
       ))}
 
-      {/* 5D Net Cash Flows */}
-      {flowBars.length > 0 && (
-        <div style={{ borderTop: `1px solid #1E2D44`, paddingTop: 12 }}>
-          <div style={{ ...LABEL, marginBottom: 10 }}>5-DAY NET CASH FLOWS</div>
-          {flowBars.map(({ label, value, color }) => {
-            const pct = Math.min(100, Math.abs(value) / maxAbs * 100)
+      {/* 5D + 20D Net Cash Flows */}
+      {([
+        { title: '5-DAY NET CASH FLOWS',  bars: flowBars,   max: maxAbs   },
+        { title: '20-DAY NET CASH FLOWS', bars: flowBars20, max: maxAbs20 },
+      ]).map(({ title, bars, max }) => bars.length > 0 && (
+        <div key={title} style={{ borderTop: `1px solid #1E2D44`, paddingTop: 12 }}>
+          <div style={{ ...LABEL, marginBottom: 10 }}>{title}</div>
+          {bars.map(({ label, value, color }) => {
+            const pct = Math.min(100, Math.abs(value) / max * 100)
             return (
               <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <span style={{ color: C.secondary, fontSize: 10, fontWeight: 600, minWidth: 56 }}>{label}</span>
@@ -409,7 +419,7 @@ function ConvictionPanel({ part, cash }: { part: ParticipantLatest; cash: Market
             )
           })}
         </div>
-      )}
+      ))}
     </div>
   )
 }
@@ -421,26 +431,37 @@ function FlowBars({ flows, part, isMobile }: {
   part:  ParticipantLatest
   isMobile: boolean
 }) {
-  const maxAbs = Math.max(...Object.values(flows).map(Math.abs), 10)
-  const rows = [
+  const fnoRows = [
     { key: 'FII',    score: flows.FII,    color: C.fii,    conv: part.FII_conviction, label: 'FII / FPI',  sub: 'Foreign Institutional' },
     { key: 'DII',    score: flows.DII,    color: C.dii,    conv: part.DII_conviction, label: 'DII / MF',   sub: 'Domestic Institutional' },
     { key: 'PRO',    score: flows.PRO,    color: C.pro,    conv: null,                label: 'PRO',         sub: 'Proprietary Desks' },
     { key: 'CLIENT', score: flows.CLIENT, color: C.client, conv: null,                label: 'CLIENT',      sub: 'Retail / HNI' },
   ]
+  const cashRows = [
+    { key: 'FPI',    score: part.FPI_flow_score,       color: C.fii,    conv: null, label: 'FPI',       sub: 'FII cash segment' },
+    { key: 'MF',     score: part.MF_flow_score,        color: C.dii,    conv: null, label: 'MF',        sub: 'Mutual Funds' },
+    { key: 'INS',    score: part.INSURANCE_flow_score, color: '#7C4DFF', conv: null, label: 'INSURANCE', sub: 'Insurance cos' },
+    { key: 'RETAIL', score: part.RETAIL_flow_score,    color: C.client, conv: null, label: 'RETAIL',    sub: 'Retail cash' },
+  ].filter(r => r.score != null && !Number.isNaN(r.score))
+  const rows = [...fnoRows, ...cashRows]
+  const maxAbs = Math.max(...rows.map(r => Math.abs(r.score)), 10)
 
   return (
     <div style={{ ...CARD, padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div style={LABEL}>F&amp;O PARTICIPANT FLOWS  <span style={{ color: C.dim, fontWeight: 400, letterSpacing: 0 }}>(z-score, rolling)</span></div>
-        <Link to="/participant" style={{ color: C.blue, fontSize: 11, textDecoration: 'none', fontWeight: 600 }}>Full Analysis →</Link>
+        <div style={LABEL}>PARTICIPANT FLOWS  <span style={{ color: C.dim, fontWeight: 400, letterSpacing: 0 }}>(z-score, rolling)</span></div>
+        <span style={{ color: C.dim, fontSize: 9, fontWeight: 600, letterSpacing: 0.5 }}>F&amp;O + CASH</span>
       </div>
 
-      {rows.map(({ key, score, color, conv, label, sub }) => {
+      {rows.map(({ key, score, color, conv, label, sub }, ri) => {
         const pct = (Math.abs(score) / maxAbs) * 50  // max 50% of half-width
         const pos = score >= 0
         return (
-          <div key={key} style={{ display: 'grid', gridTemplateColumns: isMobile ? '80px 1fr 65px' : '130px 1fr 80px', alignItems: 'center', gap: isMobile ? 8 : 12, marginBottom: 14 }}>
+          <div key={key} style={{
+            display: 'grid', gridTemplateColumns: isMobile ? '80px 1fr 65px' : '130px 1fr 80px',
+            alignItems: 'center', gap: isMobile ? 8 : 12, marginBottom: 14,
+            ...(ri === fnoRows.length ? { borderTop: '1px solid #1E2D44', paddingTop: 14 } : {}),
+          }}>
             {/* Label */}
             <div>
               <div style={{ color: C.primary, fontSize: 12, fontWeight: 700 }}>{label}</div>
@@ -507,6 +528,141 @@ function FlowBars({ flows, part, isMobile }: {
   )
 }
 
+// ─── Flow Interpretation (rescued from Participant page) ─────────────────────
+
+function FlowInterpretation({ part }: { part: ParticipantLatest }) {
+  const fii = part.FII_flow_score
+  const dii = part.DII_flow_score
+  const smart = part.Smart_Money_Score
+  const retail = part.RETAIL_flow_score
+  const divergence = part.FII_DII_Divergence
+
+  const lines: { text: string; color: string }[] = []
+
+  if (fii > 1 && dii > 1)
+    lines.push({ text: 'FII + DII both accumulating — broad institutional conviction. Historically precedes sustained rally.', color: C.bull })
+  else if (fii > 1 && dii < -1)
+    lines.push({ text: 'FII buying while DII selling — foreign led rally. DII caution is a mild headwind; watch for confirmation.', color: C.neutral })
+  else if (fii < -1 && dii > 1)
+    lines.push({ text: 'FII exiting while DII absorbing — DII acting as last buyer. Typical pre-consolidation setup. Not a buy signal.', color: C.neutral })
+  else if (fii < -1 && dii < -1)
+    lines.push({ text: 'FII + DII both reducing — institutional distribution. High risk of further downside. Reduce exposure.', color: C.bear })
+  else
+    lines.push({ text: 'Flows are within normal range — no strong directional signal from institutional participants.', color: C.muted })
+
+  if (Math.abs(divergence) > 2)
+    lines.push({
+      text: `FII/DII divergence at ${Math.abs(divergence).toFixed(1)}σ — extreme divergence. ${divergence < 0 ? 'FII pressure dominant; short-term weakness likely.' : 'DII pressure; possible base forming.'}`,
+      color: '#8B5CF6',
+    })
+
+  if (smart > 1 && (retail ?? 0) < -1)
+    lines.push({ text: 'Smart money buying while retail exits — classic accumulation pattern. Bullish for 15–45 days.', color: C.bull })
+  if (smart < -1 && (retail ?? 0) > 1)
+    lines.push({ text: 'Smart money selling into retail buying — distribution. High reversal risk.', color: C.bear })
+
+  return (
+    <div style={{ ...CARD, padding: '20px', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ ...LABEL, marginBottom: 14 }}>FLOW INTERPRETATION</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {lines.map((l, i) => (
+          <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+            <span style={{ color: l.color, flexShrink: 0, fontSize: 10, marginTop: 2 }}>&#9679;</span>
+            <span style={{ color: l.color, fontSize: 12, lineHeight: 1.55 }}>{l.text}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 'auto', paddingTop: 14, color: C.dim, fontSize: 9 }}>
+        Data date: {part.date} &middot; z-scores vs 60D window
+      </div>
+    </div>
+  )
+}
+
+// ─── Participant History (rescued from Participant page) ─────────────────────
+
+const PERIOD_OPTIONS = [
+  { label: '30D',  days: 30  },
+  { label: '90D',  days: 90  },
+  { label: '180D', days: 180 },
+  { label: '1Y',   days: 252 },
+]
+
+function ParticipantHistory({ isMobile }: { isMobile: boolean }) {
+  const [period, setPeriod] = useState(90)
+  const { data: history } = useQuery({
+    queryKey: ['participant-history', 252],
+    queryFn:  () => fetchParticipantHistory(252),
+    refetchInterval: 300_000,
+  })
+
+  const chartData = (history?.rows ?? []).slice(-period)
+  if (chartData.length === 0) return null
+  const hasCash = chartData[0] && 'FPI_flow_5D' in chartData[0]
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: isMobile || !hasCash ? '1fr' : '1.4fr 1fr', gap: 14 }}>
+      {/* FII vs DII flow score history */}
+      <div style={{ ...CARD, padding: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div style={LABEL}>FII vs DII FLOW SCORE</div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {PERIOD_OPTIONS.map(o => (
+              <button
+                key={o.label} onClick={() => setPeriod(o.days)}
+                style={{
+                  padding: '3px 10px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
+                  border: `1px solid ${period === o.days ? C.bull : '#1E2D44'}`,
+                  background: 'transparent', color: period === o.days ? C.bull : C.muted,
+                }}
+              >{o.label}</button>
+            ))}
+          </div>
+        </div>
+        <ResponsiveContainer width="100%" height={200}>
+          <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+            <defs>
+              <linearGradient id="dash-fii" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%"  stopColor="#22C55E" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#22C55E" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="dash-dii" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%"  stopColor="#3B82F6" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <XAxis dataKey="date" tick={{ fontSize: 9, fill: '#64748B' }} tickLine={false} axisLine={false} interval={Math.floor(period / 6)} />
+            <YAxis tick={{ fontSize: 9, fill: '#64748B' }} tickLine={false} axisLine={false} />
+            <ReferenceLine y={0} stroke="#1E2D44" strokeDasharray="3 3" />
+            <Tooltip contentStyle={{ backgroundColor: '#141720', border: '1px solid #1E2332', fontSize: 11 }} labelStyle={{ color: '#64748B' }} />
+            <Legend wrapperStyle={{ fontSize: 10 }} />
+            <Area type="monotone" dataKey="FII_flow_score" name="FII (F&O)" stroke="#22C55E" fill="url(#dash-fii)" strokeWidth={1.5} dot={false} />
+            <Area type="monotone" dataKey="DII_flow_score" name="DII (F&O)" stroke="#3B82F6" fill="url(#dash-dii)" strokeWidth={1.5} dot={false} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* FPI vs MF rolling cash flows */}
+      {hasCash && (
+        <div style={{ ...CARD, padding: '20px' }}>
+          <div style={{ ...LABEL, marginBottom: 12 }}>FPI vs MF CASH (5D ROLLING, Cr)</div>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={chartData.slice(-60)} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+              <XAxis dataKey="date" tick={{ fontSize: 9, fill: '#64748B' }} tickLine={false} axisLine={false} interval={9} />
+              <YAxis tick={{ fontSize: 9, fill: '#64748B' }} tickLine={false} axisLine={false} />
+              <ReferenceLine y={0} stroke="#334155" />
+              <Tooltip contentStyle={{ backgroundColor: '#141720', border: '1px solid #1E2332', fontSize: 11 }} labelStyle={{ color: '#64748B' }} />
+              <Legend wrapperStyle={{ fontSize: 10 }} />
+              <Bar dataKey="FPI_flow_5D" name="FPI (FII Cash)" fill="#22C55E" opacity={0.8} />
+              <Bar dataKey="MF_flow_5D"  name="MF (DII Cash)"  fill="#3B82F6" opacity={0.8} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Sector Heatmap ───────────────────────────────────────────────────────────
 
 const SIG: Record<string, { bg: string; glow: string; badge: string; text: string }> = {
@@ -517,11 +673,20 @@ const SIG: Record<string, { bg: string; glow: string; badge: string; text: strin
   DISTRIBUTION:        { bg: '#1A0408', glow: '#F44B4B30', badge: '#2A0608', text: C.bear },
 }
 
+const SECTORS_VISIBLE = 10   // 5 cols x 2 rows before expanding
+
 function SectorHeatmap({ sectors, isMobile }: { sectors: Sector[]; isMobile: boolean }) {
+  const [expanded, setExpanded] = useState(false)
+
+  // Strongest cross-sectional rotation candidates first; nulls last
+  const sorted = [...sectors].sort((a, b) =>
+    (b.relative_score ?? -Infinity) - (a.relative_score ?? -Infinity))
+  const visible = expanded ? sorted : sorted.slice(0, SECTORS_VISIBLE)
+
   return (
     <div style={{ ...CARD, padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-        <div style={LABEL}>SECTOR CAPITAL ROTATION  <span style={{ color: C.dim, fontWeight: 400, letterSpacing: 0 }}>({sectors.length} sectors)</span></div>
+        <div style={LABEL}>SECTOR CAPITAL ROTATION  <span style={{ color: C.dim, fontWeight: 400, letterSpacing: 0 }}>(top {expanded ? sectors.length : Math.min(SECTORS_VISIBLE, sectors.length)} of {sectors.length} by relative score)</span></div>
         <Link to="/sectors" style={{ color: C.blue, fontSize: 11, textDecoration: 'none', fontWeight: 600 }}>Full View →</Link>
       </div>
 
@@ -535,9 +700,9 @@ function SectorHeatmap({ sectors, isMobile }: { sectors: Sector[]; isMobile: boo
         ))}
       </div>
 
-      {/* Grid — 3 cols desktop / 2 cols mobile */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: 6 }}>
-        {sectors.map(s => {
+      {/* Grid — 5 cols desktop / 2 cols mobile */}
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', gap: 6 }}>
+        {visible.map(s => {
           const st  = SIG[s.rotation_signal] ?? SIG['NEUTRAL']
           const rel = s.relative_score   // cross-sectional ±100
           const z   = s.combined_score   // z-score vs 252D baseline
@@ -603,67 +768,49 @@ function SectorHeatmap({ sectors, isMobile }: { sectors: Sector[]; isMobile: boo
           )
         })}
       </div>
+
+      {/* Expand / collapse */}
+      {sectors.length > SECTORS_VISIBLE && (
+        <div style={{ textAlign: 'center', marginTop: 12 }}>
+          <button onClick={() => setExpanded(v => !v)} style={{
+            background: 'transparent', border: `1px solid #1E2D44`, borderRadius: 5,
+            color: C.blue, fontSize: 10, fontWeight: 700, padding: '5px 18px',
+            cursor: 'pointer', letterSpacing: 0.5,
+          }}>
+            {expanded ? 'SHOW TOP 10' : `SHOW ALL ${sectors.length} SECTORS`}
+          </button>
+        </div>
+      )}
     </div>
   )
 }
 
-// ─── Side Panel ───────────────────────────────────────────────────────────────
+// ─── Catalysts + Institutional Deals row ─────────────────────────────────────
 
-function SidePanel({ strong, catalysts, deals }: {
-  strong:    { stocks: import('../api/client').Stock[]; count: number } | undefined
-  catalysts: { catalysts: Record<string, unknown>[]; count: number }   | undefined
-  deals:     { deals:    Record<string, unknown>[]; count: number }    | undefined
+function CatalystsCard({ catalysts }: {
+  catalysts: { catalysts: Record<string, unknown>[]; count: number } | undefined
 }) {
+  const rows = (catalysts?.catalysts ?? []).slice(0, 8)
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-
-      {/* Top Conviction */}
-      <div style={{ ...CARD, padding: '16px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <div style={LABEL}>TOP CONVICTION</div>
-          <Link to="/watchlist" style={{ color: C.blue, fontSize: 10, textDecoration: 'none', fontWeight: 600 }}>All →</Link>
-        </div>
-        {(strong?.stocks ?? []).length === 0 ? (
-          <div style={{ color: C.muted, fontSize: 11, textAlign: 'center', padding: '12px 0' }}>None currently</div>
-        ) : (
-          (strong?.stocks ?? []).map(s => (
-            <Link key={s.symbol} to={`/stocks/${s.symbol}`} style={{ textDecoration: 'none' }}>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 10,
-                padding: '8px 0', borderBottom: `1px solid #1E2D44`,
-              }}
-                onMouseEnter={e => (e.currentTarget.style.paddingLeft = '4px')}
-                onMouseLeave={e => (e.currentTarget.style.paddingLeft = '0')}
-              >
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: C.h1, fontWeight: 800, fontSize: 13 }}>{s.symbol}</div>
-                  <div style={{ color: C.muted, fontSize: 10, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                    {s.sector}
-                    {s.price?.ret_30d != null && (
-                      <span style={{ color: (s.price.ret_30d ?? 0) >= 0 ? C.bull : C.bear, fontWeight: 700, marginLeft: 6 }}>
-                        {s.price.ret_30d >= 0 ? '+' : ''}{s.price.ret_30d.toFixed(1)}%
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <ScoreGauge score={s.bull_run_score} size={40} />
-              </div>
-            </Link>
-          ))
-        )}
+    <div style={{ ...CARD, padding: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <div style={LABEL}>UPCOMING CATALYSTS</div>
+        <Link to="/corporate" style={{ color: C.blue, fontSize: 10, textDecoration: 'none', fontWeight: 600 }}>All →</Link>
       </div>
-
-      {/* Upcoming Catalysts */}
-      <div style={{ ...CARD, padding: '16px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <div style={LABEL}>UPCOMING CATALYSTS</div>
-          <Link to="/corporate" style={{ color: C.blue, fontSize: 10, textDecoration: 'none', fontWeight: 600 }}>All →</Link>
-        </div>
-        {(catalysts?.catalysts ?? []).slice(0, 5).map((c, i) => {
-          const cat = c as Record<string, unknown>
-          const dateStr = String(cat.event_date ?? '')
-          return (
-            <div key={i} style={{ display: 'flex', gap: 10, padding: '7px 0', borderBottom: `1px solid #1E2D44`, alignItems: 'center' }}>
+      {rows.length === 0 && (
+        <div style={{ color: C.muted, fontSize: 11, textAlign: 'center', padding: '12px 0' }}>No upcoming events</div>
+      )}
+      {rows.map((c, i) => {
+        const cat = c as Record<string, unknown>
+        const symbol  = String(cat.symbol ?? '')
+        const dateStr = String(cat.event_date ?? '')
+        const score   = Number(cat.catalyst_score ?? NaN)
+        return (
+          <Link key={i} to={`/stocks/${symbol}`} style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', gap: 10, padding: '7px 0', borderBottom: `1px solid #1E2D44`, alignItems: 'center' }}
+              onMouseEnter={e => (e.currentTarget.style.paddingLeft = '4px')}
+              onMouseLeave={e => (e.currentTarget.style.paddingLeft = '0')}
+            >
               <div style={{
                 flexShrink: 0, background: '#1A1508', border: '1px solid #F5A52455',
                 borderRadius: 5, padding: '4px 7px', textAlign: 'center', minWidth: 34,
@@ -672,106 +819,77 @@ function SidePanel({ strong, catalysts, deals }: {
                 <div style={{ color: C.muted, fontSize: 8, marginTop: 1 }}>{dateStr.slice(5, 7)}</div>
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ color: C.primary, fontSize: 12, fontWeight: 700 }}>{String(cat.symbol ?? '')}</div>
+                <div style={{ color: C.primary, fontSize: 12, fontWeight: 700 }}>{symbol}</div>
                 <div style={{ color: C.muted, fontSize: 9, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {String(cat.purpose_type ?? cat.purpose ?? '').replace(/_/g, ' ')}
                 </div>
               </div>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Block Deals */}
-      <div style={{ ...CARD, padding: '16px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <div style={LABEL}>BLOCK DEALS</div>
-          <Link to="/corporate" style={{ color: C.blue, fontSize: 10, textDecoration: 'none', fontWeight: 600 }}>All →</Link>
-        </div>
-        {(deals?.deals ?? []).slice(0, 4).map((d, i) => {
-          const deal = d as Record<string, unknown>
-          const cr = Number(deal.net_value_cr ?? deal.value_cr ?? 0)
-          return (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 0', borderBottom: `1px solid #1E2D44` }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ color: C.primary, fontSize: 12, fontWeight: 700 }}>{String(deal.symbol ?? deal.SYMBOL ?? '')}</div>
-                <div style={{ color: C.muted, fontSize: 9, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {String(deal.client_name ?? deal.CLIENT_NAME ?? '').slice(0, 24)}
+              {Number.isFinite(score) && (
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <div style={{ color: C.neutral, fontSize: 12, fontWeight: 800, fontFamily: 'monospace' }}>{score.toFixed(0)}</div>
+                  <div style={{ color: C.dim, fontSize: 8 }}>CATALYST</div>
                 </div>
-              </div>
-              <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <div style={{ color: '#C668E8', fontSize: 12, fontWeight: 800 }}>
-                  {cr !== 0 ? `${cr >= 0 ? '+' : ''}${cr.toFixed(0)} Cr` : '--'}
-                </div>
-                <div style={{ color: C.dim, fontSize: 9 }}>{String(deal.trade_date ?? deal.TRADE_DATE ?? '').slice(5)}</div>
-              </div>
+              )}
             </div>
-          )
-        })}
-      </div>
+          </Link>
+        )
+      })}
     </div>
   )
 }
 
-// ─── Emerging Watchlist Card ──────────────────────────────────────────────────
-
-function EmergeCard({ stock }: { stock: import('../api/client').Stock }) {
-  const ret = stock.price?.ret_30d
-  const pos = (ret ?? 0) >= 0
+function DealsCard({ deals }: {
+  deals: { deals: Record<string, unknown>[]; count: number } | undefined
+}) {
+  const rows = (deals?.deals ?? []).slice(0, 8)
   return (
-    <Link to={`/stocks/${stock.symbol}`} style={{ textDecoration: 'none' }}>
-      <div style={{
-        ...CARD, padding: '12px 14px',
-        display: 'flex', flexDirection: 'column', gap: 8,
-        transition: 'all 0.18s',
-      }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = '#2D4A6B'; e.currentTarget.style.boxShadow = '0 4px 16px #0008'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = '#1E2D44'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none' }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <div style={{ color: C.h1, fontWeight: 800, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {stock.symbol}
-            </div>
-            <div style={{ color: C.muted, fontSize: 10, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {stock.sector}
-            </div>
-          </div>
-          <ScoreGauge score={stock.bull_run_score} size={40} />
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {stock.close_now != null && (
-            <span style={{ color: C.secondary, fontSize: 11, fontWeight: 600 }}>
-              &#8377;{stock.close_now.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-            </span>
-          )}
-          {ret != null && (
-            <span style={{ fontSize: 11, fontWeight: 800, color: pos ? C.bull : C.bear }}>
-              {pos ? '+' : ''}{ret.toFixed(1)}%
-            </span>
-          )}
-        </div>
-
-        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-          <CapFlowBadge label={stock.label} />
-          {(stock.trend_signal === 'STRONG_UPTREND' || stock.trend_signal === 'UPTREND') && (
-            <span style={{
-              fontSize: 8, fontWeight: 700, padding: '2px 5px', borderRadius: 3,
-              border: `1px solid ${C.bull}44`, color: C.bull, background: '#061A0E',
-            }}>
-              {stock.trend_signal === 'STRONG_UPTREND' ? 'STR UP' : 'UPTRD'}
-            </span>
-          )}
-          {stock.oi_signal === 'LONG_BUILDUP' && (
-            <span style={{
-              fontSize: 8, fontWeight: 700, padding: '2px 5px', borderRadius: 3,
-              border: `1px solid ${C.fii}44`, color: C.fii, background: '#040E22',
-            }}>LB</span>
-          )}
-        </div>
+    <div style={{ ...CARD, padding: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <div style={LABEL}>INSTITUTIONAL DEALS <span style={{ color: C.dim, fontWeight: 400, letterSpacing: 0 }}>(30D net)</span></div>
+        <Link to="/corporate" style={{ color: C.blue, fontSize: 10, textDecoration: 'none', fontWeight: 600 }}>All →</Link>
       </div>
-    </Link>
+      {rows.length === 0 && (
+        <div style={{ color: C.muted, fontSize: 11, textAlign: 'center', padding: '12px 0' }}>No significant deals</div>
+      )}
+      {rows.map((d, i) => {
+        const deal   = d as Record<string, unknown>
+        const symbol = String(deal.symbol ?? '')
+        const cr     = Number(deal.inst_net_value_cr ?? 0)
+        const signal = String(deal.deal_signal ?? '')
+        const accum  = signal.includes('ACCUMULATION')
+        const sigColor = accum ? C.bull : signal.includes('DISTRIBUTION') ? C.bear : C.muted
+        return (
+          <Link key={i} to={`/stocks/${symbol}`} style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 0', borderBottom: `1px solid #1E2D44` }}
+              onMouseEnter={e => (e.currentTarget.style.paddingLeft = '4px')}
+              onMouseLeave={e => (e.currentTarget.style.paddingLeft = '0')}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ color: C.primary, fontSize: 12, fontWeight: 700 }}>{symbol}</span>
+                  {signal && (
+                    <span style={{
+                      fontSize: 8, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
+                      background: `${sigColor}18`, color: sigColor, border: `1px solid ${sigColor}44`,
+                      whiteSpace: 'nowrap',
+                    }}>{signal.replace('INSTITUTIONAL_', '').replace(/_/g, ' ')}</span>
+                  )}
+                </div>
+                <div style={{ color: C.muted, fontSize: 9, marginTop: 2 }}>
+                  {String(deal.inst_deals ?? '')} inst deals &middot; dominant: {String(deal.dominant_participant ?? '--')}
+                </div>
+              </div>
+              <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                <div style={{ color: cr >= 0 ? C.bull : C.bear, fontSize: 12, fontWeight: 800, fontFamily: 'monospace' }}>
+                  {cr >= 0 ? '+' : ''}{cr.toLocaleString('en-IN', { maximumFractionDigits: 0 })} Cr
+                </div>
+                <div style={{ color: C.dim, fontSize: 9 }}>last {String(deal.last_deal_date ?? '').slice(5)}</div>
+              </div>
+            </div>
+          </Link>
+        )
+      })}
+    </div>
   )
 }
 
@@ -1213,10 +1331,8 @@ export function Dashboard() {
   const { data: ctx }       = useQuery({ queryKey: ['market-context'],    queryFn: fetchMarketContext,    refetchInterval: 300_000 })
   const { data: part }      = useQuery({ queryKey: ['participant-latest'], queryFn: fetchParticipantLatest, refetchInterval: 300_000 })
   const { data: sectors }   = useQuery({ queryKey: ['sectors'],            queryFn: fetchSectors,           refetchInterval: 300_000 })
-  const { data: emerging }  = useQuery({ queryKey: ['watchlist','EMRG'],  queryFn: () => fetchWatchlist('EMERGING', 15),        refetchInterval: 300_000 })
-  const { data: strong }    = useQuery({ queryKey: ['watchlist','STR'],   queryFn: () => fetchWatchlist('BULL_RUN', 6), refetchInterval: 300_000 })
   const { data: catalysts } = useQuery({ queryKey: ['catalysts'],          queryFn: fetchCatalysts,         refetchInterval: 600_000 })
-  const { data: deals }     = useQuery({ queryKey: ['deals-dash'],         queryFn: () => fetchDeals(10, 6), refetchInterval: 600_000 })
+  const { data: deals }     = useQuery({ queryKey: ['deals-dash'],         queryFn: () => fetchDeals(10, 8), refetchInterval: 600_000 })
 
   const allSectors = sectors?.sectors ?? []
   const flows      = ctx?.flow_scores
@@ -1242,39 +1358,31 @@ export function Dashboard() {
         )}
       </div>
 
-      {/* Row 3: Participant Flow Bars */}
-      {flows && part && <FlowBars flows={flows} part={part} isMobile={isMobile} />}
+      {/* Row 3: Participant Flow Bars + Interpretation */}
+      {flows && part && (
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.8fr 1fr', gap: 14, alignItems: 'stretch' }}>
+          <FlowBars flows={flows} part={part} isMobile={isMobile} />
+          <FlowInterpretation part={part} />
+        </div>
+      )}
 
-      {/* Row 3B: Intelligence Ticker */}
+      {/* Row 4: Participant history charts */}
+      <ParticipantHistory isMobile={isMobile} />
+
+      {/* Row 5: Sector Rotation — full width, top 10 + expand */}
+      {allSectors.length > 0 && <SectorHeatmap sectors={allSectors} isMobile={isMobile} />}
+
+      {/* Row 6: Catalysts + Institutional Deals */}
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, alignItems: 'start' }}>
+        <CatalystsCard catalysts={catalysts} />
+        <DealsCard deals={deals} />
+      </div>
+
+      {/* Row 7: Intelligence Ticker */}
       <SocialPulse />
 
-      {/* Row 3C: News Section */}
+      {/* Row 8: News Section */}
       <NewsSection />
-
-      {/* Row 4: Sector Heatmap + Side Panel */}
-      {allSectors.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2.4fr 1fr', gap: 14, alignItems: 'start' }}>
-          <SectorHeatmap sectors={allSectors} isMobile={isMobile} />
-          <SidePanel strong={strong} catalysts={catalysts} deals={deals} />
-        </div>
-      )}
-
-      {/* Row 5: Emerging Watchlist */}
-      {(emerging?.stocks ?? []).length > 0 && (
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-            <div style={LABEL}>EMERGING WATCHLIST</div>
-            <Link to="/watchlist" style={{ color: C.blue, fontSize: 11, textDecoration: 'none', fontWeight: 600 }}>
-              View all ({emerging?.count ?? 0}) →
-            </Link>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', gap: 8 }}>
-            {(emerging?.stocks ?? []).map(stock => (
-              <EmergeCard key={stock.symbol} stock={stock} />
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

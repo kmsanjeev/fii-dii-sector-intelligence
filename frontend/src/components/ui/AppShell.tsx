@@ -12,7 +12,6 @@ const NAV = [
   { path: '/themes',     label: 'Themes' },
   { path: '/stocks',     label: 'Stocks' },
   { path: '/watchlist',  label: 'Watchlist' },
-  { path: '/participant',label: 'Participant' },
   { path: '/corporate',  label: 'Corporate' },
   { path: '/portfolio',  label: 'Portfolio' },
   { path: '/backtest',   label: 'Backtest' },
