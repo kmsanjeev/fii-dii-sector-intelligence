@@ -91,22 +91,56 @@ def get_events(limit: int = 100):
 
 @router.get("/deal-tape")
 def get_deal_tape(
-    min_cr: float = Query(0.0, description="Min deal value in Cr"),
+    min_cr: float = Query(0.0, description="Min gross deal value in Cr"),
     participant: str = Query(None, description="Filter: FII/MF/INSURANCE/PROMOTER/RETAIL"),
+    position: str = Query(None, description="Filter: BUY_ONLY/SELL_ONLY/ROUND_TRIP"),
     limit: int = 40,
 ):
-    """Raw individual block/bulk deals with client names, newest first."""
+    """
+    Net same-day client positions per symbol: NSE publishes block/bulk deals
+    at trade-DATE granularity only (no intraday timestamp), so a client
+    appearing on both sides the same day cannot be sequenced -- it is
+    reported as one netted row (buy side + sell side + net) rather than as
+    separate BUY/SELL rows, with a position tag: BUY_ONLY / SELL_ONLY /
+    ROUND_TRIP (both sides same day, order unknown).
+    """
+    import pandas as pd
+
     df = data_loader.get("block_deals")
     if df is None or df.empty:
         raise HTTPException(status_code=503, detail="block_bulk_deals not loaded")
 
-    if min_cr > 0:
-        df = df[df["value_cr"].fillna(0).abs() >= min_cr]
     if participant:
         df = df[df["participant"].str.upper() == participant.upper()]
 
-    df = df.sort_values(["date", "value_cr"], ascending=[False, False]).head(limit)
-    return {"count": len(df), "deals": _clean(df.to_dict(orient="records"))}
+    keys = ["date", "symbol", "company", "client_name", "participant"]
+    buy  = (df[df["direction"] == "BUY"].groupby(keys)
+            .agg(buy_qty=("qty", "sum"), buy_value_cr=("value_cr", "sum")))
+    sell = (df[df["direction"] == "SELL"].groupby(keys)
+            .agg(sell_qty=("qty", "sum"), sell_value_cr=("value_cr", "sum")))
+    net = buy.join(sell, how="outer").fillna(0).reset_index()
+
+    net["buy_avg_price"]  = (net["buy_value_cr"]  * 1e7 / net["buy_qty"]).where(net["buy_qty"]  > 0)
+    net["sell_avg_price"] = (net["sell_value_cr"] * 1e7 / net["sell_qty"]).where(net["sell_qty"] > 0)
+    net["net_qty"]       = net["buy_qty"] - net["sell_qty"]
+    net["net_value_cr"]  = net["buy_value_cr"] - net["sell_value_cr"]
+    net["gross_value_cr"] = net["buy_value_cr"] + net["sell_value_cr"]
+
+    net["position"] = pd.Series("ROUND_TRIP", index=net.index)
+    net.loc[net["sell_qty"] == 0, "position"] = "BUY_ONLY"
+    net.loc[net["buy_qty"] == 0,  "position"] = "SELL_ONLY"
+
+    if min_cr > 0:
+        net = net[net["gross_value_cr"].abs() >= min_cr]
+    if position:
+        net = net[net["position"] == position.upper()]
+
+    net = net.sort_values(["date", "gross_value_cr"], ascending=[False, False]).head(limit)
+    cols = ["date", "symbol", "company", "client_name", "participant", "position",
+            "buy_qty", "buy_avg_price", "buy_value_cr",
+            "sell_qty", "sell_avg_price", "sell_value_cr",
+            "net_qty", "net_value_cr", "gross_value_cr"]
+    return {"count": len(net), "deals": _clean(net[cols].to_dict(orient="records"))}
 
 
 @router.get("/upcoming-actions")

@@ -6,6 +6,53 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.41.1
+
+Phase UI-C fix -- Deal Tape same-day netting + full dates
+
+Date: 2026-07-12
+
+Status: Completed
+
+---
+
+## Summary
+
+User feedback on the new Deal Tape: the date column was truncated to
+MM-DD (no year), and same-day BUY+SELL rows from the same client for the
+same symbol were listed as separate rows instead of being netted into one
+position -- burying real accumulation (e.g. a client net-buying 8.1M
+shares) inside noisy round-trip pairs.
+
+## Investigation
+
+Confirmed with nselib/NSE: block and bulk deal data is published at
+trade-DATE granularity only -- no intraday timestamp exists in the source,
+so "bought then sold" vs "sold then bought" cannot be sequenced. Of 4,852
+same-day-both-sides client/symbol groups, only 38% have exactly matching
+buy/sell quantity (a clean flip); the rest are partial positions where net
+direction is the meaningful signal.
+
+## Changes
+
+- GET /corporate/deal-tape (backend/routers/corporate.py) rewritten:
+  groups by (date, symbol, client_name, participant), computes buy-side
+  and sell-side qty/avg-price/value separately, then net_qty, net_value_cr,
+  gross_value_cr. Tags each row with position: BUY_ONLY / SELL_ONLY /
+  ROUND_TRIP. New `position` filter param alongside existing `participant`.
+- CorporatePage.tsx Deal Tape: one row per client per symbol per day.
+  Buy and Sell columns show qty + avg price side by side; Position badge
+  (color-coded) with a flip% sub-line for round trips (sell avg price vs
+  buy avg price, visible when both sides exist) so a profitable same-day
+  flip is distinguishable from a losing one; Net Value replaces the old
+  single directional Value column. Full ISO date shown (was .slice(5),
+  dropping the year). Added an inline note explaining the no-timestamp
+  data limitation instead of implying a timestamp that doesn't exist.
+- New POSITIONS filter row (ALL/BUY ONLY/SELL ONLY/ROUND TRIP) alongside
+  the existing participant filter.
+
+---
+
 # Version 4.41.0
 
 Phase UI-C -- Corporate Intelligence Hub

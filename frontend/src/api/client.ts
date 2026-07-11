@@ -292,9 +292,9 @@ export const fetchDeals         = (min_cr = 25, limit = 50) =>
 export const fetchCatalysts     = () =>
   api.get<{ catalysts: Record<string, unknown>[]; count: number }>('/corporate/catalysts').then(r => r.data)
 // Phase UI-C — Corporate Intelligence Hub
-export const fetchDealTape      = (min_cr = 0, limit = 40, participant?: string) =>
+export const fetchDealTape      = (min_cr = 0, limit = 40, participant?: string, position?: string) =>
   api.get<{ deals: Record<string, unknown>[]; count: number }>(
-    `/corporate/deal-tape?min_cr=${min_cr}&limit=${limit}${participant ? `&participant=${participant}` : ''}`).then(r => r.data)
+    `/corporate/deal-tape?min_cr=${min_cr}&limit=${limit}${participant ? `&participant=${participant}` : ''}${position ? `&position=${position}` : ''}`).then(r => r.data)
 export const fetchUpcomingActions = (days = 45, limit = 60) =>
   api.get<{ actions: Record<string, unknown>[]; count: number }>(`/corporate/upcoming-actions?days=${days}&limit=${limit}`).then(r => r.data)
 export const fetchCorporateSummary = () =>
