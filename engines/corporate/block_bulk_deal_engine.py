@@ -89,6 +89,11 @@ def _classify_client(name: str) -> str:
     for kw in MF_KEYWORDS:
         if kw in n:
             return "MF"
+    # "MUTUAL FUND" is a SEBI-reserved suffix (only registered AMCs may use it),
+    # so any client name ending in it is MF even if the AMC brand isn't in the
+    # enumerated list above (e.g. "QUANT MUTUAL FUND" vs the shorter "QUANT MF").
+    if "MUTUAL FUND" in n:
+        return "MF"
     for kw in PROMOTER_INDICATORS:
         if kw in n:
             return "PROMOTER"

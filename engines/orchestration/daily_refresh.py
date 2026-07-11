@@ -62,6 +62,7 @@ STAGES = [
     ("6C_sector_rotation",          "engines.participant.sector_rotation_intelligence_engine", "Sector Rotation Intelligence (3-factor)", 30),
     # Corporate data (independent of participant flow)
     ("7A_block_bulk_deals",         "engines.corporate.block_bulk_deal_engine",               "Block/Bulk Deals (NSE API)",             300),
+    ("7B_event_calendar",           "engines.corporate.corporate_event_calendar_engine",      "Event Calendar + Catalysts",            300),
     ("7C_corp_action_intel",        "engines.corporate.corporate_action_intelligence_engine", "Corporate Action Intelligence",         120),
     ("18A_announcements",           "engines.corporate.announcement_intelligence_engine",     "Corporate Announcements (incremental)", 600),
     # Management Intelligence (uses Anthropic API — non-critical, failures tolerated)
@@ -116,7 +117,7 @@ STAGE_SECTIONS = {
                                 "5B_participant_flow", "5C_participant_intelligence",
                                 "6A_sector_capital_flow", "6B_sector_flow_scores",
                                 "FPI_A_sector_fpi_fetch", "FPI_B_sector_fpi_signals", "6C_sector_rotation",
-                                "7A_block_bulk_deals", "7C_corp_action_intel", "18A_announcements",
+                                "7A_block_bulk_deals", "7B_event_calendar", "7C_corp_action_intel", "18A_announcements",
                                 "16A_management_sentiment", "A1_technical_indicators",
                                 "A2_fno_intelligence", "WL1_watchlist_metrics",
                                 "8A_price_momentum", "8B_bull_run_probability",

@@ -43,6 +43,8 @@ SOURCES = {
     "management_sentiment": cfg.NSE_DIR / "shareholding" / "management_sentiment.csv",
     # Phase 7C / Corporate Actions
     "corp_actions":         cfg.INTELLIGENCE_DIR / "corporate_action_signals.csv",
+    # Phase 7A raw deal tape (individual block/bulk deals with client names)
+    "block_deals":          cfg.INTELLIGENCE_DIR / "block_bulk_deals.csv",
     # Phase 18 — Corporate Announcements Intelligence
     "announcements":        cfg.INTELLIGENCE_DIR / "company_announcements.csv",
     "announcement_signals": cfg.INTELLIGENCE_DIR / "announcement_signals.csv",

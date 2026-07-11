@@ -291,6 +291,19 @@ export const fetchDeals         = (min_cr = 25, limit = 50) =>
   api.get<{ deals: Record<string, unknown>[]; count: number }>(`/corporate/deals?min_cr=${min_cr}&limit=${limit}`).then(r => r.data)
 export const fetchCatalysts     = () =>
   api.get<{ catalysts: Record<string, unknown>[]; count: number }>('/corporate/catalysts').then(r => r.data)
+// Phase UI-C — Corporate Intelligence Hub
+export const fetchDealTape      = (min_cr = 0, limit = 40, participant?: string) =>
+  api.get<{ deals: Record<string, unknown>[]; count: number }>(
+    `/corporate/deal-tape?min_cr=${min_cr}&limit=${limit}${participant ? `&participant=${participant}` : ''}`).then(r => r.data)
+export const fetchUpcomingActions = (days = 45, limit = 60) =>
+  api.get<{ actions: Record<string, unknown>[]; count: number }>(`/corporate/upcoming-actions?days=${days}&limit=${limit}`).then(r => r.data)
+export const fetchCorporateSummary = () =>
+  api.get<Record<string, number>>('/corporate/summary').then(r => r.data)
+export const fetchAnnouncements = (days = 7, min_score = 0, ann_type?: string, limit = 100) =>
+  api.get<{ announcements: Record<string, unknown>[]; count: number }>(
+    `/corporate/announcements?days=${days}&min_score=${min_score}&limit=${limit}${ann_type ? `&ann_type=${ann_type}` : ''}`).then(r => r.data)
+export const fetchConfidence    = (limit = 20) =>
+  api.get<{ confidence_scores: Record<string, unknown>[]; count: number }>(`/corporate/confidence?limit=${limit}`).then(r => r.data)
 export const fetchAllStocks     = (page = 1, per_page = 100, label?: string, sector?: string, search?: string) => {
   const params = new URLSearchParams({ page: String(page), per_page: String(per_page) })
   if (label && label !== 'ALL') params.set('label', label)

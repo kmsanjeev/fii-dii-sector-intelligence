@@ -6,6 +6,78 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.41.0
+
+Phase UI-C -- Corporate Intelligence Hub
+
+Date: 2026-07-12
+
+Status: Completed
+
+---
+
+## Summary
+
+The Corporate page was two tables reading two of six available corporate
+datasets, with no filters, no links, and no summary. It is rebuilt into a
+six-section hub covering the platform's full corporate-events data spine.
+Two real data bugs were found and fixed in the process: the event calendar
+engine never queried forward in time (Upcoming Catalysts was silently
+empty/stale), and ~60 mutual-fund block deals were misclassified as RETAIL
+because the classifier only matched abbreviated AMC names.
+
+## New sections (frontend/src/pages/CorporatePage.tsx, full rewrite)
+
+- KPI strip: announcements (7D) + high-signal count, institutional net flow
+  (30D) + accum/distrib split, results due (7D) + catalysts (60D), ex-dates
+  (14D)
+- Announcement Radar: last 72h, filterable by type (RESULT_UPDATE /
+  ACQUISITION / BOARD_OUTCOME / MANAGEMENT_CHANGE / REGULATORY) and minimum
+  signal score, rows link to stock pages
+- Deal Tape: individual block/bulk deals with client name, participant
+  badge (FII/MF/INSURANCE/PROMOTER/RETAIL, filterable), direction, qty,
+  price, value -- the raw feed the old page never surfaced
+- Corporate Action Calendar: upcoming ex-dates (dividend/bonus/split/
+  buyback) in a 45-day window, color-coded by action type
+- Management Confidence leaderboard: top 12 by 12M rolling confidence score
+- Upcoming Catalysts: unchanged data, now links to stock pages
+
+## Bugs found and fixed
+
+1. **Event calendar never looked forward.** corporate_event_calendar_engine
+   only fetched from last-cached-date to now(); board meetings are
+   scheduled ahead of time, so a forward-only-to-today window means the
+   catalysts file silently goes stale the moment NSE stops backfilling old
+   entries. Fixed: every run now also rescans the trailing 7 days (catches
+   late-arriving/corrected entries) and fetches through +60 days. Backfilled
+   immediately: 258 catalysts now populated (was near-empty).
+2. **7B was missing from the daily pipeline.** 7A and 7C were wired into
+   engines/orchestration/daily_refresh.py; 7B (event calendar) was not,
+   so the above bug was invisible to the automated refresh. Added stage
+   7B_event_calendar after 7A_block_bulk_deals.
+3. **MF misclassification in block_bulk_deal_engine.py.** MF_KEYWORDS
+   matched abbreviated brand forms ("QUANT MF") but NSE deal records use
+   full official AMC names ("QUANT MUTUAL FUND"), which never matched.
+   Fixed with a generic suffix rule: "MUTUAL FUND" is a SEBI-reserved
+   suffix only registered AMCs may use, so any client name containing it
+   is MF regardless of brand. Reclassified 13,631 existing deal rows in
+   place (61 RETAIL -> MF) and rebuilt institutional_deal_signals.csv from
+   the corrected data -- this also improves signal quality on the
+   Dashboard's Institutional Deals card and Watchlist conviction inputs,
+   not just this page.
+   KNOWN REMAINING GAP: foreign funds with generic English names (e.g.
+   "THE JUPITER GLOBAL FUND") still fall through to RETAIL -- no safe
+   generic keyword rule exists for FII names the way "MUTUAL FUND" works
+   for MF; would need a curated FPI registry to close.
+
+## Backend (backend/routers/corporate.py)
+
+New endpoints: GET /deal-tape (filterable by participant + min value),
+GET /upcoming-actions (ex-date window), GET /summary (KPI strip).
+data_loader.py: registered "block_deals" source (block_bulk_deals.csv).
+
+---
+
 # Version 4.40.1
 
 Phase UI-D fix -- Dashboard space management repack

@@ -101,12 +101,16 @@ class CorporateEventCalendarEngine:
         existing = self._load_existing()
         last_date = existing["event_date"].max() if not existing.empty else ""
 
-        start = (
+        # Catch-up start for any past gap, but ALWAYS rescan the recent week +
+        # the forward window: board meetings are scheduled/rescheduled ahead of
+        # time, so the calendar must be queried INTO THE FUTURE on every run.
+        catchup = (
             datetime.strptime(last_date, "%Y-%m-%d") + timedelta(days=1)
             if last_date
             else datetime.strptime(HISTORY_START, "%d-%m-%Y")
         )
-        end = datetime.now()
+        start = min(catchup, datetime.now() - timedelta(days=7))
+        end   = datetime.now() + timedelta(days=60)
 
         new_rows = self._download_range(start, end)
 
@@ -114,7 +118,7 @@ class CorporateEventCalendarEngine:
             new_df  = pd.DataFrame(new_rows)
             combined = pd.concat([existing, new_df], ignore_index=True)
             combined = (combined
-                        .drop_duplicates(subset=["event_date", "symbol", "purpose_type"])
+                        .drop_duplicates(subset=["event_date", "symbol", "purpose_type"], keep="last")
                         .sort_values(["event_date", "symbol"])
                         .reset_index(drop=True))
             self._save_atomic(combined, CALENDAR_HISTORY)

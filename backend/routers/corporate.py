@@ -87,6 +87,82 @@ def get_events(limit: int = 100):
     }
 
 
+# ── Phase UI-C — Corporate Intelligence Hub ───────────────────────────────────
+
+@router.get("/deal-tape")
+def get_deal_tape(
+    min_cr: float = Query(0.0, description="Min deal value in Cr"),
+    participant: str = Query(None, description="Filter: FII/MF/INSURANCE/PROMOTER/RETAIL"),
+    limit: int = 40,
+):
+    """Raw individual block/bulk deals with client names, newest first."""
+    df = data_loader.get("block_deals")
+    if df is None or df.empty:
+        raise HTTPException(status_code=503, detail="block_bulk_deals not loaded")
+
+    if min_cr > 0:
+        df = df[df["value_cr"].fillna(0).abs() >= min_cr]
+    if participant:
+        df = df[df["participant"].str.upper() == participant.upper()]
+
+    df = df.sort_values(["date", "value_cr"], ascending=[False, False]).head(limit)
+    return {"count": len(df), "deals": _clean(df.to_dict(orient="records"))}
+
+
+@router.get("/upcoming-actions")
+def get_upcoming_actions(days: int = Query(45, description="Forward window"), limit: int = 60):
+    """Upcoming corporate action ex-dates (dividend/bonus/split/buyback)."""
+    df = data_loader.get("corp_actions")
+    if df is None or df.empty:
+        raise HTTPException(status_code=503, detail="corporate_action_signals not loaded")
+
+    import pandas as pd
+    today   = pd.Timestamp.now().strftime("%Y-%m-%d")
+    horizon = (pd.Timestamp.now() + pd.Timedelta(days=days)).strftime("%Y-%m-%d")
+    up = df[(df["ex_date_dt"] >= today) & (df["ex_date_dt"] <= horizon)].copy()
+    up = up.sort_values("ex_date_dt").head(limit)
+    cols = ["ex_date_dt", "symbol", "company", "sector", "action_type",
+            "dividend_rs", "bonus_ratio", "split_new_fv", "subject"]
+    up = up[[c for c in cols if c in up.columns]]
+    return {"count": len(up), "actions": _clean(up.to_dict(orient="records"))}
+
+
+@router.get("/summary")
+def get_corporate_summary():
+    """KPI strip for the Corporate Intelligence hub."""
+    import pandas as pd
+    now = pd.Timestamp.now()
+    out: dict = {}
+
+    ann = data_loader.get("announcements")
+    if ann is not None and not ann.empty:
+        d7 = (now - pd.Timedelta(days=7)).strftime("%Y-%m-%d")
+        recent = ann[ann["date"] >= d7]
+        out["announcements_7d"]      = int(len(recent))
+        out["high_signal_7d"]        = int((recent["signal_score"].astype(float) >= 70).sum())
+
+    deals = data_loader.get("deal_signals")
+    if deals is not None and not deals.empty:
+        net = pd.to_numeric(deals["inst_net_value_cr"], errors="coerce")
+        out["inst_net_30d_cr"]  = round(float(net.sum()), 0)
+        out["accumulating_30d"] = int((net > 0).sum())
+        out["distributing_30d"] = int((net < 0).sum())
+
+    ca = data_loader.get("corp_actions")
+    if ca is not None and not ca.empty:
+        h14 = (now + pd.Timedelta(days=14)).strftime("%Y-%m-%d")
+        t   = now.strftime("%Y-%m-%d")
+        out["ex_dates_14d"] = int(((ca["ex_date_dt"] >= t) & (ca["ex_date_dt"] <= h14)).sum())
+
+    cat = data_loader.get("upcoming_catalysts")
+    if cat is not None and not cat.empty:
+        d7f = pd.to_numeric(cat.get("days_until"), errors="coerce")
+        out["results_7d"] = int(((d7f <= 7) & (cat["purpose_type"] == "FINANCIAL_RESULTS")).sum())
+        out["catalysts_60d"] = int(len(cat))
+
+    return out
+
+
 # ── Phase 18 — Corporate Announcements Intelligence ───────────────────────────
 
 @router.get("/announcements")
