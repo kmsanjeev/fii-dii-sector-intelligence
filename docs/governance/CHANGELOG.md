@@ -6,6 +6,88 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.45.0
+
+Phase V-DATA-2 -- Fix stale STRONG_CANDIDATE/AVOID label taxonomy (9 files)
+
+Date: 2026-07-13
+
+Status: Completed
+
+---
+
+## Summary
+
+Follow-up to Phase V-DATA: 9 files compared the RULE-BASED label column
+(bull_run_probability.csv's `label` / portfolio's `bull_run_label`) against
+a taxonomy (STRONG_CANDIDATE, AVOID) the platform stopped producing a while
+back in favor of the current 6-value Wyckoff-aligned scheme (BULL_RUN,
+EMERGING, WATCHLIST, NEUTRAL, ACCUMULATION, MARKDOWN). Every one of these
+checks has been silently dead code. Root cause of the blast radius:
+engines/intelligence/CLAUDE.md itself documented the old taxonomy as
+current, so nothing flagged the mismatch to a reader.
+
+## Real-world impact verified before and after the fix
+
+- **Conviction screener's "red flag" exclusion was a no-op.** `base =
+  base[base["label"] != "AVOID"]` never matched anything, since no row has
+  ever had label=="AVOID" in the current taxonomy -- MARKDOWN-labelled
+  (actively declining) stocks were never actually filtered out of the
+  platform's flagship efficacy-weighted screener. Fixed and verified: 0
+  MARKDOWN stocks now appear in the 1,562-row screener universe (was
+  previously unfiltered).
+- **RAG knowledge base never described the platform's best stocks
+  correctly.** document_builder.py's stock-document filter used EMERGING/
+  STRONG_CANDIDATE -- BULL_RUN stocks (score >= 60, confirmed uptrend) were
+  either excluded entirely or, worse, generated documents that said "A
+  score above 65 puts this stock in STRONG_CANDIDATE territory" -- a label
+  that doesn't exist. Rebuilt: all 500 stock documents now correctly say
+  "Accumulation label is BULL_RUN" where applicable; FAISS + BM25 indexes
+  rebuilt on the corrected corpus and live-verified via test queries.
+- **Stock detail thesis generation gave the platform's best label (and its
+  newest label, ACCUMULATION) the LEAST informative response** -- both
+  fell through to a bare "Bull Run Score X/100." fallback instead of the
+  rich narrative EMERGING/WATCHLIST/NEUTRAL stocks got. Fixed with
+  dedicated BULL_RUN and ACCUMULATION branches in backend/routers/
+  stocks.py's thesis builder (4 separate call sites in this file needed
+  the same fix).
+- **Portfolio and broker "key signal" logic never fired STRONG BUY SIGNAL
+  or REVIEW POSITION** for any position, and had no branch at all for
+  ACCUMULATION. Fixed in both engines/portfolio/portfolio_engine.py and
+  engines/broker/sync_engine.py (added a distinct "BASE BUILDING" output
+  for ACCUMULATION to avoid colliding with the pre-existing "ACCUMULATION"
+  text used for EMERGING positions in the same function).
+- **Backtest prioritization never favored the platform's strongest label**
+  -- fixed in engines/backtest/backtest_engine.py; also added ACCUMULATION
+  to the priority set (a genuinely new label with no old-taxonomy
+  equivalent, worth prioritizing for backtest focus).
+- **report_generator.py's color/label map was missing 2 of 6 current
+  labels entirely** (ACCUMULATION, MARKDOWN never had an entry) and used
+  wrong keys for the other 2 -- since lookup falls back to NEUTRAL styling
+  on a miss, the best AND worst stocks in every generated report were both
+  rendering as bland amber "neutral". Rebuilt to the full current 6-value
+  scheme with a purple ACCUMULATION swatch (matching the color already
+  used for this label elsewhere in the platform, e.g. Dashboard's breadth
+  donut).
+- theme_intelligence_engine.py's BULL_RUN counter was reading 0.
+- engines/intelligence/CLAUDE.md's Phase 8B documentation corrected to the
+  actual current Wyckoff-aligned thresholds and label logic (was
+  documenting the taxonomy that caused this entire bug).
+
+## Fixed but NOT a rule-based-label bug (astro/kundli's own AVOID)
+
+engines/intelligence/astro_engine.py and kundli_engine.py/kundli_
+interpretator.py use "AVOID" as one of their OWN action values (BUY/HOLD/
+CAUTION/EXIT/AVOID) -- a completely different, correct, unrelated system.
+Left untouched.
+
+Verified: full test suite 267/267; conviction_screener_engine.py,
+document_builder.py, faiss_indexer.py, bm25_indexer.py all re-run live
+with before/after data checks (not just code review) confirming each fix
+actually changes behavior as intended.
+
+---
+
 # Version 4.44.0
 
 Phase V-DATA -- Full data coverage for Veda + ML feature/label completeness

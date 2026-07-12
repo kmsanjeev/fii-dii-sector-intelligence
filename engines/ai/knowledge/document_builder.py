@@ -111,7 +111,11 @@ class DocumentBuilder:
         stock_map: dict[str, list[str]] = {}
         if BULL_RUN.exists():
             br = pd.read_csv(BULL_RUN)
-            for sec, grp in br[br["label"].isin(["EMERGING", "STRONG_CANDIDATE"])].groupby("sector"):
+            # Taxonomy fix (Phase V-DATA-2): was EMERGING/STRONG_CANDIDATE --
+            # STRONG_CANDIDATE stopped being produced a while back, so
+            # BULL_RUN stocks (the platform's best label) never appeared in
+            # any "top accumulation candidates" RAG sector document.
+            for sec, grp in br[br["label"].isin(["EMERGING", "BULL_RUN"])].groupby("sector"):
                 stock_map[sec] = grp.nlargest(5, "bull_run_score")["symbol"].tolist()
 
         docs = []
@@ -142,7 +146,7 @@ class DocumentBuilder:
         return docs
 
     # ------------------------------------------------------------------
-    # Stock documents (top EMERGING + STRONG_CANDIDATE)
+    # Stock documents (top EMERGING + BULL_RUN)
     # ------------------------------------------------------------------
 
     def _build_stock_docs(self) -> list[dict]:
@@ -165,7 +169,10 @@ class DocumentBuilder:
             corp = pd.read_csv(CORP_CONF, usecols=lambda c: c in
                                ["symbol", "confidence_score_12m"])
 
-        target = br[br["label"].isin(["EMERGING", "STRONG_CANDIDATE", "WATCHLIST"])]
+        # Taxonomy fix (Phase V-DATA-2): STRONG_CANDIDATE was replaced by
+        # BULL_RUN a while back -- this filter was silently excluding the
+        # platform's best-labelled stocks from ever getting a RAG document.
+        target = br[br["label"].isin(["EMERGING", "BULL_RUN", "WATCHLIST"])]
         target = target.nlargest(500, "bull_run_score")
 
         if ml is not None:
@@ -197,7 +204,7 @@ class DocumentBuilder:
             if conf_12m and conf_12m != "N/A":
                 text += f"Corporate confidence score over 12 months is {conf_12m}. "
             text += (
-                f"A score above 65 puts this stock in STRONG_CANDIDATE territory. "
+                f"A score above 65 puts this stock in BULL_RUN territory. "
                 f"The capital flow cascade for {sym} goes: Institutional participant -> "
                 f"{sector} sector -> {sym} stock."
             )

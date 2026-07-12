@@ -327,7 +327,13 @@ def _generate_insights(sym: str, row, fundamentals: dict, technical: dict,
         "ML models trained on 24 factors rate this" if ml_bull is not None
         else "The platform's 4-factor composite rates this"
     )
-    if label == "STRONG_CANDIDATE":
+    # Taxonomy fix (Phase V-DATA-2): was STRONG_CANDIDATE/AVOID, which
+    # bull_run_probability_engine.py stopped producing a while back --
+    # BULL_RUN stocks (the platform's BEST label) and MARKDOWN stocks were
+    # both silently falling through to the bare "else" branch below,
+    # getting the least informative thesis of any label. ACCUMULATION had
+    # no branch at all either.
+    if label == "BULL_RUN":
         thesis = f"Bull Run Score {score:.0f}/100 — {score_meaning} a strong accumulation candidate. "
         if bullish_signals:
             thesis += f"Dominant drivers: {', '.join(bullish_signals[:3])}."
@@ -339,10 +345,16 @@ def _generate_insights(sym: str, row, fundamentals: dict, technical: dict,
             thesis += f"Building signals: {', '.join(bullish_signals[:2])}."
         if bearish_signals:
             thesis += f" Not yet confirmed because: {', '.join(bearish_signals[:2])}."
-    elif label in ("AVOID", "NEUTRAL"):
+    elif label == "ACCUMULATION":
+        thesis = f"Bull Run Score {score:.0f}/100 — quiet institutional base-building. {score_meaning} early accumulation, before broad price momentum. "
+        if bullish_signals:
+            thesis += f"Supporting signals: {', '.join(bullish_signals[:2])}. "
+        if bearish_signals:
+            thesis += f"Watch for: {', '.join(bearish_signals[:2])}."
+    elif label in ("MARKDOWN", "NEUTRAL"):
         thesis = f"Bull Run Score {score:.0f}/100 — "
-        if label == "AVOID":
-            thesis += "caution advised. "
+        if label == "MARKDOWN":
+            thesis += "caution advised — declining trend. "
         else:
             thesis += "no actionable signal. "
         # Conflict resolution: explain why bearish dominates despite bullish signals
@@ -461,7 +473,7 @@ def _generate_insights(sym: str, row, fundamentals: dict, technical: dict,
             stake_str = f" (current stake: FII {shp['fii_pct']:.1f}%, DII {shp['dii_pct']:.1f}%)"
 
         # Context: if bullish flow but bearish verdict, explain it
-        if (fii_d is not None and fii_d > 0.2 or dii_d is not None and dii_d > 0.2) and label in ("AVOID", "NEUTRAL"):
+        if (fii_d is not None and fii_d > 0.2 or dii_d is not None and dii_d > 0.2) and label in ("MARKDOWN", "NEUTRAL"):
             insights.append(
                 f"Ownership flow: {flow_str}{stake_str}. "
                 "Note: institutional buying is a positive but lagging signal — "
@@ -597,20 +609,20 @@ def _build_structured_thesis(sym: str, row, fundamentals: dict, technical: dict,
         bear_signals.append(f"Promoter selling ({pro_d:.2f}%)")
 
     conflict_note = ""
-    if bull_signals and bear_signals and label in ("AVOID", "NEUTRAL", "WATCHLIST"):
+    if bull_signals and bear_signals and label in ("MARKDOWN", "NEUTRAL", "WATCHLIST"):
         conflict_note = (
             f"Despite {bull_signals[0].lower()}, the model is cautious because "
             f"{', '.join(s.lower() for s in bear_signals[:2])}. "
             "Price trend and technicals carry more weight than ownership changes in the current regime."
         )
-    elif bull_signals and label in ("STRONG_CANDIDATE", "EMERGING") and bear_signals:
+    elif bull_signals and label in ("BULL_RUN", "EMERGING") and bear_signals:
         conflict_note = (
             f"Risk to monitor: {bear_signals[0].lower()}. "
             "Positive thesis holds while price stays above key support."
         )
 
     dominant = ""
-    if label in ("STRONG_CANDIDATE", "EMERGING", "WATCHLIST"):
+    if label in ("BULL_RUN", "EMERGING", "WATCHLIST"):
         components = {
             "Price Momentum": float(row.get("price_score",       0) or 0),
             "Sector Flow":    float(row.get("sector_flow_score", 0) or 0),
@@ -864,7 +876,7 @@ def get_watchlist(label: str = "EMERGING", limit: int = 50):
 
 @router.get("")
 def get_all_stocks(
-    label: str = Query(None, description="Filter by label (STRONG_CANDIDATE, EMERGING, etc.)"),
+    label: str = Query(None, description="Filter by label (BULL_RUN, EMERGING, WATCHLIST, NEUTRAL, ACCUMULATION, MARKDOWN)"),
     sector: str = Query(None),
     page: int = 1,
     per_page: int = 100,

@@ -264,10 +264,16 @@ def _key_signal(row) -> str:
     ann     = float(row.get("ann_score_30d")      or 0)
     pnl_pct = float(row.get("unrealized_pnl_pct") or 0)
 
-    if label == "STRONG_CANDIDATE":              return "STRONG BUY SIGNAL"
-    if label == "AVOID":                         return "REVIEW POSITION"
+    # Taxonomy fix (Phase V-DATA-2): was STRONG_CANDIDATE/AVOID, which
+    # bull_run_probability_engine.py stopped producing a while back --
+    # these two branches never fired. ACCUMULATION (a real current label,
+    # distinct from the "ACCUMULATION" output text used below for EMERGING
+    # positions) had no branch at all.
+    if label == "BULL_RUN":                      return "STRONG BUY SIGNAL"
+    if label == "MARKDOWN":                      return "REVIEW POSITION"
     if label == "EMERGING" and ann > 100:        return "MOMENTUM BUILDING"
     if rot   == "EARLY_ROTATION":                return "SECTOR ROTATING IN"
+    if label == "ACCUMULATION":                  return "BASE BUILDING"
     if label == "EMERGING":                      return "ACCUMULATION"
     if label == "WATCHLIST":                     return "WATCHLIST"
     if pnl_pct < -15:                            return "CONSIDER STOP LOSS"

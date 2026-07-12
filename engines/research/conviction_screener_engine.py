@@ -13,7 +13,7 @@ What makes this different from the Phase 23 screener and the raw scores:
        - liquidity: 20d average traded value >= MIN_ADV_CR
        - price     >= MIN_PRICE (penny-stock exclusion)
        - data coverage: bull-run + technical + ML scores all present
-       - not AVOID-labelled
+       - not MARKDOWN-labelled
   3. EVIDENCE PER PICK: every candidate lists its top supporting factors
      and its single biggest risk -- both sides, always.
 
@@ -193,7 +193,12 @@ class ConvictionScreenerEngine:
         base["adv_20d_cr"] = base["close_now"] * base["vol_20d_avg"] / 1e7
         base = base[base["adv_20d_cr"] >= MIN_ADV_CR]           # liquidity
         base = base[base["close_now"] >= MIN_PRICE]             # penny exclusion
-        base = base[base["label"] != "AVOID"]                   # platform red flag
+        # Taxonomy fix (Phase V-DATA-2): AVOID was replaced by MARKDOWN a
+        # while back -- this "red flag" exclusion has been a silent no-op
+        # (bull_run_probability.csv has never had an "AVOID" value in the
+        # current taxonomy), meaning MARKDOWN-labelled stocks were never
+        # actually being filtered out of the conviction screener universe.
+        base = base[base["label"] != "MARKDOWN"]                # platform red flag
         base = base.dropna(subset=["bull_run_score", "prox_52w_high", "vs_dma_50"])
         logger.info("[ConvictionScreener] Gates: %d -> %d symbols "
                     "(liquidity >= %.1f cr/day, price >= %.0f, coverage)",

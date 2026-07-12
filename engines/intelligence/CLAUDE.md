@@ -67,10 +67,18 @@ Regime multipliers (from participant_intelligence.csv preferred):
   STRONG_ACCUMULATION: 1.20 | ACCUMULATION: 1.10 | NEUTRAL: 0.90
   DISTRIBUTION: 0.80 | STRONG_DISTRIBUTION: 0.70
 
-Labels:
-  >= 65 STRONG_CANDIDATE | >= 45 EMERGING | >= 30 WATCHLIST | >= 15 NEUTRAL | < 15 AVOID
+Labels (Wyckoff cycle-aligned -- taxonomy updated since the numbers below
+were recorded; this doc's staleness is what let the STRONG_CANDIDATE/AVOID
+bug in 9 downstream files go undetected for a while -- see CHANGELOG
+Phase V-DATA-2):
+  >= 60 BULL_RUN (Mark-Up, confirmed uptrend) | >= 52 EMERGING (late accumulation)
+  >= 40 WATCHLIST | >= 25 NEUTRAL
+  < 25 splits into ACCUMULATION (institutional presence -- Wyckoff accumulation,
+    precedes breakout, NOT a sell signal) vs MARKDOWN (no institutional
+    support -- active decline); see bull_run_probability_engine.py
+    _label_score() for the exact split rule.
 
-Results (2026-06-30):
+Results (2026-06-30, PRE-taxonomy-update -- kept for history, not current):
 - Regime: NEUTRAL (x0.90), 2441 symbols, score range 14-62
 - EMERGING: 225 | WATCHLIST: 1804 | NEUTRAL: 411 | AVOID: 1
 - Top: ADANIENSOL 62, ADANIENT 57, GMRAIRPORT 56

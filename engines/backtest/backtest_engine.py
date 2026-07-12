@@ -261,9 +261,15 @@ def run_momentum_screen(
 
     universe = _load_bull_universe()
     if len(universe) > max_symbols:
-        # Prioritise EMERGING + WATCHLIST over other labels
-        priority = universe[universe["label"].isin(["EMERGING", "STRONG_CANDIDATE", "WATCHLIST"])]
-        others   = universe[~universe["label"].isin(["EMERGING", "STRONG_CANDIDATE", "WATCHLIST"])]
+        # Prioritise EMERGING + WATCHLIST + BULL_RUN + ACCUMULATION over other labels.
+        # Taxonomy fix (Phase V-DATA-2): was EMERGING/STRONG_CANDIDATE/WATCHLIST --
+        # STRONG_CANDIDATE stopped being produced a while back so this silently
+        # never prioritised the platform's strongest label; ACCUMULATION is a
+        # genuinely new label with no old-taxonomy equivalent, added here since
+        # it's exactly the kind of signal worth prioritising for backtest focus.
+        PRIORITY_LABELS = ["EMERGING", "BULL_RUN", "WATCHLIST", "ACCUMULATION"]
+        priority = universe[universe["label"].isin(PRIORITY_LABELS)]
+        others   = universe[~universe["label"].isin(PRIORITY_LABELS)]
         n_others = max(0, max_symbols - len(priority))
         sample   = others.sample(min(n_others, len(others)), random_state=42)
         universe = pd.concat([priority, sample]).reset_index(drop=True)

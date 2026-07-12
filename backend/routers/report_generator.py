@@ -8,12 +8,19 @@ import json
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
+# Taxonomy fix (Phase V-DATA-2): was STRONG_CANDIDATE/AVOID, a scheme
+# bull_run_probability_engine.py stopped producing a while back in favor
+# of the 6-value taxonomy below. Since lookup falls back to NEUTRAL styling
+# on a miss (see LABEL_META.get() below), the platform's best (BULL_RUN)
+# and worst (MARKDOWN) stocks were both silently rendering as bland amber
+# "neutral" in every generated report -- ACCUMULATION had no entry at all.
 LABEL_META = {
-    'STRONG_CANDIDATE': {'color': '#00D87C', 'bg': '#002914', 'label': 'STRONG BUY'},
+    'BULL_RUN':         {'color': '#00D87C', 'bg': '#002914', 'label': 'BULL RUN'},
     'EMERGING':         {'color': '#06B6A4', 'bg': '#003028', 'label': 'EMERGING'},
+    'ACCUMULATION':     {'color': '#A78BFA', 'bg': '#1A0A2E', 'label': 'ACCUMULATION'},
     'WATCHLIST':        {'color': '#3DA0FF', 'bg': '#001E3A', 'label': 'WATCHLIST'},
     'NEUTRAL':          {'color': '#F5A024', 'bg': '#2A1800', 'label': 'NEUTRAL'},
-    'AVOID':            {'color': '#F04A4A', 'bg': '#2A0808', 'label': 'AVOID'},
+    'MARKDOWN':         {'color': '#F04A4A', 'bg': '#2A0808', 'label': 'MARKDOWN'},
 }
 
 def _sc(v) -> str:

@@ -153,7 +153,7 @@ if __name__ == "__main__":
 
     queries = [
         "Which sectors are seeing FII accumulation today?",
-        "Show me STRONG_CANDIDATE stocks with high bull run score",
+        "Show me BULL_RUN stocks with high bull run score",
         "What is the current market regime?",
         "Large institutional block deals today",
         "Corporate buybacks with high confidence",

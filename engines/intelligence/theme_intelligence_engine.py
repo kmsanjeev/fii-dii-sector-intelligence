@@ -698,7 +698,9 @@ def run():
         stock_count   = len(ts_df)
         scored_count  = ts_df["bull_run_score"].notna().sum()
         label_counts  = ts_df["label"].value_counts().to_dict() if "label" in ts_df.columns else {}
-        strong_count  = label_counts.get("STRONG_CANDIDATE", 0)
+        # Taxonomy fix (Phase V-DATA-2): STRONG_CANDIDATE was replaced by
+        # BULL_RUN a while back -- this counter has been reading 0 since.
+        strong_count  = label_counts.get("BULL_RUN", 0)
         emerging_count = label_counts.get("EMERGING", 0)
 
         avg_bull     = wavg("bull_run_score")
