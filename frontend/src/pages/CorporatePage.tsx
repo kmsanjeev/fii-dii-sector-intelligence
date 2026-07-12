@@ -468,9 +468,9 @@ export function CorporatePage() {
 
       <KpiStrip s={summary} />
 
-      <AnnouncementRadar />
-
       <DealTape />
+
+      <AnnouncementRadar />
 
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.4fr 1fr', gap: 14, alignItems: 'start' }}>
         <ActionCalendar />
