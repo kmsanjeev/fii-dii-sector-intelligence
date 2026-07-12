@@ -494,6 +494,7 @@ def get_data_status():
         "bull_run_watchlist":             "bull_run_watchlist.csv",
         "deal_signals":                   "institutional_deal_signals.csv",
         "block_bulk_deals":               "block_bulk_deals.csv",
+        "deal_records":                   "deal_records.csv",
         "event_calendar":                 "event_calendar.csv",
         "upcoming_catalysts":             "upcoming_catalysts.csv",
         "corporate_confidence":           "corporate_confidence_scores.csv",

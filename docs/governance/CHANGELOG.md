@@ -6,6 +6,86 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.42.0
+
+Phase UI-C fix -- Sequence-aware transaction pairing (Deal Tape rebuild)
+
+Date: 2026-07-12
+
+Status: Completed
+
+---
+
+## Summary
+
+User rejected the previous day-consolidated netting design and the
+BUY_ONLY/SELL_ONLY/ROUND_TRIP filter buttons entirely. The actual ask:
+walk each client's same-day transactions in the order they occurred, pair
+a BUY with a later SELL of the same quantity (or a SELL with a later BUY)
+as ONE record, repeat for further round trips the same day, and put the
+classification in a column (not a filter) -- distinguishing "long position
+built then squared off" (buy first) from "short position built then
+covered" (sell first).
+
+## Foundational fix required first
+
+NSE's block/bulk deal source has no intraday timestamp, so "which
+transaction happened first" can only come from the order rows appear in
+NSE's own disclosure file. Two problems had to be fixed before this could
+be trustworthy:
+
+1. **The pipeline was destroying that order.** `block_bulk_deal_engine.py`
+   re-sorted the combined dataset with `sort_values(["date","symbol"])`
+   on every run; pandas' default sort is NOT stable, so rows sharing a
+   date+symbol could be silently reshuffled on each incremental append.
+   Fixed: every row now gets a permanent `seq_id` at first capture
+   (assigned in NSE's own per-fetch return order, block deals then bulk
+   deals), and the file is sorted by `["date", "seq_id"]` -- never by
+   symbol/client -- so a row's position relative to same-day peers is
+   fixed for life once written.
+2. **Existing stored order was already unreliable** (proven by the above).
+   Since `data/intelligence/` is a rebuildable cache, did a one-time clean
+   6-month refetch from nselib with seq_id assigned fresh, rather than
+   guess-recovering already-scrambled order. Net effect: ~1,000 rows from
+   the oldest 13 days (2025-12-30 to 2026-01-11) rolled off NSE's live 6M
+   disclosure window and are gone; history resumes accumulating forward
+   from 2026-01-12 as before (rows are never pruned, only appended).
+   Also tightened the incremental dedup key to include qty+price (was
+   date+symbol+client+type+direction only, which could have silently
+   collapsed genuinely distinct multi-tranche legs into one row).
+
+## Matching algorithm (engines/corporate/block_bulk_deal_engine.py)
+
+`pair_client_transactions()`: per (date, symbol, client), walk deals in
+seq_id order; FIFO-match each leg against the oldest open opposite-
+direction leg within 1% quantity tolerance (exact-qty-only would have
+caught just 19% of real same-day pairs -- most differ by rounding/partial-
+fill noise, e.g. 9,248,751 vs 9,248,816 shares). Entry = whichever leg
+came first: BUY entry -> LONG_BUILD_SQUAREOFF, SELL entry ->
+SHORT_BUILD_COVER. A client can have multiple round trips in a day, each
+becoming its own record (verified with a synthetic 2-round-trip test:
+buy1000->sell1000 then sell500->buy500 on the same day correctly produced
+two separate records plus one leftover standalone leg). Unmatched legs
+remain BUY_ONLY / SELL_ONLY.
+
+Precomputed by the engine into `data/intelligence/deal_records.csv` (not
+computed per-request -- pairing ~12,600 rows takes ~19s with itertuples,
+too slow for a live endpoint; the API now just reads+filters the
+precomputed file, <30ms per request).
+
+## Frontend (frontend/src/pages/CorporatePage.tsx)
+
+Deal Tape rebuilt: one row per matched pair or standalone leg (was one
+row per day-aggregate). Columns: Type (color-coded LONG->SQ.OFF /
+SHORT->COVER / BUY ONLY / SELL ONLY, qty-match% shown when <100%), 1st Txn
+/ 2nd Txn (direction + qty + price), P&L% (entry-vs-exit, direction-aware
+sign), Net (Cr), full ISO date. Removed the position filter button row
+entirely per instruction -- participant filter only remains. Row hover
+restored to the amber rounded-rectangle outline from the Watchlist page
+redesign (was accidentally dropped in the previous rebuild).
+
+---
+
 # Version 4.41.1
 
 Phase UI-C fix -- Deal Tape same-day netting + full dates

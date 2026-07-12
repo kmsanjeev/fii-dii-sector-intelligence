@@ -12,6 +12,7 @@ Bulk deals  : qty >= 0.5% of total listed equity of the company
 Outputs:
   data/intelligence/block_bulk_deals.csv        — raw history (incremental)
   data/intelligence/institutional_deal_signals.csv — per-symbol rolling signals
+  data/intelligence/deal_records.csv            — sequence-paired client transactions
 
 Guardrails: G-A-01, G-A-02, G-A-03, G-D-02, G-D-03
 """
@@ -36,9 +37,113 @@ logger = get_logger("block_bulk_deal")
 INTELLIGENCE_DIR = cfg.INTELLIGENCE_DIR
 DEALS_HISTORY    = INTELLIGENCE_DIR / "block_bulk_deals.csv"
 SIGNALS_OUTPUT   = INTELLIGENCE_DIR / "institutional_deal_signals.csv"
+RECORDS_OUTPUT   = INTELLIGENCE_DIR / "deal_records.csv"
 RECOVERY_QUEUE   = INTELLIGENCE_DIR / "corporate_recovery_queue.csv"
 
 ROLLING_WINDOW_DAYS = 30
+
+# Sequence-paired transaction matching (Phase UI-C fix): NSE publishes
+# block/bulk deals at trade-DATE granularity only, with no intraday
+# timestamp. The order rows are disclosed in NSE's own file -- preserved
+# end to end via seq_id (see run(), never re-sorted by symbol/client) -- is
+# the only available proxy for "which transaction happened first" when a
+# client appears on both sides the same day.
+QTY_TOLERANCE = 0.01  # 1% relative -- catches same-position rounding/partial-fill
+                       # noise (e.g. 9,248,751 vs 9,248,816 shares) without
+                       # pairing unrelated trades of different size
+
+
+def _find_fifo_match(open_legs: list, qty: float, tol: float):
+    """First open leg (earliest seq_id -- the list is append-ordered) whose
+    quantity is within `tol` relative difference of `qty`."""
+    for i, leg in enumerate(open_legs):
+        if abs(leg["qty"] - qty) / max(leg["qty"], qty) <= tol:
+            return i
+    return None
+
+
+def _make_pair_record(date, symbol, company, client, participant, entry, exit_, record_type) -> dict:
+    entry_dir, exit_dir = ("SELL", "BUY") if record_type == "SHORT_BUILD_COVER" else ("BUY", "SELL")
+    buy_leg, sell_leg = (exit_, entry) if entry_dir == "SELL" else (entry, exit_)
+    net_value_cr = (sell_leg["qty"] * sell_leg["price"] - buy_leg["qty"] * buy_leg["price"]) / 1e7
+    pnl_pct = (
+        (exit_["price"] - entry["price"]) / entry["price"] * 100 if record_type == "LONG_BUILD_SQUAREOFF"
+        else (entry["price"] - exit_["price"]) / entry["price"] * 100
+    )
+    qty_match_pct = min(entry["qty"], exit_["qty"]) / max(entry["qty"], exit_["qty"]) * 100
+    return {
+        "date": date, "symbol": symbol, "company": company,
+        "client_name": client, "participant": participant,
+        "record_type": record_type,
+        "leg1_dir": entry_dir, "leg1_qty": entry["qty"], "leg1_price": entry["price"], "leg1_seq": entry["seq_id"],
+        "leg2_dir": exit_dir,  "leg2_qty": exit_["qty"],  "leg2_price": exit_["price"],  "leg2_seq": exit_["seq_id"],
+        "pnl_pct": round(pnl_pct, 2),
+        "net_value_cr": round(net_value_cr, 4),
+        "gross_value_cr": round((entry["qty"] * entry["price"] + exit_["qty"] * exit_["price"]) / 1e7, 4),
+        "qty_match_pct": round(qty_match_pct, 2),
+    }
+
+
+def _make_standalone_record(date, symbol, company, client, participant, leg, direction, record_type) -> dict:
+    value_cr = round(leg["qty"] * leg["price"] / 1e7, 4)
+    return {
+        "date": date, "symbol": symbol, "company": company,
+        "client_name": client, "participant": participant,
+        "record_type": record_type,
+        "leg1_dir": direction, "leg1_qty": leg["qty"], "leg1_price": leg["price"], "leg1_seq": leg["seq_id"],
+        "leg2_dir": None, "leg2_qty": None, "leg2_price": None, "leg2_seq": None,
+        "pnl_pct": None,
+        "net_value_cr": value_cr if direction == "BUY" else -value_cr,
+        "gross_value_cr": value_cr,
+        "qty_match_pct": None,
+    }
+
+
+def pair_client_transactions(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Within each (date, symbol, client) group, walk deals in seq_id order and
+    pair opposite-direction legs whose quantity matches within QTY_TOLERANCE,
+    FIFO. Whichever leg has the lower seq_id is the entry:
+      entry BUY  -> exit SELL : LONG_BUILD_SQUAREOFF
+      entry SELL -> exit BUY  : SHORT_BUILD_COVER
+    A client can have multiple round trips in a day -- each matched pair
+    becomes its own record. Legs left unmatched at the end of the group
+    become standalone BUY_ONLY / SELL_ONLY records.
+    """
+    records = []
+    for (date, symbol, company, client, participant), grp in df.groupby(
+        ["date", "symbol", "company", "client_name", "participant"], sort=False
+    ):
+        grp = grp.sort_values("seq_id")
+        open_buys: list[dict] = []
+        open_sells: list[dict] = []
+
+        for row in grp.itertuples(index=False):
+            leg = {"qty": float(row.qty), "price": float(row.price),
+                   "seq_id": int(row.seq_id), "deal_type": row.deal_type}
+            if row.direction == "BUY":
+                m = _find_fifo_match(open_sells, leg["qty"], QTY_TOLERANCE)
+                if m is not None:
+                    entry = open_sells.pop(m)
+                    records.append(_make_pair_record(date, symbol, company, client, participant,
+                                                       entry, leg, "SHORT_BUILD_COVER"))
+                else:
+                    open_buys.append(leg)
+            else:
+                m = _find_fifo_match(open_buys, leg["qty"], QTY_TOLERANCE)
+                if m is not None:
+                    entry = open_buys.pop(m)
+                    records.append(_make_pair_record(date, symbol, company, client, participant,
+                                                       entry, leg, "LONG_BUILD_SQUAREOFF"))
+                else:
+                    open_sells.append(leg)
+
+        for leg in open_buys:
+            records.append(_make_standalone_record(date, symbol, company, client, participant, leg, "BUY", "BUY_ONLY"))
+        for leg in open_sells:
+            records.append(_make_standalone_record(date, symbol, company, client, participant, leg, "SELL", "SELL_ONLY"))
+
+    return pd.DataFrame(records)
 
 # ---------------------------------------------------------------------------
 # Participant classification — keyword patterns applied to client names
@@ -152,7 +257,16 @@ class BlockBulkDealEngine:
         time.sleep(cfg.API_DELAY)
         bulk_raw  = self._download_with_retry(capital_market.bulk_deal_data,   "BULK",  last_date)
 
+        # seq_id preserves the ORDER NSE returned each deal in (no intraday
+        # timestamp exists in the source) -- this is the only proxy available
+        # for "which transaction happened first" on a same-day multi-deal
+        # client position, so it must never be destroyed by a later re-sort.
+        # Block rows are numbered first, then bulk rows, continuing the
+        # existing file's running counter (never renumbered on rewrite).
         new_rows = self._normalise(block_raw, "BLOCK") + self._normalise(bulk_raw, "BULK")
+        next_seq = int(existing["seq_id"].max()) + 1 if (not existing.empty and "seq_id" in existing.columns and existing["seq_id"].notna().any()) else 0
+        for i, row in enumerate(new_rows):
+            row["seq_id"] = next_seq + i
 
         if not new_rows:
             logger.info("[7A] No new deal rows")
@@ -160,8 +274,16 @@ class BlockBulkDealEngine:
             new_df  = pd.DataFrame(new_rows)
             combined = pd.concat([existing, new_df], ignore_index=True)
             combined = (combined
-                        .drop_duplicates(subset=["date", "symbol", "client_name", "deal_type", "direction"])
-                        .sort_values(["date", "symbol"])
+                        # qty+price included so distinct multi-tranche legs by
+                        # the same client/symbol/direction/date are never
+                        # collapsed into one -- only true re-fetch duplicates
+                        # of an already-seen disclosure are dropped.
+                        .drop_duplicates(subset=["date", "symbol", "client_name", "deal_type",
+                                                  "direction", "qty", "price"], keep="first")
+                        # Sort by date then seq_id -- NEVER by symbol/client,
+                        # which would scramble the within-date NSE report
+                        # order that seq_id exists to preserve.
+                        .sort_values(["date", "seq_id"])
                         .reset_index(drop=True))
             self._save_atomic(combined, DEALS_HISTORY)
             logger.info("[7A] Deals history: %d rows (added %d)", len(combined), len(new_rows))
@@ -171,6 +293,14 @@ class BlockBulkDealEngine:
         if not deals.empty:
             signals = self._compute_signals(deals)
             self._save_atomic(signals, SIGNALS_OUTPUT)
+
+            # Sequence-paired transaction records (precomputed here, not at
+            # request time -- pairing ~13k rows takes seconds, too slow for
+            # a live API call on every page load).
+            records = pair_client_transactions(deals)
+            if not records.empty:
+                self._save_atomic(records, RECORDS_OUTPUT)
+                logger.info("[7A] Deal records: %d paired/standalone transactions", len(records))
 
         if self.failed:
             self._save_recovery(self.failed)

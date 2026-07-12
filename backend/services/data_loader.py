@@ -45,6 +45,9 @@ SOURCES = {
     "corp_actions":         cfg.INTELLIGENCE_DIR / "corporate_action_signals.csv",
     # Phase 7A raw deal tape (individual block/bulk deals with client names)
     "block_deals":          cfg.INTELLIGENCE_DIR / "block_bulk_deals.csv",
+    # Phase UI-C: sequence-paired client transactions (precomputed by the
+    # engine -- pairing is too slow to run per-request)
+    "deal_records":         cfg.INTELLIGENCE_DIR / "deal_records.csv",
     # Phase 18 — Corporate Announcements Intelligence
     "announcements":        cfg.INTELLIGENCE_DIR / "company_announcements.csv",
     "announcement_signals": cfg.INTELLIGENCE_DIR / "announcement_signals.csv",

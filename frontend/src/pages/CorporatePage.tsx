@@ -158,67 +158,78 @@ function AnnouncementRadar() {
 
 const PARTICIPANTS = ['ALL', 'FII', 'MF', 'INSURANCE', 'PROMOTER', 'RETAIL']
 
-const POSITIONS = [
-  { key: 'ALL',        label: 'ALL',        color: C.muted },
-  { key: 'BUY_ONLY',   label: 'BUY ONLY',   color: C.green },
-  { key: 'SELL_ONLY',  label: 'SELL ONLY',  color: C.red },
-  { key: 'ROUND_TRIP', label: 'ROUND TRIP', color: C.amber },
-]
+const RECORD_TYPE: Record<string, { label: string; color: string }> = {
+  LONG_BUILD_SQUAREOFF: { label: 'LONG → SQ.OFF',  color: C.green },
+  SHORT_BUILD_COVER:    { label: 'SHORT → COVER',  color: C.red },
+  BUY_ONLY:              { label: 'BUY ONLY',            color: C.blue },
+  SELL_ONLY:             { label: 'SELL ONLY',           color: C.amber },
+}
 
 function DealTape() {
   const [participant, setParticipant] = useState('ALL')
-  const [position, setPosition]       = useState('ALL')
   const { data } = useQuery({
-    queryKey: ['deal-tape', participant, position],
-    queryFn: () => fetchDealTape(
-      0.5, 30,
-      participant === 'ALL' ? undefined : participant,
-      position === 'ALL' ? undefined : position,
-    ),
+    queryKey: ['deal-tape', participant],
+    queryFn: () => fetchDealTape(0.5, 40, participant === 'ALL' ? undefined : participant),
     refetchInterval: 300_000,
   })
   const rows = data?.deals ?? []
 
   return (
     <div style={{ ...CARD, padding: '20px' }}>
+      {/* Row-hover outline: rounded amber rectangle, matching WatchlistPage */}
+      <style>{`
+        .dt-table { border-collapse: separate; border-spacing: 0; }
+        .dt-row td {
+          border-top: 1px solid transparent;
+          border-bottom: 1px solid #1E233220;
+          transition: border-color 0.12s;
+        }
+        .dt-row td:first-child { border-left: 1px solid transparent; }
+        .dt-row td:last-child  { border-right: 1px solid transparent; }
+        .dt-row:hover td {
+          border-top-color: #F59E0BCC;
+          border-bottom-color: #F59E0BCC;
+        }
+        .dt-row:hover td:first-child {
+          border-left-color: #F59E0BCC;
+          border-top-left-radius: 8px;
+          border-bottom-left-radius: 8px;
+        }
+        .dt-row:hover td:last-child {
+          border-right-color: #F59E0BCC;
+          border-top-right-radius: 8px;
+          border-bottom-right-radius: 8px;
+        }
+      `}</style>
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4, flexWrap: 'wrap', gap: 8 }}>
-        <div style={LABEL}>DEAL TAPE <span style={{ color: C.dim, fontWeight: 400, letterSpacing: 0 }}>(same-day position per client per symbol)</span></div>
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', gap: 6 }}>
-            {POSITIONS.map(p => (
-              <button key={p.key} onClick={() => setPosition(p.key)} style={{
-                background: position === p.key ? `${p.color}22` : 'transparent',
-                border: `1px solid ${position === p.key ? p.color + '66' : T.border}`,
-                borderRadius: 4, color: position === p.key ? p.color : C.muted,
-                fontSize: 9, fontWeight: 700, padding: '3px 8px', cursor: 'pointer', letterSpacing: 0.3,
-              }}>{p.label}</button>
-            ))}
-          </div>
-          <div style={{ width: 1, background: T.border }} />
-          <div style={{ display: 'flex', gap: 6 }}>
-            {PARTICIPANTS.map(p => (
-              <button key={p} onClick={() => setParticipant(p)} style={{
-                background: participant === p ? `${PART_COLOR[p] ?? C.blue}22` : 'transparent',
-                border: `1px solid ${participant === p ? (PART_COLOR[p] ?? C.blue) + '66' : T.border}`,
-                borderRadius: 4, color: participant === p ? (PART_COLOR[p] ?? C.blue) : C.muted,
-                fontSize: 9, fontWeight: 700, padding: '3px 8px', cursor: 'pointer', letterSpacing: 0.3,
-              }}>{p}</button>
-            ))}
-          </div>
+        <div style={LABEL}>DEAL TAPE <span style={{ color: C.dim, fontWeight: 400, letterSpacing: 0 }}>(transaction sequence per client per symbol)</span></div>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {PARTICIPANTS.map(p => (
+            <button key={p} onClick={() => setParticipant(p)} style={{
+              background: participant === p ? `${PART_COLOR[p] ?? C.blue}22` : 'transparent',
+              border: `1px solid ${participant === p ? (PART_COLOR[p] ?? C.blue) + '66' : T.border}`,
+              borderRadius: 4, color: participant === p ? (PART_COLOR[p] ?? C.blue) : C.muted,
+              fontSize: 9, fontWeight: 700, padding: '3px 8px', cursor: 'pointer', letterSpacing: 0.3,
+            }}>{p}</button>
+          ))}
         </div>
       </div>
       <div style={{ color: C.dim, fontSize: 9, marginBottom: 10 }}>
-        NSE publishes block/bulk deals at trade-date granularity only (no intraday timestamp) --
-        a client on both sides the same day is netted into one row; order of execution is unknown.
+        NSE publishes block/bulk deals at trade-date granularity only (no intraday timestamp) -- the order
+        deals were disclosed in NSE's own file is the only available proxy for sequence. Same-day opposite-direction
+        legs for a client are paired (within 1% quantity tolerance) in that order: whichever side came first is the
+        entry -- BUY-first means a long position was built then squared off; SELL-first means a short position was
+        built then covered. Unmatched legs stand alone as BUY ONLY / SELL ONLY.
       </div>
 
       <div className="overflow-x-auto">
-        <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
+        <table className="dt-table" style={{ width: '100%', fontSize: 12 }}>
           <thead>
             <tr>
-              {['Symbol', 'Client', 'Participant', 'Position', 'Buy', 'Sell', 'Net Value (Cr)', 'Date'].map((h, i) => (
+              {['Symbol', 'Client', 'Participant', 'Type', '1st Txn', '2nd Txn', 'P&L%', 'Net (Cr)', 'Date'].map((h, i) => (
                 <th key={h} style={{
-                  padding: '6px 8px', textAlign: i >= 4 ? 'right' : 'left', fontSize: 10, fontWeight: 700,
+                  padding: '6px 8px', textAlign: i >= 6 ? 'right' : 'left', fontSize: 10, fontWeight: 700,
                   color: C.muted, borderBottom: `1px solid ${T.border}`, whiteSpace: 'nowrap',
                 }}>{h}</th>
               ))}
@@ -228,22 +239,25 @@ function DealTape() {
             {rows.map((d, i) => {
               const deal = d as Record<string, unknown>
               const part = String(deal.participant ?? 'RETAIL')
-              const pos  = String(deal.position ?? 'ROUND_TRIP')
-              const posDef = POSITIONS.find(p => p.key === pos) ?? POSITIONS[3]
-              const buyQty  = Number(deal.buy_qty ?? 0)
-              const sellQty = Number(deal.sell_qty ?? 0)
-              const buyPx   = deal.buy_avg_price  != null ? Number(deal.buy_avg_price)  : null
-              const sellPx  = deal.sell_avg_price != null ? Number(deal.sell_avg_price) : null
+              const rtype = String(deal.record_type ?? 'BUY_ONLY')
+              const rdef  = RECORD_TYPE[rtype] ?? RECORD_TYPE.BUY_ONLY
+              const leg1Dir = String(deal.leg1_dir ?? '')
+              const leg1Qty = Number(deal.leg1_qty ?? 0)
+              const leg1Px  = Number(deal.leg1_price ?? 0)
+              const leg2Dir = deal.leg2_dir != null ? String(deal.leg2_dir) : null
+              const leg2Qty = deal.leg2_qty != null ? Number(deal.leg2_qty) : null
+              const leg2Px  = deal.leg2_price != null ? Number(deal.leg2_price) : null
+              const pnl     = deal.pnl_pct != null ? Number(deal.pnl_pct) : null
               const netVal  = Number(deal.net_value_cr ?? 0)
-              const flipPct = (buyPx && sellPx) ? ((sellPx - buyPx) / buyPx) * 100 : null
+              const qtyMatch = deal.qty_match_pct != null ? Number(deal.qty_match_pct) : null
               return (
-                <tr key={i} style={{ borderBottom: '1px solid #1E233220' }}>
+                <tr key={i} className="dt-row">
                   <td style={{ padding: '6px 8px' }}>
                     <Link to={`/stocks/${String(deal.symbol)}`} style={{ color: C.h1, fontWeight: 700, textDecoration: 'none' }}>
                       {String(deal.symbol)}
                     </Link>
                   </td>
-                  <td style={{ padding: '6px 8px', color: C.sub, maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <td style={{ padding: '6px 8px', color: C.sub, maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {String(deal.client_name ?? '')}
                   </td>
                   <td style={{ padding: '6px 8px' }}>
@@ -256,30 +270,29 @@ function DealTape() {
                   <td style={{ padding: '6px 8px' }}>
                     <span style={{
                       fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 3,
-                      background: `${posDef.color}18`, color: posDef.color, border: `1px solid ${posDef.color}44`,
+                      background: `${rdef.color}18`, color: rdef.color, border: `1px solid ${rdef.color}44`,
                       whiteSpace: 'nowrap',
-                    }}>{posDef.label}</span>
-                    {flipPct != null && (
-                      <div style={{ color: flipPct >= 0 ? C.green : C.red, fontSize: 9, marginTop: 2, fontFamily: 'monospace' }}>
-                        {flipPct >= 0 ? '+' : ''}{flipPct.toFixed(2)}%
-                      </div>
+                    }}>{rdef.label}</span>
+                    {qtyMatch != null && qtyMatch < 100 && (
+                      <div style={{ color: C.dim, fontSize: 9, marginTop: 2 }}>{qtyMatch.toFixed(1)}% qty match</div>
                     )}
                   </td>
-                  <td style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'monospace' }}>
-                    {buyQty > 0 ? (
+                  <td style={{ padding: '6px 8px', fontFamily: 'monospace' }}>
+                    <span style={{ color: leg1Dir === 'BUY' ? C.green : C.red, fontWeight: 700 }}>{leg1Dir}</span>{' '}
+                    {leg1Qty.toLocaleString('en-IN')}
+                    <div style={{ color: C.dim, fontSize: 9 }}>@ ₹{leg1Px.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</div>
+                  </td>
+                  <td style={{ padding: '6px 8px', fontFamily: 'monospace' }}>
+                    {leg2Dir ? (
                       <>
-                        <div style={{ color: C.green, fontWeight: 700 }}>{buyQty.toLocaleString('en-IN')}</div>
-                        <div style={{ color: C.dim, fontSize: 9 }}>@ ₹{buyPx?.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</div>
+                        <span style={{ color: leg2Dir === 'BUY' ? C.green : C.red, fontWeight: 700 }}>{leg2Dir}</span>{' '}
+                        {leg2Qty?.toLocaleString('en-IN')}
+                        <div style={{ color: C.dim, fontSize: 9 }}>@ ₹{leg2Px?.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</div>
                       </>
                     ) : <span style={{ color: C.dim }}>--</span>}
                   </td>
-                  <td style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'monospace' }}>
-                    {sellQty > 0 ? (
-                      <>
-                        <div style={{ color: C.red, fontWeight: 700 }}>{sellQty.toLocaleString('en-IN')}</div>
-                        <div style={{ color: C.dim, fontSize: 9 }}>@ ₹{sellPx?.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</div>
-                      </>
-                    ) : <span style={{ color: C.dim }}>--</span>}
+                  <td style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'monospace', fontWeight: 700, color: pnl == null ? C.dim : pnl >= 0 ? C.green : C.red }}>
+                    {pnl != null ? `${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}%` : '--'}
                   </td>
                   <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 800, fontFamily: 'monospace', color: netVal >= 0 ? C.green : C.red }}>
                     {netVal >= 0 ? '+' : ''}{netVal.toFixed(1)}
