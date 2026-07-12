@@ -84,9 +84,54 @@ class LogRequest(BaseModel):
     tts_voice:      str = ""
 
 
-def _spoken_text(text: str) -> str:
-    """Convert a chat reply into speakable text: strip markdown noise,
-    drop table blocks, cap length (long detail stays in the chat)."""
+# "What to read vs. what to present" (user feedback: "she starts reading
+# all"): a reply formatted as a bulleted/numbered list of stocks/scores is
+# NOT a markdown table, so the old table-only filter let it through
+# untouched -- TTS would enumerate every line. Everything from the first
+# list item onward is chat-only detail; only the lead prose is spoken, with
+# a short trailer telling the user the rest is in the chat.
+_LIST_TRAILER: dict[str, str] = {
+    "hi": "पूरी जानकारी चैट में है।",
+    "en": "Full details are in the chat.",
+}
+_LIST_ONLY_FALLBACK: dict[str, str] = {
+    "hi": "मैंने जानकारी निकाल ली है, पूरी सूची चैट में देखिए।",
+    "en": "I've got the details -- check the full list in the chat.",
+}
+
+# Structural list detection (above) only catches markdown bullets/tables.
+# A model can (and does, especially under the "no bullet lists" voice
+# instruction) enumerate many stocks in flowing PROSE instead -- "dekhiye,
+# EBGNG ka score X hai... aur CORONA ka Y hai... aur MCX..." -- which has no
+# structural marker to cut on. Real backstop: cap the spoken lead to N
+# sentences, always, regardless of formatting. Split only on genuine
+# sentence-ending punctuation -- a decimal point inside a price/score/percent
+# ("84.72", "-8%.") must never be mistaken for a sentence boundary.
+MAX_SPOKEN_SENTENCES = 4
+
+
+def _cap_sentences(text: str) -> tuple[str, bool]:
+    """Return (capped_text, was_truncated)."""
+    import re as _re
+    parts = _re.split(r"(?<!\d)([.!?।])(?!\d)\s+", text)
+    sentences: list[str] = []
+    buf = ""
+    for piece in parts:
+        buf += piece
+        if piece in ".!?।":
+            sentences.append(buf.strip())
+            buf = ""
+    if buf.strip():
+        sentences.append(buf.strip())
+    if len(sentences) <= MAX_SPOKEN_SENTENCES:
+        return text, False
+    return " ".join(sentences[:MAX_SPOKEN_SENTENCES]), True
+
+
+def _spoken_text(text: str, lang: str = DEFAULT_LANG) -> str:
+    """Convert a chat reply into speakable text: strip markdown noise, speak
+    only the lead prose (drop everything from the first list item or table
+    onward -- that is chat-only detail), cap length as a backstop."""
     import re as _re
     # Defence in depth: strip leaked function-call artifacts before speaking
     text = _re.sub(r"<function[=\w\-]*>.*?</function>|<function[=\w\-]*/?>|</function>",
@@ -105,16 +150,34 @@ def _spoken_text(text: str) -> str:
                                               # for the table-line filter below
 
     lines = []
+    list_truncated = False
     for ln in text.splitlines():
         s = ln.strip()
         if not s:
             continue
         if s.startswith("|") or set(s) <= {"-", "=", "|", "+", " "}:
+            list_truncated = True
             continue   # tables / rulers are never read aloud
+        # Bullet/numbered list boundary -- must check BEFORE stripping "*"
+        # below, since that would erase the very marker we're looking for.
+        if _re.match(r"^([-*•▪‣·]|\d+[.)])\s+\S", s):
+            list_truncated = True
+            break   # this and every line after it is chat-only detail
         for tok in ("**", "__", "##", "#", "`", "*"):
             s = s.replace(tok, "")
         lines.append(s)
-    out = " ".join(lines)
+    out = " ".join(lines).strip()
+
+    # Sentence-count backstop BEFORE the trailer decision -- catches
+    # prose-enumerated replies with no structural list marker at all.
+    if out:
+        out, sentence_truncated = _cap_sentences(out)
+        list_truncated = list_truncated or sentence_truncated
+
+    if list_truncated:
+        out = out + (" " if out else "") + (_LIST_TRAILER.get(lang, _LIST_TRAILER["en"])
+                                              if out else _LIST_ONLY_FALLBACK.get(lang, _LIST_ONLY_FALLBACK["en"]))
+
     if len(out) > MAX_TTS_CHARS:
         cut = out[:MAX_TTS_CHARS]
         # end on a sentence boundary when possible
@@ -138,7 +201,7 @@ async def tts(req: TTSRequest):
 
     lang = req.language if req.language in VOICES else DEFAULT_LANG
     voice = VOICES[lang]["voice"]
-    text = _spoken_text(req.text)
+    text = _spoken_text(req.text, lang)
     if not text:
         raise HTTPException(status_code=400, detail="Nothing speakable in the text")
 

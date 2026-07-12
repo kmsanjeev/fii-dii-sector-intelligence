@@ -6,6 +6,86 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.43.0
+
+Phase V3.4 -- Veda field fixes: activation, barge-in, greetings, read-vs-present
+
+Date: 2026-07-12
+
+Status: Completed
+
+---
+
+## Summary
+
+Four user-reported issues on the Chat page's voice assistant: unreliable
+wake-word activation, unable to interrupt her mid-speech by voice, no
+natural greeting exchange, and "she starts reading all" (TTS speaking
+entire data-heavy replies instead of a spoken summary).
+
+## 1+2. Wake activation + voice barge-in (frontend/src/pages/ChatPage.tsx)
+
+Root cause shared by both symptoms: the wake-word recognizer only inspected
+`e.results[e.results.length - 1]` (the single newest recognition result).
+In continuous mode, Chrome can finalize "Veda" into one result index and
+then start a fresh index once the user keeps talking -- checking only the
+newest index silently lost the wake word the moment the user said anything
+after it. Fixed: match against the full accumulated transcript across all
+result indices each time onresult fires.
+
+Second fix, likely the larger contributor to "struggle to activate": wake
+detection discarded any trailing speech and always played a canned greeting
+then waited for a NEW utterance -- so a natural "Veda, what's the market
+regime" got the command silently thrown away, and the user had to repeat
+themselves after the chime without knowing why. Now the text after the
+wake word is extracted; if it's 2+ words, it's sent immediately as the
+command (skipping the greeting-then-listen round trip entirely). This same
+code path handles barge-in (interrupting Veda mid-speech), so both wake
+activation and voice interruption share the fix.
+
+Extracted `sendVoiceCommand()` to avoid duplicating the "start a fresh
+voice chat vs continue" branching between push-to-talk capture and the new
+inline-command path.
+
+## 3. Greeting exchange (new GREETING intent)
+
+No greeting handling existed at all -- "Hi Veda" or "Good morning" fell
+into RESEARCH intent and got the base "be concise, data-driven, never
+speculate" system prompt, producing an awkward non-greeting reply.
+
+- intent_router.py: GREETING_KEYWORDS + _is_greeting() -- matches short
+  (<=6 word) greeting-only messages so "hi, what's the FII flow" still
+  routes to MARKET, not GREETING.
+- Dedicated _GREETING_PROMPT (not built on the data-driven base prompt):
+  warm, brief, language-matching, feminine Hindi grammar reminder, no
+  data/tool mention.
+- chat_engine.py: GREETING skips RAG retrieval and the tools param
+  entirely -- a "hi" must never trigger a market-data tool call, and skips
+  the market-analyst voice addendum (the GREETING prompt already covers
+  tone).
+
+## 4. "She reads everything" (backend/routers/voice.py)
+
+Two distinct failure modes found:
+- Markdown bullet/numbered lists were never filtered (only markdown
+  TABLES were) -- a bulleted stock list sailed straight through and got
+  read line by line. Fixed: list-boundary detection cuts everything from
+  the first bullet/numbered item onward.
+- Bigger contributor, found via a live LLM reply: models avoid markdown
+  lists under the voice addendum's own "no bullet lists" instruction, but
+  still enumerate many stocks in flowing PROSE ("EBGNG ka score X hai...
+  aur CORONA ka Y hai... aur MCX...") with no structural marker to cut on.
+  Added a hard sentence-count backstop (MAX_SPOKEN_SENTENCES=4) -- verified
+  against a real EBGNG/CORONA/MCX/INFY/TCS reply: correctly speaks the
+  intro + EBGNG in full, drops the remaining 4 stocks. Decimal numbers in
+  scores/prices ("64.24", "84.72") are protected from false sentence-split
+  via digit lookaround on the split regex.
+- Either truncation path now appends a short spoken trailer ("Full details
+  are in the chat" / "पूरी जानकारी चैट में है।") so the user knows more
+  detail exists rather than the reply just stopping abruptly.
+
+---
+
 # Version 4.42.0
 
 Phase UI-C fix -- Sequence-aware transaction pairing (Deal Tape rebuild)

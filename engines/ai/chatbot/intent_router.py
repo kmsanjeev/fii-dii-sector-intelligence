@@ -6,6 +6,7 @@ Intent detection is keyword-based (fast, no API call needed).
 The router picks the most relevant agent type + context hints.
 
 Intents:
+  GREETING -> hello/hi/namaste/good morning -- no market data, just talk back
   MARKET   -> market regime, FII/DII flows, participant summary
   SECTOR   -> sector rotation, rotation signals, sector comparison
   STOCK    -> specific stocks, labels, watchlist, bull run scores
@@ -16,6 +17,32 @@ Intents:
 from __future__ import annotations
 import re
 from dataclasses import dataclass
+
+# Short greeting-only messages ("Hi Veda", "Good morning", "kaise ho") should
+# get a warm human reply, not a market briefing. Deliberately does NOT match
+# "hi, what's the FII flow today" -- the word-count cap below keeps this to
+# messages that are ONLY a greeting.
+GREETING_KEYWORDS = [
+    "hi", "hii", "hiii", "hiya", "hello", "hey", "heya", "yo",
+    "namaste", "namaskar", "namaskaram", "pranam",
+    "good morning", "good afternoon", "good evening", "good night", "gm", "gn",
+    "kaise ho", "kaisi ho", "kaise hain", "kya haal", "kya haal hai",
+    "how are you", "hows it going", "how's it going", "whats up", "what's up", "sup",
+    "kem cho", "vanakkam",
+]
+
+
+def _is_greeting(text: str) -> bool:
+    """A message is a pure greeting if it contains a greeting phrase AND is
+    short (<=6 words) -- long enough to also carry a real question does NOT
+    short-circuit into GREETING."""
+    t = text.strip().lower()
+    if not t:
+        return False
+    if not any(kw in t for kw in GREETING_KEYWORDS):
+        return False
+    return len(t.split()) <= 6
+
 
 INTENT_KEYWORDS = {
     "MARKET": [
@@ -75,6 +102,10 @@ def detect_intent(user_message: str) -> Intent:
     if _contains_birth_info(text):
         return Intent("KUNDLI", entity, 0.9)
 
+    # Pure greeting ("Hi Veda", "Good morning") -- talk back, don't run tools
+    if _is_greeting(text):
+        return Intent("GREETING", entity, 0.9)
+
     scores = {intent: 0 for intent in INTENT_KEYWORDS}
     for intent, keywords in INTENT_KEYWORDS.items():
         for kw in keywords:
@@ -99,8 +130,30 @@ def _contains_birth_info(text: str) -> bool:
     return has_date and has_place
 
 
+_GREETING_PROMPT = (
+    "You are Veda, a warm and friendly voice assistant for an Indian "
+    "institutional market intelligence platform. The user just greeted you "
+    "-- greet them back naturally and briefly, like a friendly colleague, "
+    "not a report. Rules:\n"
+    "- Match their language and tone exactly: Hindi greeting -> Hindi reply, "
+    "Hinglish -> Hinglish, English -> English.\n"
+    "- If they said good morning/afternoon/evening/night, acknowledge the "
+    "time of day naturally.\n"
+    "- Keep it to 1-2 short sentences. End by inviting them to ask about "
+    "markets, sectors, or stocks -- lightly, not a canned menu of options.\n"
+    "- Do NOT mention scores, numbers, data, or call any tool -- this is a "
+    "greeting exchange, not a market briefing.\n"
+    "- GENDER (Hindi/Hinglish): you are female. First-person verbs take "
+    "feminine forms -- 'main sun rahi hoon', 'main bilkul theek hoon' -- "
+    "never the masculine 'sun raha hoon'."
+)
+
+
 def get_system_prompt(intent: Intent) -> str:
     """Returns a domain-specific system prompt for the detected intent."""
+    if intent.intent_type == "GREETING":
+        return _GREETING_PROMPT
+
     base = (
         "You are the Capital Flow Intelligence Assistant for an Indian institutional "
         "market intelligence platform. You track FII/DII capital flows, sector rotation, "

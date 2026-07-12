@@ -221,11 +221,16 @@ class ChatEngine:
         Automatically rotates to the next provider if rate-limited.
         """
         intent       = detect_intent(user_message)
+        is_greeting  = intent.intent_type == "GREETING"
         system_prompt = get_system_prompt(intent)
-        if voice_mode:
+        # Greeting exchanges skip the voice-analyst addendum too -- its own
+        # prompt already covers tone + gender, and it must never speak in
+        # the "sharp market analyst" register the addendum sets up.
+        if voice_mode and not is_greeting:
             system_prompt += self._VOICE_ADDENDUM
 
-        rag_context = self._get_rag_context(user_message, intent)
+        # A "hi" needs no market context and must never trigger a tool call
+        rag_context = "" if is_greeting else self._get_rag_context(user_message, intent)
         if rag_context:
             system_prompt += f"\n\nRelevant intelligence context:\n{rag_context}"
 
@@ -245,7 +250,7 @@ class ChatEngine:
             model  = provider["model"]
             logger.debug("[ChatEngine] Using provider: %s (%s)", provider["name"], model)
 
-            result = self._run_turn(client, model, system_prompt, user_message)
+            result = self._run_turn(client, model, system_prompt, user_message, use_tools=not is_greeting)
 
             if result["status"] == "ok":
                 reply = _clean_reply(result["reply"])
@@ -268,24 +273,23 @@ class ChatEngine:
         self.history.append({"role": "assistant", "content": reply})
         return reply
 
-    def _run_turn(self, client, model: str, system_prompt: str, user_message: str) -> dict:
+    def _run_turn(self, client, model: str, system_prompt: str, user_message: str,
+                  use_tools: bool = True) -> dict:
         """
         Run the full tool loop for one turn using the given client.
         Returns {"status": "ok", "reply": ...} or {"status": "rate_limited"} or {"status": "error", "error": ...}.
+        use_tools=False (GREETING intent) skips the tools param entirely --
+        a "hi" should never trigger a market-data lookup.
         """
         messages = [{"role": "system", "content": system_prompt}] + self.history
 
         tool_use_failed = False
         for _ in range(MAX_TOOL_ROUNDS):
             try:
-                response = client.chat.completions.create(
-                    model=model,
-                    max_tokens=MAX_TOKENS,
-                    messages=messages,
-                    tools=OPENAI_TOOLS,
-                    tool_choice="auto",
-                    parallel_tool_calls=False,
-                )
+                kwargs = dict(model=model, max_tokens=MAX_TOKENS, messages=messages)
+                if use_tools:
+                    kwargs.update(tools=OPENAI_TOOLS, tool_choice="auto", parallel_tool_calls=False)
+                response = client.chat.completions.create(**kwargs)
             except Exception as e:
                 if _is_rate_limit(e):
                     return {"status": "rate_limited"}

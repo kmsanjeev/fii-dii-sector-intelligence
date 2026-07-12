@@ -894,6 +894,25 @@ export function ChatPage() {
     }
   }, [loading, backendSid, speak, logTurn, speakReplies, currentId])
 
+  // ── Voice: dispatch a captured spoken command ────────────────────────────────
+  // Shared by push-to-talk capture AND wake-word-with-inline-command (Veda,
+  // <question>, said in one breath). Voice conversations are recorded in
+  // their own chat: if the current chat is a text conversation with
+  // history, start a fresh one first.
+  const sendVoiceCommand = useCallback((spoken: string) => {
+    if (messages.length > 1 && !voiceChatsRef.current.has(currentId)) {
+      const newId = genId()
+      voiceChatsRef.current.add(newId)
+      setCurrentId(newId)
+      setMessages([makeWelcome()])
+      setBackendSid(undefined)
+      setTimeout(() => send(spoken, 'voice', null), 60)
+    } else {
+      voiceChatsRef.current.add(currentId)
+      send(spoken, 'voice')
+    }
+  }, [messages.length, currentId, send])
+
   // ── Voice: push-to-talk capture ──────────────────────────────────────────────
   // Capture timing (V3.2 -- fixes "no response after the greeting"):
   //   INITIAL_WAIT_MS  window to START speaking. Must be generous: the first
@@ -960,22 +979,10 @@ export function ChatPage() {
         }
         return
       }
-      // Voice conversations are recorded in their own chat: if the current
-      // chat is a text conversation with history, start a fresh one first.
-      if (messages.length > 1 && !voiceChatsRef.current.has(currentId)) {
-        const newId = genId()
-        voiceChatsRef.current.add(newId)
-        setCurrentId(newId)
-        setMessages([makeWelcome()])
-        setBackendSid(undefined)
-        setTimeout(() => send(spoken, 'voice', null), 60)
-      } else {
-        voiceChatsRef.current.add(currentId)
-        send(spoken, 'voice')
-      }
+      sendVoiceCommand(spoken)
     }
     try { recog.start() } catch { setListening(false) }
-  }, [listening, voiceLang, messages.length, currentId, send, stopSpeaking])
+  }, [listening, voiceLang, sendVoiceCommand, stopSpeaking])
 
   // ── Voice: hands-free wake word "Veda" / "Adya" (Phase V2 + V3 barge-in) ────
   // A lightweight continuous recognition session runs whenever no command is
@@ -995,11 +1002,26 @@ export function ChatPage() {
     recog.continuous = true
     recog.interimResults = true
 
-    const onWake = () => {
+    const onWake = (fullTranscript: string, matchedWord: string) => {
       matched = true
       try { recog.abort() } catch { /* ignore */ }
       stopSpeaking()                     // barge-in: silence Veda immediately
       wakeUsedRef.current = true
+
+      // Wake word + command in one breath ("Veda, what's the market
+      // regime") is how people naturally talk to a voice assistant. Extract
+      // whatever follows the wake word and, if it looks like a real
+      // question (2+ words), act on it immediately instead of discarding
+      // it and making the user repeat themselves after the greeting chime
+      // -- that repeat-yourself gap is what "activation doesn't work" was.
+      const idx = fullTranscript.toLowerCase().lastIndexOf(matchedWord)
+      const trailing = idx >= 0 ? fullTranscript.slice(idx + matchedWord.length) : ''
+      const inlineCommand = trailing.replace(/^[,.\s।]+/, '').trim()
+      if (inlineCommand.split(/\s+/).filter(Boolean).length >= 2) {
+        sendVoiceCommand(inlineCommand)
+        return
+      }
+
       const play = greetingRef.current ? new Audio(greetingRef.current) : null
       if (play) {
         play.volume = TTS_VOLUME
@@ -1013,11 +1035,18 @@ export function ChatPage() {
     }
 
     recog.onresult = (e) => {
-      // Only inspect the newest result to avoid re-matching old transcript
-      const last = e.results[e.results.length - 1]
-      if (!last) return
-      const heard = (last[0]?.transcript ?? '').toLowerCase()
-      if (WAKE_WORDS.some(w => heard.includes(w))) onWake()
+      // Inspect the FULL accumulated transcript, not just the newest result
+      // index: if the user says "Veda, <question>" in one breath, Chrome
+      // can finalize "Veda" into an earlier result index once the question
+      // starts a new one -- checking only the latest index silently missed
+      // the wake word the moment the user kept talking. This was the main
+      // cause of "struggle to activate Veda" and unreliable barge-in (same
+      // code path interrupts her mid-speech).
+      let combined = ''
+      for (let i = 0; i < e.results.length; i++) combined += (e.results[i][0]?.transcript ?? '') + ' '
+      const heardLower = combined.toLowerCase()
+      const hit = WAKE_WORDS.find(w => heardLower.includes(w))
+      if (hit) onWake(combined, hit)
     }
     recog.onerror = (e) => {
       if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
@@ -1050,7 +1079,7 @@ export function ChatPage() {
       clearTimeout(startTimer)
       try { recog.abort() } catch { /* ignore */ }
     }
-  }, [wakeEnabled, listening, loading, voiceLang, wakeRetry, startListening, stopSpeaking])
+  }, [wakeEnabled, listening, loading, voiceLang, wakeRetry, startListening, stopSpeaking, sendVoiceCommand])
 
   // ── Input handling ────────────────────────────────────────────────────────────
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
