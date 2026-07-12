@@ -91,15 +91,32 @@ INSIDER_SIGS   = cfg.INTELLIGENCE_DIR / "insider_signals.csv"
 CONCALL_SUM    = cfg.INTELLIGENCE_DIR / "concall_summary.csv"
 CONSENSUS      = cfg.INTELLIGENCE_DIR / "consensus_scores.csv"
 
+# Phase V-DATA -- previously-computed signals that never reached the feature
+# matrix: volume/delivery quality, shareholding TREND (not just level),
+# management tone, and planetary sector signal.
+WATCHLIST_METRICS = cfg.INTELLIGENCE_DIR / "watchlist_metrics.csv"
+HOLDING_TRENDS     = cfg.NSE_DIR / "shareholding" / "holding_trends.csv"
+MGMT_SENTIMENT     = cfg.NSE_DIR / "shareholding" / "management_sentiment.csv"
+ASTRO_SIGNALS      = cfg.INTELLIGENCE_DIR / "astro_signals.csv"
+
 # ---------------------------------------------------------------------------
 # Encoding maps
 # ---------------------------------------------------------------------------
+# Phase V-DATA fix: this previously listed STRONG_CANDIDATE/AVOID, a label
+# taxonomy bull_run_probability_engine.py no longer produces (it emits
+# BULL_RUN/EMERGING/WATCHLIST/NEUTRAL/ACCUMULATION/MARKDOWN). Every row
+# whose label didn't match STRONG_CANDIDATE or AVOID silently fell through
+# .fillna(1) into the NEUTRAL bucket -- BULL_RUN, ACCUMULATION, and
+# MARKDOWN rows (the very labels the model most needs to distinguish) were
+# training the target as if they were all NEUTRAL. Fixed to match the
+# taxonomy actually in production today.
 LABEL_MAP = {
-    "STRONG_CANDIDATE": 4,
-    "EMERGING":         3,
-    "WATCHLIST":        2,
-    "NEUTRAL":          1,
-    "AVOID":            0,
+    "BULL_RUN":     5,
+    "EMERGING":     4,
+    "WATCHLIST":    3,
+    "ACCUMULATION": 2,
+    "NEUTRAL":      1,
+    "MARKDOWN":     0,
 }
 ROTATION_MAP = {
     "EARLY_ROTATION": 5,
@@ -138,6 +155,23 @@ FNO_OI_MAP = {
     "BULLISH": 2,
     "NEUTRAL": 1,
     "BEARISH": 0,
+}
+# Phase V-DATA -- ordinal, higher = stronger institutional/promoter accumulation
+CONVICTION_SIGNAL_MAP = {
+    "STRONG_PROMOTER_FII_BUY": 7,
+    "STRONG_PROMOTER_BUY":     6,
+    "FII_DII_ACCUMULATION":    5,
+    "FII_ACCUMULATION":        4,
+    "DII_ACCUMULATION":        3,
+    "FII_DII_DIVERGENCE":      2,
+    "STABLE":                  1,
+    "PROMOTER_SELLING":        0,
+}
+MGMT_LABEL_MAP = {
+    "HIGH_CONVICTION": 3,
+    "POSITIVE":        2,
+    "NEUTRAL":         1,
+    "WEAK":            0,
 }
 
 
@@ -211,6 +245,12 @@ class FeatureEngineeringEngine:
         # Phase G consensus
         bull = self._add_consensus(bull)
 
+        # Phase V-DATA — previously-computed signals never wired into training
+        bull = self._add_watchlist_metrics(bull)
+        bull = self._add_holding_trend_deltas(bull)
+        bull = self._add_management_sentiment(bull)
+        bull = self._add_astro_signal(bull)
+
         bull["label_enc"] = bull["label"].map(LABEL_MAP).fillna(1)
 
         feature_cols = [
@@ -264,6 +304,14 @@ class FeatureEngineeringEngine:
             "adx_14", "adx_trending",
             # Phase 12C — forward return probability (true supervised signal)
             "forward_return_score",
+            # Phase V-DATA — volume/delivery quality (distinct from vol_ratio)
+            "rvol", "rs_30d_vs_nifty", "delivery_5d_pct",
+            # Phase V-DATA — shareholding TREND (direction), not just level
+            "promoter_delta", "fii_delta", "dii_delta", "conviction_signal_enc",
+            # Phase V-DATA — management tone
+            "ai_tone_score", "management_score", "management_label_enc",
+            # Phase V-DATA — AstroFinance sector planetary score
+            "astro_score",
         ]
         available = [c for c in feature_cols if c in bull.columns]
         missing = [c for c in feature_cols if c not in bull.columns]
@@ -602,6 +650,100 @@ class FeatureEngineeringEngine:
             return df.merge(cc, on="symbol", how="left")
         except Exception as e:
             logger.warning("[FeatureEng] Concall signals failed: %s", e)
+            return df
+
+    # ------------------------------------------------------------------
+    # Phase V-DATA — previously-computed signals never wired into training
+    # ------------------------------------------------------------------
+
+    def _add_watchlist_metrics(self, df: pd.DataFrame) -> pd.DataFrame:
+        """RVOL, 30D relative strength vs NIFTY 50, 5D delivery% (Phase WL-1).
+        Distinct from vol_ratio (a longer-window price_momentum figure):
+        rvol is latest-session-vs-20D-avg, a same-day volume-conviction signal."""
+        if not WATCHLIST_METRICS.exists():
+            logger.warning("[FeatureEng V-DATA] watchlist_metrics.csv missing -- skipping")
+            return df
+        try:
+            wm = pd.read_csv(WATCHLIST_METRICS, usecols=["symbol", "rvol", "rs_30d", "delivery_5d_pct"])
+            wm["symbol"] = wm["symbol"].str.strip().str.upper()
+            wm = wm.rename(columns={"rs_30d": "rs_30d_vs_nifty"})
+            for col in ("rvol", "rs_30d_vs_nifty", "delivery_5d_pct"):
+                wm[col] = pd.to_numeric(wm[col], errors="coerce")
+            logger.info("[FeatureEng V-DATA] Watchlist metrics: %d symbols", len(wm))
+            return df.merge(wm, on="symbol", how="left")
+        except Exception as e:
+            logger.warning("[FeatureEng V-DATA] Watchlist metrics failed: %s", e)
+            return df
+
+    def _add_holding_trend_deltas(self, df: pd.DataFrame) -> pd.DataFrame:
+        """QoQ promoter/FII/DII stake DELTA + conviction_signal (Phase 16) --
+        the existing _add_shareholding only carries the level (shp_*_pct);
+        direction of change is a materially different, often more
+        predictive signal (a stable 40% promoter stake is not the same
+        story as one that just fell from 55%)."""
+        if not HOLDING_TRENDS.exists():
+            logger.warning("[FeatureEng V-DATA] holding_trends.csv missing -- skipping")
+            return df
+        try:
+            ht = pd.read_csv(HOLDING_TRENDS, usecols=[
+                "symbol", "quarter_end_date", "promoter_delta", "fii_delta",
+                "dii_delta", "conviction_signal"])
+            ht["symbol"] = ht["symbol"].str.strip().str.upper()
+            ht["quarter_end_date"] = pd.to_datetime(ht["quarter_end_date"], format="%d-%b-%Y", errors="coerce")
+            ht = (ht.sort_values("quarter_end_date", ascending=False)
+                    .drop_duplicates(subset=["symbol"], keep="first"))
+            ht["conviction_signal_enc"] = ht["conviction_signal"].map(CONVICTION_SIGNAL_MAP).fillna(1)
+            for col in ("promoter_delta", "fii_delta", "dii_delta"):
+                ht[col] = pd.to_numeric(ht[col], errors="coerce")
+            keep = ["symbol", "promoter_delta", "fii_delta", "dii_delta", "conviction_signal_enc"]
+            logger.info("[FeatureEng V-DATA] Holding trend deltas: %d symbols", len(ht))
+            return df.merge(ht[keep], on="symbol", how="left")
+        except Exception as e:
+            logger.warning("[FeatureEng V-DATA] Holding trend deltas failed: %s", e)
+            return df
+
+    def _add_management_sentiment(self, df: pd.DataFrame) -> pd.DataFrame:
+        """AI-scored management tone (Phase 16, Claude-analysed)."""
+        if not MGMT_SENTIMENT.exists():
+            logger.warning("[FeatureEng V-DATA] management_sentiment.csv missing -- skipping")
+            return df
+        try:
+            ms = pd.read_csv(MGMT_SENTIMENT, usecols=[
+                "symbol", "ai_tone_score", "management_score", "management_label"])
+            ms["symbol"] = ms["symbol"].str.strip().str.upper()
+            ms["ai_tone_score"]    = pd.to_numeric(ms["ai_tone_score"], errors="coerce")
+            ms["management_score"] = pd.to_numeric(ms["management_score"], errors="coerce")
+            ms["management_label_enc"] = ms["management_label"].map(MGMT_LABEL_MAP).fillna(1)
+            keep = ["symbol", "ai_tone_score", "management_score", "management_label_enc"]
+            logger.info("[FeatureEng V-DATA] Management sentiment: %d symbols", len(ms))
+            return df.merge(ms[keep], on="symbol", how="left")
+        except Exception as e:
+            logger.warning("[FeatureEng V-DATA] Management sentiment failed: %s", e)
+            return df
+
+    def _add_astro_signal(self, df: pd.DataFrame) -> pd.DataFrame:
+        """AstroFinance sector-level planetary score (Phase AF), joined onto
+        each symbol via its sector -- astro_signals.csv is sector-granularity,
+        not per-symbol. Included per explicit instruction that no computed
+        platform signal should be withheld from ML; efficacy is for the
+        model (and later signal_efficacy_engine backtests) to determine,
+        not assumed in either direction at feature-engineering time."""
+        if not ASTRO_SIGNALS.exists():
+            logger.warning("[FeatureEng V-DATA] astro_signals.csv missing -- skipping")
+            return df
+        try:
+            astro = pd.read_csv(ASTRO_SIGNALS, usecols=["sector", "astro_score"])
+            astro["sector"] = astro["sector"].str.strip().str.upper()
+            astro["astro_score"] = pd.to_numeric(astro["astro_score"], errors="coerce")
+            astro = astro.drop_duplicates(subset=["sector"], keep="first")
+            df["_sector_upper"] = df["sector"].str.strip().str.upper()
+            merged = df.merge(astro, left_on="_sector_upper", right_on="sector",
+                              how="left", suffixes=("", "_astro"))
+            merged = merged.drop(columns=["_sector_upper", "sector_astro"], errors="ignore")
+            logger.info("[FeatureEng V-DATA] Astro signal: %d sectors joined", len(astro))
+            return merged
+        except Exception as e:
+            logger.warning("[FeatureEng V-DATA] Astro signal failed: %s", e)
             return df
 
     # ------------------------------------------------------------------

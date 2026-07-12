@@ -3,8 +3,12 @@ Bull Run ML Model — Phase 12C
 LightGBM + XGBoost ensemble for multi-label bull run probability.
 Replaces the rule-based scoring from Phase 8B with learned weights.
 
-Target: label_enc (0=AVOID, 1=NEUTRAL, 2=WATCHLIST, 3=EMERGING, 4=STRONG_CANDIDATE)
+Target: label_enc (0=MARKDOWN, 1=NEUTRAL, 2=ACCUMULATION, 3=WATCHLIST, 4=EMERGING, 5=BULL_RUN)
         treated as ordinal regression (predict each class probability, return weighted score)
+        [Phase V-DATA: taxonomy fixed to match bull_run_probability_engine.py's actual
+        output labels -- the previous AVOID/STRONG_CANDIDATE scheme no longer exists in
+        production, so those classes and everything mapped to them (BULL_RUN, ACCUMULATION,
+        MARKDOWN rows) were silently training as NEUTRAL]
 
 Ensemble: 0.6 * LightGBM + 0.4 * XGBoost (LightGBM typically wins on tabular financial data)
 
@@ -59,10 +63,34 @@ FEATURE_COLS = [
     # Phase 18C — Announcement intelligence
     "ann_score_30d", "high_signal_30d", "distinct_types_30d",
     "ann_velocity_30d", "order_wins_6m", "spurt_count_30d", "distress_30d",
+    # Phase F — Alt-data intelligence (was in feature_matrix.parquet but
+    # never wired into training until Phase V-DATA closed the gap)
+    "theme_score_max", "theme_purity_max",
+    "news_sentiment_7d", "insider_score",
+    "concall_guidance_score", "concall_sentiment_score",
+    # Phase G — Multi-signal consensus
+    "consensus_score",
+    # Phase 12A — enriched fundamentals + valuation + technical + F&O
+    "opm_pct", "roce_pct", "sales_growth_3y",
+    "pe_ratio_log", "roe_pct", "valuation_label_enc",
+    "yoy_revenue_pct", "yoy_profit_pct",
+    "vs_dma_200", "trend_signal_enc", "fno_oi_signal_enc",
+    # Phase 12B — technical strategy pattern features
+    "rsi_14", "rsi_zone_enc", "macd_hist", "macd_signal_enc",
+    "bb_pct_b", "bb_squeeze", "adx_14", "adx_trending",
+    # Phase 12C — forward return probability (true supervised signal)
+    "forward_return_score",
+    # Phase V-DATA — volume/delivery quality, shareholding trend,
+    # management tone, astro sector signal
+    "rvol", "rs_30d_vs_nifty", "delivery_5d_pct",
+    "promoter_delta", "fii_delta", "dii_delta", "conviction_signal_enc",
+    "ai_tone_score", "management_score", "management_label_enc",
+    "astro_score",
 ]
 
-# Ordinal weights for weighted score: AVOID=0, NEUTRAL=25, WATCHLIST=50, EMERGING=75, STRONG=100
-LABEL_WEIGHTS = np.array([0, 25, 50, 75, 100])
+# Ordinal weights for weighted score:
+# MARKDOWN=0, NEUTRAL=20, ACCUMULATION=40, WATCHLIST=60, EMERGING=80, BULL_RUN=100
+LABEL_WEIGHTS = np.array([0, 20, 40, 60, 80, 100])
 
 
 class BullRunMLModel:
@@ -138,7 +166,7 @@ class BullRunMLModel:
         ensemble_proba = 0.6 * lgbm_proba + 0.4 * xgb_proba
         ml_score = (ensemble_proba * weights).sum(axis=1)
 
-        predicted_label = np.array(["AVOID", "NEUTRAL", "WATCHLIST", "EMERGING", "STRONG_CANDIDATE"])[
+        predicted_label = np.array(["MARKDOWN", "NEUTRAL", "ACCUMULATION", "WATCHLIST", "EMERGING", "BULL_RUN"])[
             ensemble_proba.argmax(axis=1)
         ]
 
@@ -147,7 +175,8 @@ class BullRunMLModel:
             "ml_bull_run_score": np.round(ml_score, 2),
             "ml_label":        predicted_label,
         })
-        for i, col in enumerate(["prob_AVOID", "prob_NEUTRAL", "prob_WATCHLIST", "prob_EMERGING", "prob_STRONG"]):
+        for i, col in enumerate(["prob_MARKDOWN", "prob_NEUTRAL", "prob_ACCUMULATION",
+                                  "prob_WATCHLIST", "prob_EMERGING", "prob_BULL_RUN"]):
             if i < ensemble_proba.shape[1]:
                 scores_df[col] = np.round(ensemble_proba[:, i], 4)
 
@@ -199,7 +228,7 @@ class BullRunMLModel:
         xgb.save_model(str(self.xgb_path))
         meta = {
             "model_type":   "LightGBM (0.6) + XGBoost (0.4) ensemble",
-            "target":       "label_enc (0=AVOID ... 4=STRONG_CANDIDATE)",
+            "target":       "label_enc (0=MARKDOWN ... 5=BULL_RUN)",
             "n_classes":    n_classes,
             "feature_names": feature_names,
             "lgbm_estimators": 300,

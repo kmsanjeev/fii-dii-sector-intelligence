@@ -1,5 +1,5 @@
 """
-Data Tools -- Phase 14A
+Data Tools -- Phase 14A (+ Phase V-DATA, full-coverage expansion)
 Structured data-access tools called by the chatbot to answer domain questions.
 These are the bridge between natural language intent and intelligence CSVs.
 
@@ -18,6 +18,19 @@ from engines.common.logger import get_logger
 logger = get_logger(__name__)
 
 INTEL = cfg.INTELLIGENCE_DIR
+
+# Phase V-DATA -- previously-unreachable data sources wired into new tools
+VALUATION_CSV   = cfg.NSE_DIR / "results" / "valuation_scores.csv"
+EXT_FIN_CSV     = cfg.NSE_DIR / "results" / "extended_financials.csv"
+QTR_RESULTS_CSV = cfg.NSE_DIR / "results" / "quarterly_results.csv"
+SHP_CSV         = cfg.NSE_DIR / "shareholding" / "quarterly_shp.csv"
+HOLDING_TRENDS_CSV   = cfg.NSE_DIR / "shareholding" / "holding_trends.csv"
+MGMT_SENTIMENT_CSV   = cfg.NSE_DIR / "shareholding" / "management_sentiment.csv"
+ANNOUNCEMENTS_CSV    = INTEL / "company_announcements.csv"
+ANNOUNCEMENT_SIG_CSV = INTEL / "announcement_signals.csv"
+CORP_ACTIONS_CSV     = INTEL / "corporate_action_signals.csv"
+CONVICTION_CSV       = INTEL / "conviction_screener.csv"
+DEAL_RECORDS_CSV     = INTEL / "deal_records.csv"
 
 
 def _load(path: Path) -> Optional[pd.DataFrame]:
@@ -96,20 +109,47 @@ def get_sectors_by_signal(signal: str) -> list[dict]:
 # Stock tools
 # ------------------------------------------------------------------
 
+# Full technical field set (Phase TI) -- RSI/MACD/ATR/Bollinger/ADX/OBV exist
+# in technical_indicators.csv but were previously never exposed to any tool;
+# only trend_signal/vs_dma_200/prox_52w_high/close_now made it through.
+FULL_TECH_COLS = [
+    "trend_signal", "close_now", "vs_dma_20", "vs_dma_50", "vs_dma_200",
+    "prox_52w_high", "prox_52w_low", "high_52w", "low_52w",
+    "rsi", "rsi_signal", "macd_line", "macd_signal", "macd_hist", "macd_cross",
+    "atr_pct", "bb_pct", "bb_signal", "bb_squeeze",
+    "adx", "adx_strength", "adx_direction", "obv_signal",
+]
+
+
 def _enrich_with_technical(df_rows: list[dict]) -> list[dict]:
-    """Add key technical fields (trend_signal, vs_dma_200, prox_52w_high) to each row."""
+    """Add the full technical indicator set (trend, DMA, 52W range, RSI,
+    MACD, ATR, Bollinger Bands, ADX, OBV) plus watchlist decision metrics
+    (RVOL, relative strength, delivery%) to each row."""
     tech = _load(INTEL / "technical_indicators.csv")
-    if tech is None:
+    if tech is not None:
+        tech_idx = tech.set_index("symbol")
+        for row in df_rows:
+            sym = row.get("symbol", "")
+            if sym and sym in tech_idx.index:
+                t = tech_idx.loc[sym]
+                for col in FULL_TECH_COLS:
+                    row[col] = _clean(t.get(col))
+    return _enrich_with_watchlist_metrics(df_rows)
+
+
+def _enrich_with_watchlist_metrics(df_rows: list[dict]) -> list[dict]:
+    """Add RVOL, 30D relative strength vs NIFTY 50, and 5D delivery% to each row."""
+    wm = _load(INTEL / "watchlist_metrics.csv")
+    if wm is None:
         return df_rows
-    tech_idx = tech.set_index("symbol")
+    wm_idx = wm.set_index("symbol")
     for row in df_rows:
         sym = row.get("symbol", "")
-        if sym and sym in tech_idx.index:
-            t = tech_idx.loc[sym]
-            row["trend_signal"]  = _clean(t.get("trend_signal"))
-            row["vs_dma_200"]    = _clean(t.get("vs_dma_200"))
-            row["prox_52w_high"] = _clean(t.get("prox_52w_high"))
-            row["close_now"]     = _clean(t.get("close_now"))
+        if sym and sym in wm_idx.index:
+            w = wm_idx.loc[sym]
+            row["rvol"]             = _clean(w.get("rvol"))
+            row["rs_30d_vs_nifty"]  = _clean(w.get("rs_30d"))
+            row["delivery_5d_pct"]  = _clean(w.get("delivery_5d_pct"))
     return df_rows
 
 
@@ -191,21 +231,11 @@ def get_stock_detail(symbol: str) -> dict:
             result["ml_bull_run_score"] = ml_row.get("ml_bull_run_score")
             result["accumulation_score"] = ml_row.get("accumulation_score")
 
-    # Enrich with technical indicators — critical for trend validation
-    tech = _load(INTEL / "technical_indicators.csv")
-    if tech is not None:
-        tech_match = tech[tech["symbol"].str.upper() == symbol.upper()]
-        if not tech_match.empty:
-            t = tech_match.iloc[0]
-            result["trend_signal"]  = _clean(t.get("trend_signal"))
-            result["vs_dma_20"]     = _clean(t.get("vs_dma_20"))
-            result["vs_dma_50"]     = _clean(t.get("vs_dma_50"))
-            result["vs_dma_200"]    = _clean(t.get("vs_dma_200"))
-            result["prox_52w_high"] = _clean(t.get("prox_52w_high"))
-            result["prox_52w_low"]  = _clean(t.get("prox_52w_low"))
-            result["close_now"]     = _clean(t.get("close_now"))
-            result["high_52w"]      = _clean(t.get("high_52w"))
-            result["low_52w"]       = _clean(t.get("low_52w"))
+    # Enrich with the full technical indicator set + watchlist metrics
+    # (same helper used by get_top_stocks/get_fno_stocks/get_stocks_by_sector
+    # -- previously this pulled a different, smaller subset than those tools,
+    # an inconsistency that made Veda's answers vary by which tool she used).
+    result = _enrich_with_technical([result])[0]
 
     # Enrich with corporate confidence
     corp = _load(INTEL / "corporate_confidence_scores.csv")
@@ -342,6 +372,318 @@ def get_corporate_catalysts(upcoming_days: int = 30) -> list[dict]:
         df = df[(df[date_col] >= today) & (df[date_col] <= cutoff)]
         df = df.sort_values(date_col)
     return [_row_to_dict(r) for _, r in df.head(50).iterrows()]
+
+
+# ------------------------------------------------------------------
+# Fundamentals & valuation (Phase V-DATA)
+# ------------------------------------------------------------------
+
+def get_stock_fundamentals(symbol: str) -> dict:
+    """
+    Returns valuation (P/E, P/B, ROE, valuation label), extended financials
+    (OPM%, ROCE%, book value/share, sales growth CAGR), and the most recent
+    quarterly result (revenue, net profit, EPS) for a stock.
+    """
+    sym = symbol.upper()
+    result: dict = {"symbol": sym}
+    found = False
+
+    val = _load(VALUATION_CSV)
+    if val is not None:
+        m = val[val["symbol"].str.upper() == sym]
+        if not m.empty:
+            found = True
+            r = _row_to_dict(m.iloc[0])
+            result.update({
+                "pe_ratio": r.get("pe_ratio"), "pb_ratio": r.get("pb_ratio"),
+                "roe_pct": r.get("roe_pct"), "valuation_label": r.get("valuation_label"),
+                "revenue_ttm_cr": r.get("revenue_ttm_cr"), "profit_ttm_cr": r.get("profit_ttm_cr"),
+                "yoy_revenue_pct": r.get("yoy_revenue_pct"), "yoy_profit_pct": r.get("yoy_profit_pct"),
+            })
+
+    ext = _load(EXT_FIN_CSV)
+    if ext is not None:
+        m = ext[ext["symbol"].str.upper() == sym]
+        if not m.empty:
+            found = True
+            r = _row_to_dict(m.iloc[0])
+            result.update({
+                "opm_pct": r.get("opm_pct"), "roce_pct": r.get("roce_pct"),
+                "book_value_per_share": r.get("book_value_per_share"),
+                "sales_growth_cagr_pct": r.get("sales_growth_cagr_pct"),
+            })
+
+    qr = _load(QTR_RESULTS_CSV)
+    if qr is not None:
+        m = qr[qr["symbol"].str.upper() == sym].copy()
+        if not m.empty:
+            found = True
+            m["date_end"] = pd.to_datetime(m["date_end"], errors="coerce")
+            latest = m.sort_values("date_end", ascending=False).iloc[0]
+            result["latest_quarter"] = {
+                "quarter_label": _clean(latest.get("quarter_label")),
+                "revenue_cr": _clean(latest.get("revenue_cr")),
+                "net_profit_cr": _clean(latest.get("net_profit_cr")),
+                "eps": _clean(latest.get("eps")),
+            }
+
+    if not found:
+        return {"error": f"No fundamentals data found for '{sym}'"}
+    return result
+
+
+# ------------------------------------------------------------------
+# Shareholding pattern (Phase V-DATA)
+# ------------------------------------------------------------------
+
+def get_shareholding_pattern(symbol: str) -> dict:
+    """
+    Returns the last 4 quarters of promoter/FII/DII/public shareholding %
+    plus the latest QoQ deltas and a conviction_signal (INCREASING/
+    DECREASING/STABLE institutional or promoter stake).
+    """
+    sym = symbol.upper()
+    result: dict = {"symbol": sym}
+
+    shp = _load(SHP_CSV)
+    if shp is not None:
+        m = shp[shp["symbol"].str.upper() == sym].copy()
+        if not m.empty:
+            m["quarter_end_date"] = pd.to_datetime(m["quarter_end_date"], format="%d-%b-%Y", errors="coerce")
+            m = m.sort_values("quarter_end_date", ascending=False).head(4)
+            result["quarterly_history"] = [
+                {
+                    "quarter_end": str(r["quarter_end_date"].date()) if pd.notna(r["quarter_end_date"]) else None,
+                    "promoter_pct": _clean(r.get("promoter_pct")),
+                    "fii_pct": _clean(r.get("fii_pct")),
+                    "dii_pct": _clean(r.get("dii_pct")),
+                    "public_pct": _clean(r.get("public_pct")),
+                }
+                for _, r in m.iterrows()
+            ]
+
+    trends = _load(HOLDING_TRENDS_CSV)
+    if trends is not None:
+        m = trends[trends["symbol"].str.upper() == sym].copy()
+        if not m.empty:
+            m["quarter_end_date"] = pd.to_datetime(m["quarter_end_date"], format="%d-%b-%Y", errors="coerce")
+            latest = m.sort_values("quarter_end_date", ascending=False).iloc[0]
+            result["promoter_delta_qoq"] = _clean(latest.get("promoter_delta"))
+            result["fii_delta_qoq"]      = _clean(latest.get("fii_delta"))
+            result["dii_delta_qoq"]      = _clean(latest.get("dii_delta"))
+            result["conviction_signal"]  = _clean(latest.get("conviction_signal"))
+
+    if "quarterly_history" not in result and "conviction_signal" not in result:
+        return {"error": f"No shareholding data found for '{sym}'"}
+    return result
+
+
+# ------------------------------------------------------------------
+# Announcements & management sentiment (Phase V-DATA)
+# ------------------------------------------------------------------
+
+def get_stock_announcements(symbol: str, days: int = 30) -> dict:
+    """
+    Returns recent NSE corporate announcements for a stock (signal-scored:
+    results, board outcomes, management changes, acquisitions, regulatory
+    filings) plus a 30D/90D announcement-activity summary.
+    """
+    sym = symbol.upper()
+    result: dict = {"symbol": sym}
+
+    ann = _load(ANNOUNCEMENTS_CSV)
+    if ann is not None:
+        m = ann[ann["symbol"].str.upper() == sym].copy()
+        if not m.empty:
+            cutoff = (pd.Timestamp.now() - pd.Timedelta(days=days)).strftime("%Y-%m-%d")
+            m = m[m["date"] >= cutoff].sort_values("date", ascending=False)
+            result["recent_announcements"] = [
+                {
+                    "date": _clean(r.get("date")),
+                    "type": _clean(r.get("announcement_type")),
+                    "signal_score": _clean(r.get("signal_score")),
+                    "summary": _clean(r.get("title_snippet")),
+                }
+                for _, r in m.head(20).iterrows()
+            ]
+
+    sig = _load(ANNOUNCEMENT_SIG_CSV)
+    if sig is not None:
+        m = sig[sig["symbol"].str.upper() == sym]
+        if not m.empty:
+            r = _row_to_dict(m.iloc[0])
+            result["dominant_type_30d"] = r.get("dominant_type")
+            result["score_30d"]         = r.get("score_30d")
+            result["count_30d"]         = r.get("count_30d")
+            result["count_90d"]         = r.get("count_90d")
+            result["high_signal_30d"]   = r.get("high_signal_30d")
+
+    if "recent_announcements" not in result and "score_30d" not in result:
+        return {"error": f"No announcements found for '{sym}' in the last {days} days"}
+    return result
+
+
+def get_management_sentiment(symbol: str) -> dict:
+    """
+    Returns AI-scored management tone/sentiment (Claude-analysed from board
+    announcements and holding trends): holding_signal, ai_tone_score,
+    management_score, management_label.
+    """
+    sym = symbol.upper()
+    df = _load(MGMT_SENTIMENT_CSV)
+    if df is None:
+        return {"error": "management_sentiment.csv not available"}
+    m = df[df["symbol"].str.upper() == sym]
+    if m.empty:
+        return {"error": f"No management sentiment data for '{sym}'"}
+    return _row_to_dict(m.iloc[0])
+
+
+# ------------------------------------------------------------------
+# Historical corporate actions (Phase V-DATA)
+# ------------------------------------------------------------------
+
+def get_corporate_action_history(symbol: str, years: int = 5) -> list[dict]:
+    """
+    Returns historical corporate actions (dividends, bonuses, splits,
+    buybacks, rights issues) for a stock over the last N years, most
+    recent first.
+    """
+    sym = symbol.upper()
+    df = _load(CORP_ACTIONS_CSV)
+    if df is None:
+        return []
+    m = df[df["symbol"].str.upper() == sym].copy()
+    if m.empty:
+        return []
+    m["ex_date_dt"] = pd.to_datetime(m["ex_date_dt"], errors="coerce")
+    cutoff = pd.Timestamp.now() - pd.Timedelta(days=365 * years)
+    m = m[m["ex_date_dt"] >= cutoff].sort_values("ex_date_dt", ascending=False)
+    cols = ["ex_date", "action_type", "dividend_rs", "bonus_ratio", "split_new_fv", "subject"]
+    m = m[[c for c in cols if c in m.columns]]
+    return [_row_to_dict(r) for _, r in m.head(30).iterrows()]
+
+
+# ------------------------------------------------------------------
+# Conviction screener (Phase V-DATA -- exposes Phase SA-1's flagship output)
+# ------------------------------------------------------------------
+
+def get_conviction_picks(tier: Optional[str] = None, top_n: int = 20) -> list[dict]:
+    """
+    Returns the platform's efficacy-weighted conviction screener: stocks
+    ranked by a composite score backtested against realized forward returns
+    (Information Coefficient per factor), with supporting evidence and the
+    primary risk flag for each pick. Tiers: HIGH, MEDIUM, WATCH.
+    This is the platform's single most rigorously validated signal --
+    prefer it over get_top_stocks for "what should I actually invest in"
+    style questions.
+    """
+    df = _load(CONVICTION_CSV)
+    if df is None:
+        return []
+    if tier:
+        df = df[df["tier"].str.upper() == tier.upper()]
+    df = df.sort_values("rank").head(top_n)
+    return [_row_to_dict(r) for _, r in df.iterrows()]
+
+
+# ------------------------------------------------------------------
+# Deal tape (Phase V-DATA -- sequence-paired transactions, Phase UI-C)
+# ------------------------------------------------------------------
+
+def get_deal_tape(symbol: Optional[str] = None, top_n: int = 15) -> list[dict]:
+    """
+    Returns individual client block/bulk deal transactions, sequence-paired
+    into LONG_BUILD_SQUAREOFF / SHORT_BUILD_COVER / BUY_ONLY / SELL_ONLY
+    records (same-day same-client legs matched FIFO within 1% quantity
+    tolerance -- see block_bulk_deal_engine.py). Filter by symbol for a
+    specific stock's deal history, or omit for the largest deals market-wide.
+    """
+    df = _load(DEAL_RECORDS_CSV)
+    if df is None:
+        return []
+    if symbol:
+        df = df[df["symbol"].str.upper() == symbol.upper()]
+    df = df.sort_values(["date", "gross_value_cr"], ascending=[False, False]).head(top_n)
+    return [_row_to_dict(r) for _, r in df.iterrows()]
+
+
+# ------------------------------------------------------------------
+# Raw price history (Phase V-DATA)
+# ------------------------------------------------------------------
+
+def get_price_history(symbol: str, days: int = 90) -> dict:
+    """
+    Returns daily OHLCV price history for a stock -- the actual candle data,
+    for exact moving-average crossovers, specific-date prices, or manual
+    trend verification that derived scores can't answer.
+    days is capped at 500 to keep the response manageable.
+    """
+    sym = symbol.upper()
+    path = cfg.STOCK_HISTORY_CACHE / f"{sym}.parquet"
+    if not path.exists():
+        return {"error": f"No price history cached for '{sym}'"}
+    days = min(max(days, 1), 500)
+    try:
+        df = pd.read_parquet(path, columns=["date", "open", "high", "low", "close", "volume"])
+    except Exception as e:
+        return {"error": f"Failed to read price history: {e}"}
+    df = df.tail(days)
+    return {
+        "symbol": sym,
+        "sessions": len(df),
+        "candles": [
+            {
+                "date": str(r["date"])[:10],
+                "open": _clean(r["open"]), "high": _clean(r["high"]),
+                "low": _clean(r["low"]), "close": _clean(r["close"]),
+                "volume": _clean(r["volume"]),
+            }
+            for _, r in df.iterrows()
+        ],
+    }
+
+
+# ------------------------------------------------------------------
+# Technical screener (Phase V-DATA)
+# ------------------------------------------------------------------
+
+_TECH_SCREEN_MAP = {
+    "OVERSOLD":       ("rsi_signal", "OVERSOLD"),
+    "OVERBOUGHT":     ("rsi_signal", "OVERBOUGHT"),
+    "BULLISH_MACD":   ("macd_cross", "BULLISH"),
+    "BEARISH_MACD":   ("macd_cross", "BEARISH"),
+    "BB_SQUEEZE":     ("bb_squeeze", True),
+    "STRONG_TREND":   ("adx_strength", "STRONG"),
+}
+
+
+def get_technical_screener(condition: str = "OVERSOLD", top_n: int = 20) -> list[dict]:
+    """
+    Screens the universe by a technical condition. Valid conditions:
+    OVERSOLD (RSI<30, potential bounce), OVERBOUGHT (RSI>70, potential
+    pullback), BULLISH_MACD (MACD line crossed above signal), BEARISH_MACD
+    (crossed below), BB_SQUEEZE (Bollinger Bands compressed -- breakout
+    setup), STRONG_TREND (ADX>25 -- trending, not choppy).
+    """
+    df = _load(INTEL / "technical_indicators.csv")
+    if df is None:
+        return []
+    key = condition.upper()
+    if key not in _TECH_SCREEN_MAP:
+        return [{"error": f"Unknown condition '{condition}'. Valid: {list(_TECH_SCREEN_MAP)}"}]
+    col, val = _TECH_SCREEN_MAP[key]
+    if col not in df.columns:
+        return []
+    matches = df[df[col] == val]
+    sort_col = "rsi" if key in ("OVERSOLD", "OVERBOUGHT") else "adx" if key == "STRONG_TREND" else "symbol"
+    ascending = key == "OVERSOLD"
+    if sort_col in matches.columns:
+        matches = matches.sort_values(sort_col, ascending=ascending)
+    cols = ["symbol", "close_now", "rsi", "rsi_signal", "macd_cross", "bb_squeeze",
+            "adx", "adx_strength", "trend_signal"]
+    matches = matches[[c for c in cols if c in matches.columns]]
+    return [_row_to_dict(r) for _, r in matches.head(top_n).iterrows()]
 
 
 # ------------------------------------------------------------------

@@ -6,6 +6,134 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.44.0
+
+Phase V-DATA -- Full data coverage for Veda + ML feature/label completeness
+
+Date: 2026-07-13
+
+Status: Completed (core scope); 2 items flagged pending, 1 new bug found and deferred
+
+---
+
+## Summary
+
+User audit request found Veda (chatbot) had only 14 tools, missing entire
+platform layers (fundamentals, technical indicators, shareholding,
+announcements, conviction screener, deal tape, raw price history), and that
+the two ML models were silently training on a stale ~40-column feature
+list while the feature matrix already computed 77 columns -- everything
+from Phase 12A onward (valuation, RSI/MACD/ADX/Bollinger, theme/news/
+insider/concall sentiment, consensus, forward-return score) was being
+generated and then ignored at training time. A deeper look also found the
+label taxonomy itself (AVOID/STRONG_CANDIDATE) didn't match what
+bull_run_probability_engine.py has produced for a while (BULL_RUN/
+ACCUMULATION/MARKDOWN/etc.) -- so those rows were silently training as
+NEUTRAL, corrupting a small but meaningful slice of the target.
+
+## 1. Veda tool registry: 14 -> 23 tools
+
+New tools (engines/ai/chatbot/tools/data_tools.py + tool_registry.py):
+get_stock_fundamentals, get_shareholding_pattern, get_stock_announcements,
+get_management_sentiment, get_corporate_action_history, get_conviction_picks
+(exposes Phase SA-1's efficacy-backtested screener -- was completely
+unreachable before), get_deal_tape (today's sequence-paired transaction
+records), get_price_history (raw OHLCV from the stock_history parquet
+cache -- closes the "no exact price data" gap), get_technical_screener
+(RSI/MACD/Bollinger/ADX condition screening).
+
+get_stock_detail and the shared _enrich_with_technical() helper (also used
+by get_top_stocks/get_fno_stocks/get_stocks_by_sector) now carry the FULL
+technical set -- rsi, macd_line/signal/hist/cross, atr_pct, bollinger
+bands, adx+direction, obv_signal -- plus watchlist metrics (rvol, 30D
+relative strength, 5D delivery%). Previously only trend_signal/vs_dma_200/
+prox_52w_high/close_now were exposed, and get_stock_detail's own inline
+enrichment carried a DIFFERENT subset than the list-returning tools,
+an inconsistency now unified into one shared helper.
+
+intent_router.py domain hints updated so the LLM actively reaches for the
+new tools (e.g. "PREFER get_conviction_picks() over get_top_stocks() for
+what-should-I-invest-in questions -- it's efficacy-backtested, not
+rule-based").
+
+Verified: all 10 new/changed functions tested directly (no exceptions,
+correct schemas) plus 2 live end-to-end /api/chat calls through actual
+LLM tool-calling (RSI/MACD/ADX synthesis, HIGH-conviction picks with
+cross-referenced sector data) -- confirmed the model uses the new data
+correctly, not just that the plumbing exists.
+
+## 2. ML feature + label completeness
+
+**Bug found: FEATURE_COLS in accumulation_model.py and bull_run_model.py
+was stale.** Both trained on ~40 columns; feature_matrix.parquet had 77.
+Everything from Phase 12A onward (opm_pct, roce_pct, valuation, RSI/MACD/
+ATR/Bollinger/ADX, theme scores, news sentiment, insider signals, concall
+sentiment, consensus_score, forward_return_score) was computed every run
+and then silently never used to train either model. Synced both
+FEATURE_COLS lists to the full available set.
+
+**New feature sources wired into feature_engineering.py** (77 -> 88
+columns): watchlist_metrics (rvol, 30D relative strength, 5D delivery% --
+distinct from the existing vol_ratio, which is a longer-window figure),
+holding_trends QoQ deltas + conviction_signal (direction of promoter/FII/
+DII stake change, not just the level the platform already had), management
+sentiment (AI-scored tone), and astro_signals sector score (joined via
+each stock's sector -- astro data is sector-granularity, not per-symbol).
+Coverage: 70-99% for most; ai_tone_score is sparse (1.8%, reflecting
+genuine underlying data sparsity in management_sentiment.csv, not a
+pipeline bug) -- tree models handle missing values natively so this
+doesn't block training, just contributes less signal for now.
+
+**Bug found + fixed: label taxonomy mismatch.** feature_engineering.py's
+LABEL_MAP mapped AVOID/STRONG_CANDIDATE -- a taxonomy
+bull_run_probability_engine.py no longer produces. Every row labeled
+BULL_RUN, ACCUMULATION, or MARKDOWN (the labels the model most needs to
+distinguish) fell through .fillna(1) into the NEUTRAL bucket. Confirmed by
+the retrain itself failing outright ("Invalid classes inferred... Expected
+[0,1,2], got [1,2,3]" -- only 3 of 5 expected classes were ever present).
+Fixed to the actual 6-value taxonomy (MARKDOWN=0, NEUTRAL=1,
+ACCUMULATION=2, WATCHLIST=3, EMERGING=4, BULL_RUN=5); accumulation_model's
+binary target threshold updated from >=3 to >=4 to preserve its intended
+meaning (EMERGING or BULL_RUN, was EMERGING or the now-nonexistent
+STRONG_CANDIDATE); bull_run_model's LABEL_WEIGHTS, predicted_label array,
+and prob_* output columns updated to the 6-class scheme.
+
+Full retrain executed: feature_engineering -> accumulation_model ->
+bull_run_model -> ml_scorer, all clean, ml_scores_combined.csv
+regenerated for 2,370 symbols. Suite 267/267 green; verified live against
+/api/stocks/{symbol} (ml_scores nested object correctly populated).
+
+## 3. Chat-to-ML training -- clarified, not built (by design)
+
+Confirmed via code trace: conversation_log.csv is written only by voice.py's
+/log endpoint and read only by chat_analytics_engine.py, which produces
+pure usage/demand metrics (top intents, voice/text split, most-asked
+symbols) -- zero connection to engines/ml/. This is correct and should stay
+that way: chat content does not predict stock returns (wrong causal
+direction), so it must never become a feature in the return-prediction
+models. What COULD legitimately happen -- a separate personalization/
+demand-weighting layer using chat signals to influence alert/screener
+ordering -- is a different system with real design tradeoffs (risks
+reinforcing confirmation bias) and was NOT built; flagged for explicit
+scope confirmation before any implementation.
+
+## Found but NOT fixed (separate, pre-existing bug, flagged for a future phase)
+
+9 files compare against the label string "STRONG_CANDIDATE" (and some
+against "AVOID") on the RULE-BASED label column (bull_run_probability.csv's
+`label` / portfolio's `bull_run_label`) -- NOT the ML label this phase
+touched. That column has used BULL_RUN/ACCUMULATION/MARKDOWN for a while;
+these checks have been dead code for an unknown period: backend/routers/
+stocks.py (STRONG BUY thesis branch), backend/routers/report_generator.py
+(color/label mapping), engines/portfolio/portfolio_engine.py (STRONG BUY /
+REVIEW POSITION key signals), engines/broker/sync_engine.py (order
+labeling), engines/backtest/backtest_engine.py (stock prioritization),
+engines/ai/knowledge/document_builder.py + retriever.py (RAG document
+generation), engines/intelligence/theme_intelligence_engine.py (signal
+counting). Out of scope for this phase -- flagged, not fixed.
+
+---
+
 # Version 4.43.0
 
 Phase V3.4 -- Veda field fixes: activation, barge-in, greetings, read-vs-present

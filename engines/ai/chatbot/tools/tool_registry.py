@@ -252,6 +252,168 @@ TOOLS: list[dict] = [
         },
     },
     {
+        "name": "get_stock_fundamentals",
+        "description": (
+            "Get valuation (P/E, P/B, ROE, valuation label) and extended financials "
+            "(OPM%, ROCE%, book value/share, sales growth CAGR) plus the most recent "
+            "quarterly result (revenue, net profit, EPS) for a stock. Use for any "
+            "question about a company's financial health, profitability, or whether "
+            "it looks cheap/expensive -- NOT covered by get_stock_detail."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "symbol": {"type": "string", "description": "NSE stock symbol (e.g. RELIANCE, TCS)"}
+            },
+            "required": ["symbol"],
+        },
+    },
+    {
+        "name": "get_shareholding_pattern",
+        "description": (
+            "Get the last 4 quarters of promoter/FII/DII/public shareholding % for a "
+            "stock, plus the latest quarter-on-quarter deltas and a conviction_signal "
+            "(is promoter or institutional stake increasing or decreasing). Use when "
+            "asked about promoter holding, FII/DII ownership trends, or stake changes."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "symbol": {"type": "string", "description": "NSE stock symbol"}
+            },
+            "required": ["symbol"],
+        },
+    },
+    {
+        "name": "get_stock_announcements",
+        "description": (
+            "Get recent NSE corporate announcements for a stock (results, board "
+            "outcomes, management changes, acquisitions, regulatory filings), signal-"
+            "scored, plus a 30D/90D announcement-activity summary. Use for 'what has "
+            "this company announced recently' or 'any news on X'."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "symbol": {"type": "string", "description": "NSE stock symbol"},
+                "days": {"type": "integer", "description": "Lookback window in days (default: 30)", "default": 30},
+            },
+            "required": ["symbol"],
+        },
+    },
+    {
+        "name": "get_management_sentiment",
+        "description": (
+            "Get AI-scored management tone/sentiment for a stock (Claude-analysed "
+            "from board announcements and holding trends): holding_signal, "
+            "ai_tone_score, management_score, management_label. Use when asked about "
+            "management quality, confidence, or tone."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "symbol": {"type": "string", "description": "NSE stock symbol"}
+            },
+            "required": ["symbol"],
+        },
+    },
+    {
+        "name": "get_corporate_action_history",
+        "description": (
+            "Get historical corporate actions (dividends, bonuses, splits, buybacks, "
+            "rights issues) for a stock over the last N years, most recent first. Use "
+            "for 'has this company given bonus/split before' or dividend history "
+            "questions -- distinct from get_corporate_catalysts, which is upcoming events only."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "symbol": {"type": "string", "description": "NSE stock symbol"},
+                "years": {"type": "integer", "description": "Years of history to look back (default: 5)", "default": 5},
+            },
+            "required": ["symbol"],
+        },
+    },
+    {
+        "name": "get_conviction_picks",
+        "description": (
+            "Get the platform's efficacy-weighted conviction screener -- stocks ranked "
+            "by a composite score backtested against realized forward returns (real "
+            "Information Coefficient per factor, not just rule-based scoring), with "
+            "supporting evidence and a primary risk flag per pick. Tiers: HIGH, MEDIUM, "
+            "WATCH. This is the platform's single most rigorously validated signal -- "
+            "PREFER this over get_top_stocks whenever the user asks what to actually "
+            "invest in, not just which stocks look strong."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "tier": {"type": "string", "description": "Filter by tier: HIGH, MEDIUM, or WATCH (optional -- omit for all)"},
+                "top_n": {"type": "integer", "description": "Number of picks to return (default: 20)", "default": 20},
+            },
+            "required": [],
+        },
+    },
+    {
+        "name": "get_deal_tape",
+        "description": (
+            "Get individual client block/bulk deal transactions, sequence-paired into "
+            "LONG_BUILD_SQUAREOFF (bought then squared off), SHORT_BUILD_COVER (sold "
+            "then covered), BUY_ONLY, or SELL_ONLY records -- same-day same-client legs "
+            "matched by execution order and quantity. More granular than "
+            "get_institutional_deals (which is a 30D aggregate). Filter by symbol for "
+            "one stock's deal history, or omit for the largest deals market-wide."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "symbol": {"type": "string", "description": "NSE stock symbol (optional -- omit for market-wide)"},
+                "top_n": {"type": "integer", "description": "Number of records to return (default: 15)", "default": 15},
+            },
+            "required": [],
+        },
+    },
+    {
+        "name": "get_price_history",
+        "description": (
+            "Get the actual daily OHLCV candle history for a stock. Use this for exact "
+            "moving-average crossover dates, specific historical prices, or any question "
+            "that needs the real price series rather than a derived trend/score -- "
+            "get_stock_detail's technical fields are pre-computed signals, not raw data."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "symbol": {"type": "string", "description": "NSE stock symbol"},
+                "days": {"type": "integer", "description": "Number of trading sessions to return (default: 90, max: 500)", "default": 90},
+            },
+            "required": ["symbol"],
+        },
+    },
+    {
+        "name": "get_technical_screener",
+        "description": (
+            "Screen the stock universe by a technical condition. Valid conditions: "
+            "OVERSOLD (RSI<30, potential bounce), OVERBOUGHT (RSI>70, potential "
+            "pullback), BULLISH_MACD (MACD crossed above signal), BEARISH_MACD "
+            "(crossed below), BB_SQUEEZE (Bollinger Bands compressed, breakout setup), "
+            "STRONG_TREND (ADX>25, trending not choppy). Use for 'which stocks are "
+            "oversold' or 'show me MACD bullish crossovers' style questions."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "condition": {
+                    "type": "string",
+                    "description": "OVERSOLD, OVERBOUGHT, BULLISH_MACD, BEARISH_MACD, BB_SQUEEZE, or STRONG_TREND",
+                    "default": "OVERSOLD",
+                },
+                "top_n": {"type": "integer", "description": "Number of stocks to return (default: 20)", "default": 20},
+            },
+            "required": [],
+        },
+    },
+    {
         "name": "generate_personal_kundli",
         "description": (
             "Generate a complete Vedic (Jyotish) natal birth chart for a PERSON based on their "
@@ -319,6 +481,15 @@ from engines.ai.chatbot.tools.data_tools import (
     get_top_corporate_confidence,
     get_corporate_catalysts,
     get_astro_signal,
+    get_stock_fundamentals,
+    get_shareholding_pattern,
+    get_stock_announcements,
+    get_management_sentiment,
+    get_corporate_action_history,
+    get_conviction_picks,
+    get_deal_tape,
+    get_price_history,
+    get_technical_screener,
     generate_personal_kundli,
 )
 
@@ -336,5 +507,14 @@ TOOL_FUNCTIONS: dict[str, callable] = {
     "get_top_corporate_confidence": get_top_corporate_confidence,
     "get_corporate_catalysts":    get_corporate_catalysts,
     "get_astro_signal":           get_astro_signal,
+    "get_stock_fundamentals":     get_stock_fundamentals,
+    "get_shareholding_pattern":   get_shareholding_pattern,
+    "get_stock_announcements":    get_stock_announcements,
+    "get_management_sentiment":   get_management_sentiment,
+    "get_corporate_action_history": get_corporate_action_history,
+    "get_conviction_picks":       get_conviction_picks,
+    "get_deal_tape":              get_deal_tape,
+    "get_price_history":          get_price_history,
+    "get_technical_screener":     get_technical_screener,
     "generate_personal_kundli":   generate_personal_kundli,
 }

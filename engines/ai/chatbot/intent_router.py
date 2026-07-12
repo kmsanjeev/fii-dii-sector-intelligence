@@ -186,12 +186,27 @@ def get_system_prompt(intent: Intent) -> str:
             "Always cross-check trend_signal and prox_52w_high before recommending a stock as a buy. "
             "A stock with prox_52w_high < -20% is far from its high -- mention this. "
             "Explain the capital flow cascade: participant -> sector -> stock. "
+            "get_stock_detail() already includes RSI/MACD/ATR/Bollinger/ADX and RVOL/relative-strength/"
+            "delivery% -- do not say this data is unavailable. "
+            "For 'what should I actually invest in' or conviction-ranked picks, PREFER "
+            "get_conviction_picks() over get_top_stocks() -- it is efficacy-backtested, not rule-based. "
+            "For exact prices, moving-average crossover dates, or raw candle data, use get_price_history() -- "
+            "get_stock_detail() only has derived signals, not the actual OHLCV series. "
+            "For screening by RSI/MACD/Bollinger/ADX condition, use get_technical_screener(). "
+            "For financial health (P/E, ROE, ROCE, OPM%, revenue/profit), use get_stock_fundamentals()."
         ),
         "CORPORATE": (
             " Focus on corporate action intelligence. "
             "High corporate confidence scores (> 2.0) signal management conviction. "
             "Block/bulk deals > 50 Cr indicate institutional positioning. "
-            "Connect corporate signals to accumulation thesis."
+            "Connect corporate signals to accumulation thesis. "
+            "For a stock's dividend/bonus/split/buyback HISTORY, use get_corporate_action_history() -- "
+            "get_corporate_catalysts() is upcoming events only. "
+            "For promoter/FII/DII stake trend, use get_shareholding_pattern(). "
+            "For recent company news/filings, use get_stock_announcements(). "
+            "For management tone/quality, use get_management_sentiment(). "
+            "For a specific stock's or client's individual deal history, use get_deal_tape() -- "
+            "get_institutional_deals() is a 30D market-wide aggregate only."
         ),
         "RESEARCH": (
             " This is a broad research query. Use the RAG context provided. "

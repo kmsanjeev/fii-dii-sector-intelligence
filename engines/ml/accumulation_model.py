@@ -6,8 +6,10 @@ Training:
   - Features: price_score, sector_flow_score, deal_score, corporate_score,
                ret_30d, ret_90d, ret_365d, vol_ratio, sector_FII_flow,
                part_FII_flow, part_smart_money, regime_enc
-  - Target: label_enc >= 3 (EMERGING or STRONG_CANDIDATE) as proxy for accumulation
+  - Target: label_enc >= 4 (EMERGING or BULL_RUN) as proxy for accumulation
     (true target would be forward price return, requires bhavcopy time-series)
+    [Phase V-DATA: label taxonomy fixed to match production labels -- see
+    feature_engineering.py LABEL_MAP]
   - CV: TimeSeriesSplit (no data leakage)
   - Interpretability: SHAP values per prediction
 
@@ -65,13 +67,36 @@ FEATURE_COLS = [
     # Phase 18C — Announcement intelligence
     "ann_score_30d", "high_signal_30d", "distinct_types_30d",
     "ann_velocity_30d", "order_wins_6m", "spurt_count_30d", "distress_30d",
+    # Phase F — Alt-data intelligence (was in feature_matrix.parquet but
+    # never wired into training until Phase V-DATA closed the gap)
+    "theme_score_max", "theme_purity_max",
+    "news_sentiment_7d", "insider_score",
+    "concall_guidance_score", "concall_sentiment_score",
+    # Phase G — Multi-signal consensus
+    "consensus_score",
+    # Phase 12A — enriched fundamentals + valuation + technical + F&O
+    "opm_pct", "roce_pct", "sales_growth_3y",
+    "pe_ratio_log", "roe_pct", "valuation_label_enc",
+    "yoy_revenue_pct", "yoy_profit_pct",
+    "vs_dma_200", "trend_signal_enc", "fno_oi_signal_enc",
+    # Phase 12B — technical strategy pattern features
+    "rsi_14", "rsi_zone_enc", "macd_hist", "macd_signal_enc",
+    "bb_pct_b", "bb_squeeze", "adx_14", "adx_trending",
+    # Phase 12C — forward return probability (true supervised signal)
+    "forward_return_score",
+    # Phase V-DATA — volume/delivery quality, shareholding trend,
+    # management tone, astro sector signal
+    "rvol", "rs_30d_vs_nifty", "delivery_5d_pct",
+    "promoter_delta", "fii_delta", "dii_delta", "conviction_signal_enc",
+    "ai_tone_score", "management_score", "management_label_enc",
+    "astro_score",
 ]
 
 
 class AccumulationModel:
     """
     XGBoost binary classifier for accumulation detection.
-    Target: symbol in EMERGING or STRONG_CANDIDATE label (score proxy).
+    Target: symbol in EMERGING or BULL_RUN label (score proxy).
     """
 
     def __init__(self):
@@ -135,7 +160,7 @@ class AccumulationModel:
         X = df[available].copy()
         # NaN passed directly -- XGBoost learns the missing-value branch natively (per G-I-04:
         # never fillna(0); fillna(median) also wrong here as absence IS signal for sparse features).
-        y = (df["label_enc"] >= 3).astype(int)  # EMERGING or STRONG_CANDIDATE
+        y = (df["label_enc"] >= 4).astype(int)  # EMERGING or BULL_RUN
         symbols = df["symbol"]
         logger.info("[AccumulationModel] Features: %d, Positives: %d/%d, NaN cells: %d",
                     len(available), y.sum(), len(y), X.isnull().sum().sum())
@@ -145,7 +170,7 @@ class AccumulationModel:
         model.save_model(str(self.model_path))
         meta = {
             "model_type": "XGBoost binary classifier",
-            "target": "label_enc >= 3 (EMERGING or STRONG_CANDIDATE)",
+            "target": "label_enc >= 4 (EMERGING or BULL_RUN)",
             "cv_auc_mean": float(np.mean(cv_scores)),
             "cv_auc_std":  float(np.std(cv_scores)),
             "feature_names": feature_names,
