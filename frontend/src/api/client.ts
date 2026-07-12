@@ -363,8 +363,18 @@ export const fetchNews = () => api.get<NewsResponse>('/news').then(r => r.data)
 
 // Phase 14 — AI Chat (separate instance with longer timeout for multi-round Groq tool calls)
 const chatApi = axios.create({ baseURL: '/api', timeout: 60000 })
-export type ChatResponseData = { reply: string; session_id: string; intent: string }
+export type ChatResponseData = { reply: string; session_id: string; intent: string; symbols_discussed?: string[] }
 export const sendChat         = (message: string, session_id?: string, mode: 'voice' | 'text' = 'text') =>
   chatApi.post<ChatResponseData>('/chat', { message, session_id, mode }).then(r => r.data)
 export const resetChatSession = (session_id: string) =>
   chatApi.delete(`/chat/session/${session_id}`).then(r => r.data)
+
+// Phase V-DATA-3 — chat demand analytics ("Recently Asked" panel)
+export type ChatAnalyticsRow = { key: string; count: number; share_pct?: number; last_seen?: string | null }
+export type ChatAnalytics = {
+  source: string
+  summary?: Record<string, number>
+  top_symbols?: ChatAnalyticsRow[]
+}
+export const fetchVoiceAnalytics = () =>
+  api.get<ChatAnalytics>('/voice/analytics').then(r => r.data)

@@ -836,7 +836,8 @@ export function ChatPage() {
 
   // ── Conversation analytics log (every turn, voice AND text) ─────────────────
   const logTurn = useCallback((sid: string, mode: 'voice' | 'text', userMessage: string,
-                               intent: string, replyChars: number, latencyMs: number) => {
+                               intent: string, replyChars: number, latencyMs: number,
+                               symbols: string[] = []) => {
     const wake = wakeUsedRef.current
     wakeUsedRef.current = false
     fetch('/api/voice/log', {
@@ -845,6 +846,7 @@ export function ChatPage() {
         session_id: sid, mode, language: voiceLang, wake_word_used: wake,
         user_message: userMessage, intent, reply_chars: replyChars,
         latency_ms: latencyMs, tts_voice: mode === 'voice' ? voiceLang : '',
+        symbols,
       }),
     }).catch(() => { /* analytics must never break chat */ })
   }, [voiceLang])
@@ -878,7 +880,7 @@ export function ChatPage() {
       if (fillerTimer) { clearTimeout(fillerTimer); fillerTimer = null }
       setBackendSid(data.session_id)
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply, intent: data.intent, ts: Date.now() }])
-      logTurn(data.session_id, mode, trimmed, data.intent ?? '', data.reply.length, Date.now() - t0)
+      logTurn(data.session_id, mode, trimmed, data.intent ?? '', data.reply.length, Date.now() - t0, data.symbols_discussed ?? [])
       if (mode === 'voice' || (speakReplies && voiceChatsRef.current.has(currentId))) {
         speak(data.reply)
       }

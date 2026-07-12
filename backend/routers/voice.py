@@ -62,8 +62,12 @@ _TTS_CACHE_MAX = 64
 
 CHAT_LOG_DIR = cfg.DATA_DIR / "chat"
 CHAT_LOG_CSV = CHAT_LOG_DIR / "conversation_log.csv"
+# "symbols" (Phase V-DATA-3) added at the end so older log rows without
+# this column still parse fine (pandas reads the missing trailing field
+# as NaN) -- no migration needed for existing conversation_log.csv rows.
 _LOG_COLS = ["ts", "session_id", "mode", "language", "wake_word_used",
-             "user_message", "intent", "reply_chars", "latency_ms", "tts_voice"]
+             "user_message", "intent", "reply_chars", "latency_ms", "tts_voice",
+             "symbols"]
 _log_lock = threading.Lock()
 
 
@@ -82,6 +86,9 @@ class LogRequest(BaseModel):
     reply_chars:    int = 0
     latency_ms:     int = 0
     tts_voice:      str = ""
+    symbols:        list[str] = []     # Phase V-DATA-3 -- from actual tool
+                                         # calls (language-agnostic), not a
+                                         # regex over user_message
 
 
 # "What to read vs. what to present" (user feedback: "she starts reading
@@ -239,11 +246,39 @@ def list_voices():
     }
 
 
+def _migrate_log_schema_if_needed():
+    """One-time schema migration: older conversation_log.csv rows predate
+    the 'symbols' column (Phase V-DATA-3). Appending new 11-column rows
+    under an old 10-column header would corrupt the file for any CSV
+    reader, so if the on-disk header doesn't match _LOG_COLS, rewrite the
+    whole file once with the missing column added (empty for old rows)."""
+    if not CHAT_LOG_CSV.exists():
+        return
+    with open(CHAT_LOG_CSV, "r", newline="", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        header = next(reader, None)
+        if header == _LOG_COLS:
+            return   # already current
+        rows = list(csv.DictReader(open(CHAT_LOG_CSV, encoding="utf-8")))
+    for r in rows:
+        for col in _LOG_COLS:
+            r.setdefault(col, "")
+    tmp = CHAT_LOG_CSV.with_suffix(".tmp")
+    with open(tmp, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=_LOG_COLS)
+        w.writeheader()
+        w.writerows(rows)
+    tmp.replace(CHAT_LOG_CSV)
+    logger.info("[Voice] conversation_log.csv migrated to include 'symbols' column (%d rows)", len(rows))
+
+
 @router.post("/log")
 def log_turn(req: LogRequest):
     """Append one conversation turn to the analytics log (CSV, atomic append)."""
     try:
         CHAT_LOG_DIR.mkdir(parents=True, exist_ok=True)
+        with _log_lock:
+            _migrate_log_schema_if_needed()
         row = {
             "ts":             datetime.now(timezone.utc).isoformat(),
             "session_id":     req.session_id,
@@ -255,6 +290,7 @@ def log_turn(req: LogRequest):
             "reply_chars":    req.reply_chars,
             "latency_ms":     req.latency_ms,
             "tts_voice":      req.tts_voice,
+            "symbols":        ",".join(req.symbols) if req.symbols else "",
         }
         with _log_lock:
             new_file = not CHAT_LOG_CSV.exists()

@@ -150,16 +150,30 @@ class ChatAnalyticsEngine:
         return set()
 
     def _symbols(self, df: pd.DataFrame, n: int) -> list[dict]:
-        """Which stocks are asked about most (uppercase token match vs master)."""
+        """
+        Which stocks are asked about most. Phase V-DATA-3: prefers the
+        'symbols' column (captured from actual tool calls in chat_engine.py
+        -- language-agnostic, a Hindi voice query about a stock still calls
+        get_stock_detail(symbol="RELIANCE") internally). Falls back to a
+        regex over user_message (Latin-script only) for older log rows
+        logged before that column existed, or for turns where a tool
+        happened not to be called (rare -- most stock questions trigger one).
+        """
         universe = self._load_symbols()
         if not universe:
             return []
         counts: dict[str, int] = {}
         last: dict[str, str] = {}
         token_re = re.compile(r"[A-Z][A-Z0-9&-]{2,}")
+        has_symbols_col = "symbols" in df.columns
         for _, r in df.iterrows():
-            msg = str(r.get("user_message", "")).upper()
-            hits = {t for t in token_re.findall(msg) if t in universe and t not in _STOPWORDS}
+            hits: set[str] = set()
+            raw_syms = str(r.get("symbols", "")) if has_symbols_col else ""
+            if raw_syms and raw_syms != "nan":
+                hits = {s.strip() for s in raw_syms.split(",") if s.strip() in universe}
+            if not hits:
+                msg = str(r.get("user_message", "")).upper()
+                hits = {t for t in token_re.findall(msg) if t in universe and t not in _STOPWORDS}
             for h in hits:
                 counts[h] = counts.get(h, 0) + 1
                 last[h] = str(r["ts"])[:19]

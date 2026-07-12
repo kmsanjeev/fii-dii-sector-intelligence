@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import {
   fetchMarketContext, fetchParticipantLatest, fetchParticipantHistory, fetchSectors,
-  fetchCatalysts, fetchDeals, fetchNews, fetchSocialPulse,
+  fetchCatalysts, fetchDeals, fetchNews, fetchSocialPulse, fetchVoiceAnalytics,
   type MarketContext, type ParticipantLatest, type Sector, type NewsItem,
   type SocialPulseHandle,
 } from '../api/client'
@@ -53,6 +53,70 @@ const VAL: React.CSSProperties = {
 
 const signed = (n: number | null | undefined, d = 1) =>
   n == null ? '--' : `${n >= 0 ? '+' : ''}${n.toFixed(d)}`
+
+function _relTimeShort(iso: string | null | undefined): string {
+  if (!iso) return ''
+  const then = new Date(iso.replace(' ', 'T') + 'Z').getTime()
+  if (Number.isNaN(then)) return ''
+  const diffMin = Math.max(0, Math.floor((Date.now() - then) / 60000))
+  if (diffMin < 60) return `${diffMin}m ago`
+  if (diffMin < 1440) return `${Math.floor(diffMin / 60)}h ago`
+  return `${Math.floor(diffMin / 1440)}d ago`
+}
+
+// ─── Recently Asked (Phase V-DATA-3) ──────────────────────────────────────────
+// Purely additive: surfaces what you've been asking Veda about. Never reorders
+// or influences any ranked list (Conviction Screener, Watchlist, ML scores) --
+// what you're curious about is not evidence of what the data says is good.
+// Language-agnostic by construction (captured from actual tool calls in
+// chat_engine.py, not a text regex), so Hindi voice queries count too.
+
+function RecentlyAskedCard() {
+  const { data } = useQuery({
+    queryKey: ['voice-analytics-dashboard'],
+    queryFn: fetchVoiceAnalytics,
+    refetchInterval: 300_000,
+    staleTime: 120_000,
+  })
+
+  const symbols = (data?.top_symbols ?? []).slice(0, 10)
+  const totalTurns = data?.summary?.total_turns ?? 0
+
+  return (
+    <div style={{ ...CARD, padding: '16px 20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: symbols.length ? 12 : 4 }}>
+        <div style={LABEL}>RECENTLY ASKED <span style={{ color: C.dim, fontWeight: 400, letterSpacing: 0 }}>(what you've been researching with Veda)</span></div>
+        <Link to="/chat" style={{ color: C.blue, fontSize: 11, textDecoration: 'none', fontWeight: 600 }}>Ask Veda →</Link>
+      </div>
+      {symbols.length === 0 ? (
+        <div style={{ color: C.muted, fontSize: 11, padding: '4px 0 2px' }}>
+          {totalTurns > 0
+            ? "No specific stocks identified yet -- ask Veda about a symbol by name to build this up."
+            : "Not enough chat history yet -- ask Veda about a stock to build this up."}
+        </div>
+      ) : (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {symbols.map(s => (
+            <Link key={s.key} to={`/stocks/${s.key}`} style={{ textDecoration: 'none' }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 7,
+                background: C.bgInner, border: `1px solid ${T.border}`, borderRadius: 6,
+                padding: '6px 10px', transition: 'border-color 0.15s',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = `${C.blue}66`)}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = T.border)}
+              >
+                <span style={{ color: C.h1, fontSize: 12, fontWeight: 700 }}>{s.key}</span>
+                <span style={{ color: C.blue, fontSize: 10, fontWeight: 700 }}>×{s.count}</span>
+                {s.last_seen && <span style={{ color: C.dim, fontSize: 9 }}>{_relTimeShort(s.last_seen)}</span>}
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ─── Command Strip ────────────────────────────────────────────────────────────
 
@@ -1344,6 +1408,10 @@ export function Dashboard() {
 
       {/* Row 1: Command Strip */}
       {ctx && <CommandStrip ctx={ctx} part={part} isMobile={isMobile} />}
+
+      {/* Row 1B: Recently Asked (Phase V-DATA-3) -- purely additive, never
+          reorders any ranked list */}
+      <RecentlyAskedCard />
 
       {/* Row 2: Regime + interpretation stack | Breadth | Conviction & Cash */}
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 14, alignItems: 'stretch' }}>

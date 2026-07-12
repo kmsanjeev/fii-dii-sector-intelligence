@@ -6,6 +6,99 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.46.0
+
+Phase V-DATA-3 -- "Recently Asked" panel: chat signal as display-only,
+never a ranking input
+
+Date: 2026-07-13
+
+Status: Completed
+
+---
+
+## Summary
+
+Scoped and built the "chat history nudging alert/screener ordering"
+concern from the original data-access audit. Design principle established
+via user confirmation: chat signals may only affect DISPLAY, never the
+underlying conviction/ML/screener ranking math -- mixing "what you're
+curious about" into "what the data says is objectively good" would be the
+same category of silent-corruption mistake as the STRONG_CANDIDATE bug
+fixed in Phase V-DATA-2, just self-inflicted instead of inherited.
+
+Confirmed scope with the user: a dedicated "Recently Asked" panel (purely
+additive, doesn't touch any ranked list), built now with an honest
+empty-state rather than deferred, since it activates naturally as usage
+grows and costs nothing to ship early.
+
+## Bug found while building: symbol extraction was Latin-script only
+
+Inspecting the real conversation_log.csv (32 turns) to design the panel
+found the user has been talking to Veda almost entirely in **Hindi**
+(Devanagari voice queries), asking about "रिलायंस" (Reliance) repeatedly --
+but chat_analytics_engine.py's existing symbol-extraction regex
+(`[A-Z][A-Z0-9&-]{2,}`) only matches Latin uppercase tokens. It has been
+silently missing essentially all real usage on this Hindi-default voice
+platform. Building the panel on the existing pipeline would have shown
+almost nothing.
+
+## Fix: capture symbols from actual tool calls, not text regex
+
+Language-agnostic by construction -- a Hindi voice query that resolves to
+get_stock_detail(symbol="RELIANCE") internally is captured as "RELIANCE"
+regardless of what script the user typed in.
+
+- engines/ai/chatbot/chat_engine.py: new `self.last_symbols` list, reset
+  each turn, populated whenever a tool call's arguments include a `symbol`
+  key (works for all 10+ symbol-taking tools automatically, no per-tool
+  wiring needed).
+- backend/routers/chat.py: `ChatResponse` gained `symbols_discussed: list[str]`.
+- backend/routers/voice.py: `LogRequest` gained `symbols: list[str]`,
+  persisted as a comma-joined column. One-time schema migration
+  (`_migrate_log_schema_if_needed`) added: the existing conversation_log.csv
+  had a 10-column header pre-dating this field; appending 11-column rows
+  under the old header would have corrupted the file for any reader, so
+  the migration rewrites the file once with the new column added (empty
+  for historical rows) before the first post-upgrade append.
+- frontend/src/pages/ChatPage.tsx: `logTurn()` now threads
+  `data.symbols_discussed` from the chat response into the `/api/voice/log`
+  payload.
+- engines/research/chat_analytics_engine.py: `_symbols()` now prefers the
+  new `symbols` column when present, falling back to the old regex only
+  for historical rows that predate it (or turns where no symbol-taking
+  tool happened to be called).
+
+## Separate finding, flagged not fixed: Hindi company-name resolution
+
+While testing the new pipeline, found the LLM sometimes resolves a Hindi
+company name to the WRONG stock entirely (e.g. "रिलायंस" (Reliance)
+answered with CORONA's data) -- likely worse today with Groq/Gemini
+rate-limited and a weaker fallback provider answering. This is a real
+chatbot accuracy issue, not a bug in the new capture pipeline (which
+correctly recorded whatever symbol the tool call actually used) --
+flagged as a separate, out-of-scope finding rather than folded into this
+phase.
+
+## New: Dashboard "Recently Asked" panel
+
+frontend/src/pages/Dashboard.tsx: new card between the Command Strip and
+the instrument row, reading /api/voice/analytics' existing `top_symbols`
+field (no new backend endpoint needed once the pipeline was fixed).
+Symbol chips show mention count + relative last-asked time, link to the
+stock page. Two distinct empty states: "not enough chat history yet" vs
+"no specific stocks identified yet" (some turns logged, but no symbol
+tool calls captured -- e.g. pure market/sector questions).
+
+Verified end to end with real API calls (not just code review): an
+English stock query correctly captured its symbol; the /api/voice/log
+migration was tested directly (old rows show blank symbols, new row
+shows the value); chat_analytics_engine.py re-run confirmed the symbol
+flows through to chat_analytics.csv; the Dashboard panel screenshot
+confirmed the live chip renders correctly.
+
+---
+
 # Version 4.45.0
 
 Phase V-DATA-2 -- Fix stale STRONG_CANDIDATE/AVOID label taxonomy (9 files)

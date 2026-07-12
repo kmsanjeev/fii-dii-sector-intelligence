@@ -152,6 +152,12 @@ class ChatEngine:
         self._cooldowns: dict[str, float] = {}
         self.history: list[dict] = []
         self._retriever = None
+        # Symbols touched by tool calls this turn (Phase V-DATA-3). Reading
+        # the actual tool invocation is language-agnostic -- a Hindi voice
+        # query about "रिलायंस" still calls get_stock_detail(symbol=
+        # "RELIANCE") internally, so this captures real engagement across
+        # any input language, unlike a regex over the raw user text.
+        self.last_symbols: list[str] = []
 
         # Ensure at least one provider is configured
         if not self._active_providers():
@@ -220,6 +226,7 @@ class ChatEngine:
         Process one user turn and return the assistant's reply.
         Automatically rotates to the next provider if rate-limited.
         """
+        self.last_symbols = []
         intent       = detect_intent(user_message)
         is_greeting  = intent.intent_type == "GREETING"
         system_prompt = get_system_prompt(intent)
@@ -332,6 +339,9 @@ class ChatEngine:
                     args = {}
                 if not isinstance(args, dict):
                     args = {}
+                sym_arg = args.get("symbol")
+                if sym_arg and isinstance(sym_arg, str):
+                    self.last_symbols.append(sym_arg.strip().upper())
                 result = self._call_tool(tc.function.name, args)
 
                 # Direct bypass for kundli: return formatted_report WITHOUT sending to LLM.
