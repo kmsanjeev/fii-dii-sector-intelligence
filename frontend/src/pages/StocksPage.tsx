@@ -14,8 +14,9 @@ import {
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import {
-  createChart, ColorType, CandlestickSeries,
-  type IChartApi, type ISeriesApi, type CandlestickData, type Time,
+  createChart, ColorType, CandlestickSeries, HistogramSeries,
+  type IChartApi, type ISeriesApi, type CandlestickData,
+  type HistogramData, type Time,
 } from 'lightweight-charts'
 import {
   api, fetchStockDetail, fetchStockAnnouncements, fetchStockCorpActions,
@@ -1128,11 +1129,8 @@ export function StocksPage() {
   const chartDiv  = useRef<HTMLDivElement>(null)
   const chartApi  = useRef<IChartApi | null>(null)
   const candleRef = useRef<ISeriesApi<'Candlestick', Time> | null>(null)
+  const volRef    = useRef<ISeriesApi<'Histogram', Time> | null>(null)
   const barCount  = useRef(0)
-  // Volume is shown only in the OHLCV footer, not as a chart pane -- this
-  // map (time -> volume) feeds the footer's hover lookup without needing a
-  // rendered HistogramSeries.
-  const volumeByTime = useRef<Map<Time, number>>(new Map())
   // Render-phase snapshot refs — updated every render so chart init can read
   // the current ohlcv/tf WITHOUT waiting for the data effect to fire again.
   // This is the correct fix for StrictMode's double-invoke blank chart bug.
@@ -1212,20 +1210,28 @@ export function StocksPage() {
         // feature that renders regardless of this setting.
         priceLineVisible: false,
       })
-      chartApi.current = chart; candleRef.current = candles
+      const vol = chart.addSeries(HistogramSeries, {
+        priceScaleId: 'vol',
+        // Bars stay -- only the right-side "last value" badge and the
+        // dashed last-value line are redundant with the OHLCV footer.
+        lastValueVisible: false,
+        priceLineVisible: false,
+      })
+      vol.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } })
+      chartApi.current = chart; candleRef.current = candles; volRef.current = vol
       setChartKey(k => k + 1)
 
       // Drive the OHLCV footer from whatever bar is under the cursor,
       // instead of it always showing the latest bar regardless of hover.
-      // Volume comes from volumeByTime (no rendered volume series).
       chart.subscribeCrosshairMove(param => {
         if (!param.time) { setHoverBar(null); return }
         const cs = param.seriesData.get(candles) as CandlestickData<Time> | undefined
+        const vs = param.seriesData.get(vol) as HistogramData<Time> | undefined
         if (!cs) { setHoverBar(null); return }
         setHoverBar({
           time: param.time as Time,
           open: cs.open, high: cs.high, low: cs.low, close: cs.close,
-          volume: volumeByTime.current.get(param.time as Time) ?? 0,
+          volume: vs?.value ?? 0,
         })
       })
 
@@ -1240,13 +1246,17 @@ export function StocksPage() {
           time: (typeof b.time === 'string' ? toPeriodStart(b.time, tfNow) : b.time) as Time,
           open: b.open, high: b.high, low: b.low, close: b.close,
         }))
-        candles.setData(cs)
-        volumeByTime.current = new Map(cs.map((c, i) => [c.time, snap.bars[i].volume ?? 0]))
+        const vs = snap.bars.map(b => ({
+          time: (typeof b.time === 'string' ? toPeriodStart(b.time, tfNow) : b.time) as Time,
+          value: b.volume ?? 0,
+          color: b.close >= b.open ? P.green + '55' : P.red + '55',
+        }))
+        candles.setData(cs); vol.setData(vs)
         barCount.current = cs.length
         if (cs.length > 0) chart.timeScale().setVisibleLogicalRange({ from: Math.max(0, cs.length - DEFAULT_BARS[tfNow]), to: cs.length + 3 })
       }
     } catch (e) { setChartErr(e instanceof Error ? e.message : String(e)); chart?.remove() }
-    return () => { chartApi.current?.remove(); chartApi.current = candleRef.current = null }
+    return () => { chartApi.current?.remove(); chartApi.current = candleRef.current = volRef.current = null }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol])
 
@@ -1255,15 +1265,19 @@ export function StocksPage() {
   }, [tf])
 
   useEffect(() => {
-    if (!ohlcv || !candleRef.current) return
+    if (!ohlcv || !candleRef.current || !volRef.current) return
     try {
       const bars = ohlcv.bars
       const cs: CandlestickData<Time>[] = bars.map(b => ({
         time: (typeof b.time === 'string' ? toPeriodStart(b.time, tf) : b.time) as Time,
         open: b.open, high: b.high, low: b.low, close: b.close,
       }))
-      candleRef.current.setData(cs)
-      volumeByTime.current = new Map(cs.map((c, i) => [c.time, bars[i].volume ?? 0]))
+      const vs: HistogramData<Time>[] = bars.map(b => ({
+        time: (typeof b.time === 'string' ? toPeriodStart(b.time, tf) : b.time) as Time,
+        value: b.volume ?? 0,
+        color: b.close >= b.open ? P.green + '55' : P.red + '55',
+      }))
+      candleRef.current.setData(cs); volRef.current.setData(vs)
       barCount.current = cs.length
       if (cs.length > 0 && chartApi.current)
         chartApi.current.timeScale().setVisibleLogicalRange({ from: Math.max(0, cs.length - DEFAULT_BARS[tf]), to: cs.length + 3 })

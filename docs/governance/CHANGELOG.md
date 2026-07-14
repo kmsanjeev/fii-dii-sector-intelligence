@@ -6,6 +6,43 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.49.2
+
+StocksPage chart -- correction: restore volume bars, remove only the badge
+
+Date: 2026-07-15
+
+Status: Completed
+
+---
+
+## Summary
+
+v4.49.1 over-corrected: removed the entire volume pane (bars included)
+when the user only wanted the right-side "last value" badge gone -- the
+bars themselves are wanted.
+
+## Change
+
+Restored the `HistogramSeries` volume pane (bars visible again, same
+`scaleMargins` as before). This time only `lastValueVisible: false` and
+`priceLineVisible: false` are set on the series -- these remove the
+colored last-value badge and its dashed reference line on the right
+axis specifically, without touching the bars themselves. Crosshair
+handler again reads volume from `param.seriesData.get(vol)` (the
+`volumeByTime` map from v4.49.1 was removed as unnecessary now that the
+series exists again).
+
+## Verification
+
+`npx tsc --noEmit` and `npx vite build` both clean.
+
+## Files changed
+
+- frontend/src/pages/StocksPage.tsx -- restored volume series/bars, lastValueVisible:false + priceLineVisible:false instead of removing the pane
+
+---
+
 # Version 4.49.1
 
 StocksPage chart -- removed redundant volume pane
