@@ -6,6 +6,43 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.49.1
+
+StocksPage chart -- removed redundant volume pane
+
+Date: 2026-07-15
+
+Status: Completed
+
+---
+
+## Summary
+
+User pointed out the volume histogram bars (and their right-side axis
+badge showing the current bar's raw volume) at the bottom of the
+StocksPage inline chart duplicated what the OHLCV footer already shows
+(added in v4.49.0's crosshair fix), and asked for it removed.
+
+## Change
+
+Removed the `HistogramSeries` volume pane entirely -- both the bars and
+its own price-scale axis/badge on the right. Volume is still available
+for the hover footer: a `volumeByTime` ref (`Map<Time, number>`) is
+populated alongside the candlestick data whenever bars load, and the
+crosshair handler looks up the hovered bar's volume from that map
+instead of from a rendered series. `HistogramSeries`/`HistogramData`
+imports removed as they're now fully unused.
+
+## Verification
+
+`npx tsc --noEmit` and `npx vite build` both clean.
+
+## Files changed
+
+- frontend/src/pages/StocksPage.tsx -- removed volume series/pane, added volumeByTime lookup for the footer
+
+---
+
 # Version 4.49.0
 
 Squared price-adjustment bug (historical OHLCV corruption) + chart crosshair fixes
