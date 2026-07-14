@@ -184,3 +184,40 @@ per the agreed roadmap).
 - Confirmed no other code in the repo calls the internal functions that
   changed signature (`_compute_lagna`, `_compute_positions`,
   `_lahiri_ayanamsha`) outside kundli_calculator.py itself.
+
+---
+
+## Follow-up — ML feature gap closed (same day, version 4.48.0)
+
+**User Request:** "is personal kundli also covered with predictive
+astrology and ml have access to all?" then "kindly fix the gaps."
+
+**Findings:**
+- Personal Kundli is actually MORE complete than the stock Kundli for
+  predictive-astrology depth (full 12-house tables, dasha, yogas, doshas,
+  Sade Sati already exist via kundli_life_guide.py/kundli_interpreter.py)
+  — this is exactly why ASTRO-BHAVA's plan is to port that existing
+  depth into the stock engine, not build new content.
+- ML (`engines/ml/feature_engineering.py`) had exactly one astrology
+  field, `astro_score`, joined at SECTOR granularity — zero access to
+  the richer per-stock `kundli_signals.csv` generated earlier this same
+  session. Confirmed via direct grep, not assumption.
+
+**Fix:** New `_add_kundli_signal()` in feature_engineering.py joins
+`kundli_signals.csv` by symbol, adding `kundli_score`, `kundli_yoga_score`
+(reuses `kundli_engine.py`'s `YOGA_FINANCIAL` table), `kundli_yoga_count`,
+`kundli_dasha_benefic`. Updated `accumulation_model.py` and
+`bull_run_model.py`'s separately-hardcoded `FEATURE_COLS` lists too —
+these do not auto-sync with feature_engineering.py's output (the exact
+staleness pattern that silently dropped ~37 columns before Phase
+V-DATA), so checked explicitly rather than assuming.
+
+**Verified:** Full retrain (feature_engineering → accumulation_model →
+bull_run_model → ml_scorer), 92-col matrix, 2378 symbols. `meta.json`
+confirms all 4 new columns present in both trained models. kundli_score
+coverage 86.3% (vs. astro_score's 69.6% — per-symbol beats sector-mapped
+coverage). Test suite: 267/267 passed.
+
+**Not done:** Personal Kundli data intentionally excluded from ML (it's
+per-user, not a valid per-stock feature). Gann signals also excluded
+(numerology, not astrology — out of the scope actually asked about).

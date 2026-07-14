@@ -98,6 +98,11 @@ WATCHLIST_METRICS = cfg.INTELLIGENCE_DIR / "watchlist_metrics.csv"
 HOLDING_TRENDS     = cfg.NSE_DIR / "shareholding" / "holding_trends.csv"
 MGMT_SENTIMENT     = cfg.NSE_DIR / "shareholding" / "management_sentiment.csv"
 ASTRO_SIGNALS      = cfg.INTELLIGENCE_DIR / "astro_signals.csv"
+KUNDLI_SIGNALS     = cfg.INTELLIGENCE_DIR / "kundli_signals.csv"
+
+# Same benefic/malefic classification astro_engine.py already uses, for the
+# dasha-lord feature below -- kept in sync deliberately, not reinvented.
+_KUNDLI_NATURAL_BENEFICS = {"Jupiter", "Venus", "Mercury"}
 
 # ---------------------------------------------------------------------------
 # Encoding maps
@@ -250,6 +255,7 @@ class FeatureEngineeringEngine:
         bull = self._add_holding_trend_deltas(bull)
         bull = self._add_management_sentiment(bull)
         bull = self._add_astro_signal(bull)
+        bull = self._add_kundli_signal(bull)
 
         bull["label_enc"] = bull["label"].map(LABEL_MAP).fillna(1)
 
@@ -312,6 +318,9 @@ class FeatureEngineeringEngine:
             "ai_tone_score", "management_score", "management_label_enc",
             # Phase V-DATA — AstroFinance sector planetary score
             "astro_score",
+            # Phase ASTRO-FIX — per-stock natal chart signal (distinct from
+            # the sector-level astro_score above)
+            "kundli_score", "kundli_yoga_score", "kundli_yoga_count", "kundli_dasha_benefic",
         ]
         available = [c for c in feature_cols if c in bull.columns]
         missing = [c for c in feature_cols if c not in bull.columns]
@@ -744,6 +753,54 @@ class FeatureEngineeringEngine:
             return merged
         except Exception as e:
             logger.warning("[FeatureEng V-DATA] Astro signal failed: %s", e)
+            return df
+
+    def _add_kundli_signal(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Per-STOCK natal chart signal (Phase ASTRO-FIX), joined on symbol --
+        distinct from _add_astro_signal's sector-level astro_score above.
+        Before this, ML had zero visibility into the stock's own listing-date
+        chart: its active Mahadasha, its yogas, or its natal score -- only
+        the shallow, sector-shared mundane transit number. kundli_score is
+        renamed from the source file's astro_score to avoid colliding with
+        the sector-level column already in the matrix."""
+        if not KUNDLI_SIGNALS.exists():
+            logger.warning("[FeatureEng ASTRO-FIX] kundli_signals.csv missing -- skipping")
+            return df
+        try:
+            from engines.intelligence.kundli_engine import YOGA_FINANCIAL
+
+            kun = pd.read_csv(
+                KUNDLI_SIGNALS,
+                usecols=["symbol", "mahadasha", "yogas", "astro_score"],
+            )
+            kun["symbol"] = kun["symbol"].str.strip().str.upper()
+            kun = kun.rename(columns={"astro_score": "kundli_score"})
+            kun["kundli_score"] = pd.to_numeric(kun["kundli_score"], errors="coerce")
+
+            def _yoga_score(yoga_str) -> float:
+                if not isinstance(yoga_str, str) or not yoga_str:
+                    return 0.0
+                return sum(
+                    YOGA_FINANCIAL[name]["score"]
+                    for name in yoga_str.split("|")
+                    if name in YOGA_FINANCIAL
+                )
+
+            def _yoga_count(yoga_str) -> int:
+                if not isinstance(yoga_str, str) or not yoga_str:
+                    return 0
+                return len([n for n in yoga_str.split("|") if n])
+
+            kun["kundli_yoga_score"] = kun["yogas"].apply(_yoga_score)
+            kun["kundli_yoga_count"] = kun["yogas"].apply(_yoga_count)
+            kun["kundli_dasha_benefic"] = kun["mahadasha"].isin(_KUNDLI_NATURAL_BENEFICS).astype(int)
+            kun = kun.drop(columns=["yogas", "mahadasha"]).drop_duplicates(subset=["symbol"], keep="first")
+
+            merged = df.merge(kun, on="symbol", how="left")
+            logger.info("[FeatureEng ASTRO-FIX] Kundli signal: %d stocks joined", len(kun))
+            return merged
+        except Exception as e:
+            logger.warning("[FeatureEng ASTRO-FIX] Kundli signal failed: %s", e)
             return df
 
     # ------------------------------------------------------------------

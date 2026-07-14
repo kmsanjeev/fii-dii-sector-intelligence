@@ -6,6 +6,73 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.48.0
+
+Phase ASTRO-FIX follow-up -- per-stock Kundli signal wired into ML feature pipeline
+
+Date: 2026-07-15
+
+Status: Completed
+
+---
+
+## Summary
+
+User asked whether personal Kundli was covered by predictive astrology and
+whether ML had access to all of it. Direct grep of engines/ml/
+feature_engineering.py confirmed ML had exactly ONE astrology field --
+astro_score, joined at SECTOR granularity from astro_signals.csv -- with
+zero visibility into the richer per-stock kundli_signals.csv (dasha lord,
+yogas, natal score) generated during Phase ASTRO-FIX, or into any
+predictive-astrology depth at all. User asked to fix the gap.
+
+## Change
+
+engines/ml/feature_engineering.py: new `_add_kundli_signal()` method joins
+kundli_signals.csv onto the feature matrix by symbol (not sector), adding
+four new features: `kundli_score` (the stock's own natal-chart score,
+renamed from the source file's astro_score to avoid colliding with the
+existing sector-level column), `kundli_yoga_score` (sum of YOGA_FINANCIAL
+deltas for yogas present in the chart, reusing kundli_engine.py's existing
+scoring table rather than re-deriving one), `kundli_yoga_count`, and
+`kundli_dasha_benefic` (1 if the active Mahadasha lord is a natural
+benefic -- Jupiter/Venus/Mercury -- matching astro_engine.py's existing
+classification for consistency).
+
+Also updated accumulation_model.py and bull_run_model.py's hardcoded
+FEATURE_COLS lists to include the four new columns -- these lists are
+separate from feature_engineering.py's output columns and do NOT
+auto-sync (this exact staleness pattern silently dropped ~37 columns from
+training before Phase V-DATA caught it; deliberately checked for it here
+rather than assuming the new columns would be picked up automatically).
+
+## Verification
+
+Full retrain executed: feature_engineering -> accumulation_model ->
+bull_run_model -> ml_scorer, 2378 symbols. Confirmed via meta.json
+feature_names that all 4 kundli_* columns are present in both trained
+models (86 total features, up from 82). kundli_score coverage: 86.3%
+(better than astro_score's 69.6%, since kundli_signals.csv is per-symbol
+rather than sector-level and doesn't lose coverage to sector-mapping
+gaps). Test suite: 267/267 passed.
+
+## Files changed
+
+- engines/ml/feature_engineering.py -- new _add_kundli_signal(), KUNDLI_SIGNALS path, 4 new feature_cols
+- engines/ml/accumulation_model.py -- FEATURE_COLS extended
+- engines/ml/bull_run_model.py -- FEATURE_COLS extended
+- data/intelligence/ml_features/feature_matrix.parquet -- regenerated (92 cols, 2378 symbols)
+- data/intelligence/ml_features/models/*.json -- retrained
+
+## Not done
+
+Personal Kundli data was correctly left out of ML entirely -- it's
+per-user data, not a valid per-stock feature. Gann signals (numerology,
+not astrology) also left out of this fix, matching the scope of the
+question asked.
+
+---
+
 # Version 4.47.0
 
 Phase ASTRO-FIX -- correctness, engine unification, and governance for the

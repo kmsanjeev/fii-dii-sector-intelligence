@@ -86,6 +86,9 @@ FEATURE_COLS = [
     "promoter_delta", "fii_delta", "dii_delta", "conviction_signal_enc",
     "ai_tone_score", "management_score", "management_label_enc",
     "astro_score",
+    # Phase ASTRO-FIX — per-stock natal chart signal (distinct from the
+    # sector-level astro_score above)
+    "kundli_score", "kundli_yoga_score", "kundli_yoga_count", "kundli_dasha_benefic",
 ]
 
 # Ordinal weights for weighted score:
