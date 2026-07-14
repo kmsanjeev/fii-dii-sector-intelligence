@@ -707,6 +707,17 @@ def adjust_bhavcopy_file(
 
         .merge(
 
+            # BUG FIX (2026-07-15): a symbol can have MULTIPLE bhavcopy rows
+            # on the same TRADE_DATE (e.g. EQ + a rights-issue partly-paid
+            # series like "E1") -- without drop_duplicates() here, each
+            # legitimate adjustment_factor gets matched once per row for
+            # that symbol/date, and the groupby(...).prod() below then
+            # raises it to the Nth power instead of applying it once. Found
+            # via TATASTEEL: its real 0.1 factor (2022 face-value split)
+            # was silently squared to 0.01 on every day its rights-issue
+            # partly-paid shares (series "E1") traded alongside "EQ"
+            # (2018-03-19 onward), corrupting price/volume by an extra 10x
+            # for that whole window.
             df[
 
                 [
@@ -714,7 +725,7 @@ def adjust_bhavcopy_file(
                     "TRADE_DATE"
                 ]
 
-            ],
+            ].drop_duplicates(),
 
             on="SYMBOL",
 

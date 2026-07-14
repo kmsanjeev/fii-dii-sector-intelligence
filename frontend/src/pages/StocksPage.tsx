@@ -1124,6 +1124,7 @@ export function StocksPage() {
   const [chartErr, setChartErr] = useState<string | null>(null)
   const [chartKey, setChartKey] = useState(0)   // increments each time chart is (re)created
   const [snapFlash, setSnapFlash] = useState(false)
+  const [hoverBar, setHoverBar] = useState<{ time: Time; open: number; high: number; low: number; close: number; volume: number } | null>(null)
 
   const chartDiv  = useRef<HTMLDivElement>(null)
   const chartApi  = useRef<IChartApi | null>(null)
@@ -1202,11 +1203,31 @@ export function StocksPage() {
       })
       const candles = chart.addSeries(CandlestickSeries, {
         upColor: P.green, downColor: P.red, borderVisible: false, wickUpColor: P.green, wickDownColor: P.red,
+        // lightweight-charts draws a permanent dashed line at the last close
+        // by default (priceLineVisible: true) -- it never moves with the
+        // cursor and was being mistaken for a frozen crosshair. The actual
+        // crosshair (which does track the cursor) is a separate, built-in
+        // feature that renders regardless of this setting.
+        priceLineVisible: false,
       })
       const vol = chart.addSeries(HistogramSeries, { priceScaleId: 'vol' })
       vol.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } })
       chartApi.current = chart; candleRef.current = candles; volRef.current = vol
       setChartKey(k => k + 1)
+
+      // Drive the OHLCV footer from whatever bar is under the cursor,
+      // instead of it always showing the latest bar regardless of hover.
+      chart.subscribeCrosshairMove(param => {
+        if (!param.time) { setHoverBar(null); return }
+        const cs = param.seriesData.get(candles) as CandlestickData<Time> | undefined
+        const vs = param.seriesData.get(vol) as HistogramData<Time> | undefined
+        if (!cs) { setHoverBar(null); return }
+        setHoverBar({
+          time: param.time as Time,
+          open: cs.open, high: cs.high, low: cs.low, close: cs.close,
+          volume: vs?.value ?? 0,
+        })
+      })
 
       // Apply data immediately if already in cache — this is the critical path.
       // The data effect [ohlcv, tf, chartKey] may not re-fire if the deps haven't
@@ -1561,17 +1582,22 @@ export function StocksPage() {
             </div>
           </ChartBoundary>
 
-          {/* OHLCV footer */}
-          {latest && (
-            <div style={{ display: 'flex', gap: 20, padding: '7px 14px', fontSize: 10, color: P.sub, background: P.cell, borderTop: `1px solid ${P.border}`, fontFamily: 'monospace', fontVariantNumeric: 'tabular-nums', flexWrap: 'wrap' }}>
-              <span>O <span style={{ color: P.text }}>{latest.open.toFixed(2)}</span></span>
-              <span>H <span style={{ color: P.green }}>{latest.high.toFixed(2)}</span></span>
-              <span>L <span style={{ color: P.red }}>{latest.low.toFixed(2)}</span></span>
-              <span>C <span style={{ color: P.text }}>{latest.close.toFixed(2)}</span></span>
-              <span>Vol <span style={{ color: P.text }}>{((latest.volume ?? 0) / 1e6).toFixed(2)}M</span></span>
-              {ohlcv && <span style={{ marginLeft: 'auto', color: P.dim }}>{ohlcv.count} bars | {fmtOhlcTime(ohlcv.from)} — {fmtOhlcTime(ohlcv.to)}</span>}
-            </div>
-          )}
+          {/* OHLCV footer -- shows the hovered candle when the cursor is over
+              the chart, falls back to the latest bar otherwise */}
+          {(hoverBar ?? latest) && (() => {
+            const b = hoverBar ?? latest!
+            return (
+              <div style={{ display: 'flex', gap: 20, padding: '7px 14px', fontSize: 10, color: P.sub, background: P.cell, borderTop: `1px solid ${P.border}`, fontFamily: 'monospace', fontVariantNumeric: 'tabular-nums', flexWrap: 'wrap', alignItems: 'center' }}>
+                {hoverBar && <span style={{ color: P.blue, fontWeight: 700 }}>{fmtOhlcTime(hoverBar.time as string | number)}</span>}
+                <span>O <span style={{ color: P.text }}>{b.open.toFixed(2)}</span></span>
+                <span>H <span style={{ color: P.green }}>{b.high.toFixed(2)}</span></span>
+                <span>L <span style={{ color: P.red }}>{b.low.toFixed(2)}</span></span>
+                <span>C <span style={{ color: P.text }}>{b.close.toFixed(2)}</span></span>
+                <span>Vol <span style={{ color: P.text }}>{((b.volume ?? 0) / 1e6).toFixed(2)}M</span></span>
+                {ohlcv && <span style={{ marginLeft: 'auto', color: P.dim }}>{ohlcv.count} bars | {fmtOhlcTime(ohlcv.from)} — {fmtOhlcTime(ohlcv.to)}</span>}
+              </div>
+            )
+          })()}
         </div>
 
         {/* ── Score + ML strip ──────────────────────────────────────────── */}

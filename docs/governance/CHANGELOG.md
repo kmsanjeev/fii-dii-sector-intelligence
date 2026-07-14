@@ -6,6 +6,124 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.49.0
+
+Squared price-adjustment bug (historical OHLCV corruption) + chart crosshair fixes
+
+Date: 2026-07-15
+
+Status: Completed
+
+---
+
+## Summary
+
+User used the new Snapshot button (v4.48.1) to save a TATASTEEL chart and
+spotted a ~10x price/volume discontinuity spanning 2018-03-19 through the
+window where the stock's rights-issue partly-paid shares traded as a
+separate series. Traced to a real, systemic bug in
+engines/analytics/price_adjustment_engine.py, fixed, and the full
+historical cache rebuilt. Separately, user reported the chart's OHLCV
+readout never updates on hover and a horizontal line appeared frozen at
+the last close instead of tracking the cursor -- both fixed in the same
+pass.
+
+## Root cause: adjustment factor squared on multi-series days
+
+`adjust_bhavcopy_file()` joined the per-symbol adjustment-factor lookup
+onto each day's bhavcopy via `.merge(df[["SYMBOL","TRADE_DATE"]], on="SYMBOL")`
+without deduplicating `df` first. On any day a symbol had more than one
+bhavcopy row -- e.g. `EQ` plus a rights-issue partly-paid series like `E1`,
+which NSE trades as a separate line for months after a rights issue -- the
+join matched the same real adjustment factor once per row, and the
+subsequent `.groupby(["SYMBOL","TRADE_DATE"])["ADJ_FACTOR"].prod()` then
+multiplied those duplicates together, squaring the factor.
+
+Concretely for TATASTEEL: its real adjustment factor is 0.1 (the 2022
+face-value split, Rs 10 -> Re 1). From 2018-03-19 (when its rights-issue
+partly-paid shares, series "E1", started trading alongside "EQ") until
+those shares stopped appearing as a separate series, every historical
+date in that window got 0.1 x 0.1 = 0.01 applied instead of 0.1 -- an
+extra, spurious 10x on price (divided) and volume (multiplied). Confirmed
+by reading the raw bhavcopy directly: 2018-03-19 EQ close was genuinely
+574.95 (smooth vs. the prior day's 600.2), but the adjusted cache showed
+5.7495 (574.95 x 0.01) instead of the correct 57.495 (x 0.1).
+
+This is systemic, not TATASTEEL-specific: any symbol with a real
+historical adjustment factor that also ever had a multi-row bhavcopy day
+(rights issue, warrant, DVR, etc.) within that factor's backward-adjustment
+window was affected.
+
+## Fix
+
+One-line fix in `adjust_bhavcopy_file()`: `.drop_duplicates()` on the
+`[SYMBOL, TRADE_DATE]` frame before the merge, so each corporate action's
+factor is joined exactly once per (symbol, date) regardless of how many
+series rows exist for that symbol that day.
+
+## Rebuild
+
+Full historical rebuild required (`adjust_all(full_rebuild=True)`) since
+the corruption was baked into `data/NSE/adjusted_equity/` (an entire
+historical era of prices for affected symbols, not just isolated bad
+rows). Then the downstream `stock_history` cache also needed a full
+rebuild (`StockHistoryBuilder(full_rebuild=True)`) -- its incremental
+mode keys off the trade date embedded in the bhavcopy filename, not file
+mtime, so it would never have noticed the underlying content changed for
+old dates.
+
+- `adjust_all(full_rebuild=True)`: 7,835 files, 0 errors, 1,244.6s (~21 min)
+- `StockHistoryBuilder(full_rebuild=True)`: 5,208 symbols, 496.0s (~8.3 min)
+- Both run outside market hours (G-A-04)
+
+## Verification
+
+TATASTEEL: 2018-03-16 close 60.02 -> 2018-03-19 close 57.495 (smooth,
+was 5.75 before the fix). Scanned all 5,194 bars of TATASTEEL's full
+history (2005-2026) for any single-day move >30%: zero flags after the
+fix (previously had one exactly at the bug boundary).
+
+Blast radius: of 100 symbols with both a rights issue and a real
+adjustment factor somewhere in their history, precisely **38** had an
+actual multi-row bhavcopy day and were genuinely at risk of the bug --
+including RELIANCE, GRASIM, UPL, GODREJCP, FEDERALBNK, CHOLAFIN,
+BAJFINANCE, BAJAJFINSV, CANBK, and 29 others (full list in commit).
+
+Spot-checked ADANIENT and CANBK (both in the at-risk list) for remaining
+large single-day moves: both flagged one, but both are genuine historical
+events, not bugs -- ADANIENT's 2015-06-03 drop (637 -> 109.75) matches a
+"Scheme Of Arrangement" (its 2015 demerger of Adani Ports/Power/
+Transmission, correctly left un-adjusted since demergers aren't a clean
+back-adjustment ratio); CANBK's 2017-10-25 jump (317.1 -> 439.9, present
+identically in the RAW bhavcopy) matches the well-documented PSU bank
+rally following the Oct 24, 2017 government recapitalization
+announcement. BAJFINANCE (also at-risk) came back completely clean.
+
+## Chart crosshair fixes (StocksPage.tsx, same session)
+
+Two related complaints on the same chart: the OHLCV footer (O/H/L/C/Vol)
+was hardcoded to always show the latest bar (`ohlcv.bars.at(-1)`), never
+wired to hover at all; and a horizontal line appeared frozen at the last
+close rather than tracking the cursor -- this was lightweight-charts'
+default `priceLineVisible: true` behavior on the candlestick series (a
+permanent dashed reference line at last close, unrelated to and easily
+mistaken for the crosshair, which is a separate feature).
+
+Fixed: `chart.subscribeCrosshairMove()` now drives a `hoverBar` state
+that the OHLCV footer reads in preference to the latest bar (falls back
+to latest when the cursor leaves the chart), with the hovered bar's date
+now shown too. `priceLineVisible: false` removes the static reference
+line entirely, leaving only the real (cursor-tracking) crosshair.
+
+## Files changed
+
+- engines/analytics/price_adjustment_engine.py -- drop_duplicates() fix
+- frontend/src/pages/StocksPage.tsx -- hoverBar state, subscribeCrosshairMove, priceLineVisible:false, OHLCV footer now hover-driven
+- data/NSE/adjusted_equity/**/*.csv,*.parquet -- full rebuild (gitignored, not committed)
+- data/cache/stock_history/*.parquet -- full rebuild (gitignored, not committed)
+
+---
+
 # Version 4.48.1
 
 StocksPage inline chart -- Snapshot button
