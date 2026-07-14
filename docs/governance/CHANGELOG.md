@@ -6,6 +6,53 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.50.0
+
+Themed scrollbar (app-wide)
+
+Date: 2026-07-15
+
+Status: Completed
+
+---
+
+## Summary
+
+User flagged the default OS scrollbar (chunky, light gray, Windows-classic
+look) visible on the right edge of the stock chart page as clashing with
+the platform's dark navy theme. No custom scrollbar styling existed
+anywhere in the app before this -- every scrollable element used the
+browser default.
+
+## Change
+
+Added a global themed scrollbar in `index.css`, applied via the universal
+selector so it covers every scrollable container app-wide, not just the
+one page it was noticed on: thin (10px), fully rounded thumb using
+`background-clip: padding-box` so the padding ring always matches
+whatever background it sits on (no color-mismatch halo across different
+panel shades), colored from the existing theme tokens
+(`--bg-border` at rest, lightening on hover, and the platform's blue
+accent `--score-watchlist` while actively dragging). Firefox covered via
+`scrollbar-width: thin` + `scrollbar-color`.
+
+A handful of components (e.g. the chat sidebar) already had their own
+inline `scrollbarWidth`/`scrollbarColor` styles using similar dark tones
+-- left untouched, no conflict, inline styles simply take precedence on
+those specific elements. KLineChart Pro's own vendor scrollbar (settings
+panel) is also untouched, already using its own theme variable.
+
+## Verification
+
+`npx vite build` clean; confirmed the new `::-webkit-scrollbar` rules are
+present in the compiled CSS bundle.
+
+## Files changed
+
+- frontend/src/index.css -- themed scrollbar rules (webkit + Firefox)
+
+---
+
 # Version 4.49.2
 
 StocksPage chart -- correction: restore volume bars, remove only the badge

@@ -97,6 +97,35 @@ body {
 /* Box-sizing safety */
 main { box-sizing: border-box; }
 
+/* ── Themed scrollbar (replaces the default OS scrollbar everywhere) ───────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-border) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--bg-border);
+  border-radius: 999px;
+  border: 2.5px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.15s ease;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #2D3548;
+}
+*::-webkit-scrollbar-thumb:active {
+  background-color: var(--score-watchlist);
+}
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 /* Prevent inline-flex labels from overflowing on small screens */
 @media (max-width: 768px) {
   .ticker-inner { gap: 16px; }
