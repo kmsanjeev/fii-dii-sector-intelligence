@@ -1123,6 +1123,7 @@ export function StocksPage() {
   const [acQ, setAcQ]       = useState('')
   const [chartErr, setChartErr] = useState<string | null>(null)
   const [chartKey, setChartKey] = useState(0)   // increments each time chart is (re)created
+  const [snapFlash, setSnapFlash] = useState(false)
 
   const chartDiv  = useRef<HTMLDivElement>(null)
   const chartApi  = useRef<IChartApi | null>(null)
@@ -1299,6 +1300,18 @@ export function StocksPage() {
     if (!chartApi.current) return
     chartApi.current.timeScale().setVisibleLogicalRange({ from: Math.max(0, barCount.current - DEFAULT_BARS[tf]), to: barCount.current + 3 })
   }, [tf])
+
+  const takeSnapshot = useCallback(() => {
+    if (!chartApi.current || !symbol) return
+    try {
+      const canvas = chartApi.current.takeScreenshot()
+      const a = document.createElement('a')
+      a.href = canvas.toDataURL('image/png')
+      a.download = `${symbol.toUpperCase()}-${tf}-${new Date().toISOString().slice(0, 10)}.png`
+      document.body.appendChild(a); a.click(); document.body.removeChild(a)
+      setSnapFlash(true); setTimeout(() => setSnapFlash(false), 800)
+    } catch { /* ignore -- chart not ready */ }
+  }, [symbol, tf])
 
   // ── Symbol selection ──────────────────────────────────────────────────────
 
@@ -1494,6 +1507,19 @@ export function StocksPage() {
             </div>
             <button onClick={resetChart} style={{ padding: '4px 9px', borderRadius: 4, fontSize: 10, cursor: 'pointer', border: `1px solid ${P.border}`, background: 'transparent', color: P.dim, marginLeft: 4 }}>
               Reset
+            </button>
+            <button
+              onClick={takeSnapshot}
+              disabled={!symbol}
+              title="Save chart as PNG"
+              style={{
+                padding: '4px 9px', borderRadius: 4, fontSize: 10, cursor: symbol ? 'pointer' : 'not-allowed',
+                border: `1px solid ${snapFlash ? P.green : P.border}`,
+                background: snapFlash ? P.green + '22' : 'transparent',
+                color: snapFlash ? P.green : P.dim, fontWeight: snapFlash ? 700 : 400,
+              }}
+            >
+              {snapFlash ? 'Saved!' : 'Snapshot'}
             </button>
             {symbol && (
               <button

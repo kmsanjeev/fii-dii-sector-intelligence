@@ -6,6 +6,50 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.48.1
+
+StocksPage inline chart -- Snapshot button
+
+Date: 2026-07-15
+
+Status: Completed
+
+---
+
+## Summary
+
+User asked for a snapshot button on "the stock page chart." Two charts
+exist in the app: StocksPage.tsx's inline lightweight-charts candlestick
+(no snapshot capability) and FullChartPage.tsx's KLineChart Pro full-page
+chart at /fullchart/:symbol (already had a working Snapshot button, built
+pre-session). StockDetailPage.tsx (/stocks/:symbol) has no chart at all.
+Clarified via AskUserQuestion -- user wants it on the StocksPage inline
+chart, so users don't have to navigate away just to save an image.
+
+## Change
+
+Added `takeSnapshot()` to StocksPage.tsx using lightweight-charts v5's
+native `IChartApi.takeScreenshot()` (returns an HTMLCanvasElement
+directly, composites all panes correctly) -- simpler and more robust than
+FullChartPage's own manual multi-canvas compositing workaround, which
+was needed there because `@klinecharts/pro`'s public API doesn't expose
+the underlying chart's native export method. Button placed in the chart
+toolbar next to Reset, with the same "Saved!" flash-feedback pattern
+FullChartPage already uses. Downloads `{SYMBOL}-{timeframe}-{date}.png`.
+
+## Verification
+
+`npx tsc --noEmit` and `npx vite build` both clean. Frontend dev server
+confirmed serving /stocks and /stocks/RELIANCE (200). Could not click-test
+the actual download in a browser -- no browser automation available in
+this session; typecheck/build/serve confirmed, live click-through not.
+
+## Files changed
+
+- frontend/src/pages/StocksPage.tsx -- snapFlash state, takeSnapshot(), Snapshot button
+
+---
+
 # Version 4.48.0
 
 Phase ASTRO-FIX follow-up -- per-stock Kundli signal wired into ML feature pipeline
