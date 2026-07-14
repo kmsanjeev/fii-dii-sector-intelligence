@@ -6,6 +6,125 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.47.0
+
+Phase ASTRO-FIX -- correctness, engine unification, and governance for the
+astrology intelligence layer
+
+Date: 2026-07-15
+
+Status: Completed
+
+---
+
+## Summary
+
+User requested deep research comparing the platform's astrology features
+against classical predictive-astrology methodology (anchored by *Star
+Guide to Predictive Astrology*, Pandit K.B. Parsai), producing a gap
+analysis and roadmap. A background codebase audit found two real defects
+alongside the methodology gaps -- this phase fixed those defects and
+closed the governance/documentation gap; deeper methodology work
+(Bhava Phal, Ashtakavarga, Shadbala, signal validation, Trade Conviction
+integration) is scoped as follow-on phases in ADR-022, not yet built.
+
+## Bug fixed: astro_engine.py tropical/sidereal mismatch
+
+`astro_engine.py` computed planetary longitudes as tropical (PyEphem,
+epoch=J2000, no ayanamsha correction) but labeled the resulting signs
+with Vedic/sidereal names -- every sector's "planet in sign X" reading
+was wrong by the full ~24 degree Lahiri ayanamsha offset. Fixed by
+delegating sign placement to Swiss Ephemeris's native FLG_SIDEREAL
+calculation, the same path kundli_engine.py uses. A second, independent
+bug surfaced during verification: PyEphem's Ecliptic(epoch=J2000) is not
+precessed to the date, which alone introduced a further ~0.36 degree
+error as of 2026 -- invisible until cross-checked directly against
+kundli_engine.py's output for the same instant. Both fixed by the same
+change. Also switched Rahu/Ketu from a hand-rolled mean-node formula to
+Swiss Ephemeris's True Node, matching kundli_engine.py (mean vs true node
+can differ by up to ~1.5-2 degrees).
+
+## Engine unification: two Kundli calculators, one calculation core
+
+engines/intelligence/kundli_engine.py (stock/company charts, Swiss
+Ephemeris, exact ayanamsha) and engines/ai/chatbot/tools/
+kundli_calculator.py (personal charts, PyEphem, a linear-approximation
+ayanamsha) were independent pipelines that could disagree on the same
+chart. kundli_calculator.py now delegates all position/Ascendant/
+ayanamsha math to a module-level KundliEngine instance; its own richer
+feature set (Panchang, doshas, Lal Kitab remedies, city geocoding,
+functional-nature/yogakaraka analysis, formatted report) is unchanged.
+Verified: both paths now produce identical Lagna/planet positions for
+identical input (previously up to ~2 degrees apart).
+
+## Spike: NSE listing-time approximation confirmed correct, not arbitrary
+
+The stock Kundli's 10:00 IST listing-moment default was investigated
+rather than assumed away. Confirmed via NSE's own documented Special
+Pre-Open Session procedure (mandatory for every new listing, SEBI-wide):
+price discovery runs 09:00-09:45 IST, normal trading commences at 10:00
+IST. This is the genuine, standard first-trade moment for virtually every
+NSE listing -- not a guess. Documented with citation in kundli_engine.py
+and docs/modules/ASTRO.md; one known exception (rare ceremonial "Muhurat"
+listings) is flagged for future handling, not yet built.
+
+## Bulk archives generated
+
+data/intelligence/kundli_signals.csv (2053 symbols) and
+data/intelligence/gann_signals.csv (2052 symbols) had never been
+bulk-run -- every stock Kundli view was computed live with no historical
+archive. Both bulk jobs run successfully (~19s and ~1.5s respectively,
+run outside market hours per guardrail G-A-04). This also unblocks a
+future signal-efficacy validation pass (ADR-022 roadmap: ASTRO-VALIDATE).
+
+## RAG index retired, not deleted
+
+data/intelligence/rag_knowledge/faiss/faiss_ASTRO.index (3173 vectors)
+had zero matching rows in documents.jsonl -- built from source PDFs that
+no longer exist on this machine (confirmed via filesystem search).
+Renamed to `.retired` (reversible) rather than deleted. Separately
+confirmed retriever.py's DOMAIN_KEYWORDS never routes queries to the
+ASTRO domain regardless of index state -- flagged as a follow-on fix.
+
+## Governance gap closed
+
+Five production-wired engines (astro_engine.py, kundli_engine.py,
+gann_engine.py, kundli_interpretator.py, kundli_calculator.py) existed
+with no docs/modules/ entry, no ADR, and no entry in engines/CLAUDE.md's
+directory index or MODULE_REGISTRY.md, despite being scheduled in
+daily_refresh.py. Closed via: docs/decisions/ADR-022-AstroFinance-Vedic-
+Intelligence-Layer.md, docs/modules/ASTRO.md, MODULE_REGISTRY.md Module
+19, engines/intelligence/CLAUDE.md active-engines table, and a targeted
+fix to engines/CLAUDE.md's stale top-level directory map. Also fixed a
+stale/wrong file reference in MASTER_ROADMAP.md's Phase AF entry (cited
+a file path, engines/astro/planetary_intelligence_layer.py, that never
+existed).
+
+## Files changed
+
+- engines/intelligence/astro_engine.py -- sidereal fix, True Node, ayanamsha exposed in market_astro_context.json
+- engines/intelligence/kundli_engine.py -- documented the NSE 10:00 listing-time citation (no calculation change)
+- engines/ai/chatbot/tools/kundli_calculator.py -- delegates position/Ascendant/ayanamsha math to KundliEngine; removed unused math import and the linear-ayanamsha/mean-node functions it replaced
+- engines/ai/chatbot/tools/data_tools.py -- corrected stale PyEphem docstring/error text on generate_personal_kundli
+- requirements.txt -- added pyswisseph==2.10.3.2, ephem==4.2.1
+- data/intelligence/kundli_signals.csv, gann_signals.csv -- newly bulk-generated
+- data/intelligence/kundli/*.json -- 2053 per-symbol chart cache files, newly generated
+- data/intelligence/rag_knowledge/faiss/faiss_ASTRO.index[_ids.json] -- retired (renamed, not deleted)
+- docs/decisions/ADR-022-AstroFinance-Vedic-Intelligence-Layer.md -- new
+- docs/modules/ASTRO.md -- new
+- docs/governance/MODULE_REGISTRY.md -- Module 19 added
+- docs/governance/MASTER_ROADMAP.md -- Phase AF entry corrected
+- engines/CLAUDE.md, engines/intelligence/CLAUDE.md -- astro engines registered
+
+## Not done in this phase (see ADR-022 roadmap)
+
+Bhava Phal (full 12-house analysis), Ashtakavarga, Shadbala, Varshphal,
+Trade Conviction integration, signal-efficacy validation, North/South
+Indian chart rendering. All scoped, none built -- awaiting user
+prioritization of the next phase.
+
+---
+
 # Version 4.46.0
 
 Phase V-DATA-3 -- "Recently Asked" panel: chat signal as display-only,

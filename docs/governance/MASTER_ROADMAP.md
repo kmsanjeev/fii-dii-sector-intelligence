@@ -232,9 +232,12 @@ Fortnightly sector-level FPI data. 8690 rows.
 ## PHASE KU — Kundli + Gann Intelligence | COMPLETE
 Vedic astro + Gann angle analysis for market timing signals.
 
-## PHASE AF — AstroFinance Planetary Intelligence | COMPLETE
-`engines/astro/planetary_intelligence_layer.py` | planetary_intelligence.csv (209 rows)
-Phase AF = planetary signals integrated into daily pipeline.
+## PHASE AF — AstroFinance Planetary Intelligence | COMPLETE (corrected 2026-07-15, see ADR-022)
+`engines/intelligence/astro_engine.py` | data/intelligence/astro_signals.csv (31 sectors, daily)
+Phase AF = planetary signals integrated into daily pipeline. Full spec:
+docs/modules/ASTRO.md. (This entry previously cited a non-existent path,
+`engines/astro/planetary_intelligence_layer.py` / `planetary_intelligence.csv`
+— fixed under ADR-022's documentation pass.)
 
 ## PHASE CH — KLineChart Pro Charts | COMPLETE
 Replaced TradingView Lightweight Charts with klinecharts v9.8.12 (KLineChart Pro v0.1.1).

@@ -15,6 +15,19 @@ Signal logic (strictly from book principles):
   EXIT    -> Ruling planet retrograde | Mars/Saturn square or opposition to ruler
   AVOID   -> Eclipse in sector sign | Ketu eclipse active | multiple simultaneous malefics
 
+Sidereal note (Phase ASTRO-FIX, 2026-07): sign placement now comes from
+Swiss Ephemeris's native FLG_SIDEREAL calculation (swe.calc_ut), the same
+path kundli_engine.py uses -- not PyEphem's tropical Ecliptic() longitude.
+Two bugs existed before this fix: (1) PyEphem's Ecliptic(epoch=J2000) is
+referenced to the fixed J2000 equinox, not precessed to the date, so
+subtracting a date-of-epoch Lahiri ayanamsha left a ~26-year precession
+error (~0.36 degrees as of 2026); (2) Rahu/Ketu used a hand-rolled MEAN
+node formula while kundli_engine.py uses the TRUE node (up to ~1.5-2 degrees
+apart). Both are fixed by delegating directly to Swiss Ephemeris. PyEphem
+is still used below for retrograde-by-diff cross-checks, Moon phase
+illumination %, and eclipse-zone proximity, where relative/frame-independent
+quantities make the tropical-vs-sidereal distinction immaterial.
+
 Outputs:
   data/intelligence/astro_signals.csv         -- sector-level astro scores
   data/intelligence/market_astro_context.json -- market-level planetary pulse
@@ -30,10 +43,20 @@ from pathlib import Path
 import ephem
 import pandas as pd
 
+try:
+    import swisseph as swe
+except ImportError:
+    raise ImportError(
+        "pyswisseph not installed. Run: py -3.11 -m pip install pyswisseph"
+    )
+
 from engines.common import config as cfg
 from engines.common.logger import get_logger
 
 logger = get_logger(__name__)
+
+# Dublin JD (PyEphem epoch, 1899/12/31 12:00 UT) -> standard Julian Day offset
+DUBLIN_JD_OFFSET = 2415020.0
 
 INTEL = cfg.INTELLIGENCE_DIR
 ASTRO_SIGNALS_PATH = INTEL / "astro_signals.csv"
@@ -130,6 +153,14 @@ class AstroEngine:
     for the NSE market using Indian/Vedic planet-sector mapping.
     """
 
+    def __init__(self):
+        swe.set_sid_mode(swe.SIDM_LAHIRI)
+
+    def _ayanamsha(self, ephem_date: "ephem.Date") -> float:
+        """Lahiri ayanamsha (degrees) for the given PyEphem date, via Swiss Ephemeris."""
+        jd_ut = float(ephem_date) + DUBLIN_JD_OFFSET
+        return swe.get_ayanamsa_ut(jd_ut)
+
     def run(self) -> bool:
         logger.info("[AstroEngine] Starting planetary computation")
         try:
@@ -143,7 +174,8 @@ class AstroEngine:
             sector_df = self._compute_sector_signals(positions, aspects, moon_info, eclipse_info)
 
             self._save_sector_signals(sector_df)
-            self._save_market_context(market_pulse, positions, today)
+            ayanamsha = self._ayanamsha(ephem.Date(today))
+            self._save_market_context(market_pulse, positions, today, ayanamsha)
 
             logger.info(f"[AstroEngine] Complete -- {len(sector_df)} sectors, {today}")
             return True
@@ -151,40 +183,27 @@ class AstroEngine:
             logger.error(f"[AstroEngine] Failed: {e}")
             raise
 
+    _PLANET_IDS = {
+        "Sun": 0, "Moon": 1, "Mercury": 2, "Venus": 3, "Mars": 4,
+        "Jupiter": 5, "Saturn": 6, "Uranus": 7, "Neptune": 8,
+    }
+
     def _compute_positions(self, date_str: str) -> dict[str, dict]:
         """
-        Compute ecliptic longitude, zodiac sign, and retrograde status for all planets.
+        Compute sidereal (Lahiri) ecliptic longitude, zodiac sign, and
+        retrograde status for all planets via Swiss Ephemeris FLG_SIDEREAL --
+        the same calculation path kundli_engine.py uses.
         Returns dict: planet_name -> {lon, sign, retrograde, sign_strength, state_label}
         """
-        planet_objs = {
-            "Sun":     ephem.Sun(),
-            "Moon":    ephem.Moon(),
-            "Mercury": ephem.Mercury(),
-            "Venus":   ephem.Venus(),
-            "Mars":    ephem.Mars(),
-            "Jupiter": ephem.Jupiter(),
-            "Saturn":  ephem.Saturn(),
-            "Uranus":  ephem.Uranus(),
-            "Neptune": ephem.Neptune(),
-        }
+        ephem_date = ephem.Date(date_str)
+        jd_ut = float(ephem_date) + DUBLIN_JD_OFFSET
+        flags = swe.FLG_SIDEREAL | swe.FLG_SPEED
 
         positions: dict[str, dict] = {}
-        ephem_date = ephem.Date(date_str)
-
-        for name, body in planet_objs.items():
-            # Today
-            body.compute(ephem_date)
-            ecl = ephem.Ecliptic(body, epoch=ephem.J2000)
-            lon = math.degrees(ecl.lon) % 360
-
-            # Yesterday (for retrograde detection)
-            body.compute(ephem.Date(ephem_date - 1))
-            ecl_y = ephem.Ecliptic(body, epoch=ephem.J2000)
-            lon_y = math.degrees(ecl_y.lon) % 360
-
-            # Retrograde: eastward motion is positive; retrograde if lon < yesterday
-            diff = (lon - lon_y + 360) % 360
-            retrograde = (diff > 180)  # moved backward more than half the circle
+        for name, pid in self._PLANET_IDS.items():
+            xx, _ = swe.calc_ut(jd_ut, pid, flags)
+            lon = xx[0] % 360
+            retrograde = xx[3] < 0  # longitude speed, deg/day; negative = retrograde
 
             sign_idx = int(lon / 30)
             sign = SIGNS[sign_idx]
@@ -200,8 +219,9 @@ class AstroEngine:
                 "state_label": state_label,
             }
 
-        # Rahu (North Node) and Ketu (South Node) -- computed from formula
-        rahu_lon = self._compute_rahu(ephem_date)
+        # Rahu (True Node) and Ketu -- same convention as kundli_engine.py
+        xx, _ = swe.calc_ut(jd_ut, swe.TRUE_NODE, flags)
+        rahu_lon = xx[0] % 360
         ketu_lon = (rahu_lon + 180) % 360
         for name, lon in [("Rahu", rahu_lon), ("Ketu", ketu_lon)]:
             sign = SIGNS[int(lon / 30)]
@@ -210,7 +230,7 @@ class AstroEngine:
                 "lon": round(lon, 2),
                 "sign": sign,
                 "deg_in_sign": round(lon % 30, 2),
-                "retrograde": True,  # Nodes are always retrograde by mean motion
+                "retrograde": True,  # Nodes are always retrograde by convention
                 "sign_strength": sign_strength,
                 "state_label": self._state_label(name, sign, True),
             }
@@ -680,7 +700,7 @@ class AstroEngine:
         shutil.move(str(tmp), str(ASTRO_SIGNALS_PATH))
         logger.info(f"[AstroEngine] Saved {len(df)} sector signals to {ASTRO_SIGNALS_PATH}")
 
-    def _save_market_context(self, pulse: dict, positions: dict, date_str: str):
+    def _save_market_context(self, pulse: dict, positions: dict, date_str: str, ayanamsha: float):
         pulse["planet_positions"] = {
             name: {
                 "sign": pos["sign"],
@@ -691,6 +711,8 @@ class AstroEngine:
             for name, pos in positions.items()
         }
         pulse["computed_date"] = date_str.replace("/", "-")
+        pulse["ayanamsha"] = "Lahiri"
+        pulse["ayanamsha_deg"] = round(ayanamsha, 4)
 
         tmp = ASTRO_CONTEXT_PATH.with_suffix(".tmp.json")
         with open(tmp, "w", encoding="utf-8") as f:

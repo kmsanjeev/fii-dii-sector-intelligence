@@ -700,7 +700,9 @@ def generate_personal_kundli(
 ) -> dict:
     """
     Compute a complete Vedic natal chart for a person.
-    Uses PyEphem + Lahiri ayanamsha + whole-sign houses + Vimshottari dasha.
+    Uses Swiss Ephemeris + exact Lahiri ayanamsha + whole-sign houses +
+    Vimshottari dasha -- the same calculation core used for stock/company
+    Kundlis, so a person's chart and a stock's chart are always consistent.
 
     Args:
         date_of_birth: "DD-MM-YYYY" or "YYYY-MM-DD"
@@ -720,6 +722,6 @@ def generate_personal_kundli(
             timezone_offset_hours=timezone_offset_hours,
         )
     except ImportError as e:
-        return {"error": f"kundli_calculator module missing: {e}. Ensure ephem is installed: py -3.11 -m pip install ephem"}
+        return {"error": f"kundli_calculator module missing: {e}. Ensure pyswisseph is installed: py -3.11 -m pip install pyswisseph"}
     except Exception as e:
         return {"error": f"Kundli computation failed: {e}"}

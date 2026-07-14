@@ -1,16 +1,31 @@
 """
 Personal Kundli Calculator
 Vedic (Jyotish) natal chart computation for human birth dates.
-Uses PyEphem for planetary positions + Lahiri ayanamsha (sidereal zodiac).
 Whole-sign house system. Vimshottari Dasha. 9 planets + Lagna.
+
+Phase ASTRO-FIX (2026-07): planetary/Lagna position math now delegates to
+KundliEngine (engines/intelligence/kundli_engine.py) -- the same Swiss
+Ephemeris FLG_SIDEREAL + exact Lahiri ayanamsha core the stock/company
+Kundli uses -- instead of this file's own PyEphem + linear-ayanamsha-
+approximation pipeline. Before this fix the two engines could disagree by
+up to ~1.5 degrees (mean vs true node) and ~0.36 degrees (ayanamsha
+precision) on the same instant. Everything downstream of position math in
+this file (Panchang, doshas, Lal Kitab remedies, yogas, drishti, the
+formatted report) is unchanged.
 """
 
 from __future__ import annotations
-import math
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 
 import ephem
+
+from engines.intelligence.kundli_engine import KundliEngine
+
+# One shared Swiss Ephemeris core for both stock and personal charts.
+# KundliEngine.__init__ only sets the global sidereal mode (Lahiri) -- cheap
+# and idempotent, safe as a module-level singleton.
+_engine = KundliEngine()
 
 try:
     from engines.ai.chatbot.tools.kundli_interpreter import generate_life_readings as _gen_life
@@ -237,13 +252,10 @@ def _get_city_coords(place: str) -> Optional[tuple[float, float]]:
 
 
 def _lahiri_ayanamsha(jd: float) -> float:
-    """Lahiri (Chitrapaksha) ayanamsha for a Julian Date. Returns degrees."""
-    t = (jd - 2451545.0) / 36525.0  # Julian centuries from J2000
-    return 23.85306 + t * 1.396
-
-
-def _sidereal(tropical: float, ayanamsha: float) -> float:
-    return (tropical - ayanamsha) % 360.0
+    """Exact Lahiri (Chitrapaksha) ayanamsha via Swiss Ephemeris -- same
+    source kundli_engine.py uses. (Was a linear approximation before
+    Phase ASTRO-FIX; that could be off by several arcminutes.)"""
+    return _engine._swe.get_ayanamsa_ut(jd)
 
 
 def _sign_of(lon: float) -> str:
@@ -280,63 +292,34 @@ def _dignity(planet: str, sign: str) -> str:
     return "neutral"
 
 
-def _compute_positions(dt_utc: datetime) -> dict[str, dict]:
-    """Compute tropical planetary longitudes at dt_utc."""
-    ed = ephem.Date(dt_utc.strftime("%Y/%m/%d %H:%M:%S"))
-    ed_y = ephem.Date(ed - 1)
-    bodies = {
-        "Sun":ephem.Sun(),"Moon":ephem.Moon(),"Mercury":ephem.Mercury(),
-        "Venus":ephem.Venus(),"Mars":ephem.Mars(),"Jupiter":ephem.Jupiter(),
-        "Saturn":ephem.Saturn(),
-    }
-    out = {}
-    for name, body in bodies.items():
-        body.compute(ed)
-        lon = math.degrees(ephem.Ecliptic(body, epoch=ephem.J2000).lon) % 360.0
-        body.compute(ed_y)
-        lon_y = math.degrees(ephem.Ecliptic(body, epoch=ephem.J2000).lon) % 360.0
-        retro = ((lon - lon_y + 360.0) % 360.0) > 180.0
-        out[name] = {"lon": lon, "retrograde": retro}
+def _jd_ut(dt_utc: datetime) -> float:
+    """Standard Julian Day (UT) for a UTC datetime, via PyEphem's converter."""
+    return ephem.julian_date(ephem.Date(dt_utc.strftime("%Y/%m/%d %H:%M:%S")))
 
-    # Rahu/Ketu — mean node formula (always retrograde)
-    jd = ephem.julian_date(ed)
-    t = (jd - 2451545.0) / 36525.0
-    rahu = (125.0452 - 1934.136 * t) % 360.0
-    if rahu < 0:
-        rahu += 360.0
-    out["Rahu"] = {"lon": rahu, "retrograde": True}
-    out["Ketu"] = {"lon": (rahu + 180.0) % 360.0, "retrograde": True}
+
+def _compute_positions(dt_utc: datetime) -> dict[str, dict]:
+    """
+    Sidereal (Lahiri) planetary longitudes at dt_utc, via Swiss Ephemeris
+    FLG_SIDEREAL -- the same calculation path kundli_engine.py uses for
+    stock/company charts (Phase ASTRO-FIX). Rahu/Ketu are the True Node
+    (matching kundli_engine.py), not the mean-node formula used here before.
+    """
+    jd = _jd_ut(dt_utc)
+    pos = _engine._planet_positions(jd)  # already sidereal
+    out: dict[str, dict] = {}
+    for name in ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn"]:
+        out[name] = {"lon": pos[name], "retrograde": _engine._is_retrograde(jd, name)}
+    out["Rahu"] = {"lon": pos["Rahu"], "retrograde": True}
+    out["Ketu"] = {"lon": pos["Ketu"], "retrograde": True}
     return out
 
 
-def _compute_lagna(dt_utc: datetime, lat: float, lon: float, ayanamsha: float) -> dict:
-    """
-    Compute sidereal Ascendant (Lagna) using LST + obliquity formula.
-    Formula: tan(Asc) = cos(RAMC) / -(sin(eps)*tan(lat) + cos(eps)*sin(RAMC))
-    """
-    obs = ephem.Observer()
-    obs.lat   = str(lat)
-    obs.lon   = str(lon)
-    obs.date  = ephem.Date(dt_utc.strftime("%Y/%m/%d %H:%M:%S"))
-    obs.epoch = ephem.J2000
-    obs.pressure = 0
-
-    ramc_deg = math.degrees(float(obs.sidereal_time()))
-
-    jd = ephem.julian_date(obs.date)
-    t  = (jd - 2451545.0) / 36525.0
-    eps_deg = 23.439291111 - 0.013004167 * t
-    eps = math.radians(eps_deg)
-
-    ramc = math.radians(ramc_deg)
-    lat_r = math.radians(lat)
-
-    # Standard Ascendant formula (Meeus Chapter 24)
-    y = math.cos(ramc)
-    x = -(math.sin(eps) * math.tan(lat_r) + math.cos(eps) * math.sin(ramc))
-    asc_trop = math.degrees(math.atan2(y, x)) % 360.0
-
-    asc_sid = _sidereal(asc_trop, ayanamsha)
+def _compute_lagna(dt_utc: datetime, lat: float, lon: float) -> dict:
+    """Sidereal Ascendant (Lagna), Whole Sign -- via kundli_engine.py's
+    swe.houses()-based calculation (Phase ASTRO-FIX; previously a
+    hand-rolled Meeus LST/obliquity formula specific to this file)."""
+    jd = _jd_ut(dt_utc)
+    asc_sid = _engine._ascendant(jd, lat, lon)
     sign    = _sign_of(asc_sid)
     deg     = _deg_in_sign(asc_sid)
     lord    = SIGN_RULERS[sign]
@@ -1080,7 +1063,7 @@ def _build_formatted_report(
         lines.append("  They supplement -- never replace -- professional and practical guidance.")
         lines.append("")
 
-    lines.append("  NOTE: Chart computed via PyEphem + Lahiri ayanamsha. Dignities are")
+    lines.append("  NOTE: Chart computed via Swiss Ephemeris + exact Lahiri ayanamsha. Dignities are")
     lines.append("  calculated (not paraphrased). For major decisions, consult a Jyotishi.")
     lines.append(sep)
 
@@ -1414,27 +1397,27 @@ def compute_personal_kundli(
     else:
         lat, lon = latitude, longitude
 
-    # Compute positions
+    # Compute positions (already sidereal -- Phase ASTRO-FIX)
     try:
-        trop = _compute_positions(birth_utc)
+        pos_sid = _compute_positions(birth_utc)
     except Exception as e:
         return {"error": f"Planetary computation failed: {e}"}
 
-    jd = ephem.julian_date(ephem.Date(birth_utc.strftime("%Y/%m/%d %H:%M:%S")))
+    jd = _jd_ut(birth_utc)
     ayanamsha = _lahiri_ayanamsha(jd)
 
     # Lagna
     try:
-        lagna = _compute_lagna(birth_utc, lat, lon, ayanamsha)
+        lagna = _compute_lagna(birth_utc, lat, lon)
     except Exception as e:
         return {"error": f"Ascendant computation failed: {e}"}
 
     lagna_idx = SIGNS.index(lagna["sign"])
 
-    # Planets (sidereal)
+    # Planets (already sidereal)
     planets_out: dict[str, dict] = {}
-    for name, tp in trop.items():
-        sid = _sidereal(tp["lon"], ayanamsha)
+    for name, tp in pos_sid.items():
+        sid = tp["lon"]
         sign = _sign_of(sid)
         sign_idx = SIGNS.index(sign)
         house = (sign_idx - lagna_idx) % 12 + 1
@@ -1466,7 +1449,7 @@ def compute_personal_kundli(
         pd_["combust"] = gap <= orb
 
     # Moon nakshatra → dasha
-    moon_sid = _sidereal(trop["Moon"]["lon"], ayanamsha)
+    moon_sid = pos_sid["Moon"]["lon"]
     moon_nak = _nakshatra_info(moon_sid)
     dasha = _vimshottari(moon_nak["idx"], moon_nak["elapsed_fraction"], birth_utc)
 
@@ -1548,10 +1531,8 @@ def compute_personal_kundli(
     try:
         from engines.ai.chatbot.tools.kundli_life_guide import build_life_guide
         now_utc = datetime.now(timezone.utc)
-        now_trop = _compute_positions(now_utc)
-        now_ayan = _lahiri_ayanamsha(ephem.julian_date(ephem.Date(now_utc.strftime("%Y/%m/%d %H:%M:%S"))))
-        sat_sid  = _sidereal(now_trop["Saturn"]["lon"], now_ayan)
-        transit_saturn_sign = _sign_of(sat_sid)
+        now_pos_sid = _compute_positions(now_utc)  # already sidereal
+        transit_saturn_sign = _sign_of(now_pos_sid["Saturn"]["lon"])
         guide_lines = build_life_guide(planets_out, lagna, dasha, remedies, transit_saturn_sign)
         if guide_lines:
             formatted_report = formatted_report + "\n" + "\n".join(guide_lines)

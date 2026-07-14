@@ -1594,3 +1594,133 @@ fastapi, uvicorn[standard], pydantic
 ## Directory
 
 backend/
+
+---
+
+# Module 19
+
+AstroFinance / Vedic Intelligence Layer
+
+---
+
+## Category
+
+Intelligence Layer
+
+---
+
+## Status
+
+ACTIVE (Phase AF-2/KU-1/KU-2/KU-3 built pre-2026-07; Phase ASTRO-FIX
+correctness pass 2026-07-15 — see ADR-022)
+
+---
+
+## Completion
+
+70% (core engines complete and correctness-fixed; Bhava Phal, Ashtakavarga,
+Shadbala, signal validation, and Trade Conviction integration are open —
+see ADR-022 roadmap)
+
+---
+
+## Priority
+
+Medium (experimental signal layer, not yet in the core recommendation path)
+
+---
+
+## Purpose
+
+Apply Vedic/Parashari astrology and W.D. Gann price-time analysis to two
+distinct signal types: (1) a daily sector-wide planetary transit signal,
+and (2) a per-stock natal ("Kundli") chart cast for the stock's own
+listing/IPO moment, treated as a mundane-astrology "birth". A third path
+computes personal natal charts for the chatbot's Kundli feature, sharing
+the same calculation core as the stock path since Phase ASTRO-FIX.
+
+---
+
+## Engines
+
+**AstroEngine** (`engines/intelligence/astro_engine.py`) — daily sector
+transit signal. Swiss Ephemeris FLG_SIDEREAL (Lahiri), True Node, planet
+dignity + aspects + Moon phase + eclipse proximity -> `astro_signals.csv`
+(31 sectors) + `market_astro_context.json`. This is the "Astro" score
+shown in the 8-gauge stock header — identical for every stock in a sector.
+
+**KundliEngine** (`engines/intelligence/kundli_engine.py`) — per-stock,
+per-human, and per-country natal charts. Swiss Ephemeris, exact Lahiri
+ayanamsha, Whole Sign houses, 12 divisional charts (vargas), 3-level
+Vimshottari Dasha, 8 classical yogas, financial house reinterpretation
+(2H/5H/8H/10H/11H). Stock charts use listing date + 10:00 IST (NSE's
+documented Special Pre-Open Session end time, not an arbitrary guess —
+see ADR-022) + exchange city as the "birth". This is the canonical
+calculation core — `kundli_calculator.py` (below) now delegates to it.
+
+**GannEngine** (`engines/intelligence/gann_engine.py`) — W.D. Gann Square
+of 9, Gann Fan angles, planetary price lines, time cycles. Numerology
+riding on planetary longitude, not astrology proper. Depends on
+`kundli_signals.csv` + `price_momentum.csv` -> `gann_signals.csv`.
+
+**KundliInterpretator** (`engines/intelligence/kundli_interpretator.py`)
+— narrative layer over KundliEngine's raw chart; optional LLM-generated
+summary via `engines/common/llm_client.py`.
+
+**kundli_calculator.py** (`engines/ai/chatbot/tools/`) — personal Kundli
+for the chat tool (Panchang, doshas, Lal Kitab remedies, city geocoding,
+functional-nature/yogakaraka analysis, full formatted report). Since
+Phase ASTRO-FIX, its position/Ascendant/ayanamsha math delegates directly
+to `KundliEngine` rather than a separate PyEphem pipeline — the two
+calculators can no longer disagree on the same chart.
+
+---
+
+## Data Paths
+
+data/intelligence/astro_signals.csv — 31 sectors, regenerated daily
+
+data/intelligence/market_astro_context.json — market-wide pulse + ayanamsha used
+
+data/intelligence/kundli_signals.csv — 2,053 NSE stocks (bulk-run 2026-07-15)
+
+data/intelligence/kundli/{symbol}_kundli.json — per-symbol chart cache
+
+data/intelligence/gann_signals.csv — 2,052 stocks
+
+data/intelligence/rag_knowledge/faiss/faiss_ASTRO.index.retired — orphaned
+index (source PDFs unavailable), retired not deleted; see ADR-022
+
+---
+
+## Known Gaps (tracked, not yet built — see ADR-022)
+
+No Bhava Phal (full 12-house prediction) for stocks — only 5 houses feed
+the score today. No Ashtakavarga or Shadbala (planetary strength). No
+Varshphal (annual chart). Not wired into `trade_conviction_engine.py` —
+zero influence on the platform's actual recommendations as of this entry.
+`retriever.py`'s `DOMAIN_KEYWORDS` never routes to the ASTRO RAG domain
+even when repopulated — a separate small fix needed alongside any
+re-ingestion.
+
+---
+
+## Dependencies
+
+pyswisseph, ephem (both in requirements.txt since Phase ASTRO-FIX)
+
+equity_master.csv (listing dates), price_momentum.csv (Gann prices)
+
+---
+
+## Engines Directory
+
+engines/intelligence/ (astro_engine.py, kundli_engine.py, gann_engine.py,
+kundli_interpretator.py), engines/ai/chatbot/tools/ (kundli_calculator.py,
+kundli_life_guide.py, kundli_interpreter.py)
+
+---
+
+## Architecture Reference
+
+docs/modules/ASTRO.md, docs/decisions/ADR-022-AstroFinance-Vedic-Intelligence-Layer.md

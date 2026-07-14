@@ -151,6 +151,18 @@ SPECIAL_ASPECTS = {
 }
 
 # ── Stock exchange registry ────────────────────────────────────────────────────
+# NSE/BSE ipo_hour=10:00 (Phase ASTRO-FIX spike, 2026-07-15): this is NOT an
+# arbitrary approximation. Per NSE's mandatory "Special Pre-Open Session"
+# procedure for every new listing (SEBI-mandated, applies market-wide) --
+# order collection/price discovery runs 09:00-09:45/09:55 IST, and normal
+# continuous trading (the moment the stock actually becomes tradable at a
+# market-discovered price) commences at 10:00 IST. NSE does not publish a
+# more precise first-trade timestamp than this via any public API or
+# nselib -- 10:00 is the genuine session-open moment, not a guess. The one
+# known exception is a rare ceremonial "Muhurat listing" for a marquee IPO
+# (special bell-ringing session with its own announced timing) -- these are
+# uncommon enough that no per-symbol override exists yet; revisit if one is
+# encountered.
 EXCHANGES = {
     'NSE':  {'city': 'Mumbai',        'lat': 18.9340,   'lon': 72.8296,   'tz': 'Asia/Kolkata',      'ipo_hour': 10, 'ipo_min': 0},
     'BSE':  {'city': 'Mumbai',        'lat': 18.9340,   'lon': 72.8296,   'tz': 'Asia/Kolkata',      'ipo_hour': 10, 'ipo_min': 0},

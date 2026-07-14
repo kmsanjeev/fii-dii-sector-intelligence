@@ -10,6 +10,16 @@ Consume processed/cached data and produce ranked, scored intelligence datasets.
 |------|-------|--------|--------|
 | price_momentum_engine.py | 8A | COMPLETE | price_momentum.csv (2441 symbols) |
 | bull_run_probability_engine.py | 8B | COMPLETE | bull_run_probability.csv + watchlist |
+| astro_engine.py | AF-2 | ACTIVE (fixed 2026-07-15, see ADR-022) | astro_signals.csv (31 sectors, daily mundane transit) + market_astro_context.json |
+| kundli_engine.py | KU-1 | ACTIVE — canonical Vedic calc core, see docs/modules/ASTRO.md | kundli_signals.csv (2053 stocks) + kundli/{symbol}_kundli.json |
+| gann_engine.py | KU-2 | ACTIVE | gann_signals.csv (2052 stocks) |
+| kundli_interpretator.py | KU-1 | ACTIVE — narrative layer over kundli_engine.py | (no file output — feeds KundliCard.tsx Report tab) |
+
+Astro/Kundli/Gann are a secondary, experimental signal layer — NOT yet wired
+into trade_conviction_engine.py. Full spec: docs/modules/ASTRO.md, ADR-022.
+The chat-tool personal Kundli (engines/ai/chatbot/tools/kundli_calculator.py)
+delegates its position/Ascendant/ayanamsha math to kundli_engine.py — do not
+reintroduce a second calculation path there.
 
 ## STUB FILES — DO NOT EXTEND, DO NOT USE
 

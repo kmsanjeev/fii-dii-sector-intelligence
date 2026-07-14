@@ -20,9 +20,15 @@ engines/
 │   ├── company_name_mapping_engine.py         ✅ active
 │   ├── screener_classification_engine.py      ✅ validation layer only
 │   └── theme_master_engine.py                 ✅ active
-├── intelligence/        ← Phase 3 output engines
+├── intelligence/        ← Phase 3 output engines (NOTE: this map is stale for
+│   │                      this dir beyond the lines below — see
+│   │                      engines/intelligence/CLAUDE.md for the current list)
 │   ├── index_intelligence_engine_v2.py        ❌ 80-line stub — do not use
-│   └── leadership_persistence_engine_v2.py    ❌ 30-line stub — do not use
+│   ├── leadership_persistence_engine_v2.py    ❌ 30-line stub — do not use
+│   ├── astro_engine.py                        ✅ active — daily sector transit signal (ADR-022)
+│   ├── kundli_engine.py                       ✅ active — canonical Vedic calc core (ADR-022)
+│   ├── gann_engine.py                         ✅ active — Gann price/time tools (ADR-022)
+│   └── kundli_interpretator.py                ✅ active — narrative layer over kundli_engine.py
 ├── analytics/
 │   └── price_adjustment_engine.py             ✅ active
 ├── classification/      ← EMPTY placeholder (content lives in fundamentals/)
