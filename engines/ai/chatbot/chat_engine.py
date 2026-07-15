@@ -25,6 +25,7 @@ import time
 from engines.common.logger import get_logger
 from engines.ai.chatbot.intent_router import detect_intent, get_system_prompt
 from engines.ai.chatbot.tools.tool_registry import TOOLS, TOOL_FUNCTIONS
+from engines.ai.chatbot.safety import sanitize_reply
 
 logger = get_logger(__name__)
 
@@ -158,6 +159,9 @@ class ChatEngine:
         # "RELIANCE") internally, so this captures real engagement across
         # any input language, unlike a regex over the raw user text.
         self.last_symbols: list[str] = []
+        # Output-side safety classification of the most recent reply
+        # (safety.py) -- {"flagged": bool, "reason": "refused"|"prompt_leak"|None}.
+        self.last_flag: dict = {"flagged": False, "reason": None}
 
         # Ensure at least one provider is configured
         if not self._active_providers():
@@ -227,6 +231,7 @@ class ChatEngine:
         Automatically rotates to the next provider if rate-limited.
         """
         self.last_symbols = []
+        self.last_flag = {"flagged": False, "reason": None}
         intent       = detect_intent(user_message)
         is_greeting  = intent.intent_type == "GREETING"
         system_prompt = get_system_prompt(intent)
@@ -261,6 +266,17 @@ class ChatEngine:
 
             if result["status"] == "ok":
                 reply = _clean_reply(result["reply"])
+                # Output-side check (safety.py): flags a refusal for audit
+                # visibility (the refusal text itself is left untouched --
+                # it's already the correct, safe thing to show) and
+                # replaces a leaked-system-prompt reply before it reaches
+                # the user.
+                reply, self.last_flag = sanitize_reply(reply)
+                if self.last_flag["flagged"]:
+                    logger.warning(
+                        "[ChatEngine] Reply flagged: %s (provider=%s)",
+                        self.last_flag["reason"], provider["name"],
+                    )
                 self.history.append({"role": "assistant", "content": reply})
                 return reply
 

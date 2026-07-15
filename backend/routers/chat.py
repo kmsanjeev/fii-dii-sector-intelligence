@@ -39,6 +39,8 @@ class ChatResponse(BaseModel):
     intent: str
     symbols_discussed: list[str] = []   # Phase V-DATA-3 -- language-agnostic
                                           # (from actual tool calls, not text regex)
+    flagged: bool = False               # output-side safety classification
+    flag_reason: Optional[str] = None   # "refused" | "prompt_leak" | None
 
 
 def _get_or_create_session(session_id: Optional[str]) -> tuple[str, "ChatEngine"]:
@@ -95,11 +97,14 @@ async def chat(req: ChatRequest):
         raise HTTPException(status_code=500, detail=f"Chat error: {str(e)}")
 
     symbols_discussed = sorted(set(getattr(engine, "last_symbols", [])))
+    last_flag = getattr(engine, "last_flag", {"flagged": False, "reason": None})
     return ChatResponse(
         reply=reply,
         session_id=session_id,
         intent=intent.intent_type,
         symbols_discussed=symbols_discussed,
+        flagged=last_flag.get("flagged", False),
+        flag_reason=last_flag.get("reason"),
     )
 
 

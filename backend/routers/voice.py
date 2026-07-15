@@ -62,12 +62,13 @@ _TTS_CACHE_MAX = 64
 
 CHAT_LOG_DIR = cfg.DATA_DIR / "chat"
 CHAT_LOG_CSV = CHAT_LOG_DIR / "conversation_log.csv"
-# "symbols" (Phase V-DATA-3) added at the end so older log rows without
-# this column still parse fine (pandas reads the missing trailing field
-# as NaN) -- no migration needed for existing conversation_log.csv rows.
+# "symbols" (Phase V-DATA-3) and "flag_reason" (compliance addendum
+# follow-up) added at the end so older log rows without these columns
+# still parse fine (pandas reads a missing trailing field as NaN) -- no
+# migration needed for existing conversation_log.csv rows.
 _LOG_COLS = ["ts", "session_id", "mode", "language", "wake_word_used",
              "user_message", "intent", "reply_chars", "latency_ms", "tts_voice",
-             "symbols"]
+             "symbols", "flag_reason"]
 _log_lock = threading.Lock()
 
 
@@ -89,6 +90,8 @@ class LogRequest(BaseModel):
     symbols:        list[str] = []     # Phase V-DATA-3 -- from actual tool
                                          # calls (language-agnostic), not a
                                          # regex over user_message
+    flag_reason:    Optional[str] = None  # "refused" | "prompt_leak" | None
+                                            # (engines/ai/chatbot/safety.py)
 
 
 # "What to read vs. what to present" (user feedback: "she starts reading
@@ -291,6 +294,7 @@ def log_turn(req: LogRequest):
             "latency_ms":     req.latency_ms,
             "tts_voice":      req.tts_voice,
             "symbols":        ",".join(req.symbols) if req.symbols else "",
+            "flag_reason":    req.flag_reason or "",
         }
         with _log_lock:
             new_file = not CHAT_LOG_CSV.exists()

@@ -6,6 +6,83 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.53.0
+
+Veda safety follow-up: refusal audit logging + output-side prompt-leak scan
+
+Date: 2026-07-15
+
+Status: Completed
+
+---
+
+## Summary
+
+Follow-up to v4.52.0's compliance addendum. Two of three suggestions
+built (user approved #1 and #2, asked for #3 -- the KUNDLI verbatim-
+report tension -- to be explained rather than built yet).
+
+## #1 -- Refusal audit logging
+
+Nothing previously distinguished a refused turn from a normal one in
+`conversation_log.csv`. New `engines/ai/chatbot/safety.py` classifies
+every reply (`classify_reply()`); `chat_engine.py` runs it right before
+returning, stores the result on `self.last_flag`. Threaded through:
+`ChatResponse` (`backend/routers/chat.py`) -> frontend `ChatResponseData`
+type -> `vedaStore.ts`'s existing `logTurn` POST to `/api/voice/log` ->
+new `flag_reason` column in `conversation_log.csv` (same "trailing
+column, no migration needed" pattern as the existing `symbols` column).
+
+## #2 -- Output-side prompt-leak scan
+
+Separate from #1's classification: if a reply echoes fragments unique
+to Veda's own system prompt (e.g. a jailbreak tricked a weaker
+fallback provider into repeating its instructions), `sanitize_reply()`
+replaces it with a safe fallback message before it reaches the user.
+A refusal is NOT replaced -- refusing is already the correct, safe
+output, there's nothing to sanitize; only a `prompt_leak` classification
+triggers replacement.
+
+## #3 -- explained, not built (pending user decision)
+
+The KUNDLI intent instructs the LLM to output `generate_personal_kundli()`'s
+`formatted_report` VERBATIM, no edits -- while the new compliance
+addendum tells it to avoid presenting astrology as medical/death
+predictions. Showed the user concrete evidence:
+`kundli_interpreter.py`'s LORD_IN_HOUSE/PLANET_IN_HOUSE tables contain
+real phrases like "Risk of accidents, sudden events, and longevity
+challenges" and "Serious health transformation; sudden illness
+possible" -- standard classical 6th/8th-house significations, but
+exactly the kind of phrasing the compliance line was written to guard
+against, verbatim-locked by the KUNDLI prompt's own instruction. No
+fix implemented yet -- proposed a standing disclaimer appended once
+after the report (doesn't touch the verbatim text itself, so both
+instructions stay satisfied) as the likely direction, pending
+confirmation.
+
+## Verification
+
+267/267 tests pass. Live end-to-end through the running backend (after
+discovering and clearing a stale duplicate uvicorn process -- the
+"multiple uvicorn instances can co-bind :8001" gotcha already
+documented in project memory): pump-and-dump request wrapped in
+jailbreak framing correctly returns `flagged: true, flag_reason:
+"refused"`; a normal market query returns `flagged: false, flag_reason:
+null`; direct `/api/voice/log` call confirmed the new `flag_reason`
+column writes correctly to `conversation_log.csv` without disturbing
+older rows.
+
+## Files changed
+
+- engines/ai/chatbot/safety.py -- new (classify_reply, sanitize_reply)
+- engines/ai/chatbot/chat_engine.py -- last_flag tracking, sanitize_reply() call before returning
+- backend/routers/chat.py -- ChatResponse.flagged/flag_reason
+- backend/routers/voice.py -- LogRequest.flag_reason, _LOG_COLS, row dict
+- frontend/src/api/client.ts -- ChatResponseData type
+- frontend/src/store/vedaStore.ts -- flag_reason threaded into logTurn payload
+
+---
+
 # Version 4.52.0
 
 Veda compliance & safety addendum
