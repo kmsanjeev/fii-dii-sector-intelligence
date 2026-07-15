@@ -6,6 +6,79 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.56.0
+
+Phase PF-1: Portfolio CSV import
+
+Date: 2026-07-15
+
+Status: Completed
+
+---
+
+## Summary
+
+User asked for an Import CSV button on the Portfolio page so multiple
+transactions can be loaded at once instead of one-by-one through the
+manual Add Transaction form, with a template so the required columns
+are unambiguous.
+
+## Backend
+
+`engines/portfolio/portfolio_engine.py` -- new `import_transactions(df)`:
+validates required columns (`symbol, action, qty, price`; `date`/`notes`
+optional, matching `add_transaction()`'s existing rules), validates each
+row independently (a bad row is skipped with a reason rather than
+aborting the whole file), bulk-appends all valid rows in one write, and
+calls `rebuild()` exactly once regardless of row count (rebuild scans
+the full intelligence stack per position -- doing it per-row would be
+O(n) rebuilds of an operation meant to run once per mutation).
+
+`backend/routers/portfolio.py` -- two new endpoints:
+- `GET /api/portfolio/import/template` -- downloadable CSV with the
+  exact expected columns and 3 example rows.
+- `POST /api/portfolio/import` -- multipart file upload, parses via
+  pandas, returns `{imported, skipped, errors: [{row, reason}]}`.
+
+## Frontend
+
+`PortfolioPage.tsx`: added an "Import CSV" button + "Download template"
+link inside the existing Add Transaction card, below the manual-entry
+row. Uploads via `FormData`/`fetch`, shows an inline result summary
+(imported/skipped counts, first 8 row-level errors with the reason),
+and invalidates the `portfolio` and `portfolio_transactions` queries on
+a successful import so the holdings table and transaction history
+refresh immediately.
+
+## Verification
+
+Live end-to-end against the running backend (restarted clean first).
+Isolated engine test with a redirected data dir: 7-row CSV with 3 valid
+rows (including a blank date defaulting to today, and lowercase
+symbol/action normalized to uppercase) and 4 deliberately bad rows
+(missing symbol, invalid action, negative qty, unparseable date) ->
+correctly imported 3, skipped 4 with accurate row numbers and reasons.
+Then hit the real running endpoints: `GET .../import/template` returned
+the expected CSV; `POST .../import` with a 3-row file (2 valid, 1
+missing symbol) returned `{"imported":2,"skipped":1,"errors":[{"row":4,
+"reason":"symbol is required"}]}` and actually wrote to
+`data/portfolio/transactions.csv` -- confirmed via `GET /api/portfolio`
+showing the new positions, then reset the file back to empty (its
+pre-test state) since the imported rows were test data, not real
+holdings.
+
+Not verified this session: the browser file-picker/upload UI itself
+(needs a live browser) and the template CSV round-tripping cleanly back
+through Excel/Google Sheets edits.
+
+## Files changed
+
+- engines/portfolio/portfolio_engine.py -- import_transactions(), REQUIRED_IMPORT_COLS
+- backend/routers/portfolio.py -- GET /import/template, POST /import
+- frontend/src/pages/PortfolioPage.tsx -- Import CSV button, template link, result panel
+
+---
+
 # Version 4.55.0
 
 Phase V5: customer-support voice persona + confirm-before-detail

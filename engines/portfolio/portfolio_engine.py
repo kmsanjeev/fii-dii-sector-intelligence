@@ -101,6 +101,76 @@ def add_transaction(symbol: str, action: str, qty: float, price: float,
     return True
 
 
+REQUIRED_IMPORT_COLS = {"symbol", "action", "qty", "price"}   # date/notes optional
+
+
+def import_transactions(df: pd.DataFrame) -> dict:
+    """Validate and bulk-append transactions from an imported CSV DataFrame.
+
+    Same validation rules as add_transaction(), applied per row -- a bad row
+    is skipped (with a reason) rather than aborting the whole import, since
+    a 200-row import failing entirely over one typo would be brutal. Only
+    one rebuild() at the end regardless of row count (rebuild scans the
+    full intelligence stack per position -- doing it per-row for a bulk
+    import would be O(n) rebuilds of an operation meant to run once/mutation).
+    """
+    _ensure_dir()
+    df = df.copy()
+    df.columns = [str(c).strip().lower() for c in df.columns]
+    missing = REQUIRED_IMPORT_COLS - set(df.columns)
+    if missing:
+        raise ValueError(f"CSV missing required column(s): {', '.join(sorted(missing))}")
+
+    valid_rows: list[dict] = []
+    errors: list[dict] = []
+    for i, row in df.iterrows():
+        row_num = int(i) + 2  # +1 for 0-index, +1 for the header row
+        try:
+            symbol = str(row.get("symbol", "")).strip().upper()
+            if not symbol or symbol.lower() == "nan":
+                raise ValueError("symbol is required")
+
+            action = str(row.get("action", "")).strip().upper()
+            if action not in ("BUY", "SELL"):
+                raise ValueError(f"action must be BUY or SELL, got {action!r}")
+
+            qty = float(row.get("qty"))
+            if qty <= 0:
+                raise ValueError("qty must be positive")
+
+            price = float(row.get("price"))
+            if price <= 0:
+                raise ValueError("price must be positive")
+
+            raw_date = row.get("date")
+            if raw_date is None or (isinstance(raw_date, float) and pd.isna(raw_date)) or not str(raw_date).strip():
+                txn_date = date.today().isoformat()
+            else:
+                parsed = pd.to_datetime(str(raw_date).strip(), dayfirst=False, errors="coerce")
+                if pd.isna(parsed):
+                    raise ValueError(f"invalid date: {raw_date!r} (use YYYY-MM-DD)")
+                txn_date = parsed.strftime("%Y-%m-%d")
+
+            raw_notes = row.get("notes")
+            notes = "" if raw_notes is None or (isinstance(raw_notes, float) and pd.isna(raw_notes)) else str(raw_notes).strip()
+
+            valid_rows.append({
+                "date": txn_date, "symbol": symbol, "action": action,
+                "qty": qty, "price": price, "notes": notes,
+            })
+        except Exception as e:
+            errors.append({"row": row_num, "reason": str(e)})
+
+    if valid_rows:
+        pd.DataFrame(valid_rows, columns=TRANSACTION_COLS).to_csv(
+            TRANSACTIONS_CSV, mode="a", header=False, index=False
+        )
+        logger.info("[Portfolio] Imported %d transaction(s), %d skipped", len(valid_rows), len(errors))
+        rebuild()
+
+    return {"imported": len(valid_rows), "skipped": len(errors), "errors": errors}
+
+
 def delete_symbol(symbol: str) -> int:
     """Remove all transactions for a symbol; returns rows deleted."""
     txns   = load_transactions()

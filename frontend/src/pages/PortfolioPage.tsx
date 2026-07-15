@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 const API = ''
@@ -157,6 +157,17 @@ async function deletePosition(symbol: string): Promise<void> {
   if (!r.ok) throw new Error('Delete failed')
 }
 
+type ImportResult = { imported: number; skipped: number; errors: { row: number; reason: string }[] }
+
+async function postImportCsv(file: File): Promise<ImportResult> {
+  const fd = new FormData()
+  fd.append('file', file)
+  const r = await fetch(`${API}/api/portfolio/import`, { method: 'POST', body: fd })
+  const body = await r.json()
+  if (!r.ok) throw new Error(body.detail || 'Import failed')
+  return body
+}
+
 // ── Small reusable UI pieces ──────────────────────────────────────────────────
 
 const LABEL_COLORS: Record<string, string> = {
@@ -265,6 +276,11 @@ export function PortfolioPage() {
   // Show transactions panel
   const [showTxns, setShowTxns] = useState(false)
 
+  // CSV import
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [importResult, setImportResult] = useState<ImportResult | null>(null)
+  const [importErr,    setImportErr]    = useState('')
+
   const mutation = useMutation({
     mutationFn: () => postTransaction(txnAction.toLowerCase() as 'buy' | 'sell', {
       symbol,
@@ -280,6 +296,27 @@ export function PortfolioPage() {
     },
     onError: (e: Error) => { setFormErr(e.message); setFormMsg('') },
   })
+
+  const importMutation = useMutation({
+    mutationFn: postImportCsv,
+    onSuccess: (result) => {
+      setImportResult(result)
+      setImportErr('')
+      if (result.imported > 0) {
+        qc.invalidateQueries({ queryKey: ['portfolio'] })
+        qc.invalidateQueries({ queryKey: ['portfolio_transactions'] })
+      }
+    },
+    onError: (e: Error) => { setImportErr(e.message); setImportResult(null) },
+  })
+
+  const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''   // allow re-selecting the same file after fixing it
+    if (!file) return
+    setImportResult(null); setImportErr('')
+    importMutation.mutate(file)
+  }
 
   const delMutation = useMutation({
     mutationFn: deletePosition,
@@ -410,6 +447,72 @@ export function PortfolioPage() {
           {formMsg && <span style={{ color: '#22C55E', fontSize: 10 }}>{formMsg}</span>}
           {formErr && <span style={{ color: '#EF4444', fontSize: 10 }}>{formErr}</span>}
         </div>
+
+        {/* CSV import (Phase PF-1) */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
+          marginTop: 14, paddingTop: 14, borderTop: '1px solid #1E2332',
+        }}>
+          <span style={{ color: '#475569', fontSize: 10, letterSpacing: 1 }}>OR IMPORT FROM CSV</span>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv"
+            onChange={handleImportFile}
+            style={{ display: 'none' }}
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={importMutation.isPending}
+            style={{
+              padding: '5px 14px', borderRadius: 4, fontWeight: 700, fontSize: 11,
+              border: '1px solid #3B82F6', background: 'transparent',
+              color: importMutation.isPending ? '#334155' : '#60A5FA',
+              cursor: importMutation.isPending ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {importMutation.isPending ? 'Importing...' : 'Import CSV'}
+          </button>
+
+          <a
+            href={`${API}/api/portfolio/import/template`}
+            download="portfolio_import_template.csv"
+            style={{ color: '#64748B', fontSize: 10, textDecoration: 'underline' }}
+          >
+            Download template
+          </a>
+
+          <span style={{ color: '#334155', fontSize: 9 }}>
+            Required columns: date, symbol, action (BUY/SELL), qty, price, notes (optional)
+          </span>
+        </div>
+
+        {importResult && (
+          <div style={{
+            marginTop: 10, padding: '8px 12px', borderRadius: 4, fontSize: 10,
+            background: importResult.skipped > 0 ? '#F59E0B11' : '#22C55E11',
+            border: `1px solid ${importResult.skipped > 0 ? '#F59E0B44' : '#22C55E44'}`,
+          }}>
+            <div style={{ color: importResult.imported > 0 ? '#22C55E' : '#94A3B8', fontWeight: 700 }}>
+              Imported {importResult.imported} transaction{importResult.imported !== 1 ? 's' : ''}
+              {importResult.skipped > 0 && `, skipped ${importResult.skipped} row${importResult.skipped !== 1 ? 's' : ''}`}
+            </div>
+            {importResult.errors.length > 0 && (
+              <ul style={{ margin: '6px 0 0', paddingLeft: 16, color: '#F59E0B' }}>
+                {importResult.errors.slice(0, 8).map((e, i) => (
+                  <li key={i}>Row {e.row}: {e.reason}</li>
+                ))}
+                {importResult.errors.length > 8 && (
+                  <li style={{ color: '#64748B' }}>+{importResult.errors.length - 8} more</li>
+                )}
+              </ul>
+            )}
+          </div>
+        )}
+        {importErr && (
+          <div style={{ marginTop: 10, color: '#EF4444', fontSize: 10 }}>{importErr}</div>
+        )}
       </div>
 
       {isLoading && <div style={{ color: '#64748B', padding: 40, textAlign: 'center' }}>Loading portfolio...</div>}
