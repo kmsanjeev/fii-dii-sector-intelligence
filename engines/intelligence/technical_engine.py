@@ -32,7 +32,31 @@ logger = get_logger(__name__)
 
 OUTPUT  = cfg.INTELLIGENCE_DIR / "technical_indicators.csv"
 ADJ_DIR = cfg.DATA_DIR / "NSE" / "adjusted_equity"
+EQUITY_MASTER_FILE = cfg.EQUITY_MASTER_DIR / "equity_master.csv"
 LOOKBACK = 252  # trading sessions ~ 1 year
+
+
+def _load_equity_universe() -> set[str] | None:
+    """
+    Active EQ-series symbols from equity_master.csv -- the platform's
+    curated real-company universe. ETFs, index-tracking products, and
+    similar financial instruments also trade under NSE's "EQ" series in
+    raw bhavcopy, so a series=="EQ" filter alone does not exclude them;
+    only equity_master.csv (which is built specifically to list actual
+    listed companies) does. Without this, symbols like PSUBANK,
+    IVZINGOLD, LICMFGOLD (ETFs) leaked into "stock" screening tools --
+    found via a live chatbot response, see CHANGELOG v4.53.2.
+    """
+    if not EQUITY_MASTER_FILE.exists():
+        logger.warning("[Technical] equity_master.csv not found -- cannot filter universe")
+        return None
+    em = pd.read_csv(EQUITY_MASTER_FILE)
+    em.columns = [c.upper() for c in em.columns]
+    if not {"SYMBOL", "SERIES", "IS_ACTIVE"}.issubset(em.columns):
+        logger.warning("[Technical] equity_master.csv missing expected columns -- cannot filter universe")
+        return None
+    active_eq = em[(em["SERIES"] == "EQ") & (em["IS_ACTIVE"] == True)]  # noqa: E712
+    return set(active_eq["SYMBOL"].astype(str))
 
 
 # ─── Trend signal from DMA structure ─────────────────────────────────────────
@@ -299,6 +323,17 @@ def run() -> dict:
 
     as_of_date = str(close_piv.index[-1].date())
     symbols    = close_piv.columns.tolist()
+
+    equity_universe = _load_equity_universe()
+    if equity_universe is not None:
+        before = len(symbols)
+        symbols = [s for s in symbols if s in equity_universe]
+        logger.info(
+            "[Technical] Filtered to equity_master.csv universe: %d -> %d symbols "
+            "(excluded ETFs/index products not in the platform's stock universe)",
+            before, len(symbols),
+        )
+
     logger.info("[Technical] Computing for %d symbols, as_of=%s", len(symbols), as_of_date)
 
     records = []

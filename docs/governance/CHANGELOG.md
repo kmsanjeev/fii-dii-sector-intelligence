@@ -6,6 +6,75 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.53.2
+
+ETFs/index products leaking into stock screening tools
+
+Date: 2026-07-15
+
+Status: Completed
+
+---
+
+## Summary
+
+User shared an actual chatbot response to "which stocks are available
+in discounted buying with strong accumulation" -- the results table
+included PSUBANK, IVZINGOLD, LICMFGOLD, MIDQ50ADD, HEALTHADD. These are
+ETFs/index-tracking products (a PSU Bank index ETF, two Gold ETFs, and
+two other index-linked products), not individual companies -- a
+category error in a tool meant to screen "stocks".
+
+## Root cause
+
+`technical_engine.py` (which builds `technical_indicators.csv`, the
+source for `get_technical_screener()`) computes indicators for every
+symbol in the raw adjusted-bhavcopy archive with zero cross-reference
+to `equity_master.csv`, the platform's curated real-company universe.
+ETFs and index-tracking products also trade under NSE's "EQ" series in
+raw bhavcopy (confirmed: `stock_history_builder.py`'s existing EQ-only
+filter, G-S-01, does not exclude them either -- series alone isn't
+enough), so they flowed straight through into what's supposed to be a
+stock-only dataset. Confirmed via `equity_master.csv` lookup: all 5
+flagged symbols are absent from it entirely, while the other symbols
+in the same response (TECHNVISN, ELITECON, RNBDENIMS, DISAQ) are
+present and legitimate.
+
+Separately checked whether the unusually low RSI values (4.9-7.67) for
+these symbols indicated a computation bug: the RSI formula itself
+(Wilder smoothing) is correct; near-zero RSI is a plausible symptom of
+thin/illiquid trading in financial products that shouldn't have been
+in the screener at all, not a formula defect.
+
+## Fix
+
+New `_load_equity_universe()` in `technical_engine.py` reads
+`equity_master.csv`, filters to `SERIES=='EQ' AND IS_ACTIVE==True`
+(2053 symbols), and `run()` now restricts its computed symbol universe
+to that set before computing any indicator -- excluding ETFs/index
+products at the source rather than patching each downstream tool.
+
+## Verification
+
+Rebuilt `technical_indicators.csv` (2051 of 2053 active symbols, 2
+skipped for <5 sessions per the existing G-I-01 guardrail). Confirmed
+directly: all 5 flagged ETF symbols now absent; all 4 legitimate
+stocks from the original response still present. Re-ran the exact
+`get_technical_screener(condition="OVERSOLD")` call the chatbot used --
+clean list of real small/mid-cap stocks, no ETFs. 267/267 tests pass.
+
+Also noted, not fixed (LLM output variance, not a data bug): the
+original response's "NATNIONSTD" was a slight LLM misspelling of the
+real symbol "NATIONSTD" -- explains why it wasn't found in
+equity_master.csv during initial triage.
+
+## Files changed
+
+- engines/intelligence/technical_engine.py -- _load_equity_universe(), symbol-universe filter in run()
+- data/intelligence/technical_indicators.csv -- rebuilt (2051 symbols, ETFs excluded)
+
+---
+
 # Version 4.53.1
 
 Kundli report: hard exemption from the output-side safety scan
