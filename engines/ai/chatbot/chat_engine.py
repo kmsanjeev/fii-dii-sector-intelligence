@@ -266,17 +266,23 @@ class ChatEngine:
 
             if result["status"] == "ok":
                 reply = _clean_reply(result["reply"])
-                # Output-side check (safety.py): flags a refusal for audit
-                # visibility (the refusal text itself is left untouched --
-                # it's already the correct, safe thing to show) and
-                # replaces a leaked-system-prompt reply before it reaches
-                # the user.
-                reply, self.last_flag = sanitize_reply(reply)
-                if self.last_flag["flagged"]:
-                    logger.warning(
-                        "[ChatEngine] Reply flagged: %s (provider=%s)",
-                        self.last_flag["reason"], provider["name"],
-                    )
+                if result.get("verbatim"):
+                    # Kundli formatted_report -- user wants this honest and
+                    # unaltered, no exceptions. Explicitly skip the safety
+                    # scan rather than trust it won't false-positive.
+                    self.last_flag = {"flagged": False, "reason": None}
+                else:
+                    # Output-side check (safety.py): flags a refusal for
+                    # audit visibility (the refusal text itself is left
+                    # untouched -- it's already the correct, safe thing to
+                    # show) and replaces a leaked-system-prompt reply
+                    # before it reaches the user.
+                    reply, self.last_flag = sanitize_reply(reply)
+                    if self.last_flag["flagged"]:
+                        logger.warning(
+                            "[ChatEngine] Reply flagged: %s (provider=%s)",
+                            self.last_flag["reason"], provider["name"],
+                        )
                 self.history.append({"role": "assistant", "content": reply})
                 return reply
 
@@ -362,10 +368,14 @@ class ChatEngine:
 
                 # Direct bypass for kundli: return formatted_report WITHOUT sending to LLM.
                 # This avoids MAX_TOKENS truncation of the comprehensive multi-section report.
+                # verbatim=True tells chat() to skip sanitize_reply() (safety.py) entirely --
+                # the user explicitly wants the Kundli report honest and unaltered, and this
+                # makes that a hard guarantee rather than relying on the safety regexes simply
+                # not happening to match real astrological text.
                 if tc.function.name == "generate_personal_kundli":
                     report = result.get("formatted_report", "")
                     if report:
-                        return {"status": "ok", "reply": report}
+                        return {"status": "ok", "reply": report, "verbatim": True}
                     elif result.get("error"):
                         return {"status": "ok", "reply": f"Kundli computation failed: {result['error']}"}
 

@@ -6,6 +6,54 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.53.1
+
+Kundli report: hard exemption from the output-side safety scan
+
+Date: 2026-07-15
+
+Status: Completed
+
+---
+
+## Summary
+
+User explicitly asked to leave #3 (the verbatim-vs-compliance tension)
+alone for now, and stated a clear requirement: the Kundli report must
+come back honest and unaltered, no exceptions. v4.53.0's
+sanitize_reply() (refusal/prompt-leak scan) was applied uniformly to
+every reply including the Kundli formatted_report bypass path -- in
+practice near-zero risk of a false match (verified: zero regex hits on
+a real report), but "near-zero" isn't the same guarantee as "provably
+never," and the user's requirement deserved the stronger one.
+
+## Change
+
+The generate_personal_kundli() bypass in chat_engine.py now returns
+`{"status": "ok", "reply": report, "verbatim": True}`. chat()'s success
+branch checks this flag and skips sanitize_reply() entirely for that
+reply -- not "the regex is unlikely to match", but "this code path
+cannot run on a Kundli report at all." _clean_reply() (pre-existing,
+unrelated to this session's compliance work) still runs -- confirmed
+it only trims trailing whitespace (30317 -> 30316 chars) with zero
+function-artifact matches on a real report, i.e. no actual content is
+touched by anything in the pipeline.
+
+## Verification
+
+Direct proof, not just code review: computed a real Kundli
+(compute_personal_kundli directly) and ran the identical request
+through the full ChatEngine.chat() pipeline -- output is byte-for-byte
+identical (30316 == 30316 chars, string equality True), with
+last_flag confirming the safety scan never ran on it. 267/267 tests
+pass.
+
+## Files changed
+
+- engines/ai/chatbot/chat_engine.py -- verbatim flag on the Kundli bypass, honored in chat()'s success branch
+
+---
+
 # Version 4.53.0
 
 Veda safety follow-up: refusal audit logging + output-side prompt-leak scan
