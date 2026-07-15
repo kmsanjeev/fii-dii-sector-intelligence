@@ -6,6 +6,99 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.54.0
+
+Phase V4: hands-free follow-up voice mode for Veda
+
+Date: 2026-07-15
+
+Status: Completed
+
+---
+
+## Summary
+
+User asked whether follow-up voice queries were supported and whether
+Veda's listening/response activity is logged. Logging was already live
+(`data/chat/conversation_log.csv` via `POST /api/voice/log`, confirmed
+with real rows including `wake_word_used=True` voice turns) -- reported
+as-is, no changes needed there. Follow-up voice queries were NOT
+supported: every command required re-saying "Veda"/"Adya", even
+mid-conversation. Built hands-free follow-up on request.
+
+## Design
+
+After a voice-mode reply finishes speaking, the mic reopens automatically
+for a short window (`FOLLOWUP_WAIT_MS` = 6s) WITHOUT requiring the wake
+word -- if the user speaks, it's sent as a follow-up in the same session
+(context preserved via the existing `backendSid`/`_voiceChats` tracking);
+if they stay silent, the window lapses silently and `VedaWakeController`
+re-arms wake-word-only listening, exactly as before. A synthesized
+two-tone earcon (Web Audio oscillator, no network round trip) cues the
+open window instead of repeating the "yes, I'm listening" TTS greeting
+every turn, which would read as robotic.
+
+Gated behind a new persisted `followUpEnabled` setting (default on,
+`cfip-followup` in localStorage) AND the existing `wakeEnabled` --
+follow-up is an extension of hands-free mode, so it never opens the mic
+if the user has wake word off (manual mic-button-only preference).
+
+## Implementation
+
+`vedaStore.ts`'s `speak()` previously resolved as soon as TTS playback
+*started* (the outer async function returned right after subscribing an
+`onended` callback, never awaiting it) -- unusable for chaining
+"do something after Veda stops talking". Rewrote it to return a Promise
+that resolves at every true terminal point (head+tail playback end,
+browser-TTS-fallback end, or abort via a newer `speakGen`), preserving
+all existing behavior/timing since it was previously fire-and-forget
+with a single caller.
+
+`startListening()` gained an `opts?: { isFollowUp?: boolean }` param:
+uses `FOLLOWUP_WAIT_MS` instead of `INITIAL_WAIT_MS`, skips the "didn't
+hear anything" error banner on silence (expected/normal for an
+auto-opened window, not a failure), and sets a new `followUpListening`
+state flag so the UI can show "Listening for follow-up..." distinctly
+from wake-triggered listening.
+
+`send()` chains `get().startListening({isFollowUp: true})` after
+`speak()` resolves, gated on `mode === 'voice' && followUpEnabled &&
+wakeEnabled`, and re-checks `listening/loading/speaking` are all still
+false at that moment -- covers the barge-in case where a new wake-word
+command already interrupted mid-reply (`stopSpeaking()` bumps
+`speakGen`, aborting the old `speak()` promise; the state guard prevents
+the stale follow-up chain from also trying to open the mic).
+
+## UI
+
+Added a `FOLLOW-UP ON/OFF` toggle next to the existing `WAKE ON/OFF`
+toggle in both `VedaWidget.tsx` (drawer) and `ChatPage.tsx` (header),
+visually dimmed when wake word is off. Status text and mic-button
+tooltips/placeholders now distinguish "Listening for follow-up..." from
+plain "Listening...". Fixed two `onClick={startListening}` call sites
+(mic buttons) to `onClick={() => startListening()}` -- passing the
+button's `MouseEvent` as the new optional `opts` param was harmless
+(`.isFollowUp` on a MouseEvent is just `undefined`) but incorrect typing.
+
+## Verification
+
+`npx tsc --noEmit` clean across the touched files. Live mic/wake-word
+behavior needs a real browser with microphone access to fully exercise
+end-to-end -- not verified interactively this session; logically traced
+the state-update ordering (Zustand `set()` is synchronous, the
+`.then()` follow-up chain and `VedaWakeController`'s `useEffect` both
+read fresh `getState()`, so `listening: true` is visible before the
+wake-listener effect can grab the mic) to rule out the two-recognizers-
+racing failure mode, but this should be confirmed on a real device.
+
+## Files changed
+
+- frontend/src/store/vedaStore.ts -- FOLLOWUP_WAIT_MS, playFollowUpChime(), followUpEnabled/followUpListening state, speak() Promise rework, startListening(opts), follow-up chaining in send()
+- frontend/src/components/veda/VedaWidget.tsx -- FOLLOW-UP toggle, status text, mic onClick fix
+- frontend/src/pages/ChatPage.tsx -- FOLLOW-UP toggle, status text/placeholder, mic onClick fix
+
+---
+
 # Version 4.53.2
 
 ETFs/index products leaking into stock screening tools

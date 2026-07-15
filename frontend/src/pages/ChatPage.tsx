@@ -1,30 +1,24 @@
 /**
- * ChatPage — Phase D v2
+ * ChatPage — Phase D v2 -> Phase V-UI (global Veda)
  * Full AI chat UI with persistent history, slash-command palette, and sidebar.
  * POST /api/chat  ->  reply + session_id + intent
  * Persistence: localStorage key "mci_chat_sessions" (up to 60 sessions)
+ *
+ * Voice/session state now lives in vedaStore (shared with the global
+ * VedaWidget in AppShell) -- this page is the "detail view": full session
+ * history, export/import/print, slash commands. A message sent here shows
+ * up in the floating widget instantly, and vice versa, since both read
+ * the same store. The wake-word listener is NOT owned here anymore --
+ * see VedaWakeController, mounted once in AppShell so it works app-wide.
  */
-import { useState, useRef, useEffect, useCallback } from 'react'
-import { sendChat, resetChatSession, type ChatResponseData } from '../api/client'
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type Role = 'user' | 'assistant' | 'system'
-interface Msg { role: Role; content: string; intent?: string; ts: number }
-
-interface SavedSession {
-  id: string
-  title: string
-  messages: Msg[]
-  backendSessionId?: string
-  createdAt: number
-  updatedAt: number
-}
+import { useState, useRef, useEffect } from 'react'
+import { resetChatSession } from '../api/client'
+import {
+  useVedaStore, genId, makeTitle, VOICE_LANGS,
+  type Msg, type SavedSession,
+} from '../store/vedaStore'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-
-const STORAGE_KEY = 'mci_chat_sessions'
-const MAX_SESSIONS = 60
 
 const INTENT_META: Record<string, { label: string; color: string }> = {
   MARKET:    { label: 'MARKET',    color: '#22C55E' },
@@ -34,14 +28,6 @@ const INTENT_META: Record<string, { label: string; color: string }> = {
   RESEARCH:  { label: 'RESEARCH',  color: '#64748B' },
   KUNDLI:    { label: 'KUNDLI',    color: '#E879F9' },
   ASTRO:     { label: 'ASTRO',     color: '#FB923C' },
-}
-
-function makeWelcome(): Msg {
-  return {
-    role: 'assistant',
-    content: "Hello! I'm your market intelligence chatbot — Ask me anything about markets, sectors, stocks, or flows.",
-    ts: Date.now(),
-  }
 }
 
 // ─── Slash Commands ───────────────────────────────────────────────────────────
@@ -161,26 +147,7 @@ const SLASH: SlashCat[] = [
   },
 ]
 
-// ─── Storage helpers ──────────────────────────────────────────────────────────
-
-function genId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-}
-
-function makeTitle(msgs: Msg[]): string {
-  const first = msgs.find(m => m.role === 'user')
-  if (!first) return 'New Chat'
-  return first.content.length > 50 ? first.content.slice(0, 47) + '...' : first.content
-}
-
-function loadSessions(): SavedSession[] {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]') }
-  catch { return [] }
-}
-
-function saveSessions(list: SavedSession[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list.slice(0, MAX_SESSIONS)))
-}
+// ─── Storage helpers (export/import/print only -- session CRUD lives in the store) ──
 
 function exportSession(s: SavedSession): void {
   const blob = new Blob([JSON.stringify(s, null, 2)], { type: 'application/json' })
@@ -552,120 +519,49 @@ function MessageBubble({ msg }: { msg: Msg }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-// ── Voice support (Phase V1: Veda) ────────────────────────────────────────────
-
-const VOICE_LANGS = [
-  { code: 'hi', sttLang: 'hi-IN', label: 'Hindi (Swara)' },
-  { code: 'en', sttLang: 'en-IN', label: 'English (Neerja)' },
-  { code: 'ta', sttLang: 'ta-IN', label: 'Tamil (Pallavi)' },
-  { code: 'te', sttLang: 'te-IN', label: 'Telugu (Shruti)' },
-  { code: 'bn', sttLang: 'bn-IN', label: 'Bengali (Tanishaa)' },
-]
-const VOICE_LANG_KEY = 'cfip-voice-lang'
-const WAKE_KEY       = 'cfip-wake'
-
-function loadVoiceLang(): string {
-  try { return localStorage.getItem(VOICE_LANG_KEY) || 'hi' } catch { return 'hi' }
-}
-function loadWakeEnabled(): boolean {
-  try { return localStorage.getItem(WAKE_KEY) !== 'off' } catch { return true }
-}
-
-// Wake words + common mis-hearings; Hindi STT returns Devanagari script.
-// Extra variants added V3.3 to improve barge-in matching against TTS echo.
-const WAKE_WORDS = [
-  'veda', 'adya', 'vedha', 'aadya', 'vida', 'vader', 'adia',
-  'weda', 'vaida', 'veeda', 'aadia', 'adhya',
-  'वेदा', 'वेधा', 'आद्या', 'अद्या', 'वेद', 'विदा',
-]
-// TTS playback volume: slightly below full so the mic can still hear the
-// user's wake word over Veda's own voice from the speakers (barge-in)
-const TTS_VOLUME = 0.85
-
-const GREETINGS: Record<string, string> = {
-  hi: 'जी, बोलिए। मैं सुन रही हूँ।',
-  en: 'Yes, I am listening. How can I help?',
-}
-
-// Short spoken filler while a long request is processing (Phase V3)
-const FILLERS: Record<string, string> = {
-  hi: 'एक क्षण।',
-  en: 'One moment.',
-}
-
-// Split a reply for staged playback: first 1-2 sentences speak immediately
-// while the remainder is fetched in parallel (Phase V3)
-function splitForStaging(text: string): [string, string] {
-  if (text.length <= 220) return [text, '']
-  const head = text.slice(0, 260)
-  for (const stop of ['. ', '? ', '! ', '। ']) {
-    const i = head.lastIndexOf(stop)
-    if (i > 60) return [text.slice(0, i + 1), text.slice(i + 1)]
-  }
-  return [text, '']
-}
-
-type SpeechRecognitionLike = {
-  lang: string; continuous: boolean; interimResults: boolean
-  onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal: boolean }> }) => void) | null
-  onend: (() => void) | null
-  onerror: ((e: { error: string }) => void) | null
-  start: () => void; stop: () => void; abort: () => void
-}
-
-function getSpeechRecognition(): SpeechRecognitionLike | null {
-  const w = window as unknown as { SpeechRecognition?: new () => SpeechRecognitionLike; webkitSpeechRecognition?: new () => SpeechRecognitionLike }
-  const Ctor = w.SpeechRecognition || w.webkitSpeechRecognition
-  return Ctor ? new Ctor() : null
-}
-
 export function ChatPage() {
-  // Session state
-  const [sessions,   setSessions]   = useState<SavedSession[]>(() => loadSessions())
-  const [currentId,  setCurrentId]  = useState<string>(() => genId())
-  const [messages,   setMessages]   = useState<Msg[]>(() => [makeWelcome()])
-  const [backendSid, setBackendSid] = useState<string | undefined>(undefined)
+  // Shared state (same store the global VedaWidget uses)
+  const sessions       = useVedaStore(s => s.sessions)
+  const currentId      = useVedaStore(s => s.currentId)
+  const messages        = useVedaStore(s => s.messages)
+  const backendSid      = useVedaStore(s => s.backendSid)
+  const voiceLang       = useVedaStore(s => s.voiceLang)
+  const speakReplies    = useVedaStore(s => s.speakReplies)
+  const listening        = useVedaStore(s => s.listening)
+  const speaking          = useVedaStore(s => s.speaking)
+  const loading           = useVedaStore(s => s.loading)
+  const wakeEnabled       = useVedaStore(s => s.wakeEnabled)
+  const followUpEnabled   = useVedaStore(s => s.followUpEnabled)
+  const followUpListening = useVedaStore(s => s.followUpListening)
+  const apiError          = useVedaStore(s => s.apiError)
+  const liveTranscript    = useVedaStore(s => s.liveTranscript)
 
-  // UI state
+  const send               = useVedaStore(s => s.send)
+  const startListening     = useVedaStore(s => s.startListening)
+  const stopSpeaking       = useVedaStore(s => s.stopSpeaking)
+  const setVoiceLang       = useVedaStore(s => s.setVoiceLang)
+  const setSpeakReplies    = useVedaStore(s => s.setSpeakReplies)
+  const setWakeEnabled     = useVedaStore(s => s.setWakeEnabled)
+  const setFollowUpEnabled = useVedaStore(s => s.setFollowUpEnabled)
+  const setApiError        = useVedaStore(s => s.setApiError)
+  const handleNewChatStore = useVedaStore(s => s.handleNewChat)
+  const handleSelectStore  = useVedaStore(s => s.handleSelectSession)
+  const handleDeleteStore  = useVedaStore(s => s.handleDeleteSession)
+
+  // Page-local UI state (each surface, drawer vs full page, owns its own textbox)
   const [input,      setInput]      = useState('')
-  const [loading,    setLoading]    = useState(false)
-  const [apiError,   setApiError]   = useState<string | null>(null)
   const [showSlash,  setShowSlash]  = useState(false)
   const [slashFilter,setSlashFilter]= useState('')
 
-  // Voice state (Phase V1 + V2)
-  const [voiceLang,    setVoiceLang]    = useState<string>(() => loadVoiceLang())
-  const [speakReplies, setSpeakReplies] = useState(true)
-  const [listening,    setListening]    = useState(false)
-  const [speaking,     setSpeaking]     = useState(false)
-  const [wakeEnabled,  setWakeEnabled]  = useState<boolean>(() => loadWakeEnabled())
-  const [wakeRetry,    setWakeRetry]    = useState(0)     // bumps to restart the wake listener
-
   const bottomRef  = useRef<HTMLDivElement>(null)
   const inputRef   = useRef<HTMLTextAreaElement>(null)
-  const recogRef   = useRef<SpeechRecognitionLike | null>(null)
-  const audioRef   = useRef<HTMLAudioElement | null>(null)
-  const voiceChatsRef = useRef<Set<string>>(new Set())   // chats born from voice
-  const wakeUsedRef   = useRef(false)                    // next turn was wake-initiated
-  const greetingRef   = useRef<string | null>(null)      // pre-fetched greeting audio URL
 
-  const fillerRef = useRef<string | null>(null)          // pre-fetched filler audio URL
-
-  // Pre-fetch Veda's greeting + processing filler so both play instantly (V2/V3)
+  // Reflect the live transcript into the input box while listening (was
+  // setInput() directly inside the recognizer's onresult before this was
+  // shared state -- now it flows through the store like everything else).
   useEffect(() => {
-    let cancelled = false
-    const prefetch = (text: string, target: React.MutableRefObject<string | null>) =>
-      fetch('/api/voice/tts', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, language: voiceLang }),
-      })
-        .then(r => (r.ok ? r.blob() : null))
-        .then(b => { if (b && !cancelled) target.current = URL.createObjectURL(b) })
-        .catch(() => { /* best-effort */ })
-    prefetch(GREETINGS[voiceLang] ?? GREETINGS.en, greetingRef)
-    prefetch(FILLERS[voiceLang] ?? FILLERS.en, fillerRef)
-    return () => { cancelled = true }
-  }, [voiceLang])
+    if (listening) setInput(liveTranscript)
+  }, [liveTranscript, listening])
 
   // ── Auto-scroll ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -680,57 +576,21 @@ export function ChatPage() {
     el.style.height = Math.min(el.scrollHeight, 120) + 'px'
   }, [input])
 
-  // ── Auto-save to localStorage ────────────────────────────────────────────────
-  useEffect(() => {
-    if (messages.length <= 1) return   // don't save welcome-only sessions
-    const session: SavedSession = {
-      id:               currentId,
-      title:            makeTitle(messages),
-      messages,
-      backendSessionId: backendSid,
-      createdAt:        sessions.find(s => s.id === currentId)?.createdAt ?? Date.now(),
-      updatedAt:        Date.now(),
-    }
-    setSessions(prev => {
-      const idx = prev.findIndex(s => s.id === currentId)
-      const next = idx >= 0
-        ? prev.map(s => s.id === currentId ? session : s)
-        : [session, ...prev]
-      saveSessions(next)
-      return next
-    })
-  }, [messages])  // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── New chat ─────────────────────────────────────────────────────────────────
-  const handleNewChat = useCallback(async () => {
-    if (backendSid) { try { await resetChatSession(backendSid) } catch { /* ignore */ } }
-    setCurrentId(genId())
-    setMessages([makeWelcome()])
-    setBackendSid(undefined)
-    setInput('')
-    setApiError(null)
-    setShowSlash(false)
+  // ── New chat / session management (thin wrappers over store actions) ────────
+  const handleNewChat = async () => {
+    await handleNewChatStore()
+    setInput(''); setShowSlash(false)
     setTimeout(() => inputRef.current?.focus(), 80)
-  }, [backendSid])
+  }
 
-  // ── Load existing session ────────────────────────────────────────────────────
-  const handleSelectSession = useCallback((s: SavedSession) => {
-    setCurrentId(s.id)
-    setMessages(s.messages)
-    setBackendSid(s.backendSessionId)
-    setInput('')
-    setApiError(null)
-    setShowSlash(false)
+  const handleSelectSession = (s: SavedSession) => {
+    handleSelectStore(s)
+    setInput(''); setShowSlash(false)
     setTimeout(() => inputRef.current?.focus(), 80)
-  }, [])
+  }
 
-  // ── Delete session ───────────────────────────────────────────────────────────
-  const handleDeleteSession = useCallback((id: string) => {
-    setSessions(prev => { const next = prev.filter(s => s.id !== id); saveSessions(next); return next })
-    if (id === currentId) handleNewChat()
-  }, [currentId, handleNewChat])
+  const handleDeleteSession = (id: string) => { handleDeleteStore(id) }
 
-  // ── Export / Import / Print ──────────────────────────────────────────────────
   const currentSession = sessions.find(s => s.id === currentId) ?? null
   const hasChat = messages.length > 1
 
@@ -753,7 +613,9 @@ export function ChatPage() {
             title: s.title ? `(imported) ${s.title}` : 'Imported Chat',
             updatedAt: Date.now(),
           }
-          setSessions(prev => { const next = [imported, ...prev]; saveSessions(next); return next })
+          const next = [imported, ...sessions]
+          useVedaStore.setState({ sessions: next })
+          try { localStorage.setItem('mci_chat_sessions', JSON.stringify(next.slice(0, 60))) } catch { /* ignore */ }
           handleSelectSession(imported)
         }
       } catch { /* invalid file */ }
@@ -768,320 +630,6 @@ export function ChatPage() {
     }
     printSession(s)
   }
-
-  // ── Voice: speak a reply via Veda's TTS (edge-tts on the backend) ────────────
-  // Phase V3: staged playback (first sentences play while the rest is fetched),
-  // generation counter so stop/new-speech cancels stale chains, and a browser
-  // speechSynthesis fallback if the TTS service is unreachable.
-  const speakGenRef = useRef(0)
-
-  const fetchTtsUrl = useCallback(async (text: string): Promise<string | null> => {
-    try {
-      const r = await fetch('/api/voice/tts', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, language: voiceLang }),
-      })
-      if (!r.ok) return null
-      return URL.createObjectURL(await r.blob())
-    } catch { return null }
-  }, [voiceLang])
-
-  const browserTtsFallback = useCallback((text: string) => {
-    try {
-      const u = new SpeechSynthesisUtterance(text.slice(0, 800))
-      u.lang = (VOICE_LANGS.find(l => l.code === voiceLang) ?? VOICE_LANGS[0]).sttLang
-      u.onend = () => setSpeaking(false)
-      u.onerror = () => setSpeaking(false)
-      setSpeaking(true)
-      window.speechSynthesis.speak(u)
-    } catch { setSpeaking(false) }
-  }, [voiceLang])
-
-  const speak = useCallback(async (text: string) => {
-    const gen = ++speakGenRef.current
-    audioRef.current?.pause()
-    try { window.speechSynthesis?.cancel() } catch { /* ignore */ }
-
-    const [head, tail] = splitForStaging(text)
-    const headP = fetchTtsUrl(head)
-    const tailP = tail ? fetchTtsUrl(tail) : Promise.resolve(null)
-
-    const headUrl = await headP
-    if (gen !== speakGenRef.current) return          // superseded / stopped
-    if (!headUrl) { browserTtsFallback(text); return }  // edge-tts outage
-
-    const playUrl = (url: string, onDone: () => void) => {
-      const a = new Audio(url)
-      a.volume = TTS_VOLUME     // leave acoustic headroom for barge-in
-      audioRef.current = a
-      a.onended = onDone
-      a.onerror = onDone
-      a.play().catch(onDone)
-    }
-    setSpeaking(true)
-    playUrl(headUrl, async () => {
-      if (gen !== speakGenRef.current) { setSpeaking(false); return }
-      const tailUrl = await tailP
-      if (gen !== speakGenRef.current || !tailUrl) { setSpeaking(false); return }
-      playUrl(tailUrl, () => setSpeaking(false))
-    })
-  }, [fetchTtsUrl, browserTtsFallback])
-
-  const stopSpeaking = useCallback(() => {
-    speakGenRef.current += 1     // cancels any staged chain in flight
-    audioRef.current?.pause()
-    try { window.speechSynthesis?.cancel() } catch { /* ignore */ }
-    setSpeaking(false)
-  }, [])
-
-  // ── Conversation analytics log (every turn, voice AND text) ─────────────────
-  const logTurn = useCallback((sid: string, mode: 'voice' | 'text', userMessage: string,
-                               intent: string, replyChars: number, latencyMs: number,
-                               symbols: string[] = []) => {
-    const wake = wakeUsedRef.current
-    wakeUsedRef.current = false
-    fetch('/api/voice/log', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        session_id: sid, mode, language: voiceLang, wake_word_used: wake,
-        user_message: userMessage, intent, reply_chars: replyChars,
-        latency_ms: latencyMs, tts_voice: mode === 'voice' ? voiceLang : '',
-        symbols,
-      }),
-    }).catch(() => { /* analytics must never break chat */ })
-  }, [voiceLang])
-
-  // ── Send message ─────────────────────────────────────────────────────────────
-  // sidOverride: pass null to force a fresh backend session (voice-new-chat flow)
-  const send = useCallback(async (text: string, mode: 'voice' | 'text' = 'text',
-                                  sidOverride?: string | null) => {
-    const trimmed = text.trim()
-    if (!trimmed || loading) return
-
-    const userMsg: Msg = { role: 'user', content: trimmed, ts: Date.now() }
-    setMessages(prev => [...prev, userMsg])
-    setInput('')
-    setShowSlash(false)
-    setLoading(true)
-    setApiError(null)
-
-    const sid = sidOverride !== undefined ? (sidOverride ?? undefined) : backendSid
-    const t0 = Date.now()
-    // Spoken filler if a voice request runs long (Phase V3)
-    let fillerTimer: ReturnType<typeof setTimeout> | null = null
-    if (mode === 'voice' && fillerRef.current) {
-      fillerTimer = setTimeout(() => {
-        try { const a = new Audio(fillerRef.current as string); a.volume = TTS_VOLUME; audioRef.current = a; a.play().catch(() => {}) }
-        catch { /* ignore */ }
-      }, 2500)
-    }
-    try {
-      const data: ChatResponseData = await sendChat(trimmed, sid, mode)
-      if (fillerTimer) { clearTimeout(fillerTimer); fillerTimer = null }
-      setBackendSid(data.session_id)
-      setMessages(prev => [...prev, { role: 'assistant', content: data.reply, intent: data.intent, ts: Date.now() }])
-      logTurn(data.session_id, mode, trimmed, data.intent ?? '', data.reply.length, Date.now() - t0, data.symbols_discussed ?? [])
-      if (mode === 'voice' || (speakReplies && voiceChatsRef.current.has(currentId))) {
-        speak(data.reply)
-      }
-    } catch (err: unknown) {
-      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
-      const errText = detail ?? 'Connection error. Check that the backend is running.'
-      setApiError(errText)
-      setMessages(prev => [...prev, { role: 'assistant', content: `Sorry, I could not process that. ${errText}`, ts: Date.now() }])
-    } finally {
-      if (fillerTimer) clearTimeout(fillerTimer)
-      setLoading(false)
-      inputRef.current?.focus()
-    }
-  }, [loading, backendSid, speak, logTurn, speakReplies, currentId])
-
-  // ── Voice: dispatch a captured spoken command ────────────────────────────────
-  // Shared by push-to-talk capture AND wake-word-with-inline-command (Veda,
-  // <question>, said in one breath). Voice conversations are recorded in
-  // their own chat: if the current chat is a text conversation with
-  // history, start a fresh one first.
-  const sendVoiceCommand = useCallback((spoken: string) => {
-    if (messages.length > 1 && !voiceChatsRef.current.has(currentId)) {
-      const newId = genId()
-      voiceChatsRef.current.add(newId)
-      setCurrentId(newId)
-      setMessages([makeWelcome()])
-      setBackendSid(undefined)
-      setTimeout(() => send(spoken, 'voice', null), 60)
-    } else {
-      voiceChatsRef.current.add(currentId)
-      send(spoken, 'voice')
-    }
-  }, [messages.length, currentId, send])
-
-  // ── Voice: push-to-talk capture ──────────────────────────────────────────────
-  // Capture timing (V3.2 -- fixes "no response after the greeting"):
-  //   INITIAL_WAIT_MS  window to START speaking. Must be generous: the first
-  //                    recognition result arrives 0.5-1s AFTER speech begins,
-  //                    so the previous 2s window often closed before the user
-  //                    was even heard -- capture ended empty, silently.
-  //   SILENCE_MS       once speech HAS started, this much quiet = done.
-  //   MAX_CAPTURE_MS   hard cap per command.
-  const INITIAL_WAIT_MS = 8000
-  const SILENCE_MS      = 2500   // V3.3: more patience for slow/thoughtful speech
-  const MAX_CAPTURE_MS  = 25000
-
-  const startListening = useCallback(() => {
-    if (listening) { recogRef.current?.stop(); return }
-    const recog = getSpeechRecognition()
-    if (!recog) {
-      setApiError('Voice input needs Chrome or Edge (Web Speech API not available)')
-      return
-    }
-    stopSpeaking()
-    const langMeta = VOICE_LANGS.find(l => l.code === voiceLang) ?? VOICE_LANGS[0]
-    recog.lang = langMeta.sttLang
-    recog.continuous = true          // we decide when the user is done, not Chrome
-    recog.interimResults = true
-    recogRef.current = recog
-    setListening(true)
-
-    let finalText = ''
-    let heardAnything = false
-    let silenceTimer: ReturnType<typeof setTimeout> | null = null
-    const armSilence = (ms: number) => {
-      if (silenceTimer) clearTimeout(silenceTimer)
-      silenceTimer = setTimeout(() => { try { recog.stop() } catch { /* ignore */ } }, ms)
-    }
-    armSilence(INITIAL_WAIT_MS)   // generous window to begin speaking
-    const hardCap = setTimeout(() => { try { recog.stop() } catch { /* ignore */ } }, MAX_CAPTURE_MS)
-
-    recog.onresult = (e) => {
-      heardAnything = true
-      let interim = ''
-      finalText = ''
-      for (let i = 0; i < e.results.length; i++) {
-        const res = e.results[i]
-        if (res.isFinal) finalText += res[0].transcript + ' '
-        else interim += res[0].transcript
-      }
-      setInput((finalText + interim).trim())   // live transcript in the input box
-      armSilence(SILENCE_MS)   // speech has started: 2s of quiet = done talking
-    }
-    recog.onerror = () => { setListening(false) }
-    recog.onend = () => {
-      if (silenceTimer) clearTimeout(silenceTimer)
-      clearTimeout(hardCap)
-      setListening(false)
-      const spoken = finalText.trim()
-      if (!spoken) {
-        // Nothing captured: reset the wake flag so it cannot mislabel the
-        // next turn, and tell the user instead of failing silently.
-        wakeUsedRef.current = false
-        if (!heardAnything) {
-          setInput('')
-          setApiError('Veda did not hear anything -- say "Veda" and speak within a few seconds, or use the mic button.')
-          setTimeout(() => setApiError(null), 6000)
-        }
-        return
-      }
-      sendVoiceCommand(spoken)
-    }
-    try { recog.start() } catch { setListening(false) }
-  }, [listening, voiceLang, sendVoiceCommand, stopSpeaking])
-
-  // ── Voice: hands-free wake word "Veda" / "Adya" (Phase V2 + V3 barge-in) ────
-  // A lightweight continuous recognition session runs whenever no command is
-  // being captured or processed -- INCLUDING while Veda is speaking, so saying
-  // her name interrupts her (barge-in). Interruption is wake-word-only, never
-  // any-speech, so her own audio cannot self-trigger. Chrome ends continuous
-  // sessions periodically; onend bumps wakeRetry to restart.
-  useEffect(() => {
-    if (!wakeEnabled || listening || loading) return
-    const recog = getSpeechRecognition()
-    if (!recog) return
-
-    let matched = false
-    let disposed = false
-    const langMeta = VOICE_LANGS.find(l => l.code === voiceLang) ?? VOICE_LANGS[0]
-    recog.lang = langMeta.sttLang
-    recog.continuous = true
-    recog.interimResults = true
-
-    const onWake = (fullTranscript: string, matchedWord: string) => {
-      matched = true
-      try { recog.abort() } catch { /* ignore */ }
-      stopSpeaking()                     // barge-in: silence Veda immediately
-      wakeUsedRef.current = true
-
-      // Wake word + command in one breath ("Veda, what's the market
-      // regime") is how people naturally talk to a voice assistant. Extract
-      // whatever follows the wake word and, if it looks like a real
-      // question (2+ words), act on it immediately instead of discarding
-      // it and making the user repeat themselves after the greeting chime
-      // -- that repeat-yourself gap is what "activation doesn't work" was.
-      const idx = fullTranscript.toLowerCase().lastIndexOf(matchedWord)
-      const trailing = idx >= 0 ? fullTranscript.slice(idx + matchedWord.length) : ''
-      const inlineCommand = trailing.replace(/^[,.\s।]+/, '').trim()
-      if (inlineCommand.split(/\s+/).filter(Boolean).length >= 2) {
-        sendVoiceCommand(inlineCommand)
-        return
-      }
-
-      const play = greetingRef.current ? new Audio(greetingRef.current) : null
-      if (play) {
-        play.volume = TTS_VOLUME
-        setSpeaking(true)
-        play.onended = () => { setSpeaking(false); startListening() }
-        play.onerror = () => { setSpeaking(false); startListening() }
-        play.play().catch(() => { setSpeaking(false); startListening() })
-      } else {
-        startListening()
-      }
-    }
-
-    recog.onresult = (e) => {
-      // Inspect the FULL accumulated transcript, not just the newest result
-      // index: if the user says "Veda, <question>" in one breath, Chrome
-      // can finalize "Veda" into an earlier result index once the question
-      // starts a new one -- checking only the latest index silently missed
-      // the wake word the moment the user kept talking. This was the main
-      // cause of "struggle to activate Veda" and unreliable barge-in (same
-      // code path interrupts her mid-speech).
-      let combined = ''
-      for (let i = 0; i < e.results.length; i++) combined += (e.results[i][0]?.transcript ?? '') + ' '
-      const heardLower = combined.toLowerCase()
-      const hit = WAKE_WORDS.find(w => heardLower.includes(w))
-      if (hit) onWake(combined, hit)
-    }
-    recog.onerror = (e) => {
-      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
-        setWakeEnabled(false)
-        try { localStorage.setItem(WAKE_KEY, 'off') } catch { /* ignore */ }
-      }
-    }
-    recog.onend = () => {
-      // Chrome times continuous sessions out -- restart unless we woke or
-      // unmounted. While Veda is speaking, her own audio makes recognition
-      // sessions churn faster, so restart quickly to keep barge-in windows
-      // as small as possible (V3.3).
-      if (!matched && !disposed) setTimeout(() => setWakeRetry(n => n + 1), 250)
-    }
-
-    // V3.1 fix for "Veda stops responding after one reply": right after a
-    // command capture ends, the mic is still being released -- an immediate
-    // start() throws InvalidStateError, and the old code swallowed it with
-    // NO retry, leaving the wake listener permanently dead. Now we start
-    // after a short delay and schedule a retry if start still throws.
-    const startTimer = setTimeout(() => {
-      if (disposed) return
-      try { recog.start() } catch {
-        if (!disposed) setTimeout(() => setWakeRetry(n => n + 1), 800)
-      }
-    }, 350)
-
-    return () => {
-      disposed = true
-      clearTimeout(startTimer)
-      try { recog.abort() } catch { /* ignore */ }
-    }
-  }, [wakeEnabled, listening, loading, voiceLang, wakeRetry, startListening, stopSpeaking, sendVoiceCommand])
 
   // ── Input handling ────────────────────────────────────────────────────────────
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -1100,7 +648,9 @@ export function ChatPage() {
     if (e.key === 'Escape' && showSlash) { setShowSlash(false); return }
     if (e.key === 'Enter' && !e.shiftKey && !showSlash) {
       e.preventDefault()
-      send(input)
+      const text = input
+      setInput('')
+      send(text)
     }
   }
 
@@ -1109,6 +659,12 @@ export function ChatPage() {
     setShowSlash(false)
     setSlashFilter('')
     setTimeout(() => inputRef.current?.focus(), 0)
+  }
+
+  const submitClick = () => {
+    const text = input
+    setInput('')
+    send(text)
   }
 
   // ── Render ────────────────────────────────────────────────────────────────────
@@ -1147,7 +703,7 @@ export function ChatPage() {
               {makeTitle(messages) === 'New Chat' ? 'MARKET CHATBOT' : makeTitle(messages)}
             </div>
             <div style={{ color: '#334155', fontSize: 9, marginTop: 2 }}>
-              Groq / Llama 3.3 70B &nbsp;+&nbsp; RAG (6 domains) &nbsp;+&nbsp; 11 live tools
+              Groq / Llama 3.3 70B &nbsp;+&nbsp; RAG (6 domains) &nbsp;+&nbsp; 23 live tools
               {backendSid && <span style={{ color: '#1E2332' }}> &nbsp;|&nbsp; {backendSid.slice(0, 8)}</span>}
             </div>
           </div>
@@ -1155,29 +711,42 @@ export function ChatPage() {
             {/* Voice controls (Phase V1: Veda) */}
             <select
               value={voiceLang}
-              onChange={e => { setVoiceLang(e.target.value); try { localStorage.setItem(VOICE_LANG_KEY, e.target.value) } catch { /* ignore */ } }}
+              onChange={e => setVoiceLang(e.target.value)}
               title="Veda's language and voice"
               style={{ background: '#0D1117', border: '1px solid #1E2332', borderRadius: 4, color: '#94A3B8', fontSize: 9, padding: '3px 6px', outline: 'none', cursor: 'pointer' }}
             >
               {VOICE_LANGS.map(l => <option key={l.code} value={l.code}>{l.label}</option>)}
             </select>
             <button
-              onClick={() => setSpeakReplies(v => !v)}
+              onClick={() => setSpeakReplies(!speakReplies)}
               title={speakReplies ? 'Veda speaks replies in voice chats (on)' : 'Voice replies muted'}
               style={{ background: 'transparent', border: `1px solid ${speakReplies ? '#3B82F6' : '#1E2332'}`, borderRadius: 4, color: speakReplies ? '#60A5FA' : '#334155', fontSize: 9, padding: '3px 8px', cursor: 'pointer', fontWeight: 700 }}
             >
               {speakReplies ? 'VOICE ON' : 'MUTED'}
             </button>
             <button
-              onClick={() => {
-                const next = !wakeEnabled
-                setWakeEnabled(next)
-                try { localStorage.setItem(WAKE_KEY, next ? 'on' : 'off') } catch { /* ignore */ }
-              }}
-              title={wakeEnabled ? 'Hands-free: say "Veda" or "Adya" to activate (on)' : 'Wake word off -- use the mic button'}
+              onClick={() => setWakeEnabled(!wakeEnabled)}
+              title={wakeEnabled ? 'Hands-free: say "Veda" or "Adya" from any page (on)' : 'Wake word off -- use the mic button'}
               style={{ background: wakeEnabled ? '#14532D22' : 'transparent', border: `1px solid ${wakeEnabled ? '#22C55E' : '#1E2332'}`, borderRadius: 4, color: wakeEnabled ? '#4ADE80' : '#334155', fontSize: 9, padding: '3px 8px', cursor: 'pointer', fontWeight: 700 }}
             >
               {wakeEnabled ? 'WAKE: VEDA' : 'WAKE OFF'}
+            </button>
+            <button
+              onClick={() => setFollowUpEnabled(!followUpEnabled)}
+              title={
+                !wakeEnabled ? 'Follow-up needs wake word enabled'
+                : followUpEnabled ? 'Hands-free follow-up: mic reopens after each reply, no need to say "Veda" again (on)'
+                : 'Follow-up off -- say "Veda" for every question'
+              }
+              style={{
+                background: followUpEnabled && wakeEnabled ? '#1E3A5F' : 'transparent',
+                border: `1px solid ${followUpEnabled && wakeEnabled ? '#3B82F6' : '#1E2332'}`,
+                borderRadius: 4, color: followUpEnabled && wakeEnabled ? '#60A5FA' : '#334155',
+                fontSize: 9, padding: '3px 8px', cursor: 'pointer', fontWeight: 700,
+                opacity: wakeEnabled ? 1 : 0.5,
+              }}
+            >
+              {followUpEnabled ? 'FOLLOW-UP: ON' : 'FOLLOW-UP: OFF'}
             </button>
             {speaking && (
               <button onClick={stopSpeaking} style={{ background: '#1E3A5F', border: '1px solid #3B82F6', borderRadius: 4, color: '#60A5FA', fontSize: 9, padding: '3px 8px', cursor: 'pointer', fontWeight: 700 }}>
@@ -1219,6 +788,12 @@ export function ChatPage() {
             {apiError}
           </div>
         )}
+        {apiError && !apiError.includes('API_KEY') && !apiError.includes('not configured') && !apiError.includes('Veda') && (
+          <div style={{ margin: '0 20px 8px', padding: '8px 14px', borderRadius: 4, background: '#1c0000', border: '1px solid #EF444444', color: '#EF4444', fontSize: 11, flexShrink: 0 }}>
+            {apiError}
+            <button onClick={() => setApiError(null)} style={{ float: 'right', background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer', fontSize: 12 }}>×</button>
+          </div>
+        )}
 
         {/* Input area */}
         <div style={{ padding: '0 20px 14px', flexShrink: 0, borderTop: '1px solid #1E2332', paddingTop: 12 }}>
@@ -1233,9 +808,9 @@ export function ChatPage() {
             <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end' }}>
               {/* Mic: push-to-talk (Phase V1) */}
               <button
-                onClick={startListening}
+                onClick={() => startListening()}
                 disabled={loading}
-                title={listening ? 'Listening... click to stop' : `Speak to Veda (${VOICE_LANGS.find(l => l.code === voiceLang)?.label})`}
+                title={listening ? (followUpListening ? 'Listening for follow-up... click to stop' : 'Listening... click to stop') : `Speak to Veda (${VOICE_LANGS.find(l => l.code === voiceLang)?.label})`}
                 style={{
                   width: 42, height: 42, borderRadius: '50%', flexShrink: 0,
                   border: `2px solid ${listening ? '#EF4444' : '#3B82F6'}`,
@@ -1254,7 +829,7 @@ export function ChatPage() {
                 value={input}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder={listening ? 'Listening... speak now' : 'Ask about markets, sectors, stocks… or type / for quick questions'}
+                placeholder={listening ? (followUpListening ? 'Listening for follow-up... speak now' : 'Listening... speak now') : 'Ask about markets, sectors, stocks… or type / for quick questions'}
                 rows={1}
                 style={{
                   flex: 1, resize: 'none', overflow: 'hidden',
@@ -1268,7 +843,7 @@ export function ChatPage() {
                 disabled={loading}
               />
               <button
-                onClick={() => send(input)}
+                onClick={submitClick}
                 disabled={!input.trim() || loading}
                 style={{
                   padding: '10px 20px', borderRadius: 6, fontSize: 12, fontWeight: 700,

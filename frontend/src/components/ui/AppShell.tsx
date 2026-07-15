@@ -5,6 +5,7 @@ import { fetchRegime, type MarketRegime } from '../../api/client'
 import { RegimeBanner } from '../platform/RegimeBanner'
 import { IndicesTicker } from '../platform/IndicesTicker'
 import { usePlatformStore } from '../../store/platformStore'
+import { VedaWakeController, VedaWidget } from '../veda/VedaWidget'
 
 const NAV = [
   { path: '/',           label: 'Dashboard' },
@@ -18,7 +19,6 @@ const NAV = [
   { path: '/broker',     label: 'Broker' },
   { path: '/research',   label: 'Research' },
   { path: '/execution',  label: 'Execution' },
-  { path: '/chat',       label: 'ChatBot' },
   { path: '/data',       label: 'Data' },
   { path: '/settings',   label: 'Settings' },
 ]
@@ -95,6 +95,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', backgroundColor: '#0A0D14' }}>
+      {/* Veda: global wake-word listener, mounted once so it's alive on
+          every page -- never mount this a second time anywhere else. */}
+      <VedaWakeController />
+
       {regime && (
         <RegimeBanner
           regime={regime.regime}
@@ -216,6 +220,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {menuOpen ? '×' : '☰'}
           </button>
         )}
+
+        {/* Veda: global icon, always the rightmost element -- accessible
+            from every page instead of living inside individual page cards */}
+        <VedaWidget />
       </header>
 
       {/* ── Mobile drawer ──────────────────────────────────────────────────────── */}
