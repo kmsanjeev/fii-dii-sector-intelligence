@@ -6,6 +6,89 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.55.0
+
+Phase V5: customer-support voice persona + confirm-before-detail
+
+Date: 2026-07-15
+
+Status: Completed
+
+---
+
+## Summary
+
+User feedback on Veda's voice replies: hearing a short lead then a flat
+"full details are in the chat" felt like a support call that reads two
+lines and hangs up -- "gives a cheated feeling." Asked for a proper
+subject-expert/customer-support register, a brief headline answer
+followed by a genuine spoken offer to continue (not an assumption
+either way), warmer greetings, and never disconnecting until the user
+ends or stops responding (the last point is largely the Phase V4
+hands-free follow-up window shipped earlier the same day -- this phase
+is the persona/wording half of the fix).
+
+## Changes
+
+**chat_engine.py `_VOICE_ADDENDUM`** (system prompt for every voice-mode
+turn): persona reframed from "sharp analyst chatting with a colleague"
+to a senior subject-matter-expert with a private-bank-relationship-
+manager customer-support register -- warm, unhurried, precise. New hard
+rule: once the headline answer is given, if there is meaningfully more
+detail available, ASK a genuine short question offering it ("Would you
+like me to go through the full list, or does this cover it?") and stop
+-- never state "check the chat" as if ending the call. A paired rule
+covers the other half: if the user's next turn is a short affirmative
+("yes", "haan", "batao", "sunao") clearly answering that offer, elaborate
+in natural spoken sentences (tables converted to prose), not a repeated
+acknowledgement. Added an explicit customer-support-ethics paragraph
+(never sound rushed/dismissive, leave the door open at a natural close).
+
+**intent_router.py `_GREETING_PROMPT`**: same tone shift for the
+greeting exchange specifically -- "genuinely attentive customer-support
+expert answering a call," not a peer or a recording.
+
+**voice.py `_spoken_text()`**: `_LIST_TRAILER`/`_LIST_ONLY_FALLBACK`
+rewritten from a flat statement ("Full details are in the chat.") to a
+genuine offer/question, in both languages. Since the model is now
+instructed to ask this itself, added a check so the mechanical trailer
+is skipped when the spoken lead already ends in "?" -- prevents asking
+twice back to back, which would read worse than the original bug.
+`MAX_SPOKEN_SENTENCES` raised 4 -> 5 to give the model's own closing
+question room without truncating the actual answer to make space for it.
+
+## Verification
+
+Live end-to-end against the running backend (restarted clean first --
+Windows uvicorn `--reload` multi-process gotcha, see project memory):
+- `POST /api/chat` with `mode=voice`, a real STOCK-intent question ->
+  model naturally led with a 2-sentence data-grounded answer, then
+  closed with "Would you like me to go through the full list with
+  sector-wise breakdown, ya itna kaafi hai?" -- unprompted by any
+  hardcoded template, purely from the new system prompt.
+- Ran that exact live reply through `_spoken_text()`: trailer correctly
+  skipped (model already asked), no double-question.
+- Synthetic cases in isolation: model output ending in "?" -> no
+  trailer appended; model output with a raw table and no question ->
+  fallback trailer appended correctly; short plain reply -> passthrough
+  unchanged.
+- `POST /api/chat` with `mode=voice`, "hi veda" (GREETING intent) ->
+  "Hello, I'm so glad you reached out. How can I help you today with
+  markets, sectors, or stocks?" -- warm, professional, no canned menu.
+
+Not verified this session: actual TTS audio playback quality/pacing of
+the new phrasing, and the full hands-free loop (offer -> follow-up
+window reopens -> user says "yes" -> elaboration) end-to-end with a
+real microphone -- needs a live browser session with mic access.
+
+## Files changed
+
+- engines/ai/chatbot/chat_engine.py -- _VOICE_ADDENDUM persona + confirm-before-detail rules
+- engines/ai/chatbot/intent_router.py -- _GREETING_PROMPT tone
+- backend/routers/voice.py -- _LIST_TRAILER/_LIST_ONLY_FALLBACK wording, already-asked skip check, MAX_SPOKEN_SENTENCES 4->5
+
+---
+
 # Version 4.54.0
 
 Phase V4: hands-free follow-up voice mode for Veda

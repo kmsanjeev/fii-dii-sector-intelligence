@@ -98,15 +98,23 @@ class LogRequest(BaseModel):
 # all"): a reply formatted as a bulleted/numbered list of stocks/scores is
 # NOT a markdown table, so the old table-only filter let it through
 # untouched -- TTS would enumerate every line. Everything from the first
-# list item onward is chat-only detail; only the lead prose is spoken, with
-# a short trailer telling the user the rest is in the chat.
+# list item onward is chat-only detail; only the lead prose is spoken.
+#
+# V4 rewrite (user feedback: a flat "full details are in the chat" reads
+# like a hang-up, not a handoff -- "gives a cheated feeling"). The trailer
+# is now a genuine offer/question, matching the customer-support voice
+# persona in chat_engine.py's _VOICE_ADDENDUM (which also now instructs the
+# model to ask this itself before handing off to a table). This is only a
+# FALLBACK for when the model's own spoken lead didn't already end in a
+# question -- see the trailing "?" check in _spoken_text() below, which
+# skips this to avoid asking twice.
 _LIST_TRAILER: dict[str, str] = {
-    "hi": "पूरी जानकारी चैट में है।",
-    "en": "Full details are in the chat.",
+    "hi": "क्या मैं पूरी जानकारी बताऊं, या इतना काफी है?",
+    "en": "Would you like me to go through the rest, or does this cover it?",
 }
 _LIST_ONLY_FALLBACK: dict[str, str] = {
-    "hi": "मैंने जानकारी निकाल ली है, पूरी सूची चैट में देखिए।",
-    "en": "I've got the details -- check the full list in the chat.",
+    "hi": "मैंने पूरी जानकारी निकाल ली है -- क्या मैं इसे पढ़कर सुनाऊं, या चैट में देखना ठीक रहेगा?",
+    "en": "I've pulled up the details -- would you like me to read them out, or is checking the chat fine?",
 }
 
 # Structural list detection (above) only catches markdown bullets/tables.
@@ -117,7 +125,11 @@ _LIST_ONLY_FALLBACK: dict[str, str] = {
 # sentences, always, regardless of formatting. Split only on genuine
 # sentence-ending punctuation -- a decimal point inside a price/score/percent
 # ("84.72", "-8%.") must never be mistaken for a sentence boundary.
-MAX_SPOKEN_SENTENCES = 4
+# 5, not 4 (V4): the voice persona now asks a closing "want the rest?"
+# question as part of its own spoken lead (chat_engine.py _VOICE_ADDENDUM)
+# -- that question needs a slot of its own, on top of the actual answer,
+# or the cap would truncate the model mid-offer.
+MAX_SPOKEN_SENTENCES = 5
 
 
 def _cap_sentences(text: str) -> tuple[str, bool]:
@@ -184,7 +196,15 @@ def _spoken_text(text: str, lang: str = DEFAULT_LANG) -> str:
         out, sentence_truncated = _cap_sentences(out)
         list_truncated = list_truncated or sentence_truncated
 
-    if list_truncated:
+    # The voice persona is now instructed to ask its own "want the rest?"
+    # question before handing off to a table (chat_engine.py). If it
+    # already did -- the spoken lead ends in a question mark -- appending
+    # the mechanical trailer on top would ask twice back to back, which
+    # sounds worse than the original hang-up this was meant to fix. Only
+    # append the fallback offer when the model's own lead did NOT already
+    # end with one (covers models that ignore the instruction).
+    already_asked = bool(out) and out.rstrip()[-1:] in ("?", "？")
+    if list_truncated and not already_asked:
         out = out + (" " if out else "") + (_LIST_TRAILER.get(lang, _LIST_TRAILER["en"])
                                               if out else _LIST_ONLY_FALLBACK.get(lang, _LIST_ONLY_FALLBACK["en"]))
 
