@@ -53,6 +53,8 @@ from engines.common.progress import progress
 from engines.common.holiday_engine import (
     get_trading_days,
     is_holiday,
+    update_nse_holidays,
+    refresh_special_sessions,
 )
 
 logger = get_logger("nse_equity_acquisition")
@@ -1116,6 +1118,15 @@ def main():
     print("=" * 60, flush=True)
     print("NSE EQUITY BHAVCOPY ACQUISITION ENGINE", flush=True)
     print("=" * 60, flush=True)
+
+    # Step 0: keep the holiday calendar and special-session detection
+    # (Diwali Muhurat, Budget Day) fresh -- both are cheap/no-op once
+    # already current for the year, safe to call every run.
+    try:
+        update_nse_holidays()
+        refresh_special_sessions()
+    except Exception:
+        logger.exception("Holiday/special-session refresh failed (non-fatal)")
 
     # Step 1: validate and find missing dates
     validate_archive()

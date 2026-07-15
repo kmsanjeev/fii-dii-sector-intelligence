@@ -78,6 +78,7 @@ REPORT_CACHE = CACHE_DIR / "reports"
 # ==========================================================
 
 NSE_HOLIDAY_FILE = REFERENCE_DIR / "nse_holidays.csv"
+SPECIAL_SESSIONS_FILE = REFERENCE_DIR / "special_trading_sessions.csv"
 
 
 # ==========================================================

@@ -211,7 +211,7 @@ Full spec: `docs/governance/GUARDRAILS.md`
 
 ## KEY EDGE CASES (quick reference)
 - **Weekend dates:** Not missing — NSE closed Sat/Sun. Skip silently.
-- **Mahurat trading:** 1-hour Diwali session — real data, low volume, process normally
+- **Mahurat trading:** 1-hour Diwali session — real data, low volume, process normally. Auto-detected every year + Budget Day (Feb 1, weekend, 2026+) via `holiday_engine.py` (ADR-023) — the daily acquisition pipeline backfills these automatically, no manual date-hunting needed.
 - **Circuit breaker halt:** Partial day — bhavcopy still exists, not a gap
 - **Zero volume day:** Log warning, do not drop — may be valid circuit limit hit
 - **F&O expiry (last Thu):** Higher volume expected — not anomalous

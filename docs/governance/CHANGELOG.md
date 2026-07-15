@@ -6,6 +6,87 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.51.0
+
+Special trading session detection (Diwali Muhurat + Budget Day) -- ADR-023
+
+Date: 2026-07-15
+
+Status: Completed
+
+---
+
+## Summary
+
+User reported that special NSE trading sessions held on weekends/holidays
+(Diwali Muhurat every year, and a new Union Budget Day session on Feb 1
+whenever it falls on a weekend, started 2026) were being silently
+skipped -- `holiday_engine.py`'s `get_trading_days()` generated
+candidate dates via `pd.date_range(freq="B")`, structurally blind to
+any weekend date regardless of whether NSE actually traded. Confirmed
+via an NSE circular (NSE/CMTR/72349) and user clarification that exactly
+two recurring patterns exist -- not an open-ended set.
+
+## Root cause + fix
+
+Two categories, two different detection mechanisms:
+
+1. **Diwali Muhurat** -- NSE's own current-year holiday calendar
+   (`nselib.trading_holiday_calendar()`) marks this date with an
+   asterisk in the Equities holiday description (e.g. "Diwali Laxmi
+   Pujan*"). New `_detect_muhurat_from_calendar()` reads this signal --
+   self-updating every year with zero manual maintenance, as long as
+   NSE keeps the convention. (The API only returns the current year, so
+   this alone can't recover past years -- see Backfill.)
+
+2. **Budget Day** -- invisible to the holiday calendar entirely (it's
+   not a holiday, just a business day NSE chose to trade on). Fixed
+   rule: `_detect_budget_day(year)` flags Feb 1 whenever it's a
+   Saturday or Sunday, gated to 2026+ (the year this practice began,
+   confirmed by the user and the NSE circular).
+
+Both feed into `get_trading_days()`, which now unions weekday-minus-
+holidays with special-session dates from the persistent record
+`data/reference/special_trading_sessions.csv`. No new fetch/download
+logic was needed: `nse_equity_acquisition_engine.main()` (already run
+daily via `daily_refresh.py`) now also calls `update_nse_holidays()` +
+`refresh_special_sessions()` at startup, and the EXISTING
+`validate_archive() -> refresh_missing_dates() -> backfill_missing_dates()`
+pipeline automatically treats these as expected dates and backfills any
+gap through the same NSELIB-primary/archive-fallback path used for
+every other date.
+
+## Backfill
+
+Seeded 2010-2025 Muhurat dates (verified via web search, cross-checked
+against known Diwali dates) plus 2026-02-01 (Budget Day, the immediately
+known gap). Of the dates that actually landed on a weekend (others were
+weekdays, already covered by normal acquisition, no gap existed):
+
+- Downloaded successfully: 2019-10-27, 2020-11-14, 2023-11-12, 2026-02-01
+- Unavailable at NSE's own archive (confirmed `FileNotFoundError`, not
+  a bug -- regular weekday data from the same years downloads fine via
+  the identical mechanism): 2013-11-03, 2016-10-30
+
+## Verification
+
+267/267 tests pass. Live-verified: `refresh_special_sessions()` correctly
+auto-detected 2026-11-08 as this year's Muhurat date from NSE's live
+calendar; `get_trading_days('2026-01-28','2026-02-05')` correctly
+includes 2026-02-01 (Sunday); the 4 recoverable historical gaps
+downloaded real trading data (1471-2412 symbol rows each, not empty).
+
+## Files changed
+
+- engines/common/config.py -- SPECIAL_SESSIONS_FILE path constant
+- engines/common/holiday_engine.py -- special-session detection + get_trading_days() union
+- engines/acquisition/nse_equity_acquisition_engine.py -- calls update_nse_holidays()/refresh_special_sessions() in main()
+- data/reference/special_trading_sessions.csv -- new, force-tracked in git (same precedent as nse_holidays.csv)
+- docs/decisions/ADR-023-Special-Trading-Session-Detection.md -- new
+- CLAUDE.md, data/CLAUDE.md, engines/common/CLAUDE.md, docs/CLAUDE.md -- edge-case notes updated, stale HolidayEngine class-based example fixed to the real function-based API, ADR counter corrected (022 was already used for ADR-022 AstroFinance)
+
+---
+
 # Version 4.50.0
 
 Themed scrollbar (app-wide)

@@ -101,9 +101,9 @@ files = [f for f in all_files if extract_date(f) >= listing.date()]
 | Saturday/Sunday | No bhavcopy — not a missing date |
 | NSE national holiday | No bhavcopy — check nse_holidays.csv |
 | Market circuit breaker | Partial day — bhavcopy exists (may have low/zero volume) |
-| Mahurat trading (Diwali) | 1-hour session — bhavcopy exists, very low volume |
+| Mahurat trading (Diwali) | 1-hour session — bhavcopy exists, very low volume. Auto-detected every year (ADR-023) via the asterisk marker in NSE's holiday calendar; `get_trading_days()` treats it as expected, so the daily acquisition pipeline backfills it with no manual step. |
 | F&O expiry (last Thu) | Full day — expect higher volume, not anomalous |
-| Budget day (Feb 1) | Full day — flag analysis period, do not skip |
+| Budget day (Feb 1) | Full day — flag analysis period, do not skip. When Feb 1 falls on a weekend (2026+, ADR-023), NSE runs a special session and it's fetched the same way as Muhurat above — fixed rule in `holiday_engine.py`, not manual. |
 | Index rebalancing date | Bhavcopy unaffected — but index constituent files change |
 
 ## UPCOMING DATA EXPANSIONS (build order follows critical path)

@@ -46,7 +46,7 @@ docs/
 │   └── EXECUTION_PLATFORM.md          ← 100% complete (Phase 20-25 done)
 │
 ├── decisions/                    ← ADR register (never delete, only supersede)
-│   └── ADR-001 through ADR-021 (next: ADR-022)
+│   └── ADR-001 through ADR-023 (next: ADR-024)
 │
 └── legacy/                       ← Old docs (DO NOT USE — for historical reference only)
 ```
@@ -59,7 +59,7 @@ Create a new ADR whenever:
 - A major technology decision is made
 
 ADR naming: `ADR-0NN-Title-With-Hyphens.md`
-Next ADR number: ADR-022
+Next ADR number: ADR-024
 
 ADR template:
 ```markdown

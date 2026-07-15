@@ -12,7 +12,7 @@ All engines in this project MUST import from `engines.common` — never re-imple
 | `logger.py` | `from engines.common.logger import get_logger` | Structured file logger |
 | `constants.py` | `from engines.common.constants import <NAME>` | Domain constants |
 | `filesystem.py` | `from engines.common.filesystem import <fn>` | Path utilities |
-| `holiday_engine.py` | `from engines.common.holiday_engine import HolidayEngine` | NSE trading calendar |
+| `holiday_engine.py` | `from engines.common.holiday_engine import get_trading_days, is_holiday` | NSE trading calendar + special sessions (ADR-023) |
 | `nse_client.py` | `from engines.common.nse_client import NSEClient` | nselib wrapper |
 | `progress.py` | `from engines.common.progress import ProgressReporter` | Progress tracking |
 | `recovery.py` | `from engines.common.recovery import RecoveryManager` | Error recovery |
@@ -44,6 +44,7 @@ cfg.SHAREHOLDING_DIR             # data/NSE/shareholding/
 
 cfg.STOCK_HISTORY_CACHE          # data/cache/stock_history/
 cfg.NSE_HOLIDAY_FILE             # data/reference/nse_holidays.csv
+cfg.SPECIAL_SESSIONS_FILE        # data/reference/special_trading_sessions.csv (ADR-023)
 cfg.LOG_DIR                      # logs/
 
 # Runtime settings
@@ -72,12 +73,21 @@ logger.error("Failed to download bhavcopy for 2026-06-28: timeout")
 Logger writes to `logs/<module_name>.log` automatically.
 
 ## HOLIDAY ENGINE USAGE
+Function-based API (not a class -- the `HolidayEngine` name in the module
+reference card above is aspirational/stale, the real exports are these):
 ```python
-from engines.common.holiday_engine import HolidayEngine
-holidays = HolidayEngine()
-trading_days = holidays.get_trading_days(start="2024-01-01", end="2024-12-31")
-is_trading = holidays.is_trading_day("2024-01-15")
+from engines.common.holiday_engine import get_trading_days, is_holiday
+
+trading_days = get_trading_days("2024-01-01", "2024-12-31")
+is_off = is_holiday(date(2024, 1, 26))
 ```
+`get_trading_days()` includes weekday business days minus holidays, PLUS
+any special weekend/holiday trading sessions (Diwali Muhurat, Budget Day
+-- ADR-023) recorded in `data/reference/special_trading_sessions.csv`.
+Call `refresh_special_sessions()` (cheap no-op once current for the
+year) to detect this year's Muhurat date from NSE's own calendar and
+apply the fixed Budget Day rule -- already wired into
+`nse_equity_acquisition_engine.main()`, which runs daily.
 
 ## VALIDATORS USAGE
 ```python
