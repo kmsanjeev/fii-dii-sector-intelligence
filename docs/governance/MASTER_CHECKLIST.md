@@ -1,5 +1,5 @@
 # MASTER CHECKLIST
-## Capital Flow Intelligence Platform | Updated 2026-07-09
+## Capital Flow Intelligence Platform | Updated 2026-07-19
 
 Legend:  [x] Completed  [-] In Progress  [ ] Not Started
 
@@ -379,6 +379,36 @@ KLineChart Pro            100%  (Phase CH -- custom indicators)
 Technical Indicators      100%  (Phase TI -- RSI/MACD/ATR/BB/OBV/ADX)
 Shareholding XBRL Fix     100%  (Phase SH -- 8-score panel, fraction-scale fixed)
 Sectors + Social Pulse UI 100%  (Phase UI-S)
+Veda Hands-Free Follow-up 100%  (Phase V4 -- mic reopens after reply, no repeat wake word)
+Veda Customer-Support Persona 100% (Phase V5 -- confirm-before-detail, warm greetings)
+Portfolio CSV Import     100%  (Phase PF-1 -- bulk import + template)
 
 Overall: 100% of full vision complete (Investment Operating System LIVE)
 ```
+
+---
+
+# SECTION 26 — Voice + Portfolio Ops (2026-07-15) [COMPLETE]
+
+[x] Phase V4 -- vedaStore.ts hands-free follow-up (speak() resolves on true
+    playback end; mic auto-reopens after Veda finishes talking; earcon chime
+    instead of a spoken re-prompt)
+[x] Phase V5 -- customer-support voice persona (chat_engine.py
+    `_VOICE_ADDENDUM`, intent_router.py `_GREETING_PROMPT`, voice.py
+    trailer rewritten as a genuine question, `already_asked` guard against
+    double-asking)
+[x] Phase PF-1 -- Portfolio CSV import (`import_transactions()`,
+    `GET/POST /api/portfolio/import*`, PortfolioPage.tsx upload UI)
+
+[-] Task #25 (session tracker) -- live browser/mic verification of the
+    hands-free follow-up loop + voice persona pacing not yet done
+
+---
+
+# DOCUMENTATION HYGIENE (2026-07-19)
+
+[x] CHANGELOG.md archived: entries before v4.43.0 moved to
+    docs/governance/CHANGELOG_ARCHIVE.md (5681 -> 1442 lines in the active
+    file) -- was being read in full most sessions, a major token cost
+[x] MASTER_CHECKLIST.md + PROJECT_MASTER_STATE.md resynced to v4.56 (were
+    stale since 2026-07-09 / f7f8af2, missing 4 shipped phases)

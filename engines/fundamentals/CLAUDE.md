@@ -108,10 +108,10 @@ RURAL_CONSUMPTION, PREMIUMISATION, EXPORT_GROWTH, PSU_REVIVAL,
 SEMICONDUCTOR, LOGISTICS_MODERNISATION
 
 ## KNOWN CLASSIFICATION BUGS TO FIX
-| Symbol | Current (Wrong) | Expected |
-|--------|-----------------|---------|
-| ADANIPORTS | AEROSPACE | LOGISTICS / INFRASTRUCTURE |
-| (audit more when industry_master is complete) | | |
+| Symbol | Current (Wrong) | Expected | Status |
+|--------|-----------------|---------|--------|
+| ADANIPORTS | ~~AEROSPACE~~ | LOGISTICS / PORTS AND SHIPPING | FIXED 2026-06-30 via manual_override.csv, verified live 2026-07-19 |
+| (audit more when industry_master is complete) | | | |
 
 ## GUARDRAILS SPECIFIC TO THIS DIRECTORY
 

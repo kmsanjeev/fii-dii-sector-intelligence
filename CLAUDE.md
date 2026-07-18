@@ -178,10 +178,21 @@ Gen4 Trade:    Backtesting (21) -> Broker R/O (22) -> Research (23) -> Execution
 - `engines/classification_engine.py` — v1, superseded by v4
 
 ## KNOWN BUGS
-- ADANIPORTS classifies as AEROSPACE (wrong) — should be LOGISTICS/PORTS
-  Root cause: Industry Master has limited override coverage. Low priority now.
-- Cash market flows: 2026-02-19 failed (tz-aware/naive mixing in NSE API response)
-  Fix: add explicit timezone normalization in participant_acquisition_engine.py
+- ~~ADANIPORTS classifies as AEROSPACE~~ — FIXED 2026-06-30 via manual_override.csv
+  (LOGISTICS / PORTS AND SHIPPING); verified live in `/api/stocks/ADANIPORTS`
+  on 2026-07-19. Entry kept struck through as a paper trail; remove on next edit.
+- Cash market flows: 2026-02-19 has no row in cash_market_flows_history.csv.
+  RE-DIAGNOSED 2026-07-19: reproduced directly against nselib
+  (`capital_market.category_turnover_cash('19-02-2026')`) — raises a clean
+  `FileNotFoundError: No data available`, not a tz-aware/naive comparison
+  error (that description was stale, likely from an older nselib version).
+  NSE's own `cat_turnover_190226.xls` archive file appears to genuinely not
+  exist for that date even though equity bhavcopy exists (market was open,
+  a Thursday). `_fetch_cash_day()` already matches "no data"/"available" in
+  the exception message and skips it silently, which is correct behavior —
+  no crash, no bad data written. Treat as a permanent one-day upstream gap,
+  same class as the documented zero-volume/circuit-halt edge cases — not a
+  pipeline bug, no fix pending.
 
 ## MANDATORY GUARDRAILS (enforce in every engine)
 Full spec: `docs/governance/GUARDRAILS.md`

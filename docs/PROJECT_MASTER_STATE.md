@@ -1,6 +1,6 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.25 | 2026-07-09
+# Version 4.56 | 2026-07-19
 
 ---
 
@@ -114,6 +114,21 @@ Layer 6: Trade Conviction          (C)         LIVE through 2026-07-01
 | SH  | Shareholding Fix + 8-score panel | frontend/src/     | COMPLETE — XBRL fraction-scale fixed, 8-score panel in StockDetail |
 | UI-S | Sectors + Social Pulse UI   | frontend/src/         | COMPLETE — Sectors page + Social Pulse component |
 
+## Generation 7 — Voice + Portfolio Ops (COMPLETE)
+| Phase | What | Location | Status |
+|-------|------|----------|--------|
+| V1-V3 | Veda Voice Assistant (base) | backend/routers/voice.py | COMPLETE — edge-tts, wake word, staged playback |
+| V4  | Hands-free follow-up mode    | frontend/src/store/vedaStore.ts | COMPLETE — mic reopens after Veda speaks, no repeat wake word |
+| V5  | Customer-support voice persona | chat_engine.py, intent_router.py, voice.py | COMPLETE — confirm-before-detail, warm greetings |
+| WL-1 | Watchlist Decision Metrics  | engines/watchlist/     | COMPLETE — RVOL, RS vs NIFTY, 5D delivery |
+| DMB-1 | Daily Market Brief         | engines/briefing/      | COMPLETE — 08:45 IST auto-brief, Telegram digest |
+| UI-D | Dashboard Consolidation     | frontend/src/pages/Dashboard.tsx | COMPLETE — Participant page merged into Dashboard |
+| PF-1 | Portfolio CSV Import        | engines/portfolio/, backend/routers/portfolio.py | COMPLETE — bulk import + downloadable template |
+
+Not yet verified live (flagged, not blocking): hands-free follow-up loop and voice
+persona pacing need an actual browser/mic session — see Task #25 in the session
+tracker (wake word from non-chat pages, drawer/page state sync, orb animation).
+
 ---
 
 # KEY INTELLIGENCE FILES (all in data/intelligence/)
@@ -137,8 +152,8 @@ Layer 6: Trade Conviction          (C)         LIVE through 2026-07-01
 
 | Issue | Severity | Note |
 |-------|----------|------|
-| ADANIPORTS -> AEROSPACE misclassification | Low | industry_master override coverage |
-| Cash flows gap: 2026-02-19 | Low | tz-aware/naive mixing in NSE API response |
+| ~~ADANIPORTS -> AEROSPACE misclassification~~ | -- | FIXED 2026-06-30, verified live 2026-07-19 |
+| Cash flows gap: 2026-02-19 | Low | Not a code bug (re-diagnosed 2026-07-19) -- nselib itself returns a clean FileNotFoundError for this date, NSE's own cat_turnover archive appears to genuinely lack the file though equity bhavcopy exists. Engine already skips it silently and correctly. Permanent 1-day gap. |
 | Groq free tier: 100k tokens/day | Medium | Chat heavy queries exhaust daily budget; upgrade or cache tool results |
 | Shareholding pre-2024 quarters | Low | NSE XBRL archive has no FII/DII before 2024 |
 | Major banks missing from XBRL results | Low | HDFCBANK/ICICIBANK/SBIN use different schema |
@@ -159,9 +174,11 @@ Layer 6: Trade Conviction          (C)         LIVE through 2026-07-01
 
 # GOVERNANCE
 
-- CHANGELOG: docs/governance/CHANGELOG.md (v4.25 is latest)
+- CHANGELOG: docs/governance/CHANGELOG.md (v4.56 is latest; entries before
+  v4.43 archived to docs/governance/CHANGELOG_ARCHIVE.md, 2026-07-19, to keep
+  the active file small for session/token budget)
 - Module Registry: docs/governance/MODULE_REGISTRY.md
 - Guardrails: docs/governance/GUARDRAILS.md (55 rules)
-- ADRs: docs/decisions/ (ADR-001 to ADR-021; next = ADR-022)
+- ADRs: docs/decisions/ (ADR-001 to ADR-023; next = ADR-024)
 - Session logs: chat history/ (module-wise append files)
 - Memory: C:\Users\hp\.claude\projects\D--Projects-fii-dii-sector-intelligence\memory\
