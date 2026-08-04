@@ -440,7 +440,16 @@ Overall: 100% of full vision complete (Investment Operating System LIVE)
     `engines/ai/chatbot/chat_engine.py` now records local-first vs external
     research reasons, and `backend/routers/voice.py` logs
     request/use/provider/reason plus live `research_share`
-[ ] Phase 3 -- file/document/image upload flow
+[x] Phase 3 -- attachment upload flow foundation:
+    `POST /api/chat/attachments`, shared Veda attachment state, file picker
+    UI in full chat + floating widget, safe server-side extraction for text,
+    CSV, JSON, and PDF
+[x] Phase 3 -- attachment prompt safety:
+    uploaded file content is now injected into Veda as source material, not
+    as executable instruction
+[ ] Phase 3 -- deeper image understanding:
+    current runtime supports image upload and metadata extraction, with OCR
+    only when available; full vision analysis still pending
 [ ] Phase 4 -- source-aware answer rendering in chat UI
 [ ] Phase 5 -- reviewed save-to-knowledge flow
 [ ] Phase 6 -- MIT Git capability intake

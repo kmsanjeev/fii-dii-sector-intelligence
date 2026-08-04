@@ -477,6 +477,65 @@ function ResearchBadge({ research }: { research?: Msg['research'] }) {
   )
 }
 
+function AttachmentPills({
+  attachments,
+  onRemove,
+  align = 'flex-start',
+}: {
+  attachments?: Msg['attachments']
+  onRemove?: (storageKey?: string | null, name?: string) => void
+  align?: 'flex-start' | 'flex-end'
+}) {
+  if (!attachments || attachments.length === 0) return null
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: align, marginTop: 6 }}>
+      {attachments.map((attachment, index) => (
+        <div
+          key={`${attachment.storage_key ?? attachment.name}-${index}`}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '3px 8px',
+            borderRadius: 999,
+            border: `1px solid ${attachment.warning ? '#F59E0B44' : '#334155'}`,
+            background: '#0D1117',
+            color: attachment.warning ? '#FCD34D' : '#94A3B8',
+            fontSize: 10,
+            maxWidth: 280,
+          }}
+          title={attachment.warning || attachment.excerpt || attachment.name}
+        >
+          <span style={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            maxWidth: 220,
+          }}>
+            {attachment.name}
+          </span>
+          {onRemove && (
+            <button
+              onClick={() => onRemove(attachment.storage_key, attachment.name)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'inherit',
+                cursor: 'pointer',
+                fontSize: 11,
+                lineHeight: 1,
+                padding: 0,
+              }}
+            >
+              x
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function TypingDots() {
   return (
     <div style={{ display: 'flex', gap: 4, alignItems: 'center', padding: '6px 0' }}>
@@ -536,6 +595,7 @@ function MessageBubble({ msg }: { msg: Msg }) {
           color: '#E2E8F0', fontSize: 13, lineHeight: 1.65,
           whiteSpace: 'pre-wrap', wordBreak: 'break-word',
         }}>{msg.content}</div>
+        <AttachmentPills attachments={msg.attachments} align={isUser ? 'flex-end' : 'flex-start'} />
         <div style={{ fontSize: 9, color: '#334155', marginTop: 3, display: 'flex', alignItems: 'center', justifyContent: isUser ? 'flex-end' : 'flex-start', gap: 6 }}>
           {new Date(msg.ts).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
           <CopyButton text={msg.content} />
@@ -563,6 +623,9 @@ export function ChatPage() {
   const followUpListening = useVedaStore(s => s.followUpListening)
   const researchMode      = useVedaStore(s => s.researchMode)
   const researchEnabled   = useVedaStore(s => s.researchEnabled)
+  const attachmentsEnabled = useVedaStore(s => s.attachmentsEnabled)
+  const pendingAttachments = useVedaStore(s => s.pendingAttachments)
+  const uploadingAttachment = useVedaStore(s => s.uploadingAttachment)
   const apiError          = useVedaStore(s => s.apiError)
   const liveTranscript    = useVedaStore(s => s.liveTranscript)
 
@@ -575,6 +638,8 @@ export function ChatPage() {
   const setFollowUpEnabled = useVedaStore(s => s.setFollowUpEnabled)
   const setResearchMode    = useVedaStore(s => s.setResearchMode)
   const setApiError        = useVedaStore(s => s.setApiError)
+  const uploadAttachment   = useVedaStore(s => s.uploadAttachment)
+  const removePendingAttachment = useVedaStore(s => s.removePendingAttachment)
   const refreshCapabilities = useVedaStore(s => s.refreshCapabilities)
   const handleNewChatStore = useVedaStore(s => s.handleNewChat)
   const handleSelectStore  = useVedaStore(s => s.handleSelectSession)
@@ -587,6 +652,7 @@ export function ChatPage() {
 
   const bottomRef  = useRef<HTMLDivElement>(null)
   const inputRef   = useRef<HTMLTextAreaElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Reflect the live transcript into the input box while listening (was
   // setInput() directly inside the recognizer's onresult before this was
@@ -701,6 +767,13 @@ export function ChatPage() {
     const text = input
     setInput('')
     send(text)
+  }
+
+  const handleFileSelection = async (files: FileList | null) => {
+    if (!files || files.length === 0) return
+    for (const file of Array.from(files)) {
+      await uploadAttachment(file)
+    }
   }
 
   // ── Render ────────────────────────────────────────────────────────────────────
@@ -866,12 +939,33 @@ export function ChatPage() {
         {/* Input area */}
         <div style={{ padding: '0 20px 14px', flexShrink: 0, borderTop: '1px solid #1E2332', paddingTop: 12 }}>
           <div style={{ position: 'relative' }}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept=".pdf,.txt,.md,.csv,.json,.png,.jpg,.jpeg,.webp,.gif,.bmp"
+              style={{ display: 'none' }}
+              onChange={async e => {
+                await handleFileSelection(e.target.files)
+                e.currentTarget.value = ''
+              }}
+            />
             {showSlash && (
               <SlashPalette
                 filter={slashFilter}
                 onSelect={handleSlashSelect}
                 onClose={() => setShowSlash(false)}
               />
+            )}
+            {(pendingAttachments.length > 0 || uploadingAttachment) && (
+              <div style={{ marginBottom: 10 }}>
+                <AttachmentPills attachments={pendingAttachments} onRemove={removePendingAttachment} />
+                {uploadingAttachment && (
+                  <div style={{ fontSize: 10, color: '#60A5FA', marginTop: 6 }}>
+                    Uploading attachment...
+                  </div>
+                )}
+              </div>
             )}
             <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end' }}>
               {/* Mic: push-to-talk (Phase V1) */}
@@ -892,6 +986,25 @@ export function ChatPage() {
                 {listening ? '●' : 'MIC'}
               </button>
               <style>{'@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5);} 50% { box-shadow: 0 0 0 8px rgba(239,68,68,0);} }'}</style>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={!attachmentsEnabled || loading || uploadingAttachment}
+                title={
+                  attachmentsEnabled
+                    ? 'Attach a PDF, text file, CSV, JSON, or image'
+                    : 'Attachments are not enabled by the backend yet'
+                }
+                style={{
+                  width: 42, height: 42, borderRadius: 10, flexShrink: 0,
+                  border: `1px solid ${attachmentsEnabled ? '#1E2332' : '#2D3348'}`,
+                  background: attachmentsEnabled ? '#0D1117' : 'transparent',
+                  color: attachmentsEnabled ? '#94A3B8' : '#334155',
+                  cursor: attachmentsEnabled && !loading && !uploadingAttachment ? 'pointer' : 'not-allowed',
+                  fontSize: 14,
+                }}
+              >
+                +
+              </button>
               <textarea
                 ref={inputRef}
                 value={input}
@@ -902,7 +1015,9 @@ export function ChatPage() {
                     ? (followUpListening ? 'Listening for follow-up... speak now' : 'Listening... speak now')
                     : researchMode && researchEnabled
                       ? 'Ask anything. Veda can also check outside sources when needed.'
-                      : 'Ask about markets, sectors, stocks... or type / for quick questions'
+                      : attachmentsEnabled
+                        ? 'Ask about markets, sectors, stocks, or attach a file... type / for quick questions'
+                        : 'Ask about markets, sectors, stocks... or type / for quick questions'
                 }
                 rows={1}
                 style={{
@@ -918,13 +1033,13 @@ export function ChatPage() {
               />
               <button
                 onClick={submitClick}
-                disabled={!input.trim() || loading}
+                disabled={(!input.trim() && pendingAttachments.length === 0) || loading}
                 style={{
                   padding: '10px 20px', borderRadius: 6, fontSize: 12, fontWeight: 700,
-                  cursor: input.trim() && !loading ? 'pointer' : 'not-allowed',
-                  background: input.trim() && !loading ? '#1E3A5F' : '#0D1117',
-                  color:  input.trim() && !loading ? '#60A5FA'  : '#334155',
-                  border: `1px solid ${input.trim() && !loading ? '#3B82F6' : '#1E2332'}`,
+                  cursor: (input.trim() || pendingAttachments.length > 0) && !loading ? 'pointer' : 'not-allowed',
+                  background: (input.trim() || pendingAttachments.length > 0) && !loading ? '#1E3A5F' : '#0D1117',
+                  color:  (input.trim() || pendingAttachments.length > 0) && !loading ? '#60A5FA'  : '#334155',
+                  border: `1px solid ${(input.trim() || pendingAttachments.length > 0) && !loading ? '#3B82F6' : '#1E2332'}`,
                   transition: 'all 0.15s', whiteSpace: 'nowrap', flexShrink: 0,
                 }}>
                 {loading ? '...' : 'Send'}

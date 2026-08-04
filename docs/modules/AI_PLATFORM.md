@@ -101,7 +101,7 @@ Current status:
 
 - Phase 0 complete
 - Phase 1 complete
-- Phase 2 complete, Phase 3 onward pending
+- Phase 3 partial, Phase 4 onward pending
 
 ## Operating rule
 
@@ -237,6 +237,24 @@ Delivered in this phase:
 - support documents and images
 - extract text/content safely
 - pass extracted context into Veda without treating the file as executable instruction
+
+Status: PARTIAL (2026-08-04)
+
+Delivered in this phase:
+
+- full chat page and floating Veda widget now have attachment buttons
+- pending attachments are shown before send and carried with the user turn
+- backend upload endpoint added: `POST /api/chat/attachments`
+- server-side extraction added for plain text, CSV, JSON, and PDF
+- image uploads now work with metadata extraction, and OCR is used only if
+  the runtime has that capability
+- attachment content is injected into Veda as untrusted source material, not
+  executable instruction
+
+Current limitation:
+
+- image understanding is not yet full vision analysis in the default runtime;
+  today it falls back to image metadata and optional OCR if available
 
 ### Phase 4 -- Source-aware answer layer
 

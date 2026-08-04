@@ -1320,13 +1320,17 @@ stack:
 - Phase 2 complete -- full chat and floating widget now expose a research
   toggle, Veda shows when outside research was used, and research trigger
   reasons are logged for analytics/audit
-- Remaining Veda research phases are still pending (attachments, reviewed
-  memory, MIT Git intake, MCP fallback)
+- Phase 3 partial -- chat now supports attachment upload, server-side file
+  extraction, and safe prompt injection for attached content; image uploads
+  currently rely on metadata and optional OCR rather than full vision
+- Remaining Veda research phases are still pending (reviewed memory, MIT Git
+  intake, MCP fallback)
 
 Affected code paths:
 
 - `backend/routers/chat.py`
 - `backend/routers/voice.py`
+- `engines/ai/attachments/`
 - `engines/ai/chatbot/chat_engine.py`
 - `engines/ai/research/`
 - `engines/common/config.py`
@@ -1334,6 +1338,7 @@ Affected code paths:
 - `frontend/src/components/veda/VedaWidget.tsx`
 - `frontend/src/pages/ChatPage.tsx`
 - `frontend/src/store/vedaStore.ts`
+- `requirements.txt`
 
 ---
 

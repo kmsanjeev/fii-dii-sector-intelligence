@@ -131,14 +131,14 @@ tracker (wake word from non-chat pages, drawer/page state sync, orb animation).
 
 ---
 
-# ACTIVE NEXT WORKSTREAM (PHASE 2 COMPLETE, PHASE 3 NEXT)
+# ACTIVE NEXT WORKSTREAM (PHASE 3 STARTED)
 
 As of 2026-08-04, the next approved Veda upgrade path is:
 
 | Track | Goal | Status |
 |-------|------|--------|
 | VR-1 | Research mode foundation | PHASE 0 + 1 + 2 COMPLETE -- contracts, `ddgs` provider, local-first decision layer, chat/widget research controls, research audit metadata |
-| VR-2 | Chat attachments (documents/images) | NEXT UP -- Phase 3 not started |
+| VR-2 | Chat attachments (documents/images) | PHASE 3 PARTIAL -- upload UI live, server-side extraction added for text/CSV/JSON/PDF, image uploads accepted with metadata/OCR-ready fallback |
 | VR-3 | External research connectors | PHASE 1 BASE READY -- provider-pluggable design in place |
 | VR-4 | Save-to-knowledge review flow | NOT STARTED |
 
@@ -191,7 +191,7 @@ Phase goals:
 - Phase 0: define backend/frontend contracts, configs, flags, error states, and safety rules -- COMPLETE 2026-08-04
 - Phase 1: integrate `ddgs` as the first external research provider -- COMPLETE 2026-08-04
 - Phase 2: add the logic that decides when Veda should use local knowledge vs outside research -- COMPLETE 2026-08-04
-- Phase 3: add file/document/image upload in chat and extract usable text/context
+- Phase 3: add file/document/image upload in chat and extract usable text/context -- PARTIAL 2026-08-04
 - Phase 4: force sources, dates, and confidence framing in outside-research answers
 - Phase 5: add explicit review-before-save knowledge intake
 - Phase 6: let Veda inspect MIT-licensed Git resources in a controlled way

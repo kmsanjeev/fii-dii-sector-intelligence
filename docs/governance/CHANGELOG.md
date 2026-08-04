@@ -6,6 +6,93 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.62.0
+
+Veda Phase 3 started: chat attachments, upload flow, safe extraction, and tests
+
+Date: 2026-08-04
+
+Status: Partial
+
+---
+
+## Summary
+
+User asked to defer broad testing until later and start Phase 3.
+
+This session implemented the real chat attachment flow for Veda: users can
+now attach supported files in chat, the backend stores and extracts safe
+text context, and Veda can answer with that file context in the same turn.
+
+This is marked **partial** because image uploads are supported now, but
+full image understanding still depends on OCR or vision support in the
+runtime. The current fallback uses image metadata and OCR only when that
+capability exists.
+
+## Changes
+
+- `engines/ai/attachments/`
+  - new attachment service added
+  - uploads are stored under the Veda upload cache
+  - safe extraction added for text, CSV, JSON, PDF, and image metadata
+  - attachment prompt context is built server-side, not in the browser
+- `engines/common/config.py`
+  - attachments enabled by default for the new flow
+  - added attachment file-count, file-size, PDF-page, and prompt-size limits
+- `backend/routers/chat.py`
+  - added `POST /api/chat/attachments`
+  - attachment stubs now carry `kind` and `warning`
+  - chat requests now hydrate stored attachments into safe prompt context
+- `engines/ai/chatbot/chat_engine.py`
+  - added attachment-context prompt injection
+  - uploaded file content is explicitly treated as content, not instructions
+- `frontend/src/api/client.ts`
+  - added chat attachment upload API
+  - expanded attachment metadata shape
+- `frontend/src/store/vedaStore.ts`
+  - added pending-attachment state and upload/remove actions
+  - send flow now supports attachment-only turns with a default study prompt
+- `frontend/src/pages/ChatPage.tsx`
+  - added file picker button, pending attachment chips, and attachment-aware send
+  - user message bubbles now show which files were attached
+- `frontend/src/components/veda/VedaWidget.tsx`
+  - added the same attachment flow to the floating widget
+- `tests/test_veda_attachment_service.py`
+  - added focused tests for text, CSV, JSON prompt context, and image metadata
+- `requirements.txt`
+  - added explicit runtime requirements for `pdfplumber`, `Pillow`, and
+    `python-multipart`
+
+## Verification
+
+- `python -m py_compile ...` passed for the changed backend files
+- `python -m pytest tests/test_veda_attachment_service.py tests/test_veda_research_service.py -q`
+  passed: `7 passed`
+- installed runtime dependency `python-multipart` so FastAPI multipart upload
+  can work for the new attachment endpoint
+- full frontend TypeScript still has older unrelated project errors outside
+  this workstream; filtered output did not show errors in the changed Veda files
+
+## Files changed
+
+- `engines/ai/attachments/`
+- `engines/ai/chatbot/chat_engine.py`
+- `engines/common/config.py`
+- `backend/routers/chat.py`
+- `frontend/src/api/client.ts`
+- `frontend/src/components/veda/VedaWidget.tsx`
+- `frontend/src/pages/ChatPage.tsx`
+- `frontend/src/store/vedaStore.ts`
+- `tests/test_veda_attachment_service.py`
+- `requirements.txt`
+- `docs/governance/CHANGELOG.md`
+- `docs/governance/MASTER_CHECKLIST.md`
+- `docs/governance/MODULE_REGISTRY.md`
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/modules/AI_PLATFORM.md`
+
+---
+
 # Version 4.61.0
 
 Veda Phase 2 implemented: research mode orchestration, UI controls, and audit visibility

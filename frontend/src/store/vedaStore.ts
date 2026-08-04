@@ -21,7 +21,9 @@ import {
   sendChat,
   resetChatSession,
   fetchChatCapabilities,
+  uploadChatAttachment,
   type ChatCapabilities,
+  type ChatAttachmentStub,
   type ChatResponseData,
   type ChatResearchMeta,
 } from '../api/client'
@@ -35,6 +37,7 @@ export interface Msg {
   intent?: string
   ts: number
   research?: ChatResearchMeta
+  attachments?: ChatAttachmentStub[]
 }
 
 export interface SavedSession {
@@ -275,6 +278,8 @@ interface VedaState {
   researchMode: boolean
   researchEnabled: boolean
   attachmentsEnabled: boolean
+  pendingAttachments: ChatAttachmentStub[]
+  uploadingAttachment: boolean
 
   // Live state (shared across every surface)
   listening:      boolean
@@ -303,6 +308,9 @@ interface VedaState {
   setFollowUpEnabled: (v: boolean) => void
   setResearchMode: (v: boolean) => void
   setApiError: (msg: string | null) => void
+  uploadAttachment: (file: File) => Promise<void>
+  removePendingAttachment: (storageKey?: string | null, name?: string) => void
+  clearPendingAttachments: () => void
   refreshCapabilities: () => Promise<void>
   handleNewChat: () => Promise<void>
   handleSelectSession: (s: SavedSession) => void
@@ -329,6 +337,8 @@ export const useVedaStore = create<VedaState>((set, get) => ({
   researchMode:    loadResearchMode(),
   researchEnabled: true,
   attachmentsEnabled: false,
+  pendingAttachments: [],
+  uploadingAttachment: false,
 
   listening: false,
   followUpListening: false,
@@ -373,6 +383,36 @@ export const useVedaStore = create<VedaState>((set, get) => ({
 
   setApiError: (msg) => set({ apiError: msg }),
 
+  uploadAttachment: async (file) => {
+    if (!get().attachmentsEnabled) {
+      set({ apiError: 'Attachments are not enabled by the backend yet.' })
+      return
+    }
+    set({ uploadingAttachment: true, apiError: null })
+    try {
+      const uploaded = await uploadChatAttachment(file)
+      set(s => ({
+        pendingAttachments: [...s.pendingAttachments, uploaded],
+      }))
+    } catch (err: unknown) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      set({ apiError: detail ?? 'Attachment upload failed. Please try again.' })
+    } finally {
+      set({ uploadingAttachment: false })
+    }
+  },
+
+  removePendingAttachment: (storageKey, name) => {
+    set(s => ({
+      pendingAttachments: s.pendingAttachments.filter(att => {
+        if (storageKey && att.storage_key) return att.storage_key !== storageKey
+        return att.name !== name
+      }),
+    }))
+  },
+
+  clearPendingAttachments: () => set({ pendingAttachments: [] }),
+
   refreshCapabilities: async () => {
     try {
       const caps: ChatCapabilities = await fetchChatCapabilities()
@@ -396,11 +436,25 @@ export const useVedaStore = create<VedaState>((set, get) => ({
   handleNewChat: async () => {
     const { backendSid } = get()
     if (backendSid) { try { await resetChatSession(backendSid) } catch { /* ignore */ } }
-    set({ currentId: genId(), messages: [makeWelcome()], backendSid: undefined, apiError: null })
+    set({
+      currentId: genId(),
+      messages: [makeWelcome()],
+      backendSid: undefined,
+      apiError: null,
+      pendingAttachments: [],
+      uploadingAttachment: false,
+    })
   },
 
   handleSelectSession: (s) => {
-    set({ currentId: s.id, messages: s.messages, backendSid: s.backendSessionId, apiError: null })
+    set({
+      currentId: s.id,
+      messages: s.messages,
+      backendSid: s.backendSessionId,
+      apiError: null,
+      pendingAttachments: [],
+      uploadingAttachment: false,
+    })
   },
 
   handleDeleteSession: (id) => {
@@ -412,7 +466,7 @@ export const useVedaStore = create<VedaState>((set, get) => ({
 
   deleteAllSessions: () => {
     saveSessions([])
-    set({ sessions: [] })
+    set({ sessions: [], pendingAttachments: [], uploadingAttachment: false })
   },
 
   stopSpeaking: () => {
@@ -485,10 +539,17 @@ export const useVedaStore = create<VedaState>((set, get) => ({
 
   send: async (text, mode = 'text', sidOverride) => {
     const trimmed = text.trim()
-    const { loading, backendSid, currentId, speakReplies, _voiceChats, researchMode } = get()
-    if (!trimmed || loading) return
+    const { loading, backendSid, currentId, speakReplies, _voiceChats, researchMode, pendingAttachments } = get()
+    const hasAttachments = pendingAttachments.length > 0
+    const finalPrompt = trimmed || (hasAttachments ? 'Please study the attached file(s) and help me with them.' : '')
+    if (!finalPrompt || loading) return
 
-    const userMsg: Msg = { role: 'user', content: trimmed, ts: Date.now() }
+    const userMsg: Msg = {
+      role: 'user',
+      content: finalPrompt,
+      ts: Date.now(),
+      attachments: hasAttachments ? pendingAttachments : undefined,
+    }
     set(s => ({ messages: [...s.messages, userMsg], loading: true, apiError: null }))
 
     const sid = sidOverride !== undefined ? (sidOverride ?? undefined) : backendSid
@@ -501,10 +562,14 @@ export const useVedaStore = create<VedaState>((set, get) => ({
       }, 2500)
     }
     try {
-      const data: ChatResponseData = await sendChat(trimmed, sid, mode, { research_mode: researchMode })
+      const data: ChatResponseData = await sendChat(finalPrompt, sid, mode, {
+        research_mode: researchMode,
+        attachments: pendingAttachments,
+      })
       if (fillerTimer) { clearTimeout(fillerTimer); fillerTimer = null }
       set(s => ({
         backendSid: data.session_id,
+        pendingAttachments: [],
         messages: [...s.messages, {
           role: 'assistant' as Role,
           content: data.reply,
@@ -520,7 +585,7 @@ export const useVedaStore = create<VedaState>((set, get) => ({
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           session_id: data.session_id, mode, language: get().voiceLang, wake_word_used: wake,
-          user_message: trimmed, intent: data.intent ?? '', reply_chars: data.reply.length,
+          user_message: finalPrompt, intent: data.intent ?? '', reply_chars: data.reply.length,
           latency_ms: Date.now() - t0, tts_voice: mode === 'voice' ? get().voiceLang : '',
           symbols: data.symbols_discussed ?? [],
           flag_reason: data.flag_reason ?? null,

@@ -13,7 +13,7 @@ import os
 import time
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
 from engines.common import config as cfg
@@ -33,6 +33,8 @@ class ChatAttachment(BaseModel):
     size_bytes: Optional[int] = None
     storage_key: Optional[str] = None
     excerpt: Optional[str] = None
+    kind: Optional[str] = None
+    warning: Optional[str] = None
 
 
 class ChatResearchSource(BaseModel):
@@ -127,16 +129,25 @@ async def chat(req: ChatRequest):
 
     from engines.ai.chatbot.intent_router import detect_intent
     intent = detect_intent(req.message)
+    if req.attachments and not cfg.VEDA_ATTACHMENTS_ENABLED:
+        raise HTTPException(status_code=503, detail="Veda attachments are disabled.")
 
     try:
         session_id, engine = _get_or_create_session(req.session_id)
+        attachment_context = ""
+        if req.attachments:
+            from engines.ai.attachments import get_attachment_service
+            attachment_context = get_attachment_service().build_prompt_context(req.attachments)
         reply = engine.chat(
             req.message,
             voice_mode=(req.mode == "voice"),
             research_mode=req.research_mode,
+            attachment_context=attachment_context,
         )
     except EnvironmentError as e:
         raise HTTPException(status_code=503, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error(f"[ChatRouter] Error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Chat error: {str(e)}")
@@ -168,8 +179,32 @@ async def chat_capabilities():
             "application/pdf",
             "image/",
             "text/",
+            "application/json",
         ],
     )
+
+
+@router.post("/chat/attachments", response_model=ChatAttachment)
+async def upload_chat_attachment(file: UploadFile = File(...)):
+    if not cfg.VEDA_ATTACHMENTS_ENABLED:
+        raise HTTPException(status_code=503, detail="Veda attachments are disabled.")
+
+    raw = await file.read()
+    try:
+        from engines.ai.attachments import get_attachment_service
+
+        prepared = get_attachment_service().save_upload(
+            filename=file.filename or "attachment",
+            content_type=file.content_type or "",
+            content=raw,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        logger.error("[ChatRouter] Attachment upload failed: %s", exc, exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Attachment upload failed: {exc}")
+
+    return ChatAttachment(**prepared.to_chat_stub())
 
 
 @router.delete("/chat/session/{session_id}")

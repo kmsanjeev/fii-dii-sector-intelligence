@@ -370,6 +370,8 @@ export type ChatAttachmentStub = {
   size_bytes?: number | null
   storage_key?: string | null
   excerpt?: string | null
+  kind?: string | null
+  warning?: string | null
 }
 export type ChatResearchSource = {
   title: string
@@ -424,6 +426,13 @@ export const resetChatSession = (session_id: string) =>
   chatApi.delete(`/chat/session/${session_id}`).then(r => r.data)
 export const fetchChatCapabilities = () =>
   chatApi.get<ChatCapabilities>('/chat/capabilities').then(r => r.data)
+export const uploadChatAttachment = (file: File) => {
+  const form = new FormData()
+  form.append('file', file)
+  return chatApi.post<ChatAttachmentStub>('/chat/attachments', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }).then(r => r.data)
+}
 
 // Phase V-DATA-3 — chat demand analytics ("Recently Asked" panel)
 export type ChatAnalyticsRow = { key: string; count: number; share_pct?: number; last_seen?: string | null }

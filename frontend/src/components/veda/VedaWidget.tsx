@@ -63,6 +63,30 @@ function DrawerBubble({ msg }: { msg: Msg }) {
         whiteSpace: 'pre-wrap', wordBreak: 'break-word',
       }}>
         {msg.content}
+        {msg.attachments && msg.attachments.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+            {msg.attachments.map((attachment, index) => (
+              <div
+                key={`${attachment.storage_key ?? attachment.name}-${index}`}
+                style={{
+                  padding: '2px 7px',
+                  borderRadius: 999,
+                  border: `1px solid ${attachment.warning ? '#F59E0B44' : '#334155'}`,
+                  background: '#0D1117',
+                  color: attachment.warning ? '#FCD34D' : '#94A3B8',
+                  fontSize: 9,
+                  maxWidth: 220,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+                title={attachment.warning || attachment.excerpt || attachment.name}
+              >
+                {attachment.name}
+              </div>
+            ))}
+          </div>
+        )}
         {!isUser && researchLabel && (
           <div style={{
             marginTop: 6,
@@ -75,6 +99,56 @@ function DrawerBubble({ msg }: { msg: Msg }) {
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+function DrawerPendingAttachments({
+  attachments,
+  onRemove,
+}: {
+  attachments?: Msg['attachments']
+  onRemove: (storageKey?: string | null, name?: string) => void
+}) {
+  if (!attachments || attachments.length === 0) return null
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+      {attachments.map((attachment, index) => (
+        <div
+          key={`${attachment.storage_key ?? attachment.name}-${index}`}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '2px 7px',
+            borderRadius: 999,
+            border: `1px solid ${attachment.warning ? '#F59E0B44' : '#334155'}`,
+            background: '#0D1117',
+            color: attachment.warning ? '#FCD34D' : '#94A3B8',
+            fontSize: 9,
+            maxWidth: 260,
+          }}
+          title={attachment.warning || attachment.excerpt || attachment.name}
+        >
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 190 }}>
+            {attachment.name}
+          </span>
+          <button
+            onClick={() => onRemove(attachment.storage_key, attachment.name)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'inherit',
+              cursor: 'pointer',
+              fontSize: 10,
+              lineHeight: 1,
+              padding: 0,
+            }}
+          >
+            x
+          </button>
+        </div>
+      ))}
     </div>
   )
 }
@@ -97,6 +171,9 @@ export function VedaWidget() {
   const voiceLang       = useVedaStore(s => s.voiceLang)
   const researchMode    = useVedaStore(s => s.researchMode)
   const researchEnabled = useVedaStore(s => s.researchEnabled)
+  const attachmentsEnabled = useVedaStore(s => s.attachmentsEnabled)
+  const pendingAttachments = useVedaStore(s => s.pendingAttachments)
+  const uploadingAttachment = useVedaStore(s => s.uploadingAttachment)
   const send            = useVedaStore(s => s.send)
   const startListening  = useVedaStore(s => s.startListening)
   const stopSpeaking    = useVedaStore(s => s.stopSpeaking)
@@ -104,11 +181,14 @@ export function VedaWidget() {
   const setFollowUpEnabled = useVedaStore(s => s.setFollowUpEnabled)
   const setVoiceLang    = useVedaStore(s => s.setVoiceLang)
   const setResearchMode = useVedaStore(s => s.setResearchMode)
+  const uploadAttachment = useVedaStore(s => s.uploadAttachment)
+  const removePendingAttachment = useVedaStore(s => s.removePendingAttachment)
   const refreshCapabilities = useVedaStore(s => s.refreshCapabilities)
 
   const [input, setInput] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
   const panelRef  = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (open) bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -137,9 +217,16 @@ export function VedaWidget() {
 
   const submit = () => {
     const text = input.trim()
-    if (!text || loading) return
+    if ((!text && pendingAttachments.length === 0) || loading) return
     setInput('')
     send(text, 'text')
+  }
+
+  const handleFileSelection = async (files: FileList | null) => {
+    if (!files || files.length === 0) return
+    for (const file of Array.from(files)) {
+      await uploadAttachment(file)
+    }
   }
 
   return (
@@ -205,6 +292,30 @@ export function VedaWidget() {
 
           {/* Controls */}
           <div style={{ padding: '10px 14px', borderTop: '1px solid #1E2332', flexShrink: 0 }}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept=".pdf,.txt,.md,.csv,.json,.png,.jpg,.jpeg,.webp,.gif,.bmp"
+              style={{ display: 'none' }}
+              onChange={async e => {
+                await handleFileSelection(e.target.files)
+                e.currentTarget.value = ''
+              }}
+            />
+            {(pendingAttachments.length > 0 || uploadingAttachment) && (
+              <>
+                <DrawerPendingAttachments
+                  attachments={pendingAttachments}
+                  onRemove={removePendingAttachment}
+                />
+                {uploadingAttachment && (
+                  <div style={{ fontSize: 10, color: '#60A5FA', marginBottom: 8 }}>
+                    Uploading attachment...
+                  </div>
+                )}
+              </>
+            )}
             <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
               <button
                 onClick={() => startListening()}
@@ -228,6 +339,26 @@ export function VedaWidget() {
                   </svg>
                 )}
               </button>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={!attachmentsEnabled || loading || uploadingAttachment}
+                title={
+                  attachmentsEnabled
+                    ? 'Attach a PDF, text file, CSV, JSON, or image'
+                    : 'Attachments are not enabled by the backend yet'
+                }
+                style={{
+                  width: 34, height: 34, borderRadius: 8, flexShrink: 0,
+                  border: `1px solid ${attachmentsEnabled ? '#1E2332' : '#2D3348'}`,
+                  background: attachmentsEnabled ? '#0D1117' : 'transparent',
+                  color: attachmentsEnabled ? '#94A3B8' : '#334155',
+                  cursor: attachmentsEnabled && !loading && !uploadingAttachment ? 'pointer' : 'not-allowed',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 14,
+                }}
+              >
+                +
+              </button>
               <input
                 value={input}
                 onChange={e => setInput(e.target.value)}
@@ -237,7 +368,9 @@ export function VedaWidget() {
                     ? 'Listening...'
                     : researchMode && researchEnabled
                       ? 'Ask anything. Veda can check outside sources too.'
-                      : 'Ask about markets, sectors, stocks...'
+                      : attachmentsEnabled
+                        ? 'Ask or attach a file...'
+                        : 'Ask about markets, sectors, stocks...'
                 }
                 disabled={loading}
                 style={{
@@ -247,13 +380,13 @@ export function VedaWidget() {
               />
               <button
                 onClick={submit}
-                disabled={!input.trim() || loading}
+                disabled={(!input.trim() && pendingAttachments.length === 0) || loading}
                 style={{
                   padding: '0 14px', borderRadius: 6, fontSize: 11, fontWeight: 700,
-                  cursor: input.trim() && !loading ? 'pointer' : 'not-allowed',
-                  background: input.trim() && !loading ? '#1E3A5F' : '#0D1117',
-                  color: input.trim() && !loading ? '#60A5FA' : '#334155',
-                  border: `1px solid ${input.trim() && !loading ? '#3B82F6' : '#1E2332'}`,
+                  cursor: (input.trim() || pendingAttachments.length > 0) && !loading ? 'pointer' : 'not-allowed',
+                  background: (input.trim() || pendingAttachments.length > 0) && !loading ? '#1E3A5F' : '#0D1117',
+                  color: (input.trim() || pendingAttachments.length > 0) && !loading ? '#60A5FA' : '#334155',
+                  border: `1px solid ${(input.trim() || pendingAttachments.length > 0) && !loading ? '#3B82F6' : '#1E2332'}`,
                 }}
               >Send</button>
             </div>
