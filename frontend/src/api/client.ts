@@ -308,6 +308,7 @@ export const fetchAllStocks     = (page = 1, per_page = 100, label?: string, sec
   const params = new URLSearchParams({ page: String(page), per_page: String(per_page) })
   if (label && label !== 'ALL') params.set('label', label)
   if (sector && sector !== 'ALL') params.set('sector', sector)
+  if (search?.trim()) params.set('search', search.trim())
   return api.get<{ stocks: Stock[]; total: number; page: number }>(`/stocks?${params}`).then(r => r.data)
 }
 export type IndexTick = { name: string; ret_30d: number; ret_365d: number; momentum_score: number }

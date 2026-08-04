@@ -1317,16 +1317,23 @@ stack:
 - Phase 1 complete -- new `engines/ai/research/` layer with pluggable
   provider abstraction, `ddgs` as the first provider, TTL cache, and
   explicit `research_mode` support in `ChatEngine`
-- Remaining Veda research phases are still pending (orchestration UI,
-  attachments, reviewed memory, MIT Git intake, MCP fallback)
+- Phase 2 complete -- full chat and floating widget now expose a research
+  toggle, Veda shows when outside research was used, and research trigger
+  reasons are logged for analytics/audit
+- Remaining Veda research phases are still pending (attachments, reviewed
+  memory, MIT Git intake, MCP fallback)
 
 Affected code paths:
 
 - `backend/routers/chat.py`
+- `backend/routers/voice.py`
 - `engines/ai/chatbot/chat_engine.py`
 - `engines/ai/research/`
 - `engines/common/config.py`
 - `frontend/src/api/client.ts`
+- `frontend/src/components/veda/VedaWidget.tsx`
+- `frontend/src/pages/ChatPage.tsx`
+- `frontend/src/store/vedaStore.ts`
 
 ---
 

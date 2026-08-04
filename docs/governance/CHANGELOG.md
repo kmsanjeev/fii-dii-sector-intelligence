@@ -6,6 +6,74 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.61.0
+
+Veda Phase 2 implemented: research mode orchestration, UI controls, and audit visibility
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+User asked to commit the finished Phase 1 work and then start Phase 2.
+
+This session completed **Phase 2 -- Research mode orchestration** for Veda.
+The result is that research mode is no longer just a backend contract. It
+is now visible, controllable, and traceable in the actual chat experience.
+
+## Changes
+
+- `engines/ai/chatbot/chat_engine.py`
+  - added a dedicated local-first vs research decision helper
+  - now records clearer trigger reasons such as `local_first`,
+    `explicit_research_mode`, and `research_intent_auto`
+  - strengthened the prompt rule so outside sources stay secondary to local
+    platform intelligence
+- `backend/routers/voice.py`
+  - extended chat analytics logging with research request/use/provider/reason
+  - added `research_share` to live analytics output
+- `frontend/src/store/vedaStore.ts`
+  - completed research-mode state wiring
+  - added backend capability refresh support
+  - now sends research-mode requests and stores research metadata per reply
+- `frontend/src/pages/ChatPage.tsx`
+  - added a research mode toggle to the full chat page
+  - added visible research status in the header and input guidance
+  - added assistant research badges showing whether outside sources were used
+- `frontend/src/components/veda/VedaWidget.tsx`
+  - added the same research mode toggle to the floating Veda drawer
+  - added simple research feedback inside assistant bubbles
+- `frontend/src/api/client.ts`
+  - fixed stock search query wiring during frontend cleanup
+
+## Verification
+
+- `python -m py_compile ...` passed for the changed backend research files
+- `frontend\\node_modules\\.bin\\tsc.cmd --noEmit -p frontend/tsconfig.app.json`
+  still reports many older frontend TypeScript issues outside this workstream
+- a filtered TypeScript check for the changed Veda files returned no errors
+  for `ChatPage.tsx`, `VedaWidget.tsx`, `vedaStore.ts`, or the updated
+  `api/client.ts` path after cleanup
+
+## Files changed
+
+- `engines/ai/chatbot/chat_engine.py`
+- `backend/routers/voice.py`
+- `frontend/src/api/client.ts`
+- `frontend/src/components/veda/VedaWidget.tsx`
+- `frontend/src/pages/ChatPage.tsx`
+- `frontend/src/store/vedaStore.ts`
+- `docs/governance/CHANGELOG.md`
+- `docs/governance/MASTER_CHECKLIST.md`
+- `docs/governance/MODULE_REGISTRY.md`
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/modules/AI_PLATFORM.md`
+
+---
+
 # Version 4.60.0
 
 Veda Phase 0 + Phase 1 implemented: research contracts, capabilities, and DDGS base provider

@@ -101,7 +101,7 @@ Current status:
 
 - Phase 0 complete
 - Phase 1 complete
-- Phase 2 onward pending
+- Phase 2 complete, Phase 3 onward pending
 
 ## Operating rule
 
@@ -219,6 +219,17 @@ Status: COMPLETE (2026-08-04)
 - decide local-first vs outside-research behavior
 - add query classification for normal mode vs research mode
 - log why outside research was triggered
+
+Status: COMPLETE (2026-08-04)
+
+Delivered in this phase:
+
+- research toggle added to full chat and floating Veda widget
+- backend capability handshake now keeps the toggle honest
+- Veda now records `local_first`, `explicit_research_mode`, and
+  `research_intent_auto` style trigger reasons
+- assistant replies now show a simple research-used/research-not-used badge
+- voice analytics now capture research request/use/provider/reason
 
 ### Phase 3 -- Chat attachments
 

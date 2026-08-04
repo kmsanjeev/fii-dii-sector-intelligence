@@ -43,6 +43,15 @@ export function VedaWakeController() {
 function DrawerBubble({ msg }: { msg: Msg }) {
   const isUser = msg.role === 'user'
   if (msg.role === 'system') return null
+  const researchLabel = !isUser && msg.research
+    ? msg.research.used
+      ? `Research used${msg.research.provider ? `: ${msg.research.provider}` : ''}${msg.research.source_count ? `, ${msg.research.source_count} source${msg.research.source_count === 1 ? '' : 's'}` : ''}${msg.research.cached ? ', cache' : ''}`
+      : msg.research.error
+        ? 'Research was requested, but lookup was unavailable'
+        : msg.research.requested
+          ? 'Research mode checked, but no outside source was added'
+          : ''
+    : ''
   return (
     <div style={{ display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start', marginBottom: 10 }}>
       <div style={{
@@ -54,6 +63,17 @@ function DrawerBubble({ msg }: { msg: Msg }) {
         whiteSpace: 'pre-wrap', wordBreak: 'break-word',
       }}>
         {msg.content}
+        {!isUser && researchLabel && (
+          <div style={{
+            marginTop: 6,
+            paddingTop: 6,
+            borderTop: '1px solid #1E2332',
+            fontSize: 9,
+            color: msg.research?.used ? '#60A5FA' : msg.research?.error ? '#F59E0B' : '#94A3B8',
+          }}>
+            {researchLabel}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -75,12 +95,16 @@ export function VedaWidget() {
   const followUpEnabled = useVedaStore(s => s.followUpEnabled)
   const followUpListening = useVedaStore(s => s.followUpListening)
   const voiceLang       = useVedaStore(s => s.voiceLang)
+  const researchMode    = useVedaStore(s => s.researchMode)
+  const researchEnabled = useVedaStore(s => s.researchEnabled)
   const send            = useVedaStore(s => s.send)
   const startListening  = useVedaStore(s => s.startListening)
   const stopSpeaking    = useVedaStore(s => s.stopSpeaking)
   const setWakeEnabled  = useVedaStore(s => s.setWakeEnabled)
   const setFollowUpEnabled = useVedaStore(s => s.setFollowUpEnabled)
   const setVoiceLang    = useVedaStore(s => s.setVoiceLang)
+  const setResearchMode = useVedaStore(s => s.setResearchMode)
+  const refreshCapabilities = useVedaStore(s => s.refreshCapabilities)
 
   const [input, setInput] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -89,6 +113,11 @@ export function VedaWidget() {
   useEffect(() => {
     if (open) bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, open])
+
+  useEffect(() => {
+    if (!open) return
+    void refreshCapabilities()
+  }, [open, refreshCapabilities])
 
   // Close on outside click
   useEffect(() => {
@@ -102,7 +131,8 @@ export function VedaWidget() {
 
   const statusText = speaking ? 'Speaking...'
     : listening ? (followUpListening ? 'Listening for follow-up...' : 'Listening...')
-    : loading ? 'Thinking...'
+    : loading ? (researchMode && researchEnabled ? 'Researching...' : 'Thinking...')
+    : researchMode && researchEnabled ? 'Research mode is on'
     : wakeEnabled ? 'Say "Veda" or ask below' : 'Ask below'
 
   const submit = () => {
@@ -202,7 +232,13 @@ export function VedaWidget() {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') submit() }}
-                placeholder={listening ? 'Listening...' : 'Ask about markets, sectors, stocks...'}
+                placeholder={
+                  listening
+                    ? 'Listening...'
+                    : researchMode && researchEnabled
+                      ? 'Ask anything. Veda can check outside sources too.'
+                      : 'Ask about markets, sectors, stocks...'
+                }
                 disabled={loading}
                 style={{
                   flex: 1, background: '#0D1117', border: '1px solid #1E2332', borderRadius: 6,
@@ -255,6 +291,24 @@ export function VedaWidget() {
                     opacity: wakeEnabled ? 1 : 0.5,
                   }}
                 >{followUpEnabled ? 'FOLLOW-UP ON' : 'FOLLOW-UP OFF'}</button>
+                <button
+                  onClick={() => setResearchMode(!researchMode)}
+                  disabled={!researchEnabled}
+                  title={
+                    researchEnabled
+                      ? researchMode
+                        ? 'Research mode on: Veda may check outside sources when local data is weak'
+                        : 'Research mode off: Veda stays local-first unless a research query needs more'
+                      : 'Research mode is not enabled by the backend yet'
+                  }
+                  style={{
+                    background: researchMode && researchEnabled ? '#1E3A5F' : 'transparent',
+                    border: `1px solid ${researchMode && researchEnabled ? '#3B82F6' : '#1E2332'}`,
+                    borderRadius: 4, color: researchMode && researchEnabled ? '#60A5FA' : '#334155',
+                    fontSize: 9, fontWeight: 700, padding: '2px 6px', cursor: researchEnabled ? 'pointer' : 'not-allowed',
+                    opacity: researchEnabled ? 1 : 0.55,
+                  }}
+                >{researchMode ? 'RESEARCH ON' : 'RESEARCH OFF'}</button>
               </div>
               <button
                 onClick={() => { setOpen(false); navigate('/chat') }}

@@ -12,7 +12,6 @@
  * see VedaWakeController, mounted once in AppShell so it works app-wide.
  */
 import { useState, useRef, useEffect } from 'react'
-import { resetChatSession } from '../api/client'
 import {
   useVedaStore, genId, makeTitle, VOICE_LANGS,
   type Msg, type SavedSession,
@@ -450,6 +449,34 @@ function IntentBadge({ intent }: { intent?: string }) {
   )
 }
 
+function ResearchBadge({ research }: { research?: Msg['research'] }) {
+  if (!research || (!research.requested && !research.used && !research.error)) return null
+
+  const label = research.used
+    ? `Research used${research.provider ? `: ${research.provider}` : ''}${research.source_count ? `, ${research.source_count} source${research.source_count === 1 ? '' : 's'}` : ''}${research.cached ? ', cache' : ''}`
+    : research.error
+      ? 'Research was requested, but outside lookup was unavailable'
+      : 'Research mode checked, but no outside source was added'
+
+  const color = research.used ? '#60A5FA' : research.error ? '#F59E0B' : '#94A3B8'
+  const border = research.used ? '#3B82F644' : research.error ? '#F59E0B44' : '#334155'
+
+  return (
+    <div style={{
+      fontSize: 9,
+      color,
+      border: `1px solid ${border}`,
+      background: '#0D1117',
+      borderRadius: 4,
+      display: 'inline-block',
+      padding: '2px 7px',
+      marginBottom: 5,
+    }}>
+      {label}
+    </div>
+  )
+}
+
 function TypingDots() {
   return (
     <div style={{ display: 'flex', gap: 4, alignItems: 'center', padding: '6px 0' }}>
@@ -500,6 +527,7 @@ function MessageBubble({ msg }: { msg: Msg }) {
       )}
       <div style={{ maxWidth: '78%' }}>
         {!isUser && <IntentBadge intent={msg.intent} />}
+        {!isUser && <ResearchBadge research={msg.research} />}
         <div style={{
           padding: '10px 14px',
           borderRadius: isUser ? '12px 12px 2px 12px' : '2px 12px 12px 12px',
@@ -533,6 +561,8 @@ export function ChatPage() {
   const wakeEnabled       = useVedaStore(s => s.wakeEnabled)
   const followUpEnabled   = useVedaStore(s => s.followUpEnabled)
   const followUpListening = useVedaStore(s => s.followUpListening)
+  const researchMode      = useVedaStore(s => s.researchMode)
+  const researchEnabled   = useVedaStore(s => s.researchEnabled)
   const apiError          = useVedaStore(s => s.apiError)
   const liveTranscript    = useVedaStore(s => s.liveTranscript)
 
@@ -543,7 +573,9 @@ export function ChatPage() {
   const setSpeakReplies    = useVedaStore(s => s.setSpeakReplies)
   const setWakeEnabled     = useVedaStore(s => s.setWakeEnabled)
   const setFollowUpEnabled = useVedaStore(s => s.setFollowUpEnabled)
+  const setResearchMode    = useVedaStore(s => s.setResearchMode)
   const setApiError        = useVedaStore(s => s.setApiError)
+  const refreshCapabilities = useVedaStore(s => s.refreshCapabilities)
   const handleNewChatStore = useVedaStore(s => s.handleNewChat)
   const handleSelectStore  = useVedaStore(s => s.handleSelectSession)
   const handleDeleteStore  = useVedaStore(s => s.handleDeleteSession)
@@ -562,6 +594,10 @@ export function ChatPage() {
   useEffect(() => {
     if (listening) setInput(liveTranscript)
   }, [liveTranscript, listening])
+
+  useEffect(() => {
+    void refreshCapabilities()
+  }, [refreshCapabilities])
 
   // ── Auto-scroll ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -704,6 +740,14 @@ export function ChatPage() {
             </div>
             <div style={{ color: '#334155', fontSize: 9, marginTop: 2 }}>
               Groq / Llama 3.3 70B &nbsp;+&nbsp; RAG (6 domains) &nbsp;+&nbsp; 23 live tools
+              <span style={{ color: researchMode && researchEnabled ? '#60A5FA' : '#64748B' }}>
+                {' '}|{' '}
+                {researchEnabled
+                  ? researchMode
+                    ? 'Research mode: ON'
+                    : 'Research mode: local-first'
+                  : 'Research mode: unavailable'}
+              </span>
               {backendSid && <span style={{ color: '#1E2332' }}> &nbsp;|&nbsp; {backendSid.slice(0, 8)}</span>}
             </div>
           </div>
@@ -747,6 +791,30 @@ export function ChatPage() {
               }}
             >
               {followUpEnabled ? 'FOLLOW-UP: ON' : 'FOLLOW-UP: OFF'}
+            </button>
+            <button
+              onClick={() => setResearchMode(!researchMode)}
+              disabled={!researchEnabled}
+              title={
+                researchEnabled
+                  ? researchMode
+                    ? 'Research mode on: Veda may check outside sources when local data is weak'
+                    : 'Research mode off: Veda stays local-first unless the query auto-needs research'
+                  : 'Research mode is not enabled by the backend yet'
+              }
+              style={{
+                background: researchMode && researchEnabled ? '#1E3A5F' : 'transparent',
+                border: `1px solid ${researchMode && researchEnabled ? '#3B82F6' : '#1E2332'}`,
+                borderRadius: 4,
+                color: researchMode && researchEnabled ? '#60A5FA' : '#334155',
+                fontSize: 9,
+                padding: '3px 8px',
+                cursor: researchEnabled ? 'pointer' : 'not-allowed',
+                fontWeight: 700,
+                opacity: researchEnabled ? 1 : 0.55,
+              }}
+            >
+              {researchMode ? 'RESEARCH: ON' : 'RESEARCH: OFF'}
             </button>
             {speaking && (
               <button onClick={stopSpeaking} style={{ background: '#1E3A5F', border: '1px solid #3B82F6', borderRadius: 4, color: '#60A5FA', fontSize: 9, padding: '3px 8px', cursor: 'pointer', fontWeight: 700 }}>
@@ -829,7 +897,13 @@ export function ChatPage() {
                 value={input}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder={listening ? (followUpListening ? 'Listening for follow-up... speak now' : 'Listening... speak now') : 'Ask about markets, sectors, stocks… or type / for quick questions'}
+                placeholder={
+                  listening
+                    ? (followUpListening ? 'Listening for follow-up... speak now' : 'Listening... speak now')
+                    : researchMode && researchEnabled
+                      ? 'Ask anything. Veda can also check outside sources when needed.'
+                      : 'Ask about markets, sectors, stocks... or type / for quick questions'
+                }
                 rows={1}
                 style={{
                   flex: 1, resize: 'none', overflow: 'hidden',

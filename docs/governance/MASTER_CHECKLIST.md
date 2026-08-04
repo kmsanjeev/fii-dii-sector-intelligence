@@ -432,7 +432,14 @@ Overall: 100% of full vision complete (Investment Operating System LIVE)
     research metadata, and future attachment payload shape
 [x] Unit test coverage added:
     `tests/test_veda_research_service.py`
-[ ] Phase 2 -- research mode orchestration UI/decision layer
+[x] Phase 2 -- research mode orchestration UI/decision layer:
+    `frontend/src/pages/ChatPage.tsx` and
+    `frontend/src/components/veda/VedaWidget.tsx` now expose research-mode
+    toggles and simple assistant research badges
+[x] Phase 2 -- research audit visibility:
+    `engines/ai/chatbot/chat_engine.py` now records local-first vs external
+    research reasons, and `backend/routers/voice.py` logs
+    request/use/provider/reason plus live `research_share`
 [ ] Phase 3 -- file/document/image upload flow
 [ ] Phase 4 -- source-aware answer rendering in chat UI
 [ ] Phase 5 -- reviewed save-to-knowledge flow

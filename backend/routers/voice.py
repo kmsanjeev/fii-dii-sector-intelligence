@@ -68,7 +68,8 @@ CHAT_LOG_CSV = CHAT_LOG_DIR / "conversation_log.csv"
 # migration needed for existing conversation_log.csv rows.
 _LOG_COLS = ["ts", "session_id", "mode", "language", "wake_word_used",
              "user_message", "intent", "reply_chars", "latency_ms", "tts_voice",
-             "symbols", "flag_reason"]
+             "symbols", "flag_reason", "research_requested", "research_used",
+             "research_provider", "research_reason"]
 _log_lock = threading.Lock()
 
 
@@ -92,6 +93,10 @@ class LogRequest(BaseModel):
                                          # regex over user_message
     flag_reason:    Optional[str] = None  # "refused" | "prompt_leak" | None
                                             # (engines/ai/chatbot/safety.py)
+    research_requested: bool = False
+    research_used:      bool = False
+    research_provider:  str = ""
+    research_reason:    Optional[str] = None
 
 
 # "What to read vs. what to present" (user feedback: "she starts reading
@@ -271,8 +276,8 @@ def list_voices():
 
 def _migrate_log_schema_if_needed():
     """One-time schema migration: older conversation_log.csv rows predate
-    the 'symbols' column (Phase V-DATA-3). Appending new 11-column rows
-    under an old 10-column header would corrupt the file for any CSV
+    the latest analytics columns. Appending new rows
+    under an old header would corrupt the file for any CSV
     reader, so if the on-disk header doesn't match _LOG_COLS, rewrite the
     whole file once with the missing column added (empty for old rows)."""
     if not CHAT_LOG_CSV.exists():
@@ -292,7 +297,7 @@ def _migrate_log_schema_if_needed():
         w.writeheader()
         w.writerows(rows)
     tmp.replace(CHAT_LOG_CSV)
-    logger.info("[Voice] conversation_log.csv migrated to include 'symbols' column (%d rows)", len(rows))
+    logger.info("[Voice] conversation_log.csv migrated to current schema (%d rows)", len(rows))
 
 
 @router.post("/log")
@@ -315,6 +320,10 @@ def log_turn(req: LogRequest):
             "tts_voice":      req.tts_voice,
             "symbols":        ",".join(req.symbols) if req.symbols else "",
             "flag_reason":    req.flag_reason or "",
+            "research_requested": "1" if req.research_requested else "0",
+            "research_used":      "1" if req.research_used else "0",
+            "research_provider":  req.research_provider,
+            "research_reason":    req.research_reason or "",
         }
         with _log_lock:
             new_file = not CHAT_LOG_CSV.exists()
@@ -361,11 +370,17 @@ def quick_analytics():
     df = pd.read_csv(CHAT_LOG_CSV)
     if df.empty:
         return {"source": "live", "turns": 0, "note": "no conversations logged yet"}
+    research_used = df.get("research_used")
+    if research_used is not None:
+        research_share = round(float(research_used.astype(str).isin(["1", "true", "True"]).mean()) * 100, 1)
+    else:
+        research_share = 0.0
     return {
         "source":        "live",
         "turns":         int(len(df)),
         "sessions":      int(df["session_id"].nunique()),
         "voice_share":   round(float((df["mode"] == "voice").mean()) * 100, 1),
+        "research_share": research_share,
         "language_split": df["language"].value_counts().to_dict(),
         "top_intents":   df["intent"].value_counts().head(8).to_dict(),
         "least_intents": df["intent"].value_counts().tail(5).to_dict(),

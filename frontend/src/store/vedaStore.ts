@@ -17,12 +17,25 @@
  * risk the original useCallback dependency arrays carried.
  */
 import { create } from 'zustand'
-import { sendChat, resetChatSession, type ChatResponseData } from '../api/client'
+import {
+  sendChat,
+  resetChatSession,
+  fetchChatCapabilities,
+  type ChatCapabilities,
+  type ChatResponseData,
+  type ChatResearchMeta,
+} from '../api/client'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type Role = 'user' | 'assistant' | 'system'
-export interface Msg { role: Role; content: string; intent?: string; ts: number }
+export interface Msg {
+  role: Role
+  content: string
+  intent?: string
+  ts: number
+  research?: ChatResearchMeta
+}
 
 export interface SavedSession {
   id: string
@@ -62,6 +75,7 @@ export const VOICE_LANGS = [
 const VOICE_LANG_KEY = 'cfip-voice-lang'
 const WAKE_KEY       = 'cfip-wake'
 const FOLLOWUP_KEY   = 'cfip-followup'
+const RESEARCH_MODE_KEY = 'cfip-research-mode'
 
 function loadVoiceLang(): string {
   try { return localStorage.getItem(VOICE_LANG_KEY) || 'hi' } catch { return 'hi' }
@@ -71,6 +85,9 @@ function loadWakeEnabled(): boolean {
 }
 function loadFollowUpEnabled(): boolean {
   try { return localStorage.getItem(FOLLOWUP_KEY) !== 'off' } catch { return true }
+}
+function loadResearchMode(): boolean {
+  try { return localStorage.getItem(RESEARCH_MODE_KEY) === 'on' } catch { return false }
 }
 
 // Wake words + common mis-hearings; Hindi STT returns Devanagari script.
@@ -255,6 +272,9 @@ interface VedaState {
   wakeEnabled:    boolean
   followUpEnabled: boolean   // hands-free: keep listening after a voice reply
                               // without requiring the wake word again
+  researchMode: boolean
+  researchEnabled: boolean
+  attachmentsEnabled: boolean
 
   // Live state (shared across every surface)
   listening:      boolean
@@ -281,7 +301,9 @@ interface VedaState {
   setSpeakReplies: (v: boolean) => void
   setWakeEnabled: (v: boolean) => void
   setFollowUpEnabled: (v: boolean) => void
+  setResearchMode: (v: boolean) => void
   setApiError: (msg: string | null) => void
+  refreshCapabilities: () => Promise<void>
   handleNewChat: () => Promise<void>
   handleSelectSession: (s: SavedSession) => void
   handleDeleteSession: (id: string) => void
@@ -304,6 +326,9 @@ export const useVedaStore = create<VedaState>((set, get) => ({
   speakReplies:    true,
   wakeEnabled:     loadWakeEnabled(),
   followUpEnabled: loadFollowUpEnabled(),
+  researchMode:    loadResearchMode(),
+  researchEnabled: true,
+  attachmentsEnabled: false,
 
   listening: false,
   followUpListening: false,
@@ -337,7 +362,34 @@ export const useVedaStore = create<VedaState>((set, get) => ({
     try { localStorage.setItem(FOLLOWUP_KEY, v ? 'on' : 'off') } catch { /* ignore */ }
   },
 
+  setResearchMode: (v) => {
+    if (v && !get().researchEnabled) {
+      set({ apiError: 'Research mode is not enabled by the backend yet.' })
+      return
+    }
+    set({ researchMode: v })
+    try { localStorage.setItem(RESEARCH_MODE_KEY, v ? 'on' : 'off') } catch { /* ignore */ }
+  },
+
   setApiError: (msg) => set({ apiError: msg }),
+
+  refreshCapabilities: async () => {
+    try {
+      const caps: ChatCapabilities = await fetchChatCapabilities()
+      const next: Partial<VedaState> = {
+        researchEnabled: caps.research_enabled,
+        attachmentsEnabled: caps.attachments_enabled,
+      }
+      if (!caps.research_enabled && get().researchMode) {
+        next.researchMode = false
+        try { localStorage.setItem(RESEARCH_MODE_KEY, 'off') } catch { /* ignore */ }
+      }
+      set(next)
+    } catch {
+      // Best-effort. The UI keeps the last known local state if the backend
+      // is unavailable during page load.
+    }
+  },
 
   markWakeUsed: () => { wakeUsed = true },
 
@@ -433,7 +485,7 @@ export const useVedaStore = create<VedaState>((set, get) => ({
 
   send: async (text, mode = 'text', sidOverride) => {
     const trimmed = text.trim()
-    const { loading, backendSid, currentId, speakReplies, _voiceChats } = get()
+    const { loading, backendSid, currentId, speakReplies, _voiceChats, researchMode } = get()
     if (!trimmed || loading) return
 
     const userMsg: Msg = { role: 'user', content: trimmed, ts: Date.now() }
@@ -449,11 +501,17 @@ export const useVedaStore = create<VedaState>((set, get) => ({
       }, 2500)
     }
     try {
-      const data: ChatResponseData = await sendChat(trimmed, sid, mode)
+      const data: ChatResponseData = await sendChat(trimmed, sid, mode, { research_mode: researchMode })
       if (fillerTimer) { clearTimeout(fillerTimer); fillerTimer = null }
       set(s => ({
         backendSid: data.session_id,
-        messages: [...s.messages, { role: 'assistant' as Role, content: data.reply, intent: data.intent, ts: Date.now() }],
+        messages: [...s.messages, {
+          role: 'assistant' as Role,
+          content: data.reply,
+          intent: data.intent,
+          ts: Date.now(),
+          research: data.research,
+        }],
       }))
       // logTurn (analytics) -- fire and forget, never break chat
       const wake = wakeUsed
@@ -466,6 +524,10 @@ export const useVedaStore = create<VedaState>((set, get) => ({
           latency_ms: Date.now() - t0, tts_voice: mode === 'voice' ? get().voiceLang : '',
           symbols: data.symbols_discussed ?? [],
           flag_reason: data.flag_reason ?? null,
+          research_requested: data.research?.requested ?? researchMode,
+          research_used: data.research?.used ?? false,
+          research_provider: data.research?.provider ?? '',
+          research_reason: data.research?.reason ?? null,
         }),
       }).catch(() => { /* analytics must never break chat */ })
 
