@@ -363,11 +363,66 @@ export const fetchNews = () => api.get<NewsResponse>('/news').then(r => r.data)
 
 // Phase 14 — AI Chat (separate instance with longer timeout for multi-round Groq tool calls)
 const chatApi = axios.create({ baseURL: '/api', timeout: 60000 })
-export type ChatResponseData = { reply: string; session_id: string; intent: string; symbols_discussed?: string[]; flagged?: boolean; flag_reason?: string | null }
-export const sendChat         = (message: string, session_id?: string, mode: 'voice' | 'text' = 'text') =>
-  chatApi.post<ChatResponseData>('/chat', { message, session_id, mode }).then(r => r.data)
+export type ChatAttachmentStub = {
+  name: string
+  mime_type: string
+  size_bytes?: number | null
+  storage_key?: string | null
+  excerpt?: string | null
+}
+export type ChatResearchSource = {
+  title: string
+  url: string
+  snippet?: string | null
+  source?: string | null
+  published_at?: string | null
+  kind?: string
+}
+export type ChatResearchMeta = {
+  requested: boolean
+  used: boolean
+  provider?: string | null
+  reason?: string | null
+  source_count: number
+  cached?: boolean
+  error?: string | null
+  sources: ChatResearchSource[]
+}
+export type ChatCapabilities = {
+  research_enabled: boolean
+  default_research_provider: string
+  auto_research_for_research_intent: boolean
+  attachments_enabled: boolean
+  save_to_knowledge_enabled: boolean
+  mcp_enabled: boolean
+  supported_attachment_mime_prefixes: string[]
+}
+export type ChatResponseData = {
+  reply: string
+  session_id: string
+  intent: string
+  symbols_discussed?: string[]
+  flagged?: boolean
+  flag_reason?: string | null
+  research?: ChatResearchMeta
+}
+export const sendChat = (
+  message: string,
+  session_id?: string,
+  mode: 'voice' | 'text' = 'text',
+  extras?: { research_mode?: boolean; attachments?: ChatAttachmentStub[] },
+) =>
+  chatApi.post<ChatResponseData>('/chat', {
+    message,
+    session_id,
+    mode,
+    research_mode: extras?.research_mode ?? false,
+    attachments: extras?.attachments ?? [],
+  }).then(r => r.data)
 export const resetChatSession = (session_id: string) =>
   chatApi.delete(`/chat/session/${session_id}`).then(r => r.data)
+export const fetchChatCapabilities = () =>
+  chatApi.get<ChatCapabilities>('/chat/capabilities').then(r => r.data)
 
 // Phase V-DATA-3 — chat demand analytics ("Recently Asked" panel)
 export type ChatAnalyticsRow = { key: string; count: number; share_pct?: number; last_seen?: string | null }

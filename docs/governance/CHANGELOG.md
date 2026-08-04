@@ -6,6 +6,203 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.60.0
+
+Veda Phase 0 + Phase 1 implemented: research contracts, capabilities, and DDGS base provider
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+User switched from planning to development mode and asked to start with
+Phase 0 and Phase 1 of the approved Veda upgrade plan.
+
+This session implemented:
+
+1. **Phase 0 -- Foundation and contracts**
+2. **Phase 1 -- Python-first research base**
+
+The goal was to create a safe, pluggable foundation for external research
+without breaking the existing Veda chat flow.
+
+## Changes
+
+- `engines/common/config.py`
+  - added Veda research/attachments/MCP feature flags and runtime settings
+  - added dedicated cache/upload directories for future phases
+- `engines/ai/research/`
+  - new research layer added
+  - provider abstraction introduced
+  - `ddgs` implemented as the first external research provider
+  - in-memory TTL cache added for repeated queries
+- `engines/ai/chatbot/chat_engine.py`
+  - added explicit `research_mode`
+  - added external research context injection into the prompt
+  - added research metadata tracking on each turn (`last_research`)
+  - kept external research separate from normal tool flow
+- `backend/routers/chat.py`
+  - expanded chat request/response contract
+  - added `research_mode`
+  - added attachment placeholders for future file-upload phase
+  - added `research` metadata in the response
+  - added `GET /api/chat/capabilities` for frontend feature discovery
+- `frontend/src/api/client.ts`
+  - added chat capability/research types
+  - extended `sendChat()` to support `research_mode` and future attachments
+- `requirements.txt`
+  - added `ddgs`
+- `tests/test_veda_research_service.py`
+  - added focused tests for DDGS normalization, cache behavior, and disabled-mode handling
+
+## Verification
+
+- `python -m py_compile ...` passed for all changed Python files
+- `pytest` could not be run directly because it is not installed in the
+  active Python 3.14 environment (`python -m pytest` -> `No module named pytest`)
+
+## Files changed
+
+- `backend/routers/chat.py`
+- `engines/common/config.py`
+- `engines/ai/chatbot/chat_engine.py`
+- `engines/ai/research/`
+- `frontend/src/api/client.ts`
+- `requirements.txt`
+- `tests/test_veda_research_service.py`
+- `docs/governance/CHANGELOG.md`
+- `docs/governance/MASTER_CHECKLIST.md`
+- `docs/governance/MODULE_REGISTRY.md`
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/modules/AI_PLATFORM.md`
+- `docs/decisions/ADR-024-Veda-Research-Mode-Acquisition-Strategy.md`
+
+---
+
+# Version 4.59.0
+
+Veda development-mode decision: coding model selected + phase order locked
+
+Date: 2026-08-04
+
+Status: Completed (design and documentation only)
+
+---
+
+## Summary
+
+User asked which model is sufficient for implementing the approved Veda
+research/attachment plan, and asked for the final phase-wise implementation
+sequence before switching from planning into development mode.
+
+This update locks two things:
+
+1. the recommended development model
+2. the exact implementation phase order
+
+No application code changed in this session. This is still planning and
+documentation only.
+
+## Decision
+
+- **Practical primary coding model:** `Gemini 2.5 Pro`
+  - Reason: already supported by the current `.env` setup, large context,
+    strong code/document reasoning, and sufficient for this multi-file
+    React + FastAPI + orchestration upgrade.
+- **If a stronger paid coding model is preferred:** use a frontier coding
+  model such as OpenAI `gpt-5.6-terra` / `gpt-5.6-sol` or Anthropic
+  `Claude Sonnet 4` / `Claude Opus 4.1`, but these are optional upgrades,
+  not a requirement for this plan.
+- **Do not use small/fast-only models as the sole development model** for
+  this workstream. They are acceptable for quick summaries or minor edits,
+  but not as the main build model for research orchestration, attachments,
+  memory review, MCP fallback, and safety logic together.
+
+## Locked implementation order
+
+1. Foundation + contracts
+2. Python-first research layer (`ddgs`)
+3. Research mode orchestration
+4. Attachment upload + extraction
+5. Source-aware response layer
+6. Reviewed save-to-knowledge flow
+7. MIT Git resource intake
+8. MCP fallback layer
+9. Hardening, tests, docs, rollout
+
+## Files changed
+
+- `docs/governance/CHANGELOG.md` -- recorded the final development model and locked phase order
+- `docs/PROJECT_MASTER_STATE.md` -- expanded the approved Veda workstream into concrete phases
+- `docs/modules/AI_PLATFORM.md` -- added development-mode model guidance and phase-by-phase execution order
+
+---
+
+# Version 4.58.0
+
+Veda research stack decision: Python-first research mode, MCP fallback
+
+Date: 2026-08-04
+
+Status: Completed (design and documentation only)
+
+---
+
+## Summary
+
+User asked to identify which research-capable Python libraries and MCP
+servers can help Veda learn from global resources when local platform data
+is missing, weak, or stale. The request also added two important constraints:
+
+1. Try a Python-library approach first before adding MCP complexity.
+2. Prefer MIT-licensed Git resources when Veda is enhanced with external
+   skills, artifacts, or reusable code.
+
+This session was a research and architecture decision only. No application
+code was changed yet. The goal was to lock the rollout order before Phase 1
+implementation starts.
+
+## Decision
+
+- Default first step: `ddgs` Python library. It is free to start, requires
+  no API key for the basic path, supports web/news/image/book search plus URL
+  extraction, and can later be upgraded into MCP mode without changing the
+  overall direction.
+- If `ddgs` is not strong enough, add optional research providers in this
+  order:
+  1. `tavily-python` for agent-friendly search/extract and an easy future
+     jump to crawl/map/research.
+  2. `exa-py` for stronger company, web, and recent-information research.
+  3. `firecrawl-py` when Veda already knows the target site or needs deep
+     crawl/extract behavior.
+- MIT-friendly helper libraries approved for structured knowledge intake:
+  `Wikipedia-API` and `arxiv`.
+- MCP should be the second layer, not the first. If Python-only research
+  proves too weak, the fallback order is:
+  1. GitHub MCP Server
+  2. DDGS MCP
+  3. Tavily MCP
+  4. Exa MCP
+  5. Firecrawl MCP
+  6. Official helper MCP servers: `fetch`, `memory`, `sequential-thinking`,
+     `git`
+- Configuration will follow the same environment-variable pattern already
+  used in this repo. New keys are not added yet, but the likely future set is
+  `TAVILY_API_KEY`, `EXA_API_KEY`, `FIRECRAWL_API_KEY`, and a repo-capable
+  GitHub token if GitHub MCP is enabled.
+
+## Files changed
+
+- `docs/governance/CHANGELOG.md` -- recorded the Veda research stack decision
+- `docs/PROJECT_MASTER_STATE.md` -- added the approved next workstream and MCP rollout order
+- `docs/modules/AI_PLATFORM.md` -- added the planned Veda research extension
+- `docs/decisions/ADR-024-Veda-Research-Mode-Acquisition-Strategy.md` -- documented the architecture decision
+
+---
+
 # Version 4.57.0
 
 Governance: session token/context hygiene -- CHANGELOG archive + status doc resync

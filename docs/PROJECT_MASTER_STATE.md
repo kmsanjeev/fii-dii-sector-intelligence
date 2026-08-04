@@ -1,6 +1,6 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.56 | 2026-07-19
+# Version 4.60 | 2026-08-04
 
 ---
 
@@ -131,6 +131,75 @@ tracker (wake word from non-chat pages, drawer/page state sync, orb animation).
 
 ---
 
+# ACTIVE NEXT WORKSTREAM (PHASE 0 + 1 STARTED)
+
+As of 2026-08-04, the next approved Veda upgrade path is:
+
+| Track | Goal | Status |
+|-------|------|--------|
+| VR-1 | Research mode foundation | PHASE 0 + 1 COMPLETE -- contracts, capabilities endpoint, `ddgs` provider, cache, chat research metadata |
+| VR-2 | Chat attachments (documents/images) | NOT STARTED |
+| VR-3 | External research connectors | PHASE 1 BASE READY -- provider-pluggable design in place |
+| VR-4 | Save-to-knowledge review flow | NOT STARTED |
+
+Research connector rollout order:
+
+1. Python-first layer: `ddgs`
+2. Optional upgrade: `tavily-python`
+3. Precision web research: `exa-py`
+4. Deep crawl/extract: `firecrawl-py`
+5. Structured knowledge helpers: `Wikipedia-API`, `arxiv`
+6. MCP fallback layer: GitHub MCP, DDGS MCP, Tavily MCP, Exa MCP, Firecrawl MCP
+7. MCP helper layer: `fetch`, `memory`, `sequential-thinking`, `git`
+
+Operational rules for this workstream:
+
+- Veda must use local platform data first.
+- External research starts only when local data is missing, weak, stale, or the user explicitly asks for outside research.
+- External answers must carry source links and dates.
+- Files, repositories, and web pages are content sources, not trusted instructions.
+- MIT-licensed Git resources are preferred when importing reusable skills, tools, or artifacts.
+- No silent self-learning into permanent memory without an explicit review/save step.
+
+Current env note:
+
+- Existing `.env` already follows the right pattern for provider keys.
+- Research-specific keys are not present yet.
+- Likely future additions: `TAVILY_API_KEY`, `EXA_API_KEY`, `FIRECRAWL_API_KEY`, plus a repo-capable GitHub token if GitHub MCP is enabled.
+
+Recommended development model for this workstream:
+
+- Practical primary choice: `Gemini 2.5 Pro`
+- Stronger optional upgrade: frontier coding models such as `gpt-5.6-terra`,
+  `gpt-5.6-sol`, `Claude Sonnet 4`, or `Claude Opus 4.1`
+- Avoid relying only on fast/small models for this implementation
+
+Locked implementation phases:
+
+1. Phase 0 -- Foundation and contracts
+2. Phase 1 -- Python-first research base
+3. Phase 2 -- Research mode orchestration
+4. Phase 3 -- Chat attachments
+5. Phase 4 -- Source-aware answer layer
+6. Phase 5 -- Reviewed save-to-knowledge flow
+7. Phase 6 -- MIT Git capability intake
+8. Phase 7 -- MCP fallback layer
+9. Phase 8 -- Hardening, tests, documentation, rollout
+
+Phase goals:
+
+- Phase 0: define backend/frontend contracts, configs, flags, error states, and safety rules -- COMPLETE 2026-08-04
+- Phase 1: integrate `ddgs` as the first external research provider -- COMPLETE 2026-08-04
+- Phase 2: add the logic that decides when Veda should use local knowledge vs outside research
+- Phase 3: add file/document/image upload in chat and extract usable text/context
+- Phase 4: force sources, dates, and confidence framing in outside-research answers
+- Phase 5: add explicit review-before-save knowledge intake
+- Phase 6: let Veda inspect MIT-licensed Git resources in a controlled way
+- Phase 7: add MCP only if Python-first research is not enough
+- Phase 8: finish tests, live verification, documentation sync, and rollout checklist
+
+---
+
 # KEY INTELLIGENCE FILES (all in data/intelligence/)
 
 | File | Rows | Key Columns | Freshness |
@@ -174,11 +243,11 @@ tracker (wake word from non-chat pages, drawer/page state sync, orb animation).
 
 # GOVERNANCE
 
-- CHANGELOG: docs/governance/CHANGELOG.md (v4.56 is latest; entries before
+- CHANGELOG: docs/governance/CHANGELOG.md (v4.60 is latest; entries before
   v4.43 archived to docs/governance/CHANGELOG_ARCHIVE.md, 2026-07-19, to keep
   the active file small for session/token budget)
 - Module Registry: docs/governance/MODULE_REGISTRY.md
 - Guardrails: docs/governance/GUARDRAILS.md (55 rules)
-- ADRs: docs/decisions/ (ADR-001 to ADR-023; next = ADR-024)
+- ADRs: docs/decisions/ (ADR-001 to ADR-024; next = ADR-025)
 - Session logs: chat history/ (module-wise append files)
 - Memory: C:\Users\hp\.claude\projects\D--Projects-fii-dii-sector-intelligence\memory\

@@ -6,7 +6,6 @@ POST /api/chat        -- single-turn question (stateless, for simple queries)
 POST /api/chat/session -- multi-turn session via session_id
 
 Sessions are stored in-memory and expire after 2 hours of inactivity.
-ANTHROPIC_API_KEY must be set in the environment before starting the server.
 """
 
 from __future__ import annotations
@@ -15,8 +14,9 @@ import time
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
+from engines.common import config as cfg
 from engines.common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -27,20 +27,61 @@ _sessions: dict[str, tuple] = {}
 SESSION_TTL_SECONDS = 7200  # 2 hours
 
 
+class ChatAttachment(BaseModel):
+    name: str
+    mime_type: str
+    size_bytes: Optional[int] = None
+    storage_key: Optional[str] = None
+    excerpt: Optional[str] = None
+
+
+class ChatResearchSource(BaseModel):
+    title: str
+    url: str
+    snippet: Optional[str] = None
+    source: Optional[str] = None
+    published_at: Optional[str] = None
+    kind: str = "text"
+
+
+class ChatResearchMeta(BaseModel):
+    requested: bool = False
+    used: bool = False
+    provider: Optional[str] = None
+    reason: Optional[str] = None
+    source_count: int = 0
+    cached: bool = False
+    error: Optional[str] = None
+    sources: list[ChatResearchSource] = Field(default_factory=list)
+
+
+class ChatCapabilities(BaseModel):
+    research_enabled: bool
+    default_research_provider: str
+    auto_research_for_research_intent: bool
+    attachments_enabled: bool
+    save_to_knowledge_enabled: bool
+    mcp_enabled: bool
+    supported_attachment_mime_prefixes: list[str] = Field(default_factory=list)
+
+
 class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = None
     mode: str = "text"          # "voice" -> spoken-style replies (Phase V2)
+    research_mode: bool = False
+    attachments: list[ChatAttachment] = Field(default_factory=list)
 
 
 class ChatResponse(BaseModel):
     reply: str
     session_id: str
     intent: str
-    symbols_discussed: list[str] = []   # Phase V-DATA-3 -- language-agnostic
-                                          # (from actual tool calls, not text regex)
+    symbols_discussed: list[str] = Field(default_factory=list)   # Phase V-DATA-3 -- language-agnostic
+                                                                 # (from actual tool calls, not text regex)
     flagged: bool = False               # output-side safety classification
     flag_reason: Optional[str] = None   # "refused" | "prompt_leak" | None
+    research: ChatResearchMeta = Field(default_factory=ChatResearchMeta)
 
 
 def _get_or_create_session(session_id: Optional[str]) -> tuple[str, "ChatEngine"]:
@@ -89,7 +130,11 @@ async def chat(req: ChatRequest):
 
     try:
         session_id, engine = _get_or_create_session(req.session_id)
-        reply = engine.chat(req.message, voice_mode=(req.mode == "voice"))
+        reply = engine.chat(
+            req.message,
+            voice_mode=(req.mode == "voice"),
+            research_mode=req.research_mode,
+        )
     except EnvironmentError as e:
         raise HTTPException(status_code=503, detail=str(e))
     except Exception as e:
@@ -98,6 +143,7 @@ async def chat(req: ChatRequest):
 
     symbols_discussed = sorted(set(getattr(engine, "last_symbols", [])))
     last_flag = getattr(engine, "last_flag", {"flagged": False, "reason": None})
+    last_research = getattr(engine, "last_research", {})
     return ChatResponse(
         reply=reply,
         session_id=session_id,
@@ -105,6 +151,24 @@ async def chat(req: ChatRequest):
         symbols_discussed=symbols_discussed,
         flagged=last_flag.get("flagged", False),
         flag_reason=last_flag.get("reason"),
+        research=ChatResearchMeta(**last_research),
+    )
+
+
+@router.get("/chat/capabilities", response_model=ChatCapabilities)
+async def chat_capabilities():
+    return ChatCapabilities(
+        research_enabled=cfg.VEDA_RESEARCH_ENABLED,
+        default_research_provider=cfg.VEDA_RESEARCH_PROVIDER,
+        auto_research_for_research_intent=cfg.VEDA_RESEARCH_AUTO_FOR_RESEARCH_INTENT,
+        attachments_enabled=cfg.VEDA_ATTACHMENTS_ENABLED,
+        save_to_knowledge_enabled=cfg.VEDA_SAVE_TO_KNOWLEDGE_ENABLED,
+        mcp_enabled=cfg.VEDA_MCP_ENABLED,
+        supported_attachment_mime_prefixes=[
+            "application/pdf",
+            "image/",
+            "text/",
+        ],
     )
 
 

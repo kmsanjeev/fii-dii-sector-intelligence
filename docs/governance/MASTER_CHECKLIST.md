@@ -412,3 +412,30 @@ Overall: 100% of full vision complete (Investment Operating System LIVE)
     file) -- was being read in full most sessions, a major token cost
 [x] MASTER_CHECKLIST.md + PROJECT_MASTER_STATE.md resynced to v4.56 (were
     stale since 2026-07-09 / f7f8af2, missing 4 shipped phases)
+
+---
+
+# SECTION 27 â€” Veda Research Foundation (2026-08-04) [PARTIAL]
+
+# SECTION 27 - Veda Research Foundation (2026-08-04) [PARTIAL]
+
+[x] Phase 0 -- foundation contracts added:
+    `backend/routers/chat.py` request/response expansion,
+    `GET /api/chat/capabilities`, `engines/common/config.py` feature flags,
+    upload/cache directory paths, future attachment contract placeholders
+[x] Phase 1 -- Python-first research base added:
+    `engines/ai/research/` service layer, provider abstraction, `ddgs`
+    provider, in-memory TTL cache, explicit `research_mode` wiring into
+    `ChatEngine`
+[x] Frontend contract readiness:
+    `frontend/src/api/client.ts` now supports chat capability fetch,
+    research metadata, and future attachment payload shape
+[x] Unit test coverage added:
+    `tests/test_veda_research_service.py`
+[ ] Phase 2 -- research mode orchestration UI/decision layer
+[ ] Phase 3 -- file/document/image upload flow
+[ ] Phase 4 -- source-aware answer rendering in chat UI
+[ ] Phase 5 -- reviewed save-to-knowledge flow
+[ ] Phase 6 -- MIT Git capability intake
+[ ] Phase 7 -- MCP fallback connectors
+[ ] Phase 8 -- live hardening and rollout verification

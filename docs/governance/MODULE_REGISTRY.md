@@ -1307,6 +1307,29 @@ Groq LLM Integration (llama-3.3-70b-versatile primary; Cerebras/Gemini/OpenRoute
 
 ---
 
+## 2026-08-04 Extension Addendum
+
+Veda research foundation has started without replacing the existing chatbot
+stack:
+
+- Phase 0 complete -- chat contracts, capability discovery endpoint,
+  research/attachment/MCP feature flags, future upload/cache paths
+- Phase 1 complete -- new `engines/ai/research/` layer with pluggable
+  provider abstraction, `ddgs` as the first provider, TTL cache, and
+  explicit `research_mode` support in `ChatEngine`
+- Remaining Veda research phases are still pending (orchestration UI,
+  attachments, reviewed memory, MIT Git intake, MCP fallback)
+
+Affected code paths:
+
+- `backend/routers/chat.py`
+- `engines/ai/chatbot/chat_engine.py`
+- `engines/ai/research/`
+- `engines/common/config.py`
+- `frontend/src/api/client.ts`
+
+---
+
 ## Example Interactions
 
 "Which sectors are seeing FII accumulation this week?" → sector_agent → RAG + live tool call

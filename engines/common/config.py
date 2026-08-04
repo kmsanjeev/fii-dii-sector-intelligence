@@ -3,8 +3,13 @@ Platform Configuration
 Single source of truth for paths and runtime settings.
 """
 
+import os
 from pathlib import Path
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:  # pragma: no cover - fallback for lean runtime envs
+    def load_dotenv(*args, **kwargs):  # type: ignore[override]
+        return False
 
 # Load .env from project root — makes TELEGRAM_BOT_TOKEN, ANTHROPIC_API_KEY etc.
 # available via os.getenv() in every engine without manual shell export.
@@ -36,6 +41,28 @@ INTELLIGENCE_DIR = DATA_DIR / "intelligence"
 
 LOG_DIR = PROJECT_ROOT / "logs"
 DOCS_DIR = PROJECT_ROOT / "docs"
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        return int(raw.strip())
+    except ValueError:
+        return default
+
+
+def _env_str(name: str, default: str) -> str:
+    raw = os.getenv(name)
+    return raw.strip() if raw and raw.strip() else default
 
 # ==========================================================
 # NSE PATHS
@@ -72,6 +99,28 @@ BSE_FNO_BHAVCOPY_DIR = BSE_BHAVCOPY_DIR / "fno"
 
 STOCK_HISTORY_CACHE = CACHE_DIR / "stock_history"
 REPORT_CACHE = CACHE_DIR / "reports"
+
+# ==========================================================
+# VEDA RESEARCH / ATTACHMENTS
+# ==========================================================
+
+VEDA_CACHE_DIR = DATA_DIR / "veda"
+VEDA_RESEARCH_CACHE_DIR = VEDA_CACHE_DIR / "research_cache"
+VEDA_CHAT_UPLOAD_DIR = VEDA_CACHE_DIR / "uploads"
+
+VEDA_RESEARCH_ENABLED = _env_bool("VEDA_RESEARCH_ENABLED", True)
+VEDA_RESEARCH_AUTO_FOR_RESEARCH_INTENT = _env_bool("VEDA_RESEARCH_AUTO_FOR_RESEARCH_INTENT", False)
+VEDA_RESEARCH_PROVIDER = _env_str("VEDA_RESEARCH_PROVIDER", "ddgs")
+VEDA_RESEARCH_REGION = _env_str("VEDA_RESEARCH_REGION", "in-en")
+VEDA_RESEARCH_TIMEOUT_S = _env_int("VEDA_RESEARCH_TIMEOUT_S", 8)
+VEDA_RESEARCH_MAX_RESULTS = _env_int("VEDA_RESEARCH_MAX_RESULTS", 5)
+VEDA_RESEARCH_NEWS_RESULTS = _env_int("VEDA_RESEARCH_NEWS_RESULTS", 2)
+VEDA_RESEARCH_MAX_QUERY_CHARS = _env_int("VEDA_RESEARCH_MAX_QUERY_CHARS", 320)
+VEDA_RESEARCH_MAX_SNIPPET_CHARS = _env_int("VEDA_RESEARCH_MAX_SNIPPET_CHARS", 280)
+VEDA_RESEARCH_CACHE_TTL_S = _env_int("VEDA_RESEARCH_CACHE_TTL_S", 900)
+VEDA_ATTACHMENTS_ENABLED = _env_bool("VEDA_ATTACHMENTS_ENABLED", False)
+VEDA_SAVE_TO_KNOWLEDGE_ENABLED = _env_bool("VEDA_SAVE_TO_KNOWLEDGE_ENABLED", False)
+VEDA_MCP_ENABLED = _env_bool("VEDA_MCP_ENABLED", False)
 
 # ==========================================================
 # HOLIDAYS
@@ -128,6 +177,9 @@ DIRECTORIES = [
     REFERENCE_DIR,
     INTELLIGENCE_DIR,
     LOG_DIR,
+    VEDA_CACHE_DIR,
+    VEDA_RESEARCH_CACHE_DIR,
+    VEDA_CHAT_UPLOAD_DIR,
 
     NSE_EQUITY_BHAVCOPY_DIR,
     NSE_FNO_BHAVCOPY_DIR,
