@@ -16,6 +16,7 @@ import {
   useVedaStore, genId, makeTitle, VOICE_LANGS,
   type Msg, type SavedSession,
 } from '../store/vedaStore'
+import { MessageEvidence } from '../components/veda/MessageEvidence'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -567,7 +568,7 @@ function CopyButton({ text }: { text: string }) {
   )
 }
 
-function MessageBubble({ msg }: { msg: Msg }) {
+function MessageBubble({ msg, previous }: { msg: Msg; previous?: Msg }) {
   const isUser   = msg.role === 'user'
   const isSystem = msg.role === 'system'
   if (isSystem) return (
@@ -586,7 +587,6 @@ function MessageBubble({ msg }: { msg: Msg }) {
       )}
       <div style={{ maxWidth: '78%' }}>
         {!isUser && <IntentBadge intent={msg.intent} />}
-        {!isUser && <ResearchBadge research={msg.research} />}
         <div style={{
           padding: '10px 14px',
           borderRadius: isUser ? '12px 12px 2px 12px' : '2px 12px 12px 12px',
@@ -596,6 +596,7 @@ function MessageBubble({ msg }: { msg: Msg }) {
           whiteSpace: 'pre-wrap', wordBreak: 'break-word',
         }}>{msg.content}</div>
         <AttachmentPills attachments={msg.attachments} align={isUser ? 'flex-end' : 'flex-start'} />
+        {!isUser && <MessageEvidence msg={msg} previous={previous} />}
         <div style={{ fontSize: 9, color: '#334155', marginTop: 3, display: 'flex', alignItems: 'center', justifyContent: isUser ? 'flex-end' : 'flex-start', gap: 6 }}>
           {new Date(msg.ts).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
           <CopyButton text={msg.content} />
@@ -906,7 +907,7 @@ export function ChatPage() {
           flex: 1, overflowY: 'auto', padding: '16px 20px',
           scrollbarWidth: 'thin', scrollbarColor: '#1E2332 transparent',
         }}>
-          {messages.map((m, i) => <MessageBubble key={i} msg={m} />)}
+          {messages.map((m, i) => <MessageBubble key={i} msg={m} previous={i > 0 ? messages[i - 1] : undefined} />)}
           {loading && (
             <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 12 }}>
               <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#1E2332', border: '1px solid #3B82F644', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, marginRight: 8, flexShrink: 0, color: '#60A5FA' }}>AI</div>

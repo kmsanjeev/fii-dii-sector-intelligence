@@ -131,16 +131,17 @@ tracker (wake word from non-chat pages, drawer/page state sync, orb animation).
 
 ---
 
-# ACTIVE NEXT WORKSTREAM (PHASE 3 STARTED)
+# ACTIVE NEXT WORKSTREAM (PHASE 5 READY)
 
 As of 2026-08-04, the next approved Veda upgrade path is:
 
 | Track | Goal | Status |
 |-------|------|--------|
 | VR-1 | Research mode foundation | PHASE 0 + 1 + 2 COMPLETE -- contracts, `ddgs` provider, local-first decision layer, chat/widget research controls, research audit metadata |
-| VR-2 | Chat attachments (documents/images) | PHASE 3 PARTIAL -- upload UI live, server-side extraction added for text/CSV/JSON/PDF, image uploads accepted with metadata/OCR-ready fallback |
-| VR-3 | External research connectors | PHASE 1 BASE READY -- provider-pluggable design in place |
-| VR-4 | Save-to-knowledge review flow | NOT STARTED |
+| VR-2 | Chat attachments (documents/images) | PHASE 3 COMPLETE -- upload UI, safe extraction, image vision fallback, and attachment-aware prompting live |
+| VR-3 | Source-aware answer layer | PHASE 4 COMPLETE -- answer basis, confidence framing, source links, and research dates visible in chat |
+| VR-4 | External research connectors | PHASE 1 BASE READY -- provider-pluggable design in place |
+| VR-5 | Save-to-knowledge review flow | NOT STARTED |
 
 Research connector rollout order:
 
@@ -164,6 +165,8 @@ Operational rules for this workstream:
 Current env note:
 
 - Existing `.env` already follows the right pattern for provider keys.
+- Veda now accepts `OPENAI_API_KEY` directly in both chat and general LLM fallback paths.
+- `start.ps1` now falls back to the installed `python` runtime if `py -3.11` is missing.
 - Research-specific keys are not present yet.
 - Likely future additions: `TAVILY_API_KEY`, `EXA_API_KEY`, `FIRECRAWL_API_KEY`, plus a repo-capable GitHub token if GitHub MCP is enabled.
 
@@ -191,8 +194,8 @@ Phase goals:
 - Phase 0: define backend/frontend contracts, configs, flags, error states, and safety rules -- COMPLETE 2026-08-04
 - Phase 1: integrate `ddgs` as the first external research provider -- COMPLETE 2026-08-04
 - Phase 2: add the logic that decides when Veda should use local knowledge vs outside research -- COMPLETE 2026-08-04
-- Phase 3: add file/document/image upload in chat and extract usable text/context -- PARTIAL 2026-08-04
-- Phase 4: force sources, dates, and confidence framing in outside-research answers
+- Phase 3: add file/document/image upload in chat and extract usable text/context -- COMPLETE 2026-08-04
+- Phase 4: force sources, dates, and confidence framing in outside-research answers -- COMPLETE 2026-08-04
 - Phase 5: add explicit review-before-save knowledge intake
 - Phase 6: let Veda inspect MIT-licensed Git resources in a controlled way
 - Phase 7: add MCP only if Python-first research is not enough

@@ -19,6 +19,7 @@ import {
   useVedaStore, startWakeListener, stopWakeListener,
   VOICE_LANGS, type Msg,
 } from '../../store/vedaStore'
+import { MessageEvidence } from './MessageEvidence'
 import { VedaOrb } from './VedaOrb'
 
 // ─── Wake-word listener controller (mount once) ───────────────────────────────
@@ -40,18 +41,9 @@ export function VedaWakeController() {
 
 // ─── Compact message bubble (drawer only -- ChatPage has its own richer one) ──
 
-function DrawerBubble({ msg }: { msg: Msg }) {
+function DrawerBubble({ msg, previous }: { msg: Msg; previous?: Msg }) {
   const isUser = msg.role === 'user'
   if (msg.role === 'system') return null
-  const researchLabel = !isUser && msg.research
-    ? msg.research.used
-      ? `Research used${msg.research.provider ? `: ${msg.research.provider}` : ''}${msg.research.source_count ? `, ${msg.research.source_count} source${msg.research.source_count === 1 ? '' : 's'}` : ''}${msg.research.cached ? ', cache' : ''}`
-      : msg.research.error
-        ? 'Research was requested, but lookup was unavailable'
-        : msg.research.requested
-          ? 'Research mode checked, but no outside source was added'
-          : ''
-    : ''
   return (
     <div style={{ display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start', marginBottom: 10 }}>
       <div style={{
@@ -87,17 +79,7 @@ function DrawerBubble({ msg }: { msg: Msg }) {
             ))}
           </div>
         )}
-        {!isUser && researchLabel && (
-          <div style={{
-            marginTop: 6,
-            paddingTop: 6,
-            borderTop: '1px solid #1E2332',
-            fontSize: 9,
-            color: msg.research?.used ? '#60A5FA' : msg.research?.error ? '#F59E0B' : '#94A3B8',
-          }}>
-            {researchLabel}
-          </div>
-        )}
+        {!isUser && <MessageEvidence msg={msg} previous={previous} compact />}
       </div>
     </div>
   )
@@ -275,7 +257,7 @@ export function VedaWidget() {
 
           {/* Messages */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '12px 14px', minHeight: 200 }}>
-            {messages.map((m, i) => <DrawerBubble key={i} msg={m} />)}
+            {messages.map((m, i) => <DrawerBubble key={i} msg={m} previous={i > 0 ? messages[i - 1] : undefined} />)}
             {liveTranscript && (
               <div style={{ color: '#60A5FA', fontSize: 11, fontStyle: 'italic', padding: '4px 0' }}>
                 {liveTranscript}...

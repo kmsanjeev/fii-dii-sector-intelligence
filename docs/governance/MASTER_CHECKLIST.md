@@ -447,10 +447,10 @@ Overall: 100% of full vision complete (Investment Operating System LIVE)
 [x] Phase 3 -- attachment prompt safety:
     uploaded file content is now injected into Veda as source material, not
     as executable instruction
-[ ] Phase 3 -- deeper image understanding:
-    current runtime supports image upload and metadata extraction, with OCR
-    only when available; full vision analysis still pending
-[ ] Phase 4 -- source-aware answer rendering in chat UI
+[x] Phase 3 -- deeper image understanding:
+    current runtime supports image upload, metadata extraction, OCR fallback,
+    and OpenAI vision description when that capability is available
+[x] Phase 4 -- source-aware answer rendering in chat UI
 [ ] Phase 5 -- reviewed save-to-knowledge flow
 [ ] Phase 6 -- MIT Git capability intake
 [ ] Phase 7 -- MCP fallback connectors

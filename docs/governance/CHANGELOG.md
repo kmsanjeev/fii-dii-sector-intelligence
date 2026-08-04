@@ -6,6 +6,88 @@ Capital Flow Intelligence Platform
 
 ---
 
+# Version 4.63.0
+
+Veda runtime synced, Phase 3 completed, and Phase 4 source-aware answers implemented
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This session finished the remaining Veda attachment work and completed the
+source-aware answer layer.
+
+The runtime now matches the chat stack again, Veda can use `OPENAI_API_KEY`
+as a direct provider fallback, image attachments can use vision analysis when
+that capability is available, and both chat surfaces now show plain-language
+evidence about whether an answer came from local data, uploaded files, or
+outside research sources.
+
+## Changes
+
+- `engines/ai/chatbot/chat_engine.py`
+  - added `OPENAI_API_KEY` as a valid chat provider fallback
+  - strengthened prompt rules so outside-research answers must mention
+    source/date and state lower confidence when freshness is weak
+- `engines/common/llm_client.py`
+  - added OpenAI as a valid fallback provider for non-chat LLM helpers
+- `backend/routers/chat.py`
+  - chat availability check now accepts `OPENAI_API_KEY`
+- `engines/ai/attachments/service.py`
+  - image attachments can now use OpenAI vision description when enabled
+  - image extraction still falls back honestly to OCR and metadata when
+    vision is unavailable
+- `engines/common/config.py`
+  - added Veda image-vision runtime settings
+- `frontend/src/components/veda/MessageEvidence.tsx`
+  - new shared evidence panel for basis, confidence, files, and sources
+- `frontend/src/pages/ChatPage.tsx`
+  - assistant bubbles now show answer basis, confidence, and source cards
+- `frontend/src/components/veda/VedaWidget.tsx`
+  - floating Veda drawer now shows the same evidence layer in compact form
+- `start.ps1`
+  - backend launcher now falls back to the installed `python` runtime if
+    `py -3.11` is not available
+- `requirements.txt`
+  - added explicit runtime dependencies for `openai` and `pytesseract`
+- `tests/test_veda_attachment_service.py`
+  - added a focused image-vision extraction test
+
+## Verification
+
+- `python -m py_compile ...` passed for the changed backend files
+- `python -m pytest tests/test_veda_attachment_service.py tests/test_veda_research_service.py -q`
+  passed: `8 passed`
+- `cmd /c npx tsc --noEmit --pretty false` passed in `frontend/`
+- `python` import check passed for `backend.routers.chat`, `ChatEngine`, and
+  provider discovery
+- `start.ps1` parse check passed
+
+## Files changed
+
+- `backend/routers/chat.py`
+- `engines/ai/attachments/service.py`
+- `engines/ai/chatbot/chat_engine.py`
+- `engines/common/config.py`
+- `engines/common/llm_client.py`
+- `frontend/src/components/veda/MessageEvidence.tsx`
+- `frontend/src/components/veda/VedaWidget.tsx`
+- `frontend/src/pages/ChatPage.tsx`
+- `requirements.txt`
+- `start.ps1`
+- `tests/test_veda_attachment_service.py`
+- `docs/governance/CHANGELOG.md`
+- `docs/governance/MASTER_CHECKLIST.md`
+- `docs/governance/MODULE_REGISTRY.md`
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/modules/AI_PLATFORM.md`
+
+---
+
 # Version 4.62.0
 
 Veda Phase 3 started: chat attachments, upload flow, safe extraction, and tests

@@ -102,6 +102,13 @@ _PROVIDERS = [
         "model":        "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
         "extra_headers": {},
     },
+    {
+        "name":         "OpenAI",
+        "env_var":      "OPENAI_API_KEY",
+        "base_url":     "https://api.openai.com/v1",
+        "model":        "gpt-4o-mini",
+        "extra_headers": {},
+    },
 ]
 
 # Track which providers are temporarily exhausted (reset after COOLDOWN_S)

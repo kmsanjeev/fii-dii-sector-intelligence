@@ -1320,9 +1320,11 @@ stack:
 - Phase 2 complete -- full chat and floating widget now expose a research
   toggle, Veda shows when outside research was used, and research trigger
   reasons are logged for analytics/audit
-- Phase 3 partial -- chat now supports attachment upload, server-side file
-  extraction, and safe prompt injection for attached content; image uploads
-  currently rely on metadata and optional OCR rather than full vision
+- Phase 3 complete -- chat now supports attachment upload, server-side file
+  extraction, safe prompt injection, and image vision fallback when the
+  runtime supports it
+- Phase 4 complete -- both chat surfaces now show answer basis, confidence,
+  and outside-source links/dates in the actual message UI
 - Remaining Veda research phases are still pending (reviewed memory, MIT Git
   intake, MCP fallback)
 
@@ -1334,11 +1336,14 @@ Affected code paths:
 - `engines/ai/chatbot/chat_engine.py`
 - `engines/ai/research/`
 - `engines/common/config.py`
+- `engines/common/llm_client.py`
 - `frontend/src/api/client.ts`
+- `frontend/src/components/veda/MessageEvidence.tsx`
 - `frontend/src/components/veda/VedaWidget.tsx`
 - `frontend/src/pages/ChatPage.tsx`
 - `frontend/src/store/vedaStore.ts`
 - `requirements.txt`
+- `start.ps1`
 
 ---
 

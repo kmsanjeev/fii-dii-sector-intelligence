@@ -101,7 +101,9 @@ Current status:
 
 - Phase 0 complete
 - Phase 1 complete
-- Phase 3 partial, Phase 4 onward pending
+- Phase 3 complete
+- Phase 4 complete
+- Phase 5 onward pending
 
 ## Operating rule
 
@@ -238,7 +240,7 @@ Delivered in this phase:
 - extract text/content safely
 - pass extracted context into Veda without treating the file as executable instruction
 
-Status: PARTIAL (2026-08-04)
+Status: COMPLETE (2026-08-04)
 
 Delivered in this phase:
 
@@ -246,15 +248,10 @@ Delivered in this phase:
 - pending attachments are shown before send and carried with the user turn
 - backend upload endpoint added: `POST /api/chat/attachments`
 - server-side extraction added for plain text, CSV, JSON, and PDF
-- image uploads now work with metadata extraction, and OCR is used only if
-  the runtime has that capability
+- image uploads now support metadata extraction, OCR when available, and
+  OpenAI vision description when the runtime has that capability
 - attachment content is injected into Veda as untrusted source material, not
   executable instruction
-
-Current limitation:
-
-- image understanding is not yet full vision analysis in the default runtime;
-  today it falls back to image metadata and optional OCR if available
 
 ### Phase 4 -- Source-aware answer layer
 
@@ -262,6 +259,19 @@ Current limitation:
 - show research date/time
 - distinguish local answer vs external answer
 - add confidence framing when outside data is incomplete
+
+Status: COMPLETE (2026-08-04)
+
+Delivered in this phase:
+
+- assistant bubbles now show plain-language answer basis such as local only,
+  local plus uploaded files, or local plus outside sources
+- confidence framing is now visible in the UI instead of being hidden only in
+  prompt instructions
+- research sources now render with clickable links and source dates
+- compact evidence rendering added to the floating Veda widget
+- backend prompt rules now explicitly require source/date honesty and lower
+  confidence when freshness or coverage is weak
 
 ### Phase 5 -- Reviewed save-to-knowledge flow
 

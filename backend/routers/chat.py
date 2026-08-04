@@ -118,13 +118,13 @@ async def chat(req: ChatRequest):
     # Any one configured provider is enough -- the engine rotates through all
     _PROVIDER_KEYS = ("GROQ_API_KEY", "GEMINI_API_KEY", "MISTRAL_API_KEY",
                       "GITHUB_MODELS_TOKEN", "SAMBANOVA_API_KEY",
-                      "OPENROUTER_API_KEY", "CEREBRAS_API_KEY")
+                      "OPENROUTER_API_KEY", "CEREBRAS_API_KEY", "OPENAI_API_KEY")
     if not any(os.getenv(k) for k in _PROVIDER_KEYS):
         raise HTTPException(
             status_code=503,
             detail="AI chat unavailable: no LLM provider key configured. "
                    "Add at least one of GROQ/GEMINI/MISTRAL/GITHUB_MODELS/"
-                   "SAMBANOVA/OPENROUTER/CEREBRAS keys to .env"
+                   "SAMBANOVA/OPENROUTER/CEREBRAS/OPENAI keys to .env"
         )
 
     from engines.ai.chatbot.intent_router import detect_intent

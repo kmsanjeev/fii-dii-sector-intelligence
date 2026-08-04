@@ -19,6 +19,10 @@ def _enable_attachment_settings(monkeypatch):
     monkeypatch.setattr(cfg, "VEDA_ATTACHMENT_MAX_TABLE_COLS", 8)
     monkeypatch.setattr(cfg, "VEDA_ATTACHMENT_MAX_FILES", 4)
     monkeypatch.setattr(cfg, "VEDA_ATTACHMENT_MAX_PDF_PAGES", 3)
+    monkeypatch.setattr(cfg, "VEDA_ATTACHMENT_VISION_ENABLED", False)
+    monkeypatch.setattr(cfg, "VEDA_ATTACHMENT_VISION_MODEL", "gpt-4o-mini")
+    monkeypatch.setattr(cfg, "VEDA_ATTACHMENT_VISION_MAX_TOKENS", 200)
+    monkeypatch.setattr(cfg, "VEDA_ATTACHMENT_VISION_TIMEOUT_S", 10)
 
 
 def test_attachment_service_extracts_plain_text(monkeypatch, tmp_dir):
@@ -88,3 +92,31 @@ def test_attachment_service_extracts_image_metadata(monkeypatch, tmp_dir):
     assert uploaded.kind == "image"
     assert "Image uploaded: chart.png" in uploaded.extracted_text
     assert "64 x 32" in uploaded.extracted_text
+
+
+def test_attachment_service_extracts_image_vision_summary(monkeypatch, tmp_dir):
+    _enable_attachment_settings(monkeypatch)
+    monkeypatch.setattr(cfg, "VEDA_ATTACHMENT_VISION_ENABLED", True)
+    Image = pytest.importorskip("PIL.Image")
+    service = AttachmentService(upload_dir=tmp_dir)
+
+    monkeypatch.setattr(
+        AttachmentService,
+        "_try_image_vision",
+        lambda self, *, content, mime_type, filename: ("The image looks like a sector rotation heatmap with banking in the lead.", None),
+    )
+    monkeypatch.setattr(AttachmentService, "_try_image_ocr", lambda self, image: "")
+
+    img = Image.new("RGB", (80, 40), color=(30, 60, 90))
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+
+    uploaded = service.save_upload(
+        filename="rotation.png",
+        content_type="image/png",
+        content=buf.getvalue(),
+    )
+
+    assert "Vision summary:" in uploaded.extracted_text
+    assert "sector rotation heatmap" in uploaded.extracted_text
+    assert uploaded.warning is None
