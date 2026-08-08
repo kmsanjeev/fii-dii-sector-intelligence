@@ -9,7 +9,8 @@ GET  /api/voice/analytics quick aggregate of the conversation log
 Voice casting (design doc docs/modules/VOICE_PLATFORM.md):
   hi -> hi-IN-SwaraNeural   (sweet, clear -- the default Hindi Veda)
   en -> en-IN-NeerjaNeural  (polished, professional Indian English)
-Rate -5%% for precision; small in-memory cache so greetings play instantly.
+Per-voice rate: hi -10% (clarity), en +5% (lively Indian English, Alexa-like), others -5%.
+Small in-memory cache so greetings play instantly.
 """
 
 from __future__ import annotations
@@ -38,25 +39,121 @@ router = APIRouter(prefix="/api/voice", tags=["voice"])
 
 # ── Voice casting ─────────────────────────────────────────────────────────────
 
+# rate is per-voice (user feedback 2026-08-08 — "sweet and polite" reset):
+#   hi/Swara  -8%:  Swara is already the sweetest Hindi neural voice; -10% was
+#                   dragging, -8% keeps her warm and clear without the lag.
+#   en/Neerja   0%: +5% made her sound rushed/Alexa-like; 0% is her natural,
+#                   polite register — best for a courteous relationship-manager
+#                   tone the user asked for.
+#   other Indian languages: -5% (conservative default, unchanged).
 VOICES: dict[str, dict] = {
-    "hi": {"voice": "hi-IN-SwaraNeural",             "label": "Swara (Hindi)"},
-    # Expressive variant discovered 2026-07-11 -- noticeably more natural
-    "en": {"voice": "en-IN-NeerjaExpressiveNeural",  "label": "Neerja Expressive (Indian English)"},
-    "ta": {"voice": "ta-IN-PallaviNeural",  "label": "Pallavi (Tamil)"},
-    "te": {"voice": "te-IN-ShrutiNeural",   "label": "Shruti (Telugu)"},
-    "bn": {"voice": "bn-IN-TanishaaNeural", "label": "Tanishaa (Bengali)"},
-    "mr": {"voice": "mr-IN-AarohiNeural",   "label": "Aarohi (Marathi)"},
-    "gu": {"voice": "gu-IN-DhwaniNeural",   "label": "Dhwani (Gujarati)"},
+    "hi": {"voice": "hi-IN-SwaraNeural",    "label": "Swara (Hindi)",            "rate": "-8%"},
+    "en": {"voice": "en-IN-NeerjaNeural",   "label": "Neerja (Indian English)",  "rate": "0%"},
+    "ta": {"voice": "ta-IN-PallaviNeural",  "label": "Pallavi (Tamil)",          "rate": "-5%"},
+    "te": {"voice": "te-IN-ShrutiNeural",   "label": "Shruti (Telugu)",          "rate": "-5%"},
+    "bn": {"voice": "bn-IN-TanishaaNeural", "label": "Tanishaa (Bengali)",       "rate": "-5%"},
+    "mr": {"voice": "mr-IN-AarohiNeural",   "label": "Aarohi (Marathi)",         "rate": "-5%"},
+    "gu": {"voice": "gu-IN-DhwaniNeural",   "label": "Dhwani (Gujarati)",        "rate": "-5%"},
 }
 DEFAULT_LANG = "hi"          # per user decision 2026-07-10
-# +8%: conversational pace. The original -5% made delivery drone-like
-# (user feedback 2026-07-11: "easily identifiable as machine talking")
-TTS_RATE     = "+8%"
 MAX_TTS_CHARS = 900          # spoken summary cap -- long tables live in the chat
 
 # Small in-memory audio cache (greetings + repeated phrases play instantly)
 _tts_cache: dict[str, bytes] = {}
-_TTS_CACHE_MAX = 64
+_TTS_CACHE_MAX = 128  # doubled: warmup pre-fills greetings + common phrases
+
+# Greetings / pleasantries pre-synthesised on startup so the FIRST spoken turn
+# is instant (no edge-tts cold-call latency). These are the phrases Veda says
+# most often, so caching them pays off immediately on every backend restart.
+# Keys are the speakable (post-_spoken_text) text; the cache key hashes
+# voice+rate+text exactly like the live path, so a warm entry is a guaranteed
+# cache HIT at request time.
+_TTS_WARMUP_PHRASES: dict[str, list[str]] = {
+    "hi": [
+        "Namaste! Main Veda hoon. Aapko kya jaanna hai?",
+        "Haan, bataiye.",
+        "Ji haan, main sun rahi hoon.",
+        "Kya main aage bataoon?",
+        "Aur kuch jaanna hai?",
+        "Dhanyavaad! Koi aur sawal ho to poochiyega.",
+        "Main samajh gayi. Aur bataiye.",
+        "Theek hai, main check karti hoon.",
+    ],
+    "en": [
+        "Hello, I'm Veda. What would you like to know?",
+        "Yes, please go ahead.",
+        "Of course, I'm listening.",
+        "Would you like me to continue?",
+        "Anything else you'd like to know?",
+        "Thank you! Do let me know if there's anything else.",
+        "I understand. Please go on.",
+        "Sure, let me check that for you.",
+    ],
+}
+
+
+async def validate_voices_on_startup() -> None:
+    """Validate all VOICES entries against the installed edge-tts voice list.
+    Logs a WARNING for any unrecognised voice ID so misconfigurations are visible
+    at startup rather than silently failing at request time.
+    """
+    try:
+        import edge_tts
+    except ImportError:
+        logger.warning("[Voice] edge-tts not installed — voice ID validation skipped")
+        return
+    try:
+        voice_list = await edge_tts.list_voices()
+        available  = {v["ShortName"] for v in voice_list}
+        invalid    = 0
+        for lang_key, entry in VOICES.items():
+            if entry["voice"] not in available:
+                logger.warning(
+                    "[Voice] Unrecognised voice ID '%s' for lang '%s' — check VOICES dict",
+                    entry["voice"], lang_key,
+                )
+                invalid += 1
+        if invalid == 0:
+            logger.info("[Voice] All %d configured voices validated OK", len(VOICES))
+    except Exception as e:
+        logger.warning("[Voice] Voice ID validation failed (edge-tts list_voices error): %s", e)
+    # Warm the TTS cache with common greetings/phrases so the first spoken
+    # turn is instant (no cold edge-tts latency on every backend restart).
+    await _warm_tts_cache()
+
+
+async def _warm_tts_cache() -> None:
+    """Pre-synthesise and cache the most common spoken phrases.
+    Runs once on backend startup; doubles the cache size so we don't evict
+    real utterances later. Silent no-op if edge-tts is unavailable.
+    """
+    try:
+        import edge_tts
+    except ImportError:
+        return
+    # Pre-generate for each configured language
+    for lang, phrases in _TTS_WARMUP_PHRASES.items():
+        if lang not in VOICES:
+            continue
+        voice = VOICES[lang]["voice"]
+        rate  = VOICES[lang]["rate"]
+        for text in phrases:
+            # The text is already in "spoken" form, so we cache it as-is
+            key = hashlib.sha1(f"{voice}|{rate}|{text}".encode("utf-8")).hexdigest()
+            if key in _tts_cache:
+                continue
+            try:
+                communicate = edge_tts.Communicate(text, voice, rate=rate)
+                buf = bytearray()
+                async for chunk in communicate.stream():
+                    if chunk["type"] == "audio":
+                        buf.extend(chunk["data"])
+                if buf and len(_tts_cache) < _TTS_CACHE_MAX:
+                    _tts_cache[key] = bytes(buf)
+            except Exception as e:
+                logger.debug("[Voice] Warmup skipped for '%s' (%s): %s", text, voice, e)
+    logger.info("[Voice] TTS cache warmed with %d common phrases", len(_tts_cache))
+
 
 # ── Conversation log (Phase V1 analytics foundation) ─────────────────────────
 
@@ -190,7 +287,11 @@ def _spoken_text(text: str, lang: str = DEFAULT_LANG) -> str:
         if _re.match(r"^([-*•▪‣·]|\d+[.)])\s+\S", s):
             list_truncated = True
             break   # this and every line after it is chat-only detail
-        for tok in ("**", "__", "##", "#", "`", "*"):
+        # Strip ALL asterisks for output -- edge-tts speaks lone "*"
+        # as "tarankan" (Hindi) / "asterisk" (English). Bold markers (**) and
+        # italic markers (*) must both be silently dropped, never spoken.
+        s = s.replace("*", "")
+        for tok in ("**", "__", "##", "#", "`"):
             s = s.replace(tok, "")
         lines.append(s)
     out = " ".join(lines).strip()
@@ -240,7 +341,8 @@ async def tts(req: TTSRequest):
     if not text:
         raise HTTPException(status_code=400, detail="Nothing speakable in the text")
 
-    key = hashlib.sha1(f"{voice}|{TTS_RATE}|{text}".encode("utf-8")).hexdigest()
+    rate = VOICES[lang]["rate"]
+    key = hashlib.sha1(f"{voice}|{rate}|{text}".encode("utf-8")).hexdigest()
     if key in _tts_cache:
         return Response(content=_tts_cache[key], media_type="audio/mpeg",
                         headers={"X-Voice": voice, "X-Cache": "hit"})
@@ -248,7 +350,7 @@ async def tts(req: TTSRequest):
     async def _generate() -> AsyncGenerator[bytes, None]:
         buf = bytearray()
         try:
-            communicate = edge_tts.Communicate(text, voice, rate=TTS_RATE)
+            communicate = edge_tts.Communicate(text, voice, rate=rate)
             async for chunk in communicate.stream():
                 if chunk["type"] == "audio":
                     buf.extend(chunk["data"])

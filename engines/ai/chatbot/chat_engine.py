@@ -34,6 +34,22 @@ MAX_TOKENS      = 8192   # increased: detailed reports need headroom
 MAX_TOOL_ROUNDS = 4
 COOLDOWN_S      = 300   # 5 min before retrying a rate-limited provider
 
+# Voice-mode latency reduction: shorter replies + fewer tool rounds = faster TTS start
+VOICE_MAX_TOKENS      = 2048   # voice needs 3-5 sentence answers, not 8k tokens
+VOICE_MAX_TOOL_ROUNDS = 2      # greeting + simple Q&A don't need 4 tool rounds
+
+# Pre-computed greeting responses for voice mode -- skips LLM entirely
+# for common greetings, cutting first-response latency from ~3-5s to <50ms.
+VOICE_GREETING_REPLIES: dict[str, str] = {
+    "hi":        "Namaste! Main Veda hoon. Aapko kya jaanna hai?",
+    "hello":     "Hello, I'm Veda. What would you like to know?",
+    "hey":       "Hi there! How can I help you today?",
+    "namaste":   "Namaste! Main Veda hoon. Aapko kya jaanna hai?",
+    "हाय":       "हाय! मैं वेद हूँ। आपकी क्या सहायता चाहिए?",
+    "नमस्ते":    "नमस्ते! मैं वेद हूँ। आपकी क्या सहायता चाहिए?",
+}
+
+
 # ── Provider definitions (OpenAI-compatible) ──────────────────────────────────
 _CHAT_PROVIDERS = [
     {
@@ -198,7 +214,7 @@ class ChatEngine:
 
     def _mark_rate_limited(self, name: str) -> None:
         self._cooldowns[name] = time.time() + COOLDOWN_S
-        logger.warning("[ChatEngine] %s rate-limited — cooling down %ds", name, COOLDOWN_S)
+        logger.warning("[ChatEngine] %s rate-limited -- cooling down %ds", name, COOLDOWN_S)
 
     def _get_client(self, provider: dict):
         return self._OpenAI(
@@ -311,6 +327,18 @@ class ChatEngine:
         intent       = detect_intent(user_message)
         is_greeting  = intent.intent_type == "GREETING"
         system_prompt = get_system_prompt(intent)
+
+        # ── Voice-mode fast path: instant reply for common greetings ──────
+        # Skips LLM entirely, cutting first-response latency from ~3-5s to <50ms.
+        if voice_mode and is_greeting:
+            greeting_lower = user_message.strip().lower()
+            if greeting_lower in VOICE_GREETING_REPLIES:
+                reply = VOICE_GREETING_REPLIES[greeting_lower]
+                self.history.append({"role": "user", "content": user_message})
+                self.history.append({"role": "assistant", "content": reply})
+                logger.debug("[ChatEngine] Voice fast-path greeting: %s", greeting_lower)
+                return reply
+
         # Greeting exchanges skip the voice-analyst addendum too -- its own
         # prompt already covers tone + gender, and it must never speak in
         # the "sharp market analyst" register the addendum sets up.
@@ -372,7 +400,8 @@ class ChatEngine:
             model  = provider["model"]
             logger.debug("[ChatEngine] Using provider: %s (%s)", provider["name"], model)
 
-            result = self._run_turn(client, model, system_prompt, user_message, use_tools=not is_greeting)
+            result = self._run_turn(client, model, system_prompt, user_message,
+                                    use_tools=not is_greeting, voice_mode=voice_mode)
 
             if result["status"] == "ok":
                 reply = _clean_reply(result["reply"])
@@ -400,7 +429,7 @@ class ChatEngine:
                 self._mark_rate_limited(provider["name"])
                 continue   # try next provider
 
-            # Other error — log and try next provider
+            # Other error -- log and try next provider
             logger.error("[ChatEngine] %s failed: %s", provider["name"], result.get("error"))
             continue
 
@@ -413,19 +442,24 @@ class ChatEngine:
         return reply
 
     def _run_turn(self, client, model: str, system_prompt: str, user_message: str,
-                  use_tools: bool = True) -> dict:
+                  use_tools: bool = True, voice_mode: bool = False) -> dict:
         """
         Run the full tool loop for one turn using the given client.
         Returns {"status": "ok", "reply": ...} or {"status": "rate_limited"} or {"status": "error", "error": ...}.
         use_tools=False (GREETING intent) skips the tools param entirely --
         a "hi" should never trigger a market-data lookup.
+        voice_mode=True uses reduced token/round limits for faster response.
         """
         messages = [{"role": "system", "content": system_prompt}] + self.history
 
+        # Voice-mode: use reduced limits for faster response
+        effective_max_tokens  = VOICE_MAX_TOKENS  if voice_mode else MAX_TOKENS
+        effective_max_rounds  = VOICE_MAX_TOOL_ROUNDS if voice_mode else MAX_TOOL_ROUNDS
+
         tool_use_failed = False
-        for _ in range(MAX_TOOL_ROUNDS):
+        for _ in range(effective_max_rounds):
             try:
-                kwargs = dict(model=model, max_tokens=MAX_TOKENS, messages=messages)
+                kwargs = dict(model=model, max_tokens=effective_max_tokens, messages=messages)
                 if use_tools:
                     kwargs.update(tools=OPENAI_TOOLS, tool_choice="auto", parallel_tool_calls=False)
                 response = client.chat.completions.create(**kwargs)
@@ -434,7 +468,7 @@ class ChatEngine:
                     return {"status": "rate_limited"}
                 err = str(e)
                 if "tool_use_failed" in err:
-                    logger.warning("[ChatEngine] tool_use_failed — forcing text response")
+                    logger.warning("[ChatEngine] tool_use_failed -- forcing text response")
                     tool_use_failed = True
                     break
                 return {"status": "error", "error": err}
@@ -495,9 +529,9 @@ class ChatEngine:
                     "content":      json.dumps(result, default=str),
                 })
 
-        # Tool loop done (exhausted or tool_use_failed) — force final text call
+        # Tool loop done (exhausted or tool_use_failed) -- force final text call
         logger.warning(
-            "[ChatEngine] %s — forcing final text response",
+            "[ChatEngine] %s -- forcing final text response",
             "tool_use_failed" if tool_use_failed else "MAX_TOOL_ROUNDS exhausted",
         )
         tool_results = [m["content"] for m in messages if m.get("role") == "tool"]
@@ -516,7 +550,7 @@ class ChatEngine:
         try:
             final = client.chat.completions.create(
                 model=model,
-                max_tokens=MAX_TOKENS,
+                max_tokens=effective_max_tokens,
                 messages=final_messages,
             )
             return {"status": "ok", "reply": final.choices[0].message.content or ""}
