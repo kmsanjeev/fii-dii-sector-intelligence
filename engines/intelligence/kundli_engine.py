@@ -231,10 +231,11 @@ class KundliEngine:
             import swisseph as swe
             self._swe = swe
             swe.set_sid_mode(swe.SIDM_LAHIRI)
-        except ImportError:
+        except ImportError as e:
             raise ImportError(
-                "pyswisseph not installed. Run: py -3.11 -m pip install pyswisseph"
-            )
+                f"pyswisseph import failed: {e}. "
+                "Fix: py -3.11 -m pip install --force-reinstall pyswisseph"
+            ) from e
 
         self.output_dir = cfg.INTELLIGENCE_DIR / 'kundli'
         self.output_dir.mkdir(parents=True, exist_ok=True)
