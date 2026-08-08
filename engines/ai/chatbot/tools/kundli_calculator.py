@@ -18,8 +18,6 @@ from __future__ import annotations
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 
-import ephem
-
 from engines.intelligence.kundli_engine import KundliEngine
 
 # One shared Swiss Ephemeris core for both stock and personal charts.
@@ -293,8 +291,10 @@ def _dignity(planet: str, sign: str) -> str:
 
 
 def _jd_ut(dt_utc: datetime) -> float:
-    """Standard Julian Day (UT) for a UTC datetime, via PyEphem's converter."""
-    return ephem.julian_date(ephem.Date(dt_utc.strftime("%Y/%m/%d %H:%M:%S")))
+    """Standard Julian Day (UT) for a UTC datetime, via Swiss Ephemeris."""
+    import swisseph as swe
+    return swe.julday(dt_utc.year, dt_utc.month, dt_utc.day,
+                      dt_utc.hour + dt_utc.minute / 60.0 + dt_utc.second / 3600.0)
 
 
 def _compute_positions(dt_utc: datetime) -> dict[str, dict]:

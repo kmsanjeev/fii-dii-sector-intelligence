@@ -722,6 +722,6 @@ def generate_personal_kundli(
             timezone_offset_hours=timezone_offset_hours,
         )
     except ImportError as e:
-        return {"error": f"kundli_calculator module missing: {e}. Ensure pyswisseph is installed: py -3.11 -m pip install pyswisseph"}
+        return {"error": f"kundli_calculator import failed: {e}. Ensure pyswisseph is installed: py -3.11 -m pip install pyswisseph"}
     except Exception as e:
         return {"error": f"Kundli computation failed: {e}"}
