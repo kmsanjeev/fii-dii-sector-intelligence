@@ -19,6 +19,21 @@ import {
   useVedaStore, startWakeListener, stopWakeListener,
   VOICE_LANGS, type Msg,
 } from '../../store/vedaStore'
+import {
+  approveKnowledgeDraft,
+  approveRepoCapabilityDraft,
+  createKnowledgeDraft,
+  createRepoCapabilityDraft,
+  discardKnowledgeDraft,
+  type ChatKnowledgeDraft,
+  type ChatRepoCapabilityDraft,
+} from '../../api/client'
+import { KnowledgeReviewPanel, type KnowledgeReviewPayload } from './KnowledgeReviewPanel'
+import {
+  RepoCapabilityReviewPanel,
+  type RepoCapabilityApprovePayload,
+  type RepoCapabilityScanPayload,
+} from './RepoCapabilityReviewPanel'
 import { MessageEvidence } from './MessageEvidence'
 import { VedaOrb } from './VedaOrb'
 
@@ -41,8 +56,21 @@ export function VedaWakeController() {
 
 // ─── Compact message bubble (drawer only -- ChatPage has its own richer one) ──
 
-function DrawerBubble({ msg, previous }: { msg: Msg; previous?: Msg }) {
+function DrawerBubble({
+  msg,
+  previous,
+  saveToKnowledgeEnabled,
+  reviewLoading,
+  onReviewSave,
+}: {
+  msg: Msg
+  previous?: Msg
+  saveToKnowledgeEnabled?: boolean
+  reviewLoading?: boolean
+  onReviewSave?: (msg: Msg, previous?: Msg) => void
+}) {
   const isUser = msg.role === 'user'
+  const canReviewSave = !isUser && saveToKnowledgeEnabled && previous?.role === 'user' && Boolean(msg.intent || msg.research) && !msg.knowledge
   if (msg.role === 'system') return null
   return (
     <div style={{ display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start', marginBottom: 10 }}>
@@ -80,6 +108,25 @@ function DrawerBubble({ msg, previous }: { msg: Msg; previous?: Msg }) {
           </div>
         )}
         {!isUser && <MessageEvidence msg={msg} previous={previous} compact />}
+        {canReviewSave && (
+          <div style={{ marginTop: 6 }}>
+            <button
+              onClick={() => onReviewSave?.(msg, previous)}
+              disabled={reviewLoading}
+              style={{
+                background: reviewLoading ? 'transparent' : '#0D1117',
+                border: '1px solid #334155',
+                color: reviewLoading ? '#64748B' : '#94A3B8',
+                borderRadius: 999,
+                padding: '3px 7px',
+                fontSize: 9,
+                cursor: reviewLoading ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {reviewLoading ? 'Preparing review...' : 'Review to save'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -153,7 +200,13 @@ export function VedaWidget() {
   const voiceLang       = useVedaStore(s => s.voiceLang)
   const researchMode    = useVedaStore(s => s.researchMode)
   const researchEnabled = useVedaStore(s => s.researchEnabled)
+  const researchRuntimeReady = useVedaStore(s => s.researchRuntimeReady)
   const attachmentsEnabled = useVedaStore(s => s.attachmentsEnabled)
+  const saveToKnowledgeEnabled = useVedaStore(s => s.saveToKnowledgeEnabled)
+  const mitRepoIntakeEnabled = useVedaStore(s => s.mitRepoIntakeEnabled)
+  const mcpEnabled = useVedaStore(s => s.mcpEnabled)
+  const mcpServerNames = useVedaStore(s => s.mcpServerNames)
+  const attachmentAccept = useVedaStore(s => s.attachmentAccept)
   const pendingAttachments = useVedaStore(s => s.pendingAttachments)
   const uploadingAttachment = useVedaStore(s => s.uploadingAttachment)
   const send            = useVedaStore(s => s.send)
@@ -165,9 +218,24 @@ export function VedaWidget() {
   const setResearchMode = useVedaStore(s => s.setResearchMode)
   const uploadAttachment = useVedaStore(s => s.uploadAttachment)
   const removePendingAttachment = useVedaStore(s => s.removePendingAttachment)
+  const markKnowledgeSaved = useVedaStore(s => s.markKnowledgeSaved)
   const refreshCapabilities = useVedaStore(s => s.refreshCapabilities)
+  const backendSid = useVedaStore(s => s.backendSid)
+  const canUseResearch = researchEnabled && researchRuntimeReady
 
   const [input, setInput] = useState('')
+  const [reviewDraft, setReviewDraft] = useState<ChatKnowledgeDraft | null>(null)
+  const [reviewOpen, setReviewOpen] = useState(false)
+  const [reviewMessageTs, setReviewMessageTs] = useState<number | null>(null)
+  const [reviewLoading, setReviewLoading] = useState(false)
+  const [reviewSubmitting, setReviewSubmitting] = useState(false)
+  const [reviewError, setReviewError] = useState<string | null>(null)
+  const [repoDraft, setRepoDraft] = useState<ChatRepoCapabilityDraft | null>(null)
+  const [repoReviewOpen, setRepoReviewOpen] = useState(false)
+  const [repoLoading, setRepoLoading] = useState(false)
+  const [repoSubmitting, setRepoSubmitting] = useState(false)
+  const [repoError, setRepoError] = useState<string | null>(null)
+  const [repoNotice, setRepoNotice] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const panelRef  = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -193,8 +261,9 @@ export function VedaWidget() {
 
   const statusText = speaking ? 'Speaking...'
     : listening ? (followUpListening ? 'Listening for follow-up...' : 'Listening...')
-    : loading ? (researchMode && researchEnabled ? 'Researching...' : 'Thinking...')
-    : researchMode && researchEnabled ? 'Research mode is on'
+    : loading ? (researchMode && canUseResearch ? 'Researching...' : 'Thinking...')
+    : researchMode && canUseResearch ? 'Research mode is on'
+    : researchEnabled && !researchRuntimeReady ? 'Research is temporarily unavailable'
     : wakeEnabled ? 'Say "Veda" or ask below' : 'Ask below'
 
   const submit = () => {
@@ -208,6 +277,113 @@ export function VedaWidget() {
     if (!files || files.length === 0) return
     for (const file of Array.from(files)) {
       await uploadAttachment(file)
+    }
+  }
+
+  const closeKnowledgeReview = (force = false) => {
+    if (reviewSubmitting && !force) return
+    setReviewOpen(false)
+    setReviewDraft(null)
+    setReviewMessageTs(null)
+    setReviewLoading(false)
+    setReviewError(null)
+  }
+
+  const openKnowledgeReview = async (answerMsg: Msg, previous?: Msg) => {
+    if (!saveToKnowledgeEnabled || previous?.role !== 'user' || answerMsg.knowledge?.status === 'approved') return
+    setReviewOpen(true)
+    setReviewDraft(null)
+    setReviewMessageTs(answerMsg.ts)
+    setReviewLoading(true)
+    setReviewError(null)
+    try {
+      const draft = await createKnowledgeDraft({
+        question: previous.content,
+        answer: answerMsg.content,
+        intent: answerMsg.intent,
+        session_id: backendSid,
+        research: answerMsg.research,
+        attachments: previous.attachments,
+      })
+      setReviewDraft(draft)
+    } catch (err: unknown) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setReviewError(detail ?? 'Could not prepare the review draft.')
+    } finally {
+      setReviewLoading(false)
+    }
+  }
+
+  const approveKnowledgeReview = async (payload: KnowledgeReviewPayload) => {
+    if (!reviewDraft || reviewMessageTs == null) return
+    setReviewSubmitting(true)
+    setReviewError(null)
+    try {
+      const saved = await approveKnowledgeDraft(reviewDraft.draft_id, payload)
+      markKnowledgeSaved(reviewMessageTs, saved)
+      closeKnowledgeReview(true)
+    } catch (err: unknown) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setReviewError(detail ?? 'Could not save this reviewed knowledge.')
+    } finally {
+      setReviewSubmitting(false)
+    }
+  }
+
+  const discardKnowledgeReview = async (draftId: string) => {
+    setReviewSubmitting(true)
+    setReviewError(null)
+    try {
+      await discardKnowledgeDraft(draftId)
+      closeKnowledgeReview(true)
+    } catch (err: unknown) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setReviewError(detail ?? 'Could not discard this review draft.')
+    } finally {
+      setReviewSubmitting(false)
+    }
+  }
+
+  const closeRepoReview = (force = false) => {
+    if (repoSubmitting && !force) return
+    setRepoReviewOpen(false)
+    setRepoDraft(null)
+    setRepoLoading(false)
+    setRepoError(null)
+  }
+
+  const scanRepoCapability = async (payload: RepoCapabilityScanPayload) => {
+    setRepoReviewOpen(true)
+    setRepoDraft(null)
+    setRepoLoading(true)
+    setRepoError(null)
+    setRepoNotice(null)
+    try {
+      const draft = await createRepoCapabilityDraft(payload)
+      setRepoDraft(draft)
+    } catch (err: unknown) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setRepoError(detail ?? 'Could not study this repo yet.')
+    } finally {
+      setRepoLoading(false)
+    }
+  }
+
+  const approveRepoCapability = async (payload: RepoCapabilityApprovePayload) => {
+    if (!repoDraft) return
+    setRepoSubmitting(true)
+    setRepoError(null)
+    try {
+      const saved = await approveRepoCapabilityDraft(repoDraft.draft_id, payload)
+      setRepoNotice(saved.duplicate
+        ? `This MIT repo note was already saved: ${saved.title}`
+        : `MIT repo note saved for Veda: ${saved.title}`)
+      closeRepoReview(true)
+    } catch (err: unknown) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setRepoError(detail ?? 'Could not save this MIT repo note.')
+    } finally {
+      setRepoSubmitting(false)
     }
   }
 
@@ -250,6 +426,27 @@ export function VedaWidget() {
               }}>Stop</button>
             )}
             <button
+              onClick={() => { setRepoReviewOpen(true); setRepoError(null); setRepoNotice(null) }}
+              disabled={!mitRepoIntakeEnabled || loading}
+              title={
+                mitRepoIntakeEnabled
+                  ? 'Study a local MIT repo and save approved capability notes'
+                  : 'MIT repo study is not enabled by the backend yet'
+              }
+              style={{
+                background: repoReviewOpen && mitRepoIntakeEnabled ? '#1F2937' : 'transparent',
+                border: `1px solid ${repoReviewOpen && mitRepoIntakeEnabled ? '#60A5FA' : '#2D3348'}`,
+                borderRadius: 4,
+                color: repoReviewOpen && mitRepoIntakeEnabled ? '#BFDBFE' : '#64748B',
+                fontSize: 9,
+                padding: '3px 7px',
+                cursor: mitRepoIntakeEnabled && !loading ? 'pointer' : 'not-allowed',
+                opacity: mitRepoIntakeEnabled ? 1 : 0.55,
+              }}
+            >
+              MIT Repo
+            </button>
+            <button
               onClick={() => setOpen(false)}
               style={{ background: 'none', border: 'none', color: '#64748B', fontSize: 18, cursor: 'pointer', lineHeight: 1, padding: 0 }}
             >×</button>
@@ -257,7 +454,16 @@ export function VedaWidget() {
 
           {/* Messages */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '12px 14px', minHeight: 200 }}>
-            {messages.map((m, i) => <DrawerBubble key={i} msg={m} previous={i > 0 ? messages[i - 1] : undefined} />)}
+            {messages.map((m, i) => (
+              <DrawerBubble
+                key={i}
+                msg={m}
+                previous={i > 0 ? messages[i - 1] : undefined}
+                saveToKnowledgeEnabled={saveToKnowledgeEnabled}
+                reviewLoading={reviewLoading && reviewMessageTs === m.ts}
+                onReviewSave={openKnowledgeReview}
+              />
+            ))}
             {liveTranscript && (
               <div style={{ color: '#60A5FA', fontSize: 11, fontStyle: 'italic', padding: '4px 0' }}>
                 {liveTranscript}...
@@ -271,6 +477,11 @@ export function VedaWidget() {
               {apiError}
             </div>
           )}
+          {repoNotice && (
+            <div style={{ margin: '0 14px 8px', padding: '6px 10px', borderRadius: 4, background: '#0F1E30', border: '1px solid #1D4ED8', color: '#BFDBFE', fontSize: 10 }}>
+              {repoNotice}
+            </div>
+          )}
 
           {/* Controls */}
           <div style={{ padding: '10px 14px', borderTop: '1px solid #1E2332', flexShrink: 0 }}>
@@ -278,7 +489,7 @@ export function VedaWidget() {
               ref={fileInputRef}
               type="file"
               multiple
-              accept=".pdf,.txt,.md,.csv,.json,.png,.jpg,.jpeg,.webp,.gif,.bmp"
+              accept={attachmentAccept}
               style={{ display: 'none' }}
               onChange={async e => {
                 await handleFileSelection(e.target.files)
@@ -348,8 +559,10 @@ export function VedaWidget() {
                 placeholder={
                   listening
                     ? 'Listening...'
-                    : researchMode && researchEnabled
+                    : researchMode && canUseResearch
                       ? 'Ask anything. Veda can check outside sources too.'
+                      : researchEnabled && !researchRuntimeReady
+                        ? 'Research is temporarily unavailable right now.'
                       : attachmentsEnabled
                         ? 'Ask or attach a file...'
                         : 'Ask about markets, sectors, stocks...'
@@ -408,31 +621,61 @@ export function VedaWidget() {
                 >{followUpEnabled ? 'FOLLOW-UP ON' : 'FOLLOW-UP OFF'}</button>
                 <button
                   onClick={() => setResearchMode(!researchMode)}
-                  disabled={!researchEnabled}
+                  disabled={!canUseResearch}
                   title={
-                    researchEnabled
+                    !researchEnabled
+                      ? 'Research mode is not enabled by the backend yet'
+                      : !researchRuntimeReady
+                        ? 'Research mode is enabled, but no live research provider is available right now.'
+                      : researchEnabled
                       ? researchMode
-                        ? 'Research mode on: Veda may check outside sources when local data is weak'
-                        : 'Research mode off: Veda stays local-first unless a research query needs more'
+                        ? `Research mode on: Veda may check outside sources when local data is weak${mcpEnabled ? ` and can fall back to MCP (${mcpServerNames.join(', ') || 'configured servers'}) if needed` : ''}`
+                        : `Research mode off: Veda stays local-first unless a research query needs more${mcpEnabled ? '. MCP fallback is ready if research is triggered.' : ''}`
                       : 'Research mode is not enabled by the backend yet'
                   }
                   style={{
-                    background: researchMode && researchEnabled ? '#1E3A5F' : 'transparent',
-                    border: `1px solid ${researchMode && researchEnabled ? '#3B82F6' : '#1E2332'}`,
-                    borderRadius: 4, color: researchMode && researchEnabled ? '#60A5FA' : '#334155',
-                    fontSize: 9, fontWeight: 700, padding: '2px 6px', cursor: researchEnabled ? 'pointer' : 'not-allowed',
-                    opacity: researchEnabled ? 1 : 0.55,
+                    background: researchMode && canUseResearch ? '#1E3A5F' : 'transparent',
+                    border: `1px solid ${researchMode && canUseResearch ? '#3B82F6' : '#1E2332'}`,
+                    borderRadius: 4, color: researchMode && canUseResearch ? '#60A5FA' : researchEnabled && !researchRuntimeReady ? '#F59E0B' : '#334155',
+                    fontSize: 9, fontWeight: 700, padding: '2px 6px', cursor: canUseResearch ? 'pointer' : 'not-allowed',
+                    opacity: canUseResearch ? 1 : 0.65,
                   }}
-                >{researchMode ? 'RESEARCH ON' : 'RESEARCH OFF'}</button>
+                >{!researchEnabled
+                  ? 'RESEARCH OFF'
+                  : !researchRuntimeReady
+                    ? 'RESEARCH UNAVAILABLE'
+                    : researchMode
+                      ? 'RESEARCH ON'
+                      : 'RESEARCH OFF'}</button>
               </div>
               <button
                 onClick={() => { setOpen(false); navigate('/chat') }}
                 style={{ background: 'none', border: 'none', color: '#3B82F6', fontSize: 10, fontWeight: 600, cursor: 'pointer' }}
-              >Full chat →</button>
+              >Full chat -&gt;</button>
             </div>
           </div>
         </div>
       )}
+      <KnowledgeReviewPanel
+        open={reviewOpen}
+        draft={reviewDraft}
+        loading={reviewLoading}
+        submitting={reviewSubmitting}
+        error={reviewError}
+        onClose={closeKnowledgeReview}
+        onApprove={approveKnowledgeReview}
+        onDiscard={discardKnowledgeReview}
+      />
+      <RepoCapabilityReviewPanel
+        open={repoReviewOpen}
+        draft={repoDraft}
+        loading={repoLoading}
+        submitting={repoSubmitting}
+        error={repoError}
+        onClose={closeRepoReview}
+        onScan={scanRepoCapability}
+        onApprove={approveRepoCapability}
+      />
     </div>
   )
 }

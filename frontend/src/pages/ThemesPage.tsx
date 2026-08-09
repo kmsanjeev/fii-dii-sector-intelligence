@@ -470,7 +470,6 @@ export function ThemesPage() {
     .filter(t => catFilter === 'ALL' || t.category === catFilter)
 
   // Summary stats
-  const topTheme      = themes[0]
   const heating       = themes.filter(t => t.theme_signal === 'HEATING_UP').length
   const building      = themes.filter(t => t.theme_signal === 'BUILDING').length
   const totalStocks   = themes.reduce((s, t) => s + t.stock_count, 0)

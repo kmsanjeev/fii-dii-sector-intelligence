@@ -37,10 +37,6 @@ function pct(v: number | null | undefined) {
   if (v == null) return '--'
   return `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`
 }
-function num(v: number | null | undefined, dec = 2) {
-  if (v == null) return '--'
-  return Number(v).toFixed(dec)
-}
 function crFmt(v: number | null | undefined): string {
   if (v == null) return '--'
   const n = Number(v)
@@ -159,7 +155,7 @@ function FundamentalTiles({ fund, shp, tech, price }: FundTilesProps) {
         headerColor="#2D1B4E"
         value={fund.profit_ttm_cr != null ? crFmt(fund.profit_ttm_cr as number) : '--'}
         subtext={fund.yoy_profit_pct != null ? `YoY ${pct(fund.yoy_profit_pct as number)}` : 'trailing 12 months profit'}
-        valueColor={(fund.profit_ttm_cr ?? 0) >= 0 ? C.primary : C.bear}
+        valueColor={Number(fund.profit_ttm_cr ?? 0) >= 0 ? C.primary : C.bear}
       />
       <FundTile
         label="P/E Ratio"
@@ -406,7 +402,7 @@ function TechSection({ t, close }: { t: TechnicalIndicators; close: number }) {
 
 // ─── F&O section ──────────────────────────────────────────────────────────────
 
-function FnoSection({ fno }: { fno: FnoData }) {
+function FnoSection({ fno }: { fno: FnoData }): React.JSX.Element {
   const OI: Record<string, { color: string; bg: string; plain: string }> = {
     LONG_BUILDUP:   { color: '#22D35E', bg: '#052e1688', plain: 'Big traders buying fresh — bullish sign' },
     SHORT_BUILDUP:  { color: '#F44B4B', bg: '#45090955', plain: 'Big traders betting on a fall — bearish' },
@@ -528,16 +524,16 @@ function NewsCard({ news }: { news: Record<string, unknown> }) {
           </div>
         </div>
       </div>
-      {news.latest_headline && (
+      {Boolean(news.latest_headline) && (
         <div style={{
           fontSize: 10, color: C.secondary, background: C.bgDeep,
           padding: '7px 10px', borderRadius: 5, border: C.border, lineHeight: 1.5,
         }}>
           {String(news.latest_headline)}
-          {news.latest_date && <span style={{ color: C.dim, marginLeft: 8 }}>{String(news.latest_date)}</span>}
+          {Boolean(news.latest_date) && <span style={{ color: C.dim, marginLeft: 8 }}>{String(news.latest_date)}</span>}
         </div>
       )}
-      {news.top_theme && (
+      {Boolean(news.top_theme) && (
         <div style={{ marginTop: 8, fontSize: 10, color: C.blue }}>
           Top theme: {String(news.top_theme).replace(/_/g, ' ')}
         </div>
@@ -581,12 +577,12 @@ function InsiderCard({ insider }: { insider: Record<string, unknown> }) {
           </div>
         </div>
       </div>
-      {insider.acquirers && (
+      {Boolean(insider.acquirers) && (
         <div style={{ fontSize: 10, color: C.muted, lineHeight: 1.5 }}>
           Insiders: {String(insider.acquirers).split('|').slice(0, 3).join(', ')}
         </div>
       )}
-      {insider.latest_date && (
+      {Boolean(insider.latest_date) && (
         <div style={{ fontSize: 10, color: C.dim, marginTop: 4 }}>Last transaction: {String(insider.latest_date)}</div>
       )}
     </Card>
@@ -642,7 +638,7 @@ function ConcallCard({ concall }: { concall: Record<string, unknown> }) {
           </div>
         </div>
       </div>
-      {concall.key_statement && (
+      {Boolean(concall.key_statement) && (
         <div style={{
           fontSize: 10, color: C.secondary, fontStyle: 'italic', background: C.bgDeep,
           padding: '7px 10px', borderRadius: 5, border: C.border, lineHeight: 1.5,
@@ -650,7 +646,7 @@ function ConcallCard({ concall }: { concall: Record<string, unknown> }) {
           "{String(concall.key_statement)}"
         </div>
       )}
-      {concall.themes && (
+      {Boolean(concall.themes) && (
         <div style={{ marginTop: 8, fontSize: 10, color: C.blue }}>
           Themes: {String(concall.themes).replace(/,/g, ' · ').replace(/_/g, ' ')}
         </div>
@@ -938,13 +934,19 @@ export function StockDetailPage() {
   const c = data.components
   const t = data.technical
   const f = data.fno
-  const hasFno   = f && f.oi_signal && f.oi_signal !== ''
-  const hasShp   = data.shareholding && data.shareholding.promoter_pct != null
+  const hasFno   = Boolean(f?.oi_signal && f.oi_signal !== '')
+  const hasShp   = Boolean(data.shareholding && data.shareholding.promoter_pct != null)
   const hasFund  = data.fundamentals && (data.fundamentals.valuation_score != null || data.fundamentals.pe_ratio != null)
   const hasHT    = Array.isArray(data.holding_trends) && (data.holding_trends as unknown[]).length > 0
   const hasMgmt  = data.management && (data.management as Record<string, unknown>).management_score != null
   const hasDeals = data.deal_signals && Object.keys(data.deal_signals).length > 0
   const close    = data.close_now ?? t?.close_now ?? 0
+  const shareholdingWindowLabel = typeof data.shareholding?.window_label === 'string' ? data.shareholding.window_label : ''
+  // TS build mode loses JSX inference on this local renderer; keep the escape hatch local.
+  const renderFnoSection = (): any => {
+    if (!hasFno || !f) return null
+    return FnoSection({ fno: f as FnoData })
+  }
 
   const insights = data.analyst_insights
 
@@ -952,6 +954,8 @@ export function StockDetailPage() {
     : t?.trend_signal === 'UPTREND' ? C.teal
     : t?.trend_signal === 'CONSOLIDATING' ? C.neutral
     : t?.trend_signal ? C.bear : null
+  const showTrendBadge = Boolean(trendColor && t?.trend_signal && t.trend_signal !== 'INSUFFICIENT_DATA')
+  const trendLabel = t?.trend_signal ? t.trend_signal.replace(/_/g, ' ') : ''
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -981,12 +985,12 @@ export function StockDetailPage() {
             <span style={{ color: C.secondary, fontSize: 12 }}>{data.sector}</span>
             <span style={{ color: C.dim }}>|</span>
             <CapFlowBadge label={data.label} />
-            {trendColor && t?.trend_signal && t.trend_signal !== 'INSUFFICIENT_DATA' && (
+            {showTrendBadge && (
               <span style={{
                 fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 3,
-                border: `1px solid ${trendColor}44`, color: trendColor, background: `${trendColor}18`,
+                border: `1px solid ${trendColor ?? C.dim}44`, color: trendColor ?? C.dim, background: `${trendColor ?? C.dim}18`,
               }}>
-                {t.trend_signal.replace(/_/g, ' ')}
+                {trendLabel}
               </span>
             )}
             {hasFno && f && (
@@ -1157,11 +1161,11 @@ export function StockDetailPage() {
           )}
 
           {/* F&O */}
-          {hasFno && f && <FnoSection fno={f} />}
+          {renderFnoSection()}
 
           {/* Shareholding */}
           {hasShp && (
-            <Card title={`WHO OWNS THIS STOCK${data.shareholding!.window_label ? ` (${data.shareholding!.window_label})` : ''}`}>
+            <Card title={`WHO OWNS THIS STOCK${shareholdingWindowLabel ? ` (${shareholdingWindowLabel})` : ''}`}>
               <SHPBar label="Promoters"         pctVal={data.shareholding!.promoter_pct as number | null} color="#9B7BEA" desc="founders &amp; insiders" />
               <SHPBar label="FII / Foreign"     pctVal={data.shareholding!.fii_pct      as number | null} color="#22D35E" desc="global funds" />
               <SHPBar label="DII / Domestic"    pctVal={data.shareholding!.dii_pct      as number | null} color="#3BAEF0" desc="MFs &amp; insurance" />
@@ -1358,7 +1362,7 @@ export function StockDetailPage() {
                     </div>
                   )}
                 </div>
-                {agm.key_decision && (
+                {Boolean(agm.key_decision) && (
                   <div style={{
                     fontSize: 10, color: C.secondary, background: C.bgDeep,
                     padding: '7px 10px', borderRadius: 5, border: C.border, lineHeight: 1.5,

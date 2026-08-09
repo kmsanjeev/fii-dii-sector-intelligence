@@ -1,8 +1,52 @@
-import axios from 'axios'
+import axios, { AxiosHeaders } from 'axios'
 
 export const api = axios.create({
   baseURL: '/api',
   timeout: 15000,
+})
+
+const VEDA_CLIENT_ID_KEY = 'cfip-veda-client-id'
+
+function loadToken(): string | null {
+  try {
+    return localStorage.getItem('cfip_token')
+  } catch {
+    return null
+  }
+}
+
+function createClientId(): string {
+  const randomPart = Math.random().toString(36).slice(2, 10)
+  return `veda-${Date.now().toString(36)}-${randomPart}`
+}
+
+function loadOrCreateVedaClientId(): string {
+  try {
+    const existing = localStorage.getItem(VEDA_CLIENT_ID_KEY)
+    if (existing) return existing
+    const next = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : createClientId()
+    localStorage.setItem(VEDA_CLIENT_ID_KEY, next)
+    return next
+  } catch {
+    return createClientId()
+  }
+}
+
+function attachAuthHeaders(headers?: AxiosHeaders | Record<string, string>): AxiosHeaders {
+  const next = AxiosHeaders.from(headers)
+  const token = loadToken()
+  if (token) {
+    next.set('Authorization', `Bearer ${token}`)
+  }
+  next.set('X-Veda-Client-Id', loadOrCreateVedaClientId())
+  return next
+}
+
+api.interceptors.request.use(config => {
+  config.headers = attachAuthHeaders(config.headers as AxiosHeaders | Record<string, string> | undefined)
+  return config
 })
 
 export type MarketRegime = {
@@ -364,6 +408,10 @@ export const fetchNews = () => api.get<NewsResponse>('/news').then(r => r.data)
 
 // Phase 14 — AI Chat (separate instance with longer timeout for multi-round Groq tool calls)
 const chatApi = axios.create({ baseURL: '/api', timeout: 60000 })
+chatApi.interceptors.request.use(config => {
+  config.headers = attachAuthHeaders(config.headers as AxiosHeaders | Record<string, string> | undefined)
+  return config
+})
 export type ChatAttachmentStub = {
   name: string
   mime_type: string
@@ -390,14 +438,79 @@ export type ChatResearchMeta = {
   cached?: boolean
   error?: string | null
   sources: ChatResearchSource[]
+  temporary?: boolean
+  save_requires_review?: boolean
+  conflict_note?: string | null
+  governance_note?: string | null
+}
+export type ChatLocalEvidenceMeta = {
+  used: boolean
+  source_count: number
+  evidence_kinds: string[]
+  predictive_ml_count: number
+  platform_snapshot_count: number
+  approved_memory_count: number
+  attachment_memory_count: number
+  repo_count: number
+  top_date?: string | null
+  sources: ChatLocalEvidenceSource[]
+  conflict_note?: string | null
+  freshness_note?: string | null
+}
+export type ChatRetrievalAudit = {
+  shadow_enabled: boolean
+  configured_primary_mode: string
+  resolved_primary_mode: string
+  primary_used: boolean
+  primary_source_count: number
+  primary_attribution_quality: number
+  primary_duplicate_noise: number
+  shadow_mode?: string | null
+  shadow_used: boolean
+  shadow_source_count: number
+  shadow_attribution_quality: number
+  shadow_duplicate_noise: number
+  overlap_count: number
+  overlap_rate: number
+  only_in_primary: string[]
+  only_in_shadow: string[]
+  notes: string[]
+  primary_error?: string | null
+  shadow_error?: string | null
+}
+export type ChatLocalEvidenceSource = {
+  source_id: string
+  source_type: string
+  source_label: string
+  evidence_kind: string
+  evidence_label: string
+  domain: string
+  title: string
+  entity?: string | null
+  date?: string | null
+  freshness_class?: string | null
+  confidence?: number | null
+  summary?: string | null
+  attachment_name?: string | null
+  repo_label?: string | null
+  license_name?: string | null
+  model_name?: string | null
+  model_version?: string | null
+  score_meaning?: string | null
+  reliability_note?: string | null
+  rank: number
 }
 export type ChatCapabilities = {
   research_enabled: boolean
+  research_provider_available: boolean
+  research_runtime_ready: boolean
   default_research_provider: string
   auto_research_for_research_intent: boolean
   attachments_enabled: boolean
   save_to_knowledge_enabled: boolean
+  mit_repo_intake_enabled: boolean
   mcp_enabled: boolean
+  mcp_server_names: string[]
   supported_attachment_mime_prefixes: string[]
 }
 export type ChatResponseData = {
@@ -408,6 +521,96 @@ export type ChatResponseData = {
   flagged?: boolean
   flag_reason?: string | null
   research?: ChatResearchMeta
+  local_evidence?: ChatLocalEvidenceMeta
+  retrieval_audit?: ChatRetrievalAudit
+}
+export type ChatKnowledgeSource = {
+  kind: string
+  title: string
+  url?: string | null
+  published_at?: string | null
+  excerpt?: string | null
+  storage_key?: string | null
+  warning?: string | null
+}
+export type ChatKnowledgeExistingMatch = {
+  doc_id: string
+  title: string
+  summary: string
+  saved_at?: string | null
+  memory_type: string
+  overlap_score: number
+  semantic_score?: number
+  reason?: string | null
+  exact_duplicate?: boolean
+  new_value_hint?: string | null
+}
+export type ChatKnowledgeDraft = {
+  draft_id: string
+  title: string
+  summary: string
+  facts: string[]
+  tags: string[]
+  raw_question: string
+  raw_answer: string
+  intent?: string | null
+  session_id?: string | null
+  created_at: string
+  sources: ChatKnowledgeSource[]
+  existing_matches: ChatKnowledgeExistingMatch[]
+  suggested_action: string
+  suggestion_reason?: string | null
+  status: string
+}
+export type ChatKnowledgeSaved = {
+  draft_id: string
+  doc_id: string
+  saved_at: string
+  title: string
+  status: string
+  duplicate?: boolean
+  attachment_doc_count?: number
+  attachment_chunk_count?: number
+  decision?: string | null
+  merged_into_doc_id?: string | null
+}
+export type ChatSavedMessage = {
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  intent?: string
+  ts: number
+  research?: ChatResearchMeta
+  localEvidence?: ChatLocalEvidenceMeta
+  attachments?: ChatAttachmentStub[]
+  knowledge?: ChatKnowledgeSaved
+}
+export type ChatSavedSession = {
+  id: string
+  title: string
+  messages: ChatSavedMessage[]
+  backendSessionId?: string
+  createdAt: number
+  updatedAt: number
+}
+export type ChatSavedSessionList = {
+  sessions: ChatSavedSession[]
+}
+export type ChatRepoCapabilityDraft = {
+  draft_id: string
+  repo_path: string
+  repo_label: string
+  focus?: string | null
+  title: string
+  summary: string
+  facts: string[]
+  tags: string[]
+  license_name: string
+  license_path: string
+  license_excerpt: string
+  candidate_files: string[]
+  created_at: string
+  sources: ChatKnowledgeSource[]
+  status: string
 }
 export const sendChat = (
   message: string,
@@ -433,6 +636,61 @@ export const uploadChatAttachment = (file: File) => {
     headers: { 'Content-Type': 'multipart/form-data' },
   }).then(r => r.data)
 }
+export const fetchChatSavedSessions = () =>
+  chatApi.get<ChatSavedSessionList>('/chat/sessions').then(r => r.data)
+export const upsertChatSavedSession = (session: ChatSavedSession) =>
+  chatApi.put<ChatSavedSession>(`/chat/sessions/${encodeURIComponent(session.id)}`, session).then(r => r.data)
+export const deleteChatSavedSession = (sessionId: string) =>
+  chatApi.delete(`/chat/sessions/${encodeURIComponent(sessionId)}`).then(r => r.data)
+export const deleteAllChatSavedSessions = () =>
+  chatApi.delete('/chat/sessions').then(r => r.data)
+export const createKnowledgeDraft = (payload: {
+  question: string
+  answer: string
+  intent?: string
+  session_id?: string
+  research?: ChatResearchMeta
+  attachments?: ChatAttachmentStub[]
+}) =>
+  chatApi.post<ChatKnowledgeDraft>('/chat/knowledge/draft', {
+    question: payload.question,
+    answer: payload.answer,
+    intent: payload.intent,
+    session_id: payload.session_id,
+    research: payload.research,
+    attachments: payload.attachments ?? [],
+  }).then(r => r.data)
+export const approveKnowledgeDraft = (
+  draftId: string,
+  payload: {
+    title: string
+    summary: string
+    facts: string[]
+    tags: string[]
+    review_note?: string
+    decision?: string
+  },
+) =>
+  chatApi.post<ChatKnowledgeSaved>(`/chat/knowledge/draft/${draftId}/approve`, payload).then(r => r.data)
+export const discardKnowledgeDraft = (draftId: string) =>
+  chatApi.delete<{ draft_id: string; status: string }>(`/chat/knowledge/draft/${draftId}`).then(r => r.data)
+export const createRepoCapabilityDraft = (payload: {
+  repo_path: string
+  repo_label?: string
+  focus?: string
+}) =>
+  chatApi.post<ChatRepoCapabilityDraft>('/chat/capabilities/repo/draft', payload).then(r => r.data)
+export const approveRepoCapabilityDraft = (
+  draftId: string,
+  payload: {
+    title: string
+    summary: string
+    facts: string[]
+    tags: string[]
+    review_note?: string
+  },
+) =>
+  chatApi.post<ChatKnowledgeSaved>(`/chat/capabilities/repo/draft/${draftId}/approve`, payload).then(r => r.data)
 
 // Phase V-DATA-3 — chat demand analytics ("Recently Asked" panel)
 export type ChatAnalyticsRow = { key: string; count: number; share_pct?: number; last_seen?: string | null }

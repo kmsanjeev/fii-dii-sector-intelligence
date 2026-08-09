@@ -5,7 +5,6 @@
  * v2: Plain-English explanations, diverging score bar, context note.
  */
 
-import React from 'react'
 import { T, FS, FW } from '../../styles/tokens'
 
 // ── Types ─────────────────────────────────────────────────────────────────────

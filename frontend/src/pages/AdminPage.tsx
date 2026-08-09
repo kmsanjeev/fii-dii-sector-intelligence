@@ -7,20 +7,6 @@ const API = '/api/auth'
 interface AuthUser { id: string; email: string; role: string; active: boolean; created_at: string }
 interface ApiKey   { id: string; name: string; key_prefix: string; created_at: string; last_used_at: string | null }
 
-function roleBadge(role: string) {
-  const colors: Record<string, [string, string]> = {
-    admin:   ['#3B2000', '#FBBF24'],
-    trader:  ['#1E3A5F', '#60A5FA'],
-    analyst: ['#14532D', '#4ADE80'],
-  }
-  const [bg, fg] = colors[role] ?? ['#1E2332', '#94A3B8']
-  return (
-    <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 4, background: bg, color: fg, fontWeight: 700 }}>
-      {role.toUpperCase()}
-    </span>
-  )
-}
-
 // ── Users Tab ─────────────────────────────────────────────────────────────────
 
 function UsersTab({ currentUser }: { currentUser: AuthUser | null }) {

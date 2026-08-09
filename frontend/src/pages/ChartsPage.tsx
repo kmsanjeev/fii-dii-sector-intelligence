@@ -271,9 +271,9 @@ export function ChartsPage() {
     try {
       chart = createChart(chartRef.current, {
         autoSize: true,
-        attributionLogo: false,
         layout: {
           background: { type: ColorType.Solid, color: COLORS.bg },
+          attributionLogo: false,
           textColor: COLORS.text,
           fontSize: 11,
           fontFamily: 'monospace',

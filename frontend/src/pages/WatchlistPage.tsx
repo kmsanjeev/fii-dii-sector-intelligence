@@ -102,6 +102,8 @@ function TrendBadge({ signal }: { signal?: string }) {
 }
 
 export function WatchlistPage() {
+  type StocksResponse = Awaited<ReturnType<typeof fetchAllStocks>>
+
   // Deep-linkable label filter: /watchlist?label=BULL_RUN etc.
   // (Dashboard universe-breadth segments link here.)
   const [searchParams, setSearchParams] = useSearchParams()
@@ -131,12 +133,12 @@ export function WatchlistPage() {
   }, [urlLabel])
 
   // Fetch all matching pages (up to 2000 symbols) for client-side sort/search
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<StocksResponse>({
     queryKey: ['all_stocks', page, labelFilter, sectorFilter],
     queryFn:  () => fetchAllStocks(page, PER_PAGE, labelFilter, sectorFilter === 'ALL' ? undefined : sectorFilter),
     refetchInterval: 300000,
-    keepPreviousData: true,
-  } as any)
+    placeholderData: previous => previous,
+  })
 
   const stocks: Stock[] = data?.stocks ?? []
 

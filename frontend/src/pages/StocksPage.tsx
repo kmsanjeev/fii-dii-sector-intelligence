@@ -15,8 +15,9 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import {
   createChart, ColorType, CandlestickSeries, HistogramSeries,
+  createSeriesMarkers,
   type IChartApi, type ISeriesApi, type CandlestickData,
-  type HistogramData, type Time,
+  type HistogramData, type ISeriesMarkersPluginApi, type SeriesMarker, type Time,
 } from 'lightweight-charts'
 import {
   api, fetchStockDetail, fetchStockAnnouncements, fetchStockCorpActions,
@@ -1130,6 +1131,7 @@ export function StocksPage() {
   const chartApi  = useRef<IChartApi | null>(null)
   const candleRef = useRef<ISeriesApi<'Candlestick', Time> | null>(null)
   const volRef    = useRef<ISeriesApi<'Histogram', Time> | null>(null)
+  const markerRef = useRef<ISeriesMarkersPluginApi<Time> | null>(null)
   const barCount  = useRef(0)
   // Render-phase snapshot refs — updated every render so chart init can read
   // the current ohlcv/tf WITHOUT waiting for the data effect to fire again.
@@ -1218,6 +1220,7 @@ export function StocksPage() {
         priceLineVisible: false,
       })
       vol.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } })
+      markerRef.current = createSeriesMarkers(candles)
       chartApi.current = chart; candleRef.current = candles; volRef.current = vol
       setChartKey(k => k + 1)
 
@@ -1256,7 +1259,13 @@ export function StocksPage() {
         if (cs.length > 0) chart.timeScale().setVisibleLogicalRange({ from: Math.max(0, cs.length - DEFAULT_BARS[tfNow]), to: cs.length + 3 })
       }
     } catch (e) { setChartErr(e instanceof Error ? e.message : String(e)); chart?.remove() }
-    return () => { chartApi.current?.remove(); chartApi.current = candleRef.current = volRef.current = null }
+    return () => {
+      chartApi.current?.remove()
+      chartApi.current = null
+      candleRef.current = null
+      volRef.current = null
+      markerRef.current = null
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol])
 
@@ -1287,7 +1296,11 @@ export function StocksPage() {
   // ── Corporate action markers on chart ─────────────────────────────────────
   // Renders colored circles below candle bars at the ex-date of each CA event.
   useEffect(() => {
-    if (!candleRef.current || !corpActions?.actions?.length) return
+    if (!markerRef.current) return
+    if (!corpActions?.actions?.length) {
+      markerRef.current.setMarkers([])
+      return
+    }
     const CA_MARKER_CFG: Record<string, { color: string; text: string }> = {
       DIVIDEND: { color: P.amber,  text: 'D' },
       BONUS:    { color: P.green,  text: 'B' },
@@ -1296,7 +1309,7 @@ export function StocksPage() {
       RIGHTS:   { color: P.teal,   text: 'R' },
     }
     try {
-      const markers = corpActions.actions
+      const markers: SeriesMarker<Time>[] = corpActions.actions
         .filter(a => CA_MARKER_CFG[a.action_type])
         .map(a => {
           const cfg = CA_MARKER_CFG[a.action_type]
@@ -1319,7 +1332,7 @@ export function StocksPage() {
           }
         })
         .sort((a, b) => String(a.time).localeCompare(String(b.time)))
-      candleRef.current.setMarkers(markers)
+      markerRef.current.setMarkers(markers)
     } catch { /* markers are cosmetic — ignore failures */ }
   }, [corpActions, chartKey])
 

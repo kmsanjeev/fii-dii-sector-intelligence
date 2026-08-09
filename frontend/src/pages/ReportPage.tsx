@@ -8,7 +8,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import {
   api, fetchStockDetail, fetchStockCorpActions, fetchStockAnnouncements,
-  type Announcement, type CorpAction,
+  type Announcement,
 } from '../api/client'
 
 // ── Kundli types (from KundliCard) ────────────────────────────────────────────
@@ -254,7 +254,7 @@ function ZodiacWheel({ planets, lagna, size=190 }: { planets:Record<string,KPlan
       <circle cx={cx} cy={cy} r={outerR} fill={L.surf2} stroke={L.border} strokeWidth={1}/>
       <circle cx={cx} cy={cy} r={innerR} fill={L.bg} stroke={L.border} strokeWidth={1}/>
       {ZODIAC_ABBR.map((abbr,i) => {
-        const sa=(i*30-90)*Math.PI/180, ea=((i+1)*30-90)*Math.PI/180, ma=((i*30+15)-90)*Math.PI/180
+        const sa=(i*30-90)*Math.PI/180, ma=((i*30+15)-90)*Math.PI/180
         const x1=cx+outerR*Math.cos(sa), y1=cy+outerR*Math.sin(sa)
         const x2=cx+innerR*Math.cos(sa), y2=cy+innerR*Math.sin(sa)
         const midR2=(outerR+innerR)/2, lx=cx+midR2*Math.cos(ma), ly=cy+midR2*Math.sin(ma)
@@ -341,7 +341,6 @@ export function ReportPage() {
   const thesis = (d.structured_thesis ?? {}) as Record<string,unknown>  // { verdict, score, bull_signals, bear_signals }
   // holding_trends is a LIST sorted by quarter; latest = last element
   const htList = Array.isArray(d.holding_trends) ? (d.holding_trends as Record<string,unknown>[]) : []
-  const ht   = htList.length > 0 ? htList[htList.length-1] : {}  // latest quarter
   const htPrev = htList.length > 1 ? htList[htList.length-2] : null
 
   const bars = ohlcvData?.bars ?? []
@@ -400,10 +399,10 @@ export function ReportPage() {
                 )}
               </div>
               <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginTop:8 }}>
-                {d.sector && <Chip label={String(d.sector)} color={L.accent}/>}
-                {d.label  && <Chip label={String(d.label)}  color={scoreColor(Number(d.bull_run_score??50))}/>}
-                {ast.astro_action && <Chip label={String(ast.astro_action)} color={SIGNAL_COLOR[String(ast.astro_action)]??L.sub}/>}
-                {tec.trend_signal && <Chip label={String(tec.trend_signal)} color={L.teal}/>}
+                {Boolean(d.sector) && <Chip label={String(d.sector)} color={L.accent}/>}
+                {Boolean(d.label) && <Chip label={String(d.label)} color={scoreColor(Number(d.bull_run_score ?? 50))}/>}
+                {Boolean(ast.astro_action) && <Chip label={String(ast.astro_action)} color={SIGNAL_COLOR[String(ast.astro_action)] ?? L.sub}/>}
+                {Boolean(tec.trend_signal) && <Chip label={String(tec.trend_signal)} color={L.teal}/>}
               </div>
             </div>
             <div style={{ textAlign:'right', flexShrink:0 }}>
@@ -435,14 +434,14 @@ export function ReportPage() {
         </div>
 
         {/* ══ INVESTMENT THESIS ════════════════════════════════════════════ */}
-        {(thesis.verdict || thesis.bull_signals) && (
+        {(Boolean(thesis.verdict) || Boolean(thesis.bull_signals)) && (
           <div className="pb-avoid" style={{ marginBottom:14 }}>
             <SH label="Investment Thesis" accent={L.gold}/>
             <div style={{ background:L.surf, border:`1px solid ${L.border}`, borderRadius:8, padding:'14px 18px', borderLeft:`4px solid ${scoreColor(Number(d.bull_run_score??50))}` }}>
               <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:10, flexWrap:'wrap' }}>
-                {thesis.verdict && <span style={{ fontSize:15, fontWeight:900, letterSpacing:'.06em', color:SIGNAL_COLOR[String(thesis.verdict)]??L.green }}>{String(thesis.verdict)}</span>}
+                {Boolean(thesis.verdict) && <span style={{ fontSize:15, fontWeight:900, letterSpacing:'.06em', color:SIGNAL_COLOR[String(thesis.verdict)]??L.green }}>{String(thesis.verdict)}</span>}
                 {d.bull_run_score != null && <span style={{ fontSize:11, color:L.muted }}>Score <strong style={{ color:scoreColor(Number(d.bull_run_score)), fontFamily:'monospace' }}>{Number(d.bull_run_score).toFixed(1)}</strong> / 100</span>}
-                {thesis.dominant_factor && <Chip label={String(thesis.dominant_factor)} color={L.teal}/>}
+                {Boolean(thesis.dominant_factor) && <Chip label={String(thesis.dominant_factor)} color={L.teal}/>}
               </div>
               {(() => {
                 // bull_signals / bear_signals may arrive as Python repr strings — handle both
@@ -472,7 +471,7 @@ export function ReportPage() {
                   </div>
                 )
               })()}
-              {thesis.ml_note && <div style={{ marginTop:8, fontSize:9.5, color:L.muted, borderTop:`1px solid ${L.border}`, paddingTop:7 }}>{String(thesis.ml_note)}</div>}
+              {Boolean(thesis.ml_note) && <div style={{ marginTop:8, fontSize:9.5, color:L.muted, borderTop:`1px solid ${L.border}`, paddingTop:7 }}>{String(thesis.ml_note)}</div>}
             </div>
           </div>
         )}
@@ -539,8 +538,8 @@ export function ReportPage() {
                 )
               })}
               <div style={{ marginTop:10, paddingTop:8, borderTop:`1px solid ${L.border}`, display:'flex', gap:8, flexWrap:'wrap' }}>
-                {tec.trend_signal && <><span style={{ fontSize:9, color:L.muted }}>Trend:</span><Chip label={String(tec.trend_signal)} color={L.teal}/></>}
-                {tec.vol_20d_avg  && <span style={{ fontSize:9, color:L.muted }}>Avg Vol: <strong style={{ color:L.sub }}>{Number(tec.vol_20d_avg)>=1e6?`${(Number(tec.vol_20d_avg)/1e6).toFixed(2)}M`:Number(tec.vol_20d_avg)>=1e3?`${(Number(tec.vol_20d_avg)/1e3).toFixed(0)}K`:String(tec.vol_20d_avg)}</strong></span>}
+                {Boolean(tec.trend_signal) && <><span style={{ fontSize:9, color:L.muted }}>Trend:</span><Chip label={String(tec.trend_signal)} color={L.teal}/></>}
+                {tec.vol_20d_avg != null && <span style={{ fontSize:9, color:L.muted }}>Avg Vol: <strong style={{ color:L.sub }}>{Number(tec.vol_20d_avg)>=1e6?`${(Number(tec.vol_20d_avg)/1e6).toFixed(2)}M`:Number(tec.vol_20d_avg)>=1e3?`${(Number(tec.vol_20d_avg)/1e3).toFixed(0)}K`:String(tec.vol_20d_avg)}</strong></span>}
               </div>
             </div>
 
@@ -566,8 +565,8 @@ export function ReportPage() {
                   </span>
                 </div>
               ))}
-              {kl.conf_res_1_tags && <div style={{ marginTop:6, fontSize:8.5, color:L.dim }}>R1 tags: {String(kl.conf_res_1_tags)}</div>}
-              {kl.conf_sup_1_tags && <div style={{ marginTop:2, fontSize:8.5, color:L.dim }}>S1 tags: {String(kl.conf_sup_1_tags)}</div>}
+              {Boolean(kl.conf_res_1_tags) && <div style={{ marginTop:6, fontSize:8.5, color:L.dim }}>R1 tags: {String(kl.conf_res_1_tags)}</div>}
+              {Boolean(kl.conf_sup_1_tags) && <div style={{ marginTop:2, fontSize:8.5, color:L.dim }}>S1 tags: {String(kl.conf_sup_1_tags)}</div>}
             </div>
           </div>
         </div>
@@ -674,7 +673,7 @@ export function ReportPage() {
                   <span style={{ fontSize:11, fontWeight:700, color, fontFamily:'monospace' }}>{fmt.safe(val)}</span>
                 </div>
               ))}
-              {agm.key_decision && (
+              {Boolean(agm.key_decision) && (
                 <div style={{ marginTop:10, paddingTop:8, borderTop:`1px solid ${L.border}` }}>
                   <div style={{ fontSize:8, color:L.dim, fontWeight:800, letterSpacing:'.1em', textTransform:'uppercase', marginBottom:5 }}>Last AGM / Board Decision</div>
                   <div style={{ fontSize:9.5, color:L.sub, lineHeight:1.5 }}>{String(agm.key_decision).slice(0,200)}</div>
@@ -707,7 +706,7 @@ export function ReportPage() {
                   </div>
                 ))}
               </div>
-              {ast.astro_reason && (
+              {Boolean(ast.astro_reason) && (
                 <div style={{ padding:'10px 14px', background:L.surf2, borderRadius:6, border:`1px solid ${L.border}` }}>
                   <div style={{ fontSize:8, color:L.purple, fontWeight:800, letterSpacing:'.1em', textTransform:'uppercase', marginBottom:5 }}>Planetary Reasoning</div>
                   <div style={{ fontSize:10.5, color:L.sub, lineHeight:1.6 }}>{String(ast.astro_reason)}</div>

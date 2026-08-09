@@ -2,7 +2,7 @@
  * ChatPage — Phase D v2 -> Phase V-UI (global Veda)
  * Full AI chat UI with persistent history, slash-command palette, and sidebar.
  * POST /api/chat  ->  reply + session_id + intent
- * Persistence: localStorage key "mci_chat_sessions" (up to 60 sessions)
+ * Persistence: browser cache + backend chat history sync (up to 60 sessions shown locally)
  *
  * Voice/session state now lives in vedaStore (shared with the global
  * VedaWidget in AppShell) -- this page is the "detail view": full session
@@ -16,7 +16,22 @@ import {
   useVedaStore, genId, makeTitle, VOICE_LANGS,
   type Msg, type SavedSession,
 } from '../store/vedaStore'
+import {
+  approveKnowledgeDraft,
+  approveRepoCapabilityDraft,
+  createKnowledgeDraft,
+  createRepoCapabilityDraft,
+  discardKnowledgeDraft,
+  type ChatKnowledgeDraft,
+  type ChatRepoCapabilityDraft,
+} from '../api/client'
 import { MessageEvidence } from '../components/veda/MessageEvidence'
+import { KnowledgeReviewPanel, type KnowledgeReviewPayload } from '../components/veda/KnowledgeReviewPanel'
+import {
+  RepoCapabilityReviewPanel,
+  type RepoCapabilityApprovePayload,
+  type RepoCapabilityScanPayload,
+} from '../components/veda/RepoCapabilityReviewPanel'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -450,34 +465,6 @@ function IntentBadge({ intent }: { intent?: string }) {
   )
 }
 
-function ResearchBadge({ research }: { research?: Msg['research'] }) {
-  if (!research || (!research.requested && !research.used && !research.error)) return null
-
-  const label = research.used
-    ? `Research used${research.provider ? `: ${research.provider}` : ''}${research.source_count ? `, ${research.source_count} source${research.source_count === 1 ? '' : 's'}` : ''}${research.cached ? ', cache' : ''}`
-    : research.error
-      ? 'Research was requested, but outside lookup was unavailable'
-      : 'Research mode checked, but no outside source was added'
-
-  const color = research.used ? '#60A5FA' : research.error ? '#F59E0B' : '#94A3B8'
-  const border = research.used ? '#3B82F644' : research.error ? '#F59E0B44' : '#334155'
-
-  return (
-    <div style={{
-      fontSize: 9,
-      color,
-      border: `1px solid ${border}`,
-      background: '#0D1117',
-      borderRadius: 4,
-      display: 'inline-block',
-      padding: '2px 7px',
-      marginBottom: 5,
-    }}>
-      {label}
-    </div>
-  )
-}
-
 function AttachmentPills({
   attachments,
   onRemove,
@@ -568,9 +555,22 @@ function CopyButton({ text }: { text: string }) {
   )
 }
 
-function MessageBubble({ msg, previous }: { msg: Msg; previous?: Msg }) {
+function MessageBubble({
+  msg,
+  previous,
+  saveToKnowledgeEnabled,
+  reviewLoading,
+  onReviewSave,
+}: {
+  msg: Msg
+  previous?: Msg
+  saveToKnowledgeEnabled?: boolean
+  reviewLoading?: boolean
+  onReviewSave?: (msg: Msg, previous?: Msg) => void
+}) {
   const isUser   = msg.role === 'user'
   const isSystem = msg.role === 'system'
+  const canReviewSave = !isUser && saveToKnowledgeEnabled && previous?.role === 'user' && Boolean(msg.intent || msg.research) && !msg.knowledge
   if (isSystem) return (
     <div style={{ textAlign: 'center', padding: '6px 0' }}>
       <span style={{ color: '#334155', fontSize: 10 }}>{msg.content}</span>
@@ -597,6 +597,25 @@ function MessageBubble({ msg, previous }: { msg: Msg; previous?: Msg }) {
         }}>{msg.content}</div>
         <AttachmentPills attachments={msg.attachments} align={isUser ? 'flex-end' : 'flex-start'} />
         {!isUser && <MessageEvidence msg={msg} previous={previous} />}
+        {canReviewSave && (
+          <div style={{ marginTop: 7, display: 'flex', justifyContent: 'flex-start' }}>
+            <button
+              onClick={() => onReviewSave?.(msg, previous)}
+              disabled={reviewLoading}
+              style={{
+                background: reviewLoading ? 'transparent' : '#0D1117',
+                border: '1px solid #334155',
+                color: reviewLoading ? '#64748B' : '#94A3B8',
+                borderRadius: 999,
+                padding: '4px 9px',
+                fontSize: 10,
+                cursor: reviewLoading ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {reviewLoading ? 'Preparing review...' : 'Review to save'}
+            </button>
+          </div>
+        )}
         <div style={{ fontSize: 9, color: '#334155', marginTop: 3, display: 'flex', alignItems: 'center', justifyContent: isUser ? 'flex-end' : 'flex-start', gap: 6 }}>
           {new Date(msg.ts).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
           <CopyButton text={msg.content} />
@@ -624,7 +643,13 @@ export function ChatPage() {
   const followUpListening = useVedaStore(s => s.followUpListening)
   const researchMode      = useVedaStore(s => s.researchMode)
   const researchEnabled   = useVedaStore(s => s.researchEnabled)
+  const researchRuntimeReady = useVedaStore(s => s.researchRuntimeReady)
   const attachmentsEnabled = useVedaStore(s => s.attachmentsEnabled)
+  const saveToKnowledgeEnabled = useVedaStore(s => s.saveToKnowledgeEnabled)
+  const mitRepoIntakeEnabled = useVedaStore(s => s.mitRepoIntakeEnabled)
+  const mcpEnabled = useVedaStore(s => s.mcpEnabled)
+  const mcpServerNames = useVedaStore(s => s.mcpServerNames)
+  const attachmentAccept = useVedaStore(s => s.attachmentAccept)
   const pendingAttachments = useVedaStore(s => s.pendingAttachments)
   const uploadingAttachment = useVedaStore(s => s.uploadingAttachment)
   const apiError          = useVedaStore(s => s.apiError)
@@ -641,19 +666,34 @@ export function ChatPage() {
   const setApiError        = useVedaStore(s => s.setApiError)
   const uploadAttachment   = useVedaStore(s => s.uploadAttachment)
   const removePendingAttachment = useVedaStore(s => s.removePendingAttachment)
+  const markKnowledgeSaved = useVedaStore(s => s.markKnowledgeSaved)
   const refreshCapabilities = useVedaStore(s => s.refreshCapabilities)
   const handleNewChatStore = useVedaStore(s => s.handleNewChat)
   const handleSelectStore  = useVedaStore(s => s.handleSelectSession)
   const handleDeleteStore  = useVedaStore(s => s.handleDeleteSession)
+  const importSessionStore = useVedaStore(s => s.importSession)
 
   // Page-local UI state (each surface, drawer vs full page, owns its own textbox)
   const [input,      setInput]      = useState('')
   const [showSlash,  setShowSlash]  = useState(false)
   const [slashFilter,setSlashFilter]= useState('')
+  const [reviewDraft, setReviewDraft] = useState<ChatKnowledgeDraft | null>(null)
+  const [reviewOpen, setReviewOpen] = useState(false)
+  const [reviewMessageTs, setReviewMessageTs] = useState<number | null>(null)
+  const [reviewLoading, setReviewLoading] = useState(false)
+  const [reviewSubmitting, setReviewSubmitting] = useState(false)
+  const [reviewError, setReviewError] = useState<string | null>(null)
+  const [repoDraft, setRepoDraft] = useState<ChatRepoCapabilityDraft | null>(null)
+  const [repoReviewOpen, setRepoReviewOpen] = useState(false)
+  const [repoLoading, setRepoLoading] = useState(false)
+  const [repoSubmitting, setRepoSubmitting] = useState(false)
+  const [repoError, setRepoError] = useState<string | null>(null)
+  const [repoNotice, setRepoNotice] = useState<string | null>(null)
 
   const bottomRef  = useRef<HTMLDivElement>(null)
   const inputRef   = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const canUseResearch = researchEnabled && researchRuntimeReady
 
   // Reflect the live transcript into the input box while listening (was
   // setInput() directly inside the recognizer's onresult before this was
@@ -716,9 +756,7 @@ export function ChatPage() {
             title: s.title ? `(imported) ${s.title}` : 'Imported Chat',
             updatedAt: Date.now(),
           }
-          const next = [imported, ...sessions]
-          useVedaStore.setState({ sessions: next })
-          try { localStorage.setItem('mci_chat_sessions', JSON.stringify(next.slice(0, 60))) } catch { /* ignore */ }
+          importSessionStore(imported)
           handleSelectSession(imported)
         }
       } catch { /* invalid file */ }
@@ -777,6 +815,113 @@ export function ChatPage() {
     }
   }
 
+  const closeKnowledgeReview = (force = false) => {
+    if (reviewSubmitting && !force) return
+    setReviewOpen(false)
+    setReviewDraft(null)
+    setReviewMessageTs(null)
+    setReviewLoading(false)
+    setReviewError(null)
+  }
+
+  const openKnowledgeReview = async (answerMsg: Msg, previous?: Msg) => {
+    if (!saveToKnowledgeEnabled || previous?.role !== 'user' || answerMsg.knowledge?.status === 'approved') return
+    setReviewOpen(true)
+    setReviewDraft(null)
+    setReviewMessageTs(answerMsg.ts)
+    setReviewLoading(true)
+    setReviewError(null)
+    try {
+      const draft = await createKnowledgeDraft({
+        question: previous.content,
+        answer: answerMsg.content,
+        intent: answerMsg.intent,
+        session_id: backendSid,
+        research: answerMsg.research,
+        attachments: previous.attachments,
+      })
+      setReviewDraft(draft)
+    } catch (err: unknown) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setReviewError(detail ?? 'Could not prepare the review draft.')
+    } finally {
+      setReviewLoading(false)
+    }
+  }
+
+  const approveKnowledgeReview = async (payload: KnowledgeReviewPayload) => {
+    if (!reviewDraft || reviewMessageTs == null) return
+    setReviewSubmitting(true)
+    setReviewError(null)
+    try {
+      const saved = await approveKnowledgeDraft(reviewDraft.draft_id, payload)
+      markKnowledgeSaved(reviewMessageTs, saved)
+      closeKnowledgeReview(true)
+    } catch (err: unknown) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setReviewError(detail ?? 'Could not save this reviewed knowledge.')
+    } finally {
+      setReviewSubmitting(false)
+    }
+  }
+
+  const discardKnowledgeReview = async (draftId: string) => {
+    setReviewSubmitting(true)
+    setReviewError(null)
+    try {
+      await discardKnowledgeDraft(draftId)
+      closeKnowledgeReview(true)
+    } catch (err: unknown) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setReviewError(detail ?? 'Could not discard this review draft.')
+    } finally {
+      setReviewSubmitting(false)
+    }
+  }
+
+  const closeRepoReview = (force = false) => {
+    if (repoSubmitting && !force) return
+    setRepoReviewOpen(false)
+    setRepoDraft(null)
+    setRepoLoading(false)
+    setRepoError(null)
+  }
+
+  const scanRepoCapability = async (payload: RepoCapabilityScanPayload) => {
+    setRepoReviewOpen(true)
+    setRepoDraft(null)
+    setRepoLoading(true)
+    setRepoError(null)
+    setRepoNotice(null)
+    try {
+      const draft = await createRepoCapabilityDraft(payload)
+      setRepoDraft(draft)
+    } catch (err: unknown) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setRepoError(detail ?? 'Could not study this repo yet.')
+    } finally {
+      setRepoLoading(false)
+    }
+  }
+
+  const approveRepoCapability = async (payload: RepoCapabilityApprovePayload) => {
+    if (!repoDraft) return
+    setRepoSubmitting(true)
+    setRepoError(null)
+    try {
+      const saved = await approveRepoCapabilityDraft(repoDraft.draft_id, payload)
+      setRepoNotice(saved.duplicate
+        ? `This MIT repo note was already saved: ${saved.title}`
+        : `MIT repo note saved for Veda: ${saved.title}`)
+      closeRepoReview(true)
+    } catch (err: unknown) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setRepoError(detail ?? 'Could not save this MIT repo note.')
+    } finally {
+      setRepoSubmitting(false)
+    }
+  }
+
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
     <div style={{
@@ -814,12 +959,16 @@ export function ChatPage() {
             </div>
             <div style={{ color: '#334155', fontSize: 9, marginTop: 2 }}>
               Groq / Llama 3.3 70B &nbsp;+&nbsp; RAG (6 domains) &nbsp;+&nbsp; 23 live tools
-              <span style={{ color: researchMode && researchEnabled ? '#60A5FA' : '#64748B' }}>
+              <span style={{ color: researchMode && canUseResearch ? '#60A5FA' : researchEnabled && !researchRuntimeReady ? '#F59E0B' : '#64748B' }}>
                 {' '}|{' '}
                 {researchEnabled
                   ? researchMode
-                    ? 'Research mode: ON'
-                    : 'Research mode: local-first'
+                    ? canUseResearch
+                      ? 'Research mode: ON'
+                      : 'Research mode: temporarily unavailable'
+                    : canUseResearch
+                      ? 'Research mode: local-first'
+                      : 'Research mode: temporarily unavailable'
                   : 'Research mode: unavailable'}
               </span>
               {backendSid && <span style={{ color: '#1E2332' }}> &nbsp;|&nbsp; {backendSid.slice(0, 8)}</span>}
@@ -868,27 +1017,59 @@ export function ChatPage() {
             </button>
             <button
               onClick={() => setResearchMode(!researchMode)}
-              disabled={!researchEnabled}
+              disabled={!canUseResearch}
               title={
-                researchEnabled
+                !researchEnabled
+                  ? 'Research mode is not enabled by the backend yet'
+                  : !researchRuntimeReady
+                    ? 'Research mode is enabled, but no live research provider is available right now.'
+                    : researchEnabled
                   ? researchMode
-                    ? 'Research mode on: Veda may check outside sources when local data is weak'
-                    : 'Research mode off: Veda stays local-first unless the query auto-needs research'
+                    ? `Research mode on: Veda may check outside sources when local data is weak${mcpEnabled ? ` and can fall back to MCP (${mcpServerNames.join(', ') || 'configured servers'}) if needed` : ''}`
+                    : `Research mode off: Veda stays local-first unless the query auto-needs research${mcpEnabled ? '. MCP fallback is ready if research gets triggered.' : ''}`
                   : 'Research mode is not enabled by the backend yet'
               }
               style={{
-                background: researchMode && researchEnabled ? '#1E3A5F' : 'transparent',
-                border: `1px solid ${researchMode && researchEnabled ? '#3B82F6' : '#1E2332'}`,
+                background: researchMode && canUseResearch ? '#1E3A5F' : 'transparent',
+                border: `1px solid ${researchMode && canUseResearch ? '#3B82F6' : '#1E2332'}`,
                 borderRadius: 4,
-                color: researchMode && researchEnabled ? '#60A5FA' : '#334155',
+                color: researchMode && canUseResearch ? '#60A5FA' : researchEnabled && !researchRuntimeReady ? '#F59E0B' : '#334155',
                 fontSize: 9,
                 padding: '3px 8px',
-                cursor: researchEnabled ? 'pointer' : 'not-allowed',
+                cursor: canUseResearch ? 'pointer' : 'not-allowed',
                 fontWeight: 700,
-                opacity: researchEnabled ? 1 : 0.55,
+                opacity: canUseResearch ? 1 : 0.65,
               }}
             >
-              {researchMode ? 'RESEARCH: ON' : 'RESEARCH: OFF'}
+              {!researchEnabled
+                ? 'RESEARCH: OFF'
+                : !researchRuntimeReady
+                  ? 'RESEARCH UNAVAILABLE'
+                  : researchMode
+                    ? 'RESEARCH: ON'
+                    : 'RESEARCH: OFF'}
+            </button>
+            <button
+              onClick={() => { setRepoReviewOpen(true); setRepoError(null); setRepoNotice(null) }}
+              disabled={!mitRepoIntakeEnabled || loading}
+              title={
+                mitRepoIntakeEnabled
+                  ? 'Study a local MIT-licensed repo and save approved capability notes'
+                  : 'MIT repo study is not enabled by the backend yet'
+              }
+              style={{
+                background: repoReviewOpen && mitRepoIntakeEnabled ? '#1F2937' : 'transparent',
+                border: `1px solid ${repoReviewOpen && mitRepoIntakeEnabled ? '#60A5FA' : '#1E2332'}`,
+                borderRadius: 4,
+                color: repoReviewOpen && mitRepoIntakeEnabled ? '#BFDBFE' : '#334155',
+                fontSize: 9,
+                padding: '3px 8px',
+                cursor: mitRepoIntakeEnabled && !loading ? 'pointer' : 'not-allowed',
+                fontWeight: 700,
+                opacity: mitRepoIntakeEnabled ? 1 : 0.55,
+              }}
+            >
+              MIT REPO
             </button>
             {speaking && (
               <button onClick={stopSpeaking} style={{ background: '#1E3A5F', border: '1px solid #3B82F6', borderRadius: 4, color: '#60A5FA', fontSize: 9, padding: '3px 8px', cursor: 'pointer', fontWeight: 700 }}>
@@ -907,7 +1088,16 @@ export function ChatPage() {
           flex: 1, overflowY: 'auto', padding: '16px 20px',
           scrollbarWidth: 'thin', scrollbarColor: '#1E2332 transparent',
         }}>
-          {messages.map((m, i) => <MessageBubble key={i} msg={m} previous={i > 0 ? messages[i - 1] : undefined} />)}
+          {messages.map((m, i) => (
+            <MessageBubble
+              key={i}
+              msg={m}
+              previous={i > 0 ? messages[i - 1] : undefined}
+              saveToKnowledgeEnabled={saveToKnowledgeEnabled}
+              reviewLoading={reviewLoading && reviewMessageTs === m.ts}
+              onReviewSave={openKnowledgeReview}
+            />
+          ))}
           {loading && (
             <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 12 }}>
               <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#1E2332', border: '1px solid #3B82F644', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, marginRight: 8, flexShrink: 0, color: '#60A5FA' }}>AI</div>
@@ -937,6 +1127,13 @@ export function ChatPage() {
           </div>
         )}
 
+        {repoNotice && (
+          <div style={{ margin: '0 20px 8px', padding: '8px 14px', borderRadius: 4, background: '#0F1E30', border: '1px solid #1D4ED8', color: '#BFDBFE', fontSize: 11, flexShrink: 0 }}>
+            {repoNotice}
+            <button onClick={() => setRepoNotice(null)} style={{ float: 'right', background: 'none', border: 'none', color: '#BFDBFE', cursor: 'pointer', fontSize: 12 }}>x</button>
+          </div>
+        )}
+
         {/* Input area */}
         <div style={{ padding: '0 20px 14px', flexShrink: 0, borderTop: '1px solid #1E2332', paddingTop: 12 }}>
           <div style={{ position: 'relative' }}>
@@ -944,7 +1141,7 @@ export function ChatPage() {
               ref={fileInputRef}
               type="file"
               multiple
-              accept=".pdf,.txt,.md,.csv,.json,.png,.jpg,.jpeg,.webp,.gif,.bmp"
+              accept={attachmentAccept}
               style={{ display: 'none' }}
               onChange={async e => {
                 await handleFileSelection(e.target.files)
@@ -1014,8 +1211,10 @@ export function ChatPage() {
                 placeholder={
                   listening
                     ? (followUpListening ? 'Listening for follow-up... speak now' : 'Listening... speak now')
-                    : researchMode && researchEnabled
+                    : researchMode && canUseResearch
                       ? 'Ask anything. Veda can also check outside sources when needed.'
+                      : researchEnabled && !researchRuntimeReady
+                        ? 'Research is temporarily unavailable right now. Ask locally or try again after the provider is back.'
                       : attachmentsEnabled
                         ? 'Ask about markets, sectors, stocks, or attach a file... type / for quick questions'
                         : 'Ask about markets, sectors, stocks... or type / for quick questions'
@@ -1052,6 +1251,26 @@ export function ChatPage() {
           </div>
         </div>
       </div>
+      <KnowledgeReviewPanel
+        open={reviewOpen}
+        draft={reviewDraft}
+        loading={reviewLoading}
+        submitting={reviewSubmitting}
+        error={reviewError}
+        onClose={closeKnowledgeReview}
+        onApprove={approveKnowledgeReview}
+        onDiscard={discardKnowledgeReview}
+      />
+      <RepoCapabilityReviewPanel
+        open={repoReviewOpen}
+        draft={repoDraft}
+        loading={repoLoading}
+        submitting={repoSubmitting}
+        error={repoError}
+        onClose={closeRepoReview}
+        onScan={scanRepoCapability}
+        onApprove={approveRepoCapability}
+      />
     </div>
   )
 }

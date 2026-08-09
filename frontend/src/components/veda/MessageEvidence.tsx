@@ -17,7 +17,7 @@ function pluralize(count: number, singular: string, plural: string) {
 function deriveEvidence(msg: Msg, previous?: Msg | null): EvidenceSummary | null {
   if (msg.role !== 'assistant') return null
   if (!previous || previous.role !== 'user') return null
-  if (!msg.intent && !msg.research) return null
+  if (!msg.intent && !msg.research && !msg.localEvidence) return null
 
   const research = msg.research
   const attachments = previous.attachments ?? []
@@ -27,6 +27,12 @@ function deriveEvidence(msg: Msg, previous?: Msg | null): EvidenceSummary | null
   const researchRequested = Boolean(research?.requested)
   const researchError = Boolean(research?.error)
   const sourceCount = research?.source_count ?? 0
+  const localEvidence = msg.localEvidence
+  const predictiveMlCount = localEvidence?.predictive_ml_count ?? 0
+  const approvedMemoryCount = localEvidence?.approved_memory_count ?? 0
+  const attachmentMemoryCount = localEvidence?.attachment_memory_count ?? 0
+  const repoCount = localEvidence?.repo_count ?? 0
+  const localTopDate = localEvidence?.top_date ?? null
 
   let basisLabel = 'Basis: local platform only'
   if (researchUsed && attachmentCount > 0) {
@@ -35,6 +41,14 @@ function deriveEvidence(msg: Msg, previous?: Msg | null): EvidenceSummary | null
     basisLabel = 'Basis: local data + outside sources'
   } else if (attachmentCount > 0) {
     basisLabel = 'Basis: local data + your files'
+  } else if (predictiveMlCount > 0 && (approvedMemoryCount > 0 || attachmentMemoryCount > 0)) {
+    basisLabel = 'Basis: local ML signals + approved memory'
+  } else if (predictiveMlCount > 0) {
+    basisLabel = 'Basis: local ML signals + platform data'
+  } else if (approvedMemoryCount > 0 || attachmentMemoryCount > 0) {
+    basisLabel = 'Basis: local platform data + approved memory'
+  } else if (repoCount > 0) {
+    basisLabel = 'Basis: local platform data + MIT notes'
   }
 
   let confidenceLabel: EvidenceSummary['confidenceLabel'] = 'High confidence'
@@ -67,11 +81,27 @@ function deriveEvidence(msg: Msg, previous?: Msg | null): EvidenceSummary | null
   } else if (attachmentCount > 0) {
     note = 'Veda used your uploaded files together with local platform data for this answer.'
   }
+  const localNotes: string[] = []
+  if (predictiveMlCount > 0) {
+    localNotes.push('Local predictive ML signals were used as scored evidence, not guaranteed fact.')
+  }
+  if (approvedMemoryCount > 0 || attachmentMemoryCount > 0) {
+    localNotes.push('Approved memory also contributed supporting context.')
+  }
+  if (repoCount > 0) {
+    localNotes.push('Approved MIT capability notes also contributed reusable implementation context.')
+  }
+  if (localTopDate && predictiveMlCount > 0) {
+    localNotes.push(`Main local signal date: ${localTopDate}.`)
+  }
   if (attachmentWarnings) {
     note += ' Some file extraction was partial, so details may need manual checking.'
   }
   if (research?.cached && researchUsed) {
     note += ' The outside lookup came from cache.'
+  }
+  if (localNotes.length) {
+    note += ` ${localNotes.join(' ')}`
   }
 
   const researchLabel = researchUsed
@@ -95,6 +125,187 @@ function deriveEvidence(msg: Msg, previous?: Msg | null): EvidenceSummary | null
     researchLabel,
     attachmentLabel,
   }
+}
+
+function formatLocalSourceMeta(source: NonNullable<Msg['localEvidence']>['sources'][number]) {
+  const parts = [
+    source.source_label,
+    source.evidence_label,
+    source.domain,
+  ]
+  if (source.date) parts.push(source.date)
+  return parts.join(' | ')
+}
+
+function renderLocalSourceDetails(source: NonNullable<Msg['localEvidence']>['sources'][number]) {
+  const details = [
+    source.model_name
+      ? `Model: ${source.model_version ? `${source.model_name}@${source.model_version}` : source.model_name}`
+      : null,
+    source.repo_label ? `Repo: ${source.repo_label}` : null,
+    source.license_name ? `License: ${source.license_name}` : null,
+    source.confidence !== undefined && source.confidence !== null ? `Confidence: ${source.confidence.toFixed(2)}` : null,
+  ].filter(Boolean)
+  return details.join(' | ')
+}
+
+function LocalEvidenceNotes({
+  msg,
+  compact,
+}: {
+  msg: Msg
+  compact?: boolean
+}) {
+  const conflictNote = msg.localEvidence?.conflict_note
+  const freshnessNote = msg.localEvidence?.freshness_note
+  if (!conflictNote && !freshnessNote) return null
+
+  return (
+    <div style={{ display: 'grid', gap: 6, marginTop: 8 }}>
+      {conflictNote && (
+        <div style={{
+          border: '1px solid #F59E0B44',
+          background: '#1A1200',
+          borderRadius: 8,
+          padding: compact ? '6px 8px' : '8px 10px',
+        }}>
+          <div style={{ color: '#FBBF24', fontSize: compact ? 8 : 9, fontWeight: 700 }}>
+            Local conflict note
+          </div>
+          <div style={{ color: '#FDE68A', fontSize: compact ? 9 : 10, marginTop: 4, lineHeight: 1.5 }}>
+            {conflictNote}
+          </div>
+        </div>
+      )}
+      {freshnessNote && (
+        <div style={{
+          border: '1px solid #3B82F644',
+          background: '#0B1220',
+          borderRadius: 8,
+          padding: compact ? '6px 8px' : '8px 10px',
+        }}>
+          <div style={{ color: '#93C5FD', fontSize: compact ? 8 : 9, fontWeight: 700 }}>
+            Freshness note
+          </div>
+          <div style={{ color: '#BFDBFE', fontSize: compact ? 9 : 10, marginTop: 4, lineHeight: 1.5 }}>
+            {freshnessNote}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function LocalEvidenceSources({
+  msg,
+  compact,
+}: {
+  msg: Msg
+  compact?: boolean
+}) {
+  const sources = msg.localEvidence?.sources ?? []
+  if (!sources.length) return null
+
+  return (
+    <div style={{ display: 'grid', gap: 6, marginTop: 8 }}>
+      {sources.map((source, index) => {
+        const detailLine = renderLocalSourceDetails(source)
+        return (
+          <div
+            key={`${source.source_id}-${index}`}
+            style={{
+              border: '1px solid #1E2332',
+              background: '#0D1117',
+              borderRadius: 8,
+              padding: compact ? '7px 8px' : '8px 10px',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'baseline' }}>
+              <div style={{ color: '#E2E8F0', fontSize: compact ? 10 : 11, fontWeight: 700, lineHeight: 1.4 }}>
+                {source.title}
+              </div>
+              {source.rank > 0 && (
+                <div style={{ color: '#475569', fontSize: compact ? 8 : 9 }}>
+                  #{source.rank}
+                </div>
+              )}
+            </div>
+            <div style={{ color: '#64748B', fontSize: compact ? 8 : 9, marginTop: 3, lineHeight: 1.5 }}>
+              {formatLocalSourceMeta(source)}
+            </div>
+            {source.summary && (
+              <div style={{ color: '#94A3B8', fontSize: compact ? 9 : 10, marginTop: 5, lineHeight: 1.5 }}>
+                {source.summary}
+              </div>
+            )}
+            {detailLine && (
+              <div style={{ color: '#60A5FA', fontSize: compact ? 8 : 9, marginTop: 5, lineHeight: 1.5 }}>
+                {detailLine}
+              </div>
+            )}
+            {source.score_meaning && (
+              <div style={{ color: '#C4B5FD', fontSize: compact ? 8 : 9, marginTop: 5, lineHeight: 1.5 }}>
+                Meaning: {source.score_meaning}
+              </div>
+            )}
+            {source.reliability_note && (
+              <div style={{ color: '#FBBF24', fontSize: compact ? 8 : 9, marginTop: 5, lineHeight: 1.5 }}>
+                Reliability: {source.reliability_note}
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function ResearchGovernanceNotes({
+  msg,
+  compact,
+}: {
+  msg: Msg
+  compact?: boolean
+}) {
+  const research = msg.research
+  const governanceNote = research?.used ? research.governance_note : null
+  const conflictNote = research?.used ? research.conflict_note : null
+  if (!governanceNote && !conflictNote) return null
+
+  return (
+    <div style={{ display: 'grid', gap: 6, marginTop: 8 }}>
+      {governanceNote && (
+        <div style={{
+          border: '1px solid #334155',
+          background: '#0D1117',
+          borderRadius: 8,
+          padding: compact ? '6px 8px' : '8px 10px',
+        }}>
+          <div style={{ color: '#CBD5E1', fontSize: compact ? 8 : 9, fontWeight: 700 }}>
+            Research note
+          </div>
+          <div style={{ color: '#94A3B8', fontSize: compact ? 9 : 10, marginTop: 4, lineHeight: 1.5 }}>
+            {governanceNote}
+          </div>
+        </div>
+      )}
+      {conflictNote && (
+        <div style={{
+          border: '1px solid #F59E0B44',
+          background: '#1A1200',
+          borderRadius: 8,
+          padding: compact ? '6px 8px' : '8px 10px',
+        }}>
+          <div style={{ color: '#FBBF24', fontSize: compact ? 8 : 9, fontWeight: 700 }}>
+            Research vs saved memory
+          </div>
+          <div style={{ color: '#FDE68A', fontSize: compact ? 9 : 10, marginTop: 4, lineHeight: 1.5 }}>
+            {conflictNote}
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
 function ResearchSources({
@@ -180,6 +391,30 @@ export function MessageEvidence({
   return (
     <div style={{ marginTop: 8 }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        {msg.knowledge?.status === 'approved' && (
+          <div style={{
+            fontSize: compact ? 8 : 9,
+            color: '#4ADE80',
+            border: '1px solid #22C55E44',
+            background: '#0D1117',
+            borderRadius: 999,
+            padding: compact ? '2px 6px' : '3px 8px',
+          }}>
+            Saved to knowledge
+          </div>
+        )}
+        {(msg.knowledge?.attachment_doc_count ?? 0) > 0 && (
+          <div style={{
+            fontSize: compact ? 8 : 9,
+            color: '#BFDBFE',
+            border: '1px solid #3B82F644',
+            background: '#0D1117',
+            borderRadius: 999,
+            padding: compact ? '2px 6px' : '3px 8px',
+          }}>
+            Document memory added
+          </div>
+        )}
         <div style={{
           fontSize: compact ? 8 : 9,
           color: '#60A5FA',
@@ -212,6 +447,30 @@ export function MessageEvidence({
             {summary.researchLabel}
           </div>
         )}
+        {(msg.localEvidence?.predictive_ml_count ?? 0) > 0 && (
+          <div style={{
+            fontSize: compact ? 8 : 9,
+            color: '#C4B5FD',
+            border: '1px solid #8B5CF644',
+            background: '#0D1117',
+            borderRadius: 999,
+            padding: compact ? '2px 6px' : '3px 8px',
+          }}>
+            Local ML signals
+          </div>
+        )}
+        {((msg.localEvidence?.approved_memory_count ?? 0) + (msg.localEvidence?.attachment_memory_count ?? 0)) > 0 && (
+          <div style={{
+            fontSize: compact ? 8 : 9,
+            color: '#BFDBFE',
+            border: '1px solid #3B82F644',
+            background: '#0D1117',
+            borderRadius: 999,
+            padding: compact ? '2px 6px' : '3px 8px',
+          }}>
+            Approved memory
+          </div>
+        )}
         {summary.attachmentLabel && (
           <div style={{
             fontSize: compact ? 8 : 9,
@@ -228,6 +487,9 @@ export function MessageEvidence({
       <div style={{ marginTop: 6, fontSize: compact ? 9 : 10, color: '#94A3B8', lineHeight: 1.5 }}>
         {summary.note}
       </div>
+      <LocalEvidenceNotes msg={msg} compact={compact} />
+      <LocalEvidenceSources msg={msg} compact={compact} />
+      <ResearchGovernanceNotes msg={msg} compact={compact} />
       <ResearchSources msg={msg} compact={compact} />
     </div>
   )

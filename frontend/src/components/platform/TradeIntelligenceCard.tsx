@@ -268,14 +268,6 @@ function computeTradeSignal(data: Stock): TradeSignal {
 // ─── Sub-components ────────────────────────────────────────────────────────────
 
 function ScoreBar({ score }: { score: number }) {
-  const segments = [
-    { from: 0,  to: 28,  color: '#7F1D1D' },
-    { from: 28, to: 42,  color: '#92400E' },
-    { from: 42, to: 58,  color: '#713F12' },
-    { from: 58, to: 72,  color: '#14532D' },
-    { from: 72, to: 100, color: '#052E16' },
-  ]
-  const active = segments.find(s => score <= s.to) ?? segments[segments.length - 1]
   const color = score >= 72 ? '#22C55E' : score >= 58 ? '#10B981' : score >= 42 ? '#F59E0B' : score >= 28 ? '#F97316' : '#EF4444'
 
   return (

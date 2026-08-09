@@ -11,7 +11,7 @@
  *   AlertLines  — User-defined price alert horizontal lines
  */
 
-import { registerIndicator, IndicatorSeries } from 'klinecharts'
+import { registerIndicator, IndicatorSeries, LineType } from 'klinecharts'
 import type { KLineData, Indicator, IndicatorDrawParams } from 'klinecharts'
 
 // ── VWAP ─────────────────────────────────────────────────────────────────────
@@ -21,7 +21,7 @@ registerIndicator<{ vwap: number | null }>({
   series: IndicatorSeries.Price,
   calcParams: [],
   figures: [{ key: 'vwap', title: 'VWAP', type: 'line' }],
-  styles: { lines: [{ color: '#7b61ff', size: 2 }] },
+  styles: { lines: [{ color: '#7b61ff', size: 2, style: LineType.Solid, dashedValue: [], smooth: false }] },
   calc(dataList: KLineData[]) {
     let cumPV = 0, cumV = 0, lastDay = ''
     return dataList.map(bar => {
@@ -45,7 +45,12 @@ registerIndicator<{ supertrendUp: number | null; supertrendDown: number | null }
     { key: 'supertrendUp',   title: 'ST Bull', type: 'line' },
     { key: 'supertrendDown', title: 'ST Bear', type: 'line' },
   ],
-  styles: { lines: [{ color: '#26a69a', size: 2 }, { color: '#ef5350', size: 2 }] },
+  styles: {
+    lines: [
+      { color: '#26a69a', size: 2, style: LineType.Solid, dashedValue: [], smooth: false },
+      { color: '#ef5350', size: 2, style: LineType.Solid, dashedValue: [], smooth: false },
+    ],
+  },
   calc(dataList: KLineData[], indicator: Indicator) {
     const [period, mult] = indicator.calcParams as [number, number]
     type R = { supertrendUp: number | null; supertrendDown: number | null }
@@ -96,7 +101,7 @@ registerIndicator<{ hma: number | null }>({
   series: IndicatorSeries.Price,
   calcParams: [9],
   figures: [{ key: 'hma', title: 'HMA', type: 'line' }],
-  styles: { lines: [{ color: '#f97316', size: 2 }] },
+  styles: { lines: [{ color: '#f97316', size: 2, style: LineType.Solid, dashedValue: [], smooth: false }] },
   calc(dataList: KLineData[], indicator: Indicator) {
     const [period] = indicator.calcParams as [number]
     return hmaCalc(dataList.map(b => b.close), period).map(v => ({ hma: v }))
@@ -201,7 +206,6 @@ registerIndicator<Record<string, never>>({
   name: 'CorpActions', shortName: '',
   series: IndicatorSeries.Price,
   calcParams: [], figures: [],
-  shouldCheckParamCount: false,
   calc(dataList: KLineData[]) { return dataList.map(() => ({} as Record<string, never>)) },
   draw(params: IndicatorDrawParams<Record<string, never>>): boolean {
     if (!_corpMarks.length) return true
@@ -258,7 +262,6 @@ registerIndicator<Record<string, never>>({
   name: 'AlertLines', shortName: '',
   series: IndicatorSeries.Price,
   calcParams: [], figures: [],
-  shouldCheckParamCount: false,
   calc(dataList: KLineData[]) { return dataList.map(() => ({} as Record<string, never>)) },
   draw(params: IndicatorDrawParams<Record<string, never>>): boolean {
     if (!_alertPrices.length) return true

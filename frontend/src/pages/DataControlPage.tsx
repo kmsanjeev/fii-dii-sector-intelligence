@@ -18,29 +18,6 @@ type ModuleInfo = {
   as_of_date?: string | null
 }
 
-type ProgressInfo = {
-  label: string
-  pct: number
-  n: number
-  total: number
-  elapsed?: string
-  eta?: string
-}
-
-function parseProgress(data: Record<string, unknown>): ProgressInfo | null {
-  if (data.type !== 'progress') return null
-  const line = (data.line as string) ?? ''
-  const labelMatch = line.match(/^(.+?):\s+\d+%\|/)
-  return {
-    label:   labelMatch ? labelMatch[1].trim() : 'Progress',
-    pct:     (data.pct   as number) ?? 0,
-    n:       (data.n     as number) ?? 0,
-    total:   (data.total as number) ?? 0,
-    elapsed: data.elapsed as string | undefined,
-    eta:     data.eta     as string | undefined,
-  }
-}
-
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
     OK:      '#22C55E',
@@ -58,31 +35,6 @@ function StatusBadge({ status }: { status: string }) {
     }}>
       {status}
     </span>
-  )
-}
-
-function ProgressBar({ info }: { info: ProgressInfo }) {
-  const done = info.pct === 100
-  return (
-    <div style={{ padding: '6px 0' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#94A3B8', marginBottom: 3 }}>
-        <span style={{ color: '#F59E0B', fontWeight: 600 }}>{info.label}</span>
-        <span style={{ color: '#64748B' }}>
-          {info.n}/{info.total}
-          {info.elapsed ? ` | ${info.elapsed} elapsed` : ''}
-          {info.eta && !done ? ` | ETA: ${info.eta}` : ''}
-          {done ? ' | complete' : ''}
-        </span>
-      </div>
-      <div style={{ height: 6, backgroundColor: '#1E2332', borderRadius: 3 }}>
-        <div style={{
-          width: `${info.pct}%`, height: 6,
-          backgroundColor: done ? '#22C55E' : '#F59E0B',
-          borderRadius: 3, transition: 'width 0.4s',
-        }} />
-      </div>
-      <div style={{ fontSize: 9, color: '#64748B', marginTop: 2 }}>{info.pct}%</div>
-    </div>
   )
 }
 

@@ -6,7 +6,7 @@
  * Tabs: Overview | Planets | Houses | Dasha | Gann | Report
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../../api/client'
 import { T, FS, FW } from '../../styles/tokens'

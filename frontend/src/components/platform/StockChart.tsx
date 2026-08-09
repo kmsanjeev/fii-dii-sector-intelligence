@@ -58,9 +58,9 @@ export function StockChart({ symbol }: { symbol: string }) {
     if (!chartRef.current) return
     const chart = createChart(chartRef.current, {
       autoSize: true,
-      attributionLogo: false,
       layout: {
         background: { type: ColorType.Solid, color: COLORS.bg },
+        attributionLogo: false,
         textColor: COLORS.dim, fontSize: 10, fontFamily: 'monospace',
       },
       grid: {

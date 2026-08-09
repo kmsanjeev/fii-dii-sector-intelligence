@@ -210,7 +210,7 @@ function RegimeDial({ score, regime }: { score: number; regime: string }) {
       <div style={LABEL}>REGIME METER</div>
       <svg viewBox="0 0 240 130" width="100%" style={{ display: 'block', margin: '8px auto 0', maxWidth: 300 }}>
         <defs>
-          {segs.map(({ from, stops }, i) => (
+          {segs.map(({ stops }, i) => (
             <linearGradient key={i} id={`gr${i}`} x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor={stops[0]} />
               <stop offset="100%" stopColor={stops[1]} />
@@ -1225,7 +1225,7 @@ function NewsSection() {
   const [region, setRegion]   = useState<'ALL'|'INDIA'|'GLOBAL'>('ALL')
   const [showAll, setShowAll] = useState(false)
 
-  const { data, isLoading, refetch, dataUpdatedAt } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ['news'],
     queryFn:  fetchNews,
     refetchInterval: 5 * 60 * 1000,

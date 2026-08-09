@@ -22,7 +22,9 @@ export function SectorDetailPage() {
     <div className="max-w-3xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold" style={{ color: '#E2E8F0' }}>{data.sector}</h1>
-        <div className="text-sm mt-1" style={{ color: '#64748B' }}>{data.rotation_signal} | Score: {data.combined_score.toFixed(1)}</div>
+        <div className="text-sm mt-1" style={{ color: '#64748B' }}>
+          {data.rotation_signal} | Score: {data.combined_score != null ? data.combined_score.toFixed(1) : '--'}
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
