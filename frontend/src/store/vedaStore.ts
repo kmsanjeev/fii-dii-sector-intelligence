@@ -18,12 +18,18 @@
  */
 import { create } from 'zustand'
 import {
+  deleteAllChatSavedSessions,
+  deleteChatSavedSession,
   sendChat,
   resetChatSession,
   fetchChatCapabilities,
+  fetchChatSavedSessions,
+  upsertChatSavedSession,
   uploadChatAttachment,
+  type ChatKnowledgeSaved,
   type ChatCapabilities,
   type ChatAttachmentStub,
+  type ChatLocalEvidenceMeta,
   type ChatResponseData,
   type ChatResearchMeta,
 } from '../api/client'
@@ -37,7 +43,9 @@ export interface Msg {
   intent?: string
   ts: number
   research?: ChatResearchMeta
+  localEvidence?: ChatLocalEvidenceMeta
   attachments?: ChatAttachmentStub[]
+  knowledge?: ChatKnowledgeSaved
 }
 
 export interface SavedSession {
@@ -67,6 +75,9 @@ export function getSpeechRecognition(): SpeechRecognitionLike | null {
 
 const STORAGE_KEY = 'mci_chat_sessions'
 const MAX_SESSIONS = 60
+const DEFAULT_ATTACHMENT_ACCEPT = 'application/pdf,text/*,application/json,image/*'
+const RESEARCH_DISABLED_ERROR = 'Research mode is not enabled by the backend yet.'
+const RESEARCH_NOT_READY_ERROR = 'Research mode is enabled, but no live research provider is available right now.'
 
 export const VOICE_LANGS = [
   { code: 'hi', sttLang: 'hi-IN', label: 'Hindi (Swara)' },
@@ -91,6 +102,17 @@ function loadFollowUpEnabled(): boolean {
 }
 function loadResearchMode(): boolean {
   try { return localStorage.getItem(RESEARCH_MODE_KEY) === 'on' } catch { return false }
+}
+
+function buildAttachmentAccept(prefixes: string[]): string {
+  if (!prefixes.length) return DEFAULT_ATTACHMENT_ACCEPT
+  return prefixes.map(prefix => (
+    prefix.endsWith('/') ? `${prefix}*` : prefix
+  )).join(',')
+}
+
+function isResearchRuntimeReady(caps: ChatCapabilities): boolean {
+  return Boolean(caps.research_enabled && caps.research_runtime_ready)
 }
 
 // Wake words + common mis-hearings; Hindi STT returns Devanagari script.
@@ -174,11 +196,60 @@ export function makeTitle(msgs: Msg[]): string {
 }
 
 function loadSessions(): SavedSession[] {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]') }
+  try { return sortSessions(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]')) }
   catch { return [] }
 }
 function saveSessions(list: SavedSession[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list.slice(0, MAX_SESSIONS)))
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(sortSessions(list)))
+}
+
+function sortSessions(list: SavedSession[]): SavedSession[] {
+  return [...list]
+    .sort((a, b) => (
+      (b.updatedAt ?? 0) - (a.updatedAt ?? 0) ||
+      (b.createdAt ?? 0) - (a.createdAt ?? 0)
+    ))
+    .slice(0, MAX_SESSIONS)
+}
+
+function upsertSessionInList(list: SavedSession[], session: SavedSession): SavedSession[] {
+  return sortSessions([session, ...list.filter(existing => existing.id !== session.id)])
+}
+
+function mergeSavedSessions(
+  localSessions: SavedSession[],
+  remoteSessions: SavedSession[],
+): { merged: SavedSession[]; pendingUpload: SavedSession[] } {
+  const merged = new Map<string, SavedSession>()
+  const pendingUpload: SavedSession[] = []
+
+  for (const session of remoteSessions) {
+    merged.set(session.id, session)
+  }
+  for (const localSession of localSessions) {
+    const remoteSession = merged.get(localSession.id)
+    if (!remoteSession || (localSession.updatedAt ?? 0) > (remoteSession.updatedAt ?? 0)) {
+      merged.set(localSession.id, localSession)
+      pendingUpload.push(localSession)
+    }
+  }
+
+  return {
+    merged: sortSessions(Array.from(merged.values())),
+    pendingUpload: sortSessions(pendingUpload),
+  }
+}
+
+function syncSessionToBackend(session: SavedSession): void {
+  void upsertChatSavedSession(session).catch(() => { /* best-effort */ })
+}
+
+function syncDeleteSessionFromBackend(sessionId: string): void {
+  void deleteChatSavedSession(sessionId).catch(() => { /* best-effort */ })
+}
+
+function syncDeleteAllSessionsFromBackend(): void {
+  void deleteAllChatSavedSessions().catch(() => { /* best-effort */ })
 }
 
 function splitForStaging(text: string): [string, string] {
@@ -203,6 +274,8 @@ let wakeUsed = false
 let greetingUrl: string | null = null
 let fillerUrl: string | null = null
 let audioPrefetchedForLang: string | null = null
+let sessionsHydrated = false
+let sessionsHydrationPromise: Promise<void> | null = null
 
 // Web Audio analyser for the orb's speaking animation (real amplitude, not
 // a canned loop). One AudioContext for the app's lifetime; a fresh
@@ -277,7 +350,15 @@ interface VedaState {
                               // without requiring the wake word again
   researchMode: boolean
   researchEnabled: boolean
+  researchProviderAvailable: boolean
+  researchRuntimeReady: boolean
   attachmentsEnabled: boolean
+  saveToKnowledgeEnabled: boolean
+  mitRepoIntakeEnabled: boolean
+  mcpEnabled: boolean
+  mcpServerNames: string[]
+  supportedAttachmentMimePrefixes: string[]
+  attachmentAccept: string
   pendingAttachments: ChatAttachmentStub[]
   uploadingAttachment: boolean
 
@@ -311,7 +392,10 @@ interface VedaState {
   uploadAttachment: (file: File) => Promise<void>
   removePendingAttachment: (storageKey?: string | null, name?: string) => void
   clearPendingAttachments: () => void
+  markKnowledgeSaved: (messageTs: number, saved: ChatKnowledgeSaved) => void
+  hydrateSavedSessions: () => Promise<void>
   refreshCapabilities: () => Promise<void>
+  importSession: (session: SavedSession) => void
   handleNewChat: () => Promise<void>
   handleSelectSession: (s: SavedSession) => void
   handleDeleteSession: (id: string) => void
@@ -336,7 +420,15 @@ export const useVedaStore = create<VedaState>((set, get) => ({
   followUpEnabled: loadFollowUpEnabled(),
   researchMode:    loadResearchMode(),
   researchEnabled: true,
+  researchProviderAvailable: false,
+  researchRuntimeReady: false,
   attachmentsEnabled: false,
+  saveToKnowledgeEnabled: false,
+  mitRepoIntakeEnabled: false,
+  mcpEnabled: false,
+  mcpServerNames: [],
+  supportedAttachmentMimePrefixes: [],
+  attachmentAccept: DEFAULT_ATTACHMENT_ACCEPT,
   pendingAttachments: [],
   uploadingAttachment: false,
 
@@ -374,7 +466,11 @@ export const useVedaStore = create<VedaState>((set, get) => ({
 
   setResearchMode: (v) => {
     if (v && !get().researchEnabled) {
-      set({ apiError: 'Research mode is not enabled by the backend yet.' })
+      set({ apiError: RESEARCH_DISABLED_ERROR })
+      return
+    }
+    if (v && !get().researchRuntimeReady) {
+      set({ apiError: RESEARCH_NOT_READY_ERROR })
       return
     }
     set({ researchMode: v })
@@ -413,14 +509,76 @@ export const useVedaStore = create<VedaState>((set, get) => ({
 
   clearPendingAttachments: () => set({ pendingAttachments: [] }),
 
+  markKnowledgeSaved: (messageTs, saved) => {
+    let updatedSession: SavedSession | null = null
+    set(state => {
+      const nextMessages = state.messages.map(message => (
+        message.ts === messageTs ? { ...message, knowledge: saved } : message
+      ))
+      let nextSessions = state.sessions
+      const idx = state.sessions.findIndex(session => session.id === state.currentId)
+      if (idx >= 0) {
+        updatedSession = {
+          ...state.sessions[idx],
+          messages: nextMessages,
+          updatedAt: Date.now(),
+        }
+        nextSessions = upsertSessionInList(state.sessions, updatedSession)
+        saveSessions(nextSessions)
+      }
+      return {
+        messages: nextMessages,
+        sessions: nextSessions,
+      }
+    })
+    if (updatedSession) syncSessionToBackend(updatedSession)
+  },
+
+  hydrateSavedSessions: async () => {
+    if (sessionsHydrated) return
+    if (sessionsHydrationPromise) {
+      await sessionsHydrationPromise
+      return
+    }
+
+    sessionsHydrationPromise = (async () => {
+      try {
+        const localSessions = loadSessions()
+        const remotePayload = await fetchChatSavedSessions()
+        const { merged, pendingUpload } = mergeSavedSessions(localSessions, remotePayload.sessions ?? [])
+        saveSessions(merged)
+        set({ sessions: merged })
+        for (const session of pendingUpload) {
+          await upsertChatSavedSession(session)
+        }
+        sessionsHydrated = true
+      } catch {
+        // Best-effort. Local history remains usable if the backend is unavailable.
+      } finally {
+        sessionsHydrationPromise = null
+      }
+    })()
+
+    await sessionsHydrationPromise
+  },
+
   refreshCapabilities: async () => {
     try {
       const caps: ChatCapabilities = await fetchChatCapabilities()
+      const researchRuntimeReady = isResearchRuntimeReady(caps)
       const next: Partial<VedaState> = {
         researchEnabled: caps.research_enabled,
+        researchProviderAvailable: caps.research_provider_available,
+        researchRuntimeReady,
         attachmentsEnabled: caps.attachments_enabled,
+        saveToKnowledgeEnabled: caps.save_to_knowledge_enabled,
+        mitRepoIntakeEnabled: caps.mit_repo_intake_enabled,
+        mcpEnabled: caps.mcp_enabled,
+        mcpServerNames: caps.mcp_server_names,
+        supportedAttachmentMimePrefixes: caps.supported_attachment_mime_prefixes,
+        attachmentAccept: buildAttachmentAccept(caps.supported_attachment_mime_prefixes),
       }
-      if (!caps.research_enabled && get().researchMode) {
+      if ((!caps.research_enabled || !researchRuntimeReady) && get().researchMode) {
         next.researchMode = false
         try { localStorage.setItem(RESEARCH_MODE_KEY, 'off') } catch { /* ignore */ }
       }
@@ -429,6 +587,7 @@ export const useVedaStore = create<VedaState>((set, get) => ({
       // Best-effort. The UI keeps the last known local state if the backend
       // is unavailable during page load.
     }
+    await get().hydrateSavedSessions()
   },
 
   markWakeUsed: () => { wakeUsed = true },
@@ -457,16 +616,25 @@ export const useVedaStore = create<VedaState>((set, get) => ({
     })
   },
 
+  importSession: (session) => {
+    const next = upsertSessionInList(get().sessions, session)
+    saveSessions(next)
+    set({ sessions: next })
+    syncSessionToBackend(session)
+  },
+
   handleDeleteSession: (id) => {
     const next = get().sessions.filter(s => s.id !== id)
     saveSessions(next)
     set({ sessions: next })
+    syncDeleteSessionFromBackend(id)
     if (id === get().currentId) get().handleNewChat()
   },
 
   deleteAllSessions: () => {
     saveSessions([])
     set({ sessions: [], pendingAttachments: [], uploadingAttachment: false })
+    syncDeleteAllSessionsFromBackend()
   },
 
   stopSpeaking: () => {
@@ -502,6 +670,26 @@ export const useVedaStore = create<VedaState>((set, get) => ({
       try {
         const u = new SpeechSynthesisUtterance(t.slice(0, 800))
         u.lang = (VOICE_LANGS.find(l => l.code === lang) ?? VOICE_LANGS[0]).sttLang
+        // Prefer a female voice to match Veda's persona; the primary edge-tts path
+        // uses a named female neural voice -- the browser fallback should too.
+        // Wrapped in its own try/catch: a getVoices() failure must never suppress speech.
+        try {
+          const voices = window.speechSynthesis.getVoices()
+          if (voices.length > 0) {
+            const prefix = u.lang
+            const femaleInLang = voices.find(
+              v => v.lang.startsWith(prefix) &&
+                   (v.name + v.voiceURI).toLowerCase().includes('female'),
+            )
+            const langMatch   = voices.find(v => v.lang.startsWith(prefix))
+            const anyFemale   = voices.find(
+              v => (v.name + v.voiceURI).toLowerCase().includes('female'),
+            )
+            u.voice = femaleInLang ?? langMatch ?? anyFemale ?? null
+          }
+        } catch {
+          // getVoices() unavailable or threw — leave u.voice = null (browser default)
+        }
         u.onend = () => { set({ speaking: false }); resolve() }
         u.onerror = () => { set({ speaking: false }); resolve() }
         set({ speaking: true })
@@ -576,6 +764,7 @@ export const useVedaStore = create<VedaState>((set, get) => ({
           intent: data.intent,
           ts: Date.now(),
           research: data.research,
+          localEvidence: data.local_evidence,
         }],
       }))
       // logTurn (analytics) -- fire and forget, never break chat
@@ -632,10 +821,10 @@ export const useVedaStore = create<VedaState>((set, get) => ({
           createdAt: st.sessions.find(s => s.id === st.currentId)?.createdAt ?? Date.now(),
           updatedAt: Date.now(),
         }
-        const idx = st.sessions.findIndex(s => s.id === st.currentId)
-        const next = idx >= 0 ? st.sessions.map(s => s.id === st.currentId ? session : s) : [session, ...st.sessions]
+        const next = upsertSessionInList(st.sessions, session)
         saveSessions(next)
         set({ sessions: next })
+        syncSessionToBackend(session)
       }
     }
   },
@@ -699,7 +888,20 @@ export const useVedaStore = create<VedaState>((set, get) => ({
       set({ liveTranscript: (finalText + interim).trim() })
       armSilence(SILENCE_MS)
     }
-    recog.onerror = () => { set({ listening: false, followUpListening: false }) }
+    recog.onerror = (ev) => {
+      const errCode = (ev as { error?: string }).error ?? 'unknown'
+      console.warn('[Veda] Speech recognition error:', errCode)
+      set({ listening: false, followUpListening: false })
+      if (errCode === 'not-allowed' || errCode === 'service-not-allowed') {
+        set({ apiError: 'Microphone access denied. Please allow microphone permission in your browser and try again.' })
+        setTimeout(() => set({ apiError: null }), 8000)
+      } else if (errCode === 'no-speech') {
+        // Silence — onend will handle the "did not hear" message
+      } else if (errCode !== 'aborted') {
+        set({ apiError: `Voice recognition error: ${errCode}. Try again or use the mic button.` })
+        setTimeout(() => set({ apiError: null }), 6000)
+      }
+    }
     recog.onend = () => {
       if (silenceTimer) clearTimeout(silenceTimer)
       clearTimeout(hardCap)
@@ -720,7 +922,14 @@ export const useVedaStore = create<VedaState>((set, get) => ({
       set({ liveTranscript: '' })
       get().sendVoiceCommand(spoken)
     }
-    try { recog.start() } catch { set({ listening: false, followUpListening: false }) }
+    try { recog.start() } catch (e) {
+      console.warn('[Veda] Speech recognition start() failed:', e)
+      set({ listening: false, followUpListening: false })
+      if (!isFollowUp) {
+        set({ apiError: 'Could not start voice recognition. Ensure microphone permission is granted and you are using Chrome or Edge.' })
+        setTimeout(() => set({ apiError: null }), 8000)
+      }
+    }
   },
 }))
 
