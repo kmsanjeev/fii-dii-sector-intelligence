@@ -397,6 +397,14 @@ Overall: 100% of full vision complete (Investment Operating System LIVE)
     `_VOICE_ADDENDUM`, intent_router.py `_GREETING_PROMPT`, voice.py
     trailer rewritten as a genuine question, `already_asked` guard against
     double-asking)
+[x] Phase V6 -- Voice stability fixes (2026-08-09):
+    - start.ps1: non-blocking voice warmup, py -3.11 probe reorder,
+      debug logging, startup error capture
+    - voice.py: asyncio.create_task() for edge-tts warmup,
+      English Neerja rate 0% -> +10%, MAX_TTS_CHARS 900 -> 1500,
+      MAX_SPOKEN_SENTENCES 5 -> 8, empty-text fallback, TTS debug logging
+    - vedaStore.ts: Web Speech API onerror surfaces actual error codes,
+      start() catch shows mic permission message
 [x] Phase PF-1 -- Portfolio CSV import (`import_transactions()`,
     `GET/POST /api/portfolio/import*`, PortfolioPage.tsx upload UI)
 
@@ -451,7 +459,7 @@ Overall: 100% of full vision complete (Investment Operating System LIVE)
     current runtime supports image upload, metadata extraction, OCR fallback,
     and OpenAI vision description when that capability is available
 [x] Phase 4 -- source-aware answer rendering in chat UI
-[ ] Phase 5 -- reviewed save-to-knowledge flow
-[ ] Phase 6 -- MIT Git capability intake
-[ ] Phase 7 -- MCP fallback connectors
-[ ] Phase 8 -- live hardening and rollout verification
+[x] Phase 5 -- reviewed save-to-knowledge flow
+[x] Phase 6 -- MIT Git capability intake
+[x] Phase 7 -- MCP fallback connectors
+[x] Phase 8 -- hardening, automated verification, and rollout checklist

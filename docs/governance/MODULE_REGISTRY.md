@@ -1325,8 +1325,35 @@ stack:
   runtime supports it
 - Phase 4 complete -- both chat surfaces now show answer basis, confidence,
   and outside-source links/dates in the actual message UI
-- Remaining Veda research phases are still pending (reviewed memory, MIT Git
-  intake, MCP fallback)
+- Phase 5 complete -- reviewed save-to-knowledge flow now requires explicit
+  approval, stores traceable records, and makes approved memory immediately
+  reusable by Veda
+- Phase 6 complete -- Veda can now inspect local MIT-licensed repos in a
+  controlled review flow, keep license evidence visible, and save only
+  approved capability notes back into reusable memory
+- Phase 7 complete -- Veda now keeps Python-first research as the default path
+  but can fall back to configured MCP research servers through a lightweight
+  stdio client when the primary provider cannot return a usable answer
+- Phase 8 implementation complete -- fallback hardening is in place, chat API
+  coverage is wider, frontend capability sync is tighter, and the rollout
+  checklist for the later human browser/mic QA round is now documented
+- Phase 8 audit follow-up complete -- research runtime readiness now reaches the
+  frontend honestly, the research toggle shows a true unavailable state when
+  outside lookup is down, and focused React coverage now exists for the shared
+  store, evidence layer, and both Veda chat surfaces
+- The currently approved Veda research rollout plan is now fully implemented
+
+## 2026-08-09 Voice Stability Fixes
+
+Veda voice platform stability fixes applied after Kiro AI tool incident:
+
+- **start.ps1**: Non-blocking voice warmup, py -3.11 probe reorder, debug
+  logging, startup error capture — backend now starts reliably
+- **voice.py**: `asyncio.create_task()` for edge-tts warmup (no more startup
+  hang), English Neerja rate 0% -> +10%, MAX_TTS_CHARS 900 -> 1500,
+  MAX_SPOKEN_SENTENCES 5 -> 8, empty-text fallback, TTS debug logging
+- **vedaStore.ts**: Web Speech API `onerror` surfaces actual error codes,
+  `start()` catch shows mic permission message
 
 Affected code paths:
 
@@ -1334,16 +1361,25 @@ Affected code paths:
 - `backend/routers/voice.py`
 - `engines/ai/attachments/`
 - `engines/ai/chatbot/chat_engine.py`
+- `engines/ai/capabilities/service.py`
+- `engines/ai/knowledge/review_service.py`
 - `engines/ai/research/`
+- `engines/ai/research/mcp_client.py`
+- `engines/ai/research/providers/mcp_provider.py`
 - `engines/common/config.py`
 - `engines/common/llm_client.py`
 - `frontend/src/api/client.ts`
+- `frontend/src/components/veda/KnowledgeReviewPanel.tsx`
 - `frontend/src/components/veda/MessageEvidence.tsx`
+- `frontend/src/components/veda/RepoCapabilityReviewPanel.tsx`
 - `frontend/src/components/veda/VedaWidget.tsx`
 - `frontend/src/pages/ChatPage.tsx`
 - `frontend/src/store/vedaStore.ts`
 - `requirements.txt`
 - `start.ps1`
+- `docs/governance/VEDA_PHASE8_ROLLOUT.md`
+- `tests/test_veda_chat_router.py`
+- `tests/test_veda_mcp_provider.py`
 
 ---
 

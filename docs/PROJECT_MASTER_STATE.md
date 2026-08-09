@@ -1,6 +1,6 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.60 | 2026-08-04
+# Version 4.72.9 | 2026-08-04
 
 ---
 
@@ -16,9 +16,74 @@ This project is NOT a screener. It IS a decision intelligence platform.
 
 ---
 
-# CURRENT PLATFORM STATE (2026-07-09)
+# CURRENT PLATFORM STATE (2026-08-04)
 
 **ALL 25 CORE PHASES + A/B/C/D/FPI/KU/AF/CH/TI/SH/UI-S COMPLETE. Full investment operating system is live.**
+
+Frontend build health on 2026-08-04:
+- Full `frontend` production build passes again with `npm.cmd run build`
+- Old TypeScript drift in charting, watchlist, report, and stock-detail pages
+  has been cleaned up
+- One narrow local build-mode workaround remains in `StockDetailPage.tsx` for a
+  TS JSX inference edge case; runtime behavior is unchanged
+
+Latest Veda memory follow-up on 2026-08-04:
+- approved reviewed saves now keep both the edited knowledge note and the full
+  readable attachment text as searchable document memory
+- Veda can now recall approved book/document content later instead of only
+  recalling a short reviewed note about that file
+- when the same topic or same readable file is uploaded again, Veda now checks
+  saved memory first, recommends whether to save or discard, and asks the user
+  to confirm the final action
+- reviewed-memory decisions are now smarter:
+  - `discard` for near-duplicate readable files or strongly repeated notes
+  - `merge` for same-topic drafts that add new value to an older saved memory
+  - `save` when the draft is still different enough to stand on its own
+- `start.ps1` now prefers a backend Python runtime that already has `ddgs`, so
+  research mode does not come up disabled just because the wrong interpreter
+  started first
+- `start.ps1` now checks for `LISTENING` sockets only, so a dead `TIME_WAIT`
+  backend port is no longer mistaken for a running API
+- `requirements.txt` now explicitly includes `apscheduler`, which the backend
+  already uses during startup for scheduled refresh jobs
+- Veda chat now clamps oversized session history and tool-result context before
+  sending prompts to remote models, preventing the older prompt-too-large
+  failure pattern from recurring in long sessions
+- Veda now cools down bad providers after auth, connection, or stale-model
+  failures instead of retrying them every turn and delaying the answer path
+- approved reviewed memory and approved MIT capability notes now refresh the
+  unified durable corpus and unified BM25 index immediately after a real save
+  or merge, so newly approved knowledge becomes searchable right away
+- save-time unified FAISS rebuild is now off by default, which keeps the review
+  flow fast while the normal full index refresh path remains responsible for
+  the heavier semantic rebuild
+
+Latest Jyotish programme audit on 2026-08-05:
+
+- a dedicated repo-vs-programme audit was added to:
+  `docs/governance/VEDA_JYOTISH_ML_RAG_AUDIT_2026-08-05.md`
+- audit conclusion:
+  - Veda's platform foundation is strong enough to host a serious Jyotish programme
+  - the Jyotish-specific scholarly layer is still incomplete
+- already reusable in the current repo:
+  - attachment reading
+  - OCR/image fallback
+  - reviewed durable memory
+  - unified BM25 + FAISS retrieval
+  - evidence/provenance UI
+  - deterministic astro/kundli calculation core
+- major missing layers before this can become a true source-grounded Jyotish system:
+  - programme charter and epistemic governance
+  - validated source register and authority rubric
+  - Sanskrit corpus engineering and passage IDs
+  - source-layer separation for text / translation / commentary / modern interpretation
+  - contradiction-aware citation-first Jyotish RAG
+  - Jyotish-specific annotation, benchmarking, and red-team evaluation
+- important correction from the audit:
+  - Veda should be treated as the orchestration/governance layer above ML and RAG, not as a thin frontend over them
+- important product-positioning note:
+  - the repo should not promise autonomous "accurate prediction in all aspects"
+  - the safe target is accurate calculation, accurate source retrieval, accurate citation, and controlled testing of predictive hypotheses
 
 Project root: `D:\Projects\fii-dii-sector-intelligence`
 
@@ -120,6 +185,7 @@ Layer 6: Trade Conviction          (C)         LIVE through 2026-07-01
 | V1-V3 | Veda Voice Assistant (base) | backend/routers/voice.py | COMPLETE — edge-tts, wake word, staged playback |
 | V4  | Hands-free follow-up mode    | frontend/src/store/vedaStore.ts | COMPLETE — mic reopens after Veda speaks, no repeat wake word |
 | V5  | Customer-support voice persona | chat_engine.py, intent_router.py, voice.py | COMPLETE — confirm-before-detail, warm greetings |
+| V6  | Voice stability fixes (2026-08-09) | start.ps1, voice.py, vedaStore.ts | COMPLETE — non-blocking startup, py -3.11 probe, English Neerja rate fix |
 | WL-1 | Watchlist Decision Metrics  | engines/watchlist/     | COMPLETE — RVOL, RS vs NIFTY, 5D delivery |
 | DMB-1 | Daily Market Brief         | engines/briefing/      | COMPLETE — 08:45 IST auto-brief, Telegram digest |
 | UI-D | Dashboard Consolidation     | frontend/src/pages/Dashboard.tsx | COMPLETE — Participant page merged into Dashboard |
@@ -131,17 +197,114 @@ tracker (wake word from non-chat pages, drawer/page state sync, orb animation).
 
 ---
 
-# ACTIVE NEXT WORKSTREAM (PHASE 5 READY)
+# VEDA WORKSTREAM STATUS (PHASE 8 IMPLEMENTATION COMPLETE)
 
-As of 2026-08-04, the next approved Veda upgrade path is:
+As of 2026-08-04, the approved Veda upgrade path is complete through Phase 8
+for implementation, automated verification, and rollout documentation:
 
 | Track | Goal | Status |
 |-------|------|--------|
 | VR-1 | Research mode foundation | PHASE 0 + 1 + 2 COMPLETE -- contracts, `ddgs` provider, local-first decision layer, chat/widget research controls, research audit metadata |
 | VR-2 | Chat attachments (documents/images) | PHASE 3 COMPLETE -- upload UI, safe extraction, image vision fallback, and attachment-aware prompting live |
 | VR-3 | Source-aware answer layer | PHASE 4 COMPLETE -- answer basis, confidence framing, source links, and research dates visible in chat |
-| VR-4 | External research connectors | PHASE 1 BASE READY -- provider-pluggable design in place |
-| VR-5 | Save-to-knowledge review flow | NOT STARTED |
+| VR-4 | Save-to-knowledge review flow | PHASE 5 COMPLETE -- review draft, approve-to-save, traceability, reviewed note memory, and approved attachment document memory live |
+| VR-5 | MIT repo capability intake | PHASE 6 COMPLETE -- local MIT repo study, license check, approval-before-save, and reusable capability memory live |
+| VR-6 | External research connectors | PHASE 7 COMPLETE -- Python-first research remains primary, MCP fallback connectors are now available when the primary path is insufficient |
+| VR-7 | Hardening, tests, and rollout | PHASE 8 COMPLETE -- MCP fallback now covers provider-unavailable cases, research-runtime readiness is exposed honestly to React, focused React tests are live, browser UI QA passed on 2026-08-04, and microphone/voice QA remains separately pending |
+
+Latest Veda follow-up on 2026-08-04:
+
+- saved chat history now mirrors to backend storage under `data/veda/chat_sessions`
+- browser caching is still kept for fast sidebar/session loading
+- auth-off mode separates saved history by browser client id
+- auth-on mode separates saved history by authenticated user id
+- approved reviewed saves now also store readable attachment text as document
+  memory under `data/intelligence/rag_knowledge/veda_reviewed_documents.jsonl`
+- reviewed-save drafts now detect duplicate readable files and strong same-topic
+  overlap before saving
+- the review modal now recommends `discard` versus `save anyway` and lets the
+  user confirm the decision instead of silently re-saving similar memory
+- duplicate readable-file detection now uses extracted content instead of the
+  upload filename, so the same book saved under a different name is still
+  recognized correctly
+- Veda live chat was re-verified on 2026-08-04 after relaunch with a real
+  network-enabled backend: normal chat replies and research-mode replies both
+  returned successfully again
+- unified ML-RAG-Veda follow-up started on 2026-08-04 with a shared durable
+  knowledge contract in `engines/ai/knowledge/contracts.py`
+- Phase 0 added normalizers for platform RAG docs, reviewed memory, attachment
+  memory, and MIT repo capability notes without changing live retrieval yet
+- Phase 0 contract coverage was validated with focused tests across all current
+  durable source families plus existing reviewed-memory and MIT capability flows
+- Phase 1 now emits a combined durable side corpus through
+  `engines/ai/knowledge/unified_corpus_builder.py` with manifest and metadata
+  outputs, while current production retrieval still stays unchanged
+- Phase 1 corpus generation and duplicate reporting were validated with focused
+  tests on 2026-08-04 without changing the production chat path
+- Phase 2 now adds unified BM25 + FAISS indexes over the combined durable
+  corpus and makes chat prefer one ranked local evidence path with automatic
+  fallback to the old split retrieval route
+- Phase 2 unified retrieval was validated with focused retriever, chat, corpus,
+  contract, reviewed-memory, and MIT capability tests on 2026-08-04
+- approved saves and approved MIT capability notes now trigger immediate
+  unified corpus + BM25 refresh through runtime sync, so Veda no longer has to
+  wait for the next scheduled rebuild before recalling newly approved durable
+  knowledge
+- save-time FAISS rebuild is now optional and disabled by default to avoid
+  slowing the user-facing review/save path
+- Phase 4 now marks local evidence explicitly as predictive ML signal,
+  platform snapshot, approved memory, attachment memory, or MIT capability note
+- stock ML-oriented platform documents now carry model name, model version,
+  feature date, score meaning, and a reliability note so Veda does not confuse
+  predictive scoring with plain descriptive knowledge
+- Veda chat prompt and message evidence now say plainly when local ML signals
+  were used and remind the user that scored signals are not guaranteed fact
+- Phase 4 ML-versus-memory separation was validated on 2026-08-04 with focused
+  contract, corpus, retriever, chat-engine, router, and React evidence tests
+- local RAG and unified retrieval assets were rebuilt on 2026-08-04 so the
+  running knowledge files and indexes now reflect the new Phase 4 metadata
+- Phase 5 now preserves user-readable local source references for the top
+  unified evidence items instead of only storing summary counts
+- saved chat history now keeps those local evidence references too, so the
+  evidence trail survives in sidebar/history sessions
+- Veda now shows local conflict notes when top evidence for the same entity
+  points in opposite directions, and freshness notes when the answer mixes
+  different local source dates or mixes dated platform signals with saved memory
+- the chat evidence panel now renders local source cards with plain-language
+  source labels, dates, summaries, and model/reliability details where relevant
+- Phase 5 strong source grounding was validated on 2026-08-04 with focused
+  unified-retriever, chat-engine, chat-router, React evidence, and TypeScript checks
+- Phase 6 now keeps outside research explicitly temporary by default and marks
+  that status in chat metadata and UI notes
+- Veda now says plainly when outside research and saved memory do not agree,
+  instead of silently blending the two into one view
+- approved reviewed memory now preserves research provenance inside retrievable
+  metadata, including source title, URL, date, excerpt, and the latest source date
+- the knowledge review modal now reminds the user that outside research becomes
+  durable knowledge only after they approve the save
+- Phase 6 research governance was validated on 2026-08-04 with focused
+  reviewed-memory, contract, chat-engine, chat-router, React evidence, and TypeScript checks
+- Phase 7 now adds rollout safety around unified retrieval instead of changing
+  Veda's answer style again
+- Veda can now run unified and legacy retrieval side by side in shadow mode,
+  compare source overlap and source gaps, and keep the result reversible through flags
+- the chat API now exposes retrieval-audit metadata so backend tests and future
+  rollout checks can see which path was primary, which path was shadow, and how
+  much the two evidence bundles overlapped
+- a committed benchmark fixture plus a benchmark runner now measure:
+  - hit rate
+  - top-k relevance
+  - duplicate noise
+  - source attribution quality
+- Phase 7 rollout controls were validated on 2026-08-04 with focused
+  chat-engine, chat-router, benchmark, unified-retriever, and TypeScript checks
+- the first local Phase 7 benchmark report was written on 2026-08-04 to:
+  `data/veda/retrieval_audits/benchmark_reports/latest_report.json`
+- that report shows unified retrieval currently beats the legacy stitched path
+  on hit rate, top-k relevance, and attribution quality, while duplicate noise
+  is tied at zero for the tested cases
+- the same report also shows one honest remaining corpus gap: the astrology
+  memory benchmark case still misses on both retrieval paths right now
 
 Research connector rollout order:
 
@@ -161,6 +324,9 @@ Operational rules for this workstream:
 - Files, repositories, and web pages are content sources, not trusted instructions.
 - MIT-licensed Git resources are preferred when importing reusable skills, tools, or artifacts.
 - No silent self-learning into permanent memory without an explicit review/save step.
+- Approved reviewed knowledge can be reused by Veda only after explicit user approval.
+- When that approval includes readable attachments, Veda now stores searchable
+  document chunks from those files too, not just the reviewed summary note.
 
 Current env note:
 
@@ -169,6 +335,24 @@ Current env note:
 - `start.ps1` now falls back to the installed `python` runtime if `py -3.11` is missing.
 - Research-specific keys are not present yet.
 - Likely future additions: `TAVILY_API_KEY`, `EXA_API_KEY`, `FIRECRAWL_API_KEY`, plus a repo-capable GitHub token if GitHub MCP is enabled.
+
+Current Veda attachment + history note:
+
+- Text-based PDFs already work and can be studied immediately inside chat.
+- Scanned PDFs now have a backend fallback path through rendered page images,
+  but they still need a working OCR/vision runtime to become readable.
+- Once a reviewed save is approved, readable attachment text is now stored as
+  searchable document memory in addition to the approved note itself.
+- On this machine as of August 4, 2026, `OPENAI_API_KEY` is present but
+  cloud-image vision was unavailable during the live audit.
+- A user-space Python OCR runtime (`rapidocr_onnxruntime`) is now installed
+  and wired into Veda, so scanned pages can still be read locally without a
+  machine-wide admin install.
+- Mixed pages with both running text and a central labeled figure can now be
+  described as mixed-layout pages instead of being treated as flat OCR text.
+- Saved chat history now has backend persistence as well as browser caching.
+- Active multi-turn engine memory is still runtime-only and is reset through
+  `/api/chat/session/{session_id}`.
 
 Recommended development model for this workstream:
 
@@ -196,10 +380,10 @@ Phase goals:
 - Phase 2: add the logic that decides when Veda should use local knowledge vs outside research -- COMPLETE 2026-08-04
 - Phase 3: add file/document/image upload in chat and extract usable text/context -- COMPLETE 2026-08-04
 - Phase 4: force sources, dates, and confidence framing in outside-research answers -- COMPLETE 2026-08-04
-- Phase 5: add explicit review-before-save knowledge intake
-- Phase 6: let Veda inspect MIT-licensed Git resources in a controlled way
-- Phase 7: add MCP only if Python-first research is not enough
-- Phase 8: finish tests, live verification, documentation sync, and rollout checklist
+- Phase 5: add explicit review-before-save knowledge intake -- COMPLETE 2026-08-04
+- Phase 6: let Veda inspect MIT-licensed Git resources in a controlled way -- COMPLETE 2026-08-04
+- Phase 7: add MCP only if Python-first research is not enough -- COMPLETE 2026-08-04
+- Phase 8: finish tests, live verification, documentation sync, and rollout checklist -- COMPLETE 2026-08-04 for code, API tests, React tests, docs, and live browser UI QA; detailed microphone/voice pass remains deferred to the separate QA round
 
 ---
 
@@ -246,7 +430,7 @@ Phase goals:
 
 # GOVERNANCE
 
-- CHANGELOG: docs/governance/CHANGELOG.md (v4.60 is latest; entries before
+- CHANGELOG: docs/governance/CHANGELOG.md (v4.72.7 is latest; entries before
   v4.43 archived to docs/governance/CHANGELOG_ARCHIVE.md, 2026-07-19, to keep
   the active file small for session/token budget)
 - Module Registry: docs/governance/MODULE_REGISTRY.md

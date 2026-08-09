@@ -1,8 +1,1287 @@
 # CHANGELOG
 
+## 2026-08-09 | Veda voice platform stability fixes
+
+### Root Cause Analysis
+Veda stopped working after user ran Amazon Kiro AI tool (Aug 5-6). Audit of 77
+files with 18,975 uncommitted changes revealed two independent failure modes:
+
+1. **Backend startup hang** — `voice.validate_voices_on_startup()` made 16
+   sequential network calls to Microsoft edge-tts during startup, blocking
+   the FastAPI event loop indefinitely. The startup never completed.
+2. **Python version selection** — `start.ps1` probed Python candidates with
+   `*> $null` suppressing errors. `py -3.11` probe failed because `ddgs`
+   (duckduckgo-search) was missing, causing fallback to system Python 3.14
+   which lacks project dependencies.
+
+### Fixes Applied
+- **start.ps1**: Reordered candidates so `py -3.11` always preferred over
+  system Python; added debug logging for probe selection and error capture;
+  added startup error log redirect for diagnostics
+- **voice.py**: Made `validate_voices_on_startup()` non-blocking via
+  `asyncio.create_task()` — edge-tts network calls no longer block backend
+  startup; TTS cache warms in background after server is live
+- **vedaStore.ts**: Fixed silent `onerror` handler in Web Speech API — now
+  surfaces actual error codes (not-allowed, network, etc.) to user UI
+  instead of generic "did not hear anything" message
+- **voice.py English fixes**: Increased Neerja rate from 0% to +10% (was
+  robotic), increased MAX_TTS_CHARS from 900 to 1500, increased
+  MAX_SPOKEN_SENTENCES from 5 to 8, added empty-text fallback, added
+  debug logging to TTS endpoint
+
+### Commit History
+- `d7c634f` fix(startup): non-blocking voice warmup + py -3.11 probe reorder
+- `98be7a2` fix(voice): surface Web Speech API errors instead of silent swallow
+- `45c52f3` fix(voice): improve English Neerja TTS + add debug logging
+
+### Validation
+- All 8 diagnostic steps pass with py -3.11 (debug_kundli.py)
+- Backend starts successfully via start.ps1/start.bat
+- Hindi Swara voice working
+- English Neerja voice working (rate +10%, improved sentence cap)
+- Speech recognition errors now visible in UI and console
+
+### Lessons Learned
+- Never make network calls in synchronous startup events — always use
+  asyncio.create_task() for non-critical warmup tasks
+- Python launcher `py` may default to wrong version — always test probes
+  without `*> $null` to see actual errors
+- Web Speech API `onerror` handler must surface error codes, not just
+  clear state — otherwise users see generic messages with no fix path
+
+## 2026-08-05 | Veda Jyotish ML-RAG programme audit
+
+- Added a repo-vs-programme audit for the proposed Jyotish training stack:
+  - `docs/governance/VEDA_JYOTISH_ML_RAG_AUDIT_2026-08-05.md`
+- Audit conclusion:
+  - Veda's generic platform foundation is strong
+  - Jyotish-specific scholarly corpus/governance is still largely unbuilt
+- Confirmed reusable strengths already present in the repo:
+  - attachment ingestion
+  - OCR/image fallback
+  - reviewed save-to-knowledge flow
+  - unified BM25 + FAISS retrieval
+  - evidence/provenance rendering
+  - research-mode governance
+  - deterministic astrology calculation base
+- Confirmed major Jyotish gaps still remaining:
+  - no validated source register
+  - no edition/passage/source-layer contract
+  - no Sanskrit corpus engineering pipeline
+  - no contradiction-aware citation-first Jyotish RAG
+  - no Jyotish-specific annotation/evaluation framework
+- Flagged a design correction:
+  - Veda should remain the orchestration and governance layer above ML and RAG
+  - the programme should not be positioned as an autonomous guaranteed-prediction engine
+- Flagged current repo risks for a future implementation pass:
+  - ASTRO prompt rules still include hardcoded source-like claims
+  - Kundli interpretation tables still live mostly as code, not edition-cited corpus records
+  - the ASTRO module is still explicitly documented as experimental/incomplete
+- External research references were added inside the audit note for:
+  - RAG / DPR / BEIR
+  - TEI / IIIF
+  - GRETIL / Pingree-style cataloguing / Sanskrit Heritage
+  - IndicTrans2 / SanskritShala / RAGAS / NIST AI RMF
+  - empirical caution on astrology claims
+- Validation method on 2026-08-05:
+  - local doc/code audit of Veda, ASTRO, unified retrieval, contract, and Kundli layers
+  - external source review for corpus, governance, and retrieval best-practice references
+
+## 2026-08-04 | Veda Unified Retrieval Save Sync Hardening
+
+- Approved reviewed memory and approved MIT capability notes now trigger an
+  immediate unified retrieval refresh after a real save or merge.
+- The save-time refresh now rebuilds:
+  - unified durable corpus
+  - unified BM25 index
+- Save-time unified FAISS rebuild is now optional and off by default through
+  `VEDA_UNIFIED_FAISS_SYNC_ON_SAVE=false`.
+- This keeps the review/save flow fast and removes the older gap where approved
+  knowledge could exist on disk but remain missing from unified retrieval until
+  the next manual or scheduled rebuild.
+- Added explicit runtime sync coverage for:
+  - sync disabled
+  - BM25-only partial success when FAISS is unavailable
+  - default FAISS skip-on-save behavior
+- Validation on 2026-08-04:
+  - `python -m py_compile engines/ai/knowledge/unified_runtime_sync.py engines/ai/knowledge/unified_faiss_indexer.py engines/ai/knowledge/review_service.py engines/ai/capabilities/service.py engines/common/config.py tests/test_veda_unified_runtime_sync.py` -> passed
+  - `python -m pytest tests/test_veda_unified_runtime_sync.py -q` -> `3 passed`
+  - `python -m pytest tests/test_veda_knowledge_review_service.py tests/test_veda_repo_capability_service.py -q` -> `15 passed`
+  - `python -m pytest tests/test_veda_knowledge_contract.py tests/test_veda_unified_corpus_builder.py -q` -> `8 passed`
+
+## 2026-08-04 | Veda Unified ML-RAG Phase 7
+
+- Added Phase 7 rollout controls for unified retrieval:
+  - shadow-mode comparison between unified and legacy retrieval
+  - reversible runtime flags
+  - optional shadow audit logging
+- Added a structured legacy retrieval bundle so the old stitched path can now
+  be compared fairly against the unified path instead of only returning plain
+  prompt text.
+- Added retrieval audit metadata on the chat API response with:
+  - configured primary mode
+  - resolved primary mode
+  - overlap count and overlap rate
+  - duplicate-noise and attribution-quality scores
+  - primary-only and shadow-only source gaps
+- Added a benchmark helper plus a committed benchmark fixture covering:
+  - market
+  - sector
+  - stock
+  - astrology
+  - uploaded-book recall
+  - MIT capability reuse
+  - freshness-sensitive local questions
+- Validation on 2026-08-04:
+  - `python -m py_compile engines/ai/chatbot/chat_engine.py engines/ai/knowledge/retrieval_rollout.py engines/ai/knowledge/retrieval_benchmark.py backend/routers/chat.py` -> passed
+  - `python -m pytest tests/test_veda_chat_engine.py tests/test_veda_chat_router.py tests/test_veda_retrieval_benchmark.py tests/test_veda_unified_retriever.py -q` -> `26 passed`
+  - `npx.cmd tsc --pretty false --noEmit -p tsconfig.app.json` -> passed
+  - `python -m engines.ai.knowledge.retrieval_benchmark` -> report written to `data/veda/retrieval_audits/benchmark_reports/latest_report.json`
+- Local benchmark snapshot on 2026-08-04:
+  - unified hit rate `0.857` vs legacy `0.714`
+  - unified top-k relevance `0.679` vs legacy `0.607`
+  - unified source attribution quality `1.000` vs legacy `0.833`
+  - duplicate noise tied at `0.000`
+  - remaining open content gap: the astrology-memory benchmark case still missed on both paths with the current local corpus
+
+## 2026-08-04 | Veda Unified ML-RAG Phase 6
+
+- Added research-mode governance metadata so outside research now carries:
+  - temporary-by-default status
+  - review-required-to-save status
+  - optional conflict note
+  - plain governance note
+- Veda now flags when outside research and saved memory pull in different directions instead of silently blending them.
+- Approved reviewed memory now preserves research provenance inside retrievable doc metadata:
+  - research source title
+  - research source URL
+  - research date
+  - research excerpt
+  - latest research date
+  - research conflict/governance notes when present
+- The normalized knowledge contract now carries that research provenance forward in reviewed-memory provenance details.
+- The chat evidence panel now tells the user in simple language when:
+  - outside research is still temporary
+  - outside research conflicts with saved memory
+- The save-to-knowledge review panel now says clearly that outside research becomes durable knowledge only after approval.
+- Validation on 2026-08-04:
+  - `python -m pytest tests/test_veda_knowledge_review_service.py tests/test_veda_knowledge_contract.py tests/test_veda_chat_engine.py tests/test_veda_chat_router.py` -> `32 passed`
+  - `npm.cmd run test -- MessageEvidence KnowledgeReviewPanel` -> `7 passed`
+  - `npx.cmd tsc --pretty false --noEmit -p tsconfig.app.json` -> passed
+  - `python -m py_compile engines/ai/research/schemas.py engines/ai/chatbot/chat_engine.py engines/ai/knowledge/review_service.py engines/ai/knowledge/contracts.py backend/routers/chat.py` -> passed
+
+## 2026-08-04 | Veda Unified ML-RAG Phase 5
+
+- Added strong local source grounding for Veda's unified local evidence path.
+- Unified retrieval now preserves user-readable local source references with:
+  - source id
+  - source label
+  - evidence label
+  - domain
+  - date
+  - short summary
+  - model metadata when the evidence is predictive ML
+- Added cautious local conflict and freshness notes:
+  - Veda now flags when top local evidence for the same entity points in opposite directions
+  - Veda now warns when the answer mixes different source dates or mixes dated platform signals with saved memory
+- Chat responses and saved chat history now preserve these local source references, so the chat sidebar/history no longer loses the evidence trail for saved conversations.
+- The React evidence panel now shows:
+  - local source cards
+  - conflict notes
+  - freshness notes
+  - model/version/reliability details for local ML-backed evidence
+- Validation on 2026-08-04:
+  - `python -m pytest tests/test_veda_unified_retriever.py tests/test_veda_chat_engine.py tests/test_veda_chat_router.py` -> `19 passed`
+  - `npm.cmd run test -- MessageEvidence` -> `3 passed`
+  - `npx.cmd tsc --pretty false --noEmit -p tsconfig.app.json` -> passed
+
+## 2026-08-04 | Veda Unified ML-RAG Phase 4
+
+- Added explicit local evidence typing so Veda can distinguish:
+  - `predictive_ml_signal`
+  - `platform_signal_snapshot`
+  - `approved_memory`
+  - `attachment_memory`
+  - `mit_repo_capability`
+- Stock ML-heavy platform documents now carry:
+  - model name
+  - model version
+  - feature date
+  - score meaning
+  - reliability note
+- Unified retrieval context now tells Veda in plain language when a result is a predictive ML signal versus saved knowledge.
+- Chat prompt rules now force Veda to keep ML output separate from approved memory, uploaded-file memory, and outside research.
+- Chat responses and saved chat messages now preserve a small local evidence summary so the UI can say when local ML signals were part of the answer basis.
+- Local runtime sync completed on 2026-08-04 by rerunning `python -m engines.ai.knowledge.index_updater`, which refreshed the platform docs, unified corpus, BM25, and FAISS assets.
+- Validation on 2026-08-04:
+  - `python -m pytest tests/test_veda_knowledge_contract.py tests/test_veda_unified_corpus_builder.py tests/test_veda_unified_retriever.py tests/test_veda_chat_engine.py tests/test_veda_chat_router.py` -> `26 passed`
+  - `npm.cmd run test -- MessageEvidence KnowledgeReviewPanel` -> `5 passed`
+
+## 2026-08-04 | Veda Reviewed Memory Phase 3
+
+- Added three reviewed-memory recommendations for Veda drafts: `save`, `merge`, and `discard`.
+- Added explicit approval decisions so `Save Anyway` always forces a normal save, while same-topic updates can merge into an existing approved memory safely.
+- Added smarter same-topic detection using overlap plus semantic similarity, with noise filtering so simple rewording does not look like new knowledge.
+- Added merge-aware validation for:
+  - `tests/test_veda_knowledge_review_service.py`
+  - `tests/test_veda_chat_router.py`
+  - `frontend/src/test/KnowledgeReviewPanel.test.tsx`
+- Validation on 2026-08-04:
+  - `python -m pytest tests/test_veda_knowledge_review_service.py tests/test_veda_chat_router.py` -> `17 passed`
+  - `npm.cmd run test -- KnowledgeReviewPanel` -> `2 passed`
+
 ## Project
 
 Capital Flow Intelligence Platform
+
+---
+
+# Version 4.72.5
+
+Veda unified retrieval: one ranked local evidence path with safe fallback
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This phase removes the biggest remaining architectural gap in Veda's local
+knowledge path.
+
+Before this change, Veda assembled local context by stitching together three
+different lookups inside chat: reviewed memory, MIT repo capability notes, and
+the legacy platform hybrid retriever. That worked, but it was not a real shared
+retrieval system.
+
+Now Veda can index the unified durable corpus through unified BM25 and unified
+FAISS, rank all local evidence through one hybrid retriever, and use that
+resulting context directly in chat. The old split path still exists as an
+automatic fallback so the rollout remains safe.
+
+## Changes
+
+- `engines/ai/knowledge/unified_bm25_indexer.py`
+  - added unified keyword indexing over the combined durable corpus
+- `engines/ai/knowledge/unified_faiss_indexer.py`
+  - added unified semantic indexing over the combined durable corpus
+- `engines/ai/knowledge/unified_retriever.py`
+  - added one hybrid retriever for platform docs, approved memory, attachment
+    memory, and MIT capability notes
+- `engines/ai/chatbot/chat_engine.py`
+  - now prefers unified retrieval first
+  - keeps the old split retrieval path as automatic fallback
+- `engines/ai/knowledge/index_updater.py`
+  - now attempts unified BM25 and unified FAISS index builds after unified
+    corpus generation
+- `engines/common/config.py`
+  - added unified retrieval paths and feature flags
+- `tests/test_veda_unified_retriever.py`
+  - added focused ranking/context coverage for unified retrieval
+- `tests/test_veda_chat_engine.py`
+  - added coverage that chat prefers unified retrieval when available
+
+## Verification
+
+- `python -m py_compile engines\\ai\\knowledge\\unified_bm25_indexer.py engines\\ai\\knowledge\\unified_faiss_indexer.py engines\\ai\\knowledge\\unified_retriever.py engines\\ai\\chatbot\\chat_engine.py tests\\test_veda_unified_retriever.py tests\\test_veda_chat_engine.py`
+  passed
+- `python -m pytest tests\\test_veda_unified_retriever.py tests\\test_veda_chat_engine.py tests\\test_veda_unified_corpus_builder.py tests\\test_veda_knowledge_contract.py tests\\test_veda_knowledge_review_service.py tests\\test_veda_repo_capability_service.py -q`
+  passed: `24 passed`
+
+## Docs updated
+
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/governance/CHANGELOG.md`
+- `docs/governance/VEDA_KNOWLEDGE_CONTRACT.md`
+- `docs/governance/VEDA_UNIFIED_RETRIEVAL.md`
+- `docs/governance/VEDA_UNIFIED_ML_RAG_PLAN_2026-08-04.md`
+
+---
+
+# Version 4.72.4
+
+Veda unified knowledge foundation: Phase 1 combined durable corpus builder
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This phase builds the first combined durable knowledge corpus for Veda without
+changing the live retrieval path.
+
+Platform RAG documents, approved reviewed memory, and approved MIT repo
+capability notes can now be normalized into one shared evidence shape and
+written into a unified side corpus. The current BM25/FAISS production pipeline
+still runs exactly as before, and the unified corpus is produced as a safe
+parallel artifact for inspection and later retrieval migration.
+
+## Changes
+
+- `engines/ai/knowledge/unified_corpus_builder.py`
+  - added the combined durable corpus builder
+  - emits unified documents, manifest, and metadata artifacts
+  - reports duplicate groups and missing critical fields
+- `engines/common/config.py`
+  - added unified corpus output paths
+- `engines/ai/knowledge/index_updater.py`
+  - now builds the unified corpus as a non-blocking side artifact
+- `tests/test_veda_unified_corpus_builder.py`
+  - added coverage for combined-corpus generation and duplicate reporting
+- `docs/governance/VEDA_KNOWLEDGE_CONTRACT.md`
+  - documented how the Phase 0 contract feeds Phase 1 outputs
+
+## Verification
+
+- `python -m py_compile engines\\ai\\knowledge\\unified_corpus_builder.py tests\\test_veda_unified_corpus_builder.py`
+  passed
+- `python -m pytest tests\\test_veda_unified_corpus_builder.py tests\\test_veda_knowledge_contract.py tests\\test_veda_knowledge_review_service.py tests\\test_veda_repo_capability_service.py -q`
+  passed: `18 passed`
+
+## Docs updated
+
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/governance/CHANGELOG.md`
+- `docs/governance/VEDA_KNOWLEDGE_CONTRACT.md`
+- `docs/governance/VEDA_UNIFIED_ML_RAG_PLAN_2026-08-04.md`
+
+---
+
+# Version 4.72.3
+
+Veda unified knowledge foundation: Phase 0 shared contract and normalizers
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This change starts the unified ML-RAG-Veda program without touching live chat
+retrieval yet.
+
+The immediate problem was structural, not prompt-related: platform intelligence,
+reviewed memory, attachment memory, and MIT repo capability notes were all
+durable knowledge, but they did not share one formal evidence contract.
+
+Phase 0 fixes that foundation first. A shared schema now exists for durable
+Veda knowledge, along with normalizers that can map the current record shapes
+into one common evidence form. This keeps current behavior stable while
+preparing Phase 1 unified-corpus work.
+
+## Changes
+
+- `engines/ai/knowledge/contracts.py`
+  - added the shared durable-knowledge contract
+  - added normalized structures for entity keys, freshness, provenance, and
+    evidence records
+  - added normalizers for platform docs, reviewed memory, attachment chunks,
+    and MIT repo capability notes
+- `engines/common/config.py`
+  - added `VEDA_KNOWLEDGE_CONTRACT_VERSION`
+- `tests/test_veda_knowledge_contract.py`
+  - added contract normalization coverage across all current durable source
+    families
+- `docs/governance/VEDA_KNOWLEDGE_CONTRACT.md`
+  - documented the contract in plain language
+
+## Verification
+
+- `python -m py_compile engines\\ai\\knowledge\\contracts.py tests\\test_veda_knowledge_contract.py`
+  passed
+- `python -m pytest tests\\test_veda_knowledge_contract.py tests\\test_veda_knowledge_review_service.py tests\\test_veda_repo_capability_service.py -q`
+  passed: `16 passed`
+
+## Docs updated
+
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/governance/CHANGELOG.md`
+- `docs/governance/VEDA_KNOWLEDGE_CONTRACT.md`
+- `docs/governance/VEDA_UNIFIED_ML_RAG_PLAN_2026-08-04.md`
+
+---
+
+# Version 4.72.2
+
+Veda live-chat recovery follow-up: provider failover hardened and long-session prompt size capped
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This follow-up fixes the main reason Veda could still look broken even after
+research mode, file reading, and reviewed memory were implemented correctly.
+
+There were two practical issues:
+
+- the local launcher/runtime path could start Veda in an environment that
+  blocked or mismatched remote model access
+- the chat engine would keep retrying clearly bad providers and could still
+  build prompts that grew too large in long sessions
+
+Veda now handles that path more cleanly. The chat engine prefers the providers
+that actually worked in this runtime, cools down bad providers after auth,
+connection, or stale-model failures, and bounds history/tool-result size before
+making remote calls.
+
+After relaunching the backend with real network access on 2026-08-04, both
+normal chat and research-mode replies were verified live again.
+
+## Changes
+
+- `engines/ai/chatbot/chat_engine.py`
+  - reordered provider preference toward the providers that were currently
+    working in this runtime
+  - added cooldown handling for auth failures, connection failures, and stale
+    provider/model failures
+  - bounded stored chat history and outgoing prompt/history size
+  - bounded final tool-result context before the last model call
+- `engines/common/config.py`
+  - added Veda chat limits for history size, message size, system-prompt size,
+    tool-result size, and provider cooldown timings
+- `tests/test_veda_chat_engine.py`
+  - added coverage for auth-failure cooldown handling
+  - added coverage for bounded history/message sizing
+
+## Verification
+
+- `python -m py_compile engines\\common\\config.py engines\\ai\\chatbot\\chat_engine.py tests\\test_veda_chat_engine.py`
+  passed
+- `python -m pytest tests\\test_veda_chat_engine.py tests\\test_veda_chat_router.py tests\\test_veda_knowledge_review_service.py -q`
+  passed: `19 passed`
+- Live backend recovery check on 2026-08-04 after unsandboxed relaunch:
+  - plain chat reply succeeded
+  - research-mode reply succeeded with `ddgs` and 5 returned sources
+
+## Docs updated
+
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/governance/CHANGELOG.md`
+- `docs/modules/AI_PLATFORM.md`
+
+---
+
+# Version 4.72.1
+
+Veda memory review follow-up: duplicate-topic saves now become a user-confirmed decision
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This follow-up improves the practical case where a user asks Veda to read a
+book or note on a topic that may already exist in reviewed memory.
+
+Veda now checks saved reviewed memory before a new reviewed-save is approved.
+If the same readable file was already saved, or if a very strong same-topic
+memory already exists, Veda does not blindly save again. Instead, the review
+step now recommends the better action and asks the user to confirm whether to
+discard the draft or save it anyway.
+
+This keeps memory growth cleaner and makes the "same topic already exists"
+scenario easier to manage in normal chat use.
+
+Exact duplicate file detection is now based on readable extracted content, not
+the upload filename, so renaming a book no longer bypasses the duplicate check.
+
+## Changes
+
+- `engines/ai/knowledge/review_service.py`
+  - reviewed-save draft creation now checks approved memory for same-topic
+    overlap and exact duplicate readable attachments
+  - review drafts now carry related saved matches, a recommended action, and a
+    human-readable reason
+  - exact duplicate attachment detection now uses readable content fingerprints
+    instead of file names
+  - added reviewed-draft discard support
+- `backend/routers/chat.py`
+  - knowledge draft responses now expose existing matches and save/discard
+    recommendation metadata
+  - added `DELETE /api/chat/knowledge/draft/{draft_id}` to discard a reviewed
+    save draft
+- `frontend/src/api/client.ts`
+  - added typing and client helper support for duplicate-memory review data and
+    draft discard
+- `frontend/src/components/veda/KnowledgeReviewPanel.tsx`
+  - review modal now shows similar saved memory, recommendation text, and clear
+    `Discard Draft` / `Save Anyway` user choices
+- `frontend/src/pages/ChatPage.tsx`
+- `frontend/src/components/veda/VedaWidget.tsx`
+  - both chat surfaces now support discarding a reviewed-save draft directly
+- `start.ps1`
+  - launcher now prefers a Python runtime that has both backend dependencies
+    and `ddgs`, so research mode does not stay unavailable because the wrong
+    interpreter started the API
+  - port checks now match only `LISTENING`, so a dead `TIME_WAIT` socket is no
+    longer mistaken for a live backend
+- `requirements.txt`
+  - now explicitly lists `apscheduler`, which the backend already imports on
+    startup for refresh scheduling
+- `tests/test_veda_knowledge_review_service.py`
+  - added coverage for exact duplicate files, strong same-topic overlap, and
+  reviewed-draft discard
+- `tests/test_veda_chat_router.py`
+  - added API coverage for duplicate-memory recommendation payloads and draft
+    discard
+- `frontend/src/test/KnowledgeReviewPanel.test.tsx`
+  - added React coverage for the new save-versus-discard confirmation UI
+- `frontend/src/test/VedaSurfaces.test.tsx`
+  - updated API mocks for the reviewed-draft discard flow
+
+## Verification
+
+- `python -m py_compile backend\\routers\\chat.py engines\\ai\\knowledge\\review_service.py tests\\test_veda_knowledge_review_service.py tests\\test_veda_chat_router.py`
+  passed
+- `python -m pytest tests\\test_veda_knowledge_review_service.py tests\\test_veda_chat_router.py -q`
+  passed: `15 passed`
+- `cmd /c npx tsc --noEmit --pretty false`
+  passed in `frontend/`
+- `cmd /c npm test -- --run src/test/KnowledgeReviewPanel.test.tsx src/test/VedaSurfaces.test.tsx src/test/MessageEvidence.test.tsx`
+  passed: `5 passed`
+
+## Docs updated
+
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/governance/CHANGELOG.md`
+- `docs/modules/AI_PLATFORM.md`
+
+---
+
+# Version 4.72.0
+
+Veda knowledge-memory follow-up: approved file saves now keep full readable document memory
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This follow-up closes the main gap found in the Veda knowledge audit.
+
+Until now, approving a reviewed save only stored the edited note that came out
+of the chat answer. That meant Veda could remember a short approved summary
+about a book or document, but not the full readable content of the uploaded
+file itself.
+
+Approved reviewed saves now keep both layers:
+
+- the reviewed note the user edits and approves
+- searchable document-memory chunks built from the readable attachment text
+
+This keeps the explicit approval gate intact while giving Veda a real way to
+recall approved book or document content later.
+
+## Changes
+
+- `engines/ai/knowledge/review_service.py`
+  - approved reviewed saves now create searchable attachment-memory chunks from
+    readable uploaded files
+  - saved-memory context now labels reviewed notes versus attachment memory
+  - approval responses now report how many attachment documents/chunks were
+    added
+- `engines/common/config.py`
+  - added chunk-size, overlap, and per-file limits for approved attachment
+    document memory
+- `backend/routers/chat.py`
+  - `ChatKnowledgeSaved` now carries attachment-memory counts
+- `frontend/src/api/client.ts`
+  - updated reviewed-save response typing for attachment-memory counts
+- `frontend/src/components/veda/KnowledgeReviewPanel.tsx`
+  - review modal now explains that approving a save with readable files also
+    stores file memory
+- `frontend/src/components/veda/MessageEvidence.tsx`
+  - approved answers now show a `Document memory added` badge when readable
+    file memory was saved
+- `tests/test_veda_knowledge_review_service.py`
+  - added coverage for saving uploaded attachment text into searchable document
+    memory
+- `frontend/src/test/MessageEvidence.test.tsx`
+  - added coverage for the new document-memory confirmation badge
+
+## Verification
+
+- `python -m py_compile backend\\routers\\chat.py engines\\common\\config.py engines\\ai\\knowledge\\review_service.py tests\\test_veda_knowledge_review_service.py`
+  passed
+- `python -m pytest tests\\test_veda_knowledge_review_service.py tests\\test_veda_chat_router.py -q`
+  passed: `10 passed`
+- `cmd /c npm test -- --run src/test/MessageEvidence.test.tsx`
+  passed: `2 passed`
+- `cmd /c npx tsc --noEmit --pretty false`
+  passed in `frontend/`
+
+## Docs updated
+
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/governance/CHANGELOG.md`
+- `docs/modules/AI_PLATFORM.md`
+
+---
+
+# Version 4.71.1
+
+Frontend TypeScript cleanup: old build blockers removed, production build green
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This cleanup removes the old frontend TypeScript errors that were blocking a
+full production build even after the Veda chat-history work was finished.
+
+The main fixes were stale library API usage, old chart-marker wiring, weak page
+typing on report/detail screens, and dead helpers/imports left behind in older
+UI modules. The frontend now completes a full `npm.cmd run build` again.
+
+## Changes
+
+- `frontend/src/components/platform/StockChart.tsx`
+  - moved `attributionLogo` into the current `lightweight-charts` layout config
+- `frontend/src/pages/ChartsPage.tsx`
+  - aligned chart options with current `lightweight-charts` typings
+- `frontend/src/pages/StocksPage.tsx`
+  - replaced removed `setMarkers()` series call with `createSeriesMarkers()`
+- `frontend/src/indicators/customIndicators.ts`
+  - updated custom line-style objects for current `klinecharts` typings
+  - removed no-longer-supported `shouldCheckParamCount`
+- `frontend/src/lib/customIndicators.ts`
+  - rebuilt legacy indicator registration file against current `klinecharts`
+    style typings
+- `frontend/src/pages/WatchlistPage.tsx`
+  - fixed query typing and replaced old `keepPreviousData` usage with the
+    current React Query placeholder flow
+- `frontend/src/pages/ReportPage.tsx`
+  - tightened unknown-value checks used in JSX conditions
+- `frontend/src/pages/StockDetailPage.tsx`
+  - fixed mixed string/number comparisons and narrowed multiple JSX conditions
+  - kept one small local `any` escape hatch for a TS build-mode-only JSX
+    inference issue in the F&O renderer
+- Misc cleanup across legacy pages/components
+  - removed unused imports, dead helpers, and stale locals in dashboard/admin/
+    research/login/theme/data-control/trade-intelligence related files
+
+## Verification
+
+- `npx.cmd tsc --pretty true --noEmit -p tsconfig.app.json`
+  passed
+- `npm.cmd run build`
+  passed
+
+## Docs updated
+
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/governance/CHANGELOG.md`
+
+---
+
+# Version 4.71.0
+
+Veda chat history follow-up: backend persistence for saved conversations
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This follow-up fixes the main reason old Veda chats disappeared from the chat
+sidebar. Until now, saved conversations lived only in browser `localStorage`.
+That meant chats vanished if the browser storage was cleared, a different
+browser/profile was used, or the local data was reset.
+
+Veda now keeps a durable backend copy of saved chat sessions under
+`data/veda/chat_sessions` while still retaining local browser caching for fast
+UI loading. The frontend now hydrates saved sessions from the backend, uploads
+new or imported chats, and removes history from both sides when a session is
+deleted.
+
+## Changes
+
+- `engines/ai/chat_history/service.py`
+  - added a file-backed Veda chat-history service with owner isolation, atomic
+    writes, single-delete, and delete-all support
+- `backend/routers/chat.py`
+  - added `GET /api/chat/sessions`
+  - added `PUT /api/chat/sessions/{session_id}`
+  - added `DELETE /api/chat/sessions/{session_id}`
+  - added `DELETE /api/chat/sessions`
+  - owner resolution now uses authenticated user identity when auth is on, or
+    browser client id when auth is off
+- `engines/common/config.py`
+  - added `VEDA_CHAT_SESSION_DIR`
+- `frontend/src/api/client.ts`
+  - added axios interceptors for `Authorization` and `X-Veda-Client-Id`
+  - added saved-session client helpers for fetch, upsert, delete, and delete-all
+- `frontend/src/store/vedaStore.ts`
+  - added one-time backend hydration for Veda session history
+  - added backend sync after send, import, knowledge-save, delete, and clear-all
+- `frontend/src/pages/ChatPage.tsx`
+  - chat import now uses the shared store flow so imported chats also persist to
+    the backend
+- `tests/test_veda_chat_history_service.py`
+  - added storage coverage for upsert, listing order, owner isolation, and
+    delete behavior
+- `tests/test_veda_chat_router.py`
+  - added API coverage for saved-session round-trip and delete endpoints
+- `frontend/src/test/vedaStore.test.ts`
+  - updated mocks for the new saved-session API flow
+
+## Verification
+
+- `python -m py_compile backend\\routers\\chat.py engines\\ai\\chat_history\\service.py engines\\common\\config.py tests\\test_veda_chat_history_service.py tests\\test_veda_chat_router.py`
+  passed
+- `python -m pytest tests\\test_veda_chat_history_service.py tests\\test_veda_chat_router.py tests\\test_veda_attachment_service.py -q`
+  passed: `16 passed`
+- `npm.cmd test -- --run src/test/vedaStore.test.ts`
+  passed: `2 passed`
+- Filtered frontend build check on August 4, 2026:
+  - touched Veda files no longer report TypeScript errors
+  - full `frontend` build still has unrelated pre-existing TypeScript errors in
+    other modules outside this change
+
+## Docs updated
+
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/governance/CHANGELOG.md`
+- `docs/modules/AI_PLATFORM.md`
+
+---
+
+# Version 4.70.0
+
+Veda mixed-page OCR follow-up: local scanned-book reading now distinguishes text and figures
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This follow-up improved Veda's real handling of scanned book pages that mix
+paragraph text with diagrams, labels, charts, or workflows.
+
+The attachment service now uses a Python OCR runtime (`rapidocr_onnxruntime`)
+before falling back to `pytesseract`. That gave Veda a working local OCR path
+without requiring a machine-wide admin install. A light layout heuristic was
+also added so that when vision is unavailable, Veda can still tell the
+difference between a mostly-text page and a page that also contains a central
+labeled figure.
+
+The shared sample page (`test.png`) now extracts successfully in this runtime:
+Veda reads the surrounding text and also reports that the page contains a
+central labeled diagram plus lower explanatory text.
+
+## Changes
+
+- `engines/ai/attachments/service.py`
+  - added `rapidocr_onnxruntime` as the first local OCR path for image and
+    scanned-PDF extraction
+  - added OCR layout summarization so mixed pages can be described as text-only
+    vs text-plus-figure even when cloud vision is unavailable
+  - upgraded visual extraction formatting from a flat OCR dump to a clearer
+    `Visual analysis` / `Local OCR extraction` structure
+- `tests/test_veda_attachment_service.py`
+  - added regression coverage for mixed text-and-diagram page handling
+- `requirements.txt`
+  - added `rapidocr_onnxruntime>=1.2.3`
+
+## Verification
+
+- `python -m py_compile engines\\ai\\attachments\\service.py tests\\test_veda_attachment_service.py`
+  passed
+- `python -m pytest tests\\test_veda_attachment_service.py -q`
+  passed: `7 passed`
+- Live sample check on August 4, 2026:
+  - `C:\\Users\\hp\\Desktop\\test.png` now returns
+    `Page layout note: This page appears to mix running paragraph text with a central labeled figure or diagram.`
+  - local OCR also extracted the surrounding book text and the figure labels
+
+## Docs updated
+
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/governance/CHANGELOG.md`
+- `docs/modules/AI_PLATFORM.md`
+
+---
+
+# Version 4.69.0
+
+Veda attachment follow-up: scanned-PDF fallback, correct knowledge-save guidance, and history findings
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This follow-up addressed the two user-visible Veda issues found during live
+book-upload testing.
+
+First, the attachment service now has a real scanned-PDF fallback path. If a
+PDF has no embedded text, Veda now attempts page-image extraction instead of
+failing immediately. If that fallback runtime is not available, the warning is
+now explicit about what is missing.
+
+Second, Veda no longer gets told to speak as if permanent knowledge storage is
+impossible. When extracted attachment text is available, the chat prompt now
+pushes Veda to study that content first and explain that long-term memory save
+happens through the reviewed save flow.
+
+The audit also confirmed that missing old chats are not a backend loss today:
+chat history is still stored only in browser `localStorage`, so changing
+browser/profile/origin or clearing storage makes past chats disappear.
+
+## Changes
+
+- `engines/ai/attachments/service.py`
+  - added scanned-PDF fallback by rendering PDF pages to images and reusing the
+    attachment vision/OCR pipeline
+  - upgraded the warning text so scanned files now clearly report when no OCR
+    or vision runtime was available
+- `engines/ai/chatbot/chat_engine.py`
+  - attachment instructions now tell Veda to analyze extracted file content
+    before refusing
+  - prompt now explains the reviewed save-to-knowledge flow instead of implying
+    that future knowledge storage is impossible
+- `tests/test_veda_attachment_service.py`
+  - added a regression test for scanned-PDF page-image fallback
+- `tests/test_veda_chat_engine.py`
+  - added a regression test for attachment/save-flow prompt behavior
+
+## Verification
+
+- `python -m py_compile engines\\ai\\attachments\\service.py engines\\ai\\chatbot\\chat_engine.py tests\\test_veda_attachment_service.py tests\\test_veda_chat_engine.py`
+  passed
+- `python -m pytest tests\\test_veda_attachment_service.py tests\\test_veda_chat_engine.py -q`
+  passed: `7 passed`
+- Live attachment re-check on August 4, 2026:
+  - extractable PDF `942054578ee44e57a083ad39a7b12cfe.pdf` returned real book text
+  - scanned PDF `11561124c6b34898933e89cbb461f7a2.pdf` still reported no usable
+    extraction because vision lookup was unavailable and local `tesseract`
+    is not installed
+
+## Docs updated
+
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/governance/CHANGELOG.md`
+- `docs/modules/AI_PLATFORM.md`
+
+---
+
+# Version 4.68.0
+
+Veda audit follow-up implemented: honest research readiness UI + real React test stack
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This follow-up closed the two concrete gaps found in the Veda React audit.
+
+First, Veda now tells the truth about research availability. The backend
+exposes whether a live research provider is actually ready, and both chat
+surfaces now disable research mode and show a clear unavailable state when the
+runtime cannot perform outside lookup.
+
+Second, the frontend now has a real React test runner. Vitest and Testing
+Library are wired in, and focused tests now cover shared capability hydration,
+research fallback evidence, and the two main Veda chat surfaces.
+
+## Changes
+
+- `backend/routers/chat.py`
+  - capability response now includes `research_provider_available` and
+    `research_runtime_ready`
+- `engines/ai/research/service.py`
+  - capability reporting now distinguishes feature enablement from actual live
+    runtime readiness
+- `frontend/src/api/client.ts`
+  - frontend capability types now include runtime research readiness fields
+- `frontend/src/store/vedaStore.ts`
+  - research mode now refuses to turn on when no live provider is available
+  - capability refresh now automatically turns research mode off when runtime
+    readiness drops
+- `frontend/src/pages/ChatPage.tsx`
+  - full chat page now shows `RESEARCH UNAVAILABLE` and disables the toggle
+    when outside research is not live
+- `frontend/src/components/veda/VedaWidget.tsx`
+  - floating widget now shows the same unavailable state and keeps the file
+    input accept list synced with backend capability rules
+- `frontend/package.json`
+  - added `test` and `test:watch` scripts
+- `frontend/vite.config.ts`
+  - added jsdom Vitest setup
+- `frontend/tsconfig.app.json`
+  - added Vitest and Testing Library types
+- `frontend/src/test/setup.ts`
+  - added browser API stubs needed by the Veda UI/store in jsdom
+- `frontend/src/test/vedaStore.test.ts`
+  - added focused store tests for research readiness handling
+- `frontend/src/test/MessageEvidence.test.tsx`
+  - added coverage for research fallback evidence text
+- `frontend/src/test/VedaSurfaces.test.tsx`
+  - added focused surface tests for ChatPage and VedaWidget
+- `tests/test_veda_chat_router.py`
+  - router capability tests now assert the new readiness fields too
+
+## Verification
+
+- `python -m pytest tests\\test_veda_chat_router.py tests\\test_veda_mcp_provider.py -q`
+  passed: `8 passed`
+- `cmd /c npm test`
+  passed in `frontend/`: `3 files, 5 tests`
+- `cmd /c npx tsc --noEmit --pretty false`
+  passed in `frontend/`
+
+## Docs updated
+
+- `docs/governance/VEDA_REACT_TEST_REPORT_2026-08-04.md`
+- `docs/governance/VEDA_PHASE8_ROLLOUT.md`
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/modules/AI_PLATFORM.md`
+- `docs/governance/MODULE_REGISTRY.md`
+
+---
+
+# Version 4.67.0
+
+Veda Phase 8 implemented: hardening, API verification, and rollout checklist
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This session completed **Phase 8 -- hardening, automated verification, and
+rollout documentation** for Veda.
+
+The main hardening fix was in the research fallback path: Veda now reaches MCP
+fallback even when the primary research provider is unavailable, not only when
+that provider returns empty results. The chat surfaces also now consume the
+backend's attachment-accept rules directly, and the chat API has focused tests
+for capability reporting and attachment gating. A separate manual rollout
+checklist was written for the later human browser and microphone QA round.
+
+## Changes
+
+- `engines/ai/research/service.py`
+  - fixed the MCP fallback path so it also activates when the configured
+    primary research provider is unavailable or unknown
+- `frontend/src/store/vedaStore.ts`
+  - shared Veda capability state now tracks MCP runtime readiness and
+    backend-driven attachment accept rules
+- `frontend/src/pages/ChatPage.tsx`
+  - chat page file input now follows backend capability rules instead of a
+    separate hardcoded accept list
+  - research tooltip now reflects when MCP fallback is ready
+- `frontend/src/components/veda/VedaWidget.tsx`
+  - floating widget now follows the same backend-driven attachment accept rules
+  - research tooltip now reflects when MCP fallback is ready
+- `tests/test_veda_mcp_provider.py`
+  - added a regression test for the primary-provider-unavailable fallback case
+- `tests/test_veda_chat_router.py`
+  - added focused router tests for chat capability reporting, config fallback,
+    inline attachment gating, and upload gating
+- `docs/governance/VEDA_PHASE8_ROLLOUT.md`
+  - added the live HTTP smoke record and the later human browser/mic checklist
+
+## Verification
+
+- `python -m pytest tests\\test_veda_attachment_service.py tests\\test_veda_research_service.py tests\\test_veda_knowledge_review_service.py tests\\test_veda_repo_capability_service.py tests\\test_veda_mcp_provider.py tests\\test_veda_chat_router.py -q`
+  passed: `22 passed`
+- `cmd /c npx tsc --noEmit --pretty false`
+  passed in `frontend/`
+- Live HTTP smoke on August 4, 2026:
+  - `http://127.0.0.1:5173` returned the Vite app shell
+  - `http://127.0.0.1:8001/api/chat/capabilities` returned
+    `research_enabled=true`, `attachments_enabled=true`, `mcp_enabled=false`
+
+## Files changed
+
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/governance/CHANGELOG.md`
+- `docs/governance/MASTER_CHECKLIST.md`
+- `docs/governance/MODULE_REGISTRY.md`
+- `docs/governance/VEDA_PHASE8_ROLLOUT.md`
+- `docs/modules/AI_PLATFORM.md`
+- `engines/ai/research/service.py`
+- `frontend/src/components/veda/VedaWidget.tsx`
+- `frontend/src/pages/ChatPage.tsx`
+- `frontend/src/store/vedaStore.ts`
+- `tests/test_veda_chat_router.py`
+- `tests/test_veda_mcp_provider.py`
+
+---
+
+# Version 4.66.0
+
+Veda Phase 7 implemented: MCP fallback research layer
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This session completed **Phase 7 -- MCP fallback connectors** for Veda.
+
+Veda still uses the Python-first research path as the default behavior, but it
+can now fall back to configured MCP research servers when the main provider
+cannot return enough usable information. The fallback path is config-driven,
+keeps source normalization intact, and stays visible through the same evidence
+UI instead of becoming a hidden side channel.
+
+## Changes
+
+- `engines/ai/research/mcp_client.py`
+  - added a lightweight MCP stdio client for initialize, tool discovery,
+    tool calls, and response handling
+  - added config loading for MCP server definitions and env-variable expansion
+- `engines/ai/research/providers/mcp_provider.py`
+  - added MCP-based research provider with ordered server fallback
+  - added search-tool scoring, argument mapping, and source normalization
+- `engines/ai/research/service.py`
+  - kept Python-first research as the main path
+  - added automatic MCP fallback when the primary provider returns no usable
+    result
+  - capability reporting now includes MCP availability and configured server
+    names
+- `engines/common/config.py`
+  - added Phase 7 MCP config flags for server config path, protocol version,
+    timeout, result limit, client name, and server order
+- `backend/routers/chat.py`
+  - chat capability handshake now reports runtime MCP availability and
+    configured MCP server names
+- `frontend/src/api/client.ts`
+  - updated chat capability typing to include MCP server names
+- `tests/test_veda_mcp_provider.py`
+  - added focused tests for fake MCP-server search, research-service fallback,
+    and MCP capability reporting
+
+## Verification
+
+- `python -m py_compile backend\\routers\\chat.py engines\\ai\\research\\mcp_client.py engines\\ai\\research\\providers\\mcp_provider.py engines\\ai\\research\\service.py engines\\common\\config.py tests\\test_veda_mcp_provider.py`
+  passed
+- `python -m pytest tests\\test_veda_research_service.py tests\\test_veda_mcp_provider.py -q`
+  passed: `6 passed`
+- `cmd /c npx tsc --noEmit --pretty false` passed in `frontend/`
+
+## Files changed
+
+- `backend/routers/chat.py`
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/governance/CHANGELOG.md`
+- `docs/governance/MASTER_CHECKLIST.md`
+- `docs/governance/MODULE_REGISTRY.md`
+- `docs/modules/AI_PLATFORM.md`
+- `engines/ai/research/mcp_client.py`
+- `engines/ai/research/providers/mcp_provider.py`
+- `engines/ai/research/service.py`
+- `engines/common/config.py`
+- `frontend/src/api/client.ts`
+- `tests/test_veda_mcp_provider.py`
+
+---
+
+# Version 4.65.0
+
+Veda Phase 6 implemented: MIT repo capability intake with approval gate
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This session completed **Phase 6 -- MIT Git capability intake** for Veda.
+
+Veda can now study a local MIT-licensed repo path in a controlled review
+flow, show the detected license evidence, extract a short list of reusable
+repo ideas, and save only the approved capability note back into reusable
+memory. Repo files are treated as content only, never as trusted
+instructions, and remote GitHub-style acquisition is still left for Phase 7.
+
+## Changes
+
+- `engines/ai/capabilities/service.py`
+  - new MIT repo capability intake service added
+  - enforces MIT-only intake at the license-detection step
+  - reduces repo study to a controlled shortlist of candidate files
+  - creates editable repo review drafts
+  - stores approved capability notes separately from draft data
+  - exposes immediate search/context lookup for approved MIT repo notes
+- `engines/ai/chatbot/chat_engine.py`
+  - approved MIT repo capability notes now feed back into Veda context lookup
+- `backend/routers/chat.py`
+  - added `POST /api/chat/capabilities/repo/draft`
+  - added `POST /api/chat/capabilities/repo/draft/{draft_id}/approve`
+  - chat capabilities now expose `mit_repo_intake_enabled`
+- `engines/common/config.py`
+  - added Phase 6 storage paths, flags, and scan limits for MIT repo intake
+- `frontend/src/api/client.ts`
+  - added MIT repo draft/approve API helpers and types
+- `frontend/src/store/vedaStore.ts`
+  - added shared capability flag for MIT repo intake
+- `frontend/src/components/veda/RepoCapabilityReviewPanel.tsx`
+  - new shared Phase 6 panel for repo path input, license visibility, file
+    shortlist review, and approval
+- `frontend/src/pages/ChatPage.tsx`
+  - full chat now exposes an `MIT REPO` button and approval flow
+- `frontend/src/components/veda/VedaWidget.tsx`
+  - floating Veda drawer now exposes the same MIT repo study flow
+- `tests/test_veda_repo_capability_service.py`
+  - added focused tests for MIT-only gating, candidate extraction, duplicate
+    safe approval, and reusable context lookup
+
+## Verification
+
+- `python -m py_compile backend\\routers\\chat.py engines\\ai\\chatbot\\chat_engine.py engines\\ai\\capabilities\\service.py engines\\common\\config.py tests\\test_veda_repo_capability_service.py`
+  passed
+- `python -m pytest tests\\test_veda_attachment_service.py tests\\test_veda_research_service.py tests\\test_veda_knowledge_review_service.py tests\\test_veda_repo_capability_service.py -q`
+  passed: `14 passed`
+- `cmd /c npx tsc --noEmit --pretty false` passed in `frontend/`
+
+## Files changed
+
+- `backend/routers/chat.py`
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/governance/CHANGELOG.md`
+- `docs/governance/MASTER_CHECKLIST.md`
+- `docs/governance/MODULE_REGISTRY.md`
+- `docs/modules/AI_PLATFORM.md`
+- `engines/ai/capabilities/service.py`
+- `engines/ai/chatbot/chat_engine.py`
+- `engines/common/config.py`
+- `frontend/src/api/client.ts`
+- `frontend/src/components/veda/RepoCapabilityReviewPanel.tsx`
+- `frontend/src/components/veda/VedaWidget.tsx`
+- `frontend/src/pages/ChatPage.tsx`
+- `frontend/src/store/vedaStore.ts`
+- `tests/test_veda_repo_capability_service.py`
+
+---
+
+# Version 4.64.0
+
+Veda Phase 5 implemented: reviewed save-to-knowledge flow with traceability
+
+Date: 2026-08-04
+
+Status: Completed
+
+---
+
+## Summary
+
+This session completed **Phase 5 -- Reviewed save-to-knowledge flow** for
+Veda.
+
+Users can now review a drafted knowledge note from a real assistant answer,
+edit the title, summary, facts, tags, and review note, and approve it
+explicitly before anything is written into durable Veda memory. Approved
+items keep raw traceability to the original answer, outside sources, and
+attached files, and they become immediately searchable by Veda without any
+silent auto-learning.
+
+## Changes
+
+- `engines/ai/knowledge/review_service.py`
+  - new reviewed-knowledge service added
+  - creates editable review drafts from chat turns
+  - stores approved records separately from drafts
+  - writes approved memory into a dedicated reviewed-knowledge JSONL store
+  - deduplicates repeated approvals
+  - exposes immediate search/context lookup for approved memory
+- `engines/ai/chatbot/chat_engine.py`
+  - reviewed user-approved knowledge now feeds back into Veda context lookup
+- `backend/routers/chat.py`
+  - added `POST /api/chat/knowledge/draft`
+  - added `POST /api/chat/knowledge/draft/{draft_id}/approve`
+- `engines/common/config.py`
+  - enabled save-to-knowledge by default for the implemented flow
+  - added review storage paths and limits
+- `frontend/src/api/client.ts`
+  - added reviewed-knowledge draft/approve API helpers and types
+- `frontend/src/store/vedaStore.ts`
+  - added shared capability flag and message-level saved-knowledge state
+- `frontend/src/components/veda/KnowledgeReviewPanel.tsx`
+  - new shared review panel used by both chat surfaces
+- `frontend/src/pages/ChatPage.tsx`
+  - assistant answers now expose a review-before-save flow
+- `frontend/src/components/veda/VedaWidget.tsx`
+  - floating Veda drawer now exposes the same reviewed save flow
+- `frontend/src/components/veda/MessageEvidence.tsx`
+  - now shows when an answer has already been saved to knowledge
+- `tests/test_veda_knowledge_review_service.py`
+  - added focused tests for draft creation, explicit approval, duplicate-safe
+    writes, and immediate search visibility
+
+## Verification
+
+- `python -m py_compile ...` passed for the changed backend files
+- `python -m pytest tests/test_veda_attachment_service.py tests/test_veda_research_service.py tests/test_veda_knowledge_review_service.py -q`
+  passed: `11 passed`
+- `cmd /c npx tsc --noEmit --pretty false` passed in `frontend/`
+- verified the new chat routes exist:
+  - `/api/chat/knowledge/draft`
+  - `/api/chat/knowledge/draft/{draft_id}/approve`
+
+## Files changed
+
+- `backend/routers/chat.py`
+- `engines/ai/chatbot/chat_engine.py`
+- `engines/ai/knowledge/review_service.py`
+- `engines/common/config.py`
+- `frontend/src/api/client.ts`
+- `frontend/src/components/veda/KnowledgeReviewPanel.tsx`
+- `frontend/src/components/veda/MessageEvidence.tsx`
+- `frontend/src/components/veda/VedaWidget.tsx`
+- `frontend/src/pages/ChatPage.tsx`
+- `frontend/src/store/vedaStore.ts`
+- `tests/test_veda_knowledge_review_service.py`
+- `docs/governance/CHANGELOG.md`
+- `docs/governance/MASTER_CHECKLIST.md`
+- `docs/governance/MODULE_REGISTRY.md`
+- `docs/PROJECT_MASTER_STATE.md`
+- `docs/modules/AI_PLATFORM.md`
 
 ---
 
