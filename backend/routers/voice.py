@@ -94,32 +94,37 @@ _TTS_WARMUP_PHRASES: dict[str, list[str]] = {
 
 async def validate_voices_on_startup() -> None:
     """Validate all VOICES entries against the installed edge-tts voice list.
-    Logs a WARNING for any unrecognised voice ID so misconfigurations are visible
-    at startup rather than silently failing at request time.
+    Runs in background so it never blocks backend startup.
     """
-    try:
-        import edge_tts
-    except ImportError:
-        logger.warning("[Voice] edge-tts not installed — voice ID validation skipped")
-        return
-    try:
-        voice_list = await edge_tts.list_voices()
-        available  = {v["ShortName"] for v in voice_list}
-        invalid    = 0
-        for lang_key, entry in VOICES.items():
-            if entry["voice"] not in available:
-                logger.warning(
-                    "[Voice] Unrecognised voice ID '%s' for lang '%s' — check VOICES dict",
-                    entry["voice"], lang_key,
-                )
-                invalid += 1
-        if invalid == 0:
-            logger.info("[Voice] All %d configured voices validated OK", len(VOICES))
-    except Exception as e:
-        logger.warning("[Voice] Voice ID validation failed (edge-tts list_voices error): %s", e)
-    # Warm the TTS cache with common greetings/phrases so the first spoken
-    # turn is instant (no cold edge-tts latency on every backend restart).
-    await _warm_tts_cache()
+    import asyncio
+
+    async def _validate_and_warm():
+        try:
+            import edge_tts
+        except ImportError:
+            logger.warning("[Voice] edge-tts not installed — voice ID validation skipped")
+            return
+        try:
+            voice_list = await edge_tts.list_voices()
+            available  = {v["ShortName"] for v in voice_list}
+            invalid    = 0
+            for lang_key, entry in VOICES.items():
+                if entry["voice"] not in available:
+                    logger.warning(
+                        "[Voice] Unrecognised voice ID '%s' for lang '%s' — check VOICES dict",
+                        entry["voice"], lang_key,
+                    )
+                    invalid += 1
+            if invalid == 0:
+                logger.info("[Voice] All %d configured voices validated OK", len(VOICES))
+        except Exception as e:
+            logger.warning("[Voice] Voice ID validation failed (edge-tts list_voices error): %s", e)
+        # Warm the TTS cache with common greetings/phrases so the first spoken
+        # turn is instant (no cold edge-tts latency on every backend restart).
+        await _warm_tts_cache()
+
+    # Fire-and-forget: don't block backend startup on network calls to edge-tts
+    asyncio.get_event_loop().create_task(_validate_and_warm())
 
 
 async def _warm_tts_cache() -> None:

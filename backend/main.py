@@ -54,6 +54,7 @@ async def on_startup():
     data_loader.startup()
     from engines.orchestration.refresh_scheduler import start_scheduler
     start_scheduler()
+    await voice.validate_voices_on_startup()
 
 
 # ── Routers ───────────────────────────────────────────────────────────────────
