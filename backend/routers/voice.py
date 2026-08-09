@@ -48,7 +48,7 @@ router = APIRouter(prefix="/api/voice", tags=["voice"])
 #   other Indian languages: -5% (conservative default, unchanged).
 VOICES: dict[str, dict] = {
     "hi": {"voice": "hi-IN-SwaraNeural",    "label": "Swara (Hindi)",            "rate": "-8%"},
-    "en": {"voice": "en-IN-NeerjaNeural",   "label": "Neerja (Indian English)",  "rate": "0%"},
+    "en": {"voice": "en-IN-NeerjaNeural",   "label": "Neerja (Indian English)",  "rate": "+10%"},
     "ta": {"voice": "ta-IN-PallaviNeural",  "label": "Pallavi (Tamil)",          "rate": "-5%"},
     "te": {"voice": "te-IN-ShrutiNeural",   "label": "Shruti (Telugu)",          "rate": "-5%"},
     "bn": {"voice": "bn-IN-TanishaaNeural", "label": "Tanishaa (Bengali)",       "rate": "-5%"},
@@ -56,7 +56,7 @@ VOICES: dict[str, dict] = {
     "gu": {"voice": "gu-IN-DhwaniNeural",   "label": "Dhwani (Gujarati)",        "rate": "-5%"},
 }
 DEFAULT_LANG = "hi"          # per user decision 2026-07-10
-MAX_TTS_CHARS = 900          # spoken summary cap -- long tables live in the chat
+MAX_TTS_CHARS = 1500         # spoken summary cap -- long tables live in the chat
 
 # Small in-memory audio cache (greetings + repeated phrases play instantly)
 _tts_cache: dict[str, bytes] = {}
@@ -236,7 +236,7 @@ _LIST_ONLY_FALLBACK: dict[str, str] = {
 # question as part of its own spoken lead (chat_engine.py _VOICE_ADDENDUM)
 # -- that question needs a slot of its own, on top of the actual answer,
 # or the cap would truncate the model mid-offer.
-MAX_SPOKEN_SENTENCES = 5
+MAX_SPOKEN_SENTENCES = 8
 
 
 def _cap_sentences(text: str) -> tuple[str, bool]:
@@ -343,6 +343,13 @@ async def tts(req: TTSRequest):
     lang = req.language if req.language in VOICES else DEFAULT_LANG
     voice = VOICES[lang]["voice"]
     text = _spoken_text(req.text, lang)
+    logger.info("[TTS] lang=%s voice=%s input_len=%d output_len=%d text_preview=%r",
+                lang, voice, len(req.text or ""), len(text or ""), (text or "")[:120])
+    # Fallback: if _spoken_text stripped everything (all bullets/tables),
+    # use the raw text truncated to MAX_TTS_CHARS so the user still hears something
+    if not text and req.text:
+        text = req.text[:MAX_TTS_CHARS]
+        logger.warning("[TTS] _spoken_text returned empty, using raw text (truncated to %d chars)", MAX_TTS_CHARS)
     if not text:
         raise HTTPException(status_code=400, detail="Nothing speakable in the text")
 
