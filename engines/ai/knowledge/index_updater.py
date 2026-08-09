@@ -36,6 +36,25 @@ def run_index_update(force: bool = False) -> bool:
         return False
     logger.info(f"[IndexUpdater] Documents: {n_docs}")
 
+    # Unified durable retrieval assets are built in parallel, but failures here
+    # must not block the long-standing production BM25/FAISS pipeline.
+    try:
+        from engines.ai.knowledge.unified_corpus_builder import UnifiedCorpusBuilder
+        from engines.ai.knowledge.unified_bm25_indexer import UnifiedBM25Indexer
+        from engines.ai.knowledge.unified_faiss_indexer import UnifiedFAISSIndexer
+
+        unified_summary = UnifiedCorpusBuilder().run()
+        logger.info(
+            "[IndexUpdater] Unified corpus ready: %s records",
+            unified_summary.get("total_records", 0),
+        )
+        if not UnifiedBM25Indexer().run():
+            logger.warning("[IndexUpdater] Unified BM25 indexing skipped")
+        if not UnifiedFAISSIndexer().run():
+            logger.warning("[IndexUpdater] Unified FAISS indexing skipped")
+    except Exception as exc:
+        logger.warning("[IndexUpdater] Unified retrieval assets skipped: %s", exc)
+
     # Step 2: BM25
     from engines.ai.knowledge.bm25_indexer import BM25Indexer
     if not BM25Indexer().run():

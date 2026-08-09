@@ -37,6 +37,19 @@ CORP_CONF  = cfg.INTELLIGENCE_DIR / "corporate_confidence_scores.csv"
 ML_SCORES  = cfg.INTELLIGENCE_DIR / "ml_scores_combined.csv"
 
 
+def _latest_snapshot_date() -> str | None:
+    if not PART_INTEL.exists():
+        return None
+    try:
+        part = pd.read_csv(PART_INTEL, usecols=lambda c: c == "date")
+    except Exception:
+        return None
+    if part.empty or "date" not in part.columns:
+        return None
+    values = [str(value).strip() for value in part["date"].tolist() if str(value).strip() and str(value).strip().lower() != "nan"]
+    return sorted(values)[-1] if values else None
+
+
 class DocumentBuilder:
     """
     Builds text documents from intelligence layer outputs.
@@ -106,6 +119,7 @@ class DocumentBuilder:
         sectors = pd.read_csv(SECTOR_ROT)
         if sectors.empty:
             return []
+        snapshot_date = _latest_snapshot_date()
 
         # Load bull run for top-stock-per-sector context
         stock_map: dict[str, list[str]] = {}
@@ -140,7 +154,12 @@ class DocumentBuilder:
 
             docs.append(_doc(
                 "SECTOR", sector, f"sector_{_slug(sector)}", text,
-                {"sector": sector, "rotation_signal": rotation, "combined_score": combined}
+                {
+                    "sector": sector,
+                    "rotation_signal": rotation,
+                    "combined_score": combined,
+                    "date": snapshot_date,
+                }
             ))
 
         return docs
@@ -156,6 +175,7 @@ class DocumentBuilder:
         br = pd.read_csv(BULL_RUN)
         if br.empty:
             return []
+        snapshot_date = _latest_snapshot_date()
 
         # ML scores enrichment
         ml: Optional[pd.DataFrame] = None
@@ -192,6 +212,7 @@ class DocumentBuilder:
             ml_score = _fmt(row.get("ml_bull_run_score"))
             acc_score = _fmt(row.get("accumulation_score"))
             conf_12m = _fmt(row.get("confidence_score_12m"))
+            predictive_ml = ml_score != "N/A" or acc_score != "N/A"
 
             text = (
                 f"Stock Analysis: {sym} (sector: {sector}). "
@@ -211,7 +232,35 @@ class DocumentBuilder:
 
             docs.append(_doc(
                 "STOCK", sym, f"stock_{sym}", text,
-                {"symbol": sym, "sector": sector, "label": label, "score": score}
+                {
+                    "symbol": sym,
+                    "sector": sector,
+                    "label": label,
+                    "score": score,
+                    "bull_run_score": _num(row.get("bull_run_score")),
+                    "price_score": _num(row.get("price_score")),
+                    "deal_score": _num(row.get("deal_score")),
+                    "corporate_score": _num(row.get("corporate_score")),
+                    "ml_bull_run_score": _num(row.get("ml_bull_run_score")),
+                    "accumulation_score": _num(row.get("accumulation_score")),
+                    "confidence_score_12m": _num(row.get("confidence_score_12m")),
+                    "date": snapshot_date,
+                    "feature_date": snapshot_date,
+                    "model_name": cfg.VEDA_PLATFORM_ML_MODEL_NAME if predictive_ml else None,
+                    "model_version": cfg.VEDA_PLATFORM_ML_MODEL_VERSION if predictive_ml else None,
+                    "score_meaning": (
+                        "Higher bull-run and accumulation scores indicate a stronger local bullish "
+                        "continuation signal in the platform scoring pipeline."
+                        if predictive_ml
+                        else None
+                    ),
+                    "reliability_note": (
+                        "Treat these scores as predictive local signals, not guaranteed outcomes. "
+                        "Confirm with current flows, price action, and corporate context."
+                        if predictive_ml
+                        else None
+                    ),
+                }
             ))
 
         return docs
@@ -227,6 +276,7 @@ class DocumentBuilder:
         deals = pd.read_csv(DEAL_SIG)
         if deals.empty:
             return []
+        snapshot_date = _latest_snapshot_date()
 
         docs = []
         for _, row in deals.iterrows():
@@ -243,7 +293,7 @@ class DocumentBuilder:
 
             docs.append(_doc(
                 "DEAL", sym, f"deal_{sym}", text,
-                {"symbol": sym, "deal_type": deal_type, "net_value_cr": net_val}
+                {"symbol": sym, "deal_type": deal_type, "net_value_cr": net_val, "date": snapshot_date}
             ))
 
         return docs
@@ -259,6 +309,7 @@ class DocumentBuilder:
         corp = pd.read_csv(CORP_CONF)
         if corp.empty:
             return []
+        snapshot_date = _latest_snapshot_date()
 
         # Top 200 by confidence
         top = corp.nlargest(200, "confidence_score_12m") if "confidence_score_12m" in corp.columns else corp.head(200)
@@ -279,7 +330,13 @@ class DocumentBuilder:
 
             docs.append(_doc(
                 "CORPORATE", sym, f"corp_{sym}", text,
-                {"symbol": sym, "confidence_12m": score_12m}
+                {
+                    "symbol": sym,
+                    "confidence_12m": score_12m,
+                    "confidence_score_12m": _num(row.get("confidence_score_12m")),
+                    "confidence_score_6m": _num(row.get("confidence_score_6m", row.get("confidence_score"))),
+                    "date": snapshot_date,
+                }
             ))
 
         return docs
@@ -322,6 +379,20 @@ def _fmt(val) -> str:
     if isinstance(val, float):
         return f"{val:.2f}"
     return str(val)
+
+
+def _num(val):
+    if val is None:
+        return None
+    try:
+        if pd.isna(val):
+            return None
+    except Exception:
+        pass
+    try:
+        return float(val)
+    except (TypeError, ValueError):
+        return None
 
 
 def _slug(s: str) -> str:
