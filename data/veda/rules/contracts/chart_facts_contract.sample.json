@@ -1,0 +1,82 @@
+{
+  "contract_version": "2026-08-10",
+  "chart_id": "VEDA-CHART-SAMPLE-000001",
+  "chart_type": "GENERIC",
+  "lagna": {
+    "entity_id": "VEDA-RASHI-LIBRA",
+    "longitude": 195.2
+  },
+  "planets": [
+    {
+      "entity_id": "VEDA-GRAHA-MOON",
+      "longitude": 102.4,
+      "rashi": "VEDA-RASHI-CANCER",
+      "bhava": "VEDA-BHAVA-10",
+      "nakshatra": "VEDA-NAK-PUSHYA",
+      "pada": 2,
+      "retrograde": false,
+      "dignity": "VEDA-DIGNITY-NEUTRAL_SIGN"
+    },
+    {
+      "entity_id": "VEDA-GRAHA-JUPITER",
+      "longitude": 105.1,
+      "rashi": "VEDA-RASHI-CANCER",
+      "bhava": "VEDA-BHAVA-10",
+      "nakshatra": "VEDA-NAK-PUSHYA",
+      "pada": 3,
+      "retrograde": false,
+      "dignity": "VEDA-DIGNITY-EXALTATION"
+    }
+  ],
+  "houses": [
+    {
+      "entity_id": "VEDA-BHAVA-10",
+      "rashi": "VEDA-RASHI-CANCER",
+      "lord": "VEDA-GRAHA-MOON",
+      "occupants": [
+        "VEDA-GRAHA-MOON",
+        "VEDA-GRAHA-JUPITER"
+      ]
+    }
+  ],
+  "vargas": [
+    {
+      "entity_id": "VEDA-VARGA-D09",
+      "chart_signs": {
+        "VEDA-GRAHA-MOON": "VEDA-RASHI-CANCER",
+        "VEDA-GRAHA-JUPITER": "VEDA-RASHI-PISCES"
+      }
+    }
+  ],
+  "dashas": [
+    {
+      "entity_id": "VEDA-DASHA-VIMSHOTTARI",
+      "sequence_order": [
+        "VEDA-GRAHA-KETU",
+        "VEDA-GRAHA-VENUS",
+        "VEDA-GRAHA-SUN",
+        "VEDA-GRAHA-MOON",
+        "VEDA-GRAHA-MARS",
+        "VEDA-GRAHA-RAHU",
+        "VEDA-GRAHA-JUPITER",
+        "VEDA-GRAHA-SATURN",
+        "VEDA-GRAHA-MERCURY"
+      ],
+      "birth_balance_basis": "MOON_NAKSHATRA_REMAINDER"
+    }
+  ],
+  "relationships": {
+    "jupiter_from_moon": {
+      "house_distance": 0,
+      "relationship_entity_id": "VEDA-RELTYPE-GRAHA_DRISHTI"
+    }
+  },
+  "metadata": {
+    "adapter_status": "P003_CONTRACT_SAMPLE",
+    "legacy_paths": [
+      "engines/intelligence/kundli_engine.py::compute_human",
+      "engines/intelligence/kundli_engine.py::_vimshottari_dasha",
+      "engines/intelligence/kundli_engine.py::_detect_yogas"
+    ]
+  }
+}

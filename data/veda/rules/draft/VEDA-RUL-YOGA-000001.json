@@ -1,0 +1,175 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-08-10T00:00:00Z",
+  "created_by": "codex",
+  "updated_at": "2026-08-10T00:00:00Z",
+  "updated_by": "codex",
+  "change_reason": "Initial P003 pilot rule registration.",
+  "supersedes": null,
+  "superseded_by": null,
+  "notes": "Draft rule demonstrates nested condition groups and modifier support without changing production yoga detection.",
+  "contract_version": "2026-08-10",
+  "rule_id": "VEDA-RUL-YOGA-000001",
+  "title": "Gaja Kesari yoga sample mapping from current runtime",
+  "domain": "YOGA",
+  "subdomain": "GAJA_KESARI",
+  "rule_type": "YOGA",
+  "status": "DRAFT",
+  "source_class": "DERIVED_INTERNAL",
+  "approval_status": "NOT_SUBMITTED",
+  "evidence_types": [],
+  "high_stakes": false,
+  "requires_safety_review": false,
+  "allowed_output_mode": "STANDARD",
+  "authority": {
+    "textual": 0,
+    "traditional": 0,
+    "cross_source": 0,
+    "empirical": 0,
+    "implementation": 3,
+    "notes": "Legacy runtime mapping only; no approved P002 yoga provenance attached in P003."
+  },
+  "provenance": {
+    "source_ids": [],
+    "passage_ids": [],
+    "claim_ids": [],
+    "conflict_ids": [],
+    "legacy_provenance_status": "LEGACY_UNSOURCED"
+  },
+  "conditions": {
+    "all": [
+      {
+        "condition_id": null,
+        "subject": null,
+        "operator": null,
+        "object": null,
+        "value": null,
+        "value_entity_id": null,
+        "value_entity_ids": [],
+        "all": [],
+        "any": [
+          {
+            "condition_id": "COND-YOGA-000001",
+            "subject": {
+              "ref": "chart.relationships.jupiter_from_moon.house_distance",
+              "ref_type": "FACT_PATH",
+              "property_name": null
+            },
+            "operator": "EQUALS",
+            "object": null,
+            "value": 0,
+            "value_entity_id": null,
+            "value_entity_ids": [],
+            "all": [],
+            "any": [],
+            "none": [],
+            "notes": null
+          },
+          {
+            "condition_id": "COND-YOGA-000002",
+            "subject": {
+              "ref": "chart.relationships.jupiter_from_moon.house_distance",
+              "ref_type": "FACT_PATH",
+              "property_name": null
+            },
+            "operator": "EQUALS",
+            "object": null,
+            "value": 3,
+            "value_entity_id": null,
+            "value_entity_ids": [],
+            "all": [],
+            "any": [],
+            "none": [],
+            "notes": null
+          },
+          {
+            "condition_id": "COND-YOGA-000003",
+            "subject": {
+              "ref": "chart.relationships.jupiter_from_moon.house_distance",
+              "ref_type": "FACT_PATH",
+              "property_name": null
+            },
+            "operator": "EQUALS",
+            "object": null,
+            "value": 6,
+            "value_entity_id": null,
+            "value_entity_ids": [],
+            "all": [],
+            "any": [],
+            "none": [],
+            "notes": null
+          },
+          {
+            "condition_id": "COND-YOGA-000004",
+            "subject": {
+              "ref": "chart.relationships.jupiter_from_moon.house_distance",
+              "ref_type": "FACT_PATH",
+              "property_name": null
+            },
+            "operator": "EQUALS",
+            "object": null,
+            "value": 9,
+            "value_entity_id": null,
+            "value_entity_ids": [],
+            "all": [],
+            "any": [],
+            "none": [],
+            "notes": null
+          }
+        ],
+        "none": [],
+        "notes": null
+      }
+    ],
+    "any": [],
+    "none": []
+  },
+  "modifiers": [
+    {
+      "modifier_id": "MOD-YOGA-000001",
+      "condition": {
+        "condition_id": "COND-YOGA-000005",
+        "subject": {
+          "ref": "chart.relationships.jupiter_from_moon.house_distance",
+          "ref_type": "FACT_PATH",
+          "property_name": null
+        },
+        "operator": "EQUALS",
+        "object": null,
+        "value": 0,
+        "value_entity_id": null,
+        "value_entity_ids": [],
+        "all": [],
+        "any": [],
+        "none": [],
+        "notes": null
+      },
+      "effect": {
+        "type": "AMPLIFY",
+        "weight": 1.2,
+        "value": "STRONG",
+        "note": "Current runtime tags same-house Gaja Kesari as strong and other kendras as moderate."
+      }
+    }
+  ],
+  "exceptions": [],
+  "confirmations": [],
+  "activations": [],
+  "outcomes": [
+    {
+      "outcome_id": "OUT-YOGA-000001",
+      "outcome_type": "DETECTION",
+      "target": {
+        "ref": "chart.results.detected_yogas",
+        "ref_type": "FACT_PATH",
+        "property_name": null
+      },
+      "value": null,
+      "value_entity_id": "VEDA-YOGA-GAJA_KESARI",
+      "value_entity_ids": [],
+      "description": "Pilot mapping of the Gaja Kesari yoga currently detected by kundli_engine._detect_yogas."
+    }
+  ],
+  "depends_on_rule_ids": [],
+  "cancelled_by_rule_ids": []
+}

@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-08-10T00:00:00Z",
+  "created_by": "codex",
+  "updated_at": "2026-08-10T00:00:00Z",
+  "updated_by": "codex",
+  "change_reason": "Initial P003 legacy knowledge mapping pilot.",
+  "supersedes": null,
+  "superseded_by": null,
+  "notes": "This record proves that legacy dignity logic can be represented without falsely claiming provenance.",
+  "contract_version": "2026-08-10",
+  "legacy_mapping_id": "VEDA-LMP-000002",
+  "legacy_location": "engines/intelligence/kundli_engine.py",
+  "legacy_function": "KundliEngine._dignity",
+  "legacy_behavior": "Current runtime computes exalted, exalted_exact, debilitated, moolatrikona, own_sign, friendly, enemy, and neutral states using hard-coded sign and degree tables.",
+  "target_rule_ids": [
+    "VEDA-RUL-DIGNITY-000001"
+  ],
+  "mapping_status": "MAPPED_TO_SCHEMA",
+  "semantic_match": "PARTIAL",
+  "known_differences": [
+    "The pilot rule maps only one dignity branch and does not yet model the full dignity table.",
+    "No governed P002 claim provenance is attached yet for the legacy dignity table."
+  ],
+  "source_status": "LEGACY_UNSOURCED",
+  "migration_recommendation": "Keep the current dignity table untouched until P004/P005 validate or replace each branch with governed source evidence."
+}

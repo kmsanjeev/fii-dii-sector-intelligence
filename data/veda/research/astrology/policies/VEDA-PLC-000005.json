@@ -1,0 +1,24 @@
+{
+  "policy_id": "VEDA-PLC-000005",
+  "domain": "FINANCE",
+  "subdomain": null,
+  "high_stakes": true,
+  "requires_safety_review": true,
+  "allowed_output_mode": "TRADITIONAL_INTERPRETATION_ONLY",
+  "review_requirements": [
+    "Evidence type must distinguish classical versus empirical market claims",
+    "AstroFinance hypotheses must not be labeled as classical rules",
+    "Safety review required before recommendation-style user output"
+  ],
+  "version": "1.0.0",
+  "status": "APPROVED",
+  "created_at": "2026-08-10T00:00:00Z",
+  "created_by": "codex",
+  "updated_at": "2026-08-10T00:00:00Z",
+  "updated_by": "codex",
+  "change_reason": "Initial P002 high-stakes policy registration.",
+  "supersedes": null,
+  "superseded_by": null,
+  "notes": "This policy explicitly keeps classical Jyotisha evidence separate from AstroFinance or internal market hypotheses.",
+  "contract_version": "2026-08-10"
+}

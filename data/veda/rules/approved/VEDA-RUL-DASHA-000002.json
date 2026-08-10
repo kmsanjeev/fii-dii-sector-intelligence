@@ -1,0 +1,123 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-08-10T00:00:00Z",
+  "created_by": "codex",
+  "updated_at": "2026-08-10T00:00:00Z",
+  "updated_by": "codex",
+  "change_reason": "Initial P003 pilot rule registration.",
+  "supersedes": null,
+  "superseded_by": null,
+  "notes": "This rule demonstrates direct conflict linkage from rule to claim to conflict record.",
+  "contract_version": "2026-08-10",
+  "rule_id": "VEDA-RUL-DASHA-000002",
+  "title": "Vimshottari default-path governance with coexistence metadata",
+  "domain": "DASHA",
+  "subdomain": "VIMSHOTTARI_DASHA_FOUNDATIONS",
+  "rule_type": "DASHA",
+  "status": "APPROVED_WITH_CONDITIONS",
+  "source_class": "CLASSICAL_PRIMARY",
+  "approval_status": "APPROVED_WITH_CONDITIONS",
+  "evidence_types": [
+    "CLASSICAL_TEXTUAL",
+    "TRADITIONAL_INTERPRETIVE"
+  ],
+  "high_stakes": false,
+  "requires_safety_review": false,
+  "allowed_output_mode": "STANDARD",
+  "authority": {
+    "textual": 4,
+    "traditional": 4,
+    "cross_source": 3,
+    "empirical": 0,
+    "implementation": 2,
+    "notes": "P002 preserved a scoped contradiction between defaulting and coexistence."
+  },
+  "provenance": {
+    "source_ids": [
+      "VEDA-SRC-000001",
+      "VEDA-SRC-000002"
+    ],
+    "passage_ids": [
+      "VEDA-PSG-000004",
+      "VEDA-PSG-000005"
+    ],
+    "claim_ids": [
+      "VEDA-CLM-000005",
+      "VEDA-CLM-000006"
+    ],
+    "conflict_ids": [
+      "VEDA-CNF-000001"
+    ],
+    "legacy_provenance_status": null
+  },
+  "conditions": {
+    "all": [
+      {
+        "condition_id": "COND-DASHA-000004",
+        "subject": {
+          "ref": "chart.dashas.primary.entity_id",
+          "ref_type": "FACT_PATH",
+          "property_name": null
+        },
+        "operator": "EQUALS",
+        "object": null,
+        "value": null,
+        "value_entity_id": "VEDA-DASHA-VIMSHOTTARI",
+        "value_entity_ids": [],
+        "all": [],
+        "any": [],
+        "none": [],
+        "notes": null
+      }
+    ],
+    "any": [],
+    "none": []
+  },
+  "modifiers": [],
+  "exceptions": [
+    {
+      "exception_id": "EXC-DASHA-000001",
+      "conditions": {
+        "condition_id": "COND-DASHA-000005",
+        "subject": {
+          "ref": "chart.context.alternate_dasha_scope",
+          "ref_type": "FACT_PATH",
+          "property_name": null
+        },
+        "operator": "EQUALS",
+        "object": null,
+        "value": true,
+        "value_entity_id": null,
+        "value_entity_ids": [],
+        "all": [],
+        "any": [],
+        "none": [],
+        "notes": null
+      },
+      "result": {
+        "suppress_rule": true,
+        "override_value": "COEXIST",
+        "note": "Alternate dasha scope remains preserved rather than erased by a universal default."
+      }
+    }
+  ],
+  "confirmations": [],
+  "activations": [],
+  "outcomes": [
+    {
+      "outcome_id": "OUT-DASHA-000003",
+      "outcome_type": "CONTRACT_METADATA",
+      "target": {
+        "ref": "chart.dashas.primary.scope_policy",
+        "ref_type": "FACT_PATH",
+        "property_name": null
+      },
+      "value": "GENERAL_DEFAULT_NON_EXCLUSIVE",
+      "value_entity_id": null,
+      "value_entity_ids": [],
+      "description": "The governed ontology marks Vimshottari as the current default path without flattening alternate dasha evidence."
+    }
+  ],
+  "depends_on_rule_ids": [],
+  "cancelled_by_rule_ids": []
+}

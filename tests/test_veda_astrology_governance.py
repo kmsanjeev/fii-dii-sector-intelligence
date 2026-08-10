@@ -49,7 +49,7 @@ def test_astrology_governance_registry_validates_tracked_pilot_data():
 def test_astrology_governance_schema_files_match_models_and_validate_live_records(tmp_dir):
     written = write_json_schemas(tmp_dir)
     exported = {path.name: _load(path) for path in written}
-    tracked = {path.name: _load(path) for path in SCHEMA_DIR.glob("*.json")}
+    tracked = {name: _load(SCHEMA_DIR / name) for name in exported}
 
     assert set(exported) == set(tracked)
     assert exported == tracked

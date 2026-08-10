@@ -1,0 +1,188 @@
+{
+  "$defs": {
+    "ConditionNode": {
+      "additionalProperties": false,
+      "properties": {
+        "condition_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Condition Id"
+        },
+        "subject": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OperandReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "operator": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConditionOperator"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "object": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OperandReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "value": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "value_entity_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value Entity Id"
+        },
+        "value_entity_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Value Entity Ids",
+          "type": "array"
+        },
+        "all": {
+          "items": {
+            "$ref": "#/$defs/ConditionNode"
+          },
+          "title": "All",
+          "type": "array"
+        },
+        "any": {
+          "items": {
+            "$ref": "#/$defs/ConditionNode"
+          },
+          "title": "Any",
+          "type": "array"
+        },
+        "none": {
+          "items": {
+            "$ref": "#/$defs/ConditionNode"
+          },
+          "title": "None",
+          "type": "array"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "title": "ConditionNode",
+      "type": "object"
+    },
+    "ConditionOperator": {
+      "enum": [
+        "EQUALS",
+        "NOT_EQUALS",
+        "IN",
+        "NOT_IN",
+        "GREATER_THAN",
+        "LESS_THAN",
+        "BETWEEN",
+        "OCCUPIES",
+        "RULES",
+        "ASPECTS",
+        "CONJUNCT",
+        "EXCHANGES",
+        "RECEIVES_ASPECT",
+        "EXALTED",
+        "DEBILITATED",
+        "OWN_SIGN",
+        "MOOLATRIKONA",
+        "PRESENT",
+        "ABSENT"
+      ],
+      "title": "ConditionOperator",
+      "type": "string"
+    },
+    "OperandKind": {
+      "enum": [
+        "ENTITY",
+        "FACT_PATH",
+        "RULE",
+        "CLAIM",
+        "PASSAGE",
+        "SOURCE",
+        "CONFLICT",
+        "LITERAL"
+      ],
+      "title": "OperandKind",
+      "type": "string"
+    },
+    "OperandReference": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "title": "Ref",
+          "type": "string"
+        },
+        "ref_type": {
+          "$ref": "#/$defs/OperandKind"
+        },
+        "property_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Property Name"
+        }
+      },
+      "required": [
+        "ref",
+        "ref_type"
+      ],
+      "title": "OperandReference",
+      "type": "object"
+    }
+  },
+  "$ref": "#/$defs/ConditionNode"
+}

@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-08-10T00:00:00Z",
+  "created_by": "codex",
+  "updated_at": "2026-08-10T00:00:00Z",
+  "updated_by": "codex",
+  "change_reason": "Initial P003 legacy knowledge mapping pilot.",
+  "supersedes": null,
+  "superseded_by": null,
+  "notes": "This record demonstrates that compound legacy yoga logic can be mapped into nested conditions and modifiers.",
+  "contract_version": "2026-08-10",
+  "legacy_mapping_id": "VEDA-LMP-000003",
+  "legacy_location": "engines/intelligence/kundli_engine.py",
+  "legacy_function": "KundliEngine._detect_yogas",
+  "legacy_behavior": "Current runtime detects Gaja Kesari when Jupiter is in a kendra from the Moon and labels same-house cases as strong.",
+  "target_rule_ids": [
+    "VEDA-RUL-YOGA-000001"
+  ],
+  "mapping_status": "MAPPED_TO_SCHEMA",
+  "semantic_match": "EXACT",
+  "known_differences": [
+    "The pilot rule preserves runtime logic only and does not yet attach governed classical yoga provenance."
+  ],
+  "source_status": "LEGACY_UNSOURCED",
+  "migration_recommendation": "Use this mapping as the bridge for future yoga-source validation instead of rewriting the live detector now."
+}

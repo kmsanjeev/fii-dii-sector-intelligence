@@ -1,0 +1,61 @@
+{
+  "register_id": "VEDA-LGC-000001",
+  "scope": "Initial sample register for existing production astrology runtime paths",
+  "entries": [
+    {
+      "legacy_rule_id": "VEDA-LRY-000001",
+      "capability": "Personal kundli Vimshottari output path",
+      "module_path": "engines/ai/chatbot/tools/kundli_calculator.py::compute_personal_kundli",
+      "status": "LEGACY_UNSOURCED",
+      "mapped_claim_ids": [
+        "VEDA-CLM-000001",
+        "VEDA-CLM-000002"
+      ],
+      "provenance_note": "Current runtime behavior is protected by P001 golden fixtures but does not yet persist governed source identifiers.",
+      "migration_strategy": "Validate against governed claims in P004 before any production migration."
+    },
+    {
+      "legacy_rule_id": "VEDA-LRY-000002",
+      "capability": "REST human kundli Vimshottari output path",
+      "module_path": "engines/intelligence/kundli_engine.py::compute_human",
+      "status": "LEGACY_UNSOURCED",
+      "mapped_claim_ids": [
+        "VEDA-CLM-000001",
+        "VEDA-CLM-000002"
+      ],
+      "provenance_note": "The runtime path is preserved and regression-tested, but its rule provenance remains outside the governed registry.",
+      "migration_strategy": "Compare current behavior to the governed research baseline without forcing convergence in P002."
+    },
+    {
+      "legacy_rule_id": "VEDA-LRY-000003",
+      "capability": "Stock kundli AstroFinance path",
+      "module_path": "engines/intelligence/kundli_engine.py::compute_stock",
+      "status": "LEGACY_UNSOURCED",
+      "mapped_claim_ids": [],
+      "provenance_note": "AstroFinance and classical textual evidence are not yet separated by governed identifiers in the production stock pipeline.",
+      "migration_strategy": "Keep AstroFinance hypotheses separate from classical claims during later research and ontology work."
+    },
+    {
+      "legacy_rule_id": "VEDA-LRY-000004",
+      "capability": "Kundli interpretation helper layer",
+      "module_path": "engines/intelligence/kundli_interpretator.py",
+      "status": "LEGACY_PARTIALLY_SOURCED",
+      "mapped_claim_ids": [
+        "VEDA-CLM-000004"
+      ],
+      "provenance_note": "Interpretation behavior exists, but source traces are incomplete and not machine-readable.",
+      "migration_strategy": "Use P002 claim records as future targets while leaving the current interpretation path untouched in this phase."
+    }
+  ],
+  "version": "1.0.0",
+  "status": "APPROVED",
+  "created_at": "2026-08-10T00:00:00Z",
+  "created_by": "codex",
+  "updated_at": "2026-08-10T00:00:00Z",
+  "updated_by": "codex",
+  "change_reason": "Initial P002 sample legacy register.",
+  "supersedes": null,
+  "superseded_by": null,
+  "notes": "This is a sample mapping mechanism only. P002 does not migrate the current runtime into governed rule storage.",
+  "contract_version": "2026-08-10"
+}

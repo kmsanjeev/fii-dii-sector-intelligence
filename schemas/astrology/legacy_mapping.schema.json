@@ -1,0 +1,155 @@
+{
+  "$defs": {
+    "LegacyMappingStatus": {
+      "enum": [
+        "LEGACY_UNSOURCED",
+        "LEGACY_PARTIALLY_SOURCED",
+        "SOURCE_VALIDATED",
+        "MAPPED_TO_SCHEMA",
+        "MIGRATED",
+        "SUPERSEDED"
+      ],
+      "title": "LegacyMappingStatus",
+      "type": "string"
+    },
+    "SemanticMatch": {
+      "enum": [
+        "EXACT",
+        "PARTIAL",
+        "APPROXIMATE",
+        "DIVERGENT"
+      ],
+      "title": "SemanticMatch",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "default": "1.0.0",
+      "title": "Version",
+      "type": "string"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "title": "Created By",
+      "type": "string"
+    },
+    "updated_at": {
+      "title": "Updated At",
+      "type": "string"
+    },
+    "updated_by": {
+      "title": "Updated By",
+      "type": "string"
+    },
+    "change_reason": {
+      "title": "Change Reason",
+      "type": "string"
+    },
+    "supersedes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supersedes"
+    },
+    "superseded_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Superseded By"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    },
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "legacy_mapping_id": {
+      "title": "Legacy Mapping Id",
+      "type": "string"
+    },
+    "legacy_location": {
+      "title": "Legacy Location",
+      "type": "string"
+    },
+    "legacy_function": {
+      "title": "Legacy Function",
+      "type": "string"
+    },
+    "legacy_behavior": {
+      "title": "Legacy Behavior",
+      "type": "string"
+    },
+    "target_rule_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Target Rule Ids",
+      "type": "array"
+    },
+    "mapping_status": {
+      "$ref": "#/$defs/LegacyMappingStatus"
+    },
+    "semantic_match": {
+      "$ref": "#/$defs/SemanticMatch"
+    },
+    "known_differences": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Known Differences",
+      "type": "array"
+    },
+    "source_status": {
+      "$ref": "#/$defs/LegacyMappingStatus"
+    },
+    "migration_recommendation": {
+      "title": "Migration Recommendation",
+      "type": "string"
+    }
+  },
+  "required": [
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by",
+    "change_reason",
+    "legacy_mapping_id",
+    "legacy_location",
+    "legacy_function",
+    "legacy_behavior",
+    "mapping_status",
+    "semantic_match",
+    "source_status",
+    "migration_recommendation"
+  ],
+  "title": "LegacyKnowledgeMappingRecord",
+  "type": "object"
+}

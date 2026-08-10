@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-08-10T00:00:00Z",
+  "created_by": "codex",
+  "updated_at": "2026-08-10T00:00:00Z",
+  "updated_by": "codex",
+  "change_reason": "Initial P003 legacy knowledge mapping pilot.",
+  "supersedes": null,
+  "superseded_by": null,
+  "notes": "This mapping anchors the strongest governed rule pilot to the protected Vimshottari runtime path.",
+  "contract_version": "2026-08-10",
+  "legacy_mapping_id": "VEDA-LMP-000001",
+  "legacy_location": "engines/intelligence/kundli_engine.py",
+  "legacy_function": "KundliEngine._vimshottari_dasha",
+  "legacy_behavior": "Current runtime derives Mahadasha, Antardasha, and Pratyantardasha using the Moon's Janma Nakshatra, the hard-coded Vimshottari sequence, and a remaining-portion birth-balance calculation.",
+  "target_rule_ids": [
+    "VEDA-RUL-DASHA-000001",
+    "VEDA-RUL-DASHA-000002"
+  ],
+  "mapping_status": "MAPPED_TO_SCHEMA",
+  "semantic_match": "PARTIAL",
+  "known_differences": [
+    "The runtime does not currently persist governed claim/source identifiers.",
+    "The runtime does not currently surface coexistence metadata for alternate dasha scopes."
+  ],
+  "source_status": "SOURCE_VALIDATED",
+  "migration_recommendation": "Retain the current deterministic implementation and add an adapter in a later phase rather than rewriting the engine."
+}

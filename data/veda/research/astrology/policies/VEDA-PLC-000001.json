@@ -1,0 +1,24 @@
+{
+  "policy_id": "VEDA-PLC-000001",
+  "domain": "HEALTH",
+  "subdomain": null,
+  "high_stakes": true,
+  "requires_safety_review": true,
+  "allowed_output_mode": "TRADITIONAL_INTERPRETATION_ONLY",
+  "review_requirements": [
+    "Classical source trace required",
+    "Domain approver sign-off required",
+    "Safety review required before end-user exposure"
+  ],
+  "version": "1.0.0",
+  "status": "APPROVED",
+  "created_at": "2026-08-10T00:00:00Z",
+  "created_by": "codex",
+  "updated_at": "2026-08-10T00:00:00Z",
+  "updated_by": "codex",
+  "change_reason": "Initial P002 high-stakes policy registration.",
+  "supersedes": null,
+  "superseded_by": null,
+  "notes": "Health-related astrology content must remain provenance-aware and review-gated.",
+  "contract_version": "2026-08-10"
+}

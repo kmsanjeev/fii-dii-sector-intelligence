@@ -1,0 +1,38 @@
+{
+  "evaluation_id": "VEDA-EVL-000001",
+  "rule_id": "VEDA-RUL-YOGA-000001",
+  "matched": true,
+  "conditions_met": [
+    "COND-YOGA-000001"
+  ],
+  "conditions_failed": [],
+  "modifiers_applied": [
+    "MOD-YOGA-000001"
+  ],
+  "exceptions_triggered": [],
+  "activation": [
+    "NATAL"
+  ],
+  "confidence": 0.82,
+  "evidence": {
+    "claim_ids": [],
+    "passage_ids": [],
+    "source_ids": [],
+    "conflict_ids": []
+  },
+  "outputs": [
+    {
+      "outcome_id": "OUT-EVAL-000001",
+      "outcome_type": "DETECTION",
+      "target": {
+        "ref": "chart.results.detected_yogas",
+        "ref_type": "FACT_PATH",
+        "property_name": null
+      },
+      "value": null,
+      "value_entity_id": "VEDA-YOGA-GAJA_KESARI",
+      "value_entity_ids": [],
+      "description": "Sample evaluation output showing why a future rule engine would report Gaja Kesari."
+    }
+  ]
+}

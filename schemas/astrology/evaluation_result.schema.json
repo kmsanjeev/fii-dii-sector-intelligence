@@ -1,0 +1,233 @@
+{
+  "$defs": {
+    "EvaluationEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Claim Ids",
+          "type": "array"
+        },
+        "passage_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Passage Ids",
+          "type": "array"
+        },
+        "source_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Ids",
+          "type": "array"
+        },
+        "conflict_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Conflict Ids",
+          "type": "array"
+        }
+      },
+      "title": "EvaluationEvidence",
+      "type": "object"
+    },
+    "OperandKind": {
+      "enum": [
+        "ENTITY",
+        "FACT_PATH",
+        "RULE",
+        "CLAIM",
+        "PASSAGE",
+        "SOURCE",
+        "CONFLICT",
+        "LITERAL"
+      ],
+      "title": "OperandKind",
+      "type": "string"
+    },
+    "OperandReference": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "title": "Ref",
+          "type": "string"
+        },
+        "ref_type": {
+          "$ref": "#/$defs/OperandKind"
+        },
+        "property_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Property Name"
+        }
+      },
+      "required": [
+        "ref",
+        "ref_type"
+      ],
+      "title": "OperandReference",
+      "type": "object"
+    },
+    "OutcomeType": {
+      "enum": [
+        "CLASSIFICATION",
+        "DETECTION",
+        "TIMING",
+        "SIGNAL",
+        "EXPLANATION",
+        "CONTRACT_METADATA"
+      ],
+      "title": "OutcomeType",
+      "type": "string"
+    },
+    "RuleOutcome": {
+      "additionalProperties": false,
+      "properties": {
+        "outcome_id": {
+          "title": "Outcome Id",
+          "type": "string"
+        },
+        "outcome_type": {
+          "$ref": "#/$defs/OutcomeType"
+        },
+        "target": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OperandReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "value": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "value_entity_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value Entity Id"
+        },
+        "value_entity_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Value Entity Ids",
+          "type": "array"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "outcome_id",
+        "outcome_type",
+        "description"
+      ],
+      "title": "RuleOutcome",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "evaluation_id": {
+      "title": "Evaluation Id",
+      "type": "string"
+    },
+    "rule_id": {
+      "title": "Rule Id",
+      "type": "string"
+    },
+    "matched": {
+      "title": "Matched",
+      "type": "boolean"
+    },
+    "conditions_met": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Conditions Met",
+      "type": "array"
+    },
+    "conditions_failed": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Conditions Failed",
+      "type": "array"
+    },
+    "modifiers_applied": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Modifiers Applied",
+      "type": "array"
+    },
+    "exceptions_triggered": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Exceptions Triggered",
+      "type": "array"
+    },
+    "activation": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Activation",
+      "type": "array"
+    },
+    "confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "evidence": {
+      "$ref": "#/$defs/EvaluationEvidence"
+    },
+    "outputs": {
+      "items": {
+        "$ref": "#/$defs/RuleOutcome"
+      },
+      "title": "Outputs",
+      "type": "array"
+    }
+  },
+  "required": [
+    "evaluation_id",
+    "rule_id",
+    "matched",
+    "confidence",
+    "evidence"
+  ],
+  "title": "RuleEvaluationResultRecord",
+  "type": "object"
+}

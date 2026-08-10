@@ -1,0 +1,242 @@
+{
+  "$defs": {
+    "ContractChartType": {
+      "enum": [
+        "PERSONAL_KUNDLI",
+        "STOCK_KUNDLI",
+        "COUNTRY_KUNDLI",
+        "GENERIC"
+      ],
+      "title": "ContractChartType",
+      "type": "string"
+    },
+    "DashaFact": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "sequence_order": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Sequence Order",
+          "type": "array"
+        },
+        "birth_balance_basis": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Birth Balance Basis"
+        }
+      },
+      "required": [
+        "entity_id"
+      ],
+      "title": "DashaFact",
+      "type": "object"
+    },
+    "HouseFact": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "rashi": {
+          "title": "Rashi",
+          "type": "string"
+        },
+        "lord": {
+          "title": "Lord",
+          "type": "string"
+        },
+        "occupants": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Occupants",
+          "type": "array"
+        }
+      },
+      "required": [
+        "entity_id",
+        "rashi",
+        "lord"
+      ],
+      "title": "HouseFact",
+      "type": "object"
+    },
+    "LagnaFact": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "longitude": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Longitude"
+        }
+      },
+      "required": [
+        "entity_id"
+      ],
+      "title": "LagnaFact",
+      "type": "object"
+    },
+    "PlanetFact": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "longitude": {
+          "title": "Longitude",
+          "type": "number"
+        },
+        "rashi": {
+          "title": "Rashi",
+          "type": "string"
+        },
+        "bhava": {
+          "title": "Bhava",
+          "type": "string"
+        },
+        "nakshatra": {
+          "title": "Nakshatra",
+          "type": "string"
+        },
+        "pada": {
+          "maximum": 4,
+          "minimum": 1,
+          "title": "Pada",
+          "type": "integer"
+        },
+        "retrograde": {
+          "title": "Retrograde",
+          "type": "boolean"
+        },
+        "dignity": {
+          "title": "Dignity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_id",
+        "longitude",
+        "rashi",
+        "bhava",
+        "nakshatra",
+        "pada",
+        "retrograde",
+        "dignity"
+      ],
+      "title": "PlanetFact",
+      "type": "object"
+    },
+    "VargaFact": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "chart_signs": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Chart Signs",
+          "type": "object"
+        }
+      },
+      "required": [
+        "entity_id"
+      ],
+      "title": "VargaFact",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "chart_id": {
+      "title": "Chart Id",
+      "type": "string"
+    },
+    "chart_type": {
+      "$ref": "#/$defs/ContractChartType"
+    },
+    "lagna": {
+      "$ref": "#/$defs/LagnaFact"
+    },
+    "planets": {
+      "items": {
+        "$ref": "#/$defs/PlanetFact"
+      },
+      "title": "Planets",
+      "type": "array"
+    },
+    "houses": {
+      "items": {
+        "$ref": "#/$defs/HouseFact"
+      },
+      "title": "Houses",
+      "type": "array"
+    },
+    "vargas": {
+      "items": {
+        "$ref": "#/$defs/VargaFact"
+      },
+      "title": "Vargas",
+      "type": "array"
+    },
+    "dashas": {
+      "items": {
+        "$ref": "#/$defs/DashaFact"
+      },
+      "title": "Dashas",
+      "type": "array"
+    },
+    "relationships": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Relationships",
+      "type": "object"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "chart_id",
+    "chart_type",
+    "lagna"
+  ],
+  "title": "ChartFactsContract",
+  "type": "object"
+}

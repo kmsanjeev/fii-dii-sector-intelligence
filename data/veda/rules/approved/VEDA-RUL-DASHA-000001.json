@@ -1,0 +1,162 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-08-10T00:00:00Z",
+  "created_by": "codex",
+  "updated_at": "2026-08-10T00:00:00Z",
+  "updated_by": "codex",
+  "change_reason": "Initial P003 pilot rule registration.",
+  "supersedes": null,
+  "superseded_by": null,
+  "notes": "Governed rule captures the research-approved baseline for the current Vimshottari implementation path.",
+  "contract_version": "2026-08-10",
+  "rule_id": "VEDA-RUL-DASHA-000001",
+  "title": "Vimshottari sequence and birth-balance baseline",
+  "domain": "DASHA",
+  "subdomain": "VIMSHOTTARI_DASHA_FOUNDATIONS",
+  "rule_type": "FOUNDATIONAL_ALGORITHM",
+  "status": "IMPLEMENTATION_READY",
+  "source_class": "CLASSICAL_PRIMARY",
+  "approval_status": "IMPLEMENTATION_READY",
+  "evidence_types": [
+    "CLASSICAL_TEXTUAL"
+  ],
+  "high_stakes": false,
+  "requires_safety_review": false,
+  "allowed_output_mode": "STANDARD",
+  "authority": {
+    "textual": 4,
+    "traditional": 4,
+    "cross_source": 4,
+    "empirical": 0,
+    "implementation": 3,
+    "notes": "P002 pilot sources establish order and Moon-based balance without migrating runtime logic."
+  },
+  "provenance": {
+    "source_ids": [
+      "VEDA-SRC-000001",
+      "VEDA-SRC-000003"
+    ],
+    "passage_ids": [
+      "VEDA-PSG-000001",
+      "VEDA-PSG-000002",
+      "VEDA-PSG-000003"
+    ],
+    "claim_ids": [
+      "VEDA-CLM-000001",
+      "VEDA-CLM-000002"
+    ],
+    "conflict_ids": [],
+    "legacy_provenance_status": null
+  },
+  "conditions": {
+    "all": [
+      {
+        "condition_id": "COND-DASHA-000001",
+        "subject": {
+          "ref": "chart.dashas.primary.entity_id",
+          "ref_type": "FACT_PATH",
+          "property_name": null
+        },
+        "operator": "EQUALS",
+        "object": null,
+        "value": null,
+        "value_entity_id": "VEDA-DASHA-VIMSHOTTARI",
+        "value_entity_ids": [],
+        "all": [],
+        "any": [],
+        "none": [],
+        "notes": null
+      },
+      {
+        "condition_id": "COND-DASHA-000002",
+        "subject": {
+          "ref": "chart.dashas.primary.sequence_order",
+          "ref_type": "FACT_PATH",
+          "property_name": null
+        },
+        "operator": "EQUALS",
+        "object": null,
+        "value": null,
+        "value_entity_id": null,
+        "value_entity_ids": [
+          "VEDA-GRAHA-KETU",
+          "VEDA-GRAHA-VENUS",
+          "VEDA-GRAHA-SUN",
+          "VEDA-GRAHA-MOON",
+          "VEDA-GRAHA-MARS",
+          "VEDA-GRAHA-RAHU",
+          "VEDA-GRAHA-JUPITER",
+          "VEDA-GRAHA-SATURN",
+          "VEDA-GRAHA-MERCURY"
+        ],
+        "all": [],
+        "any": [],
+        "none": [],
+        "notes": null
+      },
+      {
+        "condition_id": "COND-DASHA-000003",
+        "subject": {
+          "ref": "chart.dashas.primary.birth_balance_basis",
+          "ref_type": "FACT_PATH",
+          "property_name": null
+        },
+        "operator": "EQUALS",
+        "object": null,
+        "value": "MOON_NAKSHATRA_REMAINDER",
+        "value_entity_id": null,
+        "value_entity_ids": [],
+        "all": [],
+        "any": [],
+        "none": [],
+        "notes": null
+      }
+    ],
+    "any": [],
+    "none": []
+  },
+  "modifiers": [],
+  "exceptions": [],
+  "confirmations": [],
+  "activations": [],
+  "outcomes": [
+    {
+      "outcome_id": "OUT-DASHA-000001",
+      "outcome_type": "CONTRACT_METADATA",
+      "target": {
+        "ref": "chart.dashas.primary.sequence_order",
+        "ref_type": "FACT_PATH",
+        "property_name": null
+      },
+      "value": null,
+      "value_entity_id": null,
+      "value_entity_ids": [
+        "VEDA-GRAHA-KETU",
+        "VEDA-GRAHA-VENUS",
+        "VEDA-GRAHA-SUN",
+        "VEDA-GRAHA-MOON",
+        "VEDA-GRAHA-MARS",
+        "VEDA-GRAHA-RAHU",
+        "VEDA-GRAHA-JUPITER",
+        "VEDA-GRAHA-SATURN",
+        "VEDA-GRAHA-MERCURY"
+      ],
+      "description": "The governed rule preserves the current Vimshottari order without altering runtime calculation code."
+    },
+    {
+      "outcome_id": "OUT-DASHA-000002",
+      "outcome_type": "CONTRACT_METADATA",
+      "target": {
+        "ref": "chart.dashas.primary.birth_balance_basis",
+        "ref_type": "FACT_PATH",
+        "property_name": null
+      },
+      "value": "MOON_NAKSHATRA_REMAINDER",
+      "value_entity_id": null,
+      "value_entity_ids": [],
+      "description": "Birth balance is derived from the unelapsed portion of the Moon's Janma Nakshatra."
+    }
+  ],
+  "depends_on_rule_ids": [],
+  "cancelled_by_rule_ids": []
+}

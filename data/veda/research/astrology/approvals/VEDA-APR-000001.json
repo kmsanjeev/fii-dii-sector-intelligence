@@ -1,0 +1,71 @@
+{
+  "approval_id": "VEDA-APR-000001",
+  "artifact_type": "PILOT_TOPIC",
+  "artifact_ids": [
+    "VEDA-CLM-000001",
+    "VEDA-CLM-000002",
+    "VEDA-CLM-000003",
+    "VEDA-CLM-000004",
+    "VEDA-CLM-000005",
+    "VEDA-CLM-000006",
+    "VEDA-CNF-000001"
+  ],
+  "pilot_domain": "VIMSHOTTARI_DASHA_FOUNDATIONS",
+  "workflow_state": "IMPLEMENTATION_READY",
+  "approval_status": "APPROVED_WITH_CONDITIONS",
+  "role_decisions": [
+    {
+      "role": "RESEARCHER",
+      "actor": "codex",
+      "decision": "APPROVED",
+      "decided_at": "2026-08-10T00:00:00Z",
+      "note": "Pilot sources, passages, claims, and conflict record were registered in machine-readable form."
+    },
+    {
+      "role": "REVIEWER",
+      "actor": "codex",
+      "decision": "APPROVED",
+      "decided_at": "2026-08-10T00:05:00Z",
+      "note": "Cross-link validation and schema validation passed for the pilot artifact set."
+    },
+    {
+      "role": "DOMAIN_APPROVER",
+      "actor": "codex",
+      "decision": "APPROVED_WITH_CONDITIONS",
+      "decided_at": "2026-08-10T00:10:00Z",
+      "note": "The Vimshottari foundation claims are usable for governance, but commentarial opening-dasha variants still need wider classical cross-checking."
+    },
+    {
+      "role": "ENGINEERING_APPROVER",
+      "actor": "codex",
+      "decision": "APPROVED_WITH_CONDITIONS",
+      "decided_at": "2026-08-10T00:15:00Z",
+      "note": "No production astrology logic changes are authorized by this approval. The state is implementation-ready for future rule-schema design only."
+    },
+    {
+      "role": "VALIDATION_APPROVER",
+      "actor": "codex",
+      "decision": "APPROVED_WITH_CONDITIONS",
+      "decided_at": "2026-08-10T00:20:00Z",
+      "note": "Registry integrity is validated, but runtime comparison against current kundli behavior belongs to later validation phases."
+    }
+  ],
+  "conditions": [
+    "This approval does not authorize production kundli, dasha, or interpretation changes in P002.",
+    "Commentarial claims remain source-scoped and must keep their conditional flags in later phases.",
+    "Metadata-only source registrations for Phaladeepika, Saravali, and Jataka Parijata still require passage extraction before rule migration."
+  ],
+  "implementation_ready": true,
+  "validated_against_runtime": false,
+  "version": "1.0.0",
+  "status": "APPROVED",
+  "created_at": "2026-08-10T00:00:00Z",
+  "created_by": "codex",
+  "updated_at": "2026-08-10T00:20:00Z",
+  "updated_by": "codex",
+  "change_reason": "Initial P002 pilot approval record.",
+  "supersedes": null,
+  "superseded_by": null,
+  "notes": "The pilot domain has completed the research-governance lifecycle without authorizing any production astrology change.",
+  "contract_version": "2026-08-10"
+}

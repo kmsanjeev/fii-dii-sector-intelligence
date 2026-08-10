@@ -1,0 +1,892 @@
+{
+  "$defs": {
+    "AllowedOutputMode": {
+      "enum": [
+        "STANDARD",
+        "TRADITIONAL_INTERPRETATION_ONLY",
+        "RESEARCH_ONLY",
+        "NO_END_USER_OUTPUT"
+      ],
+      "title": "AllowedOutputMode",
+      "type": "string"
+    },
+    "ApprovalStatus": {
+      "enum": [
+        "NOT_SUBMITTED",
+        "UNDER_REVIEW",
+        "APPROVED",
+        "APPROVED_WITH_CONDITIONS",
+        "REJECTED",
+        "IMPLEMENTATION_READY"
+      ],
+      "title": "ApprovalStatus",
+      "type": "string"
+    },
+    "ConditionNode": {
+      "additionalProperties": false,
+      "properties": {
+        "condition_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Condition Id"
+        },
+        "subject": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OperandReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "operator": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConditionOperator"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "object": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OperandReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "value": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "value_entity_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value Entity Id"
+        },
+        "value_entity_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Value Entity Ids",
+          "type": "array"
+        },
+        "all": {
+          "items": {
+            "$ref": "#/$defs/ConditionNode"
+          },
+          "title": "All",
+          "type": "array"
+        },
+        "any": {
+          "items": {
+            "$ref": "#/$defs/ConditionNode"
+          },
+          "title": "Any",
+          "type": "array"
+        },
+        "none": {
+          "items": {
+            "$ref": "#/$defs/ConditionNode"
+          },
+          "title": "None",
+          "type": "array"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "title": "ConditionNode",
+      "type": "object"
+    },
+    "ConditionOperator": {
+      "enum": [
+        "EQUALS",
+        "NOT_EQUALS",
+        "IN",
+        "NOT_IN",
+        "GREATER_THAN",
+        "LESS_THAN",
+        "BETWEEN",
+        "OCCUPIES",
+        "RULES",
+        "ASPECTS",
+        "CONJUNCT",
+        "EXCHANGES",
+        "RECEIVES_ASPECT",
+        "EXALTED",
+        "DEBILITATED",
+        "OWN_SIGN",
+        "MOOLATRIKONA",
+        "PRESENT",
+        "ABSENT"
+      ],
+      "title": "ConditionOperator",
+      "type": "string"
+    },
+    "ConfirmationSource": {
+      "enum": [
+        "D1",
+        "VARGA",
+        "DASHA",
+        "TRANSIT",
+        "KARAKA",
+        "HOUSE_LORD",
+        "YOGA"
+      ],
+      "title": "ConfirmationSource",
+      "type": "string"
+    },
+    "EvidenceType": {
+      "enum": [
+        "CLASSICAL_TEXTUAL",
+        "TRADITIONAL_INTERPRETIVE",
+        "MODERN_ASTROLOGY",
+        "EMPIRICAL_MARKET",
+        "INTERNAL_HYPOTHESIS"
+      ],
+      "title": "EvidenceType",
+      "type": "string"
+    },
+    "ExceptionResult": {
+      "additionalProperties": false,
+      "properties": {
+        "suppress_rule": {
+          "default": false,
+          "title": "Suppress Rule",
+          "type": "boolean"
+        },
+        "override_value": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Override Value"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "title": "ExceptionResult",
+      "type": "object"
+    },
+    "LegacyMappingStatus": {
+      "enum": [
+        "LEGACY_UNSOURCED",
+        "LEGACY_PARTIALLY_SOURCED",
+        "SOURCE_VALIDATED",
+        "MAPPED_TO_SCHEMA",
+        "MIGRATED",
+        "SUPERSEDED"
+      ],
+      "title": "LegacyMappingStatus",
+      "type": "string"
+    },
+    "ModifierEffect": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "$ref": "#/$defs/ModifierType"
+        },
+        "weight": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Weight"
+        },
+        "value": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "title": "ModifierEffect",
+      "type": "object"
+    },
+    "ModifierType": {
+      "enum": [
+        "AMPLIFY",
+        "REDUCE",
+        "SUPPRESS",
+        "CANCEL",
+        "ACTIVATE",
+        "CONFIRM",
+        "ANNOTATE"
+      ],
+      "title": "ModifierType",
+      "type": "string"
+    },
+    "OperandKind": {
+      "enum": [
+        "ENTITY",
+        "FACT_PATH",
+        "RULE",
+        "CLAIM",
+        "PASSAGE",
+        "SOURCE",
+        "CONFLICT",
+        "LITERAL"
+      ],
+      "title": "OperandKind",
+      "type": "string"
+    },
+    "OperandReference": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "title": "Ref",
+          "type": "string"
+        },
+        "ref_type": {
+          "$ref": "#/$defs/OperandKind"
+        },
+        "property_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Property Name"
+        }
+      },
+      "required": [
+        "ref",
+        "ref_type"
+      ],
+      "title": "OperandReference",
+      "type": "object"
+    },
+    "OutcomeType": {
+      "enum": [
+        "CLASSIFICATION",
+        "DETECTION",
+        "TIMING",
+        "SIGNAL",
+        "EXPLANATION",
+        "CONTRACT_METADATA"
+      ],
+      "title": "OutcomeType",
+      "type": "string"
+    },
+    "RuleActivation": {
+      "additionalProperties": false,
+      "properties": {
+        "activation_id": {
+          "title": "Activation Id",
+          "type": "string"
+        },
+        "activation_type": {
+          "title": "Activation Type",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "condition": {
+          "$ref": "#/$defs/ConditionNode"
+        }
+      },
+      "required": [
+        "activation_id",
+        "activation_type",
+        "description",
+        "condition"
+      ],
+      "title": "RuleActivation",
+      "type": "object"
+    },
+    "RuleAuthorityProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "textual": {
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Textual",
+          "type": "integer"
+        },
+        "traditional": {
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Traditional",
+          "type": "integer"
+        },
+        "cross_source": {
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Cross Source",
+          "type": "integer"
+        },
+        "empirical": {
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Empirical",
+          "type": "integer"
+        },
+        "implementation": {
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Implementation",
+          "type": "integer"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "required": [
+        "textual",
+        "traditional",
+        "cross_source",
+        "empirical",
+        "implementation"
+      ],
+      "title": "RuleAuthorityProfile",
+      "type": "object"
+    },
+    "RuleConditionSet": {
+      "additionalProperties": false,
+      "properties": {
+        "all": {
+          "items": {
+            "$ref": "#/$defs/ConditionNode"
+          },
+          "title": "All",
+          "type": "array"
+        },
+        "any": {
+          "items": {
+            "$ref": "#/$defs/ConditionNode"
+          },
+          "title": "Any",
+          "type": "array"
+        },
+        "none": {
+          "items": {
+            "$ref": "#/$defs/ConditionNode"
+          },
+          "title": "None",
+          "type": "array"
+        }
+      },
+      "title": "RuleConditionSet",
+      "type": "object"
+    },
+    "RuleConfirmation": {
+      "additionalProperties": false,
+      "properties": {
+        "confirmation_id": {
+          "title": "Confirmation Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/ConfirmationSource"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "condition": {
+          "$ref": "#/$defs/ConditionNode"
+        }
+      },
+      "required": [
+        "confirmation_id",
+        "source",
+        "description",
+        "condition"
+      ],
+      "title": "RuleConfirmation",
+      "type": "object"
+    },
+    "RuleException": {
+      "additionalProperties": false,
+      "properties": {
+        "exception_id": {
+          "title": "Exception Id",
+          "type": "string"
+        },
+        "conditions": {
+          "$ref": "#/$defs/ConditionNode"
+        },
+        "result": {
+          "$ref": "#/$defs/ExceptionResult"
+        }
+      },
+      "required": [
+        "exception_id",
+        "conditions",
+        "result"
+      ],
+      "title": "RuleException",
+      "type": "object"
+    },
+    "RuleLifecycleStatus": {
+      "enum": [
+        "DRAFT",
+        "RESEARCHING",
+        "SOURCE_VALIDATED",
+        "APPROVED",
+        "APPROVED_WITH_CONDITIONS",
+        "IMPLEMENTATION_READY",
+        "IMPLEMENTED",
+        "VALIDATED",
+        "DEPRECATED",
+        "SUPERSEDED",
+        "REJECTED"
+      ],
+      "title": "RuleLifecycleStatus",
+      "type": "string"
+    },
+    "RuleModifier": {
+      "additionalProperties": false,
+      "properties": {
+        "modifier_id": {
+          "title": "Modifier Id",
+          "type": "string"
+        },
+        "condition": {
+          "$ref": "#/$defs/ConditionNode"
+        },
+        "effect": {
+          "$ref": "#/$defs/ModifierEffect"
+        }
+      },
+      "required": [
+        "modifier_id",
+        "condition",
+        "effect"
+      ],
+      "title": "RuleModifier",
+      "type": "object"
+    },
+    "RuleOutcome": {
+      "additionalProperties": false,
+      "properties": {
+        "outcome_id": {
+          "title": "Outcome Id",
+          "type": "string"
+        },
+        "outcome_type": {
+          "$ref": "#/$defs/OutcomeType"
+        },
+        "target": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OperandReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "value": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "value_entity_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value Entity Id"
+        },
+        "value_entity_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Value Entity Ids",
+          "type": "array"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "outcome_id",
+        "outcome_type",
+        "description"
+      ],
+      "title": "RuleOutcome",
+      "type": "object"
+    },
+    "RuleProvenance": {
+      "additionalProperties": false,
+      "properties": {
+        "source_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Ids",
+          "type": "array"
+        },
+        "passage_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Passage Ids",
+          "type": "array"
+        },
+        "claim_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Claim Ids",
+          "type": "array"
+        },
+        "conflict_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Conflict Ids",
+          "type": "array"
+        },
+        "legacy_provenance_status": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LegacyMappingStatus"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "RuleProvenance",
+      "type": "object"
+    },
+    "RuleType": {
+      "enum": [
+        "FOUNDATIONAL_ALGORITHM",
+        "DASHA",
+        "DIGNITY",
+        "YOGA",
+        "DOSHA",
+        "INTERPRETATION",
+        "ASTROFINANCE_HYPOTHESIS"
+      ],
+      "title": "RuleType",
+      "type": "string"
+    },
+    "SourceClass": {
+      "enum": [
+        "CLASSICAL_PRIMARY",
+        "CLASSICAL_COMMENTARY",
+        "TRADITIONAL_SECONDARY",
+        "MODERN_PRACTITIONER",
+        "ACADEMIC_SECONDARY",
+        "EMPIRICAL_RESEARCH",
+        "REFERENCE_EDITION",
+        "DERIVED_INTERNAL",
+        "HYPOTHESIS",
+        "FOLKLORE_OR_UNVERIFIED"
+      ],
+      "title": "SourceClass",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "default": "1.0.0",
+      "title": "Version",
+      "type": "string"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "title": "Created By",
+      "type": "string"
+    },
+    "updated_at": {
+      "title": "Updated At",
+      "type": "string"
+    },
+    "updated_by": {
+      "title": "Updated By",
+      "type": "string"
+    },
+    "change_reason": {
+      "title": "Change Reason",
+      "type": "string"
+    },
+    "supersedes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supersedes"
+    },
+    "superseded_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Superseded By"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    },
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "rule_id": {
+      "title": "Rule Id",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "domain": {
+      "title": "Domain",
+      "type": "string"
+    },
+    "subdomain": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Subdomain"
+    },
+    "rule_type": {
+      "$ref": "#/$defs/RuleType"
+    },
+    "status": {
+      "$ref": "#/$defs/RuleLifecycleStatus"
+    },
+    "source_class": {
+      "$ref": "#/$defs/SourceClass"
+    },
+    "approval_status": {
+      "$ref": "#/$defs/ApprovalStatus"
+    },
+    "evidence_types": {
+      "items": {
+        "$ref": "#/$defs/EvidenceType"
+      },
+      "title": "Evidence Types",
+      "type": "array"
+    },
+    "high_stakes": {
+      "default": false,
+      "title": "High Stakes",
+      "type": "boolean"
+    },
+    "requires_safety_review": {
+      "default": false,
+      "title": "Requires Safety Review",
+      "type": "boolean"
+    },
+    "allowed_output_mode": {
+      "$ref": "#/$defs/AllowedOutputMode",
+      "default": "STANDARD"
+    },
+    "authority": {
+      "$ref": "#/$defs/RuleAuthorityProfile"
+    },
+    "provenance": {
+      "$ref": "#/$defs/RuleProvenance"
+    },
+    "conditions": {
+      "$ref": "#/$defs/RuleConditionSet"
+    },
+    "modifiers": {
+      "items": {
+        "$ref": "#/$defs/RuleModifier"
+      },
+      "title": "Modifiers",
+      "type": "array"
+    },
+    "exceptions": {
+      "items": {
+        "$ref": "#/$defs/RuleException"
+      },
+      "title": "Exceptions",
+      "type": "array"
+    },
+    "confirmations": {
+      "items": {
+        "$ref": "#/$defs/RuleConfirmation"
+      },
+      "title": "Confirmations",
+      "type": "array"
+    },
+    "activations": {
+      "items": {
+        "$ref": "#/$defs/RuleActivation"
+      },
+      "title": "Activations",
+      "type": "array"
+    },
+    "outcomes": {
+      "items": {
+        "$ref": "#/$defs/RuleOutcome"
+      },
+      "title": "Outcomes",
+      "type": "array"
+    },
+    "depends_on_rule_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Depends On Rule Ids",
+      "type": "array"
+    },
+    "cancelled_by_rule_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Cancelled By Rule Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by",
+    "change_reason",
+    "rule_id",
+    "title",
+    "domain",
+    "rule_type",
+    "status",
+    "source_class",
+    "approval_status",
+    "authority",
+    "provenance",
+    "conditions"
+  ],
+  "title": "AstrologyRuleRecord",
+  "type": "object"
+}

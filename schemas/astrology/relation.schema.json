@@ -1,0 +1,149 @@
+{
+  "$defs": {
+    "EntitySourceStatus": {
+      "enum": [
+        "CURATED_CANONICAL",
+        "SOURCE_VALIDATED",
+        "LEGACY_UNGOVERNED",
+        "UNKNOWN"
+      ],
+      "title": "EntitySourceStatus",
+      "type": "string"
+    },
+    "OntologyRecordStatus": {
+      "enum": [
+        "ACTIVE",
+        "PILOT",
+        "DEPRECATED"
+      ],
+      "title": "OntologyRecordStatus",
+      "type": "string"
+    },
+    "RelationType": {
+      "enum": [
+        "OCCUPIES",
+        "RULES",
+        "ASPECTS",
+        "RECEIVES_ASPECT",
+        "BELONGS_TO_DOMAIN",
+        "SPECIALIZES",
+        "PART_OF",
+        "NEXT_IN_SEQUENCE",
+        "CLASSIFIES",
+        "ASSOCIATED_WITH"
+      ],
+      "title": "RelationType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "default": "1.0.0",
+      "title": "Version",
+      "type": "string"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "title": "Created By",
+      "type": "string"
+    },
+    "updated_at": {
+      "title": "Updated At",
+      "type": "string"
+    },
+    "updated_by": {
+      "title": "Updated By",
+      "type": "string"
+    },
+    "change_reason": {
+      "title": "Change Reason",
+      "type": "string"
+    },
+    "supersedes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supersedes"
+    },
+    "superseded_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Superseded By"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    },
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "relation_id": {
+      "title": "Relation Id",
+      "type": "string"
+    },
+    "subject_entity_id": {
+      "title": "Subject Entity Id",
+      "type": "string"
+    },
+    "relation_type": {
+      "$ref": "#/$defs/RelationType"
+    },
+    "object_entity_id": {
+      "title": "Object Entity Id",
+      "type": "string"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "source_status": {
+      "$ref": "#/$defs/EntitySourceStatus",
+      "default": "CURATED_CANONICAL"
+    },
+    "status": {
+      "$ref": "#/$defs/OntologyRecordStatus",
+      "default": "ACTIVE"
+    }
+  },
+  "required": [
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by",
+    "change_reason",
+    "relation_id",
+    "subject_entity_id",
+    "relation_type",
+    "object_entity_id",
+    "description"
+  ],
+  "title": "RelationRecord",
+  "type": "object"
+}
