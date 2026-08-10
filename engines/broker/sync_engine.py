@@ -13,6 +13,9 @@ Run:  py -3.11 -m engines.broker.sync_engine
 """
 
 import json
+import base64
+import hashlib
+import os
 import shutil
 import sys
 from datetime import datetime, timedelta
@@ -20,6 +23,7 @@ from pathlib import Path
 from typing import Optional
 
 import pandas as pd
+from cryptography.fernet import Fernet, InvalidToken
 
 _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
@@ -37,6 +41,7 @@ PORTFOLIO_DIR    = cfg.DATA_DIR / "portfolio"
 BROKER_HOLDINGS  = PORTFOLIO_DIR / "broker_holdings.csv"
 TRANSACTIONS_CSV = PORTFOLIO_DIR / "transactions.csv"
 BROKER_AUTH      = PORTFOLIO_DIR / "broker_auth.json"     # gitignored via data/**/*.json
+BROKER_KEY       = cfg.DATA_DIR / "auth" / "broker_credentials.key"
 SYNC_LOG         = PORTFOLIO_DIR / "broker_sync_log.csv"
 
 HOLDINGS_COLS = [
@@ -49,21 +54,65 @@ TRANSACTION_COLS = ["date", "symbol", "action", "qty", "price", "notes"]
 
 # ── Auth helpers ───────────────────────────────────────────────────────────────
 
-def save_credentials(broker: str, client_id: str, access_token: str) -> None:
-    """Persist credentials to broker_auth.json (never committed)."""
+def _mask_client_id(client_id: str) -> str:
+    return (client_id[:4] + "****") if client_id else ""
+
+
+def _derive_fernet_key(secret: str) -> bytes:
+    return base64.urlsafe_b64encode(hashlib.sha256(secret.encode("utf-8")).digest())
+
+
+def _get_fernet() -> Fernet:
+    env_secret = os.environ.get("VEDA_BROKER_CREDENTIAL_SECRET", "").strip()
+    if env_secret:
+        return Fernet(_derive_fernet_key(env_secret))
+
+    BROKER_KEY.parent.mkdir(parents=True, exist_ok=True)
+    if BROKER_KEY.exists():
+        return Fernet(BROKER_KEY.read_bytes().strip())
+
+    key = Fernet.generate_key()
+    tmp = BROKER_KEY.with_suffix(".tmp")
+    with open(tmp, "wb") as f:
+        f.write(key)
+    shutil.move(str(tmp), str(BROKER_KEY))
+    try:
+        os.chmod(BROKER_KEY, 0o600)
+    except OSError:
+        pass
+    return Fernet(key)
+
+
+def _write_credentials_file(payload: dict) -> None:
     PORTFOLIO_DIR.mkdir(parents=True, exist_ok=True)
-    payload = {
-        "broker":       broker,
-        "client_id":    client_id,
-        "access_token": access_token,
-        "set_at":       datetime.now().isoformat(),
-    }
     tmp = BROKER_AUTH.with_suffix(".tmp.json")
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
     shutil.move(str(tmp), str(BROKER_AUTH))
-    logger.info("[Broker] Credentials saved for broker=%s client=%s****",
-                broker, client_id[:4])
+
+
+def save_credentials(broker: str, client_id: str, access_token: str) -> None:
+    """Persist broker credentials without leaving the access token in plaintext on disk."""
+    now = datetime.now().isoformat()
+    cipher = _get_fernet().encrypt(
+        json.dumps(
+            {
+                "broker": broker,
+                "client_id": client_id,
+                "access_token": access_token,
+                "set_at": now,
+            }
+        ).encode("utf-8")
+    ).decode("utf-8")
+    payload = {
+        "version": 2,
+        "broker": broker,
+        "client_id_mask": _mask_client_id(client_id),
+        "set_at": now,
+        "ciphertext": cipher,
+    }
+    _write_credentials_file(payload)
+    logger.info("[Broker] Credentials saved for broker=%s client=%s", broker, _mask_client_id(client_id))
 
 
 def load_credentials() -> Optional[dict]:
@@ -71,7 +120,22 @@ def load_credentials() -> Optional[dict]:
         return None
     try:
         with open(BROKER_AUTH, encoding="utf-8") as f:
-            return json.load(f)
+            payload = json.load(f)
+        if "ciphertext" in payload:
+            decrypted = _get_fernet().decrypt(str(payload["ciphertext"]).encode("utf-8"))
+            data = json.loads(decrypted.decode("utf-8"))
+            data["set_at"] = payload.get("set_at", data.get("set_at"))
+            return data
+        if "client_id" in payload and "access_token" in payload:
+            logger.warning("[Broker] Legacy plaintext broker credentials detected; migrating to encrypted local storage")
+            save_credentials(
+                str(payload.get("broker", "dhan")),
+                str(payload.get("client_id", "")),
+                str(payload.get("access_token", "")),
+            )
+            return load_credentials()
+    except (InvalidToken, ValueError, TypeError, json.JSONDecodeError):
+        return None
     except Exception:
         return None
 
@@ -254,7 +318,7 @@ def get_status() -> dict:
     return {
         "connected":      creds is not None,
         "broker":         creds.get("broker") if creds else None,
-        "client_id":      (creds.get("client_id", "")[:4] + "****") if creds else None,
+        "client_id":      _mask_client_id(str(creds.get("client_id", ""))) if creds else None,
         "credentials_set_at": creds.get("set_at") if creds else None,
         "holdings_count": holdings_count,
         "last_synced":    last_synced,

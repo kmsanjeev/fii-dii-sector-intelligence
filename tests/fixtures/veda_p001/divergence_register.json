@@ -1,0 +1,272 @@
+{
+  "generated_on": "2026-08-10",
+  "divergences": [
+    {
+      "divergence_id": "MUMBAI_1984-D01",
+      "input": {
+        "date": "1984-11-03",
+        "time": "06:30:00",
+        "place": "Mumbai",
+        "lat": 19.076,
+        "lon": 72.8777,
+        "tz_offset": 5.5
+      },
+      "path_a": "personal_kundli_chat_path",
+      "path_b": "rest_human_kundli_path",
+      "field": "planets_present",
+      "output_a": [
+        "Jupiter",
+        "Ketu",
+        "Mars",
+        "Mercury",
+        "Moon",
+        "Rahu",
+        "Saturn",
+        "Sun",
+        "Venus"
+      ],
+      "output_b": [
+        "Jupiter",
+        "Ketu",
+        "Mars",
+        "Mercury",
+        "Moon",
+        "Neptune",
+        "Rahu",
+        "Saturn",
+        "Sun",
+        "Uranus",
+        "Venus"
+      ],
+      "known_reason": "personal path returns 9 grahas plus nodes; REST human path also returns Uranus and Neptune",
+      "status": "KNOWN"
+    },
+    {
+      "divergence_id": "MUMBAI_1984-D02",
+      "input": {
+        "date": "1984-11-03",
+        "time": "06:30:00",
+        "place": "Mumbai",
+        "lat": 19.076,
+        "lon": 72.8777,
+        "tz_offset": 5.5
+      },
+      "path_a": "personal_kundli_chat_path",
+      "path_b": "rest_human_kundli_path",
+      "field": "rahu_dignity",
+      "output_a": "friendly",
+      "output_b": "exalted",
+      "known_reason": "personal and REST paths use different dignity tables for node interpretation",
+      "status": "KNOWN"
+    },
+    {
+      "divergence_id": "MUMBAI_1984-D03",
+      "input": {
+        "date": "1984-11-03",
+        "time": "06:30:00",
+        "place": "Mumbai",
+        "lat": 19.076,
+        "lon": 72.8777,
+        "tz_offset": 5.5
+      },
+      "path_a": "personal_kundli_chat_path",
+      "path_b": "rest_human_kundli_path",
+      "field": "yoga_names",
+      "output_a": [
+        "Kemadruma Yoga",
+        "Sasa Yoga"
+      ],
+      "output_b": [
+        "Kemdrum",
+        "Raja Yoga"
+      ],
+      "known_reason": "personal path applies life-reading yoga logic; REST path applies finance-oriented yoga detection",
+      "status": "KNOWN"
+    },
+    {
+      "divergence_id": "MUMBAI_1984-D04",
+      "input": {
+        "date": "1984-11-03",
+        "time": "06:30:00",
+        "place": "Mumbai",
+        "lat": 19.076,
+        "lon": 72.8777,
+        "tz_offset": 5.5
+      },
+      "path_a": "personal_kundli_chat_path",
+      "path_b": "rest_human_kundli_path",
+      "field": "available_varga_surface",
+      "output_a": [
+        "d10_dasamsa",
+        "d9_navamsa"
+      ],
+      "output_b": [
+        "D1",
+        "D10",
+        "D11",
+        "D12",
+        "D16",
+        "D2",
+        "D20",
+        "D3",
+        "D30",
+        "D4",
+        "D60",
+        "D7",
+        "D9"
+      ],
+      "known_reason": "personal path exposes D9 and D10 only; REST path exposes a broader divisional chart set",
+      "status": "KNOWN"
+    },
+    {
+      "divergence_id": "MUMBAI_1984-D05",
+      "input": {
+        "date": "1984-11-03",
+        "time": "06:30:00",
+        "place": "Mumbai",
+        "lat": 19.076,
+        "lon": 72.8777,
+        "tz_offset": 5.5
+      },
+      "path_a": "personal_kundli_chat_path",
+      "path_b": "rest_human_kundli_path",
+      "field": "all_antardashas_presence",
+      "output_a": true,
+      "output_b": false,
+      "known_reason": "personal path returns a deeper dasha breakdown than the REST human path",
+      "status": "KNOWN"
+    },
+    {
+      "divergence_id": "LONDON_2001-D01",
+      "input": {
+        "date": "2001-01-15",
+        "time": "23:45:00",
+        "place": "London",
+        "lat": 51.5074,
+        "lon": -0.1278,
+        "tz_offset": 0.0
+      },
+      "path_a": "personal_kundli_chat_path",
+      "path_b": "rest_human_kundli_path",
+      "field": "planets_present",
+      "output_a": [
+        "Jupiter",
+        "Ketu",
+        "Mars",
+        "Mercury",
+        "Moon",
+        "Rahu",
+        "Saturn",
+        "Sun",
+        "Venus"
+      ],
+      "output_b": [
+        "Jupiter",
+        "Ketu",
+        "Mars",
+        "Mercury",
+        "Moon",
+        "Neptune",
+        "Rahu",
+        "Saturn",
+        "Sun",
+        "Uranus",
+        "Venus"
+      ],
+      "known_reason": "personal path returns 9 grahas plus nodes; REST human path also returns Uranus and Neptune",
+      "status": "KNOWN"
+    },
+    {
+      "divergence_id": "LONDON_2001-D02",
+      "input": {
+        "date": "2001-01-15",
+        "time": "23:45:00",
+        "place": "London",
+        "lat": 51.5074,
+        "lon": -0.1278,
+        "tz_offset": 0.0
+      },
+      "path_a": "personal_kundli_chat_path",
+      "path_b": "rest_human_kundli_path",
+      "field": "rahu_dignity",
+      "output_a": "exalted",
+      "output_b": "neutral",
+      "known_reason": "personal and REST paths use different dignity tables for node interpretation",
+      "status": "KNOWN"
+    },
+    {
+      "divergence_id": "LONDON_2001-D03",
+      "input": {
+        "date": "2001-01-15",
+        "time": "23:45:00",
+        "place": "London",
+        "lat": 51.5074,
+        "lon": -0.1278,
+        "tz_offset": 0.0
+      },
+      "path_a": "personal_kundli_chat_path",
+      "path_b": "rest_human_kundli_path",
+      "field": "yoga_names",
+      "output_a": [],
+      "output_b": [
+        "Parivartana",
+        "Raja Yoga"
+      ],
+      "known_reason": "personal path applies life-reading yoga logic; REST path applies finance-oriented yoga detection",
+      "status": "KNOWN"
+    },
+    {
+      "divergence_id": "LONDON_2001-D04",
+      "input": {
+        "date": "2001-01-15",
+        "time": "23:45:00",
+        "place": "London",
+        "lat": 51.5074,
+        "lon": -0.1278,
+        "tz_offset": 0.0
+      },
+      "path_a": "personal_kundli_chat_path",
+      "path_b": "rest_human_kundli_path",
+      "field": "available_varga_surface",
+      "output_a": [
+        "d10_dasamsa",
+        "d9_navamsa"
+      ],
+      "output_b": [
+        "D1",
+        "D10",
+        "D11",
+        "D12",
+        "D16",
+        "D2",
+        "D20",
+        "D3",
+        "D30",
+        "D4",
+        "D60",
+        "D7",
+        "D9"
+      ],
+      "known_reason": "personal path exposes D9 and D10 only; REST path exposes a broader divisional chart set",
+      "status": "KNOWN"
+    },
+    {
+      "divergence_id": "LONDON_2001-D05",
+      "input": {
+        "date": "2001-01-15",
+        "time": "23:45:00",
+        "place": "London",
+        "lat": 51.5074,
+        "lon": -0.1278,
+        "tz_offset": 0.0
+      },
+      "path_a": "personal_kundli_chat_path",
+      "path_b": "rest_human_kundli_path",
+      "field": "all_antardashas_presence",
+      "output_a": true,
+      "output_b": false,
+      "known_reason": "personal path returns a deeper dasha breakdown than the REST human path",
+      "status": "KNOWN"
+    }
+  ]
+}

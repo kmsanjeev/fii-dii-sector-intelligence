@@ -78,7 +78,7 @@ function UsersTab({ currentUser }: { currentUser: AuthUser | null }) {
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <input placeholder="Email" value={newEmail} onChange={e => setNewEmail(e.target.value)}
             style={{ ...inputStyle, width: 200 }} />
-          <input placeholder="Password (min 8)" type="password" value={newPw} onChange={e => setNewPw(e.target.value)}
+          <input placeholder="Password (min 12, upper/lower/digit)" type="password" value={newPw} onChange={e => setNewPw(e.target.value)}
             style={{ ...inputStyle, width: 180 }} />
           <select value={newRole} onChange={e => setNewRole(e.target.value)} style={{ ...inputStyle }}>
             <option value="analyst">analyst</option>
@@ -298,7 +298,7 @@ function AuthConfigTab() {
             <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>
               {cfg.enabled
                 ? 'All API endpoints require a valid session token.'
-                : 'Platform is open -- no login required. Enable for production.'}
+                : 'Platform is open for loopback-only local/dev use. Production requires explicit auth.'}
             </div>
           </div>
           <button
@@ -326,8 +326,8 @@ function AuthConfigTab() {
       {msg && <span style={{ marginLeft: 12, fontSize: 13, color: '#22C55E' }}>{msg}</span>}
 
       <div style={{ marginTop: 28, padding: 12, borderRadius: 6, background: '#1A1D2E', fontSize: 12, color: '#64748B' }}>
-        <strong style={{ color: '#94A3B8' }}>Note:</strong> Disabling auth opens the platform to all network
-        users on the configured allow-origins. Only disable in trusted local environments.
+        <strong style={{ color: '#94A3B8' }}>Note:</strong> Auth-disabled mode is intended only for trusted
+        local/dev use. Non-loopback requests are rejected when auth is off.
       </div>
     </div>
   )
@@ -343,7 +343,7 @@ function PasswordTab() {
 
   const save = async () => {
     setMsg('')
-    if (pw.length < 8) { setMsg('Minimum 8 characters'); return }
+    if (pw.length < 12) { setMsg('Minimum 12 characters with upper/lower/digit'); return }
     if (pw !== confirm) { setMsg('Passwords do not match'); return }
     setSaving(true)
     try {
@@ -367,7 +367,7 @@ function PasswordTab() {
     <div style={{ maxWidth: 360 }}>
       <div style={{ marginBottom: 14 }}>
         <label style={{ fontSize: 12, color: '#64748B', display: 'block', marginBottom: 6 }}>New Password</label>
-        <input type="password" value={pw} onChange={e => setPw(e.target.value)} style={inputStyle} placeholder="min 8 characters" />
+        <input type="password" value={pw} onChange={e => setPw(e.target.value)} style={inputStyle} placeholder="min 12 characters with upper/lower/digit" />
       </div>
       <div style={{ marginBottom: 20 }}>
         <label style={{ fontSize: 12, color: '#64748B', display: 'block', marginBottom: 6 }}>Confirm Password</label>

@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
@@ -78,11 +78,17 @@ def setup(req: SetupRequest):
     First-run only: creates the admin account and enables auth.
     Rejected if any users already exist.
     """
+    if not store.is_setup_allowed():
+        raise HTTPException(status_code=403, detail="Setup endpoint is disabled by runtime policy")
     store.init_db()
     if store.user_count() > 0:
         raise HTTPException(status_code=409, detail="Setup already complete -- users exist")
     if not req.email or not req.password:
         raise HTTPException(status_code=400, detail="Email and password required")
+    try:
+        store.validate_password_strength(req.password)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     user  = store.create_user(req.email, req.password, role="admin")
     store.save_auth_config({"enabled": True})
     token = store.create_session(user.id)
@@ -121,8 +127,10 @@ def me(request: Request):
 
 @router.put("/me/password")
 def change_password(req: ChangePasswordRequest, current_user: User = Depends(require_auth)):
-    if not req.new_password or len(req.new_password) < 8:
-        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    try:
+        store.validate_password_strength(req.new_password)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     store.change_password(current_user.id, req.new_password)
     return {"message": "Password updated"}
 
@@ -153,8 +161,10 @@ def list_users(current_user: User = Depends(require_admin)):
 def create_user(req: CreateUserRequest, current_user: User = Depends(require_admin)):
     if store.get_user_by_email(req.email):
         raise HTTPException(status_code=409, detail=f"User {req.email} already exists")
-    if len(req.password) < 8:
-        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    try:
+        store.validate_password_strength(req.password)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     if req.role not in ("admin", "analyst", "trader"):
         raise HTTPException(status_code=400, detail="Role must be admin, analyst, or trader")
     user = store.create_user(req.email, req.password, req.role)

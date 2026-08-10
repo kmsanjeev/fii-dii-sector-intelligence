@@ -1,0 +1,3232 @@
+{
+  "meta": {
+    "baseline_id": "VEDA-P001-M003",
+    "generated_on": "2026-08-10",
+    "openapi_path_count": 125,
+    "operation_count": 137
+  },
+  "critical_endpoints": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "owner": "health",
+      "operation_id": "health_health_get",
+      "tags": [],
+      "auth_requirement": "PUBLIC",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "owner": "auth",
+      "operation_id": "login_api_auth_login_post",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "PUBLIC",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/config",
+      "owner": "auth",
+      "operation_id": "get_auth_config_api_auth_config_get",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/chat/capabilities",
+      "owner": "api",
+      "operation_id": "chat_capabilities_api_chat_capabilities_get",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat",
+      "owner": "api",
+      "operation_id": "chat_api_chat_post",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/stocks/{symbol}/kundli",
+      "owner": "kundli",
+      "operation_id": "stock_kundli_api_stocks__symbol__kundli_get",
+      "tags": [
+        "kundli"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [
+        "exchange",
+        "generate_narrative",
+        "include_gann"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/kundli/human",
+      "owner": "kundli",
+      "operation_id": "human_kundli_api_kundli_human_post",
+      "tags": [
+        "kundli"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [
+        "generate_narrative"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/universe/stats",
+      "owner": "research",
+      "operation_id": "get_universe_stats_api_research_universe_stats_get",
+      "tags": [
+        "research"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/broker/status",
+      "owner": "broker",
+      "operation_id": "broker_status_api_broker_status_get",
+      "tags": [
+        "broker"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/pipeline/status",
+      "owner": "pipeline",
+      "operation_id": "get_status_api_pipeline_status_get",
+      "tags": [
+        "pipeline"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    }
+  ],
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/",
+      "owner": "root",
+      "operation_id": "root__get",
+      "tags": [],
+      "auth_requirement": "PUBLIC",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/api-keys",
+      "owner": "auth",
+      "operation_id": "list_api_keys_api_auth_api_keys_get",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/api-keys",
+      "owner": "auth",
+      "operation_id": "create_api_key_api_auth_api_keys_post",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/auth/api-keys/{key_id}",
+      "owner": "auth",
+      "operation_id": "revoke_api_key_api_auth_api_keys__key_id__delete",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "key_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/config",
+      "owner": "auth",
+      "operation_id": "get_auth_config_api_auth_config_get",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/auth/config",
+      "owner": "auth",
+      "operation_id": "update_auth_config_api_auth_config_put",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "owner": "auth",
+      "operation_id": "login_api_auth_login_post",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "PUBLIC",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "owner": "auth",
+      "operation_id": "logout_api_auth_logout_post",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "owner": "auth",
+      "operation_id": "me_api_auth_me_get",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/auth/me/password",
+      "owner": "auth",
+      "operation_id": "change_password_api_auth_me_password_put",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/setup",
+      "owner": "auth",
+      "operation_id": "setup_api_auth_setup_post",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "LOOPBACK_SETUP",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/users",
+      "owner": "auth",
+      "operation_id": "list_users_api_auth_users_get",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/users",
+      "owner": "auth",
+      "operation_id": "create_user_api_auth_users_post",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/auth/users/{user_id}",
+      "owner": "auth",
+      "operation_id": "deactivate_user_api_auth_users__user_id__delete",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "user_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/auth/users/{user_id}",
+      "owner": "auth",
+      "operation_id": "update_user_api_auth_users__user_id__put",
+      "tags": [
+        "auth"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [
+        "user_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/backtest/label-screen",
+      "owner": "backtest",
+      "operation_id": "backtest_label_screen_api_backtest_label_screen_post",
+      "tags": [
+        "backtest"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/backtest/momentum-screen",
+      "owner": "backtest",
+      "operation_id": "backtest_momentum_screen_api_backtest_momentum_screen_post",
+      "tags": [
+        "backtest"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/backtest/portfolio-trades",
+      "owner": "backtest",
+      "operation_id": "backtest_portfolio_trades_api_backtest_portfolio_trades_post",
+      "tags": [
+        "backtest"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/backtest/results",
+      "owner": "backtest",
+      "operation_id": "get_last_results_api_backtest_results_get",
+      "tags": [
+        "backtest"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/broker/auth",
+      "owner": "broker",
+      "operation_id": "clear_broker_auth_api_broker_auth_delete",
+      "tags": [
+        "broker"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/broker/auth",
+      "owner": "broker",
+      "operation_id": "save_broker_auth_api_broker_auth_post",
+      "tags": [
+        "broker"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/broker/holdings",
+      "owner": "broker",
+      "operation_id": "get_broker_holdings_api_broker_holdings_get",
+      "tags": [
+        "broker"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/broker/import-csv",
+      "owner": "broker",
+      "operation_id": "import_csv_api_broker_import_csv_post",
+      "tags": [
+        "broker"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [
+        "multipart/form-data"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/broker/status",
+      "owner": "broker",
+      "operation_id": "broker_status_api_broker_status_get",
+      "tags": [
+        "broker"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/broker/sync",
+      "owner": "broker",
+      "operation_id": "sync_holdings_api_broker_sync_post",
+      "tags": [
+        "broker"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/broker/sync-trades",
+      "owner": "broker",
+      "operation_id": "sync_with_trades_api_broker_sync_trades_post",
+      "tags": [
+        "broker"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/charts/movers",
+      "owner": "charts",
+      "operation_id": "get_movers_api_charts_movers_get",
+      "tags": [
+        "charts"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "type"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/charts/ohlcv",
+      "owner": "charts",
+      "operation_id": "get_ohlcv_api_charts_ohlcv_get",
+      "tags": [
+        "charts"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "from_date",
+        "symbol",
+        "timeframe",
+        "to_date"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/charts/signals",
+      "owner": "charts",
+      "operation_id": "get_signals_api_charts_signals_get",
+      "tags": [
+        "charts"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "symbol"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/charts/symbols",
+      "owner": "charts",
+      "operation_id": "get_symbols_api_charts_symbols_get",
+      "tags": [
+        "charts"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "q"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat",
+      "owner": "api",
+      "operation_id": "chat_api_chat_post",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/attachments",
+      "owner": "api",
+      "operation_id": "upload_chat_attachment_api_chat_attachments_post",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "multipart/form-data"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/chat/capabilities",
+      "owner": "api",
+      "operation_id": "chat_capabilities_api_chat_capabilities_get",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/capabilities/repo/draft",
+      "owner": "api",
+      "operation_id": "create_repo_capability_draft_api_chat_capabilities_repo_draft_post",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/capabilities/repo/draft/{draft_id}/approve",
+      "owner": "api",
+      "operation_id": "approve_repo_capability_draft_api_chat_capabilities_repo_draft__draft_id__approve_post",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [
+        "draft_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/knowledge/draft",
+      "owner": "api",
+      "operation_id": "create_chat_knowledge_draft_api_chat_knowledge_draft_post",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/chat/knowledge/draft/{draft_id}",
+      "owner": "api",
+      "operation_id": "discard_chat_knowledge_draft_api_chat_knowledge_draft__draft_id__delete",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "draft_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/knowledge/draft/{draft_id}/approve",
+      "owner": "api",
+      "operation_id": "approve_chat_knowledge_draft_api_chat_knowledge_draft__draft_id__approve_post",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [
+        "draft_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/chat/session/{session_id}",
+      "owner": "api",
+      "operation_id": "reset_session_api_chat_session__session_id__delete",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "session_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/chat/sessions",
+      "owner": "api",
+      "operation_id": "delete_all_saved_chat_sessions_api_chat_sessions_delete",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/chat/sessions",
+      "owner": "api",
+      "operation_id": "list_saved_chat_sessions_api_chat_sessions_get",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/chat/sessions/{session_id}",
+      "owner": "api",
+      "operation_id": "delete_saved_chat_session_api_chat_sessions__session_id__delete",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "session_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/chat/sessions/{session_id}",
+      "owner": "api",
+      "operation_id": "upsert_saved_chat_session_api_chat_sessions__session_id__put",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [
+        "session_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/corporate/announcement-signals",
+      "owner": "corporate",
+      "operation_id": "get_announcement_signals_api_corporate_announcement_signals_get",
+      "tags": [
+        "corporate"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "ann_type",
+        "limit",
+        "min_score_30d"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/corporate/announcements",
+      "owner": "corporate",
+      "operation_id": "get_announcements_api_corporate_announcements_get",
+      "tags": [
+        "corporate"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "ann_type",
+        "days",
+        "limit",
+        "min_score"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/corporate/announcements/{symbol}",
+      "owner": "corporate",
+      "operation_id": "get_symbol_announcements_api_corporate_announcements__symbol__get",
+      "tags": [
+        "corporate"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [
+        "days",
+        "limit"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/corporate/catalysts",
+      "owner": "corporate",
+      "operation_id": "get_upcoming_catalysts_api_corporate_catalysts_get",
+      "tags": [
+        "corporate"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/corporate/confidence",
+      "owner": "corporate",
+      "operation_id": "get_corporate_confidence_api_corporate_confidence_get",
+      "tags": [
+        "corporate"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "limit",
+        "min_score"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/corporate/deal-tape",
+      "owner": "corporate",
+      "operation_id": "get_deal_tape_api_corporate_deal_tape_get",
+      "tags": [
+        "corporate"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "limit",
+        "min_cr",
+        "participant"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/corporate/deals",
+      "owner": "corporate",
+      "operation_id": "get_deals_api_corporate_deals_get",
+      "tags": [
+        "corporate"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "limit",
+        "min_cr"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/corporate/events",
+      "owner": "corporate",
+      "operation_id": "get_events_api_corporate_events_get",
+      "tags": [
+        "corporate"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "limit"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/corporate/summary",
+      "owner": "corporate",
+      "operation_id": "get_corporate_summary_api_corporate_summary_get",
+      "tags": [
+        "corporate"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/corporate/upcoming-actions",
+      "owner": "corporate",
+      "operation_id": "get_upcoming_actions_api_corporate_upcoming_actions_get",
+      "tags": [
+        "corporate"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "days",
+        "limit"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/data/backup/status",
+      "owner": "data_ops",
+      "operation_id": "backup_status_api_data_backup_status_get",
+      "tags": [
+        "data_ops"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/data/engines",
+      "owner": "data_ops",
+      "operation_id": "list_engines_api_data_engines_get",
+      "tags": [
+        "data_ops"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/data/kill",
+      "owner": "data_ops",
+      "operation_id": "kill_engine_api_data_kill_post",
+      "tags": [
+        "data_ops"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/data/run/{engine_name}",
+      "owner": "data_ops",
+      "operation_id": "run_engine_api_data_run__engine_name__get",
+      "tags": [
+        "data_ops"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "engine_name"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/data/running",
+      "owner": "data_ops",
+      "operation_id": "get_running_status_api_data_running_get",
+      "tags": [
+        "data_ops"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/data/status",
+      "owner": "data_ops",
+      "operation_id": "get_data_status_api_data_status_get",
+      "tags": [
+        "data_ops"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/execution/config",
+      "owner": "execution",
+      "operation_id": "get_config_api_execution_config_get",
+      "tags": [
+        "execution"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/execution/config",
+      "owner": "execution",
+      "operation_id": "update_config_api_execution_config_put",
+      "tags": [
+        "execution"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/execution/order",
+      "owner": "execution",
+      "operation_id": "place_order_endpoint_api_execution_order_post",
+      "tags": [
+        "execution"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/execution/order/{order_id}",
+      "owner": "execution",
+      "operation_id": "cancel_order_endpoint_api_execution_order__order_id__delete",
+      "tags": [
+        "execution"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "order_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/execution/order/{order_id}",
+      "owner": "execution",
+      "operation_id": "order_status_api_execution_order__order_id__get",
+      "tags": [
+        "execution"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "order_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/execution/orders",
+      "owner": "execution",
+      "operation_id": "list_orders_api_execution_orders_get",
+      "tags": [
+        "execution"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "limit",
+        "status"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/execution/recommend",
+      "owner": "execution",
+      "operation_id": "get_recommendations_api_execution_recommend_post",
+      "tags": [
+        "execution"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/execution/security-master/refresh",
+      "owner": "execution",
+      "operation_id": "refresh_security_master_api_execution_security_master_refresh_post",
+      "tags": [
+        "execution"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/execution/slice_plan",
+      "owner": "execution",
+      "operation_id": "get_slice_plan_api_execution_slice_plan_get",
+      "tags": [
+        "execution"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "qty",
+        "symbol"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/execution/tca",
+      "owner": "execution",
+      "operation_id": "get_tca_api_execution_tca_get",
+      "tags": [
+        "execution"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/execution/tca/refresh",
+      "owner": "execution",
+      "operation_id": "refresh_tca_api_execution_tca_refresh_post",
+      "tags": [
+        "execution"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/kundli/bulk/run",
+      "owner": "kundli",
+      "operation_id": "bulk_run_api_kundli_bulk_run_post",
+      "tags": [
+        "kundli"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/kundli/bulk/status",
+      "owner": "kundli",
+      "operation_id": "bulk_status_api_kundli_bulk_status_get",
+      "tags": [
+        "kundli"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/kundli/country/{name}",
+      "owner": "kundli",
+      "operation_id": "country_kundli_api_kundli_country__name__get",
+      "tags": [
+        "kundli"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "generate_narrative"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/kundli/gann/market/planetary-lines",
+      "owner": "kundli",
+      "operation_id": "market_planetary_lines_api_kundli_gann_market_planetary_lines_get",
+      "tags": [
+        "kundli"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "price_factor"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/kundli/gann/{symbol}",
+      "owner": "kundli",
+      "operation_id": "gann_analysis_api_kundli_gann__symbol__get",
+      "tags": [
+        "kundli"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [
+        "price"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/kundli/human",
+      "owner": "kundli",
+      "operation_id": "human_kundli_api_kundli_human_post",
+      "tags": [
+        "kundli"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [
+        "generate_narrative"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/market/context",
+      "owner": "market",
+      "operation_id": "get_market_context_api_market_context_get",
+      "tags": [
+        "market"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/market/freshness",
+      "owner": "market",
+      "operation_id": "get_freshness_api_market_freshness_get",
+      "tags": [
+        "market"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/market/indices",
+      "owner": "market",
+      "operation_id": "get_indices_ticker_api_market_indices_get",
+      "tags": [
+        "market"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/market/regime",
+      "owner": "market",
+      "operation_id": "get_market_regime_api_market_regime_get",
+      "tags": [
+        "market"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/news",
+      "owner": "news",
+      "operation_id": "get_news_api_news_get",
+      "tags": [
+        "news"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/participant/history",
+      "owner": "participant",
+      "operation_id": "get_participant_history_api_participant_history_get",
+      "tags": [
+        "participant"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "limit"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/participant/latest",
+      "owner": "participant",
+      "operation_id": "get_participant_latest_api_participant_latest_get",
+      "tags": [
+        "participant"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/pipeline/log",
+      "owner": "pipeline",
+      "operation_id": "get_log_api_pipeline_log_get",
+      "tags": [
+        "pipeline"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "n"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/pipeline/next",
+      "owner": "pipeline",
+      "operation_id": "get_next_run_api_pipeline_next_get",
+      "tags": [
+        "pipeline"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/pipeline/run",
+      "owner": "pipeline",
+      "operation_id": "run_pipeline_api_pipeline_run_post",
+      "tags": [
+        "pipeline"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/pipeline/status",
+      "owner": "pipeline",
+      "operation_id": "get_status_api_pipeline_status_get",
+      "tags": [
+        "pipeline"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/pipeline/stop",
+      "owner": "pipeline",
+      "operation_id": "stop_pipeline_endpoint_api_pipeline_stop_post",
+      "tags": [
+        "pipeline"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/portfolio",
+      "owner": "portfolio",
+      "operation_id": "get_portfolio_api_portfolio_get",
+      "tags": [
+        "portfolio"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/portfolio/buy",
+      "owner": "portfolio",
+      "operation_id": "record_buy_api_portfolio_buy_post",
+      "tags": [
+        "portfolio"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/portfolio/import",
+      "owner": "portfolio",
+      "operation_id": "import_csv_api_portfolio_import_post",
+      "tags": [
+        "portfolio"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "multipart/form-data"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/portfolio/import/template",
+      "owner": "portfolio",
+      "operation_id": "download_import_template_api_portfolio_import_template_get",
+      "tags": [
+        "portfolio"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/portfolio/positions/{symbol}",
+      "owner": "portfolio",
+      "operation_id": "remove_position_api_portfolio_positions__symbol__delete",
+      "tags": [
+        "portfolio"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/portfolio/sell",
+      "owner": "portfolio",
+      "operation_id": "record_sell_api_portfolio_sell_post",
+      "tags": [
+        "portfolio"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/portfolio/transactions",
+      "owner": "portfolio",
+      "operation_id": "get_transactions_api_portfolio_transactions_get",
+      "tags": [
+        "portfolio"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/compare",
+      "owner": "research",
+      "operation_id": "compare_symbols_api_research_compare_get",
+      "tags": [
+        "research"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "symbols"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/conviction",
+      "owner": "research",
+      "operation_id": "get_conviction_screener_api_research_conviction_get",
+      "tags": [
+        "research"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "limit",
+        "tier"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/research/conviction/refresh",
+      "owner": "research",
+      "operation_id": "refresh_conviction_screener_api_research_conviction_refresh_post",
+      "tags": [
+        "research"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/efficacy",
+      "owner": "research",
+      "operation_id": "get_signal_efficacy_api_research_efficacy_get",
+      "tags": [
+        "research"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/notes",
+      "owner": "research",
+      "operation_id": "list_notes_api_research_notes_get",
+      "tags": [
+        "research"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/research/notes/{symbol}",
+      "owner": "research",
+      "operation_id": "delete_note_api_research_notes__symbol__delete",
+      "tags": [
+        "research"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/notes/{symbol}",
+      "owner": "research",
+      "operation_id": "get_note_api_research_notes__symbol__get",
+      "tags": [
+        "research"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/research/notes/{symbol}",
+      "owner": "research",
+      "operation_id": "upsert_note_api_research_notes__symbol__put",
+      "tags": [
+        "research"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/research/screen",
+      "owner": "research",
+      "operation_id": "run_screen_api_research_screen_post",
+      "tags": [
+        "research"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/universe/stats",
+      "owner": "research",
+      "operation_id": "get_universe_stats_api_research_universe_stats_get",
+      "tags": [
+        "research"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/risk/factors",
+      "owner": "risk",
+      "operation_id": "get_factors_api_risk_factors_get",
+      "tags": [
+        "risk"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/risk/factors/refresh",
+      "owner": "risk",
+      "operation_id": "refresh_factors_api_risk_factors_refresh_post",
+      "tags": [
+        "risk"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/risk/portfolio",
+      "owner": "risk",
+      "operation_id": "get_portfolio_risk_api_risk_portfolio_get",
+      "tags": [
+        "risk"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/risk/refresh",
+      "owner": "risk",
+      "operation_id": "refresh_portfolio_risk_api_risk_refresh_post",
+      "tags": [
+        "risk"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/risk/simulate",
+      "owner": "risk",
+      "operation_id": "get_simulation_api_risk_simulate_get",
+      "tags": [
+        "risk"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/risk/simulate",
+      "owner": "risk",
+      "operation_id": "run_simulation_api_risk_simulate_post",
+      "tags": [
+        "risk"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "n_paths"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/risk/stress",
+      "owner": "risk",
+      "operation_id": "get_stress_api_risk_stress_get",
+      "tags": [
+        "risk"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/risk/stress/refresh",
+      "owner": "risk",
+      "operation_id": "refresh_stress_api_risk_stress_refresh_post",
+      "tags": [
+        "risk"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/sectors",
+      "owner": "sectors",
+      "operation_id": "get_sectors_api_sectors_get",
+      "tags": [
+        "sectors"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/sectors/fpi",
+      "owner": "sectors",
+      "operation_id": "get_fpi_snapshot_api_sectors_fpi_get",
+      "tags": [
+        "sectors"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/sectors/history",
+      "owner": "sectors",
+      "operation_id": "get_sector_history_api_sectors_history_get",
+      "tags": [
+        "sectors"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "limit",
+        "sector"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/sectors/{sector}",
+      "owner": "sectors",
+      "operation_id": "get_sector_detail_api_sectors__sector__get",
+      "tags": [
+        "sectors"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "sector"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/sectors/{sector}/fpi-history",
+      "owner": "sectors",
+      "operation_id": "get_sector_fpi_history_api_sectors__sector__fpi_history_get",
+      "tags": [
+        "sectors"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "sector"
+      ],
+      "query_params": [
+        "limit"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/social-pulse",
+      "owner": "social_pulse",
+      "operation_id": "get_social_pulse_api_social_pulse_get",
+      "tags": [
+        "social_pulse"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "refresh"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/stocks",
+      "owner": "stocks",
+      "operation_id": "get_all_stocks_api_stocks_get",
+      "tags": [
+        "stocks"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "label",
+        "page",
+        "per_page",
+        "sector"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/stocks/announcement-summary",
+      "owner": "stocks",
+      "operation_id": "get_announcement_summary_api_stocks_announcement_summary_get",
+      "tags": [
+        "stocks"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "pdf_url",
+        "seq_id",
+        "title"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/stocks/news-article-summary",
+      "owner": "stocks",
+      "operation_id": "get_news_article_summary_api_stocks_news_article_summary_get",
+      "tags": [
+        "stocks"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "article_id",
+        "headline",
+        "themes",
+        "url"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/stocks/watchlist",
+      "owner": "stocks",
+      "operation_id": "get_watchlist_api_stocks_watchlist_get",
+      "tags": [
+        "stocks"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "label",
+        "limit"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/stocks/{symbol}",
+      "owner": "stocks",
+      "operation_id": "get_stock_detail_api_stocks__symbol__get",
+      "tags": [
+        "stocks"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/stocks/{symbol}/announcements",
+      "owner": "stocks",
+      "operation_id": "get_stock_announcements_api_stocks__symbol__announcements_get",
+      "tags": [
+        "stocks"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [
+        "limit"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/stocks/{symbol}/corporate-actions",
+      "owner": "stocks",
+      "operation_id": "get_stock_corp_actions_api_stocks__symbol__corporate_actions_get",
+      "tags": [
+        "stocks"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [
+        "types",
+        "years"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/stocks/{symbol}/kundli",
+      "owner": "kundli",
+      "operation_id": "stock_kundli_api_stocks__symbol__kundli_get",
+      "tags": [
+        "kundli"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [
+        "exchange",
+        "generate_narrative",
+        "include_gann"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/stocks/{symbol}/momentum",
+      "owner": "stocks",
+      "operation_id": "get_stock_momentum_api_stocks__symbol__momentum_get",
+      "tags": [
+        "stocks"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/stocks/{symbol}/report",
+      "owner": "stocks",
+      "operation_id": "get_stock_report_api_stocks__symbol__report_get",
+      "tags": [
+        "stocks"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json",
+        "text/html"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/themes",
+      "owner": "themes",
+      "operation_id": "get_themes_api_themes_get",
+      "tags": [
+        "themes"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/themes/{theme_code}",
+      "owner": "themes",
+      "operation_id": "get_theme_detail_api_themes__theme_code__get",
+      "tags": [
+        "themes"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "theme_code"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/themes/{theme_code}/stocks",
+      "owner": "themes",
+      "operation_id": "get_theme_stocks_api_themes__theme_code__stocks_get",
+      "tags": [
+        "themes"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "theme_code"
+      ],
+      "query_params": [
+        "limit"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/voice/analytics",
+      "owner": "voice",
+      "operation_id": "quick_analytics_api_voice_analytics_get",
+      "tags": [
+        "voice"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/voice/log",
+      "owner": "voice",
+      "operation_id": "log_turn_api_voice_log_post",
+      "tags": [
+        "voice"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/voice/tts",
+      "owner": "voice",
+      "operation_id": "tts_api_voice_tts_post",
+      "tags": [
+        "voice"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/voice/voices",
+      "owner": "voice",
+      "operation_id": "list_voices_api_voice_voices_get",
+      "tags": [
+        "voice"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "owner": "health",
+      "operation_id": "health_health_get",
+      "tags": [],
+      "auth_requirement": "PUBLIC",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    }
+  ]
+}

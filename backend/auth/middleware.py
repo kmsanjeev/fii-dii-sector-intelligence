@@ -18,17 +18,31 @@ _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from backend.auth.store import User, is_auth_enabled, verify_session, verify_api_key
+from backend.auth.store import (
+    User,
+    is_auth_enabled,
+    is_loopback_only_mode,
+    is_setup_allowed,
+    verify_api_key,
+    verify_session,
+)
 
 # Paths that bypass auth even when auth is enabled
 _PUBLIC = {
     "/", "/health", "/docs", "/openapi.json", "/redoc",
-    "/api/auth/login", "/api/auth/setup",
+    "/api/auth/login",
 }
 
 
 def _is_public(path: str) -> bool:
+    if path == "/api/auth/setup":
+        return True
     return path in _PUBLIC or path.startswith("/ws/")
+
+
+def _is_loopback_request(request: Request) -> bool:
+    host = ((request.client.host if request.client else "") or "").split("%", 1)[0]
+    return host in {"127.0.0.1", "::1", "localhost", "testclient"} or host.startswith("127.")
 
 
 def _resolve_user(request: Request) -> Optional[User]:
@@ -46,7 +60,23 @@ class AuthMiddleware(BaseHTTPMiddleware):
     """Rejects unauthenticated / unauthorised requests when auth is enabled."""
 
     async def dispatch(self, request: Request, call_next):
-        if not is_auth_enabled() or _is_public(request.url.path):
+        if request.url.path == "/api/auth/setup":
+            if is_loopback_only_mode() and not _is_loopback_request(request):
+                return JSONResponse(
+                    status_code=403,
+                    content={"detail": "Authentication-disabled mode is restricted to loopback clients"},
+                )
+            return await call_next(request)
+
+        if _is_public(request.url.path):
+            return await call_next(request)
+
+        if not is_auth_enabled():
+            if is_loopback_only_mode() and not _is_loopback_request(request):
+                return JSONResponse(
+                    status_code=403,
+                    content={"detail": "Authentication-disabled mode is restricted to loopback clients"},
+                )
             return await call_next(request)
 
         user = _resolve_user(request)
@@ -77,6 +107,8 @@ _DEV_USER = User(id="dev", email="dev@localhost", role="admin", active=True, cre
 def require_auth(request: Request) -> User:
     """Dependency: authenticated user (or synthetic dev user when auth off)."""
     if not is_auth_enabled():
+        if is_loopback_only_mode() and not _is_loopback_request(request):
+            raise HTTPException(status_code=403, detail="Authentication-disabled mode is restricted to loopback clients")
         return _DEV_USER
     user = getattr(request.state, "user", None) or _resolve_user(request)
     if user is None:

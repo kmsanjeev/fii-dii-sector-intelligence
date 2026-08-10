@@ -142,7 +142,8 @@ function DhanForm({ status }: { status: BrokerStatus }) {
         <div>
           <div style={{ color: '#64748B', fontSize: 10, marginBottom: 12 }}>
             Client ID = Dhan User ID. Access token: Dhan app &gt; My Profile &gt; Generate Access Token
-            (valid 30 days). Credentials are stored locally in data/portfolio/broker_auth.json.
+            (valid 30 days). Credentials are stored locally in encrypted form; reconnect if the local
+            credential key is intentionally removed.
           </div>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
             <div style={{ flex: 1, minWidth: 140 }}>
@@ -344,7 +345,7 @@ export function SettingsPage() {
           <Row label="Backend API"    value="http://localhost:8001 (uvicorn)" />
           <Row label="API Docs"       value={<a href="http://localhost:8001/docs" target="_blank" rel="noreferrer" style={{ color: '#3B82F6' }}>http://localhost:8001/docs</a>} />
           <Row label="Intelligence"   value="data/intelligence/ (30+ CSVs)" />
-          <Row label="Auth"           value="Disabled by default (enable via Admin page)" />
+          <Row label="Auth"           value="Local/dev can run auth-off; production requires explicit auth" />
         </div>
       </section>
 

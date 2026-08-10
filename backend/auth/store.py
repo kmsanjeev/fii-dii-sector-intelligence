@@ -12,6 +12,8 @@ Schema:
 import hashlib
 import hmac
 import json
+import os
+import re
 import secrets
 import shutil
 import sqlite3
@@ -37,24 +39,67 @@ DB_PATH           = AUTH_DIR / "users.db"
 CFG_PATH          = AUTH_DIR / "auth_config.json"
 TOKEN_EXPIRY_DAYS = 7
 API_KEY_PREFIX    = "cfip_"
+PASSWORD_MIN_LENGTH = 12
 
 _DEFAULT_CFG = {"enabled": False, "token_expiry_days": TOKEN_EXPIRY_DAYS}
 
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-def load_auth_config() -> dict:
+def _load_auth_config_file() -> dict:
     if CFG_PATH.exists():
         try:
             with open(CFG_PATH, encoding="utf-8") as f:
-                return {**_DEFAULT_CFG, **json.load(f)}
+                return json.load(f)
         except Exception:
             pass
-    return _DEFAULT_CFG.copy()
+    return {}
+
+
+def get_runtime_env() -> str:
+    raw = (os.environ.get("VEDA_RUNTIME_ENV") or os.environ.get("ENVIRONMENT") or "local").strip().lower()
+    aliases = {
+        "development": "dev",
+        "devlocal": "local",
+        "prod": "production",
+        "stage": "production",
+        "staging": "production",
+    }
+    return aliases.get(raw, raw or "local")
+
+
+def _env_bool_override(name: str) -> Optional[bool]:
+    raw = os.environ.get(name)
+    if raw is None or not raw.strip():
+        return None
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def is_loopback_only_mode() -> bool:
+    return get_runtime_env() in {"dev", "local", "test"}
+
+
+def is_setup_allowed() -> bool:
+    return get_runtime_env() != "production"
+
+
+def load_auth_config() -> dict:
+    data = {**_DEFAULT_CFG, **_load_auth_config_file()}
+    enabled_override = _env_bool_override("VEDA_AUTH_ENABLED")
+    if enabled_override is not None:
+        data["enabled"] = enabled_override
+    data["runtime_env"] = get_runtime_env()
+    data["setup_allowed"] = is_setup_allowed()
+    data["auth_source"] = (
+        "env"
+        if enabled_override is not None
+        else ("file" if CFG_PATH.exists() else "default")
+    )
+    return data
 
 
 def save_auth_config(updates: dict) -> dict:
-    data = load_auth_config()
+    data = {**_DEFAULT_CFG, **_load_auth_config_file()}
     data.update(updates)
     AUTH_DIR.mkdir(parents=True, exist_ok=True)
     tmp = CFG_PATH.with_suffix(".tmp")
@@ -66,6 +111,47 @@ def save_auth_config(updates: dict) -> dict:
 
 def is_auth_enabled() -> bool:
     return bool(load_auth_config().get("enabled", False))
+
+
+def _bootstrap_credentials() -> tuple[str, str]:
+    return os.environ.get("ADMIN_EMAIL", "").strip(), os.environ.get("ADMIN_PASSWORD", "")
+
+
+def password_policy_message() -> str:
+    return (
+        f"Password must be at least {PASSWORD_MIN_LENGTH} characters and include "
+        "at least one uppercase letter, one lowercase letter, and one digit"
+    )
+
+
+def validate_password_strength(password: str) -> None:
+    if len(password) < PASSWORD_MIN_LENGTH:
+        raise ValueError(password_policy_message())
+    if not re.search(r"[A-Z]", password):
+        raise ValueError(password_policy_message())
+    if not re.search(r"[a-z]", password):
+        raise ValueError(password_policy_message())
+    if not re.search(r"\d", password):
+        raise ValueError(password_policy_message())
+
+
+def validate_runtime_auth_policy() -> None:
+    if get_runtime_env() != "production":
+        return
+    if not is_auth_enabled():
+        raise RuntimeError(
+            "Production runtime requires authentication. Set VEDA_AUTH_ENABLED=true "
+            "or enable auth in the local auth config before startup."
+        )
+    if user_count() > 0:
+        return
+    admin_email, admin_password = _bootstrap_credentials()
+    if not admin_email or not admin_password:
+        raise RuntimeError(
+            "Production runtime requires an admin account before startup. Provide "
+            "ADMIN_EMAIL and ADMIN_PASSWORD for first bootstrap or provision the user database offline."
+        )
+    validate_password_strength(admin_password)
 
 
 # ── DB ─────────────────────────────────────────────────────────────────────────
@@ -158,6 +244,7 @@ def user_count() -> int:
 
 
 def create_user(email: str, password: str, role: str = "analyst") -> User:
+    validate_password_strength(password)
     uid  = str(uuid.uuid4())
     now  = datetime.now(timezone.utc).isoformat()
     ph, salt = _hash_pw(password)
@@ -198,6 +285,7 @@ def update_user(uid: str, role: Optional[str] = None, active: Optional[bool] = N
 
 
 def change_password(uid: str, new_password: str) -> None:
+    validate_password_strength(new_password)
     ph, salt = _hash_pw(new_password)
     with _conn() as con:
         con.execute("UPDATE users SET password_hash = ?, salt = ? WHERE id = ?", (ph, salt, uid))
@@ -307,22 +395,22 @@ def revoke_api_key(key_id: str, uid: str) -> bool:
 
 def bootstrap_admin() -> None:
     """
-    Create first admin user from env vars if auth is enabled and no users exist.
-    Env vars: ADMIN_EMAIL (default: admin@localhost), ADMIN_PASSWORD (default: admin123)
-    Logs a warning if using default credentials.
+    Create the first admin user from env vars if auth is enabled and no users exist.
+    In local/dev/test, missing env bootstrap credentials leave setup to `/api/auth/setup`.
+    In production, runtime validation requires explicit bootstrap credentials or an existing admin.
     """
-    import os
     if not is_auth_enabled():
         return
     init_db()
     if user_count() > 0:
         return
-    email    = os.environ.get("ADMIN_EMAIL",    "admin@localhost")
-    password = os.environ.get("ADMIN_PASSWORD", "admin123")
-    if password == "admin123":
+    email, password = _bootstrap_credentials()
+    if not email or not password:
         logger.warning(
-            "[Auth] BOOTSTRAP: creating admin with default password 'admin123'. "
-            "Set ADMIN_EMAIL and ADMIN_PASSWORD env vars before enabling auth in production."
+            "[Auth] No bootstrap admin credentials configured. Auth remains enabled, "
+            "but first admin must be created through /api/auth/setup in local/dev/test."
         )
+        return
+    validate_password_strength(password)
     create_user(email, password, role="admin")
-    logger.info("[Auth] Admin bootstrapped: %s", email)
+    logger.info("[Auth] Admin bootstrapped from environment: %s", email)

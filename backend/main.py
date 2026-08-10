@@ -21,7 +21,7 @@ from backend.services import data_loader
 from backend.routers import market, sectors, stocks, participant, corporate, chat, data_ops, charts, pipeline, portfolio, backtest, broker, research, execution, themes, kundli, news, social_pulse, risk, voice
 from backend.auth import router as auth_router
 from backend.auth.middleware import AuthMiddleware
-from backend.auth.store import init_db, bootstrap_admin
+from backend.auth.store import init_db, bootstrap_admin, validate_runtime_auth_policy
 from backend.ws.live_ticker import live_ticker_endpoint
 
 # ── App ───────────────────────────────────────────────────────────────────────
@@ -51,6 +51,7 @@ app.add_middleware(AuthMiddleware)
 async def on_startup():
     init_db()
     bootstrap_admin()
+    validate_runtime_auth_policy()
     data_loader.startup()
     from engines.orchestration.refresh_scheduler import start_scheduler
     start_scheduler()
