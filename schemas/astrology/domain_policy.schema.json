@@ -1,0 +1,151 @@
+{
+  "$defs": {
+    "AllowedOutputMode": {
+      "enum": [
+        "STANDARD",
+        "TRADITIONAL_INTERPRETATION_ONLY",
+        "RESEARCH_ONLY",
+        "NO_END_USER_OUTPUT"
+      ],
+      "title": "AllowedOutputMode",
+      "type": "string"
+    },
+    "ArtifactStatus": {
+      "enum": [
+        "DRAFT",
+        "ACTIVE",
+        "PILOT",
+        "APPROVED",
+        "SUPERSEDED",
+        "ARCHIVED"
+      ],
+      "title": "ArtifactStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "default": "1.0.0",
+      "title": "Version",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/ArtifactStatus",
+      "default": "ACTIVE"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "title": "Created By",
+      "type": "string"
+    },
+    "updated_at": {
+      "title": "Updated At",
+      "type": "string"
+    },
+    "updated_by": {
+      "title": "Updated By",
+      "type": "string"
+    },
+    "change_reason": {
+      "title": "Change Reason",
+      "type": "string"
+    },
+    "supersedes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supersedes"
+    },
+    "superseded_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Superseded By"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    },
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "policy_id": {
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "domain": {
+      "title": "Domain",
+      "type": "string"
+    },
+    "subdomain": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Subdomain"
+    },
+    "high_stakes": {
+      "title": "High Stakes",
+      "type": "boolean"
+    },
+    "requires_safety_review": {
+      "title": "Requires Safety Review",
+      "type": "boolean"
+    },
+    "allowed_output_mode": {
+      "$ref": "#/$defs/AllowedOutputMode"
+    },
+    "review_requirements": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Review Requirements",
+      "type": "array"
+    }
+  },
+  "required": [
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by",
+    "change_reason",
+    "policy_id",
+    "domain",
+    "high_stakes",
+    "requires_safety_review",
+    "allowed_output_mode"
+  ],
+  "title": "DomainPolicyRecord",
+  "type": "object"
+}

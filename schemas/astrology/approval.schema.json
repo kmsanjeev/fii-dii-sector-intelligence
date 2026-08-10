@@ -1,0 +1,254 @@
+{
+  "$defs": {
+    "ApprovalRole": {
+      "enum": [
+        "RESEARCHER",
+        "REVIEWER",
+        "DOMAIN_APPROVER",
+        "ENGINEERING_APPROVER",
+        "VALIDATION_APPROVER"
+      ],
+      "title": "ApprovalRole",
+      "type": "string"
+    },
+    "ApprovalStatus": {
+      "enum": [
+        "NOT_SUBMITTED",
+        "UNDER_REVIEW",
+        "APPROVED",
+        "APPROVED_WITH_CONDITIONS",
+        "REJECTED",
+        "IMPLEMENTATION_READY"
+      ],
+      "title": "ApprovalStatus",
+      "type": "string"
+    },
+    "ArtifactStatus": {
+      "enum": [
+        "DRAFT",
+        "ACTIVE",
+        "PILOT",
+        "APPROVED",
+        "SUPERSEDED",
+        "ARCHIVED"
+      ],
+      "title": "ArtifactStatus",
+      "type": "string"
+    },
+    "ArtifactType": {
+      "enum": [
+        "SOURCE",
+        "PASSAGE",
+        "CLAIM",
+        "CONFLICT",
+        "CLAIM_SET",
+        "PILOT_TOPIC",
+        "LEGACY_RULE_SET"
+      ],
+      "title": "ArtifactType",
+      "type": "string"
+    },
+    "RoleDecision": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "$ref": "#/$defs/ApprovalRole"
+        },
+        "actor": {
+          "title": "Actor",
+          "type": "string"
+        },
+        "decision": {
+          "$ref": "#/$defs/ApprovalStatus"
+        },
+        "decided_at": {
+          "title": "Decided At",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "role",
+        "actor",
+        "decision",
+        "decided_at"
+      ],
+      "title": "RoleDecision",
+      "type": "object"
+    },
+    "WorkflowState": {
+      "enum": [
+        "DISCOVERED",
+        "REGISTERED",
+        "EXTRACTED",
+        "CROSS_REFERENCED",
+        "UNDER_REVIEW",
+        "REVIEWED",
+        "CONFLICT_FOUND",
+        "NEEDS_MORE_RESEARCH",
+        "APPROVED",
+        "APPROVED_WITH_CONDITIONS",
+        "REJECTED",
+        "IMPLEMENTATION_READY",
+        "IMPLEMENTED",
+        "VALIDATED",
+        "SUPERSEDED"
+      ],
+      "title": "WorkflowState",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "default": "1.0.0",
+      "title": "Version",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/ArtifactStatus",
+      "default": "ACTIVE"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "title": "Created By",
+      "type": "string"
+    },
+    "updated_at": {
+      "title": "Updated At",
+      "type": "string"
+    },
+    "updated_by": {
+      "title": "Updated By",
+      "type": "string"
+    },
+    "change_reason": {
+      "title": "Change Reason",
+      "type": "string"
+    },
+    "supersedes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supersedes"
+    },
+    "superseded_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Superseded By"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    },
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "approval_id": {
+      "title": "Approval Id",
+      "type": "string"
+    },
+    "artifact_type": {
+      "$ref": "#/$defs/ArtifactType"
+    },
+    "artifact_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Artifact Ids",
+      "type": "array"
+    },
+    "pilot_domain": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Pilot Domain"
+    },
+    "workflow_state": {
+      "$ref": "#/$defs/WorkflowState"
+    },
+    "approval_status": {
+      "$ref": "#/$defs/ApprovalStatus"
+    },
+    "role_decisions": {
+      "items": {
+        "$ref": "#/$defs/RoleDecision"
+      },
+      "title": "Role Decisions",
+      "type": "array"
+    },
+    "conditions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Conditions",
+      "type": "array"
+    },
+    "implementation_ready": {
+      "default": false,
+      "title": "Implementation Ready",
+      "type": "boolean"
+    },
+    "validated_against_runtime": {
+      "default": false,
+      "title": "Validated Against Runtime",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by",
+    "change_reason",
+    "approval_id",
+    "artifact_type",
+    "workflow_state",
+    "approval_status"
+  ],
+  "title": "ApprovalRecord",
+  "type": "object"
+}

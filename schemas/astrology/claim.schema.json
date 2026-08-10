@@ -1,0 +1,252 @@
+{
+  "$defs": {
+    "AllowedOutputMode": {
+      "enum": [
+        "STANDARD",
+        "TRADITIONAL_INTERPRETATION_ONLY",
+        "RESEARCH_ONLY",
+        "NO_END_USER_OUTPUT"
+      ],
+      "title": "AllowedOutputMode",
+      "type": "string"
+    },
+    "ApprovalStatus": {
+      "enum": [
+        "NOT_SUBMITTED",
+        "UNDER_REVIEW",
+        "APPROVED",
+        "APPROVED_WITH_CONDITIONS",
+        "REJECTED",
+        "IMPLEMENTATION_READY"
+      ],
+      "title": "ApprovalStatus",
+      "type": "string"
+    },
+    "ArtifactStatus": {
+      "enum": [
+        "DRAFT",
+        "ACTIVE",
+        "PILOT",
+        "APPROVED",
+        "SUPERSEDED",
+        "ARCHIVED"
+      ],
+      "title": "ArtifactStatus",
+      "type": "string"
+    },
+    "EvidenceType": {
+      "enum": [
+        "CLASSICAL_TEXTUAL",
+        "TRADITIONAL_INTERPRETIVE",
+        "MODERN_ASTROLOGY",
+        "EMPIRICAL_MARKET",
+        "INTERNAL_HYPOTHESIS"
+      ],
+      "title": "EvidenceType",
+      "type": "string"
+    },
+    "InterpretationType": {
+      "enum": [
+        "TEXTUAL_LITERAL",
+        "COMMENTARIAL",
+        "DERIVED_RULE",
+        "IMPLEMENTATION_NOTE",
+        "HYPOTHESIS"
+      ],
+      "title": "InterpretationType",
+      "type": "string"
+    },
+    "SupportLevel": {
+      "enum": [
+        "SINGLE_SOURCE",
+        "MULTI_SOURCE",
+        "CROSS_VERIFIED",
+        "CONFLICTED",
+        "HYPOTHETICAL"
+      ],
+      "title": "SupportLevel",
+      "type": "string"
+    },
+    "WorkflowState": {
+      "enum": [
+        "DISCOVERED",
+        "REGISTERED",
+        "EXTRACTED",
+        "CROSS_REFERENCED",
+        "UNDER_REVIEW",
+        "REVIEWED",
+        "CONFLICT_FOUND",
+        "NEEDS_MORE_RESEARCH",
+        "APPROVED",
+        "APPROVED_WITH_CONDITIONS",
+        "REJECTED",
+        "IMPLEMENTATION_READY",
+        "IMPLEMENTED",
+        "VALIDATED",
+        "SUPERSEDED"
+      ],
+      "title": "WorkflowState",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "default": "1.0.0",
+      "title": "Version",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/ArtifactStatus",
+      "default": "ACTIVE"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "title": "Created By",
+      "type": "string"
+    },
+    "updated_at": {
+      "title": "Updated At",
+      "type": "string"
+    },
+    "updated_by": {
+      "title": "Updated By",
+      "type": "string"
+    },
+    "change_reason": {
+      "title": "Change Reason",
+      "type": "string"
+    },
+    "supersedes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supersedes"
+    },
+    "superseded_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Superseded By"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    },
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "claim_id": {
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "claim_text": {
+      "title": "Claim Text",
+      "type": "string"
+    },
+    "domain": {
+      "title": "Domain",
+      "type": "string"
+    },
+    "subdomain": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Subdomain"
+    },
+    "source_passages": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Passages",
+      "type": "array"
+    },
+    "interpretation_type": {
+      "$ref": "#/$defs/InterpretationType"
+    },
+    "support_level": {
+      "$ref": "#/$defs/SupportLevel"
+    },
+    "evidence_types": {
+      "items": {
+        "$ref": "#/$defs/EvidenceType"
+      },
+      "title": "Evidence Types",
+      "type": "array"
+    },
+    "conflicting_claims": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Conflicting Claims",
+      "type": "array"
+    },
+    "research_status": {
+      "$ref": "#/$defs/WorkflowState"
+    },
+    "approval_status": {
+      "$ref": "#/$defs/ApprovalStatus",
+      "default": "NOT_SUBMITTED"
+    },
+    "high_stakes": {
+      "default": false,
+      "title": "High Stakes",
+      "type": "boolean"
+    },
+    "requires_safety_review": {
+      "default": false,
+      "title": "Requires Safety Review",
+      "type": "boolean"
+    },
+    "allowed_output_mode": {
+      "$ref": "#/$defs/AllowedOutputMode",
+      "default": "STANDARD"
+    }
+  },
+  "required": [
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by",
+    "change_reason",
+    "claim_id",
+    "claim_text",
+    "domain",
+    "interpretation_type",
+    "support_level",
+    "research_status"
+  ],
+  "title": "ClaimRecord",
+  "type": "object"
+}

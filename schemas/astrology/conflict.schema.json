@@ -1,0 +1,232 @@
+{
+  "$defs": {
+    "ArtifactStatus": {
+      "enum": [
+        "DRAFT",
+        "ACTIVE",
+        "PILOT",
+        "APPROVED",
+        "SUPERSEDED",
+        "ARCHIVED"
+      ],
+      "title": "ArtifactStatus",
+      "type": "string"
+    },
+    "ConflictResolutionStatus": {
+      "enum": [
+        "UNRESOLVED",
+        "COEXIST",
+        "CONTEXT_DEPENDENT",
+        "SOURCE_A_PREFERRED",
+        "SOURCE_B_PREFERRED",
+        "COMPOSITE_RULE",
+        "INSUFFICIENT_EVIDENCE"
+      ],
+      "title": "ConflictResolutionStatus",
+      "type": "string"
+    },
+    "ConflictType": {
+      "enum": [
+        "DIRECT_CONTRADICTION",
+        "PARTIAL_CONTRADICTION",
+        "DIFFERENT_SCOPE",
+        "DIFFERENT_CONDITION",
+        "DIFFERENT_SCHOOL",
+        "TRANSLATION_VARIANCE",
+        "COMMENTARIAL_VARIANCE",
+        "TEMPORAL_OR_TRADITION_VARIANCE",
+        "APPARENT_ONLY",
+        "UNRESOLVED"
+      ],
+      "title": "ConflictType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "default": "1.0.0",
+      "title": "Version",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/ArtifactStatus",
+      "default": "ACTIVE"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "title": "Created By",
+      "type": "string"
+    },
+    "updated_at": {
+      "title": "Updated At",
+      "type": "string"
+    },
+    "updated_by": {
+      "title": "Updated By",
+      "type": "string"
+    },
+    "change_reason": {
+      "title": "Change Reason",
+      "type": "string"
+    },
+    "supersedes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supersedes"
+    },
+    "superseded_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Superseded By"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    },
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "conflict_id": {
+      "title": "Conflict Id",
+      "type": "string"
+    },
+    "topic": {
+      "title": "Topic",
+      "type": "string"
+    },
+    "claim_a": {
+      "title": "Claim A",
+      "type": "string"
+    },
+    "claim_b": {
+      "title": "Claim B",
+      "type": "string"
+    },
+    "source_a": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source A"
+    },
+    "source_b": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source B"
+    },
+    "conflict_type": {
+      "$ref": "#/$defs/ConflictType"
+    },
+    "analysis": {
+      "title": "Analysis",
+      "type": "string"
+    },
+    "possible_reconciliation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Possible Reconciliation"
+    },
+    "school_context": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "School Context"
+    },
+    "implementation_impact": {
+      "title": "Implementation Impact",
+      "type": "string"
+    },
+    "resolution_status": {
+      "$ref": "#/$defs/ConflictResolutionStatus"
+    },
+    "approved_resolution": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approved Resolution"
+    },
+    "confidence": {
+      "maximum": 5,
+      "minimum": 0,
+      "title": "Confidence",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by",
+    "change_reason",
+    "conflict_id",
+    "topic",
+    "claim_a",
+    "claim_b",
+    "conflict_type",
+    "analysis",
+    "implementation_impact",
+    "resolution_status",
+    "confidence"
+  ],
+  "title": "ConflictRecord",
+  "type": "object"
+}

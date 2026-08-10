@@ -1,0 +1,171 @@
+{
+  "$defs": {
+    "ArtifactStatus": {
+      "enum": [
+        "DRAFT",
+        "ACTIVE",
+        "PILOT",
+        "APPROVED",
+        "SUPERSEDED",
+        "ARCHIVED"
+      ],
+      "title": "ArtifactStatus",
+      "type": "string"
+    },
+    "LegacyRuleEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "legacy_rule_id": {
+          "title": "Legacy Rule Id",
+          "type": "string"
+        },
+        "capability": {
+          "title": "Capability",
+          "type": "string"
+        },
+        "module_path": {
+          "title": "Module Path",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/LegacyRuleStatus"
+        },
+        "mapped_claim_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Mapped Claim Ids",
+          "type": "array"
+        },
+        "provenance_note": {
+          "title": "Provenance Note",
+          "type": "string"
+        },
+        "migration_strategy": {
+          "title": "Migration Strategy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "legacy_rule_id",
+        "capability",
+        "module_path",
+        "status",
+        "provenance_note",
+        "migration_strategy"
+      ],
+      "title": "LegacyRuleEntry",
+      "type": "object"
+    },
+    "LegacyRuleStatus": {
+      "enum": [
+        "LEGACY_UNSOURCED",
+        "LEGACY_PARTIALLY_SOURCED",
+        "SOURCE_VALIDATED",
+        "RULE_MIGRATED",
+        "SUPERSEDED"
+      ],
+      "title": "LegacyRuleStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "default": "1.0.0",
+      "title": "Version",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/ArtifactStatus",
+      "default": "ACTIVE"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "title": "Created By",
+      "type": "string"
+    },
+    "updated_at": {
+      "title": "Updated At",
+      "type": "string"
+    },
+    "updated_by": {
+      "title": "Updated By",
+      "type": "string"
+    },
+    "change_reason": {
+      "title": "Change Reason",
+      "type": "string"
+    },
+    "supersedes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supersedes"
+    },
+    "superseded_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Superseded By"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    },
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "register_id": {
+      "title": "Register Id",
+      "type": "string"
+    },
+    "scope": {
+      "title": "Scope",
+      "type": "string"
+    },
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/LegacyRuleEntry"
+      },
+      "title": "Entries",
+      "type": "array"
+    }
+  },
+  "required": [
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by",
+    "change_reason",
+    "register_id",
+    "scope"
+  ],
+  "title": "LegacyRuleRegister",
+  "type": "object"
+}

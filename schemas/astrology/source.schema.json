@@ -1,0 +1,477 @@
+{
+  "$defs": {
+    "ArtifactStatus": {
+      "enum": [
+        "DRAFT",
+        "ACTIVE",
+        "PILOT",
+        "APPROVED",
+        "SUPERSEDED",
+        "ARCHIVED"
+      ],
+      "title": "ArtifactStatus",
+      "type": "string"
+    },
+    "AuthorityProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_tier": {
+          "$ref": "#/$defs/AuthorityTier"
+        },
+        "textual_authority": {
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Textual Authority",
+          "type": "integer"
+        },
+        "traditional_authority": {
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Traditional Authority",
+          "type": "integer"
+        },
+        "translation_reliability": {
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Translation Reliability",
+          "type": "integer"
+        },
+        "cross_source_support": {
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Cross Source Support",
+          "type": "integer"
+        },
+        "empirical_support": {
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Empirical Support",
+          "type": "integer"
+        },
+        "implementation_confidence": {
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Implementation Confidence",
+          "type": "integer"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "required": [
+        "authority_tier",
+        "textual_authority",
+        "traditional_authority",
+        "translation_reliability",
+        "cross_source_support",
+        "empirical_support",
+        "implementation_confidence"
+      ],
+      "title": "AuthorityProfile",
+      "type": "object"
+    },
+    "AuthorityTier": {
+      "enum": [
+        "TIER_A",
+        "TIER_B",
+        "TIER_C",
+        "TIER_D",
+        "TIER_E",
+        "TIER_F",
+        "TIER_U"
+      ],
+      "title": "AuthorityTier",
+      "type": "string"
+    },
+    "EvidenceType": {
+      "enum": [
+        "CLASSICAL_TEXTUAL",
+        "TRADITIONAL_INTERPRETIVE",
+        "MODERN_ASTROLOGY",
+        "EMPIRICAL_MARKET",
+        "INTERNAL_HYPOTHESIS"
+      ],
+      "title": "EvidenceType",
+      "type": "string"
+    },
+    "LegalAccessStatus": {
+      "enum": [
+        "PUBLIC_DOMAIN",
+        "LICENSED_OR_COPYRIGHTED",
+        "LIMITED_QUOTATION_ONLY",
+        "METADATA_ONLY",
+        "UNKNOWN"
+      ],
+      "title": "LegalAccessStatus",
+      "type": "string"
+    },
+    "PrimarySecondaryStatus": {
+      "enum": [
+        "PRIMARY",
+        "SECONDARY",
+        "TERTIARY",
+        "UNKNOWN"
+      ],
+      "title": "PrimarySecondaryStatus",
+      "type": "string"
+    },
+    "QualityGrade": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "U"
+      ],
+      "title": "QualityGrade",
+      "type": "string"
+    },
+    "SourceClass": {
+      "enum": [
+        "CLASSICAL_PRIMARY",
+        "CLASSICAL_COMMENTARY",
+        "TRADITIONAL_SECONDARY",
+        "MODERN_PRACTITIONER",
+        "ACADEMIC_SECONDARY",
+        "EMPIRICAL_RESEARCH",
+        "REFERENCE_EDITION",
+        "DERIVED_INTERNAL",
+        "HYPOTHESIS",
+        "FOLKLORE_OR_UNVERIFIED"
+      ],
+      "title": "SourceClass",
+      "type": "string"
+    },
+    "VerificationStatus": {
+      "enum": [
+        "VERIFIED",
+        "PASSAGE_VERIFIED",
+        "METADATA_VERIFIED",
+        "PARTIAL",
+        "REFERENCE_NOT_VERIFIED",
+        "UNVERIFIED",
+        "UNKNOWN"
+      ],
+      "title": "VerificationStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "default": "1.0.0",
+      "title": "Version",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/ArtifactStatus",
+      "default": "ACTIVE"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "title": "Created By",
+      "type": "string"
+    },
+    "updated_at": {
+      "title": "Updated At",
+      "type": "string"
+    },
+    "updated_by": {
+      "title": "Updated By",
+      "type": "string"
+    },
+    "change_reason": {
+      "title": "Change Reason",
+      "type": "string"
+    },
+    "supersedes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supersedes"
+    },
+    "superseded_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Superseded By"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    },
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "source_id": {
+      "title": "Source Id",
+      "type": "string"
+    },
+    "title_original": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Title Original"
+    },
+    "title_normalized": {
+      "title": "Title Normalized",
+      "type": "string"
+    },
+    "source_class": {
+      "$ref": "#/$defs/SourceClass"
+    },
+    "author_attributed": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Author Attributed"
+    },
+    "author_normalized": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Author Normalized"
+    },
+    "historical_period": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Historical Period"
+    },
+    "language_original": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Language Original"
+    },
+    "edition": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Edition"
+    },
+    "publisher": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Publisher"
+    },
+    "publication_year": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Publication Year"
+    },
+    "translator": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Translator"
+    },
+    "commentator": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Commentator"
+    },
+    "isbn_or_identifier": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Isbn Or Identifier"
+    },
+    "digital_source": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Digital Source"
+    },
+    "legal_access_status": {
+      "$ref": "#/$defs/LegalAccessStatus",
+      "default": "UNKNOWN"
+    },
+    "primary_or_secondary": {
+      "$ref": "#/$defs/PrimarySecondaryStatus",
+      "default": "UNKNOWN"
+    },
+    "tradition": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Tradition"
+    },
+    "school": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "School"
+    },
+    "domains": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Domains",
+      "type": "array"
+    },
+    "quality_grade": {
+      "$ref": "#/$defs/QualityGrade",
+      "default": "U"
+    },
+    "authority_score": {
+      "anyOf": [
+        {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Authority Score"
+    },
+    "authority_profile": {
+      "$ref": "#/$defs/AuthorityProfile"
+    },
+    "verification_status": {
+      "$ref": "#/$defs/VerificationStatus",
+      "default": "UNKNOWN"
+    },
+    "evidence_type": {
+      "$ref": "#/$defs/EvidenceType",
+      "default": "CLASSICAL_TEXTUAL"
+    }
+  },
+  "required": [
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by",
+    "change_reason",
+    "source_id",
+    "title_normalized",
+    "source_class",
+    "authority_profile"
+  ],
+  "title": "AstrologySourceRecord",
+  "type": "object"
+}
