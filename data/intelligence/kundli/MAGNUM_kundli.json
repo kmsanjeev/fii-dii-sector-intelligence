@@ -1,0 +1,588 @@
+{
+  "entity": {
+    "type": "STOCK",
+    "name": "MAGNUM",
+    "inception_date": "2007-09-20",
+    "inception_time": "10:00:00",
+    "lat": 18.934,
+    "lon": 72.8296,
+    "tz_offset": 5.5
+  },
+  "lagna": {
+    "sign": "Libra",
+    "sign_num": 6,
+    "degree": 21.68,
+    "lord": "Venus",
+    "full_longitude": 201.6834
+  },
+  "planets": {
+    "Sun": {
+      "longitude": 152.8825,
+      "sign": "Virgo",
+      "sign_num": 5,
+      "degree": 2.88,
+      "house": 12,
+      "nakshatra": "Uttara Phalguni",
+      "pada": 2,
+      "nakshatra_lord": "Sun",
+      "dignity": "neutral",
+      "retrograde": false
+    },
+    "Moon": {
+      "longitude": 248.4289,
+      "sign": "Sagittarius",
+      "sign_num": 8,
+      "degree": 8.43,
+      "house": 3,
+      "nakshatra": "Mula",
+      "pada": 3,
+      "nakshatra_lord": "Ketu",
+      "dignity": "neutral",
+      "retrograde": false
+    },
+    "Mercury": {
+      "longitude": 177.1853,
+      "sign": "Virgo",
+      "sign_num": 5,
+      "degree": 27.19,
+      "house": 12,
+      "nakshatra": "Chitra",
+      "pada": 2,
+      "nakshatra_lord": "Mars",
+      "dignity": "exalted",
+      "retrograde": false
+    },
+    "Venus": {
+      "longitude": 115.0121,
+      "sign": "Cancer",
+      "sign_num": 3,
+      "degree": 25.01,
+      "house": 10,
+      "nakshatra": "Ashlesha",
+      "pada": 3,
+      "nakshatra_lord": "Mercury",
+      "dignity": "enemy",
+      "retrograde": false
+    },
+    "Mars": {
+      "longitude": 61.7979,
+      "sign": "Gemini",
+      "sign_num": 2,
+      "degree": 1.8,
+      "house": 9,
+      "nakshatra": "Mrigashira",
+      "pada": 3,
+      "nakshatra_lord": "Mars",
+      "dignity": "enemy",
+      "retrograde": false
+    },
+    "Jupiter": {
+      "longitude": 228.8051,
+      "sign": "Scorpio",
+      "sign_num": 7,
+      "degree": 18.81,
+      "house": 2,
+      "nakshatra": "Jyeshtha",
+      "pada": 1,
+      "nakshatra_lord": "Mercury",
+      "dignity": "friendly",
+      "retrograde": false
+    },
+    "Saturn": {
+      "longitude": 128.2062,
+      "sign": "Leo",
+      "sign_num": 4,
+      "degree": 8.21,
+      "house": 11,
+      "nakshatra": "Magha",
+      "pada": 3,
+      "nakshatra_lord": "Ketu",
+      "dignity": "enemy",
+      "retrograde": false
+    },
+    "Uranus": {
+      "longitude": 322.3307,
+      "sign": "Aquarius",
+      "sign_num": 10,
+      "degree": 22.33,
+      "house": 5,
+      "nakshatra": "Purva Bhadra",
+      "pada": 1,
+      "nakshatra_lord": "Jupiter",
+      "dignity": "neutral",
+      "retrograde": true
+    },
+    "Neptune": {
+      "longitude": 295.7337,
+      "sign": "Capricorn",
+      "sign_num": 9,
+      "degree": 25.73,
+      "house": 4,
+      "nakshatra": "Dhanishtha",
+      "pada": 1,
+      "nakshatra_lord": "Mars",
+      "dignity": "neutral",
+      "retrograde": true
+    },
+    "Rahu": {
+      "longitude": 312.9258,
+      "sign": "Aquarius",
+      "sign_num": 10,
+      "degree": 12.93,
+      "house": 5,
+      "nakshatra": "Shatabhisha",
+      "pada": 2,
+      "nakshatra_lord": "Rahu",
+      "dignity": "friendly",
+      "retrograde": true
+    },
+    "Ketu": {
+      "longitude": 132.9258,
+      "sign": "Leo",
+      "sign_num": 4,
+      "degree": 12.93,
+      "house": 11,
+      "nakshatra": "Magha",
+      "pada": 4,
+      "nakshatra_lord": "Ketu",
+      "dignity": "enemy",
+      "retrograde": true
+    }
+  },
+  "divisional_charts": {
+    "D1": {
+      "Sun": "Virgo",
+      "Moon": "Sagittarius",
+      "Mercury": "Virgo",
+      "Venus": "Cancer",
+      "Mars": "Gemini",
+      "Jupiter": "Scorpio",
+      "Saturn": "Leo",
+      "Uranus": "Aquarius",
+      "Neptune": "Capricorn",
+      "Rahu": "Aquarius",
+      "Ketu": "Leo"
+    },
+    "D2": {
+      "Sun": "Cancer",
+      "Moon": "Leo",
+      "Mercury": "Leo",
+      "Venus": "Leo",
+      "Mars": "Leo",
+      "Jupiter": "Leo",
+      "Saturn": "Leo",
+      "Uranus": "Cancer",
+      "Neptune": "Leo",
+      "Rahu": "Leo",
+      "Ketu": "Leo"
+    },
+    "D3": {
+      "Sun": "Virgo",
+      "Moon": "Sagittarius",
+      "Mercury": "Taurus",
+      "Venus": "Pisces",
+      "Mars": "Gemini",
+      "Jupiter": "Pisces",
+      "Saturn": "Leo",
+      "Uranus": "Libra",
+      "Neptune": "Virgo",
+      "Rahu": "Gemini",
+      "Ketu": "Sagittarius"
+    },
+    "D4": {
+      "Sun": "Pisces",
+      "Moon": "Capricorn",
+      "Mercury": "Gemini",
+      "Venus": "Aries",
+      "Mars": "Gemini",
+      "Jupiter": "Cancer",
+      "Saturn": "Virgo",
+      "Uranus": "Aries",
+      "Neptune": "Libra",
+      "Rahu": "Pisces",
+      "Ketu": "Virgo"
+    },
+    "D7": {
+      "Sun": "Pisces",
+      "Moon": "Capricorn",
+      "Mercury": "Virgo",
+      "Venus": "Gemini",
+      "Mars": "Gemini",
+      "Jupiter": "Virgo",
+      "Saturn": "Virgo",
+      "Uranus": "Cancer",
+      "Neptune": "Capricorn",
+      "Rahu": "Taurus",
+      "Ketu": "Scorpio"
+    },
+    "D9": {
+      "Sun": "Capricorn",
+      "Moon": "Gemini",
+      "Mercury": "Virgo",
+      "Venus": "Aquarius",
+      "Mars": "Libra",
+      "Jupiter": "Sagittarius",
+      "Saturn": "Gemini",
+      "Uranus": "Aries",
+      "Neptune": "Leo",
+      "Rahu": "Capricorn",
+      "Ketu": "Cancer"
+    },
+    "D10": {
+      "Sun": "Taurus",
+      "Moon": "Aquarius",
+      "Mercury": "Aquarius",
+      "Venus": "Scorpio",
+      "Mars": "Gemini",
+      "Jupiter": "Capricorn",
+      "Saturn": "Libra",
+      "Uranus": "Virgo",
+      "Neptune": "Taurus",
+      "Rahu": "Gemini",
+      "Ketu": "Sagittarius"
+    },
+    "D11": {
+      "Sun": "Aries",
+      "Moon": "Pisces",
+      "Mercury": "Sagittarius",
+      "Venus": "Libra",
+      "Mars": "Gemini",
+      "Jupiter": "Scorpio",
+      "Saturn": "Scorpio",
+      "Uranus": "Libra",
+      "Neptune": "Aries",
+      "Rahu": "Gemini",
+      "Ketu": "Sagittarius"
+    },
+    "D12": {
+      "Sun": "Libra",
+      "Moon": "Pisces",
+      "Mercury": "Cancer",
+      "Venus": "Taurus",
+      "Mars": "Gemini",
+      "Jupiter": "Gemini",
+      "Saturn": "Scorpio",
+      "Uranus": "Libra",
+      "Neptune": "Scorpio",
+      "Rahu": "Cancer",
+      "Ketu": "Capricorn"
+    },
+    "D16": {
+      "Sun": "Aries",
+      "Moon": "Aries",
+      "Mercury": "Taurus",
+      "Venus": "Aquarius",
+      "Mars": "Gemini",
+      "Jupiter": "Pisces",
+      "Saturn": "Sagittarius",
+      "Uranus": "Capricorn",
+      "Neptune": "Leo",
+      "Rahu": "Leo",
+      "Ketu": "Aquarius"
+    },
+    "D20": {
+      "Sun": "Aries",
+      "Moon": "Taurus",
+      "Mercury": "Virgo",
+      "Venus": "Taurus",
+      "Mars": "Cancer",
+      "Jupiter": "Taurus",
+      "Saturn": "Capricorn",
+      "Uranus": "Aries",
+      "Neptune": "Sagittarius",
+      "Rahu": "Libra",
+      "Ketu": "Aries"
+    },
+    "D30": {
+      "Sun": "Taurus",
+      "Moon": "Aquarius",
+      "Mercury": "Scorpio",
+      "Venus": "Scorpio",
+      "Mars": "Aries",
+      "Jupiter": "Pisces",
+      "Saturn": "Aquarius",
+      "Uranus": "Gemini",
+      "Neptune": "Scorpio",
+      "Rahu": "Sagittarius",
+      "Ketu": "Sagittarius"
+    },
+    "D60": {
+      "Sun": "Leo",
+      "Moon": "Aries",
+      "Mercury": "Virgo",
+      "Venus": "Pisces",
+      "Mars": "Virgo",
+      "Jupiter": "Gemini",
+      "Saturn": "Sagittarius",
+      "Uranus": "Libra",
+      "Neptune": "Libra",
+      "Rahu": "Pisces",
+      "Ketu": "Virgo"
+    }
+  },
+  "current_dasha": {
+    "mahadasha": {
+      "planet": "Venus",
+      "start": 2010.292996,
+      "end": 2030.292996,
+      "start_date": "2010-04-18",
+      "end_date": "2030-04-18"
+    },
+    "antardasha": {
+      "planet": "Mercury",
+      "start": 2026.292996,
+      "end": 2029.126329,
+      "start_date": "2026-04-18",
+      "end_date": "2029-02-16"
+    },
+    "pratyantardasha": {
+      "planet": "Mercury",
+      "start": 2026.292996,
+      "end": 2026.694385,
+      "start_date": "2026-04-18",
+      "end_date": "2026-09-11"
+    },
+    "all_mahadashas": [
+      {
+        "planet": "Ketu",
+        "start_date": "2007-09-20",
+        "end_date": "2010-04-18"
+      },
+      {
+        "planet": "Venus",
+        "start_date": "2010-04-18",
+        "end_date": "2030-04-18"
+      },
+      {
+        "planet": "Sun",
+        "start_date": "2030-04-18",
+        "end_date": "2036-04-17"
+      },
+      {
+        "planet": "Moon",
+        "start_date": "2036-04-17",
+        "end_date": "2046-04-18"
+      },
+      {
+        "planet": "Mars",
+        "start_date": "2046-04-18",
+        "end_date": "2053-04-18"
+      },
+      {
+        "planet": "Rahu",
+        "start_date": "2053-04-18",
+        "end_date": "2071-04-18"
+      },
+      {
+        "planet": "Jupiter",
+        "start_date": "2071-04-18",
+        "end_date": "2087-04-18"
+      },
+      {
+        "planet": "Saturn",
+        "start_date": "2087-04-18",
+        "end_date": "2106-04-18"
+      },
+      {
+        "planet": "Mercury",
+        "start_date": "2106-04-18",
+        "end_date": "2123-04-18"
+      },
+      {
+        "planet": "Ketu",
+        "start_date": "2123-04-18",
+        "end_date": "2130-04-18"
+      },
+      {
+        "planet": "Venus",
+        "start_date": "2130-04-18",
+        "end_date": "2150-04-18"
+      },
+      {
+        "planet": "Sun",
+        "start_date": "2150-04-18",
+        "end_date": "2156-04-17"
+      },
+      {
+        "planet": "Moon",
+        "start_date": "2156-04-17",
+        "end_date": "2166-04-18"
+      },
+      {
+        "planet": "Mars",
+        "start_date": "2166-04-18",
+        "end_date": "2173-04-18"
+      },
+      {
+        "planet": "Rahu",
+        "start_date": "2173-04-18",
+        "end_date": "2191-04-18"
+      },
+      {
+        "planet": "Jupiter",
+        "start_date": "2191-04-18",
+        "end_date": "2207-04-18"
+      },
+      {
+        "planet": "Saturn",
+        "start_date": "2207-04-18",
+        "end_date": "2226-04-18"
+      },
+      {
+        "planet": "Mercury",
+        "start_date": "2226-04-18",
+        "end_date": "2243-04-18"
+      }
+    ]
+  },
+  "financial_houses": {
+    "2H": {
+      "sign": "Scorpio",
+      "lord": "Mars",
+      "lord_house": 9,
+      "lord_dignity": "enemy",
+      "occupants": [
+        "Jupiter"
+      ],
+      "strength": "moderate-strong",
+      "signification": "Cash reserves, balance sheet, P&L, accumulated wealth"
+    },
+    "5H": {
+      "sign": "Aquarius",
+      "lord": "Saturn",
+      "lord_house": 11,
+      "lord_dignity": "enemy",
+      "occupants": [
+        "Uranus",
+        "Rahu"
+      ],
+      "strength": "moderate-strong",
+      "signification": "Speculation, derivatives, creative R&D, investor sentiment"
+    },
+    "8H": {
+      "sign": "Taurus",
+      "lord": "Venus",
+      "lord_house": 10,
+      "lord_dignity": "enemy",
+      "occupants": [],
+      "strength": "moderate-strong",
+      "signification": "Sudden events, transformation, debt restructuring, M&A target"
+    },
+    "10H": {
+      "sign": "Cancer",
+      "lord": "Moon",
+      "lord_house": 3,
+      "lord_dignity": "neutral",
+      "occupants": [
+        "Venus"
+      ],
+      "strength": "moderate",
+      "signification": "Management, CEO, government relations, market reputation"
+    },
+    "11H": {
+      "sign": "Leo",
+      "lord": "Sun",
+      "lord_house": 12,
+      "lord_dignity": "neutral",
+      "occupants": [
+        "Saturn",
+        "Ketu"
+      ],
+      "strength": "weak",
+      "signification": "Revenue, profits, cash inflows, shareholder returns"
+    }
+  },
+  "yogas": [],
+  "transits": {
+    "Sun": {
+      "current_sign": "Gemini",
+      "natal_sign": "Virgo",
+      "transit_angle": 295.3,
+      "aspect": "sextile",
+      "conjunct_natal": []
+    },
+    "Moon": {
+      "current_sign": "Cancer",
+      "natal_sign": "Sagittarius",
+      "transit_angle": 206.4,
+      "aspect": "separating",
+      "conjunct_natal": []
+    },
+    "Mercury": {
+      "current_sign": "Gemini",
+      "natal_sign": "Virgo",
+      "transit_angle": 268.1,
+      "aspect": "square",
+      "conjunct_natal": []
+    },
+    "Venus": {
+      "current_sign": "Leo",
+      "natal_sign": "Cancer",
+      "transit_angle": 16.5,
+      "aspect": "separating",
+      "conjunct_natal": [
+        "Saturn",
+        "Ketu"
+      ]
+    },
+    "Mars": {
+      "current_sign": "Taurus",
+      "natal_sign": "Gemini",
+      "transit_angle": 345.3,
+      "aspect": "separating",
+      "conjunct_natal": []
+    },
+    "Jupiter": {
+      "current_sign": "Cancer",
+      "natal_sign": "Scorpio",
+      "transit_angle": 230.1,
+      "aspect": "separating",
+      "conjunct_natal": []
+    },
+    "Saturn": {
+      "current_sign": "Pisces",
+      "natal_sign": "Leo",
+      "transit_angle": 222.2,
+      "aspect": "separating",
+      "conjunct_natal": []
+    },
+    "Uranus": {
+      "current_sign": "Taurus",
+      "natal_sign": "Aquarius",
+      "transit_angle": 77.8,
+      "aspect": "separating",
+      "conjunct_natal": []
+    },
+    "Neptune": {
+      "current_sign": "Pisces",
+      "natal_sign": "Capricorn",
+      "transit_angle": 44.4,
+      "aspect": "separating",
+      "conjunct_natal": []
+    },
+    "Rahu": {
+      "current_sign": "Aquarius",
+      "natal_sign": "Aquarius",
+      "transit_angle": 353.1,
+      "aspect": "conjunction",
+      "conjunct_natal": [
+        "Rahu"
+      ]
+    },
+    "Ketu": {
+      "current_sign": "Leo",
+      "natal_sign": "Leo",
+      "transit_angle": 353.1,
+      "aspect": "conjunction",
+      "conjunct_natal": [
+        "Saturn",
+        "Ketu"
+      ]
+    }
+  },
+  "astro_score": 10.0,
+  "astro_action": "CAUTION",
+  "computed_date": "2026-07-15",
+  "symbol": "MAGNUM",
+  "exchange": "NSE"
+}

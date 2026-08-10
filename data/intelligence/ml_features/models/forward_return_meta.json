@@ -1,0 +1,15 @@
+{
+  "model_type": "XGBoost binary classifier",
+  "target": "is_up_15_45d (15% gain in 45 trading sessions)",
+  "features": [
+    "rsi_14",
+    "macd_hist",
+    "bb_pct_b",
+    "adx_14",
+    "vs_dma_200",
+    "vol_ratio"
+  ],
+  "cv_auc_mean": 0.6284169953569273,
+  "cv_auc_std": 0.015180947310130392,
+  "trained_at": "2026-07-03T20:55:41.792451"
+}

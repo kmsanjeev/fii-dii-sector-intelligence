@@ -1,0 +1,23 @@
+index,expiry,key,value,note,trade_date
+NIFTY,2026-08-04,spot,24383.6,underlying at FO close,2026-07-31
+NIFTY,2026-08-04,pcr,1.494,"put OI / call OI, nearest expiry",2026-07-31
+NIFTY,2026-08-04,max_pain,24350.0,,2026-07-31
+NIFTY,2026-08-04,support,24000.0,highest Put OI strike,2026-07-31
+NIFTY,2026-08-04,resistance,24600.0,highest Call OI strike,2026-07-31
+NIFTY,2026-08-04,expected_range,24000 - 24600,put wall to call wall,2026-07-31
+NIFTY,2026-08-04,top_call_oi_strikes,24600:12035k | 25000:10899k | 24700:9196k,,2026-07-31
+NIFTY,2026-08-04,top_put_oi_strikes,24000:14686k | 24200:11814k | 23000:10813k,,2026-07-31
+NIFTY,2026-08-04,call_oi_change,18438160,"chain net, today",2026-07-31
+NIFTY,2026-08-04,put_oi_change,49971025,"chain net, today",2026-07-31
+NIFTY,2026-08-04,futures_read,SHORT_COVERING,"price vs OI, nearest future",2026-07-31
+BANKNIFTY,2026-08-25,spot,57264.8,underlying at FO close,2026-07-31
+BANKNIFTY,2026-08-25,pcr,0.857,"put OI / call OI, nearest expiry",2026-07-31
+BANKNIFTY,2026-08-25,max_pain,57500.0,,2026-07-31
+BANKNIFTY,2026-08-25,support,57000.0,highest Put OI strike,2026-07-31
+BANKNIFTY,2026-08-25,resistance,58000.0,highest Call OI strike,2026-07-31
+BANKNIFTY,2026-08-25,expected_range,57000 - 58000,put wall to call wall,2026-07-31
+BANKNIFTY,2026-08-25,top_call_oi_strikes,58000:2153k | 60000:1168k | 59000:987k,,2026-07-31
+BANKNIFTY,2026-08-25,top_put_oi_strikes,58000:1315k | 57000:904k | 56000:572k,,2026-07-31
+BANKNIFTY,2026-08-25,call_oi_change,439830,"chain net, today",2026-07-31
+BANKNIFTY,2026-08-25,put_oi_change,71790,"chain net, today",2026-07-31
+BANKNIFTY,2026-08-25,futures_read,SHORT_COVERING,"price vs OI, nearest future",2026-07-31

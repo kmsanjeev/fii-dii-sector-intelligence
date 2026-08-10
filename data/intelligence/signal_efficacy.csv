@@ -1,0 +1,31 @@
+factor,horizon_days,ic_mean,ic_std,ic_positive_pct,decile_spread_pct,top_decile_hit_rate_pct,n_snapshots,n_obs,status,note,run_date
+ret_30d,30,-0.0104,0.1235,50.0,0.69,54.7,34,14335,MEASURED,,2026-07-10
+ret_30d,60,-0.0179,0.1305,48.5,0.37,56.3,33,13883,MEASURED,,2026-07-10
+ret_30d,90,-0.0188,0.1288,40.6,0.91,57.5,32,13431,MEASURED,,2026-07-10
+ret_90d,30,-0.025,0.1319,55.9,-0.1,53.4,34,14335,MEASURED,,2026-07-10
+ret_90d,60,-0.0189,0.1421,42.4,0.25,55.0,33,13883,MEASURED,,2026-07-10
+ret_90d,90,-0.0094,0.1435,40.6,2.47,55.8,32,13431,MEASURED,,2026-07-10
+prox_52w_high,30,0.0052,0.1609,52.9,-0.37,55.0,34,14335,MEASURED,,2026-07-10
+prox_52w_high,60,0.0126,0.1581,60.6,-0.0,57.3,33,13883,MEASURED,,2026-07-10
+prox_52w_high,90,0.0215,0.1336,62.5,0.21,56.7,32,13431,MEASURED,,2026-07-10
+dma_trend,30,-0.0199,0.1317,47.1,0.97,54.7,34,14335,MEASURED,,2026-07-10
+dma_trend,60,-0.0198,0.1444,60.6,1.02,56.4,33,13883,MEASURED,,2026-07-10
+dma_trend,90,-0.0211,0.1471,37.5,2.31,57.1,32,13431,MEASURED,,2026-07-10
+vol_surge,30,-0.0169,0.0785,38.2,-0.45,51.3,34,14335,MEASURED,,2026-07-10
+vol_surge,60,-0.0143,0.0792,33.3,-1.56,53.7,33,13883,MEASURED,,2026-07-10
+vol_surge,90,-0.0078,0.0765,43.8,-0.74,55.3,32,13431,MEASURED,,2026-07-10
+deal_score,30,,,,,,0,0,UNMEASURED,needs scores_history.parquet -- measurable after ~6 months of snapshots,2026-07-10
+deal_score,60,,,,,,0,0,UNMEASURED,needs scores_history.parquet -- measurable after ~6 months of snapshots,2026-07-10
+deal_score,90,,,,,,0,0,UNMEASURED,needs scores_history.parquet -- measurable after ~6 months of snapshots,2026-07-10
+sector_flow_score,30,,,,,,0,0,UNMEASURED,needs scores_history.parquet -- measurable after ~6 months of snapshots,2026-07-10
+sector_flow_score,60,,,,,,0,0,UNMEASURED,needs scores_history.parquet -- measurable after ~6 months of snapshots,2026-07-10
+sector_flow_score,90,,,,,,0,0,UNMEASURED,needs scores_history.parquet -- measurable after ~6 months of snapshots,2026-07-10
+corporate_score,30,,,,,,0,0,UNMEASURED,needs scores_history.parquet -- measurable after ~6 months of snapshots,2026-07-10
+corporate_score,60,,,,,,0,0,UNMEASURED,needs scores_history.parquet -- measurable after ~6 months of snapshots,2026-07-10
+corporate_score,90,,,,,,0,0,UNMEASURED,needs scores_history.parquet -- measurable after ~6 months of snapshots,2026-07-10
+ml_bull_run_score,30,,,,,,0,0,UNMEASURED,needs scores_history.parquet -- measurable after ~6 months of snapshots,2026-07-10
+ml_bull_run_score,60,,,,,,0,0,UNMEASURED,needs scores_history.parquet -- measurable after ~6 months of snapshots,2026-07-10
+ml_bull_run_score,90,,,,,,0,0,UNMEASURED,needs scores_history.parquet -- measurable after ~6 months of snapshots,2026-07-10
+holding_trends,30,,,,,,0,0,UNMEASURED,quarterly cadence -- needs 8+ quarters of snapshots,2026-07-10
+holding_trends,60,,,,,,0,0,UNMEASURED,quarterly cadence -- needs 8+ quarters of snapshots,2026-07-10
+holding_trends,90,,,,,,0,0,UNMEASURED,quarterly cadence -- needs 8+ quarters of snapshots,2026-07-10
