@@ -199,11 +199,15 @@ export type Stock = {
     sector: string; ruling_planets: string; primary_planet: string
     planet_sign: string; planet_state: string; planet_retrograde: boolean
     key_aspects: string; astro_score: number; astro_action: string
+    astro_action_code?: string; astro_action_label?: string
     astro_reason: string; moon_phase: string; eclipse_active: boolean
     as_of_date: string; market_astro_signal: string
     mercury_retrograde: boolean; venus_retrograde: boolean
     moon_illumination: number | null; jupiter_sign: string
     saturn_sign: string; reversal_note: string | null
+    evidence_class?: string; source_status?: string; interpretation_type?: string
+    high_stakes?: boolean; actionability?: string; output_classification?: string
+    boundary_note?: string
   }
   // Phase D — four new intelligence cards
   structured_thesis?: {

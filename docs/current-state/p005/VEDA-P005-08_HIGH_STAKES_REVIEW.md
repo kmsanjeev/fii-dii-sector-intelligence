@@ -13,10 +13,10 @@ Representative longevity excerpt:
 ```text
 LONGEVITY & LIFE SPAN (AYURDAYA PRINCIPLES)
 ----------------------------------------------------
-  Primary longevity indicators (BPHS Ayurdaya): the Lagna, Lagna lord, Moon, and 8th house together determine life span.
-  Lagna lord Venus in H2 (neutral): challenges to vitality; attention to health habits is strongly advised.
-  Moon in H5 (neutral): Moon in challenging dignity may affect mental peace and overall vitality; consistent self-care advised.
-  Saturn in H1 (exalted): Saturn's role in the chart strongly supports longevity -- Saturn in favourable d
+  Traditional Ayurdaya indicators are interpretive only. Traditional Jyotisha interpretation only; not a factual lifespan or death prediction.
+  This section describes vitality, resilience, and periods of caution through the Lagna, Lagna lord, Moon, Saturn, and 8th house.
+  Lagna lord Venus in H2 (neutral): traditionally read as a call for disciplined vitality management and health awareness.
+  Moon in H5 (neutral): traditionally associated with fluctuating v
 ```
 
 Representative health excerpt:

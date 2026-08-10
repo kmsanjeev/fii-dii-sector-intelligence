@@ -64,7 +64,16 @@ interface KundliData {
   transits:         Record<string, { current_sign: string; natal_sign: string; aspect: string }>
   astro_score:      number
   astro_action:     string
+  astro_action_code?: string
+  astro_action_label?: string
   computed_date:    string
+  evidence_class?:  string
+  source_status?:   string
+  interpretation_type?: string
+  high_stakes?:     boolean
+  actionability?:   string
+  output_classification?: string
+  boundary_note?:   string
 }
 
 interface GannData {
@@ -88,12 +97,21 @@ interface GannData {
 
 interface Interpretation {
   signal:          string
+  signal_code?:    string
+  signal_label?:   string
   astro_score:     number
   bullish_factors: string[]
   bearish_factors: string[]
   dasha_outlook:   Array<{ period: string; start: string; end: string; outlook: string }>
   narrative:       string
   yogas:           string[]
+  evidence_class?: string
+  source_status?:  string
+  interpretation_type?: string
+  high_stakes?:    boolean
+  actionability?:  string
+  output_classification?: string
+  boundary_note?:  string
 }
 
 interface KundliResponse {
@@ -113,6 +131,8 @@ const ACTION_CFG: Record<string, { color: string; bg: string; border: string }> 
   CAUTION:    { color: T.amber,   bg: `${T.amber}14`,   border: `${T.amber}55`   },
   EXIT:       { color: '#F97316', bg: '#F9731614',       border: '#F9731655'      },
   AVOID:      { color: T.red,     bg: `${T.red}14`,     border: `${T.red}55`     },
+  MODERATE:   { color: T.green,   bg: `${T.green}14`,   border: `${T.green}55`   },
+  NEUTRAL:    { color: T.blue,    bg: `${T.blue}14`,    border: `${T.blue}55`    },
 }
 
 const DIGNITY_COLOR: Record<string, string> = {
@@ -597,19 +617,20 @@ function GannTab({ gann }: { gann: GannData | null }) {
 }
 
 function ReportTab({ kundli, interp }: { kundli: KundliData; interp: Interpretation }) {
-  const cfg = ACTION_CFG[interp.signal] ?? ACTION_CFG.HOLD
+  const signalCode = interp.signal_code ?? interp.signal
+  const cfg = ACTION_CFG[signalCode] ?? ACTION_CFG.HOLD
   const scoreColor = interp.astro_score >= 30 ? T.green : interp.astro_score >= 5 ? T.blue : interp.astro_score >= -10 ? T.amber : T.red
 
   return (
     <div>
-      <SectionLabel text="Financial Signal" />
+      <SectionLabel text="Financial Heuristic" />
       <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
         <div style={{
           flex: 1, padding: '14px', borderRadius: 6,
           background: T.cell, border: `1px solid ${T.border}`,
           display: 'flex', flexDirection: 'column', alignItems: 'center',
         }}>
-          <span style={{ fontSize: FS.caption, color: T.muted, marginBottom: 5, letterSpacing: 0.8, textTransform: 'uppercase' as const }}>Vedic Signal</span>
+          <span style={{ fontSize: FS.caption, color: T.muted, marginBottom: 5, letterSpacing: 0.8, textTransform: 'uppercase' as const }}>Astrology Heuristic</span>
           <span style={{ fontSize: FS['2xl'], fontWeight: FW.black, color: cfg.color }}>{interp.signal}</span>
         </div>
         <div style={{
@@ -631,6 +652,16 @@ function ReportTab({ kundli, interp }: { kundli: KundliData; interp: Interpretat
           color: T.textSub, fontSize: FS.body, lineHeight: 1.6,
         }}>
           {interp.narrative}
+        </div>
+      )}
+
+      {interp.boundary_note && (
+        <div style={{
+          padding: '10px 14px', borderRadius: 6, marginBottom: 14,
+          background: `${T.purple}09`, border: `1px solid ${T.purple}20`,
+          color: T.textSub, fontSize: FS.caption, lineHeight: 1.55,
+        }}>
+          {interp.boundary_note}
         </div>
       )}
 
@@ -668,7 +699,7 @@ function ReportTab({ kundli, interp }: { kundli: KundliData; interp: Interpretat
         borderTop: `1px solid ${T.border}`, paddingTop: 10, marginTop: 14, lineHeight: 1.5,
       }}>
         Computed: {kundli.computed_date}. Uses Swiss Ephemeris with Lahiri ayanamsha + Whole Sign houses.
-        Supplementary to technical and fundamental analysis.
+        Astrology-derived heuristic only. Supplementary to technical and fundamental analysis.
       </div>
     </div>
   )
@@ -688,8 +719,9 @@ export function KundliCard({ symbol }: { symbol: string }) {
     enabled: expanded,
   })
 
-  const signal   = data?.interpretation?.signal
-  const actionCfg = ACTION_CFG[signal ?? ''] ?? ACTION_CFG.HOLD
+  const signal = data?.interpretation?.signal
+  const signalCode = data?.interpretation?.signal_code ?? signal
+  const actionCfg = ACTION_CFG[signalCode ?? ''] ?? ACTION_CFG.HOLD
 
   return (
     <div style={{

@@ -18,6 +18,7 @@ from datetime import datetime
 from typing import Optional
 
 from engines.common import config as cfg
+from engines.common.astrology_safety import present_kundli_interpretation
 from engines.common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -232,7 +233,7 @@ class KundliInterpretator:
         else:
             interpretation['narrative'] = ''
 
-        return interpretation
+        return present_kundli_interpretation(interpretation)
 
     # ── Gann summary ─────────────────────────────────────────────────────────
 
@@ -284,7 +285,8 @@ class KundliInterpretator:
 
         entity_name = interpretation.get('entity', 'this entity')
         entity_type = interpretation.get('entity_type', 'stock')
-        signal      = interpretation.get('signal', 'HOLD')
+        signal      = interpretation.get('signal', 'Mixed astrology heuristic')
+        signal_code = interpretation.get('signal_code', 'HOLD')
         score       = interpretation.get('astro_score', 0)
         maha        = kundli.get('current_dasha', {}).get('mahadasha', {})
         yogas       = interpretation.get('yogas', [])
@@ -294,20 +296,24 @@ class KundliInterpretator:
 
         system = (
             "You are a senior Vedic astrology analyst specializing in financial markets. "
-            "Produce concise, actionable 2-3 sentence financial interpretations. "
-            "Be specific about planetary influences. Avoid vague generalities. "
-            "Always mention the current Mahadasha period and its financial implication."
+            "Produce concise 2-3 sentence interpretive summaries of astrology-derived market context. "
+            "Be specific about planetary influences, but do not give buy, sell, exit, allocation, "
+            "or timing instructions. Frame the output as a heuristic to be cross-checked with "
+            "technical and fundamental analysis. Always mention the current Mahadasha period and "
+            "its relevance."
         )
 
         user = (
             f"Entity: {entity_name} ({entity_type})\n"
-            f"Signal: {signal} (score: {score})\n"
+            f"Signal label: {signal}\n"
+            f"Legacy signal code: {signal_code}\n"
+            f"Astro score: {score}\n"
             f"Mahadasha: {maha.get('planet','')} until {maha.get('end_date','')}\n"
             f"Active Yogas: {', '.join(yogas) if yogas else 'None'}\n"
             f"Bullish factors: {bullish_pts}\n"
             f"Bearish factors: {bearish_pts}\n\n"
-            "Write a 2-3 sentence financial outlook based on these planetary influences. "
-            "Be direct. Start with the most important factor."
+            "Write a 2-3 sentence astrology-based market context summary. "
+            "Keep it non-prescriptive and explicitly heuristic. Start with the most important factor."
         )
 
         try:

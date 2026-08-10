@@ -13,6 +13,7 @@ from typing import Any, Optional
 import pandas as pd
 
 from engines.common import config as cfg
+from engines.common.astrology_safety import present_astrofinance_signal
 from engines.common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -265,7 +266,7 @@ def get_stocks_by_sector(sector: str, top_n: int = 10) -> list[dict]:
 def get_astro_signal(sector: Optional[str] = None) -> dict:
     """
     Returns AstroFinance planetary signals for a sector or full market context.
-    Shows ruling planet status, retrograde warnings, aspect quality, and BUY/HOLD/CAUTION/EXIT/AVOID action.
+    Shows ruling planet status, retrograde warnings, aspect quality, and a bounded AstroFinance heuristic label.
     """
     import json
     from pathlib import Path
@@ -311,19 +312,20 @@ def get_astro_signal(sector: Optional[str] = None) -> dict:
                 result["astro_score"]      = float(r.get("astro_score", 0) or 0)
                 result["astro_action"]     = str(r.get("astro_action", "HOLD"))
                 result["astro_reason"]     = str(r.get("astro_reason", ""))
+                result = present_astrofinance_signal(result)
             else:
                 result["sector_error"] = f"Sector '{sector}' not found in astro signals"
         else:
             # Return all sectors sorted by astro_score
             top = sector_df.sort_values("astro_score", ascending=False)
             result["all_sectors"] = [
-                {
+                present_astrofinance_signal({
                     "sector":       str(r["sector"]),
                     "primary_planet": str(r["primary_planet"]),
                     "planet_state": str(r["planet_state"]),
                     "astro_score":  round(float(r.get("astro_score", 0) or 0), 1),
                     "astro_action": str(r["astro_action"]),
-                }
+                })
                 for _, r in top.iterrows()
             ]
 

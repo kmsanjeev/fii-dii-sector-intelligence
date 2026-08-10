@@ -31,6 +31,8 @@ interface KundliData {
   yogas: KYoga[]
   transits: Record<string, { current_sign: string; natal_sign: string; aspect: string }>
   astro_score: number; astro_action: string
+  astro_action_code?: string; astro_action_label?: string
+  boundary_note?: string
 }
 interface KGannData {
   square_of_9: { current_degree: number; nearest_angle: string }
@@ -39,10 +41,11 @@ interface KGannData {
   planetary_lines: Record<string, { longitude: number; base_price: number }>
 }
 interface KInterpretation {
-  signal: string; astro_score: number
+  signal: string; signal_code?: string; signal_label?: string; astro_score: number
   bullish_factors: string[]; bearish_factors: string[]
   dasha_outlook: Array<{ period: string; start: string; end: string; outlook: string }>
   narrative: string; yogas: string[]
+  boundary_note?: string
 }
 interface KundliResponse { kundli: KundliData; gann: KGannData | null; interpretation: KInterpretation }
 
@@ -112,8 +115,10 @@ const ZODIAC_FULL = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','S
 const ZODIAC_ABBR = ['Ari','Tau','Gem','Can','Leo','Vir','Lib','Sco','Sag','Cap','Aqu','Pis']
 const YOGA_COLOR: Record<string,string> = { BUY: L.green, HOLD: L.accent, CAUTION: L.gold, EXIT: L.orange, AVOID: L.red }
 const HOUSE_STRENGTH_COLOR: Record<string,string> = { strong: L.green, 'moderate-strong': L.accent, moderate: L.muted, weak: L.red }
-const SIGNAL_COLOR: Record<string,string> = { STRONG_BUY: L.green, BUY: L.green, HOLD: L.accent, CAUTION: L.gold, EXIT: L.orange, AVOID: L.red }
+const SIGNAL_COLOR: Record<string,string> = { STRONG_BUY: L.green, BUY: L.green, HOLD: L.accent, CAUTION: L.gold, EXIT: L.orange, AVOID: L.red, MODERATE: L.green, NEUTRAL: L.accent }
 const CA_COLOR: Record<string,string> = { DIVIDEND: L.gold, BONUS: L.green, SPLIT: L.accent, BUYBACK: L.purple, RIGHTS: L.teal }
+
+const signalColor = (code: unknown) => SIGNAL_COLOR[String(code ?? '')] ?? L.sub
 
 // ── SVG helpers ───────────────────────────────────────────────────────────────
 function svgArc(cx: number, cy: number, r: number, startDeg: number, sweepDeg: number): string {
@@ -401,7 +406,7 @@ export function ReportPage() {
               <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginTop:8 }}>
                 {Boolean(d.sector) && <Chip label={String(d.sector)} color={L.accent}/>}
                 {Boolean(d.label) && <Chip label={String(d.label)} color={scoreColor(Number(d.bull_run_score ?? 50))}/>}
-                {Boolean(ast.astro_action) && <Chip label={String(ast.astro_action)} color={SIGNAL_COLOR[String(ast.astro_action)] ?? L.sub}/>}
+                {Boolean(ast.astro_action) && <Chip label={String(ast.astro_action)} color={signalColor(ast.astro_action_code ?? ast.astro_action)}/>}
                 {Boolean(tec.trend_signal) && <Chip label={String(tec.trend_signal)} color={L.teal}/>}
               </div>
             </div>
@@ -692,7 +697,7 @@ export function ReportPage() {
               <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:12 }}>
                 {([
                   { label:'Primary Planet', val:ast.primary_planet,   color:L.gold   },
-                  { label:'Signal',         val:ast.astro_action,      color:SIGNAL_COLOR[String(ast.astro_action??'')]??L.sub },
+                  { label:'Heuristic',      val:ast.astro_action,      color:signalColor(ast.astro_action_code ?? ast.astro_action) },
                   { label:'Score',          val:ast.astro_score!=null?`${Number(ast.astro_score)>=0?'+':''}${Number(ast.astro_score).toFixed(0)}`:'--', color:sentColor(Number(ast.astro_score??0)) },
                   { label:'Planet Sign',    val:ast.planet_sign,       color:L.accent },
                   { label:'Planet State',   val:ast.planet_state,      color:L.sub    },
@@ -710,6 +715,12 @@ export function ReportPage() {
                 <div style={{ padding:'10px 14px', background:L.surf2, borderRadius:6, border:`1px solid ${L.border}` }}>
                   <div style={{ fontSize:8, color:L.purple, fontWeight:800, letterSpacing:'.1em', textTransform:'uppercase', marginBottom:5 }}>Planetary Reasoning</div>
                   <div style={{ fontSize:10.5, color:L.sub, lineHeight:1.6 }}>{String(ast.astro_reason)}</div>
+                </div>
+              )}
+              {Boolean(ast.boundary_note) && (
+                <div style={{ marginTop:8, padding:'9px 12px', background:L.purple+'09', borderRadius:6, border:`1px solid ${L.purple}22` }}>
+                  <div style={{ fontSize:8, color:L.purple, fontWeight:800, letterSpacing:'.1em', textTransform:'uppercase', marginBottom:4 }}>Boundary</div>
+                  <div style={{ fontSize:9.5, color:L.sub, lineHeight:1.6 }}>{String(ast.boundary_note)}</div>
                 </div>
               )}
             </div>
@@ -740,7 +751,7 @@ export function ReportPage() {
                     <div>
                       <div style={{ fontSize:7.5, color:L.dim, letterSpacing:'.1em', textTransform:'uppercase', marginBottom:3 }}>Astro Score</div>
                       <div style={{ fontSize:20, fontWeight:900, color:sentColor(kundli.astro_score), fontFamily:'monospace' }}>{kundli.astro_score>=0?'+':''}{kundli.astro_score.toFixed(0)}</div>
-                      <div style={{ fontSize:10, color:SIGNAL_COLOR[kundli.astro_action]??L.sub }}>{kundli.astro_action}</div>
+                      <div style={{ fontSize:10, color:signalColor(kundli.astro_action_code ?? kundli.astro_action) }}>{kundli.astro_action_label ?? kundli.astro_action}</div>
                     </div>
                     <div>
                       <div style={{ fontSize:7.5, color:L.dim, letterSpacing:'.1em', textTransform:'uppercase', marginBottom:3 }}>Entity</div>
@@ -949,10 +960,11 @@ export function ReportPage() {
                 {interp.narrative && (
                   <div style={{ background:L.surf, border:`1px solid ${L.border}`, borderLeft:`4px solid ${L.purple}`, borderRadius:8, padding:'14px 18px', marginBottom:12 }}>
                     <div style={{ display:'flex', gap:12, alignItems:'center', marginBottom:10 }}>
-                      <span style={{ fontSize:15, fontWeight:900, letterSpacing:'.06em', color:SIGNAL_COLOR[interp.signal]??L.sub }}>{interp.signal}</span>
+                      <span style={{ fontSize:15, fontWeight:900, letterSpacing:'.06em', color:signalColor(interp.signal_code ?? interp.signal) }}>{interp.signal}</span>
                       <span style={{ fontSize:14, fontWeight:800, color:sentColor(interp.astro_score), fontFamily:'monospace' }}>{interp.astro_score>=0?'+':''}{interp.astro_score.toFixed(0)}</span>
                     </div>
                     <div style={{ fontSize:10.5, color:L.sub, lineHeight:1.7 }}>{interp.narrative}</div>
+                    {interp.boundary_note && <div style={{ marginTop:8, paddingTop:8, borderTop:`1px solid ${L.border}`, fontSize:9.5, color:L.muted, lineHeight:1.55 }}>{interp.boundary_note}</div>}
                     {interp.yogas?.length>0 && <div style={{ marginTop:10, paddingTop:8, borderTop:`1px solid ${L.border}`, fontSize:9.5, color:L.muted }}>{interp.yogas.join(' · ')}</div>}
                   </div>
                 )}

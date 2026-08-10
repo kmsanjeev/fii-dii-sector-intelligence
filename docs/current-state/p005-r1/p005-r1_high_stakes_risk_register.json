@@ -1,0 +1,64 @@
+[
+  {
+    "RISK_ID": "VEDA-P005-R1-RISK-0001",
+    "SURFACE": "GET /api/stocks/{symbol}/kundli -> interpretation.signal",
+    "OLD_BEHAVIOUR": "User-facing stock kundli interpretation exposed STRONG_BUY/BUY/HOLD/CAUTION/EXIT/AVOID style action labels.",
+    "RISK_CLASS": "P0_FINANCIAL_ACTION_LANGUAGE",
+    "REMEDIATION": "Replaced user-facing signal labels with bounded astrology-heuristic wording and preserved the raw internal code as signal_code plus safety metadata.",
+    "NEW_BEHAVIOUR": "User-facing stock kundli interpretation now returns bounded labels such as Strong positive astrology heuristic together with signal_code, evidence_class, source_status, and boundary_note.",
+    "TEST": [
+      "tests/test_veda_interpretation_safety_remediation.py::test_stock_kundli_route_returns_bounded_finance_labels",
+      "tests/test_veda_interpretation_validation.py::test_p005_summary_captures_interpretation_baseline"
+    ],
+    "STATUS": "MITIGATED"
+  },
+  {
+    "RISK_ID": "VEDA-P005-R1-RISK-0002",
+    "SURFACE": "GET /api/stocks/{symbol} astro payload + get_astro_signal() + AstroSignalCard",
+    "OLD_BEHAVIOUR": "AstroFinance sector surfaces exposed BUY/HOLD/CAUTION/EXIT/AVOID labels with directive reason text.",
+    "RISK_CLASS": "P0_ASTROFINANCE_ACTION_LANGUAGE",
+    "REMEDIATION": "Wrapped sector astro payloads with bounded heuristic labels, preserved raw codes as astro_action_code, replaced reason text with non-prescriptive heuristic explanations, and surfaced provenance metadata.",
+    "NEW_BEHAVIOUR": "AstroFinance sector surfaces now present bounded labels such as Positive AstroFinance heuristic plus astro_action_code, evidence_class, source_status, interpretation_type, and boundary_note.",
+    "TEST": [
+      "tests/test_veda_interpretation_safety_remediation.py::test_astrofinance_tool_returns_bounded_heuristic_payloads",
+      "frontend/src/test/AstroSafetyPresentation.test.tsx"
+    ],
+    "STATUS": "MITIGATED"
+  },
+  {
+    "RISK_ID": "VEDA-P005-R1-RISK-0003",
+    "SURFACE": "Personal kundli formatted report longevity section",
+    "OLD_BEHAVIOUR": "LONGEVITY & LIFE SPAN section used deterministic-sounding lifespan language and traditional maraka warnings without an explicit safety boundary.",
+    "RISK_CLASS": "P0_LONGEVITY_DETERMINISM",
+    "REMEDIATION": "Reframed the section as traditional Ayurdaya interpretation, removed factual lifespan wording, and added an explicit non-deterministic safety statement.",
+    "NEW_BEHAVIOUR": "The longevity section now describes vitality, resilience, and traditional caution factors while stating that it is not a factual lifespan or death prediction.",
+    "TEST": [
+      "tests/test_veda_interpretation_safety_remediation.py::test_personal_longevity_report_is_bounded_and_non_deterministic"
+    ],
+    "STATUS": "MITIGATED"
+  },
+  {
+    "RISK_ID": "VEDA-P005-R1-RISK-0004",
+    "SURFACE": "Personal health interpretation surfaces",
+    "OLD_BEHAVIOUR": "P005 identified health-style guidance risk but did not identify active runtime wording that replaces medical care or gives diagnosis-as-fact instructions.",
+    "RISK_CLASS": "P1_HEALTH_GUIDANCE",
+    "REMEDIATION": "No code change in R1. Risk carried forward for research-governed remediation after provenance and safety policy work.",
+    "NEW_BEHAVIOUR": "No immediately dangerous health-style runtime wording was found in the R1 sweep; the broader health-language review remains open.",
+    "TEST": [
+      "Documented carry-forward only"
+    ],
+    "STATUS": "DEFERRED"
+  },
+  {
+    "RISK_ID": "VEDA-P005-R1-RISK-0005",
+    "SURFACE": "Personal remedies and remedial guidance surfaces",
+    "OLD_BEHAVIOUR": "P005 identified remedy-governance risk but not an active runtime hazardous-ingestion or stop-medication style claim.",
+    "RISK_CLASS": "P1_REMEDY_SAFETY",
+    "REMEDIATION": "No code change in R1. Risk carried forward for source-governed remedy validation and safety review.",
+    "NEW_BEHAVIOUR": "Existing remedy text remains under P1 review with no additional R1 expansion or authority increase.",
+    "TEST": [
+      "Documented carry-forward only"
+    ],
+    "STATUS": "DEFERRED"
+  }
+]

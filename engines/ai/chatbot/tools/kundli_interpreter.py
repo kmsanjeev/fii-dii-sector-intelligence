@@ -9,6 +9,8 @@ Sources: BPHS, Phaladeepika, Saravali, Uttara Kalamrita, Lal Kitab.
 from __future__ import annotations
 from typing import Optional
 
+from engines.common.astrology_safety import longevity_boundary_note
+
 # ── Zodiac helpers (duplicated here to keep interpreter self-contained) ────────
 _SIGNS = [
     "Aries","Taurus","Gemini","Cancer","Leo","Virgo",
@@ -1245,35 +1247,66 @@ def _read_longevity(planets: dict, lagna: dict, all_houses: dict) -> str:
     moon = planets.get("Moon", {})
     saturn = planets.get("Saturn", {})
 
-    parts.append(f"Primary longevity indicators (BPHS Ayurdaya): the Lagna, Lagna lord, Moon, and 8th house together determine life span.")
+    parts.append(
+        "Traditional Ayurdaya indicators are interpretive only. "
+        f"{longevity_boundary_note()}"
+    )
+    parts.append(
+        "This section describes vitality, resilience, and periods of caution through the Lagna, Lagna lord, Moon, Saturn, and 8th house."
+    )
 
     ll_h = ll.get("house", 0)
     ll_dg = ll.get("dignity", "neutral")
     if ll_h in (1, 4, 5, 7, 9, 10):
-        parts.append(f"Lagna lord {lagna_lord} in H{ll_h} (kendra/trikona) with {ll_dg} dignity: "
-                     + ("Excellent longevity indicator -- Lagna lord in a power house supports long life." if ll_dg in ("exalted","own_sign","moolatrikona")
-                        else "Moderate longevity -- Lagna lord in angular/trine house is generally supportive of life span."))
+        parts.append(
+            f"Lagna lord {lagna_lord} in H{ll_h} (kendra/trikona) with {ll_dg} dignity: "
+            + (
+                "traditionally read as a strong vitality and recovery indicator."
+                if ll_dg in ("exalted", "own_sign", "moolatrikona")
+                else "traditionally read as a supportive resilience factor."
+            )
+        )
     else:
-        parts.append(f"Lagna lord {lagna_lord} in H{ll_h} ({ll_dg}): challenges to vitality; attention to health habits is strongly advised.")
+        parts.append(
+            f"Lagna lord {lagna_lord} in H{ll_h} ({ll_dg}): traditionally read as a call for disciplined vitality management and health awareness."
+        )
 
-    parts.append(f"Moon in H{moon.get('house',0)} ({moon.get('dignity','neutral')}): "
-                 + ("Strong Moon supports mental and physical resilience, positively influencing longevity." if moon.get("dignity") in ("exalted","own_sign","moolatrikona")
-                    else "Moon in challenging dignity may affect mental peace and overall vitality; consistent self-care advised."))
+    parts.append(
+        f"Moon in H{moon.get('house', 0)} ({moon.get('dignity', 'neutral')}): "
+        + (
+            "traditionally associated with steadier mental and physical resilience."
+            if moon.get("dignity") in ("exalted", "own_sign", "moolatrikona")
+            else "traditionally associated with fluctuating vitality, rest, and emotional-balance needs."
+        )
+    )
 
-    parts.append(f"Saturn in H{saturn.get('house',0)} ({saturn.get('dignity','neutral')}): Saturn's role in the chart "
-                 + ("strongly supports longevity -- Saturn in favourable dignity acts as a protector of life span." if saturn.get("dignity") in ("exalted","own_sign","moolatrikona")
-                    else "suggests karmic delays and health challenges; preventive care and disciplined lifestyle are essential."))
+    parts.append(
+        f"Saturn in H{saturn.get('house', 0)} ({saturn.get('dignity', 'neutral')}): Saturn's role in the chart "
+        + (
+            "is traditionally read as a stabilizing endurance factor."
+            if saturn.get("dignity") in ("exalted", "own_sign", "moolatrikona")
+            else "is traditionally read as emphasizing discipline, pacing, and preventive care."
+        )
+    )
 
     h8_strength = h8.get("strength", "moderate")
-    parts.append(f"8th House (house of longevity): {h8_strength} strength. "
-                 + ("Strong 8th house indicates resilience, good recovery from illness, and generally longer life span." if h8_strength == "strong"
-                    else "Afflicted 8th house suggests caution around accidents, surgery, or sudden health events." if h8_strength == "weak"
-                    else "Moderate 8th house; average longevity with attention to health in Saturn and Mars periods."))
+    parts.append(
+        f"8th House (house of longevity and transformation): {h8_strength} strength. "
+        + (
+            "Traditionally read as stronger resilience under pressure and better recovery capacity."
+            if h8_strength == "strong"
+            else "Traditionally read as a need for extra caution around sudden strain, accidents, or major transitions."
+            if h8_strength == "weak"
+            else "Traditionally read as mixed, with resilience depending on broader chart support and life habits."
+        )
+    )
 
-    # Maraka warning
     h2_lord = all_houses.get("H2", {}).get("lord", "")
     h7_lord = all_houses.get("H7", {}).get("lord", "")
-    parts.append(f"Note on maraka (life-inflicting) planets: {h2_lord} (lord of H2) and {h7_lord} (lord of H7) are traditional maraka planets. Their Mahadashas/Antardashas in advanced age should be monitored.")
+    parts.append(
+        f"Traditional maraka context: {h2_lord} (lord of H2) and {h7_lord} (lord of H7) are classical maraka planets. "
+        "This is a traditional caution category for later-life vulnerability analysis, not a factual death-timing claim."
+    )
 
     return "\n".join(f"  {p}" if i > 0 else p for i, p in enumerate(parts))
 

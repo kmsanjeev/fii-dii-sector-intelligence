@@ -16,6 +16,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from backend.services import data_loader
 from backend.routers.report_generator import generate_report_html
+from engines.common.astrology_safety import present_astrofinance_signal
 
 # ── Announcement summary cache (seq_id → summary text) ───────────────────────
 _SUMMARY_CACHE_PATH = Path("data/intelligence/announcement_summaries.json")
@@ -1417,6 +1418,7 @@ def get_stock_detail(symbol: str):
         astro_signal["jupiter_sign"]        = astro_ctx.get("jupiter_sign", "")
         astro_signal["saturn_sign"]         = astro_ctx.get("saturn_sign", "")
         astro_signal["reversal_note"]       = astro_ctx.get("reversal_note")
+        astro_signal = present_astrofinance_signal(astro_signal)
 
     # ── Upcoming events from event_calendar (next 90 days for this symbol) ───
     upcoming_events: list = []

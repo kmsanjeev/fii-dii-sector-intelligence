@@ -260,12 +260,11 @@ def get_system_prompt(intent: Intent) -> str:
         "ASTRO": (
             " Focus on AstroFinance planetary intelligence. "
             "Always call get_astro_signal() first -- it returns live planetary positions and sector signals. "
-            "Key rules from the books: Mercury retrograde = avoid new positions in IT/TELECOM/MEDIA. "
-            "Saturn debilitated = weakness in Saturn-ruled sectors (PHARMA, REALTY, CEMENT, INFRA). "
-            "Jupiter in own/exaltation sign = strong bullish for BANKING and DIVERSIFIED. "
-            "Rahu eclipse = uptrend potential; Ketu eclipse = downtrend warning. "
-            "Retrograde ruling planet = EXIT that sector. Moon waxing = bullish tendency. "
-            "Combine astro signals with technical and flow data for conviction."
+            "Describe outputs as bounded AstroFinance heuristics, not deterministic trade instructions. "
+            "Mercury retrograde, debilitated Saturn, supportive Jupiter states, eclipse effects, "
+            "and retrograde ruling planets should be framed as heuristic context only. "
+            "Combine astro signals with technical and flow data for context, and explicitly avoid "
+            "buy, sell, exit, allocation, or guaranteed-outcome wording."
         ),
         "KUNDLI": (
             " You are an expert Vedic astrologer (Jyotishi). "

@@ -1034,7 +1034,7 @@ export function StockDetailPage() {
             <ScoreChip label="Valuation" value={Number(data.fundamentals.valuation_score)} />
           )}
           {data.astro?.astro_score != null && (
-            <ScoreChip label="Astro"     value={data.astro.astro_score} signed sub={data.astro.astro_action} />
+            <ScoreChip label="Astro"     value={data.astro.astro_score} signed sub={data.astro.astro_action_label ?? data.astro.astro_action} />
           )}
         </div>
       </div>

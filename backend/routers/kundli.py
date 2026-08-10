@@ -21,6 +21,7 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 
 from engines.common import config as cfg
+from engines.common.astrology_safety import present_kundli_chart
 
 router = APIRouter(prefix='/api', tags=['kundli'])
 
@@ -148,10 +149,12 @@ async def stock_kundli(
     except Exception:
         interpretation = {}
 
+    safe_chart = present_kundli_chart(chart) if isinstance(chart, dict) else chart
+
     return {
         'symbol':         symbol,
         'exchange':       exchange,
-        'kundli':         chart,
+        'kundli':         safe_chart,
         'gann':           gann_result,
         'interpretation': interpretation,
     }
@@ -175,7 +178,7 @@ async def human_kundli(req: HumanKundliRequest, generate_narrative: bool = False
         raise HTTPException(status_code=500, detail='Kundli computation failed')
 
     interpretation = ki.interpret(chart, generate_narrative=generate_narrative)
-    return {'kundli': chart, 'interpretation': interpretation}
+    return {'kundli': present_kundli_chart(chart), 'interpretation': interpretation}
 
 
 @router.get('/kundli/country/{name}')
@@ -192,7 +195,7 @@ async def country_kundli(name: str, generate_narrative: bool = False):
             detail=chart.get('error', 'Country not found') if chart else 'Computation failed',
         )
     interpretation = ki.interpret(chart, generate_narrative=generate_narrative)
-    return {'country': name, 'kundli': chart, 'interpretation': interpretation}
+    return {'country': name, 'kundli': present_kundli_chart(chart), 'interpretation': interpretation}
 
 
 @router.get('/kundli/gann/{symbol}')

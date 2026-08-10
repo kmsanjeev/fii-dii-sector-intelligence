@@ -218,11 +218,12 @@ TOOLS: list[dict] = [
         "name": "get_astro_signal",
         "description": (
             "Get AstroFinance planetary intelligence. Returns current planetary positions, "
-            "retrograde warnings (Mercury retrograde = avoid IT/TELECOM/MEDIA), Moon phase, "
-            "eclipse status, and BUY/HOLD/CAUTION/EXIT/AVOID action for a sector. "
+            "retrograde warnings, Moon phase, eclipse status, and a bounded AstroFinance "
+            "heuristic label for a sector together with the legacy internal action code. "
             "Based on Vedic Indian planet-sector mapping (Banerjee 2009) + Western aspect theory "
             "(Pesavento 2015). Use when user asks about astrology, planets, cosmic signals, "
-            "astro trading, or sector planetary analysis. "
+            "astro trading, or sector planetary analysis. Treat outputs as non-validated "
+            "AstroFinance heuristics rather than trading instructions. "
             "If no sector specified, returns all sectors ranked by astro score."
         ),
         "input_schema": {

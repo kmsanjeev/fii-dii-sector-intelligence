@@ -52,9 +52,9 @@ def test_p005_summary_captures_interpretation_baseline():
     assert samples["personal"]["report_sections"]["current_period"] is True
     assert samples["personal"]["report_sections"]["remedies"] is True
 
-    assert samples["rest_human"]["interpretation_signal"] == "CAUTION"
-    assert samples["stock"]["interpretation_signal"] == "STRONG_BUY"
-    assert samples["country"]["interpretation_signal"] == "STRONG_BUY"
+    assert samples["rest_human"]["interpretation_signal"] == "Cautionary astrology heuristic"
+    assert samples["stock"]["interpretation_signal"] == "Strong positive astrology heuristic"
+    assert samples["country"]["interpretation_signal"] == "Strong positive astrology heuristic"
 
 
 def test_p005_surface_inventory_preserves_key_paths_and_statuses():

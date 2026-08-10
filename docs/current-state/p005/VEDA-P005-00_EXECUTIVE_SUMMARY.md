@@ -28,6 +28,6 @@ Representative runtime evidence under frozen `2026-08-10`:
 - Personal sample lagna: `Libra`; Mahadasha: `Saturn`
 - Personal sample yogas: `Sasa Yoga, Kemadruma Yoga`
 - Personal sample doshas: `Shani Dosha`
-- REST human sample interpretation signal: `CAUTION`
-- Stock sample interpretation signal: `STRONG_BUY` with stock action `BUY`
-- Country sample interpretation signal: `STRONG_BUY`
+- REST human sample interpretation signal: `Cautionary astrology heuristic`
+- Stock sample interpretation signal: `Strong positive astrology heuristic` with stock action `BUY`
+- Country sample interpretation signal: `Strong positive astrology heuristic`
