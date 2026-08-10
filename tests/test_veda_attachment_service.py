@@ -103,7 +103,10 @@ def test_attachment_service_extracts_image_vision_summary(monkeypatch, tmp_dir):
     monkeypatch.setattr(
         AttachmentService,
         "_try_image_vision",
-        lambda self, *, content, mime_type, filename: ("The image looks like a sector rotation heatmap with banking in the lead.", None),
+        lambda self, *, content, mime_type, filename: (
+            "Page type:\nchart\n\nReadable text:\nBanking is leading.\n\nVisual elements:\nA sector rotation heatmap.\n\nMeaning:\nBanking is strongest.\n\nUnclear areas:\nNone.",
+            None,
+        ),
     )
     monkeypatch.setattr(AttachmentService, "_try_image_ocr", lambda self, image: "")
 
@@ -117,6 +120,81 @@ def test_attachment_service_extracts_image_vision_summary(monkeypatch, tmp_dir):
         content=buf.getvalue(),
     )
 
-    assert "Vision summary:" in uploaded.extracted_text
+    assert "Visual analysis:" in uploaded.extracted_text
     assert "sector rotation heatmap" in uploaded.extracted_text
     assert uploaded.warning is None
+
+
+def test_attachment_service_uses_vision_for_scanned_pdf(monkeypatch, tmp_dir):
+    _enable_attachment_settings(monkeypatch)
+    monkeypatch.setattr(cfg, "VEDA_ATTACHMENT_VISION_ENABLED", True)
+    pytest.importorskip("pdfplumber")
+    Image = pytest.importorskip("PIL.Image")
+    service = AttachmentService(upload_dir=tmp_dir)
+
+    monkeypatch.setattr(
+        AttachmentService,
+        "_try_image_vision",
+        lambda self, *, content, mime_type, filename: (
+            "Page type:\ntext-heavy astrology page\n\nReadable text:\nPredictive astrology rules and Jupiter transit notes.\n\nVisual elements:\nNo major visual diagram beyond page layout.\n\nMeaning:\nThe page explains timing rules.\n\nUnclear areas:\nMinor print softness.",
+            None,
+        ),
+    )
+    monkeypatch.setattr(AttachmentService, "_try_image_ocr", lambda self, image: "")
+
+    img = Image.new("RGB", (900, 1200), color="white")
+    buf = io.BytesIO()
+    img.save(buf, format="PDF")
+
+    uploaded = service.save_upload(
+        filename="predictive-astrology.pdf",
+        content_type="application/pdf",
+        content=buf.getvalue(),
+    )
+
+    assert uploaded.kind == "pdf"
+    assert "Visual analysis:" in uploaded.extracted_text
+    assert "Predictive astrology rules" in uploaded.extracted_text
+    assert uploaded.warning == "PDF was scanned, so page-image vision extraction was used."
+
+
+def test_attachment_service_distinguishes_text_and_diagram_on_mixed_page(monkeypatch, tmp_dir):
+    _enable_attachment_settings(monkeypatch)
+    monkeypatch.setattr(cfg, "VEDA_ATTACHMENT_VISION_ENABLED", True)
+    Image = pytest.importorskip("PIL.Image")
+    service = AttachmentService(upload_dir=tmp_dir)
+
+    monkeypatch.setattr(
+        AttachmentService,
+        "_try_image_vision",
+        lambda self, *, content, mime_type, filename: (
+            "Page type:\nmixed page with paragraph text and astrology diagram\n\n"
+            "Readable text:\nThe page discusses the Sun's longitude and a prepared chart.\n\n"
+            "Visual elements:\nA central diamond-shaped astrology chart with numbered houses and labels like Sun, Venus, Jupiter, Moon, Rahu, Mars, Ketu, and Saturn.\n\n"
+            "Meaning:\nThe diagram maps planetary positions described by the surrounding text.\n\n"
+            "Unclear areas:\nSmall labels may be partly hard to read.",
+            None,
+        ),
+    )
+    monkeypatch.setattr(
+        AttachmentService,
+        "_try_image_ocr",
+        lambda self, image: "The Sun's longitude is 8-16-43 means 8 completed signs and therefore 16 43 in Sagittarius.",
+    )
+
+    img = Image.new("RGB", (900, 1200), color="white")
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+
+    uploaded = service.save_upload(
+        filename="astrology-page.png",
+        content_type="image/png",
+        content=buf.getvalue(),
+    )
+
+    assert uploaded.kind == "image"
+    assert "Page type:" in uploaded.extracted_text
+    assert "Visual elements:" in uploaded.extracted_text
+    assert "diamond-shaped astrology chart" in uploaded.extracted_text
+    assert "Local OCR extraction:" in uploaded.extracted_text
+    assert "The Sun's longitude is 8-16-43" in uploaded.extracted_text
