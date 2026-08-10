@@ -226,6 +226,20 @@ frontend/.vite/
 .kiro/
 .vscode/
 
+# Runtime / ephemeral (not committed)
+data/NSE/bhavcopy/
+data/NSE/adjusted_equity/
+data/NSE/nsecache/
+data/NSE/recovery_queue.csv
+data/auth/
+data/backtest/
+data/cache/
+data/chat/
+data/execution/
+data/portfolio/
+data/veda/
+data/voice_samples/
+
 # Generated logs
 logs/
 *.log
