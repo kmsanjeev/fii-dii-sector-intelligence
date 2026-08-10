@@ -186,6 +186,7 @@ Layer 6: Trade Conviction          (C)         LIVE through 2026-07-01
 | V4  | Hands-free follow-up mode    | frontend/src/store/vedaStore.ts | COMPLETE — mic reopens after Veda speaks, no repeat wake word |
 | V5  | Customer-support voice persona | chat_engine.py, intent_router.py, voice.py | COMPLETE — confirm-before-detail, warm greetings |
 | V6  | Voice stability fixes (2026-08-09) | start.ps1, voice.py, vedaStore.ts | COMPLETE — non-blocking startup, py -3.11 probe, English Neerja rate fix |
+| RF-1 | Research foundation commit (2026-08-10) | engines/ai/, frontend/veda/, tests/ | COMPLETE — 7 commits: 71 files, ~14,500 lines. Kiro AI additions committed category-wise |
 | WL-1 | Watchlist Decision Metrics  | engines/watchlist/     | COMPLETE — RVOL, RS vs NIFTY, 5D delivery |
 | DMB-1 | Daily Market Brief         | engines/briefing/      | COMPLETE — 08:45 IST auto-brief, Telegram digest |
 | UI-D | Dashboard Consolidation     | frontend/src/pages/Dashboard.tsx | COMPLETE — Participant page merged into Dashboard |

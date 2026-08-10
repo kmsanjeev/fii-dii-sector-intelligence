@@ -1,5 +1,90 @@
 # CHANGELOG
 
+## 2026-08-10 | Systematic commit of Kiro AI research foundation additions
+
+### Context
+After Kiro AI ran its upgrade pass (Aug 5-6), 77 files with ~18,975 uncommitted
+changes were staged. This session systematically reviewed, categorized, and
+committed all safe code in 7 commits across 6 categories.
+
+### Commits (7 total)
+1. `d7c634f` fix(startup): non-blocking voice warmup + py -3.11 probe reorder
+2. `98be7a2` fix(voice): surface Web Speech API errors instead of silent swallow
+3. `45c52f3` fix(voice): improve English Neerja TTS + add debug logging
+4. `5e49286` feat(tooling): add Windows batch launchers (start.bat, stop.bat)
+5. `b5afefc` feat(veda): research foundation backend (Kiro AI additions)
+6. `fdeb77f` feat(veda): chat router research foundation endpoints
+7. `ba8efed` feat(veda): frontend research foundation + voice error surfacing
+8. `47f3ea1` feat(veda): research foundation engine modules (15 files, 4629 lines)
+9. `eff5e49` test(veda): comprehensive test suite for research foundation (13 files)
+10. `6228b12` docs(veda): research foundation governance docs (10 files)
+
+### Files Committed (Category-wise)
+**Category 1 — Backend engines (Kiro additions):**
+- engines/common/config.py (+70 lines research config paths)
+- engines/ai/research/service.py (+66 lines MCPResearchProvider fallback)
+- engines/ai/research/schemas.py (+13 lines new Pydantic models)
+- engines/ai/research/providers/__init__.py (MCP registration)
+- engines/ai/attachments/service.py (+272 lines enhanced ingestion)
+- engines/ai/knowledge/document_builder.py (+79 lines knowledge building)
+- engines/ai/knowledge/index_updater.py (+19 lines index triggers)
+- engines/ai/capabilities/ (NEW: repo capability intake service)
+- engines/ai/chat_history/ (NEW: persistent chat session history)
+- engines/ai/knowledge/contracts.py (NEW: Pydantic models for knowledge lifecycle)
+- engines/ai/knowledge/review_service.py (NEW: knowledge review workflow)
+- engines/ai/knowledge/unified_retriever.py (NEW: hybrid BM25+FAISS retrieval)
+- engines/ai/knowledge/unified_bm25_indexer.py (NEW: BM25 index builder)
+- engines/ai/knowledge/unified_faiss_indexer.py (NEW: FAISS index builder)
+- engines/ai/knowledge/unified_corpus_builder.py (NEW: corpus construction)
+- engines/ai/knowledge/unified_runtime_sync.py (NEW: runtime index sync)
+- engines/ai/knowledge/retrieval_benchmark.py (NEW: retrieval quality benchmark)
+- engines/ai/knowledge/retrieval_rollout.py (NEW: rollout management)
+- engines/ai/research/mcp_client.py (NEW: MCP protocol client)
+- engines/ai/research/providers/mcp_provider.py (NEW: MCP research provider)
+- backend/routers/chat.py (+420 lines research/knowledge endpoints)
+- requirements.txt (ddgs, rapidocr_onnxruntime, apscheduler)
+
+**Category 2 — Frontend (32 files):**
+- frontend/src/store/vedaStore.ts (research toggle, knowledge review state)
+- frontend/src/components/veda/VedaWidget.tsx (knowledge/repo panels)
+- frontend/src/components/veda/MessageEvidence.tsx (evidence display)
+- frontend/src/components/veda/KnowledgeReviewPanel.tsx (NEW)
+- frontend/src/components/veda/RepoCapabilityReviewPanel.tsx (NEW)
+- frontend/src/api/client.ts (auth interceptors, new interfaces)
+- 13 page files (import updates, minor UI adjustments)
+- 5 test files (KnowledgeReviewPanel, MessageEvidence, VedaSurfaces, vedaStore, setup)
+- package.json, package-lock.json, tsconfig.app.json, vite.config.ts
+
+**Category 5 — Test files (14 files):**
+- test_veda_attachment_service, test_veda_chat_engine, test_veda_chat_history_service
+- test_veda_chat_router, test_veda_knowledge_contract, test_veda_knowledge_review_service
+- test_veda_mcp_provider, test_veda_repo_capability_service, test_veda_research_service
+- test_veda_retrieval_benchmark, test_veda_unified_corpus_builder
+- test_veda_unified_retriever, test_veda_unified_runtime_sync
+- test_voice_startup_validation
+
+**Category 6 — Documentation (10 files):**
+- VEDA_BOOK_MEMORY_AUDIT, VEDA_JYOTISH_ML_RAG_AUDIT, VEDA_KNOWLEDGE_CONTRACT
+- VEDA_LIVE_UI_QA, VEDA_PHASE8_ROLLOUT, VEDA_REACT_TEST_REPORT
+- VEDA_UNIFIED_ML_RAG_PLAN, VEDA_UNIFIED_RETRIEVAL
+- fixtures/veda_unified_retrieval_benchmark.json
+- docs/modules/AI_PLATFORM.md (updated)
+
+### Files NOT Committed (with reasons)
+**Category 4 — Data files (SKIP per guardrails G-D-01/G-SYS-02):**
+- data/NSE/corporate_actions/* (raw NSE data — IMMUTABLE)
+- data/NSE/equity_master/* (raw NSE data — IMMUTABLE)
+- data/historical/institutional/* (derived data — rebuildable)
+- data/intelligence/* (derived outputs — rebuildable by engines)
+- data/intelligence/rag_knowledge/veda_*.jsonl and veda_unified_faiss/ (runtime data)
+- data/reports/DMB_*.md (generated reports)
+- data/veda/ (runtime chat sessions)
+- data/voice_samples/ (runtime voice samples)
+
+**IDE/editor configs (not project code):**
+- .kiro/ (Kiro AI working directory)
+- .vscode/ (VS Code workspace settings)
+
 ## 2026-08-09 | Veda voice platform stability fixes
 
 ### Root Cause Analysis
