@@ -1,0 +1,93 @@
+{
+  "$defs": {
+    "ValidationStage": {
+      "enum": [
+        "V1_SOURCE_VALIDATION",
+        "V2_AUTHORITY_VALIDATION",
+        "V3_PROVENANCE_VALIDATION",
+        "V4_EXISTING_KNOWLEDGE_CHECK",
+        "V5_CONTRADICTION_CHECK",
+        "V6_CROSS_SOURCE_SUPPORT",
+        "V7_ONTOLOGY_COMPATIBILITY",
+        "V8_RULE_IMPACT",
+        "V9_SAFETY_CLASSIFICATION",
+        "V10_NOVELTY_ASSESSMENT"
+      ],
+      "title": "ValidationStage",
+      "type": "string"
+    },
+    "ValidationStatus": {
+      "enum": [
+        "PASS",
+        "PASS_WITH_CONDITIONS",
+        "FAIL",
+        "UNKNOWN",
+        "NOT_APPLICABLE"
+      ],
+      "title": "ValidationStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "validation_id": {
+      "title": "Validation Id",
+      "type": "string"
+    },
+    "candidate_id": {
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "validator": {
+      "$ref": "#/$defs/ValidationStage"
+    },
+    "result": {
+      "title": "Result",
+      "type": "string"
+    },
+    "score": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Score",
+      "type": "number"
+    },
+    "status": {
+      "$ref": "#/$defs/ValidationStatus"
+    },
+    "evidence": {
+      "additionalProperties": true,
+      "title": "Evidence",
+      "type": "object"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "requires_follow_up": {
+      "default": false,
+      "title": "Requires Follow Up",
+      "type": "boolean"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "validation_id",
+    "candidate_id",
+    "validator",
+    "result",
+    "score",
+    "status",
+    "reason",
+    "created_at"
+  ],
+  "title": "ResearchValidationRecord",
+  "type": "object"
+}

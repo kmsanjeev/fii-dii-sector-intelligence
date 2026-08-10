@@ -27,6 +27,7 @@ CRITICAL_ENDPOINTS = [
     ("GET", "/api/broker/status"),
     ("GET", "/api/pipeline/status"),
 ]
+P001_EXCLUDED_TAGS = {"research-admin"}
 
 
 def _classify_auth_requirement(path: str) -> str:
@@ -52,15 +53,18 @@ def build_api_contract_payload() -> dict:
 
     for path, methods in sorted(spec.get("paths", {}).items()):
         for method, details in sorted(methods.items()):
+            tags = details.get("tags", [])
+            if P001_EXCLUDED_TAGS.intersection(tags):
+                continue
             parameters = details.get("parameters", [])
             request_body = details.get("requestBody") or {}
             endpoints.append(
                 {
                     "method": method.upper(),
                     "path": path,
-                    "owner": (details.get("tags") or [path.strip("/").split("/", 1)[0] or "root"])[0],
+                    "owner": (tags or [path.strip("/").split("/", 1)[0] or "root"])[0],
                     "operation_id": details.get("operationId"),
-                    "tags": details.get("tags", []),
+                    "tags": tags,
                     "auth_requirement": _classify_auth_requirement(path),
                     "request_body_required": bool(request_body.get("required", False)),
                     "request_body_content_types": sorted((request_body.get("content") or {}).keys()),
@@ -77,7 +81,7 @@ def build_api_contract_payload() -> dict:
         "meta": {
             "baseline_id": "VEDA-P001-M003",
             "generated_on": "2026-08-10",
-            "openapi_path_count": len(spec.get("paths", {})),
+            "openapi_path_count": len({item["path"] for item in endpoints}),
             "operation_count": len(endpoints),
         },
         "critical_endpoints": [

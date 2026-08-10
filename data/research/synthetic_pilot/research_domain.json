@@ -1,0 +1,55 @@
+[
+  {
+    "contract_version": "2026-08-10",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "name": "Synthetic Research Domain",
+    "version": "1.0.0",
+    "status": "TEST",
+    "description": "Controlled synthetic domain used to validate the autonomous research platform lifecycle.",
+    "ontology_namespace": "veda.synthetic",
+    "source_policy": {
+      "allowed_source_types": [
+        "PRIMARY_SOURCE",
+        "SECONDARY_SOURCE",
+        "OFFICIAL_DOCUMENT",
+        "ACADEMIC_SOURCE",
+        "NEWS",
+        "DATASET",
+        "WEB_REFERENCE",
+        "INTERNAL_KNOWLEDGE",
+        "ARCHIVED_RESEARCH",
+        "USER_PROVIDED",
+        "UNKNOWN"
+      ],
+      "unsafe_uri_schemes_rejected": true
+    },
+    "validation_policy": {
+      "minimum_independent_sources": 2,
+      "supports_follow_up": true
+    },
+    "safety_policy": {
+      "high_stakes_topics": [
+        "synthetic.delta"
+      ]
+    },
+    "approval_policy": {
+      "admin_required": true,
+      "auto_promotion": false,
+      "promotion_state": "PROMOTION_READY"
+    },
+    "provider_policy": {
+      "default_provider_id": "synthetic-fixture",
+      "allowed_provider_types": [
+        "FIXTURE"
+      ]
+    },
+    "schedule_policy": {
+      "default_cadence_type": "MANUAL_ONLY",
+      "default_overlap_policy": "SKIP",
+      "default_misfire_policy": "RUN_ONCE"
+    },
+    "plugin_entrypoint": "engines.ai.research.platform.synthetic:SyntheticResearchDomainPlugin",
+    "created_at": "2026-08-10T00:00:00Z",
+    "updated_at": "2026-08-10T00:00:00Z"
+  }
+]

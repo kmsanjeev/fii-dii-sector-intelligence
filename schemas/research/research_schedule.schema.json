@@ -1,0 +1,132 @@
+{
+  "$defs": {
+    "CadenceType": {
+      "enum": [
+        "HOURLY",
+        "DAILY",
+        "WEEKLY",
+        "CUSTOM",
+        "MANUAL_ONLY"
+      ],
+      "title": "CadenceType",
+      "type": "string"
+    },
+    "MisfirePolicy": {
+      "enum": [
+        "RUN_ONCE",
+        "SKIP",
+        "RESCHEDULE"
+      ],
+      "title": "MisfirePolicy",
+      "type": "string"
+    },
+    "MissionPriority": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "title": "MissionPriority",
+      "type": "string"
+    },
+    "OverlapPolicy": {
+      "enum": [
+        "SKIP",
+        "QUEUE",
+        "COALESCE",
+        "ALLOW"
+      ],
+      "title": "OverlapPolicy",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "schedule_id": {
+      "title": "Schedule Id",
+      "type": "string"
+    },
+    "domain_id": {
+      "title": "Domain Id",
+      "type": "string"
+    },
+    "mission_id": {
+      "title": "Mission Id",
+      "type": "string"
+    },
+    "cadence_type": {
+      "$ref": "#/$defs/CadenceType"
+    },
+    "timezone": {
+      "title": "Timezone",
+      "type": "string"
+    },
+    "enabled": {
+      "default": true,
+      "title": "Enabled",
+      "type": "boolean"
+    },
+    "next_run_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Next Run At"
+    },
+    "last_run_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Last Run At"
+    },
+    "misfire_policy": {
+      "$ref": "#/$defs/MisfirePolicy",
+      "default": "RUN_ONCE"
+    },
+    "overlap_policy": {
+      "$ref": "#/$defs/OverlapPolicy",
+      "default": "SKIP"
+    },
+    "priority": {
+      "$ref": "#/$defs/MissionPriority",
+      "default": "P2"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "updated_at": {
+      "title": "Updated At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schedule_id",
+    "domain_id",
+    "mission_id",
+    "cadence_type",
+    "timezone",
+    "created_at",
+    "updated_at"
+  ],
+  "title": "ResearchScheduleRecord",
+  "type": "object"
+}

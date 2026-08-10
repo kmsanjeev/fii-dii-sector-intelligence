@@ -1,0 +1,299 @@
+{
+  "$defs": {
+    "MissionPriority": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "title": "MissionPriority",
+      "type": "string"
+    },
+    "MissionStatus": {
+      "enum": [
+        "DRAFT",
+        "QUEUED",
+        "ACTIVE",
+        "PAUSED",
+        "AWAITING_REVIEW",
+        "COMPLETED",
+        "BLOCKED",
+        "CANCELLED",
+        "ARCHIVED"
+      ],
+      "title": "MissionStatus",
+      "type": "string"
+    },
+    "ResearchBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "default": "2026-08-10",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "max_queries": {
+          "default": 5,
+          "minimum": 1,
+          "title": "Max Queries",
+          "type": "integer"
+        },
+        "max_sources": {
+          "default": 10,
+          "minimum": 1,
+          "title": "Max Sources",
+          "type": "integer"
+        },
+        "max_provider_calls": {
+          "default": 3,
+          "minimum": 1,
+          "title": "Max Provider Calls",
+          "type": "integer"
+        },
+        "max_runtime_seconds": {
+          "default": 60,
+          "minimum": 1,
+          "title": "Max Runtime Seconds",
+          "type": "integer"
+        },
+        "max_model_calls": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Max Model Calls",
+          "type": "integer"
+        },
+        "max_cost": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Max Cost",
+          "type": "number"
+        },
+        "max_follow_up_depth": {
+          "default": 2,
+          "minimum": 0,
+          "title": "Max Follow Up Depth",
+          "type": "integer"
+        },
+        "max_retries": {
+          "default": 2,
+          "minimum": 0,
+          "title": "Max Retries",
+          "type": "integer"
+        },
+        "cooldown_seconds": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Cooldown Seconds",
+          "type": "integer"
+        }
+      },
+      "title": "ResearchBudget",
+      "type": "object"
+    },
+    "ResearchType": {
+      "enum": [
+        "DISCOVERY",
+        "SOURCE_VERIFICATION",
+        "CLAIM_VALIDATION",
+        "CROSS_SOURCE_VALIDATION",
+        "CONTRADICTION_RESOLUTION",
+        "KNOWLEDGE_GAP",
+        "PROVENANCE_RECOVERY",
+        "UPDATE_MONITORING",
+        "NOVELTY_SEARCH",
+        "EMPIRICAL_VALIDATION"
+      ],
+      "title": "ResearchType",
+      "type": "string"
+    },
+    "SafetyClass": {
+      "enum": [
+        "LOW",
+        "MODERATE",
+        "HIGH",
+        "CRITICAL",
+        "HIGH_STAKES"
+      ],
+      "title": "SafetyClass",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "mission_id": {
+      "title": "Mission Id",
+      "type": "string"
+    },
+    "domain_id": {
+      "title": "Domain Id",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "objective": {
+      "title": "Objective",
+      "type": "string"
+    },
+    "research_type": {
+      "$ref": "#/$defs/ResearchType"
+    },
+    "priority": {
+      "$ref": "#/$defs/MissionPriority"
+    },
+    "status": {
+      "$ref": "#/$defs/MissionStatus"
+    },
+    "created_by": {
+      "title": "Created By",
+      "type": "string"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "updated_at": {
+      "title": "Updated At",
+      "type": "string"
+    },
+    "schedule_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Schedule Id"
+    },
+    "query_strategy": {
+      "additionalProperties": true,
+      "title": "Query Strategy",
+      "type": "object"
+    },
+    "required_source_classes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Source Classes",
+      "type": "array"
+    },
+    "minimum_independent_sources": {
+      "default": 1,
+      "minimum": 1,
+      "title": "Minimum Independent Sources",
+      "type": "integer"
+    },
+    "known_claim_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Known Claim Ids",
+      "type": "array"
+    },
+    "known_conflict_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Known Conflict Ids",
+      "type": "array"
+    },
+    "known_gap_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Known Gap Ids",
+      "type": "array"
+    },
+    "safety_class": {
+      "$ref": "#/$defs/SafetyClass",
+      "default": "LOW"
+    },
+    "completion_policy": {
+      "additionalProperties": true,
+      "title": "Completion Policy",
+      "type": "object"
+    },
+    "research_budget": {
+      "$ref": "#/$defs/ResearchBudget"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    },
+    "follow_up_depth": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Follow Up Depth",
+      "type": "integer"
+    },
+    "parent_candidate_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Candidate Id"
+    },
+    "parent_mission_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Mission Id"
+    },
+    "last_run_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Last Run At"
+    }
+  },
+  "required": [
+    "mission_id",
+    "domain_id",
+    "title",
+    "objective",
+    "research_type",
+    "priority",
+    "status",
+    "created_by",
+    "created_at",
+    "updated_at"
+  ],
+  "title": "ResearchMissionRecord",
+  "type": "object"
+}

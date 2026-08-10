@@ -1,0 +1,107 @@
+{
+  "$defs": {
+    "DomainStatus": {
+      "enum": [
+        "DISABLED",
+        "TEST",
+        "ACTIVE",
+        "PAUSED",
+        "RETIRED"
+      ],
+      "title": "DomainStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "domain_id": {
+      "title": "Domain Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/DomainStatus"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "ontology_namespace": {
+      "title": "Ontology Namespace",
+      "type": "string"
+    },
+    "source_policy": {
+      "additionalProperties": true,
+      "title": "Source Policy",
+      "type": "object"
+    },
+    "validation_policy": {
+      "additionalProperties": true,
+      "title": "Validation Policy",
+      "type": "object"
+    },
+    "safety_policy": {
+      "additionalProperties": true,
+      "title": "Safety Policy",
+      "type": "object"
+    },
+    "approval_policy": {
+      "additionalProperties": true,
+      "title": "Approval Policy",
+      "type": "object"
+    },
+    "provider_policy": {
+      "additionalProperties": true,
+      "title": "Provider Policy",
+      "type": "object"
+    },
+    "schedule_policy": {
+      "additionalProperties": true,
+      "title": "Schedule Policy",
+      "type": "object"
+    },
+    "plugin_entrypoint": {
+      "title": "Plugin Entrypoint",
+      "type": "string"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "updated_at": {
+      "title": "Updated At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "domain_id",
+    "name",
+    "version",
+    "status",
+    "description",
+    "ontology_namespace",
+    "source_policy",
+    "validation_policy",
+    "safety_policy",
+    "approval_policy",
+    "provider_policy",
+    "schedule_policy",
+    "plugin_entrypoint",
+    "created_at",
+    "updated_at"
+  ],
+  "title": "ResearchDomainRecord",
+  "type": "object"
+}

@@ -1,0 +1,206 @@
+[
+  {
+    "contract_version": "2026-08-10",
+    "observation_id": "VEDA-OBS-000001",
+    "run_id": "VEDA-RUN-000001",
+    "provider_id": "synthetic-fixture",
+    "source_uri": "fixture://synthetic/alpha-primary",
+    "canonical_uri": "fixture://synthetic/alpha-primary",
+    "source_title": "Synthetic Alpha Primary Memo",
+    "source_type": "WEB_REFERENCE",
+    "published_at": "2026-08-10T08:00:00Z",
+    "retrieved_at": "2026-08-10T00:00:08Z",
+    "last_checked_at": "2026-08-10T00:00:08Z",
+    "author": "Synthetic Analyst A",
+    "publisher": "Synthetic Lab",
+    "content_hash": "19f43a3f02c6b60967e212489f1f630b400755a00bf771399a41b1f03a403831",
+    "content_version": null,
+    "access_status": "ACCEPTED",
+    "trust_metadata": {
+      "prompt_injection_detected": false,
+      "unsafe_reason": null,
+      "authority_score": 0.8
+    },
+    "raw_reference": {
+      "authority_score": 0.8
+    },
+    "domain_metadata": {
+      "authority_score": 0.8
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "observation_id": "VEDA-OBS-000002",
+    "run_id": "VEDA-RUN-000001",
+    "provider_id": "synthetic-fixture",
+    "source_uri": "fixture://synthetic/gamma-known",
+    "canonical_uri": "fixture://synthetic/gamma-known",
+    "source_title": "Synthetic Gamma Procedural Note",
+    "source_type": "OFFICIAL_DOCUMENT",
+    "published_at": "2026-08-10T08:05:00Z",
+    "retrieved_at": "2026-08-10T00:00:36Z",
+    "last_checked_at": "2026-08-10T00:00:36Z",
+    "author": "Synthetic Governance Office",
+    "publisher": "Synthetic Lab",
+    "content_hash": "94396a8bfdb008efef268aeb1c313447f9388e89dd0f9ffb44716f16adf40f1e",
+    "content_version": null,
+    "access_status": "ACCEPTED",
+    "trust_metadata": {
+      "prompt_injection_detected": false,
+      "unsafe_reason": null,
+      "authority_score": 0.95
+    },
+    "raw_reference": {
+      "authority_score": 0.95
+    },
+    "domain_metadata": {
+      "authority_score": 0.95
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "observation_id": "VEDA-OBS-000003",
+    "run_id": "VEDA-RUN-000001",
+    "provider_id": "synthetic-fixture",
+    "source_uri": "file:///C:/secret/unsafe.txt",
+    "canonical_uri": "file:///C:/secret/unsafe.txt",
+    "source_title": "Unsafe Local File Probe",
+    "source_type": "WEB_REFERENCE",
+    "published_at": "2026-08-10T08:10:00Z",
+    "retrieved_at": "2026-08-10T00:01:04Z",
+    "last_checked_at": "2026-08-10T00:01:04Z",
+    "author": "Synthetic Adversary",
+    "publisher": "Unknown",
+    "content_hash": "449fd81388ed08d7930f63efe3762b50abcad940447ce34b83e62afc29b3fb8a",
+    "content_version": null,
+    "access_status": "UNSAFE",
+    "trust_metadata": {
+      "prompt_injection_detected": false,
+      "unsafe_reason": "unsafe_uri_scheme:file",
+      "authority_score": 0.1,
+      "reject_reason": "unsafe_uri_scheme:file"
+    },
+    "raw_reference": {
+      "authority_score": 0.1
+    },
+    "domain_metadata": {
+      "authority_score": 0.1
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "observation_id": "VEDA-OBS-000004",
+    "run_id": "VEDA-RUN-000001",
+    "provider_id": "synthetic-fixture",
+    "source_uri": "fixture://synthetic/beta-contradiction",
+    "canonical_uri": "fixture://synthetic/beta-contradiction",
+    "source_title": "Synthetic Beta Adversarial Note",
+    "source_type": "NEWS",
+    "published_at": "2026-08-10T08:15:00Z",
+    "retrieved_at": "2026-08-10T00:01:06Z",
+    "last_checked_at": "2026-08-10T00:01:06Z",
+    "author": "Synthetic Analyst B",
+    "publisher": "Synthetic Wire",
+    "content_hash": "11d2f6628e166df6beb9443ed315c38664f036275a818d56df08dd16f7a56959",
+    "content_version": null,
+    "access_status": "ACCEPTED",
+    "trust_metadata": {
+      "prompt_injection_detected": true,
+      "unsafe_reason": null,
+      "authority_score": 0.6
+    },
+    "raw_reference": {
+      "authority_score": 0.6
+    },
+    "domain_metadata": {
+      "authority_score": 0.6
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "observation_id": "VEDA-OBS-000005",
+    "run_id": "VEDA-RUN-000002",
+    "provider_id": "synthetic-fixture",
+    "source_uri": "fixture://synthetic/alpha-follow-support",
+    "canonical_uri": "fixture://synthetic/alpha-follow-support",
+    "source_title": "Synthetic Alpha Independent Confirmation",
+    "source_type": "SECONDARY_SOURCE",
+    "published_at": "2026-08-10T12:00:00Z",
+    "retrieved_at": "2026-08-10T00:01:40Z",
+    "last_checked_at": "2026-08-10T00:01:40Z",
+    "author": "Synthetic Analyst C",
+    "publisher": "Synthetic Review Board",
+    "content_hash": "7eb2afcd280e3cf7d19444cd79aa72c8d1991fe6b8a15c462508f89dc44b6c0e",
+    "content_version": null,
+    "access_status": "ACCEPTED",
+    "trust_metadata": {
+      "prompt_injection_detected": false,
+      "unsafe_reason": null,
+      "authority_score": 0.88
+    },
+    "raw_reference": {
+      "authority_score": 0.88
+    },
+    "domain_metadata": {
+      "authority_score": 0.88
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "observation_id": "VEDA-OBS-000006",
+    "run_id": "VEDA-RUN-000002",
+    "provider_id": "synthetic-fixture",
+    "source_uri": "fixture://synthetic/delta-uncertain",
+    "canonical_uri": "fixture://synthetic/delta-uncertain",
+    "source_title": "Synthetic Delta Early Observation",
+    "source_type": "WEB_REFERENCE",
+    "published_at": "2026-08-10T12:05:00Z",
+    "retrieved_at": "2026-08-10T00:02:07Z",
+    "last_checked_at": "2026-08-10T00:02:07Z",
+    "author": "Synthetic Analyst D",
+    "publisher": "Synthetic Lab",
+    "content_hash": "bcb95d2721a92091576e72806d03d695bca6b6cced386c3526d4dbb0a1923200",
+    "content_version": null,
+    "access_status": "ACCEPTED",
+    "trust_metadata": {
+      "prompt_injection_detected": false,
+      "unsafe_reason": null,
+      "authority_score": 0.45
+    },
+    "raw_reference": {
+      "authority_score": 0.45
+    },
+    "domain_metadata": {
+      "authority_score": 0.45
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "observation_id": "VEDA-OBS-000007",
+    "run_id": "VEDA-RUN-000003",
+    "provider_id": "synthetic-fixture",
+    "source_uri": "fixture://synthetic/delta-follow-up",
+    "canonical_uri": "fixture://synthetic/delta-follow-up",
+    "source_title": "Synthetic Delta Follow-Up Evidence",
+    "source_type": "ACADEMIC_SOURCE",
+    "published_at": "2026-08-10T16:00:00Z",
+    "retrieved_at": "2026-08-10T00:02:51Z",
+    "last_checked_at": "2026-08-10T00:02:51Z",
+    "author": "Synthetic Research Group",
+    "publisher": "Synthetic Journal",
+    "content_hash": "afcaf4ddeed9f42b565d1a282cf4e5df816233ccb6365fdbc67d4cfcaa5d5816",
+    "content_version": null,
+    "access_status": "ACCEPTED",
+    "trust_metadata": {
+      "prompt_injection_detected": false,
+      "unsafe_reason": null,
+      "authority_score": 0.78
+    },
+    "raw_reference": {
+      "authority_score": 0.78
+    },
+    "domain_metadata": {
+      "authority_score": 0.78
+    }
+  }
+]

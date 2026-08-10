@@ -1,0 +1,171 @@
+{
+  "$defs": {
+    "ActorType": {
+      "enum": [
+        "SYSTEM",
+        "MODEL",
+        "ADMIN",
+        "SCHEDULER",
+        "PROVIDER",
+        "VALIDATOR"
+      ],
+      "title": "ActorType",
+      "type": "string"
+    },
+    "LedgerEventType": {
+      "enum": [
+        "MISSION_CREATED",
+        "MISSION_STARTED",
+        "MISSION_PAUSED",
+        "RUN_STARTED",
+        "QUERY_EXECUTED",
+        "SOURCE_DISCOVERED",
+        "SOURCE_REJECTED",
+        "EVIDENCE_CREATED",
+        "CANDIDATE_CREATED",
+        "CANDIDATE_MERGED",
+        "VALIDATION_COMPLETED",
+        "CONTRADICTION_FOUND",
+        "FOLLOW_UP_CREATED",
+        "ADMIN_APPROVED",
+        "ADMIN_REJECTED",
+        "MORE_RESEARCH_REQUESTED",
+        "RUN_FAILED",
+        "RUN_RECOVERED"
+      ],
+      "title": "LedgerEventType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "event_id": {
+      "title": "Event Id",
+      "type": "string"
+    },
+    "timestamp": {
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "event_type": {
+      "$ref": "#/$defs/LedgerEventType"
+    },
+    "domain_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Domain Id"
+    },
+    "mission_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Mission Id"
+    },
+    "run_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Run Id"
+    },
+    "candidate_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Candidate Id"
+    },
+    "actor_type": {
+      "$ref": "#/$defs/ActorType"
+    },
+    "actor_id": {
+      "title": "Actor Id",
+      "type": "string"
+    },
+    "action": {
+      "title": "Action",
+      "type": "string"
+    },
+    "before_state": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Before State"
+    },
+    "after_state": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "After State"
+    },
+    "reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reason"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "event_id",
+    "timestamp",
+    "event_type",
+    "actor_type",
+    "actor_id",
+    "action"
+  ],
+  "title": "ResearchLedgerEventRecord",
+  "type": "object"
+}

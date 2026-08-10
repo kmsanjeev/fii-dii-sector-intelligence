@@ -1,0 +1,159 @@
+{
+  "$defs": {
+    "EvidenceType": {
+      "enum": [
+        "PRIMARY_SOURCE",
+        "SECONDARY_SOURCE",
+        "OFFICIAL_DOCUMENT",
+        "ACADEMIC_SOURCE",
+        "NEWS",
+        "DATASET",
+        "WEB_REFERENCE",
+        "INTERNAL_KNOWLEDGE",
+        "ARCHIVED_RESEARCH",
+        "USER_PROVIDED",
+        "UNKNOWN"
+      ],
+      "title": "EvidenceType",
+      "type": "string"
+    },
+    "SourceAccessStatus": {
+      "enum": [
+        "ACCEPTED",
+        "REJECTED",
+        "UNAVAILABLE",
+        "UNSAFE"
+      ],
+      "title": "SourceAccessStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "observation_id": {
+      "title": "Observation Id",
+      "type": "string"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "provider_id": {
+      "title": "Provider Id",
+      "type": "string"
+    },
+    "source_uri": {
+      "title": "Source Uri",
+      "type": "string"
+    },
+    "canonical_uri": {
+      "title": "Canonical Uri",
+      "type": "string"
+    },
+    "source_title": {
+      "title": "Source Title",
+      "type": "string"
+    },
+    "source_type": {
+      "$ref": "#/$defs/EvidenceType"
+    },
+    "published_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Published At"
+    },
+    "retrieved_at": {
+      "title": "Retrieved At",
+      "type": "string"
+    },
+    "last_checked_at": {
+      "title": "Last Checked At",
+      "type": "string"
+    },
+    "author": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Author"
+    },
+    "publisher": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Publisher"
+    },
+    "content_hash": {
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "content_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Content Version"
+    },
+    "access_status": {
+      "$ref": "#/$defs/SourceAccessStatus",
+      "default": "ACCEPTED"
+    },
+    "trust_metadata": {
+      "additionalProperties": true,
+      "title": "Trust Metadata",
+      "type": "object"
+    },
+    "raw_reference": {
+      "additionalProperties": true,
+      "title": "Raw Reference",
+      "type": "object"
+    },
+    "domain_metadata": {
+      "additionalProperties": true,
+      "title": "Domain Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "observation_id",
+    "run_id",
+    "provider_id",
+    "source_uri",
+    "canonical_uri",
+    "source_title",
+    "source_type",
+    "retrieved_at",
+    "last_checked_at",
+    "content_hash"
+  ],
+  "title": "SourceObservationRecord",
+  "type": "object"
+}

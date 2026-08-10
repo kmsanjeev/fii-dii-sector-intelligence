@@ -1,0 +1,121 @@
+{
+  "$defs": {
+    "EvidenceType": {
+      "enum": [
+        "PRIMARY_SOURCE",
+        "SECONDARY_SOURCE",
+        "OFFICIAL_DOCUMENT",
+        "ACADEMIC_SOURCE",
+        "NEWS",
+        "DATASET",
+        "WEB_REFERENCE",
+        "INTERNAL_KNOWLEDGE",
+        "ARCHIVED_RESEARCH",
+        "USER_PROVIDED",
+        "UNKNOWN"
+      ],
+      "title": "EvidenceType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "evidence_id": {
+      "title": "Evidence Id",
+      "type": "string"
+    },
+    "observation_id": {
+      "title": "Observation Id",
+      "type": "string"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "mission_id": {
+      "title": "Mission Id",
+      "type": "string"
+    },
+    "domain_id": {
+      "title": "Domain Id",
+      "type": "string"
+    },
+    "location": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Location"
+    },
+    "passage": {
+      "title": "Passage",
+      "type": "string"
+    },
+    "normalized_text": {
+      "title": "Normalized Text",
+      "type": "string"
+    },
+    "claim_hint": {
+      "title": "Claim Hint",
+      "type": "string"
+    },
+    "evidence_type": {
+      "$ref": "#/$defs/EvidenceType"
+    },
+    "language": {
+      "default": "en",
+      "title": "Language",
+      "type": "string"
+    },
+    "content_hash": {
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "extraction_method": {
+      "title": "Extraction Method",
+      "type": "string"
+    },
+    "confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "domain_metadata": {
+      "additionalProperties": true,
+      "title": "Domain Metadata",
+      "type": "object"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "evidence_id",
+    "observation_id",
+    "run_id",
+    "mission_id",
+    "domain_id",
+    "passage",
+    "normalized_text",
+    "claim_hint",
+    "evidence_type",
+    "content_hash",
+    "extraction_method",
+    "confidence",
+    "created_at"
+  ],
+  "title": "ResearchEvidenceRecord",
+  "type": "object"
+}

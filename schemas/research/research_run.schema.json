@@ -1,0 +1,170 @@
+{
+  "$defs": {
+    "RunStatus": {
+      "enum": [
+        "QUEUED",
+        "RUNNING",
+        "SUCCESS",
+        "PARTIAL",
+        "FAILED",
+        "CANCELLED",
+        "RECOVERABLE"
+      ],
+      "title": "RunStatus",
+      "type": "string"
+    },
+    "TriggerType": {
+      "enum": [
+        "MANUAL",
+        "HOURLY",
+        "DAILY",
+        "WEEKLY",
+        "FOLLOW_UP",
+        "ADMIN_REQUEST",
+        "SYSTEM_RETRY"
+      ],
+      "title": "TriggerType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "mission_id": {
+      "title": "Mission Id",
+      "type": "string"
+    },
+    "domain_id": {
+      "title": "Domain Id",
+      "type": "string"
+    },
+    "trigger_type": {
+      "$ref": "#/$defs/TriggerType"
+    },
+    "started_at": {
+      "title": "Started At",
+      "type": "string"
+    },
+    "completed_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Completed At"
+    },
+    "status": {
+      "$ref": "#/$defs/RunStatus"
+    },
+    "provider_calls": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Provider Calls",
+      "type": "integer"
+    },
+    "queries_executed": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Queries Executed",
+      "type": "integer"
+    },
+    "sources_discovered": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Sources Discovered",
+      "type": "integer"
+    },
+    "sources_accepted": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Sources Accepted",
+      "type": "integer"
+    },
+    "sources_rejected": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Sources Rejected",
+      "type": "integer"
+    },
+    "evidence_created": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Evidence Created",
+      "type": "integer"
+    },
+    "candidates_created": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Candidates Created",
+      "type": "integer"
+    },
+    "duplicates_detected": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Duplicates Detected",
+      "type": "integer"
+    },
+    "conflicts_created": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Conflicts Created",
+      "type": "integer"
+    },
+    "errors": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Errors",
+      "type": "array"
+    },
+    "cost_metrics": {
+      "additionalProperties": true,
+      "title": "Cost Metrics",
+      "type": "object"
+    },
+    "model_metadata": {
+      "additionalProperties": true,
+      "title": "Model Metadata",
+      "type": "object"
+    },
+    "continuation_required": {
+      "default": false,
+      "title": "Continuation Required",
+      "type": "boolean"
+    },
+    "continuation_hint": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Continuation Hint"
+    }
+  },
+  "required": [
+    "run_id",
+    "mission_id",
+    "domain_id",
+    "trigger_type",
+    "started_at",
+    "status"
+  ],
+  "title": "ResearchRunRecord",
+  "type": "object"
+}

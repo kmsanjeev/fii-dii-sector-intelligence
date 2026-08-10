@@ -1,0 +1,251 @@
+[
+  {
+    "contract_version": "2026-08-10",
+    "candidate_id": "VEDA-RCND-000002",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "title": "Synthetic gamma requires multi-source confirmation",
+    "candidate_type": "SOURCE_ADDITION",
+    "claim": "Synthetic gamma requires multi-source confirmation before approval.",
+    "normalized_claim": "synthetic gamma requires multi-source confirmation before approval",
+    "topic_key": "synthetic.gamma.confirmation",
+    "stance": "REQUIRES_CONFIRMATION",
+    "evidence_ids": [
+      "VEDA-EVD-000002"
+    ],
+    "source_ids": [
+      "VEDA-OBS-000002"
+    ],
+    "existing_knowledge_matches": [
+      "VEDA-RCORE-000001"
+    ],
+    "novelty_status": "KNOWN",
+    "contradiction_status": "NONE",
+    "validation_status": "PASS_WITH_CONDITIONS",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 0.5,
+      "authority_confidence": 0.95,
+      "cross_source_confidence": 0.5,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.7,
+      "contradiction_confidence": 1.0,
+      "domain_confidence": 0.775
+    },
+    "priority": "P3",
+    "safety_class": "MODERATE",
+    "approval_status": "PENDING",
+    "knowledge_zone": "RESEARCH_CANDIDATE",
+    "promotion_state": "NONE",
+    "created_at": "2026-08-10T00:00:40Z",
+    "updated_at": "2026-08-10T00:01:02Z",
+    "merged_into_candidate_id": null,
+    "support_count": 1,
+    "metadata": {
+      "title": "Synthetic gamma requires multi-source confirmation",
+      "topic_key": "synthetic.gamma.confirmation",
+      "stance": "REQUIRES_CONFIRMATION",
+      "candidate_type": "SOURCE_ADDITION",
+      "priority": "P3",
+      "authority_score": 0.95,
+      "prompt_injection_detected": false,
+      "current_knowledge_comparison": {
+        "novelty_status": "KNOWN",
+        "existing_knowledge_matches": [
+          "VEDA-RCORE-000001"
+        ],
+        "topic_matches": [
+          "VEDA-RCORE-000001"
+        ]
+      },
+      "conflict_analysis": "No domain conflict detected."
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "candidate_id": "VEDA-RCND-000001",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "title": "Synthetic alpha improves evidence durability",
+    "candidate_type": "NEW_CLAIM",
+    "claim": "Synthetic alpha improves evidence durability.",
+    "normalized_claim": "synthetic alpha improves evidence durability",
+    "topic_key": "synthetic.alpha.durability",
+    "stance": "POSITIVE",
+    "evidence_ids": [
+      "VEDA-EVD-000001",
+      "VEDA-EVD-000004"
+    ],
+    "source_ids": [
+      "VEDA-OBS-000001",
+      "VEDA-OBS-000005"
+    ],
+    "existing_knowledge_matches": [],
+    "novelty_status": "NEW",
+    "contradiction_status": "NONE",
+    "validation_status": "PASS",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 1.0,
+      "authority_confidence": 0.84,
+      "cross_source_confidence": 1.0,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.9,
+      "contradiction_confidence": 1.0,
+      "domain_confidence": 0.9567
+    },
+    "priority": "P1",
+    "safety_class": "MODERATE",
+    "approval_status": "APPROVED",
+    "knowledge_zone": "RESEARCH_CANDIDATE",
+    "promotion_state": "PROMOTION_READY",
+    "created_at": "2026-08-10T00:00:12Z",
+    "updated_at": "2026-08-10T00:02:36Z",
+    "merged_into_candidate_id": null,
+    "support_count": 2,
+    "metadata": {
+      "title": "Synthetic alpha improves evidence durability",
+      "topic_key": "synthetic.alpha.durability",
+      "stance": "POSITIVE",
+      "candidate_type": "NEW_CLAIM",
+      "priority": "P1",
+      "authority_score": 0.8,
+      "prompt_injection_detected": false,
+      "current_knowledge_comparison": {
+        "novelty_status": "NEW",
+        "existing_knowledge_matches": [],
+        "topic_matches": []
+      },
+      "conflict_analysis": "No domain conflict detected."
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "candidate_id": "VEDA-RCND-000003",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "title": "Synthetic beta decreases evidence durability",
+    "candidate_type": "CONTRADICTION",
+    "claim": "Synthetic beta decreases evidence durability.",
+    "normalized_claim": "synthetic beta decreases evidence durability",
+    "topic_key": "synthetic.beta.durability",
+    "stance": "NEGATIVE",
+    "evidence_ids": [
+      "VEDA-EVD-000003"
+    ],
+    "source_ids": [
+      "VEDA-OBS-000004"
+    ],
+    "existing_knowledge_matches": [
+      "VEDA-RCORE-000002"
+    ],
+    "novelty_status": "POSSIBLE_UPDATE",
+    "contradiction_status": "DIRECT",
+    "validation_status": "PASS_WITH_CONDITIONS",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 0.5,
+      "authority_confidence": 0.6,
+      "cross_source_confidence": 0.5,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.75,
+      "contradiction_confidence": 0.3,
+      "domain_confidence": 0.6083
+    },
+    "priority": "P0",
+    "safety_class": "MODERATE",
+    "approval_status": "REJECTED",
+    "knowledge_zone": "RESEARCH_ARCHIVE",
+    "promotion_state": "NONE",
+    "created_at": "2026-08-10T00:01:10Z",
+    "updated_at": "2026-08-10T00:02:39Z",
+    "merged_into_candidate_id": null,
+    "support_count": 1,
+    "metadata": {
+      "title": "Synthetic beta decreases evidence durability",
+      "topic_key": "synthetic.beta.durability",
+      "stance": "NEGATIVE",
+      "candidate_type": "CONTRADICTION",
+      "priority": "P0",
+      "authority_score": 0.6,
+      "prompt_injection_detected": true,
+      "current_knowledge_comparison": {
+        "novelty_status": "POSSIBLE_UPDATE",
+        "existing_knowledge_matches": [
+          "VEDA-RCORE-000002"
+        ],
+        "topic_matches": [
+          "VEDA-RCORE-000002"
+        ]
+      },
+      "conflict_analysis": "Candidate stance NEGATIVE conflicts with approved core stance POSITIVE."
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "candidate_id": "VEDA-RCND-000004",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "title": "Synthetic delta remains uncertain",
+    "candidate_type": "KNOWLEDGE_GAP",
+    "claim": "Synthetic delta remains uncertain and needs more evidence.",
+    "normalized_claim": "synthetic delta remains uncertain and needs more evidence",
+    "topic_key": "synthetic.delta.uncertainty",
+    "stance": "UNCERTAIN",
+    "evidence_ids": [
+      "VEDA-EVD-000005",
+      "VEDA-EVD-000006"
+    ],
+    "source_ids": [
+      "VEDA-OBS-000006",
+      "VEDA-OBS-000007"
+    ],
+    "existing_knowledge_matches": [],
+    "novelty_status": "NEW",
+    "contradiction_status": "NONE",
+    "validation_status": "PASS_WITH_CONDITIONS",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 1.0,
+      "authority_confidence": 0.615,
+      "cross_source_confidence": 1.0,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.9,
+      "contradiction_confidence": 1.0,
+      "domain_confidence": 0.9192
+    },
+    "priority": "P1",
+    "safety_class": "HIGH",
+    "approval_status": "NEEDS_MORE_RESEARCH",
+    "knowledge_zone": "RESEARCH_CANDIDATE",
+    "promotion_state": "NONE",
+    "created_at": "2026-08-10T00:02:11Z",
+    "updated_at": "2026-08-10T00:03:16Z",
+    "merged_into_candidate_id": null,
+    "support_count": 2,
+    "metadata": {
+      "title": "Synthetic delta remains uncertain",
+      "topic_key": "synthetic.delta.uncertainty",
+      "stance": "UNCERTAIN",
+      "candidate_type": "KNOWLEDGE_GAP",
+      "priority": "P1",
+      "safety_class": "HIGH",
+      "follow_up_batch_sequence": [
+        "follow_up"
+      ],
+      "follow_up_depth": 0,
+      "authority_score": 0.45,
+      "prompt_injection_detected": false,
+      "current_knowledge_comparison": {
+        "novelty_status": "NEW",
+        "existing_knowledge_matches": [],
+        "topic_matches": []
+      },
+      "conflict_analysis": "No domain conflict detected."
+    }
+  }
+]

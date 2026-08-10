@@ -1,0 +1,147 @@
+{
+  "$defs": {
+    "ConflictResolutionStatus": {
+      "enum": [
+        "UNRESOLVED",
+        "COEXIST",
+        "CONTEXT_DEPENDENT",
+        "SOURCE_A_PREFERRED",
+        "SOURCE_B_PREFERRED",
+        "COMPOSITE_RULE",
+        "INSUFFICIENT_EVIDENCE"
+      ],
+      "title": "ConflictResolutionStatus",
+      "type": "string"
+    },
+    "ContradictionStatus": {
+      "enum": [
+        "NONE",
+        "POSSIBLE",
+        "DIRECT",
+        "PARTIAL",
+        "CONTEXTUAL",
+        "SOURCE_VARIANCE",
+        "UNRESOLVED"
+      ],
+      "title": "ContradictionStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "conflict_id": {
+      "title": "Conflict Id",
+      "type": "string"
+    },
+    "topic": {
+      "title": "Topic",
+      "type": "string"
+    },
+    "candidate_id": {
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "conflicting_candidate_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Conflicting Candidate Id"
+    },
+    "conflicting_core_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Conflicting Core Id"
+    },
+    "conflict_type": {
+      "$ref": "#/$defs/ContradictionStatus"
+    },
+    "analysis": {
+      "title": "Analysis",
+      "type": "string"
+    },
+    "possible_reconciliation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Possible Reconciliation"
+    },
+    "school_context": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "School Context"
+    },
+    "implementation_impact": {
+      "title": "Implementation Impact",
+      "type": "string"
+    },
+    "resolution_status": {
+      "$ref": "#/$defs/ConflictResolutionStatus",
+      "default": "UNRESOLVED"
+    },
+    "approved_resolution": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approved Resolution"
+    },
+    "confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "conflict_id",
+    "topic",
+    "candidate_id",
+    "conflict_type",
+    "analysis",
+    "implementation_impact",
+    "confidence",
+    "created_at"
+  ],
+  "title": "ResearchConflictRecord",
+  "type": "object"
+}

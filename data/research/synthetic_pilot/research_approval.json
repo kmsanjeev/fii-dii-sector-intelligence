@@ -1,0 +1,38 @@
+[
+  {
+    "contract_version": "2026-08-10",
+    "approval_id": "VEDA-RAPR-000001",
+    "candidate_id": "VEDA-RCND-000001",
+    "action": "APPROVE",
+    "status": "APPROVED",
+    "decided_by": "admin@example.com",
+    "decided_at": "2026-08-10T00:02:37Z",
+    "reason": "Supported by two independent sources.",
+    "conditions": [],
+    "promotion_state": "PROMOTION_READY"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "approval_id": "VEDA-RAPR-000002",
+    "candidate_id": "VEDA-RCND-000003",
+    "action": "REJECT",
+    "status": "REJECTED",
+    "decided_by": "admin@example.com",
+    "decided_at": "2026-08-10T00:02:40Z",
+    "reason": "Conflicts with approved core and lacks override evidence.",
+    "conditions": [],
+    "promotion_state": "NONE"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "approval_id": "VEDA-RAPR-000003",
+    "candidate_id": "VEDA-RCND-000004",
+    "action": "REQUEST_MORE_RESEARCH",
+    "status": "NEEDS_MORE_RESEARCH",
+    "decided_by": "admin@example.com",
+    "decided_at": "2026-08-10T00:02:43Z",
+    "reason": "Needs more evidence before approval.",
+    "conditions": [],
+    "promotion_state": "NONE"
+  }
+]

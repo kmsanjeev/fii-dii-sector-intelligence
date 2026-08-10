@@ -1,0 +1,2573 @@
+[
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000001",
+    "timestamp": "2026-08-10T00:00:03Z",
+    "event_type": "MISSION_CREATED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": null,
+    "candidate_id": null,
+    "actor_type": "ADMIN",
+    "actor_id": "admin",
+    "action": "create_mission",
+    "before_state": null,
+    "after_state": {
+      "contract_version": "2026-08-10",
+      "mission_id": "VEDA-RM-000001",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "title": "Synthetic pilot mission",
+      "objective": "Exercise the P006 platform pipeline end to end.",
+      "research_type": "CLAIM_VALIDATION",
+      "priority": "P1",
+      "status": "QUEUED",
+      "created_by": "admin",
+      "created_at": "2026-08-10T00:00:02Z",
+      "updated_at": "2026-08-10T00:00:02Z",
+      "schedule_id": null,
+      "query_strategy": {
+        "provider_id": "synthetic-fixture",
+        "batch_sequence": [
+          "initial",
+          "continuation"
+        ]
+      },
+      "required_source_classes": [
+        "WEB_REFERENCE",
+        "OFFICIAL_DOCUMENT"
+      ],
+      "minimum_independent_sources": 2,
+      "known_claim_ids": [],
+      "known_conflict_ids": [],
+      "known_gap_ids": [],
+      "safety_class": "MODERATE",
+      "completion_policy": {
+        "auto_complete": false
+      },
+      "research_budget": {
+        "contract_version": "2026-08-10",
+        "max_queries": 2,
+        "max_sources": 6,
+        "max_provider_calls": 2,
+        "max_runtime_seconds": 60,
+        "max_model_calls": 0,
+        "max_cost": 0.0,
+        "max_follow_up_depth": 2,
+        "max_retries": 1,
+        "cooldown_seconds": 0
+      },
+      "notes": null,
+      "follow_up_depth": 0,
+      "parent_candidate_id": null,
+      "parent_mission_id": null,
+      "last_run_at": null
+    },
+    "reason": "Exercise the P006 platform pipeline end to end.",
+    "metadata": {}
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000002",
+    "timestamp": "2026-08-10T00:00:06Z",
+    "event_type": "RUN_STARTED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": null,
+    "actor_type": "ADMIN",
+    "actor_id": "admin@example.com",
+    "action": "start_run",
+    "before_state": null,
+    "after_state": {
+      "contract_version": "2026-08-10",
+      "run_id": "VEDA-RUN-000001",
+      "mission_id": "VEDA-RM-000001",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "trigger_type": "MANUAL",
+      "started_at": "2026-08-10T00:00:05Z",
+      "completed_at": null,
+      "status": "RUNNING",
+      "provider_calls": 0,
+      "queries_executed": 0,
+      "sources_discovered": 0,
+      "sources_accepted": 0,
+      "sources_rejected": 0,
+      "evidence_created": 0,
+      "candidates_created": 0,
+      "duplicates_detected": 0,
+      "conflicts_created": 0,
+      "errors": [],
+      "cost_metrics": {},
+      "model_metadata": {},
+      "continuation_required": false,
+      "continuation_hint": null
+    },
+    "reason": null,
+    "metadata": {}
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000003",
+    "timestamp": "2026-08-10T00:00:07Z",
+    "event_type": "QUERY_EXECUTED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "provider_search",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "continuation_hint": "continuation"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000004",
+    "timestamp": "2026-08-10T00:00:09Z",
+    "event_type": "SOURCE_DISCOVERED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "accept_source",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "observation_id": "VEDA-OBS-000001",
+      "source_uri": "fixture://synthetic/alpha-primary"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000005",
+    "timestamp": "2026-08-10T00:00:11Z",
+    "event_type": "EVIDENCE_CREATED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "extract_evidence",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "evidence_id": "VEDA-EVD-000001",
+      "observation_id": "VEDA-OBS-000001"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000006",
+    "timestamp": "2026-08-10T00:00:15Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V1_SOURCE_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000001",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000007",
+    "timestamp": "2026-08-10T00:00:17Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V2_AUTHORITY_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000002",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000008",
+    "timestamp": "2026-08-10T00:00:19Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V3_PROVENANCE_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000003",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000009",
+    "timestamp": "2026-08-10T00:00:21Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000004",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000010",
+    "timestamp": "2026-08-10T00:00:23Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V5_CONTRADICTION_CHECK",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000005",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000011",
+    "timestamp": "2026-08-10T00:00:25Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V6_CROSS_SOURCE_SUPPORT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000006",
+      "status": "PASS_WITH_CONDITIONS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000012",
+    "timestamp": "2026-08-10T00:00:27Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V7_ONTOLOGY_COMPATIBILITY",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000007",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000013",
+    "timestamp": "2026-08-10T00:00:29Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V8_RULE_IMPACT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000008",
+      "status": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000014",
+    "timestamp": "2026-08-10T00:00:31Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V9_SAFETY_CLASSIFICATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000009",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000015",
+    "timestamp": "2026-08-10T00:00:33Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V10_NOVELTY_ASSESSMENT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000010",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000016",
+    "timestamp": "2026-08-10T00:00:35Z",
+    "event_type": "CANDIDATE_CREATED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "SYSTEM",
+    "actor_id": "candidate_builder",
+    "action": "create_candidate",
+    "before_state": null,
+    "after_state": {
+      "contract_version": "2026-08-10",
+      "candidate_id": "VEDA-RCND-000001",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "mission_id": "VEDA-RM-000001",
+      "run_id": "VEDA-RUN-000001",
+      "title": "Synthetic alpha improves evidence durability",
+      "candidate_type": "NEW_CLAIM",
+      "claim": "Synthetic alpha improves evidence durability.",
+      "normalized_claim": "synthetic alpha improves evidence durability",
+      "topic_key": "synthetic.alpha.durability",
+      "stance": "POSITIVE",
+      "evidence_ids": [
+        "VEDA-EVD-000001"
+      ],
+      "source_ids": [
+        "VEDA-OBS-000001"
+      ],
+      "existing_knowledge_matches": [],
+      "novelty_status": "NEW",
+      "contradiction_status": "NONE",
+      "validation_status": "PASS_WITH_CONDITIONS",
+      "confidence": {
+        "contract_version": "2026-08-10",
+        "source_confidence": 0.5,
+        "authority_confidence": 0.8,
+        "cross_source_confidence": 0.5,
+        "provenance_confidence": 1.0,
+        "novelty_confidence": 0.9,
+        "contradiction_confidence": 1.0,
+        "domain_confidence": 0.7833
+      },
+      "priority": "P1",
+      "safety_class": "MODERATE",
+      "approval_status": "PENDING",
+      "knowledge_zone": "RESEARCH_CANDIDATE",
+      "promotion_state": "NONE",
+      "created_at": "2026-08-10T00:00:12Z",
+      "updated_at": "2026-08-10T00:00:34Z",
+      "merged_into_candidate_id": null,
+      "support_count": 1,
+      "metadata": {
+        "title": "Synthetic alpha improves evidence durability",
+        "topic_key": "synthetic.alpha.durability",
+        "stance": "POSITIVE",
+        "candidate_type": "NEW_CLAIM",
+        "priority": "P1",
+        "authority_score": 0.8,
+        "prompt_injection_detected": false,
+        "current_knowledge_comparison": {
+          "novelty_status": "NEW",
+          "existing_knowledge_matches": [],
+          "topic_matches": []
+        },
+        "conflict_analysis": "No domain conflict detected."
+      }
+    },
+    "reason": null,
+    "metadata": {}
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000017",
+    "timestamp": "2026-08-10T00:00:37Z",
+    "event_type": "SOURCE_DISCOVERED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "accept_source",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "observation_id": "VEDA-OBS-000002",
+      "source_uri": "fixture://synthetic/gamma-known"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000018",
+    "timestamp": "2026-08-10T00:00:39Z",
+    "event_type": "EVIDENCE_CREATED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "extract_evidence",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "evidence_id": "VEDA-EVD-000002",
+      "observation_id": "VEDA-OBS-000002"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000019",
+    "timestamp": "2026-08-10T00:00:43Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000002",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V1_SOURCE_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000011",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000020",
+    "timestamp": "2026-08-10T00:00:45Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000002",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V2_AUTHORITY_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000012",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000021",
+    "timestamp": "2026-08-10T00:00:47Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000002",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V3_PROVENANCE_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000013",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000022",
+    "timestamp": "2026-08-10T00:00:49Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000002",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000014",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000023",
+    "timestamp": "2026-08-10T00:00:51Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000002",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V5_CONTRADICTION_CHECK",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000015",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000024",
+    "timestamp": "2026-08-10T00:00:53Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000002",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V6_CROSS_SOURCE_SUPPORT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000016",
+      "status": "PASS_WITH_CONDITIONS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000025",
+    "timestamp": "2026-08-10T00:00:55Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000002",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V7_ONTOLOGY_COMPATIBILITY",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000017",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000026",
+    "timestamp": "2026-08-10T00:00:57Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000002",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V8_RULE_IMPACT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000018",
+      "status": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000027",
+    "timestamp": "2026-08-10T00:00:59Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000002",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V9_SAFETY_CLASSIFICATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000019",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000028",
+    "timestamp": "2026-08-10T00:01:01Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000002",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V10_NOVELTY_ASSESSMENT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000020",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000029",
+    "timestamp": "2026-08-10T00:01:03Z",
+    "event_type": "CANDIDATE_CREATED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000002",
+    "actor_type": "SYSTEM",
+    "actor_id": "candidate_builder",
+    "action": "create_candidate",
+    "before_state": null,
+    "after_state": {
+      "contract_version": "2026-08-10",
+      "candidate_id": "VEDA-RCND-000002",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "mission_id": "VEDA-RM-000001",
+      "run_id": "VEDA-RUN-000001",
+      "title": "Synthetic gamma requires multi-source confirmation",
+      "candidate_type": "SOURCE_ADDITION",
+      "claim": "Synthetic gamma requires multi-source confirmation before approval.",
+      "normalized_claim": "synthetic gamma requires multi-source confirmation before approval",
+      "topic_key": "synthetic.gamma.confirmation",
+      "stance": "REQUIRES_CONFIRMATION",
+      "evidence_ids": [
+        "VEDA-EVD-000002"
+      ],
+      "source_ids": [
+        "VEDA-OBS-000002"
+      ],
+      "existing_knowledge_matches": [
+        "VEDA-RCORE-000001"
+      ],
+      "novelty_status": "KNOWN",
+      "contradiction_status": "NONE",
+      "validation_status": "PASS_WITH_CONDITIONS",
+      "confidence": {
+        "contract_version": "2026-08-10",
+        "source_confidence": 0.5,
+        "authority_confidence": 0.95,
+        "cross_source_confidence": 0.5,
+        "provenance_confidence": 1.0,
+        "novelty_confidence": 0.7,
+        "contradiction_confidence": 1.0,
+        "domain_confidence": 0.775
+      },
+      "priority": "P3",
+      "safety_class": "MODERATE",
+      "approval_status": "PENDING",
+      "knowledge_zone": "RESEARCH_CANDIDATE",
+      "promotion_state": "NONE",
+      "created_at": "2026-08-10T00:00:40Z",
+      "updated_at": "2026-08-10T00:01:02Z",
+      "merged_into_candidate_id": null,
+      "support_count": 1,
+      "metadata": {
+        "title": "Synthetic gamma requires multi-source confirmation",
+        "topic_key": "synthetic.gamma.confirmation",
+        "stance": "REQUIRES_CONFIRMATION",
+        "candidate_type": "SOURCE_ADDITION",
+        "priority": "P3",
+        "authority_score": 0.95,
+        "prompt_injection_detected": false,
+        "current_knowledge_comparison": {
+          "novelty_status": "KNOWN",
+          "existing_knowledge_matches": [
+            "VEDA-RCORE-000001"
+          ],
+          "topic_matches": [
+            "VEDA-RCORE-000001"
+          ]
+        },
+        "conflict_analysis": "No domain conflict detected."
+      }
+    },
+    "reason": null,
+    "metadata": {}
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000030",
+    "timestamp": "2026-08-10T00:01:05Z",
+    "event_type": "SOURCE_REJECTED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": null,
+    "actor_type": "VALIDATOR",
+    "actor_id": "source_gate",
+    "action": "reject_source",
+    "before_state": null,
+    "after_state": null,
+    "reason": "unsafe_uri_scheme:file",
+    "metadata": {
+      "source_uri": "file:///C:/secret/unsafe.txt"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000031",
+    "timestamp": "2026-08-10T00:01:07Z",
+    "event_type": "SOURCE_DISCOVERED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "accept_source",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "observation_id": "VEDA-OBS-000004",
+      "source_uri": "fixture://synthetic/beta-contradiction"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000032",
+    "timestamp": "2026-08-10T00:01:09Z",
+    "event_type": "EVIDENCE_CREATED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "extract_evidence",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "evidence_id": "VEDA-EVD-000003",
+      "observation_id": "VEDA-OBS-000004"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000033",
+    "timestamp": "2026-08-10T00:01:13Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000003",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V1_SOURCE_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000021",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000034",
+    "timestamp": "2026-08-10T00:01:15Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000003",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V2_AUTHORITY_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000022",
+      "status": "PASS_WITH_CONDITIONS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000035",
+    "timestamp": "2026-08-10T00:01:17Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000003",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V3_PROVENANCE_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000023",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000036",
+    "timestamp": "2026-08-10T00:01:19Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000003",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000024",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000037",
+    "timestamp": "2026-08-10T00:01:21Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000003",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V5_CONTRADICTION_CHECK",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000025",
+      "status": "PASS_WITH_CONDITIONS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000038",
+    "timestamp": "2026-08-10T00:01:23Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000003",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V6_CROSS_SOURCE_SUPPORT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000026",
+      "status": "PASS_WITH_CONDITIONS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000039",
+    "timestamp": "2026-08-10T00:01:25Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000003",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V7_ONTOLOGY_COMPATIBILITY",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000027",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000040",
+    "timestamp": "2026-08-10T00:01:27Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000003",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V8_RULE_IMPACT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000028",
+      "status": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000041",
+    "timestamp": "2026-08-10T00:01:29Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000003",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V9_SAFETY_CLASSIFICATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000029",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000042",
+    "timestamp": "2026-08-10T00:01:31Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000003",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V10_NOVELTY_ASSESSMENT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000030",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000043",
+    "timestamp": "2026-08-10T00:01:33Z",
+    "event_type": "CANDIDATE_CREATED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000003",
+    "actor_type": "SYSTEM",
+    "actor_id": "candidate_builder",
+    "action": "create_candidate",
+    "before_state": null,
+    "after_state": {
+      "contract_version": "2026-08-10",
+      "candidate_id": "VEDA-RCND-000003",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "mission_id": "VEDA-RM-000001",
+      "run_id": "VEDA-RUN-000001",
+      "title": "Synthetic beta decreases evidence durability",
+      "candidate_type": "CONTRADICTION",
+      "claim": "Synthetic beta decreases evidence durability.",
+      "normalized_claim": "synthetic beta decreases evidence durability",
+      "topic_key": "synthetic.beta.durability",
+      "stance": "NEGATIVE",
+      "evidence_ids": [
+        "VEDA-EVD-000003"
+      ],
+      "source_ids": [
+        "VEDA-OBS-000004"
+      ],
+      "existing_knowledge_matches": [
+        "VEDA-RCORE-000002"
+      ],
+      "novelty_status": "POSSIBLE_UPDATE",
+      "contradiction_status": "DIRECT",
+      "validation_status": "PASS_WITH_CONDITIONS",
+      "confidence": {
+        "contract_version": "2026-08-10",
+        "source_confidence": 0.5,
+        "authority_confidence": 0.6,
+        "cross_source_confidence": 0.5,
+        "provenance_confidence": 1.0,
+        "novelty_confidence": 0.75,
+        "contradiction_confidence": 0.3,
+        "domain_confidence": 0.6083
+      },
+      "priority": "P0",
+      "safety_class": "MODERATE",
+      "approval_status": "PENDING",
+      "knowledge_zone": "RESEARCH_CANDIDATE",
+      "promotion_state": "NONE",
+      "created_at": "2026-08-10T00:01:10Z",
+      "updated_at": "2026-08-10T00:01:32Z",
+      "merged_into_candidate_id": null,
+      "support_count": 1,
+      "metadata": {
+        "title": "Synthetic beta decreases evidence durability",
+        "topic_key": "synthetic.beta.durability",
+        "stance": "NEGATIVE",
+        "candidate_type": "CONTRADICTION",
+        "priority": "P0",
+        "authority_score": 0.6,
+        "prompt_injection_detected": true,
+        "current_knowledge_comparison": {
+          "novelty_status": "POSSIBLE_UPDATE",
+          "existing_knowledge_matches": [
+            "VEDA-RCORE-000002"
+          ],
+          "topic_matches": [
+            "VEDA-RCORE-000002"
+          ]
+        },
+        "conflict_analysis": "Candidate stance NEGATIVE conflicts with approved core stance POSITIVE."
+      }
+    },
+    "reason": null,
+    "metadata": {}
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000044",
+    "timestamp": "2026-08-10T00:01:35Z",
+    "event_type": "CONTRADICTION_FOUND",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000003",
+    "actor_type": "VALIDATOR",
+    "actor_id": "contradiction_checker",
+    "action": "record_conflict",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "conflict_id": "VEDA-RCNF-000001"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000045",
+    "timestamp": "2026-08-10T00:01:38Z",
+    "event_type": "RUN_STARTED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": null,
+    "actor_type": "ADMIN",
+    "actor_id": "admin@example.com",
+    "action": "start_run",
+    "before_state": null,
+    "after_state": {
+      "contract_version": "2026-08-10",
+      "run_id": "VEDA-RUN-000002",
+      "mission_id": "VEDA-RM-000001",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "trigger_type": "MANUAL",
+      "started_at": "2026-08-10T00:01:37Z",
+      "completed_at": null,
+      "status": "RUNNING",
+      "provider_calls": 0,
+      "queries_executed": 0,
+      "sources_discovered": 0,
+      "sources_accepted": 0,
+      "sources_rejected": 0,
+      "evidence_created": 0,
+      "candidates_created": 0,
+      "duplicates_detected": 0,
+      "conflicts_created": 0,
+      "errors": [],
+      "cost_metrics": {},
+      "model_metadata": {},
+      "continuation_required": false,
+      "continuation_hint": null
+    },
+    "reason": null,
+    "metadata": {}
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000046",
+    "timestamp": "2026-08-10T00:01:39Z",
+    "event_type": "QUERY_EXECUTED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "provider_search",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "continuation_hint": null
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000047",
+    "timestamp": "2026-08-10T00:01:41Z",
+    "event_type": "SOURCE_DISCOVERED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "accept_source",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "observation_id": "VEDA-OBS-000005",
+      "source_uri": "fixture://synthetic/alpha-follow-support"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000048",
+    "timestamp": "2026-08-10T00:01:43Z",
+    "event_type": "EVIDENCE_CREATED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "extract_evidence",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "evidence_id": "VEDA-EVD-000004",
+      "observation_id": "VEDA-OBS-000005"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000049",
+    "timestamp": "2026-08-10T00:01:46Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V1_SOURCE_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000031",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000050",
+    "timestamp": "2026-08-10T00:01:48Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V2_AUTHORITY_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000032",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000051",
+    "timestamp": "2026-08-10T00:01:50Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V3_PROVENANCE_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000033",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000052",
+    "timestamp": "2026-08-10T00:01:52Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000034",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000053",
+    "timestamp": "2026-08-10T00:01:54Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V5_CONTRADICTION_CHECK",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000035",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000054",
+    "timestamp": "2026-08-10T00:01:56Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V6_CROSS_SOURCE_SUPPORT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000036",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000055",
+    "timestamp": "2026-08-10T00:01:58Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V7_ONTOLOGY_COMPATIBILITY",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000037",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000056",
+    "timestamp": "2026-08-10T00:02:00Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V8_RULE_IMPACT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000038",
+      "status": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000057",
+    "timestamp": "2026-08-10T00:02:02Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V9_SAFETY_CLASSIFICATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000039",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000058",
+    "timestamp": "2026-08-10T00:02:04Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V10_NOVELTY_ASSESSMENT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000040",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000059",
+    "timestamp": "2026-08-10T00:02:06Z",
+    "event_type": "CANDIDATE_MERGED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "SYSTEM",
+    "actor_id": "dedupe",
+    "action": "merge_candidate",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "evidence_id": "VEDA-EVD-000004"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000060",
+    "timestamp": "2026-08-10T00:02:08Z",
+    "event_type": "SOURCE_DISCOVERED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "accept_source",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "observation_id": "VEDA-OBS-000006",
+      "source_uri": "fixture://synthetic/delta-uncertain"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000061",
+    "timestamp": "2026-08-10T00:02:10Z",
+    "event_type": "EVIDENCE_CREATED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "extract_evidence",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "evidence_id": "VEDA-EVD-000005",
+      "observation_id": "VEDA-OBS-000006"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000062",
+    "timestamp": "2026-08-10T00:02:14Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V1_SOURCE_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000041",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000063",
+    "timestamp": "2026-08-10T00:02:16Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V2_AUTHORITY_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000042",
+      "status": "PASS_WITH_CONDITIONS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000064",
+    "timestamp": "2026-08-10T00:02:18Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V3_PROVENANCE_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000043",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000065",
+    "timestamp": "2026-08-10T00:02:20Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000044",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000066",
+    "timestamp": "2026-08-10T00:02:22Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V5_CONTRADICTION_CHECK",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000045",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000067",
+    "timestamp": "2026-08-10T00:02:24Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V6_CROSS_SOURCE_SUPPORT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000046",
+      "status": "PASS_WITH_CONDITIONS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000068",
+    "timestamp": "2026-08-10T00:02:26Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V7_ONTOLOGY_COMPATIBILITY",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000047",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000069",
+    "timestamp": "2026-08-10T00:02:28Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V8_RULE_IMPACT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000048",
+      "status": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000070",
+    "timestamp": "2026-08-10T00:02:30Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V9_SAFETY_CLASSIFICATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000049",
+      "status": "PASS_WITH_CONDITIONS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000071",
+    "timestamp": "2026-08-10T00:02:32Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V10_NOVELTY_ASSESSMENT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000050",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000072",
+    "timestamp": "2026-08-10T00:02:34Z",
+    "event_type": "CANDIDATE_CREATED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "SYSTEM",
+    "actor_id": "candidate_builder",
+    "action": "create_candidate",
+    "before_state": null,
+    "after_state": {
+      "contract_version": "2026-08-10",
+      "candidate_id": "VEDA-RCND-000004",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "mission_id": "VEDA-RM-000001",
+      "run_id": "VEDA-RUN-000002",
+      "title": "Synthetic delta remains uncertain",
+      "candidate_type": "KNOWLEDGE_GAP",
+      "claim": "Synthetic delta remains uncertain and needs more evidence.",
+      "normalized_claim": "synthetic delta remains uncertain and needs more evidence",
+      "topic_key": "synthetic.delta.uncertainty",
+      "stance": "UNCERTAIN",
+      "evidence_ids": [
+        "VEDA-EVD-000005"
+      ],
+      "source_ids": [
+        "VEDA-OBS-000006"
+      ],
+      "existing_knowledge_matches": [],
+      "novelty_status": "NEW",
+      "contradiction_status": "NONE",
+      "validation_status": "PASS_WITH_CONDITIONS",
+      "confidence": {
+        "contract_version": "2026-08-10",
+        "source_confidence": 0.5,
+        "authority_confidence": 0.45,
+        "cross_source_confidence": 0.5,
+        "provenance_confidence": 1.0,
+        "novelty_confidence": 0.9,
+        "contradiction_confidence": 1.0,
+        "domain_confidence": 0.725
+      },
+      "priority": "P1",
+      "safety_class": "HIGH",
+      "approval_status": "PENDING",
+      "knowledge_zone": "RESEARCH_CANDIDATE",
+      "promotion_state": "NONE",
+      "created_at": "2026-08-10T00:02:11Z",
+      "updated_at": "2026-08-10T00:02:33Z",
+      "merged_into_candidate_id": null,
+      "support_count": 1,
+      "metadata": {
+        "title": "Synthetic delta remains uncertain",
+        "topic_key": "synthetic.delta.uncertainty",
+        "stance": "UNCERTAIN",
+        "candidate_type": "KNOWLEDGE_GAP",
+        "priority": "P1",
+        "safety_class": "HIGH",
+        "follow_up_batch_sequence": [
+          "follow_up"
+        ],
+        "follow_up_depth": 0,
+        "authority_score": 0.45,
+        "prompt_injection_detected": false,
+        "current_knowledge_comparison": {
+          "novelty_status": "NEW",
+          "existing_knowledge_matches": [],
+          "topic_matches": []
+        },
+        "conflict_analysis": "No domain conflict detected."
+      }
+    },
+    "reason": null,
+    "metadata": {}
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000073",
+    "timestamp": "2026-08-10T00:02:38Z",
+    "event_type": "ADMIN_APPROVED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000001",
+    "actor_type": "ADMIN",
+    "actor_id": "admin@example.com",
+    "action": "APPROVE",
+    "before_state": {
+      "contract_version": "2026-08-10",
+      "candidate_id": "VEDA-RCND-000001",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "mission_id": "VEDA-RM-000001",
+      "run_id": "VEDA-RUN-000002",
+      "title": "Synthetic alpha improves evidence durability",
+      "candidate_type": "NEW_CLAIM",
+      "claim": "Synthetic alpha improves evidence durability.",
+      "normalized_claim": "synthetic alpha improves evidence durability",
+      "topic_key": "synthetic.alpha.durability",
+      "stance": "POSITIVE",
+      "evidence_ids": [
+        "VEDA-EVD-000001",
+        "VEDA-EVD-000004"
+      ],
+      "source_ids": [
+        "VEDA-OBS-000001",
+        "VEDA-OBS-000005"
+      ],
+      "existing_knowledge_matches": [],
+      "novelty_status": "NEW",
+      "contradiction_status": "NONE",
+      "validation_status": "PASS",
+      "confidence": {
+        "contract_version": "2026-08-10",
+        "source_confidence": 1.0,
+        "authority_confidence": 0.84,
+        "cross_source_confidence": 1.0,
+        "provenance_confidence": 1.0,
+        "novelty_confidence": 0.9,
+        "contradiction_confidence": 1.0,
+        "domain_confidence": 0.9567
+      },
+      "priority": "P1",
+      "safety_class": "MODERATE",
+      "approval_status": "PENDING",
+      "knowledge_zone": "RESEARCH_CANDIDATE",
+      "promotion_state": "NONE",
+      "created_at": "2026-08-10T00:00:12Z",
+      "updated_at": "2026-08-10T00:02:05Z",
+      "merged_into_candidate_id": null,
+      "support_count": 2,
+      "metadata": {
+        "title": "Synthetic alpha improves evidence durability",
+        "topic_key": "synthetic.alpha.durability",
+        "stance": "POSITIVE",
+        "candidate_type": "NEW_CLAIM",
+        "priority": "P1",
+        "authority_score": 0.8,
+        "prompt_injection_detected": false,
+        "current_knowledge_comparison": {
+          "novelty_status": "NEW",
+          "existing_knowledge_matches": [],
+          "topic_matches": []
+        },
+        "conflict_analysis": "No domain conflict detected."
+      }
+    },
+    "after_state": {
+      "contract_version": "2026-08-10",
+      "candidate_id": "VEDA-RCND-000001",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "mission_id": "VEDA-RM-000001",
+      "run_id": "VEDA-RUN-000002",
+      "title": "Synthetic alpha improves evidence durability",
+      "candidate_type": "NEW_CLAIM",
+      "claim": "Synthetic alpha improves evidence durability.",
+      "normalized_claim": "synthetic alpha improves evidence durability",
+      "topic_key": "synthetic.alpha.durability",
+      "stance": "POSITIVE",
+      "evidence_ids": [
+        "VEDA-EVD-000001",
+        "VEDA-EVD-000004"
+      ],
+      "source_ids": [
+        "VEDA-OBS-000001",
+        "VEDA-OBS-000005"
+      ],
+      "existing_knowledge_matches": [],
+      "novelty_status": "NEW",
+      "contradiction_status": "NONE",
+      "validation_status": "PASS",
+      "confidence": {
+        "contract_version": "2026-08-10",
+        "source_confidence": 1.0,
+        "authority_confidence": 0.84,
+        "cross_source_confidence": 1.0,
+        "provenance_confidence": 1.0,
+        "novelty_confidence": 0.9,
+        "contradiction_confidence": 1.0,
+        "domain_confidence": 0.9567
+      },
+      "priority": "P1",
+      "safety_class": "MODERATE",
+      "approval_status": "APPROVED",
+      "knowledge_zone": "RESEARCH_CANDIDATE",
+      "promotion_state": "PROMOTION_READY",
+      "created_at": "2026-08-10T00:00:12Z",
+      "updated_at": "2026-08-10T00:02:36Z",
+      "merged_into_candidate_id": null,
+      "support_count": 2,
+      "metadata": {
+        "title": "Synthetic alpha improves evidence durability",
+        "topic_key": "synthetic.alpha.durability",
+        "stance": "POSITIVE",
+        "candidate_type": "NEW_CLAIM",
+        "priority": "P1",
+        "authority_score": 0.8,
+        "prompt_injection_detected": false,
+        "current_knowledge_comparison": {
+          "novelty_status": "NEW",
+          "existing_knowledge_matches": [],
+          "topic_matches": []
+        },
+        "conflict_analysis": "No domain conflict detected."
+      }
+    },
+    "reason": "Supported by two independent sources.",
+    "metadata": {
+      "approval_id": "VEDA-RAPR-000001"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000074",
+    "timestamp": "2026-08-10T00:02:41Z",
+    "event_type": "ADMIN_REJECTED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "candidate_id": "VEDA-RCND-000003",
+    "actor_type": "ADMIN",
+    "actor_id": "admin@example.com",
+    "action": "REJECT",
+    "before_state": {
+      "contract_version": "2026-08-10",
+      "candidate_id": "VEDA-RCND-000003",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "mission_id": "VEDA-RM-000001",
+      "run_id": "VEDA-RUN-000001",
+      "title": "Synthetic beta decreases evidence durability",
+      "candidate_type": "CONTRADICTION",
+      "claim": "Synthetic beta decreases evidence durability.",
+      "normalized_claim": "synthetic beta decreases evidence durability",
+      "topic_key": "synthetic.beta.durability",
+      "stance": "NEGATIVE",
+      "evidence_ids": [
+        "VEDA-EVD-000003"
+      ],
+      "source_ids": [
+        "VEDA-OBS-000004"
+      ],
+      "existing_knowledge_matches": [
+        "VEDA-RCORE-000002"
+      ],
+      "novelty_status": "POSSIBLE_UPDATE",
+      "contradiction_status": "DIRECT",
+      "validation_status": "PASS_WITH_CONDITIONS",
+      "confidence": {
+        "contract_version": "2026-08-10",
+        "source_confidence": 0.5,
+        "authority_confidence": 0.6,
+        "cross_source_confidence": 0.5,
+        "provenance_confidence": 1.0,
+        "novelty_confidence": 0.75,
+        "contradiction_confidence": 0.3,
+        "domain_confidence": 0.6083
+      },
+      "priority": "P0",
+      "safety_class": "MODERATE",
+      "approval_status": "PENDING",
+      "knowledge_zone": "RESEARCH_CANDIDATE",
+      "promotion_state": "NONE",
+      "created_at": "2026-08-10T00:01:10Z",
+      "updated_at": "2026-08-10T00:01:32Z",
+      "merged_into_candidate_id": null,
+      "support_count": 1,
+      "metadata": {
+        "title": "Synthetic beta decreases evidence durability",
+        "topic_key": "synthetic.beta.durability",
+        "stance": "NEGATIVE",
+        "candidate_type": "CONTRADICTION",
+        "priority": "P0",
+        "authority_score": 0.6,
+        "prompt_injection_detected": true,
+        "current_knowledge_comparison": {
+          "novelty_status": "POSSIBLE_UPDATE",
+          "existing_knowledge_matches": [
+            "VEDA-RCORE-000002"
+          ],
+          "topic_matches": [
+            "VEDA-RCORE-000002"
+          ]
+        },
+        "conflict_analysis": "Candidate stance NEGATIVE conflicts with approved core stance POSITIVE."
+      }
+    },
+    "after_state": {
+      "contract_version": "2026-08-10",
+      "candidate_id": "VEDA-RCND-000003",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "mission_id": "VEDA-RM-000001",
+      "run_id": "VEDA-RUN-000001",
+      "title": "Synthetic beta decreases evidence durability",
+      "candidate_type": "CONTRADICTION",
+      "claim": "Synthetic beta decreases evidence durability.",
+      "normalized_claim": "synthetic beta decreases evidence durability",
+      "topic_key": "synthetic.beta.durability",
+      "stance": "NEGATIVE",
+      "evidence_ids": [
+        "VEDA-EVD-000003"
+      ],
+      "source_ids": [
+        "VEDA-OBS-000004"
+      ],
+      "existing_knowledge_matches": [
+        "VEDA-RCORE-000002"
+      ],
+      "novelty_status": "POSSIBLE_UPDATE",
+      "contradiction_status": "DIRECT",
+      "validation_status": "PASS_WITH_CONDITIONS",
+      "confidence": {
+        "contract_version": "2026-08-10",
+        "source_confidence": 0.5,
+        "authority_confidence": 0.6,
+        "cross_source_confidence": 0.5,
+        "provenance_confidence": 1.0,
+        "novelty_confidence": 0.75,
+        "contradiction_confidence": 0.3,
+        "domain_confidence": 0.6083
+      },
+      "priority": "P0",
+      "safety_class": "MODERATE",
+      "approval_status": "REJECTED",
+      "knowledge_zone": "RESEARCH_ARCHIVE",
+      "promotion_state": "NONE",
+      "created_at": "2026-08-10T00:01:10Z",
+      "updated_at": "2026-08-10T00:02:39Z",
+      "merged_into_candidate_id": null,
+      "support_count": 1,
+      "metadata": {
+        "title": "Synthetic beta decreases evidence durability",
+        "topic_key": "synthetic.beta.durability",
+        "stance": "NEGATIVE",
+        "candidate_type": "CONTRADICTION",
+        "priority": "P0",
+        "authority_score": 0.6,
+        "prompt_injection_detected": true,
+        "current_knowledge_comparison": {
+          "novelty_status": "POSSIBLE_UPDATE",
+          "existing_knowledge_matches": [
+            "VEDA-RCORE-000002"
+          ],
+          "topic_matches": [
+            "VEDA-RCORE-000002"
+          ]
+        },
+        "conflict_analysis": "Candidate stance NEGATIVE conflicts with approved core stance POSITIVE."
+      }
+    },
+    "reason": "Conflicts with approved core and lacks override evidence.",
+    "metadata": {
+      "approval_id": "VEDA-RAPR-000002"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000075",
+    "timestamp": "2026-08-10T00:02:44Z",
+    "event_type": "MORE_RESEARCH_REQUESTED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000002",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "ADMIN",
+    "actor_id": "admin@example.com",
+    "action": "REQUEST_MORE_RESEARCH",
+    "before_state": {
+      "contract_version": "2026-08-10",
+      "candidate_id": "VEDA-RCND-000004",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "mission_id": "VEDA-RM-000001",
+      "run_id": "VEDA-RUN-000002",
+      "title": "Synthetic delta remains uncertain",
+      "candidate_type": "KNOWLEDGE_GAP",
+      "claim": "Synthetic delta remains uncertain and needs more evidence.",
+      "normalized_claim": "synthetic delta remains uncertain and needs more evidence",
+      "topic_key": "synthetic.delta.uncertainty",
+      "stance": "UNCERTAIN",
+      "evidence_ids": [
+        "VEDA-EVD-000005"
+      ],
+      "source_ids": [
+        "VEDA-OBS-000006"
+      ],
+      "existing_knowledge_matches": [],
+      "novelty_status": "NEW",
+      "contradiction_status": "NONE",
+      "validation_status": "PASS_WITH_CONDITIONS",
+      "confidence": {
+        "contract_version": "2026-08-10",
+        "source_confidence": 0.5,
+        "authority_confidence": 0.45,
+        "cross_source_confidence": 0.5,
+        "provenance_confidence": 1.0,
+        "novelty_confidence": 0.9,
+        "contradiction_confidence": 1.0,
+        "domain_confidence": 0.725
+      },
+      "priority": "P1",
+      "safety_class": "HIGH",
+      "approval_status": "PENDING",
+      "knowledge_zone": "RESEARCH_CANDIDATE",
+      "promotion_state": "NONE",
+      "created_at": "2026-08-10T00:02:11Z",
+      "updated_at": "2026-08-10T00:02:33Z",
+      "merged_into_candidate_id": null,
+      "support_count": 1,
+      "metadata": {
+        "title": "Synthetic delta remains uncertain",
+        "topic_key": "synthetic.delta.uncertainty",
+        "stance": "UNCERTAIN",
+        "candidate_type": "KNOWLEDGE_GAP",
+        "priority": "P1",
+        "safety_class": "HIGH",
+        "follow_up_batch_sequence": [
+          "follow_up"
+        ],
+        "follow_up_depth": 0,
+        "authority_score": 0.45,
+        "prompt_injection_detected": false,
+        "current_knowledge_comparison": {
+          "novelty_status": "NEW",
+          "existing_knowledge_matches": [],
+          "topic_matches": []
+        },
+        "conflict_analysis": "No domain conflict detected."
+      }
+    },
+    "after_state": {
+      "contract_version": "2026-08-10",
+      "candidate_id": "VEDA-RCND-000004",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "mission_id": "VEDA-RM-000001",
+      "run_id": "VEDA-RUN-000002",
+      "title": "Synthetic delta remains uncertain",
+      "candidate_type": "KNOWLEDGE_GAP",
+      "claim": "Synthetic delta remains uncertain and needs more evidence.",
+      "normalized_claim": "synthetic delta remains uncertain and needs more evidence",
+      "topic_key": "synthetic.delta.uncertainty",
+      "stance": "UNCERTAIN",
+      "evidence_ids": [
+        "VEDA-EVD-000005"
+      ],
+      "source_ids": [
+        "VEDA-OBS-000006"
+      ],
+      "existing_knowledge_matches": [],
+      "novelty_status": "NEW",
+      "contradiction_status": "NONE",
+      "validation_status": "PASS_WITH_CONDITIONS",
+      "confidence": {
+        "contract_version": "2026-08-10",
+        "source_confidence": 0.5,
+        "authority_confidence": 0.45,
+        "cross_source_confidence": 0.5,
+        "provenance_confidence": 1.0,
+        "novelty_confidence": 0.9,
+        "contradiction_confidence": 1.0,
+        "domain_confidence": 0.725
+      },
+      "priority": "P1",
+      "safety_class": "HIGH",
+      "approval_status": "NEEDS_MORE_RESEARCH",
+      "knowledge_zone": "RESEARCH_CANDIDATE",
+      "promotion_state": "NONE",
+      "created_at": "2026-08-10T00:02:11Z",
+      "updated_at": "2026-08-10T00:02:42Z",
+      "merged_into_candidate_id": null,
+      "support_count": 1,
+      "metadata": {
+        "title": "Synthetic delta remains uncertain",
+        "topic_key": "synthetic.delta.uncertainty",
+        "stance": "UNCERTAIN",
+        "candidate_type": "KNOWLEDGE_GAP",
+        "priority": "P1",
+        "safety_class": "HIGH",
+        "follow_up_batch_sequence": [
+          "follow_up"
+        ],
+        "follow_up_depth": 0,
+        "authority_score": 0.45,
+        "prompt_injection_detected": false,
+        "current_knowledge_comparison": {
+          "novelty_status": "NEW",
+          "existing_knowledge_matches": [],
+          "topic_matches": []
+        },
+        "conflict_analysis": "No domain conflict detected."
+      }
+    },
+    "reason": "Needs more evidence before approval.",
+    "metadata": {
+      "approval_id": "VEDA-RAPR-000003"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000076",
+    "timestamp": "2026-08-10T00:02:46Z",
+    "event_type": "MISSION_CREATED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": null,
+    "candidate_id": null,
+    "actor_type": "ADMIN",
+    "actor_id": "system",
+    "action": "create_mission",
+    "before_state": null,
+    "after_state": {
+      "contract_version": "2026-08-10",
+      "mission_id": "VEDA-RM-000002",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "title": "Follow-up: Synthetic delta remains uncertain",
+      "objective": "Gather additional evidence for Synthetic delta remains uncertain and needs more evidence.",
+      "research_type": "CLAIM_VALIDATION",
+      "priority": "P1",
+      "status": "QUEUED",
+      "created_by": "system",
+      "created_at": "2026-08-10T00:02:45Z",
+      "updated_at": "2026-08-10T00:02:45Z",
+      "schedule_id": null,
+      "query_strategy": {
+        "provider_id": "synthetic-fixture",
+        "batch_sequence": [
+          "follow_up"
+        ],
+        "parent_candidate_id": "VEDA-RCND-000004"
+      },
+      "required_source_classes": [
+        "WEB_REFERENCE"
+      ],
+      "minimum_independent_sources": 1,
+      "known_claim_ids": [
+        "VEDA-RCND-000004"
+      ],
+      "known_conflict_ids": [],
+      "known_gap_ids": [],
+      "safety_class": "HIGH",
+      "completion_policy": {
+        "auto_complete": false
+      },
+      "research_budget": {
+        "contract_version": "2026-08-10",
+        "max_queries": 1,
+        "max_sources": 4,
+        "max_provider_calls": 1,
+        "max_runtime_seconds": 60,
+        "max_model_calls": 0,
+        "max_cost": 0.0,
+        "max_follow_up_depth": 2,
+        "max_retries": 1,
+        "cooldown_seconds": 0
+      },
+      "notes": "Needs more evidence before approval.",
+      "follow_up_depth": 1,
+      "parent_candidate_id": "VEDA-RCND-000004",
+      "parent_mission_id": "VEDA-RM-000001",
+      "last_run_at": null
+    },
+    "reason": "Gather additional evidence for Synthetic delta remains uncertain and needs more evidence.",
+    "metadata": {}
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000077",
+    "timestamp": "2026-08-10T00:02:47Z",
+    "event_type": "FOLLOW_UP_CREATED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": null,
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "SYSTEM",
+    "actor_id": "admin@example.com",
+    "action": "create_follow_up_mission",
+    "before_state": null,
+    "after_state": null,
+    "reason": "Needs more evidence before approval.",
+    "metadata": {}
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000078",
+    "timestamp": "2026-08-10T00:02:49Z",
+    "event_type": "RUN_STARTED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": null,
+    "actor_type": "ADMIN",
+    "actor_id": "admin@example.com",
+    "action": "start_run",
+    "before_state": null,
+    "after_state": {
+      "contract_version": "2026-08-10",
+      "run_id": "VEDA-RUN-000003",
+      "mission_id": "VEDA-RM-000002",
+      "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+      "trigger_type": "MANUAL",
+      "started_at": "2026-08-10T00:02:48Z",
+      "completed_at": null,
+      "status": "RUNNING",
+      "provider_calls": 0,
+      "queries_executed": 0,
+      "sources_discovered": 0,
+      "sources_accepted": 0,
+      "sources_rejected": 0,
+      "evidence_created": 0,
+      "candidates_created": 0,
+      "duplicates_detected": 0,
+      "conflicts_created": 0,
+      "errors": [],
+      "cost_metrics": {},
+      "model_metadata": {},
+      "continuation_required": false,
+      "continuation_hint": null
+    },
+    "reason": null,
+    "metadata": {}
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000079",
+    "timestamp": "2026-08-10T00:02:50Z",
+    "event_type": "QUERY_EXECUTED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "provider_search",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "continuation_hint": null
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000080",
+    "timestamp": "2026-08-10T00:02:52Z",
+    "event_type": "SOURCE_DISCOVERED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "accept_source",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "observation_id": "VEDA-OBS-000007",
+      "source_uri": "fixture://synthetic/delta-follow-up"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000081",
+    "timestamp": "2026-08-10T00:02:54Z",
+    "event_type": "EVIDENCE_CREATED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": null,
+    "actor_type": "PROVIDER",
+    "actor_id": "synthetic-fixture",
+    "action": "extract_evidence",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "evidence_id": "VEDA-EVD-000006",
+      "observation_id": "VEDA-OBS-000007"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000082",
+    "timestamp": "2026-08-10T00:02:57Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V1_SOURCE_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000051",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000083",
+    "timestamp": "2026-08-10T00:02:59Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V2_AUTHORITY_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000052",
+      "status": "PASS_WITH_CONDITIONS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000084",
+    "timestamp": "2026-08-10T00:03:01Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V3_PROVENANCE_VALIDATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000053",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000085",
+    "timestamp": "2026-08-10T00:03:03Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000054",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000086",
+    "timestamp": "2026-08-10T00:03:05Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V5_CONTRADICTION_CHECK",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000055",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000087",
+    "timestamp": "2026-08-10T00:03:07Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V6_CROSS_SOURCE_SUPPORT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000056",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000088",
+    "timestamp": "2026-08-10T00:03:09Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V7_ONTOLOGY_COMPATIBILITY",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000057",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000089",
+    "timestamp": "2026-08-10T00:03:11Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V8_RULE_IMPACT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000058",
+      "status": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000090",
+    "timestamp": "2026-08-10T00:03:13Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V9_SAFETY_CLASSIFICATION",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000059",
+      "status": "PASS_WITH_CONDITIONS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000091",
+    "timestamp": "2026-08-10T00:03:15Z",
+    "event_type": "VALIDATION_COMPLETED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "VALIDATOR",
+    "actor_id": "V10_NOVELTY_ASSESSMENT",
+    "action": "validation_completed",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "validation_id": "VEDA-RVAL-000060",
+      "status": "PASS"
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "event_id": "VEDA-LED-000092",
+    "timestamp": "2026-08-10T00:03:17Z",
+    "event_type": "CANDIDATE_MERGED",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000003",
+    "candidate_id": "VEDA-RCND-000004",
+    "actor_type": "SYSTEM",
+    "actor_id": "dedupe",
+    "action": "merge_candidate",
+    "before_state": null,
+    "after_state": null,
+    "reason": null,
+    "metadata": {
+      "evidence_id": "VEDA-EVD-000006"
+    }
+  }
+]

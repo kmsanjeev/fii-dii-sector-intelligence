@@ -1,0 +1,96 @@
+{
+  "$defs": {
+    "AdminAction": {
+      "enum": [
+        "APPROVE",
+        "APPROVE_WITH_CONDITIONS",
+        "REJECT",
+        "REQUEST_MORE_RESEARCH",
+        "MERGE",
+        "SUPERSEDE",
+        "ARCHIVE"
+      ],
+      "title": "AdminAction",
+      "type": "string"
+    },
+    "ApprovalStatus": {
+      "enum": [
+        "PENDING",
+        "UNDER_REVIEW",
+        "APPROVED",
+        "APPROVED_WITH_CONDITIONS",
+        "REJECTED",
+        "NEEDS_MORE_RESEARCH",
+        "MERGE_REQUIRED",
+        "SUPERSEDE_APPROVED",
+        "ARCHIVED"
+      ],
+      "title": "ApprovalStatus",
+      "type": "string"
+    },
+    "PromotionState": {
+      "enum": [
+        "NONE",
+        "PROMOTION_READY"
+      ],
+      "title": "PromotionState",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "approval_id": {
+      "title": "Approval Id",
+      "type": "string"
+    },
+    "candidate_id": {
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "action": {
+      "$ref": "#/$defs/AdminAction"
+    },
+    "status": {
+      "$ref": "#/$defs/ApprovalStatus"
+    },
+    "decided_by": {
+      "title": "Decided By",
+      "type": "string"
+    },
+    "decided_at": {
+      "title": "Decided At",
+      "type": "string"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "conditions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Conditions",
+      "type": "array"
+    },
+    "promotion_state": {
+      "$ref": "#/$defs/PromotionState",
+      "default": "NONE"
+    }
+  },
+  "required": [
+    "approval_id",
+    "candidate_id",
+    "action",
+    "status",
+    "decided_by",
+    "decided_at",
+    "reason"
+  ],
+  "title": "ResearchApprovalRecord",
+  "type": "object"
+}

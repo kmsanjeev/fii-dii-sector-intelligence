@@ -10,12 +10,15 @@ PUT    /api/research/notes/{symbol}       upsert note
 DELETE /api/research/notes/{symbol}       delete note
 """
 
-from typing import Optional
-from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel
+from typing import Any, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
 
 from engines.research.screener_engine import screen, compare, universe_stats
 from engines.research import notes_engine
+from engines.ai.research.platform.contracts import AdminAction
+from engines.ai.research.platform.service import get_research_platform_service
+from backend.auth.middleware import require_admin
 
 router = APIRouter(prefix="/api/research", tags=["research"])
 
@@ -50,6 +53,57 @@ class NoteRequest(BaseModel):
     content: str
     tags:    list[str] = []
     rating:  int = 0
+
+
+class MissionCreateRequest(BaseModel):
+    domain_id: str
+    title: str
+    objective: str
+    research_type: str
+    priority: str = "P2"
+    status: str = "QUEUED"
+    created_by: str = "admin"
+    query_strategy: dict[str, Any] = Field(default_factory=dict)
+    required_source_classes: list[str] = Field(default_factory=list)
+    minimum_independent_sources: int = 1
+    known_claim_ids: list[str] = Field(default_factory=list)
+    known_conflict_ids: list[str] = Field(default_factory=list)
+    known_gap_ids: list[str] = Field(default_factory=list)
+    safety_class: str = "LOW"
+    completion_policy: dict[str, Any] = Field(default_factory=dict)
+    research_budget: dict[str, Any] = Field(default_factory=dict)
+    notes: str | None = None
+    follow_up_depth: int = 0
+    parent_candidate_id: str | None = None
+    parent_mission_id: str | None = None
+
+
+class ScheduleCreateRequest(BaseModel):
+    domain_id: str
+    mission_id: str
+    cadence_type: str = "MANUAL_ONLY"
+    timezone: str = "Asia/Calcutta"
+    enabled: bool = True
+    next_run_at: str | None = None
+    last_run_at: str | None = None
+    misfire_policy: str = "RUN_ONCE"
+    overlap_policy: str = "SKIP"
+    priority: str = "P2"
+
+
+class ScheduleUpdateRequest(BaseModel):
+    enabled: bool | None = None
+    next_run_at: str | None = None
+    last_run_at: str | None = None
+    misfire_policy: str | None = None
+    overlap_policy: str | None = None
+    priority: str | None = None
+
+
+class CandidateDecisionRequest(BaseModel):
+    action: str
+    reason: str
+    conditions: list[str] = Field(default_factory=list)
 
 
 # ── Screener ───────────────────────────────────────────────────────────────────
@@ -169,3 +223,156 @@ def delete_note(symbol: str):
     if not deleted:
         raise HTTPException(status_code=404, detail=f"No note for {symbol.upper()}")
     return {"status": "deleted", "symbol": symbol.upper()}
+
+
+# ── P006 Research Platform Admin Surface ───────────────────────────────────────
+
+@router.get("/dashboard", tags=["research-admin"])
+def get_research_dashboard(current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    return service.dashboard().model_dump(mode="json")
+
+
+@router.get("/platform/health", tags=["research-admin"])
+def get_research_platform_health(current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    return service.health()
+
+
+@router.get("/domains", tags=["research-admin"])
+def list_research_domains(current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    return {"domains": [item.model_dump(mode="json") for item in service.list_domains()]}
+
+
+@router.get("/missions", tags=["research-admin"])
+def list_research_missions(current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    return {"missions": [item.model_dump(mode="json") for item in service.list_missions()]}
+
+
+@router.post("/missions", tags=["research-admin"])
+def create_research_mission(req: MissionCreateRequest, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    mission = service.create_mission(req.model_dump())
+    return mission.model_dump(mode="json")
+
+
+@router.get("/missions/{mission_id}", tags=["research-admin"])
+def get_research_mission(mission_id: str, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    mission = service.get_mission(mission_id)
+    if mission is None:
+        raise HTTPException(status_code=404, detail=f"Unknown mission: {mission_id}")
+    return mission.model_dump(mode="json")
+
+
+@router.post("/missions/{mission_id}/pause", tags=["research-admin"])
+def pause_research_mission(mission_id: str, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    try:
+        mission = service.pause_mission(mission_id, actor_id=current_user.email)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    return mission.model_dump(mode="json")
+
+
+@router.post("/missions/{mission_id}/resume", tags=["research-admin"])
+def resume_research_mission(mission_id: str, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    try:
+        mission = service.resume_mission(mission_id, actor_id=current_user.email)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    return mission.model_dump(mode="json")
+
+
+@router.post("/missions/{mission_id}/trigger", tags=["research-admin"])
+def trigger_research_mission(mission_id: str, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    try:
+        run = service.trigger_manual_run(mission_id, actor_id=current_user.email)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    return run.model_dump(mode="json")
+
+
+@router.get("/runs", tags=["research-admin"])
+def list_research_runs(current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    return {"runs": [item.model_dump(mode="json") for item in service.list_runs()]}
+
+
+@router.get("/runs/{run_id}", tags=["research-admin"])
+def get_research_run(run_id: str, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    run = service.get_run(run_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail=f"Unknown run: {run_id}")
+    return run.model_dump(mode="json")
+
+
+@router.get("/candidates", tags=["research-admin"])
+def list_research_candidates(current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    return {"candidates": [item.model_dump(mode="json") for item in service.list_candidates()]}
+
+
+@router.get("/candidates/{candidate_id}", tags=["research-admin"])
+def get_research_candidate(candidate_id: str, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    try:
+        review = service.get_candidate_review(candidate_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    return review.model_dump(mode="json")
+
+
+@router.post("/candidates/{candidate_id}/decision", tags=["research-admin"])
+def decide_research_candidate(candidate_id: str, req: CandidateDecisionRequest, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    try:
+        approval = service.decide_candidate(
+            candidate_id,
+            action=AdminAction(req.action),
+            actor_id=current_user.email,
+            reason=req.reason,
+            conditions=req.conditions,
+        )
+    except ValueError:
+        raise HTTPException(status_code=400, detail=f"Unsupported action: {req.action}")
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    return approval.model_dump(mode="json")
+
+
+@router.get("/ledger", tags=["research-admin"])
+def list_research_ledger(limit: int = Query(200, ge=1, le=1000), current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    rows = service.list_ledger_events()[-limit:]
+    return {"events": [item.model_dump(mode="json") for item in rows], "returned": len(rows)}
+
+
+@router.get("/schedules", tags=["research-admin"])
+def list_research_schedules(current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    return {"schedules": [item.model_dump(mode="json") for item in service.list_schedules()]}
+
+
+@router.post("/schedules", tags=["research-admin"])
+def create_research_schedule(req: ScheduleCreateRequest, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    schedule = service.create_schedule(req.model_dump())
+    return schedule.model_dump(mode="json")
+
+
+@router.put("/schedules/{schedule_id}", tags=["research-admin"])
+def update_research_schedule(schedule_id: str, req: ScheduleUpdateRequest, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    try:
+        schedule = service.update_schedule(schedule_id, req.model_dump(exclude_none=True))
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    return schedule.model_dump(mode="json")

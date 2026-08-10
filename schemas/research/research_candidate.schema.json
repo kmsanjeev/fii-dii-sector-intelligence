@@ -1,0 +1,325 @@
+{
+  "$defs": {
+    "ApprovalStatus": {
+      "enum": [
+        "PENDING",
+        "UNDER_REVIEW",
+        "APPROVED",
+        "APPROVED_WITH_CONDITIONS",
+        "REJECTED",
+        "NEEDS_MORE_RESEARCH",
+        "MERGE_REQUIRED",
+        "SUPERSEDE_APPROVED",
+        "ARCHIVED"
+      ],
+      "title": "ApprovalStatus",
+      "type": "string"
+    },
+    "CandidateType": {
+      "enum": [
+        "NEW_CLAIM",
+        "CLAIM_UPDATE",
+        "SOURCE_ADDITION",
+        "SOURCE_CORRECTION",
+        "CONTRADICTION",
+        "RULE_CANDIDATE",
+        "PROVENANCE_CANDIDATE",
+        "KNOWLEDGE_GAP",
+        "DEPRECATION_CANDIDATE",
+        "EMPIRICAL_FINDING"
+      ],
+      "title": "CandidateType",
+      "type": "string"
+    },
+    "ConfidenceDimensions": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "default": "2026-08-10",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "source_confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Source Confidence",
+          "type": "number"
+        },
+        "authority_confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Authority Confidence",
+          "type": "number"
+        },
+        "cross_source_confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Cross Source Confidence",
+          "type": "number"
+        },
+        "provenance_confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Provenance Confidence",
+          "type": "number"
+        },
+        "novelty_confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Novelty Confidence",
+          "type": "number"
+        },
+        "contradiction_confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Contradiction Confidence",
+          "type": "number"
+        },
+        "domain_confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Domain Confidence",
+          "type": "number"
+        }
+      },
+      "required": [
+        "source_confidence",
+        "authority_confidence",
+        "cross_source_confidence",
+        "provenance_confidence",
+        "novelty_confidence",
+        "contradiction_confidence",
+        "domain_confidence"
+      ],
+      "title": "ConfidenceDimensions",
+      "type": "object"
+    },
+    "ContradictionStatus": {
+      "enum": [
+        "NONE",
+        "POSSIBLE",
+        "DIRECT",
+        "PARTIAL",
+        "CONTEXTUAL",
+        "SOURCE_VARIANCE",
+        "UNRESOLVED"
+      ],
+      "title": "ContradictionStatus",
+      "type": "string"
+    },
+    "KnowledgeZone": {
+      "enum": [
+        "APPROVED_CORE",
+        "RESEARCH_CANDIDATE",
+        "RESEARCH_ARCHIVE"
+      ],
+      "title": "KnowledgeZone",
+      "type": "string"
+    },
+    "MissionPriority": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "title": "MissionPriority",
+      "type": "string"
+    },
+    "NoveltyStatus": {
+      "enum": [
+        "NEW",
+        "KNOWN",
+        "DUPLICATE",
+        "PARTIAL_EXTENSION",
+        "REFINEMENT",
+        "POSSIBLE_UPDATE",
+        "UNKNOWN"
+      ],
+      "title": "NoveltyStatus",
+      "type": "string"
+    },
+    "PromotionState": {
+      "enum": [
+        "NONE",
+        "PROMOTION_READY"
+      ],
+      "title": "PromotionState",
+      "type": "string"
+    },
+    "SafetyClass": {
+      "enum": [
+        "LOW",
+        "MODERATE",
+        "HIGH",
+        "CRITICAL",
+        "HIGH_STAKES"
+      ],
+      "title": "SafetyClass",
+      "type": "string"
+    },
+    "ValidationStatus": {
+      "enum": [
+        "PASS",
+        "PASS_WITH_CONDITIONS",
+        "FAIL",
+        "UNKNOWN",
+        "NOT_APPLICABLE"
+      ],
+      "title": "ValidationStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "candidate_id": {
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "domain_id": {
+      "title": "Domain Id",
+      "type": "string"
+    },
+    "mission_id": {
+      "title": "Mission Id",
+      "type": "string"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "candidate_type": {
+      "$ref": "#/$defs/CandidateType"
+    },
+    "claim": {
+      "title": "Claim",
+      "type": "string"
+    },
+    "normalized_claim": {
+      "title": "Normalized Claim",
+      "type": "string"
+    },
+    "topic_key": {
+      "title": "Topic Key",
+      "type": "string"
+    },
+    "stance": {
+      "title": "Stance",
+      "type": "string"
+    },
+    "evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "source_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Ids",
+      "type": "array"
+    },
+    "existing_knowledge_matches": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Existing Knowledge Matches",
+      "type": "array"
+    },
+    "novelty_status": {
+      "$ref": "#/$defs/NoveltyStatus",
+      "default": "UNKNOWN"
+    },
+    "contradiction_status": {
+      "$ref": "#/$defs/ContradictionStatus",
+      "default": "NONE"
+    },
+    "validation_status": {
+      "$ref": "#/$defs/ValidationStatus",
+      "default": "UNKNOWN"
+    },
+    "confidence": {
+      "$ref": "#/$defs/ConfidenceDimensions"
+    },
+    "priority": {
+      "$ref": "#/$defs/MissionPriority",
+      "default": "P2"
+    },
+    "safety_class": {
+      "$ref": "#/$defs/SafetyClass",
+      "default": "LOW"
+    },
+    "approval_status": {
+      "$ref": "#/$defs/ApprovalStatus",
+      "default": "PENDING"
+    },
+    "knowledge_zone": {
+      "$ref": "#/$defs/KnowledgeZone",
+      "default": "RESEARCH_CANDIDATE"
+    },
+    "promotion_state": {
+      "$ref": "#/$defs/PromotionState",
+      "default": "NONE"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "updated_at": {
+      "title": "Updated At",
+      "type": "string"
+    },
+    "merged_into_candidate_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Merged Into Candidate Id"
+    },
+    "support_count": {
+      "default": 1,
+      "minimum": 0,
+      "title": "Support Count",
+      "type": "integer"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "candidate_id",
+    "domain_id",
+    "mission_id",
+    "run_id",
+    "title",
+    "candidate_type",
+    "claim",
+    "normalized_claim",
+    "topic_key",
+    "stance",
+    "confidence",
+    "created_at",
+    "updated_at"
+  ],
+  "title": "ResearchCandidateRecord",
+  "type": "object"
+}
