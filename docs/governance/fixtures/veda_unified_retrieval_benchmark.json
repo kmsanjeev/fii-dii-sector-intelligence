@@ -1,0 +1,65 @@
+[
+  {
+    "case_id": "market-flows-01",
+    "category": "market",
+    "query": "What is the current market regime and are FII or DII flows supporting it?",
+    "expected_domains": ["MARKET"],
+    "expected_source_types": ["platform_intelligence"],
+    "expected_terms": ["market", "regime", "fii", "dii"],
+    "requires_freshness": true
+  },
+  {
+    "case_id": "sector-rotation-01",
+    "category": "sector",
+    "query": "Which sectors are leading or lagging in the current rotation?",
+    "expected_domains": ["SECTOR"],
+    "expected_source_types": ["platform_intelligence"],
+    "expected_terms": ["sector", "rotation", "leading", "lagging"],
+    "requires_freshness": true
+  },
+  {
+    "case_id": "stock-setup-01",
+    "category": "stock",
+    "query": "What is the latest local view on ETHOSLTD and does it still look strong?",
+    "expected_domains": ["STOCK"],
+    "expected_source_types": ["platform_intelligence", "user_reviewed"],
+    "expected_terms": ["ethosltd", "stock", "strong", "latest"],
+    "requires_freshness": true
+  },
+  {
+    "case_id": "astro-memory-01",
+    "category": "astrology",
+    "query": "From the saved astrology notes, what does Jupiter usually mean for expansion timing?",
+    "expected_domains": ["RESEARCH"],
+    "expected_source_types": ["user_reviewed", "attachment_chunk"],
+    "expected_terms": ["jupiter", "astrology", "timing", "expansion"],
+    "requires_freshness": false
+  },
+  {
+    "case_id": "book-recall-01",
+    "category": "uploaded_book_recall",
+    "query": "Study the uploaded book memory and recall the rule about Saturn and patience.",
+    "expected_domains": ["RESEARCH"],
+    "expected_source_types": ["attachment_chunk", "user_reviewed"],
+    "expected_terms": ["book", "uploaded", "saturn", "patience"],
+    "requires_freshness": false
+  },
+  {
+    "case_id": "mit-capability-01",
+    "category": "mit_capability_reuse",
+    "query": "Which MIT repo workflow or prompt should Veda reuse to improve memory or research capability?",
+    "expected_domains": ["MIT_REPO_CAPABILITY"],
+    "expected_source_types": ["mit_repo_capability"],
+    "expected_terms": ["mit", "repo", "workflow", "prompt", "capability"],
+    "requires_freshness": false
+  },
+  {
+    "case_id": "freshness-check-01",
+    "category": "research_freshness",
+    "query": "What is the latest local signal on banking right now, and is the evidence fresh?",
+    "expected_domains": ["MARKET", "SECTOR", "STOCK"],
+    "expected_source_types": ["platform_intelligence"],
+    "expected_terms": ["latest", "right now", "fresh", "banking"],
+    "requires_freshness": true
+  }
+]

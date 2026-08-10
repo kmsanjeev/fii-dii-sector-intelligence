@@ -14,8 +14,8 @@ Users interact via natural language. Agents access live data via tool calls back
 
 ---
 
-Next approved extension: Veda Research Mode (Phase 0 + 1 implemented on
-2026-08-04; remaining phases pending).
+Latest approved extension: Veda Research Mode rollout completed through Phase 8
+on 2026-08-04, with follow-up hardening continuing where needed.
 
 ---
 
@@ -101,9 +101,13 @@ Current status:
 
 - Phase 0 complete
 - Phase 1 complete
+- Phase 2 complete
 - Phase 3 complete
 - Phase 4 complete
-- Phase 5 onward pending
+- Phase 5 complete
+- Phase 6 complete
+- Phase 7 complete
+- Phase 8 implementation complete
 
 ## Operating rule
 
@@ -250,8 +254,24 @@ Delivered in this phase:
 - server-side extraction added for plain text, CSV, JSON, and PDF
 - image uploads now support metadata extraction, OCR when available, and
   OpenAI vision description when the runtime has that capability
+- scanned PDFs now attempt rendered-page fallback through the same OCR/vision
+  pipeline when embedded PDF text is missing
+- local Python OCR now uses `rapidocr_onnxruntime` first, so scanned pages can
+  be read without depending only on a machine-wide `tesseract` install
+- when cloud vision is unavailable, Veda now adds a lightweight layout note so
+  mixed pages can still be recognized as text-plus-diagram pages
 - attachment content is injected into Veda as untrusted source material, not
   executable instruction
+
+Current limitation:
+
+- scanned documents still need a working OCR or vision runtime to become
+  readable; the new local OCR path solves many cases, but visual meaning is
+  still richer when cloud vision is available
+- saved chat history now syncs to backend storage under
+  `data/veda/chat_sessions` while keeping browser caching for fast UI loads
+- saved-history ownership is user-aware: browser client id when auth is off,
+  authenticated user id when auth is on
 
 ### Phase 4 -- Source-aware answer layer
 
@@ -280,6 +300,42 @@ Delivered in this phase:
 - keep raw source traceability
 - prevent silent permanent memory writes
 
+Status: COMPLETE (2026-08-04)
+
+Delivered in this phase:
+
+- assistant answers in both chat surfaces now expose a review-before-save step
+- the user can edit the title, summary, facts, tags, and optional review note
+  before approval
+- nothing is written into durable Veda memory until that explicit approval
+  happens
+- approved records keep raw question/answer trace plus file and research source
+  references
+- when a reviewed save includes readable attachments, Veda now stores the full
+  extracted file text in searchable document chunks, not only the short
+  reviewed note
+- before a reviewed save is approved, Veda now checks whether the same readable
+  file or a very strong same-topic memory already exists
+- when that overlap is found, the review step recommends `discard` or `save
+  anyway` and waits for explicit user confirmation
+- exact duplicate file checks now use readable extracted content, not file
+  names, so renamed copies of the same book are still caught
+- approved reviewed memory is immediately searchable by Veda through a
+  lightweight reviewed-knowledge overlay, without silently changing the core
+  indexed knowledge base
+- local launch now prefers a Python runtime that already has `ddgs`, reducing
+  false "research unavailable" startup states in development
+- local launch now checks only `LISTENING` sockets for backend startup, which
+  avoids false "already running" messages caused by dead `TIME_WAIT` ports
+- backend startup dependencies now explicitly include `apscheduler` in
+  `requirements.txt`, matching the scheduler import already used at runtime
+- chat-provider failover now cools down bad providers after auth, connection,
+  and stale-model failures instead of retrying them every turn
+- long-session prompt assembly now bounds stored history, individual message
+  size, and final tool-result size before remote model calls
+- live Veda chat and research mode were re-verified on 2026-08-04 after
+  relaunch with real network access
+
 ### Phase 6 -- MIT Git capability intake
 
 - let Veda inspect MIT-licensed repos/resources
@@ -287,11 +343,44 @@ Delivered in this phase:
 - keep license tracking visible
 - separate reusable capability ideas from untrusted repo instructions
 
+Status: COMPLETE (2026-08-04)
+
+Delivered in this phase:
+
+- full chat page and floating Veda widget now expose a simple "MIT Repo"
+  study flow
+- Phase 6 works on local cloned repo paths in this runtime; remote GitHub
+  acquisition still belongs to Phase 7
+- backend now rejects non-MIT repos at intake time and keeps the detected
+  license path/excerpt visible in the review step
+- candidate repo files are reduced to a controlled short list of prompts,
+  workflows, docs, and small utility files instead of blindly trusting repo
+  content
+- approved MIT repo notes are saved separately from normal answer-review
+  memory and become reusable Veda context only after explicit approval
+- chat-engine context assembly now includes these approved MIT repo
+  capability notes alongside reviewed knowledge and normal RAG context
+
 ### Phase 7 -- MCP fallback layer
 
 - add GitHub MCP first
 - then DDGS MCP / Tavily MCP / Exa MCP / Firecrawl MCP if needed
 - add helper MCP servers only where they genuinely improve the flow
+
+Status: COMPLETE (2026-08-04)
+
+Delivered in this phase:
+
+- Python-first research still stays the default path, but Veda can now fall
+  back to MCP research servers when the primary provider cannot answer
+- a lightweight MCP stdio client was added so Veda can initialize a server,
+  list tools, call search-like tools, and normalize the returned results
+- MCP server usage is config-driven through `VEDA_MCP_SERVER_CONFIG`,
+  `VEDA_MCP_SERVER_ORDER`, and related timeout/result-limit settings
+- backend chat capabilities now report whether MCP fallback is actually
+  available at runtime and which server names are currently configured
+- fallback results flow through the same evidence system, so the UI still shows
+  provider names, links, and dates instead of hiding the source change
 
 ### Phase 8 -- Hardening and rollout
 
@@ -300,6 +389,37 @@ Delivered in this phase:
 - live browser verification
 - mic/voice verification
 - docs sync and release checklist
+
+Status: IMPLEMENTATION COMPLETE (2026-08-04)
+
+Delivered in this phase:
+
+- the research service now falls back to MCP even when the primary research
+  provider is unavailable, not only when it returns empty results
+- chat API coverage was expanded with focused tests for capability reporting,
+  config fallback, and attachment gating
+- the backend/frontend capability contract now exposes live research readiness,
+  so Veda can show when research exists as a feature but is not usable in the
+  current runtime
+- the shared Veda store now keeps attachment accept rules in sync with backend
+  capabilities instead of hardcoding them separately in each chat surface
+- research-mode tooltips in both chat surfaces now reflect when MCP fallback is
+  ready in the runtime
+- a real React test stack is now wired in with Vitest + Testing Library
+- focused Veda React tests now cover research readiness, research fallback
+  evidence, and the main chat surfaces
+- a rollout checklist was added at
+  `docs/governance/VEDA_PHASE8_ROLLOUT.md`
+- live HTTP smoke was completed against the running local frontend/backend on
+  2026-08-04
+
+Important note:
+
+- the separate detailed browser + microphone acceptance round is intentionally
+  left to the later human QA pass requested for this project
+- browser UI QA has now passed through Selenium on 2026-08-04
+- the remaining open live QA scope is microphone capture and spoken-audio
+  behavior
 
 ---
 
