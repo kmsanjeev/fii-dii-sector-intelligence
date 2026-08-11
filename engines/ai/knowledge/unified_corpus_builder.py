@@ -3,7 +3,6 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -13,9 +12,7 @@ from engines.common.logger import get_logger
 
 logger = get_logger(__name__)
 
-
-def _utc_now() -> str:
-    return datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+BUILDER_VERSION = "VEDA-RAG-GEN-001-R"
 
 
 class UnifiedCorpusBuilder:
@@ -62,6 +59,8 @@ class UnifiedCorpusBuilder:
             for doc in raw_docs:
                 records.append(normalize_knowledge_record(doc))
 
+        records.sort(key=lambda record: (record.doc_id, record.source_type))
+
         source_counts = self._count_by(records, "source_type")
         domain_counts = self._count_by(records, "domain")
         duplicates = self._find_duplicates(records)
@@ -71,13 +70,23 @@ class UnifiedCorpusBuilder:
         self._manifest_path.parent.mkdir(parents=True, exist_ok=True)
         self._metadata_path.parent.mkdir(parents=True, exist_ok=True)
 
-        self._write_docs(records)
-        self._write_metadata(records)
-
+        docs_content = self._render_docs(records)
+        metadata_content = self._render_metadata(records)
+        authoritative_input_hash = _sha256(
+            "".join(
+                json.dumps(record.to_dict(), ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
+                for record in records
+            ).encode("utf-8")
+        )
+        corpus_content_hash = _sha256((docs_content + metadata_content).encode("utf-8"))
         summary = {
+            "artifact_version": BUILDER_VERSION,
             "contract_version": CONTRACT_VERSION,
-            "built_at": _utc_now(),
             "total_records": len(records),
+            "document_count": len(records),
+            "approved_core_count": sum(record.source_type == "approved_core" for record in records),
+            "authoritative_input_hash": authoritative_input_hash,
+            "corpus_content_hash": corpus_content_hash,
             "input_counts": input_counts,
             "source_counts": source_counts,
             "domain_counts": domain_counts,
@@ -86,13 +95,16 @@ class UnifiedCorpusBuilder:
             "missing_critical_field_count": len(missing),
             "duplicates": duplicates,
             "missing_critical_fields": missing,
-            "output_paths": {
-                "documents": str(self._unified_docs_path),
-                "manifest": str(self._manifest_path),
-                "metadata": str(self._metadata_path),
-            },
         }
-        self._write_manifest(summary)
+        manifest_content = json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+        documents_written = self._write_if_changed(self._unified_docs_path, docs_content)
+        metadata_written = self._write_if_changed(self._metadata_path, metadata_content)
+        manifest_written = self._write_if_changed(self._manifest_path, manifest_content)
+        summary["written"] = {
+            "documents": documents_written,
+            "metadata": metadata_written,
+            "manifest": manifest_written,
+        }
         logger.info(
             "[UnifiedCorpus] Built %s records from platform=%s core=%s reviewed=%s capability=%s",
             len(records),
@@ -205,24 +217,14 @@ class UnifiedCorpusBuilder:
                 )
         return missing
 
-    def _write_docs(self, records) -> None:
-        tmp = self._unified_docs_path.with_suffix(".tmp.jsonl")
-        with open(tmp, "w", encoding="utf-8") as handle:
-            for record in records:
-                handle.write(json.dumps(record.to_dict(), ensure_ascii=False) + "\n")
-        tmp.replace(self._unified_docs_path)
+    def _render_docs(self, records) -> str:
+        return "".join(
+            json.dumps(record.to_dict(), ensure_ascii=False, sort_keys=True) + "\n"
+            for record in records
+        )
 
-    def _write_manifest(self, summary: dict[str, Any]) -> None:
-        tmp = self._manifest_path.with_suffix(".tmp.json")
-        tmp.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
-        tmp.replace(self._manifest_path)
-
-    def _write_metadata(self, records) -> None:
-        tmp = self._metadata_path.with_suffix(".tmp.csv")
-        with open(tmp, "w", encoding="utf-8", newline="") as handle:
-            writer = csv.DictWriter(
-                handle,
-                fieldnames=[
+    def _render_metadata(self, records) -> str:
+        fieldnames = [
                     "doc_id",
                     "source_type",
                     "domain",
@@ -234,12 +236,15 @@ class UnifiedCorpusBuilder:
                     "effective_date",
                     "freshness_class",
                     "approval_state",
-                ],
-            )
-            writer.writeheader()
-            for record in records:
-                writer.writerow(
-                    {
+                ]
+        from io import StringIO
+
+        output = StringIO()
+        writer = csv.DictWriter(output, fieldnames=fieldnames, lineterminator="\n")
+        writer.writeheader()
+        for record in records:
+            writer.writerow(
+                {
                         "doc_id": record.doc_id,
                         "source_type": record.source_type,
                         "domain": record.domain,
@@ -251,6 +256,22 @@ class UnifiedCorpusBuilder:
                         "effective_date": record.effective_date or "",
                         "freshness_class": record.freshness_class,
                         "approval_state": record.approval_state,
-                    }
-                )
-        tmp.replace(self._metadata_path)
+                }
+            )
+        return output.getvalue()
+
+    @staticmethod
+    def _content_changed(path: Path, content: str) -> bool:
+        return path.read_text(encoding="utf-8") != content
+
+    def _write_if_changed(self, path: Path, content: str) -> bool:
+        if path.exists() and not self._content_changed(path, content):
+            return False
+        tmp = path.with_name(f".{path.name}.tmp")
+        tmp.write_text(content, encoding="utf-8", newline="")
+        tmp.replace(path)
+        return True
+
+
+def _sha256(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()

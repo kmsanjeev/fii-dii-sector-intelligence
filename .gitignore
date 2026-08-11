@@ -257,6 +257,9 @@ data/veda/validation/*
 data/voice_samples/
 data/research/runtime/
 
+# Rebuildable unified retrieval cache
+data/intelligence/rag_knowledge/veda_unified_bm25_index.pkl
+
 # Generated logs
 logs/
 *.log

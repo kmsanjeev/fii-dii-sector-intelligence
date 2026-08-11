@@ -1,21 +1,12 @@
 {
+  "approved_core_count": 17,
+  "artifact_version": "VEDA-RAG-GEN-001-R",
+  "authoritative_input_hash": "e15c5130a086ac1c2ad9dc896e51fd67828d3f587806660009b40b4ba7a606b7",
   "contract_version": "2026-08-04",
-  "built_at": "2026-08-11T10:29:25Z",
-  "total_records": 1047,
-  "input_counts": {
-    "platform_docs": 1028,
-    "approved_core_docs": 16,
-    "reviewed_memory_docs": 2,
-    "mit_capability_docs": 1
-  },
-  "source_counts": {
-    "approved_core": 16,
-    "mit_repo_capability": 1,
-    "platform_intelligence": 1028,
-    "user_reviewed": 2
-  },
+  "corpus_content_hash": "9754fc5e948405c4510f2340170e47bf4c433f1ac3b83020fe9aa3b02b0a882c",
+  "document_count": 1048,
   "domain_counts": {
-    "ASTROLOGY": 14,
+    "ASTROLOGY": 15,
     "CORPORATE": 200,
     "DEAL": 298,
     "MARKET": 1,
@@ -27,12 +18,20 @@
   },
   "duplicate_group_count": 0,
   "duplicate_record_count": 0,
-  "missing_critical_field_count": 0,
   "duplicates": [],
+  "input_counts": {
+    "approved_core_docs": 17,
+    "mit_capability_docs": 1,
+    "platform_docs": 1028,
+    "reviewed_memory_docs": 2
+  },
+  "missing_critical_field_count": 0,
   "missing_critical_fields": [],
-  "output_paths": {
-    "documents": "D:\\Projects\\fii-dii-sector-intelligence\\data\\intelligence\\rag_knowledge\\veda_unified_documents.jsonl",
-    "manifest": "D:\\Projects\\fii-dii-sector-intelligence\\data\\intelligence\\rag_knowledge\\veda_unified_manifest.json",
-    "metadata": "D:\\Projects\\fii-dii-sector-intelligence\\data\\intelligence\\rag_knowledge\\veda_unified_metadata.csv"
-  }
+  "source_counts": {
+    "approved_core": 17,
+    "mit_repo_capability": 1,
+    "platform_intelligence": 1028,
+    "user_reviewed": 2
+  },
+  "total_records": 1048
 }

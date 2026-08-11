@@ -24,13 +24,17 @@ INDEX_OUT = cfg.VEDA_UNIFIED_BM25_INDEX
 
 
 class UnifiedBM25Indexer:
+    def __init__(self, *, docs_path=None, index_path=None):
+        self.docs_path = docs_path or DOCS_PATH
+        self.index_path = index_path or INDEX_OUT
+
     def run(self) -> bool:
         from rank_bm25 import BM25Okapi
 
         logger.info("[UnifiedBM25] Building unified BM25 index")
 
-        if not DOCS_PATH.exists():
-            raise FileNotFoundError(f"Run unified_corpus_builder.py first: {DOCS_PATH}")
+        if not self.docs_path.exists():
+            raise FileNotFoundError(f"Run unified_corpus_builder.py first: {self.docs_path}")
 
         docs = self._load_docs()
         if not docs:
@@ -44,17 +48,18 @@ class UnifiedBM25Indexer:
             "n_docs": len(docs),
         }
 
-        tmp = INDEX_OUT.with_suffix(".tmp.pkl")
+        self.index_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = self.index_path.with_suffix(".tmp.pkl")
         with open(tmp, "wb") as handle:
             pickle.dump(payload, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        shutil.move(str(tmp), str(INDEX_OUT))
+        shutil.move(str(tmp), str(self.index_path))
 
-        logger.info("[UnifiedBM25] Indexed %s unified documents -> %s", len(docs), INDEX_OUT)
+        logger.info("[UnifiedBM25] Indexed %s unified documents -> %s", len(docs), self.index_path)
         return True
 
     def _load_docs(self) -> list[dict[str, Any]]:
         docs = []
-        with open(DOCS_PATH, encoding="utf-8") as handle:
+        with open(self.docs_path, encoding="utf-8") as handle:
             for line in handle:
                 line = line.strip()
                 if line:
@@ -63,10 +68,14 @@ class UnifiedBM25Indexer:
 
     @staticmethod
     def query(query_text: str, top_k: int = 10) -> list[dict[str, Any]]:
-        if not INDEX_OUT.exists():
-            raise FileNotFoundError(f"Unified BM25 index not built: {INDEX_OUT}")
+        return UnifiedBM25Indexer.query_from_path(query_text, INDEX_OUT, top_k=top_k)
 
-        with open(INDEX_OUT, "rb") as handle:
+    @staticmethod
+    def query_from_path(query_text: str, index_path, top_k: int = 10) -> list[dict[str, Any]]:
+        if not index_path.exists():
+            raise FileNotFoundError(f"Unified BM25 index not built: {index_path}")
+
+        with open(index_path, "rb") as handle:
             payload = pickle.load(handle)
 
         bm25 = payload["bm25"]

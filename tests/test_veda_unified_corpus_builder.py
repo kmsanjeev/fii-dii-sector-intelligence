@@ -5,6 +5,7 @@ import json
 from engines.ai.capabilities.service import RepoCapabilityService
 from engines.ai.knowledge.review_service import KnowledgeReviewService
 from engines.ai.knowledge.unified_corpus_builder import UnifiedCorpusBuilder
+from engines.ai.knowledge.unified_bm25_indexer import UnifiedBM25Indexer
 from engines.common import config as cfg
 
 
@@ -223,3 +224,83 @@ def test_unified_corpus_builder_includes_approved_core_documents(tmp_dir):
     assert docs[0]["source_type"] == "approved_core"
     assert docs[0]["freshness_class"] == "governed_core"
     assert docs[0]["provenance"]["details"]["core_id"] == "VEDA-RCORE-000123"
+
+
+def test_unified_corpus_identical_rebuild_is_byte_stable(tmp_dir):
+    platform_docs_path = tmp_dir / "documents.jsonl"
+    core_docs_path = tmp_dir / "core.jsonl"
+    reviewed_docs_path = tmp_dir / "reviewed.jsonl"
+    capability_docs_path = tmp_dir / "capability.jsonl"
+    unified_docs_path = tmp_dir / "veda_unified_documents.jsonl"
+    manifest_path = tmp_dir / "veda_unified_manifest.json"
+    metadata_path = tmp_dir / "veda_unified_metadata.csv"
+    _write_jsonl(
+        platform_docs_path,
+        [{"doc_id": "stable_doc", "domain": "MARKET", "entity": "MARKET", "text": "Stable corpus input."}],
+    )
+
+    builder = UnifiedCorpusBuilder(
+        platform_docs_path=platform_docs_path,
+        core_docs_path=core_docs_path,
+        reviewed_docs_path=reviewed_docs_path,
+        capability_docs_path=capability_docs_path,
+        unified_docs_path=unified_docs_path,
+        manifest_path=manifest_path,
+        metadata_path=metadata_path,
+    )
+    first = builder.run()
+    before = {path: path.read_bytes() for path in (unified_docs_path, manifest_path, metadata_path)}
+    second = builder.run()
+
+    assert first["written"] == {"documents": True, "metadata": True, "manifest": True}
+    assert second["written"] == {"documents": False, "metadata": False, "manifest": False}
+    assert {path: path.read_bytes() for path in before} == before
+    assert "built_at" not in json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert first["corpus_content_hash"] == second["corpus_content_hash"]
+
+
+def test_unified_corpus_approved_core_change_updates_snapshots(tmp_dir):
+    core_docs_path = tmp_dir / "core.jsonl"
+    unified_docs_path = tmp_dir / "veda_unified_documents.jsonl"
+    manifest_path = tmp_dir / "veda_unified_manifest.json"
+    metadata_path = tmp_dir / "veda_unified_metadata.csv"
+    base = {
+        "doc_id": "core_one",
+        "domain": "VEDA",
+        "entity": "CORE",
+        "text": "Approved core one.",
+        "meta": {"memory_type": "approved_core", "governance_zone": "APPROVED_CORE"},
+    }
+    _write_jsonl(core_docs_path, [base])
+    builder = UnifiedCorpusBuilder(
+        platform_docs_path=tmp_dir / "missing_platform.jsonl",
+        core_docs_path=core_docs_path,
+        reviewed_docs_path=tmp_dir / "missing_reviewed.jsonl",
+        capability_docs_path=tmp_dir / "missing_capability.jsonl",
+        unified_docs_path=unified_docs_path,
+        manifest_path=manifest_path,
+        metadata_path=metadata_path,
+    )
+    first = builder.run()
+    _write_jsonl(core_docs_path, [base, {**base, "doc_id": "core_two", "text": "Approved core two."}])
+    second = builder.run()
+
+    assert first["document_count"] == 1
+    assert second["document_count"] == 2
+    assert second["corpus_content_hash"] != first["corpus_content_hash"]
+    assert second["written"] == {"documents": True, "metadata": True, "manifest": True}
+
+
+def test_unified_bm25_rebuild_from_documents_supports_query(tmp_dir):
+    docs_path = tmp_dir / "documents.jsonl"
+    index_path = tmp_dir / "veda_unified_bm25_index.pkl"
+    _write_jsonl(
+        docs_path,
+        [{"doc_id": "gaja_core", "text": "Gaja Kesari approved core formation."}],
+    )
+
+    indexer = UnifiedBM25Indexer(docs_path=docs_path, index_path=index_path)
+    assert indexer.run() is True
+    results = UnifiedBM25Indexer.query_from_path("Gaja Kesari", index_path)
+
+    assert results[0]["doc_id"] == "gaja_core"
