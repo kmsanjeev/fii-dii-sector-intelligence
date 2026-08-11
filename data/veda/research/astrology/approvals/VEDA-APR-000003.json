@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "status": "APPROVED",
+  "created_at": "2026-08-11T12:27:11.278506Z",
+  "created_by": "p017-r1-admin",
+  "updated_at": "2026-08-11T12:27:11.278506Z",
+  "updated_by": "p017-r1-admin",
+  "change_reason": "P010 promotion approval materialization for VEDA-RCND-000001.",
+  "supersedes": null,
+  "superseded_by": null,
+  "notes": "Formation evidence reviewed against the retrieved classical passage; interpretation remains separate and unapproved.",
+  "contract_version": "2026-08-10",
+  "approval_id": "VEDA-APR-000003",
+  "artifact_type": "CLAIM_SET",
+  "artifact_ids": [
+    "VEDA-SRC-000010",
+    "VEDA-PSG-000013",
+    "VEDA-CLM-000013"
+  ],
+  "pilot_domain": "YOGA_DOSHA",
+  "workflow_state": "APPROVED",
+  "approval_status": "APPROVED",
+  "role_decisions": [
+    {
+      "role": "DOMAIN_APPROVER",
+      "actor": "p017-r1-admin",
+      "decision": "APPROVED",
+      "decided_at": "2026-08-11T12:27:11.277506Z",
+      "note": "Formation evidence reviewed against the retrieved classical passage; interpretation remains separate and unapproved."
+    }
+  ],
+  "conditions": [],
+  "implementation_ready": true,
+  "validated_against_runtime": false
+}

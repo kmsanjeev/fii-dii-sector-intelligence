@@ -110,6 +110,7 @@ def test_unified_corpus_builder_combines_current_durable_sources(monkeypatch, tm
 
     builder = UnifiedCorpusBuilder(
         platform_docs_path=platform_docs_path,
+        core_docs_path=tmp_dir / "missing_core.jsonl",
         reviewed_docs_path=reviewed_docs_path,
         capability_docs_path=capability_docs_path,
         unified_docs_path=unified_docs_path,
@@ -162,6 +163,7 @@ def test_unified_corpus_builder_reports_exact_duplicates(tmp_dir):
 
     builder = UnifiedCorpusBuilder(
         platform_docs_path=platform_docs_path,
+        core_docs_path=tmp_dir / "missing_core.jsonl",
         reviewed_docs_path=tmp_dir / "missing_reviewed.jsonl",
         capability_docs_path=tmp_dir / "missing_capability.jsonl",
         unified_docs_path=tmp_dir / "veda_unified_documents.jsonl",

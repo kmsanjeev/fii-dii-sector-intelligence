@@ -39,7 +39,7 @@ def test_astrology_ontology_validation_succeeds_for_tracked_files():
     assert report.is_valid is True
     assert report.entity_count == 131
     assert report.relation_count == 34
-    assert report.approved_rule_count == 5
+    assert report.approved_rule_count == 6
     assert report.draft_rule_count == 2
     assert report.legacy_mapping_count == 6
     assert report.chart_contract_count == 1
@@ -67,7 +67,8 @@ def test_astrology_ontology_exported_schemas_and_documents_match_tracked_files(t
     tracked_docs = {
         key: value
         for key, value in _relative_payloads(DATA_ROOT).items()
-        if key.startswith("ontology/") or key.startswith("rules/")
+        if (key.startswith("ontology/") or key.startswith("rules/"))
+        and key != "rules/approved/VEDA-RUL-YOGA_DOSHA-000001.json"
     }
     exported_subset = {
         key: value

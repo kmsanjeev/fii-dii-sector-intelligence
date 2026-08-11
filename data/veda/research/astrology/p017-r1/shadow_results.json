@@ -1,0 +1,172 @@
+[
+  {
+    "fixture_id": "P017-R1-GAJA-POSITIVE",
+    "rule_id": "VEDA-RUL-YOGA-000001",
+    "classification": "MATCH",
+    "formation_matched": true,
+    "matched_conditions": {
+      "operator": "ALL",
+      "children": [
+        {
+          "path": "relationships.jupiter_from_moon.house_distance",
+          "operator": "IN",
+          "actual": 3,
+          "expected": [
+            0,
+            3,
+            6,
+            9
+          ],
+          "matched": true
+        }
+      ]
+    },
+    "chart_fact_ids": [],
+    "claim_ids": [
+      "VEDA-CLM-000013"
+    ],
+    "passage_ids": [
+      "VEDA-PSG-000013"
+    ],
+    "source_ids": [
+      "VEDA-SRC-000010"
+    ],
+    "conflict_ids": []
+  },
+  {
+    "fixture_id": "P017-R1-GAJA-NEGATIVE",
+    "rule_id": "VEDA-RUL-YOGA-000001",
+    "classification": "MATCH",
+    "formation_matched": false,
+    "matched_conditions": {
+      "operator": "ALL",
+      "children": [
+        {
+          "path": "relationships.jupiter_from_moon.house_distance",
+          "operator": "IN",
+          "actual": 2,
+          "expected": [
+            0,
+            3,
+            6,
+            9
+          ],
+          "matched": false
+        }
+      ]
+    },
+    "chart_fact_ids": [],
+    "claim_ids": [
+      "VEDA-CLM-000013"
+    ],
+    "passage_ids": [
+      "VEDA-PSG-000013"
+    ],
+    "source_ids": [
+      "VEDA-SRC-000010"
+    ],
+    "conflict_ids": []
+  },
+  {
+    "fixture_id": "P017-R1-GAJA-MODIFIED",
+    "rule_id": "VEDA-RUL-YOGA-000001",
+    "classification": "MATCH",
+    "formation_matched": true,
+    "matched_conditions": {
+      "operator": "ALL",
+      "children": [
+        {
+          "path": "relationships.jupiter_from_moon.house_distance",
+          "operator": "IN",
+          "actual": 0,
+          "expected": [
+            0,
+            3,
+            6,
+            9
+          ],
+          "matched": true
+        }
+      ]
+    },
+    "chart_fact_ids": [],
+    "claim_ids": [
+      "VEDA-CLM-000013"
+    ],
+    "passage_ids": [
+      "VEDA-PSG-000013"
+    ],
+    "source_ids": [
+      "VEDA-SRC-000010"
+    ],
+    "conflict_ids": []
+  },
+  {
+    "fixture_id": "P017-R1-MANGLIK-CANCELLED",
+    "rule_id": "VEDA-RUL-YOGA-000001",
+    "classification": "CANCELLATION_DIFFERENCE",
+    "formation_matched": false,
+    "matched_conditions": {
+      "operator": "ALL",
+      "children": [
+        {
+          "path": "relationships.jupiter_from_moon.house_distance",
+          "operator": "IN",
+          "actual": null,
+          "expected": [
+            0,
+            3,
+            6,
+            9
+          ],
+          "matched": false
+        }
+      ]
+    },
+    "chart_fact_ids": [],
+    "claim_ids": [
+      "VEDA-CLM-000013"
+    ],
+    "passage_ids": [
+      "VEDA-PSG-000013"
+    ],
+    "source_ids": [
+      "VEDA-SRC-000010"
+    ],
+    "conflict_ids": []
+  },
+  {
+    "fixture_id": "P017-R1-SCHOOL-VARIANCE",
+    "rule_id": "VEDA-RUL-YOGA-000001",
+    "classification": "SCHOOL_VARIANCE",
+    "formation_matched": false,
+    "matched_conditions": {
+      "operator": "ALL",
+      "children": [
+        {
+          "path": "relationships.jupiter_from_moon.house_distance",
+          "operator": "IN",
+          "actual": null,
+          "expected": [
+            0,
+            3,
+            6,
+            9
+          ],
+          "matched": false
+        }
+      ]
+    },
+    "chart_fact_ids": [],
+    "claim_ids": [
+      "VEDA-CLM-000013"
+    ],
+    "passage_ids": [
+      "VEDA-PSG-000013"
+    ],
+    "source_ids": [
+      "VEDA-SRC-000010"
+    ],
+    "conflict_ids": []
+  }
+]

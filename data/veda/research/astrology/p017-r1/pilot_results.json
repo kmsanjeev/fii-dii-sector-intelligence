@@ -1,0 +1,81 @@
+[
+  {
+    "pilot_id": "A",
+    "name": "Gaja Kesari Yoga",
+    "formation_status": "APPROVED_WITH_CONDITIONS",
+    "interpretation_status": "RESEARCH_REQUIRED",
+    "queries": 1,
+    "sources_discovered": 2,
+    "sources_retrieved": 2,
+    "sources_accepted": 2,
+    "sources_rejected": 0,
+    "evidence_records": 2,
+    "source_urls": [
+      "https://www.wisdomlib.org/hinduism/essay/significance-of-the-moon-in-ancient-civilizations/d/doc1187672.html",
+      "https://www.wisdomlib.org/shop/books/jyotisha/deva-keralam-english/doc1192236.html"
+    ],
+    "claim_ids": [
+      "VEDA-CLM-000013"
+    ],
+    "passage_ids": [
+      "VEDA-PSG-000013"
+    ],
+    "source_ids": [
+      "VEDA-SRC-000010"
+    ],
+    "promotion_id": "VEDA-RPRM-000001"
+  },
+  {
+    "pilot_id": "B",
+    "name": "Foundational Raja Yoga",
+    "formation_status": "FORMATION_UNVERIFIED",
+    "interpretation_status": "INTERPRETATION_UNVERIFIED",
+    "queries": 1,
+    "sources_discovered": 2,
+    "sources_retrieved": 1,
+    "sources_accepted": 1,
+    "sources_rejected": 1,
+    "evidence_records": 1,
+    "block_reason": "Retrieved result did not establish the selected lordship formation claim."
+  },
+  {
+    "pilot_id": "C",
+    "name": "Foundational Dhana Yoga",
+    "formation_status": "FORMATION_UNVERIFIED",
+    "interpretation_status": "INTERPRETATION_UNVERIFIED",
+    "queries": 1,
+    "sources_discovered": 1,
+    "sources_retrieved": 1,
+    "sources_accepted": 1,
+    "sources_rejected": 0,
+    "evidence_records": 1,
+    "block_reason": "Retrieved page was a generic definition and did not support the selected Dhana formation rule."
+  },
+  {
+    "pilot_id": "D",
+    "name": "Kuja Dosha",
+    "formation_status": "FORMATION_UNVERIFIED",
+    "interpretation_status": "INTERPRETATION_UNVERIFIED",
+    "queries": 1,
+    "sources_discovered": 0,
+    "sources_retrieved": 0,
+    "sources_accepted": 0,
+    "sources_rejected": 0,
+    "evidence_records": 2,
+    "local_fallback_sources": 2,
+    "block_reason": "Search results resolved to unrelated existing corpus evidence; no claim-valid external Kuja passage was accepted."
+  },
+  {
+    "pilot_id": "E",
+    "name": "Kemadruma cancellation",
+    "formation_status": "PARTIALLY_SUPPORTED",
+    "interpretation_status": "RESEARCH_REQUIRED",
+    "queries": 1,
+    "sources_discovered": 2,
+    "sources_retrieved": 2,
+    "sources_accepted": 2,
+    "sources_rejected": 0,
+    "evidence_records": 2,
+    "block_reason": "Cancellation evidence was retrieved, but no independently validated binding to the selected cancellation rule was completed."
+  }
+]

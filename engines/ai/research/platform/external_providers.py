@@ -186,11 +186,13 @@ class DDGSPlatformSearchProvider(BasePlatformResearchProvider):
             return []
         metadata = dict(document.metadata)
         metadata.setdefault("title", document.source_title)
+        claim_hint = str(metadata.get("claim_text") or document.source_title)
+        normalized_claim = str(metadata.get("normalized_claim") or claim_hint).strip().lower()
         return [
             ProviderEvidenceHint(
                 passage=snippet,
-                claim_hint=document.source_title,
-                normalized_text=sanitize_external_text(snippet.lower()),
+                claim_hint=claim_hint,
+                normalized_text=sanitize_external_text(normalized_claim),
                 confidence=0.35,
                 location=document.source_uri,
                 metadata=metadata,
@@ -283,7 +285,7 @@ class RequestsDirectRetrievalProvider(BasePlatformResearchProvider):
 
     def extract(self, document: ProviderDocument, *, content: str) -> list[ProviderEvidenceHint]:
         text = sanitize_external_text(content or "")
-        snippet = text[: cfg.VEDA_RESEARCH_MAX_SNIPPET_CHARS]
+        snippet = self._relevant_excerpt(document, text)
         if not snippet:
             snippet = sanitize_external_text(str(document.metadata.get("snippet") or ""))
         if not snippet:
@@ -303,6 +305,33 @@ class RequestsDirectRetrievalProvider(BasePlatformResearchProvider):
                 metadata=metadata,
             )
         ]
+
+    def _relevant_excerpt(self, document: ProviderDocument, text: str) -> str:
+        """Prefer evidence near claim terms instead of page-navigation text."""
+        if not text:
+            return ""
+        claim = str(document.metadata.get("claim_text") or document.metadata.get("normalized_claim") or "")
+        terms = [term.lower() for term in claim.replace("/", " ").split() if len(term) >= 4]
+        lowered = text.lower()
+        positions = [
+            (lowered.find(term), term)
+            for term in sorted(set(terms), key=len, reverse=True)
+            if lowered.find(term) >= 0
+        ]
+        anchor = -1
+        best_score = -1
+        for position, _ in positions:
+            score = sum(
+                lowered.find(other, max(0, position - 900), min(len(lowered), position + 900)) >= 0
+                for _, other in positions
+            )
+            if score > best_score:
+                anchor, best_score = position, score
+        if anchor < 0:
+            return text[: cfg.VEDA_RESEARCH_MAX_SNIPPET_CHARS]
+        start = max(0, anchor - cfg.VEDA_RESEARCH_MAX_SNIPPET_CHARS // 3)
+        end = min(len(text), start + cfg.VEDA_RESEARCH_MAX_SNIPPET_CHARS)
+        return text[start:end].strip()
 
     def health_check(self) -> dict[str, Any]:
         return {
