@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VEDA Canonical Varga Fact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "varga",
+    "planet_id",
+    "source_longitude",
+    "division",
+    "varga_sign",
+    "varga_degree",
+    "calculation_rule_id",
+    "runtime_version",
+    "validation_status",
+    "interpretation_status"
+  ],
+  "properties": {
+    "varga": {"type": "string", "pattern": "^D(1|2|3|4|7|9|10|11|12|16|20|30|60)$"},
+    "planet_id": {"type": "string", "pattern": "^VEDA-GRAHA-[A-Z]+$"},
+    "source_longitude": {"type": "number", "minimum": 0, "exclusiveMaximum": 360},
+    "division": {"type": "integer", "minimum": 1},
+    "varga_sign": {"type": "string", "pattern": "^VEDA-RASHI-[A-Z]+$"},
+    "varga_degree": {"type": "number", "minimum": 0, "exclusiveMaximum": 30},
+    "calculation_rule_id": {"type": "string", "pattern": "^VEDA-RUL-VARGA-[0-9]{3}$"},
+    "runtime_version": {"type": "string"},
+    "validation_status": {"type": "string"},
+    "interpretation_status": {"type": "string"}
+  }
+}
