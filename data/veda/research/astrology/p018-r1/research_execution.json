@@ -1,0 +1,70 @@
+{
+  "missions_queued": 3,
+  "missions_executed": 3,
+  "external_queries": 3,
+  "providers_used": [
+    "ddgs-search",
+    "requests-fetch"
+  ],
+  "provider_failures": [
+    "requests-fetch: http_auth_failed:403",
+    "budget_exhausted on all three bounded runs"
+  ],
+  "runs": [
+    {
+      "mission_id": "VEDA-RM-000001",
+      "run_id": "VEDA-RUN-000001",
+      "status": "PARTIAL",
+      "queries": [
+        "site:wisdomlib.org Shadbala six types planetary strength"
+      ],
+      "sources_discovered": 3,
+      "sources_retrieved": 2,
+      "sources_accepted": 2,
+      "sources_rejected": 1,
+      "evidence_created": 2,
+      "candidate_id": "VEDA-RCND-000001",
+      "errors": [
+        "budget_exhausted",
+        "http_auth_failed:403"
+      ]
+    },
+    {
+      "mission_id": "VEDA-RM-000002",
+      "run_id": "VEDA-RUN-000002",
+      "status": "PARTIAL",
+      "queries": [
+        "site:wisdomlib.org Ashtakavarga bindus Bhinna Sarva"
+      ],
+      "sources_discovered": 3,
+      "sources_retrieved": 2,
+      "sources_accepted": 2,
+      "sources_rejected": 1,
+      "evidence_created": 2,
+      "candidate_id": "VEDA-RCND-000002",
+      "errors": [
+        "budget_exhausted",
+        "http_auth_failed:403"
+      ]
+    },
+    {
+      "mission_id": "VEDA-RM-000003",
+      "run_id": "VEDA-RUN-000003",
+      "status": "PARTIAL",
+      "queries": [
+        "site:wisdomlib.org graha drishti planetary aspects"
+      ],
+      "sources_discovered": 3,
+      "sources_retrieved": 3,
+      "sources_accepted": 3,
+      "sources_rejected": 0,
+      "evidence_created": 3,
+      "candidate_id": "VEDA-RCND-000003",
+      "errors": [
+        "budget_exhausted"
+      ]
+    }
+  ],
+  "ledger_reconstructed": true,
+  "external_research_status": "ACTIVE_DURING_CONTROLLED_RUN"
+}
