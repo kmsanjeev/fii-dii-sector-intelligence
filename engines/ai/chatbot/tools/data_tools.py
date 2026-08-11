@@ -714,15 +714,26 @@ def generate_personal_kundli(
         timezone_offset_hours: UTC offset (default 5.5 = IST)
     """
     try:
+        from engines.intelligence.jyotisha_runtime import get_jyotisha_runtime_service
         from engines.ai.chatbot.tools.kundli_calculator import compute_personal_kundli
-        return compute_personal_kundli(
-            date_of_birth=date_of_birth,
-            time_of_birth=time_of_birth,
-            place_name=place_name,
-            latitude=latitude,
-            longitude=longitude,
-            timezone_offset_hours=timezone_offset_hours,
-        )
+        try:
+            return get_jyotisha_runtime_service().compute_personal_chart(
+                date_of_birth=date_of_birth,
+                time_of_birth=time_of_birth,
+                place_name=place_name,
+                latitude=latitude,
+                longitude=longitude,
+                timezone_offset_hours=timezone_offset_hours,
+            ).legacy_payload
+        except Exception:
+            return compute_personal_kundli(
+                date_of_birth=date_of_birth,
+                time_of_birth=time_of_birth,
+                place_name=place_name,
+                latitude=latitude,
+                longitude=longitude,
+                timezone_offset_hours=timezone_offset_hours,
+            )
     except ImportError as e:
         return {"error": f"kundli_calculator import failed: {e}. Ensure pyswisseph is installed: py -3.11 -m pip install pyswisseph"}
     except Exception as e:

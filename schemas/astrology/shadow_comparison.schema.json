@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "fixture_id",
+    "request_id",
+    "primary_surface",
+    "comparison_surface",
+    "primary_profile",
+    "comparison_profile",
+    "divergences",
+    "divergence_count",
+    "status"
+  ],
+  "properties": {
+    "fixture_id": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "primary_surface": {
+      "type": "string"
+    },
+    "comparison_surface": {
+      "type": "string"
+    },
+    "primary_profile": {
+      "type": "string"
+    },
+    "comparison_profile": {
+      "type": "string"
+    },
+    "divergences": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "divergence_count": {
+      "type": "integer"
+    },
+    "status": {
+      "type": "string"
+    }
+  }
+}

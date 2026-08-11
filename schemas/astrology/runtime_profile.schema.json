@@ -1,0 +1,61 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profile_id",
+    "runtime_surface",
+    "subject_types",
+    "timezone_policy",
+    "node_policy",
+    "house_policy",
+    "ayanamsha_policy",
+    "varga_surface",
+    "dasha_surface",
+    "confidence_status",
+    "notes"
+  ],
+  "properties": {
+    "profile_id": {
+      "type": "string"
+    },
+    "runtime_surface": {
+      "type": "string"
+    },
+    "subject_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "timezone_policy": {
+      "type": "string"
+    },
+    "node_policy": {
+      "type": "string"
+    },
+    "house_policy": {
+      "type": "string"
+    },
+    "ayanamsha_policy": {
+      "type": "string"
+    },
+    "varga_surface": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dasha_surface": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "confidence_status": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

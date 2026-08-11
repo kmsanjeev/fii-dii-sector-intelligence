@@ -1,0 +1,171 @@
+{
+  "contract_version": "2026-08-11",
+  "provider": {
+    "provider": "SWISS_EPHEMERIS_KUNDLI_ENGINE",
+    "version": "swisseph-lahiri-true-node",
+    "profiles": [
+      "COUNTRY_EVENT",
+      "PERSONAL",
+      "REST_STANDARD",
+      "STOCK_MARKET"
+    ],
+    "subject_types": [
+      "COUNTRY",
+      "EVENT",
+      "MARKET",
+      "PERSON",
+      "STOCK"
+    ],
+    "sidereal_mode": "SIDM_LAHIRI",
+    "node_method": "TRUE_NODE",
+    "house_method": "WHOLE_SIGN_DOWNSTREAM"
+  },
+  "profiles": [
+    {
+      "profile_id": "PERSONAL",
+      "runtime_surface": "personal_kundli_chat_path",
+      "subject_types": [
+        "PERSON"
+      ],
+      "timezone_policy": "USER_PROVIDED_OFFSET",
+      "node_policy": "TRUE_NODE",
+      "house_policy": "WHOLE_SIGN",
+      "ayanamsha_policy": "LAHIRI",
+      "varga_surface": [
+        "D9",
+        "D10"
+      ],
+      "dasha_surface": [
+        "MAHADASHA",
+        "ANTARDASHA",
+        "PRATYANTARDASHA",
+        "ALL_ANTARDASHAS"
+      ],
+      "confidence_status": "VALIDATED_WITH_CONDITIONS",
+      "notes": "Personal path accepts caller-supplied offset rather than governed IANA timezone history."
+    },
+    {
+      "profile_id": "REST_STANDARD",
+      "runtime_surface": "rest_human_kundli_path",
+      "subject_types": [
+        "PERSON"
+      ],
+      "timezone_policy": "USER_PROVIDED_OFFSET",
+      "node_policy": "TRUE_NODE",
+      "house_policy": "WHOLE_SIGN",
+      "ayanamsha_policy": "LAHIRI",
+      "varga_surface": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D7",
+        "D9",
+        "D10",
+        "D11",
+        "D12",
+        "D16",
+        "D20",
+        "D30",
+        "D60"
+      ],
+      "dasha_surface": [
+        "MAHADASHA",
+        "ANTARDASHA",
+        "PRATYANTARDASHA"
+      ],
+      "confidence_status": "VALIDATED_WITH_CONDITIONS",
+      "notes": "REST human path preserves broader varga output and fixed-offset caller semantics."
+    },
+    {
+      "profile_id": "STOCK_MARKET",
+      "runtime_surface": "stock_kundli_route",
+      "subject_types": [
+        "STOCK",
+        "MARKET"
+      ],
+      "timezone_policy": "HARDCODED_OFFSET",
+      "node_policy": "TRUE_NODE",
+      "house_policy": "WHOLE_SIGN",
+      "ayanamsha_policy": "LAHIRI",
+      "varga_surface": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D7",
+        "D9",
+        "D10",
+        "D11",
+        "D12",
+        "D16",
+        "D20",
+        "D30",
+        "D60"
+      ],
+      "dasha_surface": [
+        "MAHADASHA",
+        "ANTARDASHA",
+        "PRATYANTARDASHA"
+      ],
+      "confidence_status": "VALIDATED_WITH_CONDITIONS",
+      "notes": "Exchange offsets are still fixed in the legacy engine and remain DST-sensitive under P004 conditions."
+    },
+    {
+      "profile_id": "COUNTRY_EVENT",
+      "runtime_surface": "country_kundli_route",
+      "subject_types": [
+        "COUNTRY",
+        "EVENT"
+      ],
+      "timezone_policy": "HARDCODED_OFFSET",
+      "node_policy": "TRUE_NODE",
+      "house_policy": "WHOLE_SIGN",
+      "ayanamsha_policy": "LAHIRI",
+      "varga_surface": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D7",
+        "D9",
+        "D10",
+        "D11",
+        "D12",
+        "D16",
+        "D20",
+        "D30",
+        "D60"
+      ],
+      "dasha_surface": [
+        "MAHADASHA",
+        "ANTARDASHA",
+        "PRATYANTARDASHA"
+      ],
+      "confidence_status": "VALIDATED_WITH_CONDITIONS",
+      "notes": "Country/event inception data carries historical civil-time provenance conditions from P004."
+    }
+  ],
+  "surfaces": [
+    {
+      "runtime_surface": "personal_kundli_chat_path",
+      "runtime_profile": "PERSONAL",
+      "classification": "PRIMARY_RUNTIME"
+    },
+    {
+      "runtime_surface": "rest_human_kundli_path",
+      "runtime_profile": "REST_STANDARD",
+      "classification": "PRIMARY_RUNTIME"
+    },
+    {
+      "runtime_surface": "stock_kundli_route",
+      "runtime_profile": "STOCK_MARKET",
+      "classification": "SPECIALIZED_RUNTIME"
+    },
+    {
+      "runtime_surface": "country_kundli_route",
+      "runtime_profile": "COUNTRY_EVENT",
+      "classification": "SPECIALIZED_RUNTIME"
+    }
+  ]
+}

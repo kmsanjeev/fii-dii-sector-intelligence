@@ -1,0 +1,13 @@
+{
+  "measurement_mode": "STABLE_POLICY_REPORT",
+  "legacy_execution": "DIRECT_PERSONAL_RUNTIME",
+  "facade_path": "JyotishaRuntimeService -> LegacyPersonalAdapter",
+  "shadow_path": "JyotishaRuntimeService -> personal/rest shadow comparison",
+  "sample_chart_id": "veda-chart-a977cf0f9b163cf6",
+  "sample_shadow_status": "KNOWN_DIVERGENCE",
+  "expected_relative_cost": "SHADOW_GREATER_THAN_SINGLE_SURFACE_EXECUTION",
+  "cache_policy": {
+    "status": "NO_RUNTIME_RESULT_CACHE",
+    "notes": "P012 establishes cache-key policy but does not enable deterministic chart-fact caching in production."
+  }
+}

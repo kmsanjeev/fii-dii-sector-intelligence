@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "divergence_id",
+    "surface_a",
+    "surface_b",
+    "input_fixture",
+    "fact",
+    "classification",
+    "known_reason",
+    "severity",
+    "disposition"
+  ],
+  "properties": {
+    "divergence_id": {
+      "type": "string"
+    },
+    "surface_a": {
+      "type": "string"
+    },
+    "surface_b": {
+      "type": "string"
+    },
+    "input_fixture": {
+      "type": "string"
+    },
+    "fact": {
+      "type": "string"
+    },
+    "value_a": {},
+    "value_b": {},
+    "difference": {},
+    "classification": {
+      "type": "string"
+    },
+    "known_reason": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "string"
+    },
+    "disposition": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    }
+  }
+}

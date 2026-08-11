@@ -1,0 +1,377 @@
+[
+  {
+    "fixture_id": "VEDA-FIX-CALC-000001",
+    "label": "mumbai_1984_baseline",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-c44affcc1843cc70"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000002",
+    "label": "london_2001_baseline",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-cfa6dfd4830d525c"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000003",
+    "label": "sydney_1990_baseline",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-48b9fa2f597f031a"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000004",
+    "label": "newyork_1975_baseline",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-6c32f5e47b055f7d"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000005",
+    "label": "newyork_1975_lagna_boundary",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-62be95a037ac5a12"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000006",
+    "label": "sydney_1990_lagna_boundary",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-cfa4d4df4164496d"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000007",
+    "label": "newyork_1975_nakshatra_boundary",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-83684dbaaac10478"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000008",
+    "label": "kathmandu_1988_nakshatra_boundary",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-925f22f9e7be2672"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000009",
+    "label": "santiago_2012_nakshatra_boundary",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-8009728a45b56835"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000010",
+    "label": "auckland_1999_nakshatra_boundary",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-8b1869fa99772b93"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000011",
+    "label": "delhi_1947_midnight",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-1440f771e8e24e82"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000012",
+    "label": "karachi_1947_offset_check",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-c4000791ab819236"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000013",
+    "label": "philadelphia_1776_country_reference",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-28024cb2af72e25a"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000014",
+    "label": "tokyo_1947_country_reference",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-0a04ea7b3e9ee70d"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000015",
+    "label": "beijing_1949_country_reference",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-68cfb458b2aa669a"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000016",
+    "label": "moscow_1991_country_reference",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-f570681885bdea74"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000017",
+    "label": "paris_1958_country_reference",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-426e3a5a6a0aac02"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000018",
+    "label": "bonn_1949_country_reference",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-6ec61a6e6071d414"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000019",
+    "label": "salvador_1822_country_reference",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-61a4491ee72920ac"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000020",
+    "label": "los_angeles_1969_evening",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-ea053813e566baef"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000021",
+    "label": "johannesburg_1994_midday",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-912e4e83ccf47f48"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000022",
+    "label": "buenos_aires_1983_transition",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-3100a08d0d787424"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000023",
+    "label": "reykjavik_1986_late_night",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-7dfe4c07fdb4cc58"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000024",
+    "label": "nyse_summer_open_reference",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-33ca424592a65358"
+  },
+  {
+    "fixture_id": "VEDA-FIX-CALC-000025",
+    "label": "lse_summer_open_reference",
+    "status": "PASS",
+    "comparisons": {
+      "julian_day": true,
+      "ayanamsha": true,
+      "lagna_sign": true,
+      "lagna_longitude": true,
+      "sun_longitude": true,
+      "moon_longitude": true
+    },
+    "runtime_profile": "PERSONAL",
+    "chart_id": "veda-chart-8dedfe079d797776"
+  }
+]

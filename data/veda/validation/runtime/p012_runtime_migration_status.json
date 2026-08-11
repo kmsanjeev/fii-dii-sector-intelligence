@@ -1,0 +1,58 @@
+[
+  {
+    "surface_id": "generate_personal_kundli_tool",
+    "facade_routed": true,
+    "runtime_surface": "personal_kundli_chat_path",
+    "status": "MIGRATED_WITH_FALLBACK",
+    "notes": "Facade is primary path; direct personal runtime remains as compatibility fallback for malformed legacy inputs."
+  },
+  {
+    "surface_id": "backend_human_kundli_route",
+    "facade_routed": true,
+    "runtime_surface": "rest_human_kundli_path",
+    "status": "MIGRATED",
+    "notes": "Route returns legacy payload from canonical runtime execution."
+  },
+  {
+    "surface_id": "backend_stock_kundli_route",
+    "facade_routed": true,
+    "runtime_surface": "stock_kundli_route",
+    "status": "MIGRATED_ON_CACHE_MISS",
+    "notes": "Cache hits still return stored legacy payloads directly; live computation uses the facade."
+  },
+  {
+    "surface_id": "backend_country_kundli_route",
+    "facade_routed": true,
+    "runtime_surface": "country_kundli_route",
+    "status": "MIGRATED",
+    "notes": "Route returns legacy payload from canonical runtime execution."
+  },
+  {
+    "surface_id": "personal_kundli_chat_path",
+    "facade_routed": false,
+    "runtime_surface": "personal_kundli_chat_path",
+    "status": "LEGACY_ENGINE_PRESERVED",
+    "notes": "Personal calculation core remains in place under the adapter boundary."
+  },
+  {
+    "surface_id": "rest_human_kundli_path",
+    "facade_routed": false,
+    "runtime_surface": "rest_human_kundli_path",
+    "status": "LEGACY_ENGINE_PRESERVED",
+    "notes": "REST human engine remains in place under the adapter boundary."
+  },
+  {
+    "surface_id": "stock_kundli_route",
+    "facade_routed": false,
+    "runtime_surface": "stock_kundli_route",
+    "status": "LEGACY_ENGINE_PRESERVED",
+    "notes": "Stock engine remains in place under the adapter boundary."
+  },
+  {
+    "surface_id": "country_kundli_route",
+    "facade_routed": false,
+    "runtime_surface": "country_kundli_route",
+    "status": "LEGACY_ENGINE_PRESERVED",
+    "notes": "Country engine remains in place under the adapter boundary."
+  }
+]

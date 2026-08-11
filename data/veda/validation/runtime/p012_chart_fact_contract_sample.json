@@ -1,0 +1,938 @@
+{
+  "contract_version": "2026-08-11",
+  "chart_id": "veda-chart-8b96dcb4cd9407fe",
+  "chart_type": "PERSONAL_KUNDLI",
+  "request_id": "p012-sample-request",
+  "runtime_profile": "PERSONAL",
+  "runtime_surface": "personal_kundli_chat_path",
+  "subject_type": "PERSON",
+  "normalized_datetime": {
+    "datetime_local": "1984-11-03T06:30:00+05:30",
+    "timezone": "UTC+05:30",
+    "timezone_offset_hours": 5.5,
+    "utc_datetime": "1984-11-03T01:00:00+00:00",
+    "julian_day": 2446007.541667
+  },
+  "ayanamsha": {
+    "entity_id": "VEDA-AYANAMSHA-LAHIRI",
+    "display_name": "Lahiri",
+    "value": 23.6453,
+    "raw_legacy_value": 23.6453,
+    "source": "Lahiri (Chitrapaksha)"
+  },
+  "lagna": {
+    "entity_id": "VEDA-LAGNA-ASCENDANT",
+    "display_name": "Ascendant",
+    "rashi_entity_id": "VEDA-RASHI-LIBRA",
+    "display_name_rashi": "Libra",
+    "display_name_lord": "Venus",
+    "longitude": 194.0885,
+    "degree": 14.09,
+    "raw_legacy_value": {
+      "sign": "Libra",
+      "degree": 14.09,
+      "full_longitude": 194.0885,
+      "lord": "Venus"
+    }
+  },
+  "planets": [
+    {
+      "entity_id": "VEDA-GRAHA-SUN",
+      "display_name": "Sun",
+      "longitude": 197.1504,
+      "degree": 17.15,
+      "rashi_entity_id": "VEDA-RASHI-LIBRA",
+      "rashi_display_name": "Libra",
+      "bhava_entity_id": "VEDA-BHAVA-01",
+      "bhava_number": 1,
+      "nakshatra_entity_id": "VEDA-NAK-SWATI",
+      "nakshatra_display_name": "Swati",
+      "pada": 4,
+      "retrograde": false,
+      "dignity": "debilitated",
+      "raw_legacy_value": {
+        "longitude": 197.1504,
+        "sign": "Libra",
+        "degree": 17.15,
+        "house": 1,
+        "nakshatra": "Swati",
+        "nakshatra_lord": "Rahu",
+        "pada": 4,
+        "dignity": "debilitated",
+        "retrograde": false,
+        "combust": false
+      }
+    },
+    {
+      "entity_id": "VEDA-GRAHA-MOON",
+      "display_name": "Moon",
+      "longitude": 314.9267,
+      "degree": 14.93,
+      "rashi_entity_id": "VEDA-RASHI-AQUARIUS",
+      "rashi_display_name": "Aquarius",
+      "bhava_entity_id": "VEDA-BHAVA-05",
+      "bhava_number": 5,
+      "nakshatra_entity_id": "VEDA-NAK-SHATABHISHA",
+      "nakshatra_display_name": "Shatabhisha",
+      "pada": 3,
+      "retrograde": false,
+      "dignity": "neutral",
+      "raw_legacy_value": {
+        "longitude": 314.9267,
+        "sign": "Aquarius",
+        "degree": 14.93,
+        "house": 5,
+        "nakshatra": "Shatabhisha",
+        "nakshatra_lord": "Rahu",
+        "pada": 3,
+        "dignity": "neutral",
+        "retrograde": false,
+        "combust": false
+      }
+    },
+    {
+      "entity_id": "VEDA-GRAHA-MARS",
+      "display_name": "Mars",
+      "longitude": 266.9227,
+      "degree": 26.92,
+      "rashi_entity_id": "VEDA-RASHI-SAGITTARIUS",
+      "rashi_display_name": "Sagittarius",
+      "bhava_entity_id": "VEDA-BHAVA-03",
+      "bhava_number": 3,
+      "nakshatra_entity_id": "VEDA-NAK-UTTARA_ASHADHA",
+      "nakshatra_display_name": "Uttara Ashadha",
+      "pada": 1,
+      "retrograde": false,
+      "dignity": "friendly",
+      "raw_legacy_value": {
+        "longitude": 266.9227,
+        "sign": "Sagittarius",
+        "degree": 26.92,
+        "house": 3,
+        "nakshatra": "Uttara Ashadha",
+        "nakshatra_lord": "Sun",
+        "pada": 1,
+        "dignity": "friendly",
+        "retrograde": false,
+        "combust": false
+      }
+    },
+    {
+      "entity_id": "VEDA-GRAHA-MERCURY",
+      "display_name": "Mercury",
+      "longitude": 211.2251,
+      "degree": 1.23,
+      "rashi_entity_id": "VEDA-RASHI-SCORPIO",
+      "rashi_display_name": "Scorpio",
+      "bhava_entity_id": "VEDA-BHAVA-02",
+      "bhava_number": 2,
+      "nakshatra_entity_id": "VEDA-NAK-VISHAKHA",
+      "nakshatra_display_name": "Vishakha",
+      "pada": 4,
+      "retrograde": false,
+      "dignity": "neutral",
+      "raw_legacy_value": {
+        "longitude": 211.2251,
+        "sign": "Scorpio",
+        "degree": 1.23,
+        "house": 2,
+        "nakshatra": "Vishakha",
+        "nakshatra_lord": "Jupiter",
+        "pada": 4,
+        "dignity": "neutral",
+        "retrograde": false,
+        "combust": false
+      }
+    },
+    {
+      "entity_id": "VEDA-GRAHA-JUPITER",
+      "display_name": "Jupiter",
+      "longitude": 255.5387,
+      "degree": 15.54,
+      "rashi_entity_id": "VEDA-RASHI-SAGITTARIUS",
+      "rashi_display_name": "Sagittarius",
+      "bhava_entity_id": "VEDA-BHAVA-03",
+      "bhava_number": 3,
+      "nakshatra_entity_id": "VEDA-NAK-PURVA_ASHADHA",
+      "nakshatra_display_name": "Purva Ashadha",
+      "pada": 1,
+      "retrograde": false,
+      "dignity": "moolatrikona",
+      "raw_legacy_value": {
+        "longitude": 255.5387,
+        "sign": "Sagittarius",
+        "degree": 15.54,
+        "house": 3,
+        "nakshatra": "Purva Ashadha",
+        "nakshatra_lord": "Venus",
+        "pada": 1,
+        "dignity": "moolatrikona",
+        "retrograde": false,
+        "combust": false
+      }
+    },
+    {
+      "entity_id": "VEDA-GRAHA-VENUS",
+      "display_name": "Venus",
+      "longitude": 233.1248,
+      "degree": 23.12,
+      "rashi_entity_id": "VEDA-RASHI-SCORPIO",
+      "rashi_display_name": "Scorpio",
+      "bhava_entity_id": "VEDA-BHAVA-02",
+      "bhava_number": 2,
+      "nakshatra_entity_id": "VEDA-NAK-JYESHTHA",
+      "nakshatra_display_name": "Jyeshtha",
+      "pada": 2,
+      "retrograde": false,
+      "dignity": "neutral",
+      "raw_legacy_value": {
+        "longitude": 233.1248,
+        "sign": "Scorpio",
+        "degree": 23.12,
+        "house": 2,
+        "nakshatra": "Jyeshtha",
+        "nakshatra_lord": "Mercury",
+        "pada": 2,
+        "dignity": "neutral",
+        "retrograde": false,
+        "combust": false
+      }
+    },
+    {
+      "entity_id": "VEDA-GRAHA-SATURN",
+      "display_name": "Saturn",
+      "longitude": 204.4433,
+      "degree": 24.44,
+      "rashi_entity_id": "VEDA-RASHI-LIBRA",
+      "rashi_display_name": "Libra",
+      "bhava_entity_id": "VEDA-BHAVA-01",
+      "bhava_number": 1,
+      "nakshatra_entity_id": "VEDA-NAK-VISHAKHA",
+      "nakshatra_display_name": "Vishakha",
+      "pada": 2,
+      "retrograde": false,
+      "dignity": "exalted",
+      "raw_legacy_value": {
+        "longitude": 204.4433,
+        "sign": "Libra",
+        "degree": 24.44,
+        "house": 1,
+        "nakshatra": "Vishakha",
+        "nakshatra_lord": "Jupiter",
+        "pada": 2,
+        "dignity": "exalted",
+        "retrograde": false,
+        "combust": true
+      }
+    },
+    {
+      "entity_id": "VEDA-GRAHA-RAHU",
+      "display_name": "Rahu",
+      "longitude": 33.9292,
+      "degree": 3.93,
+      "rashi_entity_id": "VEDA-RASHI-TAURUS",
+      "rashi_display_name": "Taurus",
+      "bhava_entity_id": "VEDA-BHAVA-08",
+      "bhava_number": 8,
+      "nakshatra_entity_id": "VEDA-NAK-KRITTIKA",
+      "nakshatra_display_name": "Krittika",
+      "pada": 3,
+      "retrograde": true,
+      "dignity": "friendly",
+      "raw_legacy_value": {
+        "longitude": 33.9292,
+        "sign": "Taurus",
+        "degree": 3.93,
+        "house": 8,
+        "nakshatra": "Krittika",
+        "nakshatra_lord": "Sun",
+        "pada": 3,
+        "dignity": "friendly",
+        "retrograde": true,
+        "combust": false
+      }
+    },
+    {
+      "entity_id": "VEDA-GRAHA-KETU",
+      "display_name": "Ketu",
+      "longitude": 213.9292,
+      "degree": 3.93,
+      "rashi_entity_id": "VEDA-RASHI-SCORPIO",
+      "rashi_display_name": "Scorpio",
+      "bhava_entity_id": "VEDA-BHAVA-02",
+      "bhava_number": 2,
+      "nakshatra_entity_id": "VEDA-NAK-ANURADHA",
+      "nakshatra_display_name": "Anuradha",
+      "pada": 1,
+      "retrograde": true,
+      "dignity": "neutral",
+      "raw_legacy_value": {
+        "longitude": 213.9292,
+        "sign": "Scorpio",
+        "degree": 3.93,
+        "house": 2,
+        "nakshatra": "Anuradha",
+        "nakshatra_lord": "Saturn",
+        "pada": 1,
+        "dignity": "neutral",
+        "retrograde": true,
+        "combust": false
+      }
+    }
+  ],
+  "houses": [
+    {
+      "entity_id": "VEDA-BHAVA-01",
+      "house_number": 1,
+      "rashi_entity_id": "VEDA-RASHI-LIBRA",
+      "display_name": "Libra",
+      "lord": "Venus",
+      "occupants": [
+        "Sun",
+        "Saturn"
+      ],
+      "raw_legacy_value": {
+        "house": 1,
+        "sign": "Libra",
+        "lord": "Venus",
+        "lord_house": 2,
+        "lord_dignity": "neutral",
+        "occupants": [
+          "Sun",
+          "Saturn"
+        ],
+        "strength": "weak",
+        "signification": "Self, personality, health, overall life direction"
+      }
+    },
+    {
+      "entity_id": "VEDA-BHAVA-02",
+      "house_number": 2,
+      "rashi_entity_id": "VEDA-RASHI-SCORPIO",
+      "display_name": "Scorpio",
+      "lord": "Mars",
+      "occupants": [
+        "Mercury",
+        "Venus",
+        "Ketu"
+      ],
+      "raw_legacy_value": {
+        "house": 2,
+        "sign": "Scorpio",
+        "lord": "Mars",
+        "lord_house": 3,
+        "lord_dignity": "friendly",
+        "occupants": [
+          "Mercury",
+          "Venus",
+          "Ketu"
+        ],
+        "strength": "strong",
+        "signification": "Wealth, savings, speech, family, food, right eye"
+      }
+    },
+    {
+      "entity_id": "VEDA-BHAVA-03",
+      "house_number": 3,
+      "rashi_entity_id": "VEDA-RASHI-SAGITTARIUS",
+      "display_name": "Sagittarius",
+      "lord": "Jupiter",
+      "occupants": [
+        "Mars",
+        "Jupiter"
+      ],
+      "raw_legacy_value": {
+        "house": 3,
+        "sign": "Sagittarius",
+        "lord": "Jupiter",
+        "lord_house": 3,
+        "lord_dignity": "moolatrikona",
+        "occupants": [
+          "Mars",
+          "Jupiter"
+        ],
+        "strength": "strong",
+        "signification": "Siblings, courage, communication, short journeys, hands"
+      }
+    },
+    {
+      "entity_id": "VEDA-BHAVA-04",
+      "house_number": 4,
+      "rashi_entity_id": "VEDA-RASHI-CAPRICORN",
+      "display_name": "Capricorn",
+      "lord": "Saturn",
+      "occupants": [],
+      "raw_legacy_value": {
+        "house": 4,
+        "sign": "Capricorn",
+        "lord": "Saturn",
+        "lord_house": 1,
+        "lord_dignity": "exalted",
+        "occupants": [],
+        "strength": "strong",
+        "signification": "Mother, home, property, vehicles, education, chest"
+      }
+    },
+    {
+      "entity_id": "VEDA-BHAVA-05",
+      "house_number": 5,
+      "rashi_entity_id": "VEDA-RASHI-AQUARIUS",
+      "display_name": "Aquarius",
+      "lord": "Saturn",
+      "occupants": [
+        "Moon"
+      ],
+      "raw_legacy_value": {
+        "house": 5,
+        "sign": "Aquarius",
+        "lord": "Saturn",
+        "lord_house": 1,
+        "lord_dignity": "exalted",
+        "occupants": [
+          "Moon"
+        ],
+        "strength": "strong",
+        "signification": "Children, intelligence, creativity, speculation, past life merits"
+      }
+    },
+    {
+      "entity_id": "VEDA-BHAVA-06",
+      "house_number": 6,
+      "rashi_entity_id": "VEDA-RASHI-PISCES",
+      "display_name": "Pisces",
+      "lord": "Jupiter",
+      "occupants": [],
+      "raw_legacy_value": {
+        "house": 6,
+        "sign": "Pisces",
+        "lord": "Jupiter",
+        "lord_house": 3,
+        "lord_dignity": "moolatrikona",
+        "occupants": [],
+        "strength": "strong",
+        "signification": "Enemies, debts, diseases, litigation, service, maternal uncle"
+      }
+    },
+    {
+      "entity_id": "VEDA-BHAVA-07",
+      "house_number": 7,
+      "rashi_entity_id": "VEDA-RASHI-ARIES",
+      "display_name": "Aries",
+      "lord": "Mars",
+      "occupants": [],
+      "raw_legacy_value": {
+        "house": 7,
+        "sign": "Aries",
+        "lord": "Mars",
+        "lord_house": 3,
+        "lord_dignity": "friendly",
+        "occupants": [],
+        "strength": "moderate",
+        "signification": "Spouse, partnerships, business, foreign journeys, lower abdomen"
+      }
+    },
+    {
+      "entity_id": "VEDA-BHAVA-08",
+      "house_number": 8,
+      "rashi_entity_id": "VEDA-RASHI-TAURUS",
+      "display_name": "Taurus",
+      "lord": "Venus",
+      "occupants": [
+        "Rahu"
+      ],
+      "raw_legacy_value": {
+        "house": 8,
+        "sign": "Taurus",
+        "lord": "Venus",
+        "lord_house": 2,
+        "lord_dignity": "neutral",
+        "occupants": [
+          "Rahu"
+        ],
+        "strength": "weak",
+        "signification": "Longevity, obstacles, inheritance, transformation, hidden knowledge"
+      }
+    },
+    {
+      "entity_id": "VEDA-BHAVA-09",
+      "house_number": 9,
+      "rashi_entity_id": "VEDA-RASHI-GEMINI",
+      "display_name": "Gemini",
+      "lord": "Mercury",
+      "occupants": [],
+      "raw_legacy_value": {
+        "house": 9,
+        "sign": "Gemini",
+        "lord": "Mercury",
+        "lord_house": 2,
+        "lord_dignity": "neutral",
+        "occupants": [],
+        "strength": "moderate",
+        "signification": "Father, fortune, higher education, religion, guru, long journeys"
+      }
+    },
+    {
+      "entity_id": "VEDA-BHAVA-10",
+      "house_number": 10,
+      "rashi_entity_id": "VEDA-RASHI-CANCER",
+      "display_name": "Cancer",
+      "lord": "Moon",
+      "occupants": [],
+      "raw_legacy_value": {
+        "house": 10,
+        "sign": "Cancer",
+        "lord": "Moon",
+        "lord_house": 5,
+        "lord_dignity": "neutral",
+        "occupants": [],
+        "strength": "moderate",
+        "signification": "Career, reputation, authority, government, public image, knees"
+      }
+    },
+    {
+      "entity_id": "VEDA-BHAVA-11",
+      "house_number": 11,
+      "rashi_entity_id": "VEDA-RASHI-LEO",
+      "display_name": "Leo",
+      "lord": "Sun",
+      "occupants": [],
+      "raw_legacy_value": {
+        "house": 11,
+        "sign": "Leo",
+        "lord": "Sun",
+        "lord_house": 1,
+        "lord_dignity": "debilitated",
+        "occupants": [],
+        "strength": "weak",
+        "signification": "Income, gains, elder siblings, social networks, hopes and desires"
+      }
+    },
+    {
+      "entity_id": "VEDA-BHAVA-12",
+      "house_number": 12,
+      "rashi_entity_id": "VEDA-RASHI-VIRGO",
+      "display_name": "Virgo",
+      "lord": "Mercury",
+      "occupants": [],
+      "raw_legacy_value": {
+        "house": 12,
+        "sign": "Virgo",
+        "lord": "Mercury",
+        "lord_house": 2,
+        "lord_dignity": "neutral",
+        "occupants": [],
+        "strength": "moderate",
+        "signification": "Losses, moksha, foreign lands, expenses, bed pleasures, left eye"
+      }
+    }
+  ],
+  "vargas": [
+    {
+      "entity_id": "VEDA-VARGA-D09",
+      "varga_key": "d9_navamsa",
+      "chart_signs": {
+        "VEDA-GRAHA-SUN": "VEDA-RASHI-PISCES",
+        "VEDA-GRAHA-MOON": "VEDA-RASHI-AQUARIUS",
+        "VEDA-GRAHA-MARS": "VEDA-RASHI-SAGITTARIUS",
+        "VEDA-GRAHA-MERCURY": "VEDA-RASHI-CANCER",
+        "VEDA-GRAHA-JUPITER": "VEDA-RASHI-LEO",
+        "VEDA-GRAHA-VENUS": "VEDA-RASHI-CAPRICORN",
+        "VEDA-GRAHA-SATURN": "VEDA-RASHI-TAURUS",
+        "VEDA-GRAHA-RAHU": "VEDA-RASHI-AQUARIUS",
+        "VEDA-GRAHA-KETU": "VEDA-RASHI-LEO"
+      },
+      "raw_legacy_value": [
+        {
+          "planet": "Sun",
+          "rashi": "Libra",
+          "navamsa_sign": "Pisces",
+          "navamsa_lord": "Jupiter"
+        },
+        {
+          "planet": "Moon",
+          "rashi": "Aquarius",
+          "navamsa_sign": "Aquarius",
+          "navamsa_lord": "Saturn"
+        },
+        {
+          "planet": "Mars",
+          "rashi": "Sagittarius",
+          "navamsa_sign": "Sagittarius",
+          "navamsa_lord": "Jupiter"
+        },
+        {
+          "planet": "Mercury",
+          "rashi": "Scorpio",
+          "navamsa_sign": "Cancer",
+          "navamsa_lord": "Moon"
+        },
+        {
+          "planet": "Jupiter",
+          "rashi": "Sagittarius",
+          "navamsa_sign": "Leo",
+          "navamsa_lord": "Sun"
+        },
+        {
+          "planet": "Venus",
+          "rashi": "Scorpio",
+          "navamsa_sign": "Capricorn",
+          "navamsa_lord": "Saturn"
+        },
+        {
+          "planet": "Saturn",
+          "rashi": "Libra",
+          "navamsa_sign": "Taurus",
+          "navamsa_lord": "Venus"
+        },
+        {
+          "planet": "Rahu",
+          "rashi": "Taurus",
+          "navamsa_sign": "Aquarius",
+          "navamsa_lord": "Saturn"
+        },
+        {
+          "planet": "Ketu",
+          "rashi": "Scorpio",
+          "navamsa_sign": "Leo",
+          "navamsa_lord": "Sun"
+        }
+      ]
+    },
+    {
+      "entity_id": "VEDA-VARGA-D10",
+      "varga_key": "d10_dasamsa",
+      "chart_signs": {
+        "VEDA-GRAHA-SUN": "VEDA-RASHI-PISCES",
+        "VEDA-GRAHA-MOON": "VEDA-RASHI-GEMINI",
+        "VEDA-GRAHA-MARS": "VEDA-RASHI-LEO",
+        "VEDA-GRAHA-MERCURY": "VEDA-RASHI-CANCER",
+        "VEDA-GRAHA-JUPITER": "VEDA-RASHI-TAURUS",
+        "VEDA-GRAHA-VENUS": "VEDA-RASHI-AQUARIUS",
+        "VEDA-GRAHA-SATURN": "VEDA-RASHI-GEMINI",
+        "VEDA-GRAHA-RAHU": "VEDA-RASHI-AQUARIUS",
+        "VEDA-GRAHA-KETU": "VEDA-RASHI-LEO"
+      },
+      "raw_legacy_value": [
+        {
+          "planet": "Sun",
+          "rashi": "Libra",
+          "dasamsa_sign": "Pisces",
+          "dasamsa_lord": "Jupiter"
+        },
+        {
+          "planet": "Moon",
+          "rashi": "Aquarius",
+          "dasamsa_sign": "Gemini",
+          "dasamsa_lord": "Mercury"
+        },
+        {
+          "planet": "Mars",
+          "rashi": "Sagittarius",
+          "dasamsa_sign": "Leo",
+          "dasamsa_lord": "Sun"
+        },
+        {
+          "planet": "Mercury",
+          "rashi": "Scorpio",
+          "dasamsa_sign": "Cancer",
+          "dasamsa_lord": "Moon"
+        },
+        {
+          "planet": "Jupiter",
+          "rashi": "Sagittarius",
+          "dasamsa_sign": "Taurus",
+          "dasamsa_lord": "Venus"
+        },
+        {
+          "planet": "Venus",
+          "rashi": "Scorpio",
+          "dasamsa_sign": "Aquarius",
+          "dasamsa_lord": "Saturn"
+        },
+        {
+          "planet": "Saturn",
+          "rashi": "Libra",
+          "dasamsa_sign": "Gemini",
+          "dasamsa_lord": "Mercury"
+        },
+        {
+          "planet": "Rahu",
+          "rashi": "Taurus",
+          "dasamsa_sign": "Aquarius",
+          "dasamsa_lord": "Saturn"
+        },
+        {
+          "planet": "Ketu",
+          "rashi": "Scorpio",
+          "dasamsa_sign": "Leo",
+          "dasamsa_lord": "Sun"
+        }
+      ]
+    }
+  ],
+  "dashas": [
+    {
+      "entity_id": "VEDA-DASHA-VIMSHOTTARI",
+      "current_periods": {
+        "mahadasha": {
+          "planet": "Saturn",
+          "start_date": "2007-09-09",
+          "end_date": "2026-09-09",
+          "years": 19
+        },
+        "antardasha": {
+          "planet": "Jupiter",
+          "start_date": "2024-02-26",
+          "end_date": "2026-09-08"
+        },
+        "pratyantardasha": {
+          "planet": "Rahu",
+          "start_date": "2026-04-22",
+          "end_date": "2026-09-08"
+        }
+      },
+      "mahadasha_sequence": [
+        "Rahu",
+        "Jupiter",
+        "Saturn",
+        "Mercury",
+        "Ketu",
+        "Venus",
+        "Sun",
+        "Moon",
+        "Mars",
+        "Rahu",
+        "Jupiter",
+        "Saturn",
+        "Mercury",
+        "Ketu",
+        "Venus",
+        "Sun",
+        "Moon",
+        "Mars"
+      ],
+      "has_all_antardashas": true,
+      "raw_legacy_value": {
+        "mahadasha": {
+          "planet": "Saturn",
+          "start_date": "2007-09-09",
+          "end_date": "2026-09-09",
+          "years": 19
+        },
+        "antardasha": {
+          "planet": "Jupiter",
+          "start_date": "2024-02-26",
+          "end_date": "2026-09-08"
+        },
+        "pratyantardasha": {
+          "planet": "Rahu",
+          "start_date": "2026-04-22",
+          "end_date": "2026-09-08"
+        },
+        "all_mahadashas": [
+          {
+            "planet": "Rahu",
+            "start_date": "1984-11-03",
+            "end_date": "1991-09-09",
+            "years": 6.85
+          },
+          {
+            "planet": "Jupiter",
+            "start_date": "1991-09-09",
+            "end_date": "2007-09-09",
+            "years": 16
+          },
+          {
+            "planet": "Saturn",
+            "start_date": "2007-09-09",
+            "end_date": "2026-09-09",
+            "years": 19
+          },
+          {
+            "planet": "Mercury",
+            "start_date": "2026-09-09",
+            "end_date": "2043-09-09",
+            "years": 17
+          },
+          {
+            "planet": "Ketu",
+            "start_date": "2043-09-09",
+            "end_date": "2050-09-09",
+            "years": 7
+          },
+          {
+            "planet": "Venus",
+            "start_date": "2050-09-09",
+            "end_date": "2070-09-09",
+            "years": 20
+          },
+          {
+            "planet": "Sun",
+            "start_date": "2070-09-09",
+            "end_date": "2076-09-08",
+            "years": 6
+          },
+          {
+            "planet": "Moon",
+            "start_date": "2076-09-08",
+            "end_date": "2086-09-09",
+            "years": 10
+          },
+          {
+            "planet": "Mars",
+            "start_date": "2086-09-09",
+            "end_date": "2093-09-09",
+            "years": 7
+          },
+          {
+            "planet": "Rahu",
+            "start_date": "2093-09-09",
+            "end_date": "2111-09-10",
+            "years": 18
+          },
+          {
+            "planet": "Jupiter",
+            "start_date": "2111-09-10",
+            "end_date": "2127-09-10",
+            "years": 16
+          },
+          {
+            "planet": "Saturn",
+            "start_date": "2127-09-10",
+            "end_date": "2146-09-10",
+            "years": 19
+          },
+          {
+            "planet": "Mercury",
+            "start_date": "2146-09-10",
+            "end_date": "2163-09-10",
+            "years": 17
+          },
+          {
+            "planet": "Ketu",
+            "start_date": "2163-09-10",
+            "end_date": "2170-09-10",
+            "years": 7
+          },
+          {
+            "planet": "Venus",
+            "start_date": "2170-09-10",
+            "end_date": "2190-09-10",
+            "years": 20
+          },
+          {
+            "planet": "Sun",
+            "start_date": "2190-09-10",
+            "end_date": "2196-09-09",
+            "years": 6
+          },
+          {
+            "planet": "Moon",
+            "start_date": "2196-09-09",
+            "end_date": "2206-09-11",
+            "years": 10
+          },
+          {
+            "planet": "Mars",
+            "start_date": "2206-09-11",
+            "end_date": "2213-09-11",
+            "years": 7
+          }
+        ],
+        "all_antardashas": [
+          {
+            "planet": "Saturn",
+            "start_date": "2007-09-09",
+            "end_date": "2010-09-11",
+            "years": 3.01,
+            "is_current": false
+          },
+          {
+            "planet": "Mercury",
+            "start_date": "2010-09-11",
+            "end_date": "2013-05-21",
+            "years": 2.69,
+            "is_current": false
+          },
+          {
+            "planet": "Ketu",
+            "start_date": "2013-05-21",
+            "end_date": "2014-06-30",
+            "years": 1.11,
+            "is_current": false
+          },
+          {
+            "planet": "Venus",
+            "start_date": "2014-06-30",
+            "end_date": "2017-08-30",
+            "years": 3.17,
+            "is_current": false
+          },
+          {
+            "planet": "Sun",
+            "start_date": "2017-08-30",
+            "end_date": "2018-08-12",
+            "years": 0.95,
+            "is_current": false
+          },
+          {
+            "planet": "Moon",
+            "start_date": "2018-08-12",
+            "end_date": "2020-03-12",
+            "years": 1.58,
+            "is_current": false
+          },
+          {
+            "planet": "Mars",
+            "start_date": "2020-03-12",
+            "end_date": "2021-04-21",
+            "years": 1.11,
+            "is_current": false
+          },
+          {
+            "planet": "Rahu",
+            "start_date": "2021-04-21",
+            "end_date": "2024-02-26",
+            "years": 2.85,
+            "is_current": false
+          },
+          {
+            "planet": "Jupiter",
+            "start_date": "2024-02-26",
+            "end_date": "2026-09-08",
+            "years": 2.53,
+            "is_current": true
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "status": "VALIDATED_WITH_CONDITIONS",
+    "confidence_status": "VALIDATED_WITH_CONDITIONS",
+    "calculation_provider": "SWISS_EPHEMERIS_KUNDLI_ENGINE",
+    "algorithm_version": "swisseph-lahiri-true-node",
+    "house_method": "WHOLE_SIGN",
+    "node_method": "TRUE_NODE",
+    "ayanamsha_policy": "LAHIRI",
+    "timezone_policy": "USER_PROVIDED_OFFSET",
+    "raw_entity": {
+      "type": "person",
+      "inception_date": "1984-11-03",
+      "inception_time": "06:30:00",
+      "place": "Mumbai",
+      "latitude": 19.076,
+      "longitude": 72.8777,
+      "timezone_offset_hours": 5.5,
+      "time_approximate": false
+    },
+    "non_core_grahas": [],
+    "requested_facts": [
+      "lagna",
+      "grahas",
+      "nakshatra",
+      "vimshottari",
+      "vargas"
+    ]
+  }
+}

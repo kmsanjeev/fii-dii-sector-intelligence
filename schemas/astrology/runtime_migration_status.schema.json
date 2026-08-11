@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "surface_id",
+    "facade_routed",
+    "runtime_surface",
+    "status",
+    "notes"
+  ],
+  "properties": {
+    "surface_id": {
+      "type": "string"
+    },
+    "facade_routed": {
+      "type": "boolean"
+    },
+    "runtime_surface": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "phase_id": "VEDA-P012",
+    "phase_date": "2026-08-11",
+    "generated_at": "2026-08-11T00:00:00Z",
+    "regression_baseline": "438 passed / 0 failed"
+  },
+  "summary": {
+    "runtime_surfaces_identified": 8,
+    "production_paths_routed_through_facade": 4,
+    "known_divergences_entering": 10,
+    "known_divergences_confirmed": 2,
+    "new_divergences": 11,
+    "unexplained_divergences": 0,
+    "p001_pass_count": 11,
+    "p001_total": 11,
+    "p004_pass_count": 25,
+    "p004_total": 25,
+    "shadow_comparison_count": 2,
+    "legacy_engines_removed": 0,
+    "production_astrology_calculation_semantics_changed": "NO",
+    "production_astrology_interpretation_semantics_changed": "NO",
+    "approved_core_changed": "NO",
+    "production_rules_activated": 0
+  }
+}

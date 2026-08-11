@@ -1,0 +1,26 @@
+{
+  "request_id": "p012-sample-request",
+  "runtime_profile": "PERSONAL",
+  "subject_type": "PERSON",
+  "datetime_local": "1984-11-03T06:30:00",
+  "timezone": "UTC+05:30",
+  "latitude": 19.076,
+  "longitude": 72.8777,
+  "location_name": "Mumbai",
+  "calculation_options": {
+    "timezone_offset_hours": 5.5
+  },
+  "requested_facts": [
+    "lagna",
+    "grahas",
+    "nakshatra",
+    "vimshottari",
+    "vargas"
+  ],
+  "metadata": {
+    "place_name": "Mumbai",
+    "date_of_birth_raw": "1984-11-03",
+    "time_of_birth_raw": "06:30",
+    "time_approximate": false
+  }
+}

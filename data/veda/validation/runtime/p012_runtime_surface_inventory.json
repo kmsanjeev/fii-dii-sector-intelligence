@@ -1,0 +1,281 @@
+[
+  {
+    "surface_id": "personal_kundli_chat_path",
+    "module_path": "engines/ai/chatbot/tools/kundli_calculator.py",
+    "function_class": "compute_personal_kundli",
+    "consumer": "chatbot personal-kundli calculation core",
+    "request_shape": {
+      "date_of_birth": "DD-MM-YYYY | YYYY-MM-DD",
+      "time_of_birth": "HH:MM | HH:MM:SS | unknown",
+      "place_name": "string",
+      "latitude": "optional float",
+      "longitude": "optional float",
+      "timezone_offset_hours": "fixed offset float"
+    },
+    "time_handling": "local datetime + caller-supplied fixed offset",
+    "timezone_handling": "USER_PROVIDED_OFFSET",
+    "location_handling": "city lookup or explicit lat/lon",
+    "ayanamsha_handling": "Lahiri inside personal calculator",
+    "house_method": "WHOLE_SIGN",
+    "node_method": "TRUE_NODE",
+    "varga_support": [
+      "D9",
+      "D10"
+    ],
+    "dasha_support": [
+      "MAHADASHA",
+      "ANTARDASHA",
+      "PRATYANTARDASHA",
+      "ALL_ANTARDASHAS"
+    ],
+    "returned_schema": "personal kundli payload",
+    "interpretation_coupling": "HIGH",
+    "production_usage": "ACTIVE",
+    "tests": [
+      "tests/test_veda_astrology_golden.py::test_personal_kundli_golden_fixtures",
+      "tests/test_veda_calculation_validation.py"
+    ],
+    "classification": "PRIMARY_RUNTIME"
+  },
+  {
+    "surface_id": "generate_personal_kundli_tool",
+    "module_path": "engines/ai/chatbot/tools/data_tools.py",
+    "function_class": "generate_personal_kundli",
+    "consumer": "chat tool registry",
+    "request_shape": "wrapper around personal request",
+    "time_handling": "delegated to canonical facade, fallback to personal runtime",
+    "timezone_handling": "USER_PROVIDED_OFFSET",
+    "location_handling": "delegated",
+    "ayanamsha_handling": "delegated",
+    "house_method": "delegated",
+    "node_method": "delegated",
+    "varga_support": [
+      "D9",
+      "D10"
+    ],
+    "dasha_support": [
+      "MAHADASHA",
+      "ANTARDASHA",
+      "PRATYANTARDASHA",
+      "ALL_ANTARDASHAS"
+    ],
+    "returned_schema": "personal kundli payload",
+    "interpretation_coupling": "HIGH",
+    "production_usage": "ACTIVE",
+    "tests": [
+      "tests/test_veda_jyotisha_runtime_boundary.py::test_generate_personal_kundli_preserves_unknown_time_semantics"
+    ],
+    "classification": "ADAPTER_CANDIDATE"
+  },
+  {
+    "surface_id": "rest_human_kundli_path",
+    "module_path": "engines/intelligence/kundli_engine.py",
+    "function_class": "KundliEngine.compute_human",
+    "consumer": "REST human backend route",
+    "request_shape": {
+      "name": "string",
+      "date_str": "YYYY-MM-DD",
+      "time_str": "HH:MM:SS",
+      "lat": "float",
+      "lon": "float",
+      "tz_offset": "fixed offset float"
+    },
+    "time_handling": "local datetime + caller-supplied fixed offset",
+    "timezone_handling": "USER_PROVIDED_OFFSET",
+    "location_handling": "explicit coordinates only",
+    "ayanamsha_handling": "Lahiri inside KundliEngine",
+    "house_method": "WHOLE_SIGN",
+    "node_method": "TRUE_NODE",
+    "varga_support": [
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D7",
+      "D9",
+      "D10",
+      "D11",
+      "D12",
+      "D16",
+      "D20",
+      "D30",
+      "D60"
+    ],
+    "dasha_support": [
+      "MAHADASHA",
+      "ANTARDASHA",
+      "PRATYANTARDASHA"
+    ],
+    "returned_schema": "REST-style kundli payload",
+    "interpretation_coupling": "MEDIUM",
+    "production_usage": "ACTIVE",
+    "tests": [
+      "tests/test_veda_astrology_golden.py::test_rest_human_kundli_golden_fixtures"
+    ],
+    "classification": "LEGACY_RUNTIME"
+  },
+  {
+    "surface_id": "backend_human_kundli_route",
+    "module_path": "backend/routers/kundli.py",
+    "function_class": "human_kundli",
+    "consumer": "HTTP API",
+    "request_shape": "HumanKundliRequest",
+    "time_handling": "delegated to canonical facade",
+    "timezone_handling": "USER_PROVIDED_OFFSET",
+    "location_handling": "explicit coordinates only",
+    "ayanamsha_handling": "delegated",
+    "house_method": "delegated",
+    "node_method": "delegated",
+    "varga_support": [
+      "delegated REST surface"
+    ],
+    "dasha_support": [
+      "delegated REST surface"
+    ],
+    "returned_schema": "{kundli, interpretation}",
+    "interpretation_coupling": "HIGH",
+    "production_usage": "ACTIVE",
+    "tests": [
+      "tests/test_veda_jyotisha_runtime_boundary.py::test_human_route_uses_facade_without_shape_change"
+    ],
+    "classification": "ADAPTER_CANDIDATE"
+  },
+  {
+    "surface_id": "stock_kundli_route",
+    "module_path": "engines/intelligence/kundli_engine.py",
+    "function_class": "KundliEngine.compute_stock",
+    "consumer": "stock route, AstroFinance, bulk intelligence",
+    "request_shape": {
+      "symbol": "string",
+      "listing_date": "YYYY-MM-DD",
+      "exchange": "string"
+    },
+    "time_handling": "exchange opening timestamp",
+    "timezone_handling": "HARDCODED_OFFSET",
+    "location_handling": "derived from exchange registry",
+    "ayanamsha_handling": "Lahiri inside KundliEngine",
+    "house_method": "WHOLE_SIGN",
+    "node_method": "TRUE_NODE",
+    "varga_support": [
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D7",
+      "D9",
+      "D10",
+      "D11",
+      "D12",
+      "D16",
+      "D20",
+      "D30",
+      "D60"
+    ],
+    "dasha_support": [
+      "MAHADASHA",
+      "ANTARDASHA",
+      "PRATYANTARDASHA"
+    ],
+    "returned_schema": "REST-style kundli payload",
+    "interpretation_coupling": "HIGH",
+    "production_usage": "ACTIVE",
+    "tests": [
+      "tests/test_veda_astrology_golden.py::test_stock_kundli_golden_fixtures"
+    ],
+    "classification": "SPECIALIZED_RUNTIME"
+  },
+  {
+    "surface_id": "backend_stock_kundli_route",
+    "module_path": "backend/routers/kundli.py",
+    "function_class": "stock_kundli",
+    "consumer": "HTTP API / stock detail views",
+    "request_shape": "{symbol, exchange, include_gann, generate_narrative}",
+    "time_handling": "delegated to canonical facade on live compute; cached payload on cache hit",
+    "timezone_handling": "HARDCODED_OFFSET",
+    "location_handling": "derived from exchange registry",
+    "ayanamsha_handling": "delegated",
+    "house_method": "delegated",
+    "node_method": "delegated",
+    "varga_support": [
+      "delegated stock surface"
+    ],
+    "dasha_support": [
+      "delegated stock surface"
+    ],
+    "returned_schema": "{symbol, exchange, kundli, gann, interpretation}",
+    "interpretation_coupling": "HIGH",
+    "production_usage": "ACTIVE",
+    "tests": [
+      "tests/test_veda_astrology_golden.py::test_stock_kundli_endpoint_uses_cache_for_known_symbol"
+    ],
+    "classification": "ADAPTER_CANDIDATE"
+  },
+  {
+    "surface_id": "country_kundli_route",
+    "module_path": "engines/intelligence/kundli_engine.py",
+    "function_class": "KundliEngine.compute_country",
+    "consumer": "country inception route",
+    "request_shape": {
+      "country_name": "string"
+    },
+    "time_handling": "fixed stored inception datetime",
+    "timezone_handling": "HARDCODED_OFFSET",
+    "location_handling": "derived from country registry",
+    "ayanamsha_handling": "Lahiri inside KundliEngine",
+    "house_method": "WHOLE_SIGN",
+    "node_method": "TRUE_NODE",
+    "varga_support": [
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D7",
+      "D9",
+      "D10",
+      "D11",
+      "D12",
+      "D16",
+      "D20",
+      "D30",
+      "D60"
+    ],
+    "dasha_support": [
+      "MAHADASHA",
+      "ANTARDASHA",
+      "PRATYANTARDASHA"
+    ],
+    "returned_schema": "REST-style kundli payload",
+    "interpretation_coupling": "HIGH",
+    "production_usage": "ACTIVE",
+    "tests": [
+      "tests/test_veda_astrology_golden.py::test_country_kundli_golden_fixtures"
+    ],
+    "classification": "SPECIALIZED_RUNTIME"
+  },
+  {
+    "surface_id": "backend_country_kundli_route",
+    "module_path": "backend/routers/kundli.py",
+    "function_class": "country_kundli",
+    "consumer": "HTTP API",
+    "request_shape": "{name, generate_narrative}",
+    "time_handling": "delegated to canonical facade",
+    "timezone_handling": "HARDCODED_OFFSET",
+    "location_handling": "derived from country registry",
+    "ayanamsha_handling": "delegated",
+    "house_method": "delegated",
+    "node_method": "delegated",
+    "varga_support": [
+      "delegated country surface"
+    ],
+    "dasha_support": [
+      "delegated country surface"
+    ],
+    "returned_schema": "{country, kundli, interpretation}",
+    "interpretation_coupling": "HIGH",
+    "production_usage": "ACTIVE",
+    "tests": [
+      "tests/test_veda_jyotisha_runtime_boundary.py::test_country_route_uses_facade_without_shape_change"
+    ],
+    "classification": "ADAPTER_CANDIDATE"
+  }
+]

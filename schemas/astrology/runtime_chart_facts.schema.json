@@ -1,0 +1,53 @@
+{
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "contract_version",
+    "chart_id",
+    "chart_type",
+    "runtime_profile",
+    "runtime_surface",
+    "normalized_datetime",
+    "lagna",
+    "planets",
+    "houses",
+    "vargas",
+    "dashas",
+    "metadata"
+  ],
+  "properties": {
+    "chart_id": {
+      "type": "string"
+    },
+    "chart_type": {
+      "type": "string"
+    },
+    "runtime_profile": {
+      "type": "string"
+    },
+    "runtime_surface": {
+      "type": "string"
+    },
+    "normalized_datetime": {
+      "type": "object"
+    },
+    "lagna": {
+      "type": "object"
+    },
+    "planets": {
+      "type": "array"
+    },
+    "houses": {
+      "type": "array"
+    },
+    "vargas": {
+      "type": "array"
+    },
+    "dashas": {
+      "type": "array"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}

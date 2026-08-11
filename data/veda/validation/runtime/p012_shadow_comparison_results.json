@@ -1,0 +1,184 @@
+[
+  {
+    "fixture_id": "MUMBAI_1984",
+    "input_redacted": {
+      "fixture_id": "MUMBAI_1984",
+      "timezone_offset_hours": 5.5
+    },
+    "request_id": "p012-shadow-MUMBAI_1984",
+    "primary_surface": "personal_kundli_chat_path",
+    "comparison_surface": "rest_human_kundli_path",
+    "primary_profile": "PERSONAL",
+    "comparison_profile": "REST_STANDARD",
+    "divergences": [
+      {
+        "fact": "non_core_graha_surface",
+        "value_a": [],
+        "value_b": [
+          "Neptune",
+          "Uranus"
+        ],
+        "difference": null,
+        "classification": "LEGACY_COMPATIBILITY",
+        "known_reason": "REST-family runtimes surface Uranus/Neptune while the personal path limits canonical grahas to the classical set.",
+        "severity": "LOW",
+        "disposition": "PRESERVE"
+      },
+      {
+        "fact": "Jupiter_dignity",
+        "value_a": "moolatrikona",
+        "value_b": "own_sign",
+        "difference": null,
+        "classification": "LEGACY_COMPATIBILITY",
+        "known_reason": "Dignity tables remain surface-specific in current legacy personal and REST runtimes.",
+        "severity": "LOW",
+        "disposition": "PRESERVE"
+      },
+      {
+        "fact": "Ketu_dignity",
+        "value_a": "neutral",
+        "value_b": "exalted",
+        "difference": null,
+        "classification": "LEGACY_COMPATIBILITY",
+        "known_reason": "Dignity tables remain surface-specific in current legacy personal and REST runtimes.",
+        "severity": "LOW",
+        "disposition": "PRESERVE"
+      },
+      {
+        "fact": "Rahu_dignity",
+        "value_a": "friendly",
+        "value_b": "exalted",
+        "difference": null,
+        "classification": "LEGACY_COMPATIBILITY",
+        "known_reason": "Dignity tables remain surface-specific in current legacy personal and REST runtimes.",
+        "severity": "LOW",
+        "disposition": "PRESERVE"
+      },
+      {
+        "fact": "varga_surface",
+        "value_a": [
+          "d9_navamsa",
+          "d10_dasamsa"
+        ],
+        "value_b": [
+          "D1",
+          "D2",
+          "D3",
+          "D4",
+          "D7",
+          "D9",
+          "D10",
+          "D11",
+          "D12",
+          "D16",
+          "D20",
+          "D30",
+          "D60"
+        ],
+        "difference": null,
+        "classification": "EXPECTED_PROFILE_DIFFERENCE",
+        "known_reason": "Personal path exposes fewer surfaced vargas than REST/stock/country paths.",
+        "severity": "LOW",
+        "disposition": "PRESERVE"
+      },
+      {
+        "fact": "all_antardashas_presence",
+        "value_a": true,
+        "value_b": false,
+        "difference": null,
+        "classification": "EXPECTED_PROFILE_DIFFERENCE",
+        "known_reason": "Personal path exposes deeper dasha surface than REST/stock/country paths.",
+        "severity": "LOW",
+        "disposition": "PRESERVE"
+      }
+    ],
+    "divergence_count": 6,
+    "status": "KNOWN_DIVERGENCE"
+  },
+  {
+    "fixture_id": "LONDON_2001",
+    "input_redacted": {
+      "fixture_id": "LONDON_2001",
+      "timezone_offset_hours": 0.0
+    },
+    "request_id": "p012-shadow-LONDON_2001",
+    "primary_surface": "personal_kundli_chat_path",
+    "comparison_surface": "rest_human_kundli_path",
+    "primary_profile": "PERSONAL",
+    "comparison_profile": "REST_STANDARD",
+    "divergences": [
+      {
+        "fact": "non_core_graha_surface",
+        "value_a": [],
+        "value_b": [
+          "Neptune",
+          "Uranus"
+        ],
+        "difference": null,
+        "classification": "LEGACY_COMPATIBILITY",
+        "known_reason": "REST-family runtimes surface Uranus/Neptune while the personal path limits canonical grahas to the classical set.",
+        "severity": "LOW",
+        "disposition": "PRESERVE"
+      },
+      {
+        "fact": "Ketu_dignity",
+        "value_a": "exalted",
+        "value_b": "neutral",
+        "difference": null,
+        "classification": "LEGACY_COMPATIBILITY",
+        "known_reason": "Dignity tables remain surface-specific in current legacy personal and REST runtimes.",
+        "severity": "LOW",
+        "disposition": "PRESERVE"
+      },
+      {
+        "fact": "Rahu_dignity",
+        "value_a": "exalted",
+        "value_b": "neutral",
+        "difference": null,
+        "classification": "LEGACY_COMPATIBILITY",
+        "known_reason": "Dignity tables remain surface-specific in current legacy personal and REST runtimes.",
+        "severity": "LOW",
+        "disposition": "PRESERVE"
+      },
+      {
+        "fact": "varga_surface",
+        "value_a": [
+          "d9_navamsa",
+          "d10_dasamsa"
+        ],
+        "value_b": [
+          "D1",
+          "D2",
+          "D3",
+          "D4",
+          "D7",
+          "D9",
+          "D10",
+          "D11",
+          "D12",
+          "D16",
+          "D20",
+          "D30",
+          "D60"
+        ],
+        "difference": null,
+        "classification": "EXPECTED_PROFILE_DIFFERENCE",
+        "known_reason": "Personal path exposes fewer surfaced vargas than REST/stock/country paths.",
+        "severity": "LOW",
+        "disposition": "PRESERVE"
+      },
+      {
+        "fact": "all_antardashas_presence",
+        "value_a": true,
+        "value_b": false,
+        "difference": null,
+        "classification": "EXPECTED_PROFILE_DIFFERENCE",
+        "known_reason": "Personal path exposes deeper dasha surface than REST/stock/country paths.",
+        "severity": "LOW",
+        "disposition": "PRESERVE"
+      }
+    ],
+    "divergence_count": 5,
+    "status": "KNOWN_DIVERGENCE"
+  }
+]

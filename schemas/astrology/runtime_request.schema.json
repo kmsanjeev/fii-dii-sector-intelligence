@@ -1,0 +1,66 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "runtime_profile",
+    "subject_type",
+    "datetime_local"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string"
+    },
+    "runtime_profile": {
+      "type": "string"
+    },
+    "subject_type": {
+      "enum": [
+        "PERSON",
+        "STOCK",
+        "COUNTRY",
+        "EVENT",
+        "MARKET"
+      ]
+    },
+    "datetime_local": {
+      "type": "string"
+    },
+    "timezone": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "latitude": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "longitude": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "location_name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "calculation_options": {
+      "type": "object"
+    },
+    "requested_facts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}

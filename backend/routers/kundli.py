@@ -22,6 +22,7 @@ from pydantic import BaseModel
 
 from engines.common import config as cfg
 from engines.common.astrology_safety import present_kundli_chart
+from engines.intelligence.jyotisha_runtime import get_jyotisha_runtime_service
 
 router = APIRouter(prefix='/api', tags=['kundli'])
 
@@ -120,8 +121,7 @@ async def stock_kundli(
             if listing_date in ('nan', 'NaT', 'None', ''):
                 raise HTTPException(status_code=422, detail=f'No listing date for {symbol}')
 
-            ke, ge, ki = _get_engines()
-            chart = ke.compute_stock(symbol, listing_date, exchange)
+            chart = get_jyotisha_runtime_service().compute_stock_chart(symbol, listing_date, exchange).legacy_payload
             if chart is None:
                 raise HTTPException(status_code=500, detail='Kundli computation failed')
 
@@ -165,15 +165,15 @@ async def human_kundli(req: HumanKundliRequest, generate_narrative: bool = False
     """
     Compute Vedic natal chart for a human being.
     """
-    ke, ge, ki = _get_engines()
-    chart = ke.compute_human(
+    _, _, ki = _get_engines()
+    chart = get_jyotisha_runtime_service().compute_rest_human_chart(
         name=req.name,
         date_str=req.date_str,
         time_str=req.time_str,
         lat=req.lat,
         lon=req.lon,
         tz_offset=req.tz_offset,
-    )
+    ).legacy_payload
     if chart is None:
         raise HTTPException(status_code=500, detail='Kundli computation failed')
 
@@ -187,8 +187,8 @@ async def country_kundli(name: str, generate_narrative: bool = False):
     Return inception chart for a country.
     Available: India, USA, UK, China, Japan, Germany, Pakistan, Russia, France, Brazil
     """
-    ke, ge, ki = _get_engines()
-    chart = ke.compute_country(name)
+    _, _, ki = _get_engines()
+    chart = get_jyotisha_runtime_service().compute_country_chart(name).legacy_payload
     if chart is None or 'error' in chart:
         raise HTTPException(
             status_code=404,
