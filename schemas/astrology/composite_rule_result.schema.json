@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VEDA Composite Yoga/Dosha Rule Result",
+  "type": "object",
+  "required": ["capability_id", "rule_id", "status", "formation_matched", "matched_conditions", "rule_version", "interpretation_status"],
+  "properties": {
+    "capability_id": {"type": "string"},
+    "rule_id": {"type": "string"},
+    "status": {"enum": ["FORMED", "FORMED_WITH_MODIFICATION", "CANCELLED", "NOT_FORMED"]},
+    "formation_matched": {"type": "boolean"},
+    "matched_conditions": {"type": "object"},
+    "modifier": {"type": ["object", "null"]},
+    "cancelled": {"type": "boolean"},
+    "chart_fact_ids": {"type": "array"},
+    "claim_ids": {"type": "array"},
+    "passage_ids": {"type": "array"},
+    "source_ids": {"type": "array"},
+    "conflict_ids": {"type": "array"},
+    "rule_version": {"type": "string"},
+    "interpretation_status": {"type": "string"},
+    "production_activation": {"type": "string"}
+  }
+}
