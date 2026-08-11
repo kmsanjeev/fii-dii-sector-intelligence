@@ -17,6 +17,7 @@ from engines.ai.research.platform.providers import (
     ProviderEvidenceHint,
     ProviderSearchBatch,
     ResearchProviderAuthError,
+    ResearchProviderTemporaryError,
 )
 from engines.ai.research.platform.runtime import ResearchPlatformRuntime
 from engines.ai.research.platform.service import ResearchPlatformService
@@ -141,6 +142,25 @@ class FetchFixtureProvider(BasePlatformResearchProvider):
         return {"provider_id": self.provider_id, "status": "HEALTHY", "available": True}
 
 
+class DDGSLiveFixtureProvider(SearchFixtureProvider):
+    def __init__(self, batches_by_title: dict[str, list[list[ProviderDocument]]]):
+        super().__init__(batches_by_title, provider_id="ddgs-search")
+
+
+class RequestsLiveFixtureProvider(FetchFixtureProvider):
+    def __init__(self):
+        super().__init__(provider_id="requests-fetch")
+
+
+class FlakyFetchProvider(FetchFixtureProvider):
+    def retrieve(self, document: ProviderDocument) -> str:
+        if document.source_uri.endswith("/blocked"):
+            raise ResearchProviderAuthError("http_auth_failed:403")
+        if document.source_uri.endswith("/timeout"):
+            raise ResearchProviderTemporaryError("http_fetch_failed:timeout")
+        return super().retrieve(document)
+
+
 def _service(tmp_dir, *, providers: dict[str, BasePlatformResearchProvider]) -> ResearchPlatformService:
     return ResearchPlatformService(
         db_path=tmp_dir / "research_platform.sqlite3",
@@ -247,6 +267,125 @@ def test_p009_provider_fallback_and_cooldown(tmp_dir):
     assert second["runs_started"] == 1
     assert refreshed_auth_state is not None and refreshed_auth_state["status"] == ProviderStatus.COOLDOWN.value
     assert len(service.list_runs()) == 2
+
+
+def test_p009_r1_fetch_failure_marks_run_partial_when_other_evidence_succeeds(tmp_dir):
+    providers = {
+        "external-search": SearchFixtureProvider(
+            {
+                "Mixed retrieval mission": [[
+                    _doc("https://example.com/ok", "Accessible source", "synthetic alpha improves evidence durability"),
+                    _doc("https://example.com/blocked", "Blocked source", "synthetic beta improves evidence durability", topic_key="synthetic.beta.durability"),
+                ]]
+            }
+        ),
+        "external-fetch": FlakyFetchProvider(),
+    }
+    service = _service(tmp_dir, providers=providers)
+
+    mission = service.create_mission(_mission_payload("Mixed retrieval mission"))
+    run = service.trigger_manual_run(mission.mission_id, actor_id="admin@example.com")
+    detail = service.get_run_detail(run.run_id)
+
+    assert run.status.value == "PARTIAL"
+    assert "http_auth_failed:403" in run.errors
+    assert run.sources_accepted == 1
+    assert run.sources_rejected == 1
+    assert run.evidence_created == 1
+    assert run.candidates_created == 1
+    assert detail["run"]["run_scope"] == "EXTERNAL"
+    assert any(item["access_status"] == "ACCEPTED" for item in detail["observations"])
+
+
+def test_p009_r1_source_monitoring_tracks_updated_and_unchanged_versions(tmp_dir):
+    providers = {
+        "external-search": SearchFixtureProvider(
+            {
+                "Monitoring mission": [
+                    [_doc("https://example.com/monitor", "Version one", "synthetic alpha improves evidence durability")],
+                    [_doc("https://example.com/monitor", "Version two", "synthetic alpha improves evidence durability")],
+                    [_doc("https://example.com/monitor", "Version two", "synthetic alpha improves evidence durability")],
+                ]
+            }
+        ),
+        "external-fetch": FetchFixtureProvider(),
+    }
+    service = _service(tmp_dir, providers=providers)
+
+    mission = service.create_mission(_mission_payload("Monitoring mission"))
+    first = service.trigger_manual_run(mission.mission_id, actor_id="admin@example.com")
+    second = service.trigger_manual_run(mission.mission_id, actor_id="admin@example.com")
+    third = service.trigger_manual_run(mission.mission_id, actor_id="admin@example.com")
+
+    first_obs = service.get_run_detail(first.run_id)["observations"][0]
+    second_obs = service.get_run_detail(second.run_id)["observations"][0]
+    third_obs = service.get_run_detail(third.run_id)["observations"][0]
+
+    assert first_obs["domain_metadata"]["change_status"] == "NEW"
+    assert second_obs["domain_metadata"]["change_status"] == "UPDATED"
+    assert third_obs["domain_metadata"]["change_status"] == "UNCHANGED"
+
+
+def test_p009_r1_external_fallback_uses_local_retrieval_for_veda_sources(tmp_dir):
+    providers = {
+        "external-auth": AuthFailSearchProvider({}, provider_id="external-auth"),
+        "external-fetch": FetchFixtureProvider(),
+    }
+    service = _service(tmp_dir, providers=providers)
+
+    mission = service.create_mission(
+        {
+            "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+            "title": "Astrology fallback mission",
+            "objective": "Fallback from external source discovery to the governed local astrology corpus.",
+            "research_type": "CROSS_SOURCE_VALIDATION",
+            "priority": "P1",
+            "status": "ACTIVE",
+            "created_by": "admin",
+            "query_strategy": {
+                "provider_id": "external-auth",
+                "fallback_provider_ids": ["vedic-astrology-local"],
+                "retrieval_provider_id": "external-fetch",
+                "claim_ids": ["VEDA-CLM-000002"],
+                "source_ids": ["VEDA-SRC-000001"],
+                "title": "Vimshottari Dasha Foundations",
+                "claim_text": "The starting Vimshottari period depends on the birth Nakshatra and its remaining balance.",
+                "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+                "stance": "CROSS_SOURCE_SUPPORT",
+                "candidate_type": "CLAIM_UPDATE",
+                "priority": "P1",
+                "domain": "DASHA",
+                "subdomain": "VIMSHOTTARI_DASHA_FOUNDATIONS",
+                "requires_primary_source": True,
+            },
+            "required_source_classes": ["CLASSICAL_PRIMARY", "REFERENCE_EDITION"],
+            "minimum_independent_sources": 1,
+            "research_budget": {
+                "max_queries": 1,
+                "max_sources": 2,
+                "max_provider_calls": 2,
+                "max_runtime_seconds": 120,
+                "max_model_calls": 0,
+                "max_cost": 0,
+                "max_follow_up_depth": 1,
+                "max_retries": 1,
+                "cooldown_seconds": 0,
+            },
+        }
+    )
+
+    run = service.trigger_manual_run(mission.mission_id, actor_id="admin@example.com")
+    detail = service.get_run_detail(run.run_id)
+    auth_state = service.store.get_provider_state("external-auth")
+
+    assert run.status.value in {"SUCCESS", "PARTIAL"}
+    assert auth_state is not None and auth_state["status"] == ProviderStatus.COOLDOWN.value
+    assert detail["run"]["run_scope"] == "HYBRID"
+    assert any(source["source_uri"].startswith("veda://") for source in detail["observations"])
+    assert any(
+        source["provider_id"] == "vedic-astrology-local" and source["access_status"] == "ACCEPTED"
+        for source in detail["observations"]
+    )
 
 
 def test_p009_kill_switch_and_domain_pause_prevent_autonomous_runs(tmp_dir):
@@ -364,6 +503,47 @@ def test_p009_budget_exhaustion_marks_run_partial_and_stops_candidate_creation(t
     assert run.queries_executed == 1
     assert run.sources_discovered == 1
     assert len(service.list_candidates()) == 1
+
+
+def test_p009_r1_external_seed_program_creates_four_live_missions_and_schedules(tmp_dir):
+    providers = {
+        "ddgs-search": DDGSLiveFixtureProvider(
+            {
+                "P009-R1 Mission 1 - Vimshottari Provenance Strengthening": [[
+                    _doc("https://www.wisdomlib.org/shop/books/jyotisha/brihat-parashara-hora-shastra/doc234222.html", "Vimshottari source", "vimshottari dasha janma nakshatra balance"),
+                ]],
+                "P009-R1 Mission 2 - Graha/Bhava Legacy Provenance Recovery": [[
+                    _doc("https://www.wisdomlib.org/hinduism/book/phaladeepika-by-mantreswara-text-and-translation/d/doc1621574.html", "Jupiter first house", "jupiter in first house interpretive effect"),
+                ]],
+                "P009-R1 Mission 3 - Vimshottari Scope Conflict Review": [[
+                    _doc("https://archive.org/details/in.ernet.dli.2015.92117", "Conflict source", "vimshottari default scope contradiction"),
+                ]],
+                "P009-R1 Mission 4 - Lordship Interpretation Knowledge Gap": [[
+                    _doc("https://example.com/gap", "Gap discovery", "legacy lordship interpretation provenance gap", topic_key="legacy.lordship.gap"),
+                ]],
+            }
+        ),
+        "requests-fetch": RequestsLiveFixtureProvider(),
+    }
+    service = _service(tmp_dir, providers=providers)
+    runtime = ResearchPlatformRuntime(service=service, instance_id="p009-r1-runtime")
+
+    seeded = service.seed_vedic_astrology_external_program(actor_id="admin@example.com")
+
+    assert seeded["external_ready"] is True
+    assert len(seeded["missions"]) == 4
+    assert len(seeded["schedules"]) == 4
+    assert sum(1 for item in seeded["missions"] if item["status"] == "ACTIVE") == 4
+    assert {item["cadence_type"] for item in seeded["schedules"]} == {"HOURLY", "DAILY", "WEEKLY"}
+
+    for schedule in service.list_schedules():
+        service.update_schedule(schedule.schedule_id, {"next_run_at": "2026-08-11T00:00:00Z"})
+
+    result = runtime.run_due_tasks(as_of="2026-08-11T01:00:00Z")
+    run_rows = service.list_run_rows(domain_id="VEDA-DOMAIN-VEDIC-ASTROLOGY", page=1, per_page=20)["runs"]
+
+    assert result["runs_started"] == 4
+    assert any(item["run_scope"] == "EXTERNAL" for item in run_rows)
 
 
 def test_p009_external_prompt_injection_is_flagged_and_sanitized(tmp_dir):

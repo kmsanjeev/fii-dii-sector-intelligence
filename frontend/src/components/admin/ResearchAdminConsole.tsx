@@ -515,7 +515,13 @@ function DashboardView({
                     <Badge label={String(item.status)} color={statusColor(String(item.status))} />
                   </div>
                   <div style={{ color: muted, fontSize: 11 }}>
-                    {item.provider_type} · last successful use {formatStamp(item.last_successful_use)}
+                    {item.provider_type} | {item.enabled ? 'enabled' : 'disabled'} | last successful use {formatStamp(item.last_successful_use)}
+                  </div>
+                  <div style={{ color: muted, fontSize: 11, marginTop: 4 }}>
+                    Calls today {Number(item.calls_today || 0)} | queries {Number(item.budget_used?.queries_today || 0)} | retrievals {Number(item.budget_used?.retrievals_today || 0)}
+                  </div>
+                  <div style={{ color: muted, fontSize: 11, marginTop: 4 }}>
+                    Cooldown {formatStamp(item.cooldown_until)} | last failure {formatStamp(item.last_failure)}
                   </div>
                 </div>
               ))}
@@ -869,7 +875,9 @@ export function ResearchAdminConsole() {
                   </div>
                   <div style={{ color: muted, fontSize: 11, marginTop: 6 }}>{item.mission_title}</div>
                   <div style={{ color: muted, fontSize: 11, marginTop: 6 }}>
-                    {item.provider_id} · {item.sources_discovered} sources · {item.candidates_created} candidates
+                    {item.run_scope || 'LOCAL'} | {item.provider_id}
+                    {item.retrieval_provider_id ? ` -> ${item.retrieval_provider_id}` : ''}
+                    | {item.sources_discovered} sources | {item.candidates_created} candidates
                   </div>
                 </div>
               ))}
@@ -886,7 +894,7 @@ export function ResearchAdminConsole() {
                     <Badge label={runDetailQuery.data.run.status} color={statusColor(runDetailQuery.data.run.status)} />
                   </div>
                   <div style={{ color: muted, fontSize: 11, marginBottom: 10 }}>
-                    {runDetailQuery.data.mission.title} · {runDetailQuery.data.run.trigger_type} · {formatStamp(runDetailQuery.data.run.started_at)}
+                    {runDetailQuery.data.mission.title} | {runDetailQuery.data.run.trigger_type} | {runDetailQuery.data.run.run_scope || 'LOCAL'} | {formatStamp(runDetailQuery.data.run.started_at)}
                   </div>
                   <div style={{ display: 'grid', gap: 8 }}>
                     {runDetailQuery.data.timeline.map(event => (
@@ -906,7 +914,7 @@ export function ResearchAdminConsole() {
                           <div style={{ color: text, fontSize: 12, fontWeight: 700 }}>{item.source_title}</div>
                           <Badge label={item.state} color={statusColor(item.state)} />
                         </div>
-                        <div style={{ color: muted, fontSize: 11 }}>{item.provider_id} · {formatStamp(item.retrieved_at)}</div>
+                        <div style={{ color: muted, fontSize: 11 }}>{item.provider_id} | {item.provider_type || 'unknown provider type'} | {formatStamp(item.retrieved_at)}</div>
                       </div>
                     ))}
                   </div>
@@ -1076,7 +1084,7 @@ export function ResearchAdminConsole() {
                     <Badge label={item.state} color={statusColor(item.state)} />
                   </div>
                   <div style={{ color: muted, fontSize: 11, marginTop: 6 }}>
-                    {item.author || 'Unknown author'} · {item.authority_level || 'Unscored'} · {formatStamp(item.retrieved_at)}
+                    {item.author || 'Unknown author'} | {item.authority_level || 'Unscored'} | {item.provider_type || 'unknown provider'} | {formatStamp(item.retrieved_at)}
                   </div>
                 </div>
               ))}
@@ -1097,6 +1105,7 @@ export function ResearchAdminConsole() {
                   <Badge label={selectedSource.state} color={statusColor(selectedSource.state)} />
                   <Badge label={String(selectedSource.authority_level || 'UNSPECIFIED')} color={info} />
                   <Badge label={selectedSource.source_type} color={muted} />
+                  <Badge label={selectedSource.provider_type || 'UNKNOWN_PROVIDER'} color={accent} />
                 </div>
                 <pre style={{ margin: 0, color: muted, fontSize: 11, whiteSpace: 'pre-wrap' }}>
                   {JSON.stringify({

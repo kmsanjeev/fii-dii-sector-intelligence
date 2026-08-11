@@ -1,13 +1,136 @@
 from __future__ import annotations
 
+from pathlib import Path
+
+from engines.ai.research.platform.contracts import EvidenceType, ProviderStatus, ProviderType, ResearchMissionRecord, ResearchProviderDescriptor
+from engines.ai.research.platform.providers import BasePlatformResearchProvider, ProviderDocument, ProviderEvidenceHint, ProviderSearchBatch
 from engines.ai.research.platform.contracts import AdminAction, ApprovalStatus
 from engines.ai.research.platform.service import ResearchPlatformService
 
 
-def _service(tmp_dir) -> ResearchPlatformService:
+def _service(tmp_dir, *, providers: dict[str, BasePlatformResearchProvider] | None = None) -> ResearchPlatformService:
     return ResearchPlatformService(
         db_path=tmp_dir / "research_platform.sqlite3",
+        providers=providers,
     )
+
+
+class ExternalAuthoritySearchProvider(BasePlatformResearchProvider):
+    def descriptor(self) -> ResearchProviderDescriptor:
+        return ResearchProviderDescriptor(
+            provider_id="ddgs-search",
+            provider_type=ProviderType.WEB_SEARCH,
+            capabilities=["search"],
+            supports_search=True,
+            supports_fetch=False,
+            supports_documents=True,
+            status=ProviderStatus.HEALTHY,
+            allowed_uri_schemes=["https", "http"],
+        )
+
+    def is_available(self) -> bool:
+        return True
+
+    def search(self, mission: ResearchMissionRecord, *, prior_run_count: int) -> ProviderSearchBatch:
+        context = dict(mission.query_strategy)
+        context.pop("queries", None)
+        context.pop("fallback_provider_ids", None)
+        blog_doc = ProviderDocument(
+            source_uri="https://astro.example.com/gaja-kesari-buy",
+            source_title="Gaja Kesari buy signal blog",
+            source_type=EvidenceType.WEB_REFERENCE,
+            content="A modern astrology blog claims Gaja Kesari is a strong buy setup.",
+            metadata={**context, "snippet": "Modern blog summary"},
+        )
+        wisdom_doc = ProviderDocument(
+            source_uri="https://www.wisdomlib.org/hinduism/book/phaladeepika-by-mantreswara-text-and-translation/d/doc1621574.html",
+            source_title="Phaladeepika chapter extract",
+            source_type=EvidenceType.WEB_REFERENCE,
+            content="Phaladeepika translated passage concerning Jupiter and the Moon.",
+            metadata={**context, "snippet": "Reference edition excerpt"},
+        )
+        return ProviderSearchBatch(
+            documents=[blog_doc, wisdom_doc],
+            query="gaja kesari classical definition",
+            search_metadata={"provider": "ddgs-search", "result_count": 2},
+        )
+
+    def retrieve(self, document: ProviderDocument) -> str:
+        return document.content
+
+    def fetch_metadata(self, document: ProviderDocument) -> dict:
+        return dict(document.metadata)
+
+    def extract(self, document: ProviderDocument, *, content: str):
+        metadata = dict(document.metadata)
+        claim_text = str(metadata.get("claim_text") or "Gaja Kesari Yoga requires provenance review.")
+        return [
+            ProviderEvidenceHint(
+                passage=content[:220],
+                claim_hint=claim_text,
+                normalized_text=claim_text.lower(),
+                confidence=float(metadata.get("authority_score", 0.45)),
+                location=document.source_uri,
+                metadata=metadata,
+            )
+        ]
+
+    def health_check(self) -> dict:
+        return {"provider_id": "ddgs-search", "status": "HEALTHY", "available": True}
+
+
+class ExternalAuthorityFetchProvider(BasePlatformResearchProvider):
+    def descriptor(self) -> ResearchProviderDescriptor:
+        return ResearchProviderDescriptor(
+            provider_id="requests-fetch",
+            provider_type=ProviderType.DIRECT_WEB,
+            capabilities=["retrieve", "fetch_metadata", "extract"],
+            supports_search=False,
+            supports_fetch=True,
+            supports_documents=True,
+            status=ProviderStatus.HEALTHY,
+            allowed_uri_schemes=["https", "http"],
+        )
+
+    def is_available(self) -> bool:
+        return True
+
+    def search(self, mission: ResearchMissionRecord, *, prior_run_count: int) -> ProviderSearchBatch:
+        raise RuntimeError("not used")
+
+    def retrieve(self, document: ProviderDocument) -> str:
+        document.metadata.update(
+            {
+                "http_status": 200,
+                "content_type": "text/html",
+                "content_length": len(document.content),
+                "final_url": document.source_uri,
+                "redirect_count": 0,
+                "retrieved_at": "2026-08-11T00:00:00Z",
+                "original_text": document.content[:600],
+            }
+        )
+        return document.content
+
+    def fetch_metadata(self, document: ProviderDocument) -> dict:
+        return dict(document.metadata)
+
+    def extract(self, document: ProviderDocument, *, content: str):
+        metadata = dict(document.metadata)
+        claim_text = str(metadata.get("claim_text") or "Gaja Kesari Yoga requires provenance review.")
+        return [
+            ProviderEvidenceHint(
+                passage=content[:220],
+                claim_hint=claim_text,
+                normalized_text=claim_text.lower(),
+                confidence=max(0.45, float(metadata.get("authority_score", 0.45))),
+                location=document.source_uri,
+                metadata=metadata,
+            )
+        ]
+
+    def health_check(self) -> dict:
+        return {"provider_id": "requests-fetch", "status": "HEALTHY", "available": True}
 
 
 def _astrology_candidates(service: ResearchPlatformService):
@@ -135,3 +258,61 @@ def test_astrology_candidate_ledger_reconstructs_creation_merge_and_admin_decisi
     assert "CANDIDATE_CREATED" in pending_events
     assert "CANDIDATE_MERGED" in pending_events
     assert "VALIDATION_COMPLETED" in pending_events
+
+
+def test_astrology_external_research_refines_authority_and_marks_run_scope_external(tmp_dir):
+    providers = {
+        "ddgs-search": ExternalAuthoritySearchProvider(),
+        "requests-fetch": ExternalAuthorityFetchProvider(),
+    }
+    service = _service(tmp_dir, providers=providers)
+    mission = service.create_mission(
+        {
+            "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+            "title": "External authority mission",
+            "objective": "Validate external authority refinement for live Jyotisha research.",
+            "research_type": "LEGACY_RULE_PROVENANCE",
+            "priority": "P2",
+            "status": "ACTIVE",
+            "query_strategy": {
+                "provider_id": "ddgs-search",
+                "retrieval_provider_id": "requests-fetch",
+                "fallback_provider_ids": ["vedic-astrology-local"],
+                "queries": ["gaja kesari classical definition"],
+                "title": "VEDA-P005-LGC-0002",
+                "claim_text": "Gaja Kesari Yoga requires governed provenance review.",
+                "topic_key": "YOGA::GAJA_KESARI",
+                "stance": "PROVENANCE_REVIEW",
+                "candidate_type": "PROVENANCE_CANDIDATE",
+                "priority": "P2",
+                "legacy_rule_id": "VEDA-P005-LGC-0002",
+                "domain": "YOGA",
+                "subdomain": "GAJA_KESARI",
+                "search_terms": ["Gaja Kesari", "Phaladeepika", "Wisdom Library"],
+                "requires_primary_source": True,
+            },
+            "required_source_classes": ["CLASSICAL_PRIMARY", "CLASSICAL_COMMENTARY", "REFERENCE_EDITION"],
+            "minimum_independent_sources": 2,
+        }
+    )
+
+    run = service.trigger_manual_run(mission.mission_id, actor_id="admin@example.com")
+    observations = service.store.list_observations_for_run(run.run_id)
+    run_detail = service.get_run_detail(run.run_id)
+    candidates = _astrology_candidates(service)
+
+    blog = next(item for item in observations if "astro.example.com" in item.source_uri)
+    reference = next(item for item in observations if "wisdomlib.org" in item.source_uri)
+    candidate = next(item for item in candidates if item.metadata.get("legacy_rule_id") == "VEDA-P005-LGC-0002")
+
+    assert run.status.value == "SUCCESS"
+    assert run.sources_discovered == 2
+    assert run.candidates_created == 1
+    assert run.duplicates_detected == 1
+    assert blog.domain_metadata["discovery_only"] is True
+    assert blog.domain_metadata["source_class"] in {"FOLKLORE_OR_UNVERIFIED", "MODERN_PRACTITIONER"}
+    assert reference.domain_metadata["discovery_only"] is False
+    assert reference.domain_metadata["source_class"] == "REFERENCE_EDITION"
+    assert reference.domain_metadata["verification_status"] == "METADATA_VERIFIED"
+    assert candidate.support_count == 2
+    assert run_detail["run"]["run_scope"] == "EXTERNAL"

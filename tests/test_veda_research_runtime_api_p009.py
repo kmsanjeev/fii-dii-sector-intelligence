@@ -17,9 +17,12 @@ FIXTURE_PATH = Path(__file__).resolve().parents[1] / "data" / "research" / "fixt
 
 
 class SearchProvider(BasePlatformResearchProvider):
+    def __init__(self, *, provider_id: str = "external-search"):
+        self.provider_id = provider_id
+
     def descriptor(self) -> ResearchProviderDescriptor:
         return ResearchProviderDescriptor(
-            provider_id="external-search",
+            provider_id=self.provider_id,
             provider_type=ProviderType.WEB_SEARCH,
             capabilities=["search"],
             supports_search=True,
@@ -68,13 +71,13 @@ class SearchProvider(BasePlatformResearchProvider):
         return list(document.evidence_hints)
 
     def health_check(self) -> dict:
-        return {"provider_id": "external-search", "status": "HEALTHY"}
+        return {"provider_id": self.provider_id, "status": "HEALTHY"}
 
 
 class FetchProvider(SearchProvider):
     def descriptor(self) -> ResearchProviderDescriptor:
         return ResearchProviderDescriptor(
-            provider_id="external-fetch",
+            provider_id=self.provider_id,
             provider_type=ProviderType.DIRECT_WEB,
             capabilities=["retrieve", "extract"],
             supports_search=False,
@@ -94,7 +97,7 @@ def _service(tmp_dir) -> ResearchPlatformService:
         fixture_path=FIXTURE_PATH,
         providers={
             "external-search": SearchProvider(),
-            "external-fetch": FetchProvider(),
+            "external-fetch": FetchProvider(provider_id="external-fetch"),
         },
     )
 
@@ -158,3 +161,26 @@ def test_p009_runtime_admin_routes_control_scheduler_state_and_run_due(tmp_dir, 
     assert status.json()["runtime"]["backlog_state"] in {"NORMAL", "ELEVATED", "HIGH", "SATURATED"}
     assert disable_provider.status_code == 200 and disable_provider.json()["enabled"] is False
     assert enable_provider.status_code == 200 and enable_provider.json()["enabled"] is True
+
+
+def test_p009_r1_provider_audit_and_external_seed_routes_are_admin_visible(tmp_dir, monkeypatch):
+    service = ResearchPlatformService(
+        db_path=tmp_dir / "research_platform.sqlite3",
+        fixture_path=FIXTURE_PATH,
+        providers={
+            "ddgs-search": SearchProvider(provider_id="ddgs-search"),
+            "requests-fetch": FetchProvider(provider_id="requests-fetch"),
+        },
+    )
+    runtime = ResearchPlatformRuntime(service=service, instance_id="api-runtime")
+    client = _client(service, runtime, monkeypatch)
+
+    audit = client.get("/api/research/platform/provider-audit")
+    seeded = client.post("/api/research/platform/seed-astrology-external-pilot")
+
+    assert audit.status_code == 200
+    assert any(item["provider"] == "ddgs-search" for item in audit.json()["providers"])
+    assert seeded.status_code == 200
+    assert seeded.json()["external_ready"] is True
+    assert len(seeded.json()["missions"]) == 4
+    assert len(seeded.json()["schedules"]) == 4

@@ -121,6 +121,35 @@ class ResearchPlatformService:
     def list_domains(self) -> list[ResearchDomainRecord]:
         return self.store.list_domains()
 
+    def provider_capability_matrix(self) -> list[dict[str, Any]]:
+        matrix: list[dict[str, Any]] = []
+        for provider_id, provider in self.providers.items():
+            descriptor = provider.descriptor()
+            state = self.store.get_provider_state(provider_id) or {}
+            status = state.get("status") or (descriptor.status.value if hasattr(descriptor.status, "value") else str(descriptor.status))
+            provider_type = self._provider_type_name(provider_id) or "UNKNOWN"
+            enabled = bool(state.get("enabled", True))
+            healthy = status in {ProviderStatus.HEALTHY.value, "ACTIVE"}
+            suitable = enabled and provider.is_available() and provider_type in {"WEB_SEARCH", "DIRECT_WEB", "LOCAL_DOCUMENTS", "INTERNAL_KNOWLEDGE"}
+            matrix.append(
+                {
+                    "provider": provider_id,
+                    "search": bool(descriptor.supports_search),
+                    "fetch": bool(descriptor.supports_fetch),
+                    "auth": bool(descriptor.auth_required),
+                    "enabled": enabled,
+                    "healthy": healthy,
+                    "suitable": suitable,
+                    "implemented": True,
+                    "configured": provider.is_available(),
+                    "validated": bool(state.get("last_success")),
+                    "status": status,
+                    "provider_type": provider_type,
+                }
+            )
+        matrix.sort(key=lambda item: item["provider"])
+        return matrix
+
     def health(self) -> dict[str, Any]:
         failed_runs = sum(1 for run in self.store.list_runs() if run.status == RunStatus.FAILED)
         providers = {name: provider.health_check() for name, provider in self.providers.items()}
@@ -163,6 +192,80 @@ class ResearchPlatformService:
             last_weekly=last_by_cadence["WEEKLY"],
             metrics=metrics,
         )
+
+    def seed_vedic_astrology_external_program(self, *, actor_id: str = "admin") -> dict[str, Any]:
+        provider_matrix = self.provider_capability_matrix()
+        search_ready = any(
+            item["provider"] == "ddgs-search"
+            and item["search"]
+            and item["enabled"]
+            and item["configured"]
+            and item["suitable"]
+            for item in provider_matrix
+        )
+        retrieval_ready = any(
+            item["provider"] == "requests-fetch"
+            and item["fetch"]
+            and item["enabled"]
+            and item["configured"]
+            and item["suitable"]
+            for item in provider_matrix
+        )
+        activate = search_ready and retrieval_ready
+        payloads = self.vedic_astrology_plugin.build_external_activation_program(
+            search_provider_id="ddgs-search",
+            retrieval_provider_id="requests-fetch",
+            fallback_provider_ids=["vedic-astrology-local"],
+            activate=activate,
+        )
+        missions: list[ResearchMissionRecord] = []
+        schedules: list[ResearchScheduleRecord] = []
+        for entry in payloads:
+            mission_payload = dict(entry["mission"])
+            schedule_payload = dict(entry["schedule"])
+            existing_mission = self._find_mission_by_title(mission_payload["domain_id"], mission_payload["title"])
+            if existing_mission is None:
+                mission = self.create_mission(mission_payload)
+            else:
+                mission = existing_mission
+                if activate and mission.status == MissionStatus.PAUSED:
+                    mission = self.resume_mission(mission.mission_id, actor_id=actor_id)
+                elif not activate and mission.status == MissionStatus.ACTIVE:
+                    mission = self.pause_mission(mission.mission_id, actor_id=actor_id)
+            missions.append(mission)
+
+            existing_schedule = next((item for item in self.store.list_schedules() if item.mission_id == mission.mission_id), None)
+            schedule_payload.update(
+                {
+                    "domain_id": mission.domain_id,
+                    "mission_id": mission.mission_id,
+                    "enabled": bool(schedule_payload.get("enabled", activate)),
+                }
+            )
+            if existing_schedule is None:
+                schedules.append(self.create_schedule(schedule_payload))
+            else:
+                schedules.append(
+                    self.update_schedule(
+                        existing_schedule.schedule_id,
+                        {
+                            "enabled": schedule_payload["enabled"],
+                            "cadence_type": schedule_payload.get("cadence_type"),
+                            "timezone": schedule_payload.get("timezone"),
+                            "misfire_policy": schedule_payload.get("misfire_policy"),
+                            "overlap_policy": schedule_payload.get("overlap_policy"),
+                            "priority": schedule_payload.get("priority"),
+                        },
+                    )
+                )
+
+        return {
+            "domain_id": self.vedic_astrology_plugin.domain_id,
+            "external_ready": activate,
+            "provider_matrix": provider_matrix,
+            "missions": [item.model_dump(mode="json") for item in missions],
+            "schedules": [item.model_dump(mode="json") for item in schedules],
+        }
 
     def create_mission(self, payload: dict[str, Any]) -> ResearchMissionRecord:
         now = utc_now()
@@ -399,16 +502,51 @@ class ResearchPlatformService:
             documents = list(batch.documents)
             if len(documents) > mission.research_budget.max_sources:
                 run.errors.append("budget_exhausted")
+            accepted_any = False
             for document in documents[: mission.research_budget.max_sources]:
                 if self._run_budget_exhausted(run, mission):
                     run.errors.append("budget_exhausted")
                     break
-                self._process_document(provider, retrieval_provider or provider, mission, run, document)
+                try:
+                    self._process_document(provider, retrieval_provider or provider, mission, run, document)
+                    accepted_any = True
+                except ResearchProviderAuthError as exc:
+                    run.errors.append(str(exc))
+                    self._mark_provider_failure((retrieval_provider or provider).descriptor().provider_id, error=str(exc), hard=True)
+                    self._record_document_failure(
+                        mission=mission,
+                        run=run,
+                        document=document,
+                        reason=str(exc),
+                        provider_id=(retrieval_provider or provider).descriptor().provider_id,
+                    )
+                except ResearchProviderTemporaryError as exc:
+                    run.errors.append(str(exc))
+                    self._mark_provider_failure((retrieval_provider or provider).descriptor().provider_id, error=str(exc), hard=False)
+                    self._record_document_failure(
+                        mission=mission,
+                        run=run,
+                        document=document,
+                        reason=str(exc),
+                        provider_id=(retrieval_provider or provider).descriptor().provider_id,
+                    )
+                except Exception as exc:
+                    run.errors.append(str(exc))
+                    self._record_document_failure(
+                        mission=mission,
+                        run=run,
+                        document=document,
+                        reason=str(exc),
+                        provider_id=(retrieval_provider or provider).descriptor().provider_id,
+                    )
 
             run.continuation_required = bool(batch.continuation_hint)
             run.continuation_hint = batch.continuation_hint
             if run.status == RunStatus.RUNNING:
-                run.status = RunStatus.PARTIAL if run.errors else RunStatus.SUCCESS
+                if run.errors and not accepted_any and run.sources_accepted == 0 and run.evidence_created == 0 and run.candidates_created == 0:
+                    run.status = RunStatus.FAILED
+                else:
+                    run.status = RunStatus.PARTIAL if run.errors else RunStatus.SUCCESS
         except Exception as exc:
             run.errors.append(str(exc))
             run.status = RunStatus.FAILED
@@ -467,11 +605,28 @@ class ResearchPlatformService:
         document,
     ) -> None:
         search_descriptor = search_provider.descriptor()
-        descriptor = retrieval_provider.descriptor()
+        provider_for_document = retrieval_provider
+        descriptor = provider_for_document.descriptor()
+        safe, unsafe_reason = is_safe_uri(document.source_uri, allowed_schemes=set(descriptor.allowed_uri_schemes))
+        if not safe and search_descriptor.supports_fetch:
+            fallback_safe, _ = is_safe_uri(document.source_uri, allowed_schemes=set(search_descriptor.allowed_uri_schemes))
+            if fallback_safe:
+                provider_for_document = search_provider
+                descriptor = search_descriptor
+                safe, unsafe_reason = fallback_safe, None
+        plugin = self.domain_plugins[mission.domain_id]
         retrieved_at = utc_now()
         canonical_uri = normalize_uri(document.source_uri)
-        safe, unsafe_reason = is_safe_uri(document.source_uri, allowed_schemes=set(descriptor.allowed_uri_schemes))
-        raw_content = "" if not safe else retrieval_provider.retrieve(document)
+        raw_content = "" if not safe else provider_for_document.retrieve(document)
+        raw_reference = provider_for_document.fetch_metadata(document)
+        refined_metadata = plugin.refine_observation_metadata(
+            mission=mission,
+            document_metadata=dict(document.metadata),
+            fetched_content=raw_content,
+            canonical_uri=canonical_uri,
+            raw_reference=dict(raw_reference),
+        )
+        document.metadata = dict(refined_metadata)
         prompt_injection = detect_prompt_injection(raw_content)
         previous_observation = self.store.find_latest_observation(canonical_uri)
         change_status = "NEW"
@@ -503,27 +658,31 @@ class ResearchPlatformService:
             published_at=document.published_at,
             retrieved_at=retrieved_at,
             last_checked_at=retrieved_at,
-            author=document.author,
-            publisher=document.publisher,
+            author=refined_metadata.get("author") or document.author,
+            publisher=refined_metadata.get("publisher") or document.publisher,
             content_hash=content_hash(raw_content),
-            content_version=document.metadata.get("content_version"),
+            content_version=refined_metadata.get("content_version"),
             access_status=SourceAccessStatus.ACCEPTED if safe else SourceAccessStatus.UNSAFE,
             trust_metadata={
                 "prompt_injection_detected": prompt_injection,
                 "unsafe_reason": unsafe_reason,
-                "authority_score": document.metadata.get("authority_score", 0.5),
+                "authority_score": refined_metadata.get("authority_score", 0.5),
                 "change_status": change_status,
             },
-            raw_reference=retrieval_provider.fetch_metadata(document),
+            raw_reference={
+                **dict(raw_reference),
+                "search_provider_id": search_descriptor.provider_id,
+                "retrieval_provider_id": descriptor.provider_id,
+            },
             domain_metadata={
-                **dict(document.metadata),
+                **dict(refined_metadata),
                 "discovery_provider_id": search_descriptor.provider_id,
                 "retrieval_provider_id": descriptor.provider_id,
                 "change_status": change_status,
             },
         )
 
-        accepted, reject_reason = self.domain_plugins[mission.domain_id].validate_source(observation)
+        accepted, reject_reason = plugin.validate_source(observation)
         if not safe or not accepted:
             observation = observation.model_copy(
                 update={
@@ -568,7 +727,7 @@ class ResearchPlatformService:
             normalized_text = sanitize_external_text(hint.normalized_text or hint.passage or hint.claim_hint)
             evidence_metadata = {
                 **hint.metadata,
-                "authority_score": document.metadata.get("authority_score", 0.5),
+                "authority_score": observation.domain_metadata.get("authority_score", document.metadata.get("authority_score", 0.5)),
                 "prompt_injection_detected": prompt_injection,
                 "change_status": change_status,
             }
@@ -603,6 +762,32 @@ class ResearchPlatformService:
                 metadata={"evidence_id": evidence.evidence_id, "observation_id": observation.observation_id},
             )
             self._upsert_candidate_from_evidence(mission, run, observation, evidence)
+
+    def _record_document_failure(
+        self,
+        *,
+        mission: ResearchMissionRecord,
+        run: ResearchRunRecord,
+        document,
+        reason: str,
+        provider_id: str,
+    ) -> None:
+        run.sources_discovered += 1
+        run.sources_rejected += 1
+        self._append_ledger(
+            event_type=LedgerEventType.SOURCE_REJECTED,
+            actor_type=ActorType.VALIDATOR,
+            actor_id="source_gate",
+            action="source_retrieval_failed",
+            domain_id=mission.domain_id,
+            mission_id=mission.mission_id,
+            run_id=run.run_id,
+            reason=reason,
+            metadata={
+                "source_uri": getattr(document, "source_uri", None),
+                "provider_id": provider_id,
+            },
+        )
 
     def _upsert_candidate_from_evidence(
         self,
@@ -1234,6 +1419,7 @@ class ResearchPlatformService:
             mission = mission_lookup.get(run.mission_id)
             provider_id = str(mission.query_strategy.get("provider_id")) if mission else None
             run_rows = self.store.list_observations_for_run(run.run_id)
+            run_scope = self._run_scope_for_run(run, mission=mission, observations=run_rows)
             if include_sources:
                 source_rows.extend(self._source_summary(item) for item in run_rows)
             runs.append(
@@ -1241,6 +1427,8 @@ class ResearchPlatformService:
                     **run.model_dump(mode="json"),
                     "mission_title": mission.title if mission else run.mission_id,
                     "provider_id": provider_id,
+                    "retrieval_provider_id": str(mission.query_strategy.get("retrieval_provider_id")) if mission else None,
+                    "run_scope": run_scope,
                     "duration_seconds": self._duration_seconds(run.started_at, run.completed_at),
                 }
             )
@@ -1259,7 +1447,13 @@ class ResearchPlatformService:
         candidates = [item for item in self.store.list_candidates() if item.run_id == run_id]
         ledger = [item for item in self.store.list_ledger_events() if item.run_id == run_id]
         return {
-            "run": run.model_dump(mode="json"),
+            "run": {
+                **run.model_dump(mode="json"),
+                "provider_id": str(mission.query_strategy.get("provider_id") or ""),
+                "retrieval_provider_id": str(mission.query_strategy.get("retrieval_provider_id") or ""),
+                "run_scope": self._run_scope_for_run(run, mission=mission, observations=observations),
+                "duration_seconds": self._duration_seconds(run.started_at, run.completed_at),
+            },
             "mission": mission.model_dump(mode="json"),
             "observations": [self._source_summary(item) for item in observations],
             "evidence": [item.model_dump(mode="json") for item in evidence],
@@ -1613,6 +1807,7 @@ class ResearchPlatformService:
         )
         if metadata.get("source_id") and not metadata.get("discovery_only"):
             state = "GOVERNED"
+        provider_type = self._provider_type_name(observation.provider_id)
         return {
             **observation.model_dump(mode="json"),
             "claims_supported": metadata.get("claim_ids", []),
@@ -1620,6 +1815,7 @@ class ResearchPlatformService:
             "authority_level": authority.get("authority_tier") or metadata.get("source_class"),
             "state": state,
             "discovery_only": bool(metadata.get("discovery_only")),
+            "provider_type": provider_type,
         }
 
     def backlog_state(self) -> str:
@@ -1930,6 +2126,8 @@ class ResearchPlatformService:
 
     def _provider_health_rows(self) -> list[dict[str, Any]]:
         observations = self.store.list_observations()
+        ledger_events = self.store.list_ledger_events()
+        today = utc_now()[:10]
         rows = []
         for provider_id, provider in self.providers.items():
             descriptor = provider.descriptor()
@@ -1940,6 +2138,14 @@ class ResearchPlatformService:
             )
             if not last_use:
                 last_use = state.get("last_success")
+            provider_events_today = [
+                item
+                for item in ledger_events
+                if item.actor_id == provider_id and item.timestamp.startswith(today)
+            ]
+            queries_today = sum(1 for item in provider_events_today if item.event_type == LedgerEventType.QUERY_EXECUTED)
+            retrievals_today = sum(1 for item in provider_events_today if item.event_type == LedgerEventType.SOURCE_RETRIEVED)
+            observations_today = sum(1 for item in observations if item.provider_id == provider_id and item.retrieved_at.startswith(today))
             rows.append(
                 {
                     **provider.health_check(),
@@ -1950,7 +2156,14 @@ class ResearchPlatformService:
                     "status": state.get("status") or (descriptor.status.value if hasattr(descriptor.status, "value") else str(descriptor.status)),
                     "cooldown_until": state.get("cooldown_until"),
                     "last_failure": state.get("last_failure"),
+                    "last_error": state.get("last_error"),
                     "enabled": state.get("enabled", True),
+                    "calls_today": queries_today + retrievals_today,
+                    "budget_used": {
+                        "queries_today": queries_today,
+                        "retrievals_today": retrievals_today,
+                        "observations_today": observations_today,
+                    },
                 }
             )
         return rows
@@ -2001,6 +2214,56 @@ class ResearchPlatformService:
     def _domain_for_run(self, run_id: str) -> str | None:
         run = self.store.get_run(run_id)
         return run.domain_id if run else None
+
+    def _provider_type_name(self, provider_id: str | None) -> str | None:
+        if not provider_id:
+            return None
+        provider = self.providers.get(str(provider_id))
+        if provider is None:
+            return None
+        provider_type = provider.descriptor().provider_type
+        return provider_type.value if hasattr(provider_type, "value") else str(provider_type)
+
+    def _run_scope_for_run(
+        self,
+        run: ResearchRunRecord,
+        *,
+        mission: ResearchMissionRecord | None = None,
+        observations: list[SourceObservationRecord] | None = None,
+    ) -> str:
+        provider_ids: set[str] = set()
+        mission = mission or self.store.get_mission(run.mission_id)
+        if mission is not None:
+            strategy = dict(mission.query_strategy or {})
+            for key in ("provider_id", "search_provider_id", "retrieval_provider_id"):
+                value = strategy.get(key)
+                if value:
+                    provider_ids.add(str(value))
+        for observation in observations or self.store.list_observations_for_run(run.run_id):
+            provider_ids.add(observation.provider_id)
+            for key in ("discovery_provider_id", "retrieval_provider_id"):
+                value = observation.domain_metadata.get(key)
+                if value:
+                    provider_ids.add(str(value))
+
+        types = {self._provider_type_name(provider_id) for provider_id in provider_ids if self._provider_type_name(provider_id)}
+        external = any(item in {"WEB_SEARCH", "DIRECT_WEB", "API", "CONNECTOR"} for item in types)
+        local = any(item in {"LOCAL_DOCUMENTS", "INTERNAL_KNOWLEDGE", "FIXTURE"} for item in types)
+        if external and local:
+            return "HYBRID"
+        if external:
+            return "EXTERNAL"
+        return "LOCAL"
+
+    def _find_mission_by_title(self, domain_id: str, title: str) -> ResearchMissionRecord | None:
+        return next(
+            (
+                item
+                for item in self.store.list_missions()
+                if item.domain_id == domain_id and item.title == title
+            ),
+            None,
+        )
 
     def _count_today_approvals(self, statuses: set[ApprovalStatus], *, domain_id: str | None = None) -> int:
         today = utc_now()[:10]

@@ -281,6 +281,12 @@ def get_research_runtime_status(current_user=Depends(require_admin)):
     }
 
 
+@router.get("/platform/provider-audit", tags=["research-admin"])
+def get_research_provider_audit(current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    return {"providers": service.provider_capability_matrix()}
+
+
 @router.post("/platform/pause", tags=["research-admin"])
 def pause_research_runtime(req: RuntimeControlRequest | None = None, current_user=Depends(require_admin)):
     runtime = get_research_platform_runtime()
@@ -306,6 +312,12 @@ def run_due_research_schedules(req: DueRunRequest | None = None, current_user=De
         as_of=req.as_of if req else None,
         actor_id=req.actor_id if req and req.actor_id else current_user.email,
     )
+
+
+@router.post("/platform/seed-astrology-external-pilot", tags=["research-admin"])
+def seed_astrology_external_pilot(current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    return service.seed_vedic_astrology_external_program(actor_id=current_user.email)
 
 
 @router.get("/domains", tags=["research-admin"])

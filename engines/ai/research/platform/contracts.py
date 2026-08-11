@@ -1074,6 +1074,18 @@ class ResearchDomainPlugin(ABC):
     def create_follow_up(self, candidate: ResearchCandidateRecord, reason: str) -> dict[str, Any] | None:
         raise NotImplementedError
 
+    def refine_observation_metadata(
+        self,
+        *,
+        mission: ResearchMissionRecord,
+        document_metadata: dict[str, Any],
+        fetched_content: str,
+        canonical_uri: str,
+        raw_reference: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Allow a domain plugin to refine fetched source metadata before validation/persistence."""
+        return dict(document_metadata or {})
+
 
 def schema_documents() -> dict[str, dict[str, Any]]:
     return {

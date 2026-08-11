@@ -5,6 +5,7 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 from engines.ai.knowledge.astrology_governance import (
     ClaimRecord,
@@ -69,6 +70,16 @@ _CLAIM_STANCES = {
 _RULE_STANCES = {
     "VEDA-RUL-DASHA-000001": "GOVERNED_VIMSHOTTARI_BASELINE",
     "VEDA-RUL-DASHA-000002": "GOVERNED_DEFAULT_WITH_COEXISTENCE",
+}
+_EXTERNAL_CLASSICAL_WORK_HINTS = {
+    "brihat parashara hora shastra": "Brihat Parashara Hora Shastra",
+    "bp hs": "Brihat Parashara Hora Shastra",
+    "phaladeepika": "Phaladeepika",
+    "saravali": "Saravali",
+    "brihat jataka": "Brihat Jataka",
+    "hora sara": "Hora Sara",
+    "jataka parijata": "Jataka Parijata",
+    "uttara kalamrita": "Uttara Kalamrita",
 }
 
 
@@ -186,7 +197,10 @@ class VedicAstrologyResearchDomain(ResearchDomainPlugin):
             },
             provider_policy={
                 "default_provider_id": "vedic-astrology-local",
-                "allowed_provider_types": ["LOCAL_DOCUMENTS", "INTERNAL_KNOWLEDGE"],
+                "fallback_provider_ids": ["vedic-astrology-local"],
+                "preferred_external_search_provider_id": "ddgs-search",
+                "preferred_external_retrieval_provider_id": "requests-fetch",
+                "allowed_provider_types": ["LOCAL_DOCUMENTS", "INTERNAL_KNOWLEDGE", "WEB_SEARCH", "DIRECT_WEB"],
             },
             schedule_policy={
                 "hourly_focus": "pending missions, source discovery, follow-up research",
@@ -200,6 +214,122 @@ class VedicAstrologyResearchDomain(ResearchDomainPlugin):
             created_at=now,
             updated_at=now,
         )
+
+    def refine_observation_metadata(
+        self,
+        *,
+        mission: ResearchMissionRecord,
+        document_metadata: dict[str, Any],
+        fetched_content: str,
+        canonical_uri: str,
+        raw_reference: dict[str, Any],
+    ) -> dict[str, Any]:
+        metadata = dict(document_metadata or {})
+        metadata.setdefault("supports_claim", True)
+        parsed = urlparse(canonical_uri)
+        host = parsed.netloc.lower()
+        path = parsed.path.lower()
+        if parsed.scheme not in {"http", "https"}:
+            return metadata
+
+        title_blob = " ".join(
+            filter(
+                None,
+                [
+                    str(metadata.get("title") or ""),
+                    str(metadata.get("mission_title") or mission.title or ""),
+                    str(raw_reference.get("title") or ""),
+                    str(raw_reference.get("snippet") or metadata.get("snippet") or ""),
+                ],
+            )
+        )
+        content_blob = normalize_text(f"{title_blob} {str(fetched_content or '')[:2000]}")
+        work = self._infer_external_work(title_blob, str(fetched_content or "")[:1200])
+        if work:
+            metadata.setdefault("source_work", work)
+            metadata.setdefault("known_source_work", work)
+            metadata.setdefault("known_source_titles", [work])
+        metadata["source_host"] = host
+        metadata["source_path"] = path
+        metadata["external_source"] = True
+
+        if "wisdomlib.org" in host:
+            metadata.update(
+                {
+                    "source_class": SourceClass.REFERENCE_EDITION.value,
+                    "verification_status": VerificationStatus.METADATA_VERIFIED.value,
+                    "quality_grade": "B",
+                    "authority_score": max(float(metadata.get("authority_score", 0.0)), 0.78),
+                    "discovery_only": False,
+                    "reference_not_verified": True,
+                    "requires_primary_source": True,
+                    "evidence_class": "CLASSICAL_TEXTUAL",
+                    "publisher": metadata.get("publisher") or "Wisdom Library",
+                }
+            )
+        elif "archive.org" in host:
+            metadata.update(
+                {
+                    "source_class": SourceClass.REFERENCE_EDITION.value,
+                    "verification_status": VerificationStatus.METADATA_VERIFIED.value,
+                    "quality_grade": "B",
+                    "authority_score": max(float(metadata.get("authority_score", 0.0)), 0.72),
+                    "discovery_only": False,
+                    "reference_not_verified": True,
+                    "requires_primary_source": True,
+                    "evidence_class": "CLASSICAL_TEXTUAL",
+                    "publisher": metadata.get("publisher") or "Internet Archive",
+                }
+            )
+        elif host in {"youtube.com", "www.youtube.com", "youtu.be"}:
+            metadata.update(
+                {
+                    "source_class": SourceClass.MODERN_PRACTITIONER.value,
+                    "verification_status": VerificationStatus.UNVERIFIED.value,
+                    "quality_grade": "D",
+                    "authority_score": min(float(metadata.get("authority_score", 0.35)), 0.35),
+                    "discovery_only": True,
+                    "reference_not_verified": True,
+                    "evidence_class": "MODERN_ASTROLOGY",
+                }
+            )
+        elif any(token in host for token in ("astrosage", "astroyogi", "astrocamp", "horoscope", "timesofindia", "youtube")):
+            metadata.update(
+                {
+                    "source_class": SourceClass.MODERN_PRACTITIONER.value,
+                    "verification_status": VerificationStatus.UNVERIFIED.value,
+                    "quality_grade": "C",
+                    "authority_score": min(float(metadata.get("authority_score", 0.45)), 0.45),
+                    "discovery_only": True,
+                    "reference_not_verified": True,
+                    "evidence_class": "MODERN_ASTROLOGY",
+                }
+            )
+        else:
+            metadata.update(
+                {
+                    "source_class": SourceClass.FOLKLORE_OR_UNVERIFIED.value,
+                    "verification_status": VerificationStatus.UNVERIFIED.value,
+                    "quality_grade": "U",
+                    "authority_score": min(float(metadata.get("authority_score", 0.35)), 0.35),
+                    "discovery_only": True,
+                    "reference_not_verified": True,
+                    "evidence_class": metadata.get("evidence_class") or "DISCOVERY_ONLY",
+                }
+            )
+
+        if any(token in content_blob for token in ("ai generated", "generated by ai", "chatgpt", "llm generated", "auto generated")):
+            metadata["possible_ai_generated"] = True
+            metadata["source_class"] = SourceClass.FOLKLORE_OR_UNVERIFIED.value
+            metadata["verification_status"] = VerificationStatus.UNVERIFIED.value
+            metadata["quality_grade"] = "U"
+            metadata["authority_score"] = min(float(metadata.get("authority_score", 0.35)), 0.35)
+            metadata["discovery_only"] = True
+
+        if metadata.get("source_class") == SourceClass.FOLKLORE_OR_UNVERIFIED.value:
+            metadata["discovery_only"] = True
+
+        return metadata
 
     def seed_core_knowledge(self) -> list[ResearchCoreKnowledgeRecord]:
         records: list[ResearchCoreKnowledgeRecord] = []
@@ -473,6 +603,9 @@ class VedicAstrologyResearchDomain(ResearchDomainPlugin):
     def create_follow_up(self, candidate: ResearchCandidateRecord, reason: str) -> dict[str, Any] | None:
         metadata = dict(candidate.metadata)
         search_terms = list(metadata.get("search_terms") or [])
+        provider_id = str(metadata.get("search_provider_id") or metadata.get("provider_id") or "vedic-astrology-local")
+        retrieval_provider_id = metadata.get("retrieval_provider_id")
+        fallback_provider_ids = list(metadata.get("fallback_provider_ids") or ([] if provider_id == "vedic-astrology-local" else ["vedic-astrology-local"]))
         include_uploads = bool(
             metadata.get("discovery_only")
             or metadata.get("legacy_rule_id")
@@ -500,7 +633,9 @@ class VedicAstrologyResearchDomain(ResearchDomainPlugin):
             "status": "QUEUED",
             "created_by": "system",
             "query_strategy": {
-                "provider_id": "vedic-astrology-local",
+                "provider_id": provider_id,
+                "fallback_provider_ids": fallback_provider_ids,
+                "retrieval_provider_id": retrieval_provider_id,
                 "queries": search_terms,
                 "search_rounds": [{"queries": search_terms, "include_uploads": include_uploads}],
                 "title": candidate.title,
@@ -699,6 +834,262 @@ class VedicAstrologyResearchDomain(ResearchDomainPlugin):
             },
         ]
 
+    def build_external_activation_program(
+        self,
+        *,
+        search_provider_id: str,
+        retrieval_provider_id: str,
+        fallback_provider_ids: list[str] | None = None,
+        activate: bool,
+    ) -> list[dict[str, Any]]:
+        fallback_provider_ids = list(fallback_provider_ids or [])
+        base_schedule = {
+            "timezone": "Asia/Calcutta",
+            "misfire_policy": "RUN_ONCE",
+            "overlap_policy": "COALESCE",
+        }
+        live_status = "ACTIVE" if activate else "PAUSED"
+        live_enabled = bool(activate)
+        return [
+            {
+                "mission": {
+                    "domain_id": self.domain_id,
+                    "title": "P009-R1 Mission 1 - Vimshottari Provenance Strengthening",
+                    "objective": "Strengthen governed Vimshottari Dasha provenance through controlled external source discovery and retrieval.",
+                    "research_type": "CROSS_SOURCE_VALIDATION",
+                    "priority": "P1",
+                    "status": live_status,
+                    "created_by": "admin",
+                    "query_strategy": {
+                        "provider_id": search_provider_id,
+                        "fallback_provider_ids": fallback_provider_ids,
+                        "retrieval_provider_id": retrieval_provider_id,
+                        "queries": [
+                            "site:wisdomlib.org Brihat Parashara Hora Shastra Vimshottari Dasha",
+                            "site:wisdomlib.org Hora Sara Vimshottari dasha lagna stronger than moon",
+                        ],
+                        "title": "Vimshottari Dasha Foundations",
+                        "claim_text": self.claims["VEDA-CLM-000002"].claim_text,
+                        "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+                        "stance": _CLAIM_STANCES["VEDA-CLM-000002"],
+                        "candidate_type": "CLAIM_UPDATE",
+                        "priority": "P1",
+                        "domain": "DASHA",
+                        "subdomain": "VIMSHOTTARI_DASHA_FOUNDATIONS",
+                        "search_terms": ["vimshottari dasha", "janma nakshatra balance", "hora sara"],
+                        "claim_ids": ["VEDA-CLM-000001", "VEDA-CLM-000002", "VEDA-CLM-000003"],
+                        "source_ids": ["VEDA-SRC-000001", "VEDA-SRC-000002"],
+                        "known_source_titles": ["Brihat Parashara Hora Shastra", "Hora Sara"],
+                        "requires_primary_source": True,
+                        "search_provider_id": search_provider_id,
+                        "retrieval_provider_id": retrieval_provider_id,
+                    },
+                    "required_source_classes": ["CLASSICAL_PRIMARY", "CLASSICAL_COMMENTARY", "REFERENCE_EDITION"],
+                    "minimum_independent_sources": 2,
+                    "known_claim_ids": ["VEDA-CLM-000001", "VEDA-CLM-000002", "VEDA-CLM-000003"],
+                    "known_conflict_ids": [],
+                    "known_gap_ids": [],
+                    "safety_class": "LOW",
+                    "completion_policy": {"auto_complete": False},
+                    "research_budget": {
+                        "max_queries": 2,
+                        "max_sources": 4,
+                        "max_provider_calls": 3,
+                        "max_runtime_seconds": 150,
+                        "max_model_calls": 0,
+                        "max_cost": 0,
+                        "max_follow_up_depth": 2,
+                        "max_retries": 1,
+                        "cooldown_seconds": 0,
+                    },
+                    "notes": "P009-R1 live external pilot A.",
+                },
+                "schedule": {
+                    **base_schedule,
+                    "cadence_type": "DAILY",
+                    "enabled": live_enabled,
+                    "priority": "P1",
+                },
+            },
+            {
+                "mission": {
+                    "domain_id": self.domain_id,
+                    "title": "P009-R1 Mission 2 - Graha/Bhava Legacy Provenance Recovery",
+                    "objective": "Research one low-risk graha/bhava interpretation surface from the legacy table using external sources.",
+                    "research_type": "LEGACY_RULE_PROVENANCE",
+                    "priority": "P2",
+                    "status": live_status,
+                    "created_by": "admin",
+                    "query_strategy": {
+                        "provider_id": search_provider_id,
+                        "fallback_provider_ids": fallback_provider_ids,
+                        "retrieval_provider_id": retrieval_provider_id,
+                        "queries": [
+                            "site:wisdomlib.org Phaladeepika Jupiter first house",
+                            "site:wisdomlib.org Saravali Jupiter ascendant effects",
+                        ],
+                        "title": "VEDA-P005-LGC-0017",
+                        "claim_text": "Jupiter in the first house carries a benefic, wisdom-oriented interpretive effect in the graha/bhava narrative layer.",
+                        "topic_key": "GRAHA_BHAVA_INTERPRETATION::JUPITER_H1",
+                        "stance": "PROVENANCE_RECOVERY",
+                        "candidate_type": "PROVENANCE_CANDIDATE",
+                        "priority": "P2",
+                        "legacy_rule_id": "VEDA-P005-LGC-0017",
+                        "legacy_rule_claim": "Planet name + house number returns a full narrative sentence for the graha in that bhava.",
+                        "domain": "GRAHA_BHAVA_INTERPRETATION",
+                        "subdomain": "JUPITER_H1",
+                        "search_terms": ["Jupiter first house", "Guru Lagna", "Phaladeepika", "Saravali"],
+                        "requires_primary_source": True,
+                        "search_provider_id": search_provider_id,
+                        "retrieval_provider_id": retrieval_provider_id,
+                    },
+                    "required_source_classes": ["CLASSICAL_PRIMARY", "CLASSICAL_COMMENTARY", "REFERENCE_EDITION"],
+                    "minimum_independent_sources": 2,
+                    "known_claim_ids": [],
+                    "known_conflict_ids": [],
+                    "known_gap_ids": ["VEDA-P005-LGC-0017"],
+                    "safety_class": "LOW",
+                    "completion_policy": {"auto_complete": False},
+                    "research_budget": {
+                        "max_queries": 2,
+                        "max_sources": 4,
+                        "max_provider_calls": 3,
+                        "max_runtime_seconds": 150,
+                        "max_model_calls": 0,
+                        "max_cost": 0,
+                        "max_follow_up_depth": 2,
+                        "max_retries": 1,
+                        "cooldown_seconds": 0,
+                    },
+                    "notes": "P009-R1 live external pilot B.",
+                },
+                "schedule": {
+                    **base_schedule,
+                    "cadence_type": "DAILY",
+                    "enabled": live_enabled,
+                    "priority": "P2",
+                },
+            },
+            {
+                "mission": {
+                    "domain_id": self.domain_id,
+                    "title": "P009-R1 Mission 3 - Vimshottari Scope Conflict Review",
+                    "objective": "Use external source discovery to investigate the existing governed Vimshottari scope contradiction.",
+                    "research_type": "CONTRADICTION_RESOLUTION",
+                    "priority": "P1",
+                    "status": live_status,
+                    "created_by": "admin",
+                    "query_strategy": {
+                        "provider_id": search_provider_id,
+                        "fallback_provider_ids": fallback_provider_ids,
+                        "retrieval_provider_id": retrieval_provider_id,
+                        "queries": [
+                            "site:wisdomlib.org Vimshottari Dasha default general population alternate dashas",
+                            "site:wisdomlib.org Brihat Parashara Hora Shastra alternate dasha scope",
+                        ],
+                        "title": "Vimshottari Scope Conflict",
+                        "claim_text": "Vimshottari Dasha default-scope guidance must preserve the documented coexistence conflict instead of forcing a universal rule.",
+                        "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+                        "stance": _CLAIM_STANCES["VEDA-CLM-000005"],
+                        "candidate_type": "CONTRADICTION",
+                        "priority": "P1",
+                        "domain": "DASHA",
+                        "subdomain": "VIMSHOTTARI_DASHA_FOUNDATIONS",
+                        "claim_ids": ["VEDA-CLM-000005", "VEDA-CLM-000006"],
+                        "conflict_ids": ["VEDA-CNF-000001"],
+                        "search_terms": ["vimshottari default scope", "alternate dashas", "governed contradiction"],
+                        "requires_primary_source": True,
+                        "search_provider_id": search_provider_id,
+                        "retrieval_provider_id": retrieval_provider_id,
+                    },
+                    "required_source_classes": ["CLASSICAL_PRIMARY", "CLASSICAL_COMMENTARY", "REFERENCE_EDITION"],
+                    "minimum_independent_sources": 2,
+                    "known_claim_ids": ["VEDA-CLM-000005", "VEDA-CLM-000006"],
+                    "known_conflict_ids": ["VEDA-CNF-000001"],
+                    "known_gap_ids": [],
+                    "safety_class": "LOW",
+                    "completion_policy": {"auto_complete": False},
+                    "research_budget": {
+                        "max_queries": 2,
+                        "max_sources": 4,
+                        "max_provider_calls": 3,
+                        "max_runtime_seconds": 150,
+                        "max_model_calls": 0,
+                        "max_cost": 0,
+                        "max_follow_up_depth": 2,
+                        "max_retries": 1,
+                        "cooldown_seconds": 0,
+                    },
+                    "notes": "P009-R1 live external pilot C. No governed yoga/dosha conflict record existed on 2026-08-11, so the live contradiction pilot uses the existing governed Vimshottari scope conflict while Gaja Kesari remains a research-further legacy surface.",
+                },
+                "schedule": {
+                    **base_schedule,
+                    "cadence_type": "WEEKLY",
+                    "enabled": live_enabled,
+                    "priority": "P1",
+                },
+            },
+            {
+                "mission": {
+                    "domain_id": self.domain_id,
+                    "title": "P009-R1 Mission 4 - Lordship Interpretation Knowledge Gap",
+                    "objective": "Discover stronger source leads for one active legacy lordship interpretation surface.",
+                    "research_type": "KNOWLEDGE_GAP",
+                    "priority": "P2",
+                    "status": live_status,
+                    "created_by": "admin",
+                    "query_strategy": {
+                        "provider_id": search_provider_id,
+                        "fallback_provider_ids": fallback_provider_ids,
+                        "retrieval_provider_id": retrieval_provider_id,
+                        "queries": [
+                            "site:wisdomlib.org lord of seventh house in tenth house",
+                            "site:wisdomlib.org lordship interpretation seventh lord tenth house",
+                        ],
+                        "title": "VEDA-P005-LGC-0018",
+                        "claim_text": "Legacy lord-in-house interpretations require governed provenance recovery before migration.",
+                        "topic_key": "LORDSHIP_INTERPRETATION::SEVENTH_LORD_TENTH",
+                        "stance": "PROVENANCE_RECOVERY",
+                        "candidate_type": "KNOWLEDGE_GAP",
+                        "priority": "P2",
+                        "legacy_rule_id": "VEDA-P005-LGC-0018",
+                        "legacy_rule_claim": "House number + placement house of its lord returns a lord-in-house interpretation sentence.",
+                        "domain": "LORDSHIP_INTERPRETATION",
+                        "subdomain": "SEVENTH_LORD_TENTH",
+                        "search_terms": ["seventh lord tenth house", "lordship interpretation"],
+                        "requires_primary_source": True,
+                        "search_provider_id": search_provider_id,
+                        "retrieval_provider_id": retrieval_provider_id,
+                    },
+                    "required_source_classes": ["CLASSICAL_PRIMARY", "CLASSICAL_COMMENTARY", "REFERENCE_EDITION"],
+                    "minimum_independent_sources": 2,
+                    "known_claim_ids": [],
+                    "known_conflict_ids": [],
+                    "known_gap_ids": ["VEDA-P005-LGC-0018"],
+                    "safety_class": "LOW",
+                    "completion_policy": {"auto_complete": False},
+                    "research_budget": {
+                        "max_queries": 2,
+                        "max_sources": 3,
+                        "max_provider_calls": 3,
+                        "max_runtime_seconds": 120,
+                        "max_model_calls": 0,
+                        "max_cost": 0,
+                        "max_follow_up_depth": 2,
+                        "max_retries": 1,
+                        "cooldown_seconds": 0,
+                    },
+                    "notes": "P009-R1 seeded knowledge-gap discovery mission.",
+                },
+                "schedule": {
+                    **base_schedule,
+                    "cadence_type": "HOURLY",
+                    "enabled": live_enabled,
+                    "priority": "P2",
+                },
+            },
+        ]
+
     def generate_gap_missions(self, *, limit: int = 12) -> list[dict[str, Any]]:
         missions: list[dict[str, Any]] = []
         priority_domains = {
@@ -814,6 +1205,13 @@ class VedicAstrologyResearchDomain(ResearchDomainPlugin):
                 }
             )
         return rows
+
+    def _infer_external_work(self, title_blob: str, content_blob: str) -> str | None:
+        combined = normalize_text(f"{title_blob} {content_blob}")
+        for key, label in _EXTERNAL_CLASSICAL_WORK_HINTS.items():
+            if key in combined:
+                return label
+        return None
 
     def _load_rules(self, directory: Path) -> dict[Path, dict[str, Any]]:
         payloads: dict[Path, dict[str, Any]] = {}

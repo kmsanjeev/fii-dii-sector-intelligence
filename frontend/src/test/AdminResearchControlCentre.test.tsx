@@ -97,14 +97,22 @@ const dashboardPayload = {
   ],
   provider_health: [
     {
-      provider_id: 'vedic-astrology-local',
-      provider_type: 'LOCAL_DOCUMENTS',
+      provider_id: 'ddgs-search',
+      provider_type: 'WEB_SEARCH',
       status: 'HEALTHY',
-      capabilities: ['search', 'retrieve', 'extract'],
+      capabilities: ['search'],
       last_successful_use: '2026-08-11T05:00:00Z',
+      enabled: true,
+      calls_today: 3,
+      cooldown_until: null,
+      last_failure: null,
+      budget_used: {
+        queries_today: 2,
+        retrievals_today: 1,
+      },
     },
   ],
-  external_web_research_status: 'LOCAL_ONLY',
+  external_web_research_status: 'ACTIVE',
   knowledge_gaps: [
     {
       gap_id: 'gap-1',
@@ -203,7 +211,9 @@ const runListPayload = {
       conflicts_created: 1,
       errors: [],
       mission_title: 'Validate Vimshottari foundation',
-      provider_id: 'vedic-astrology-local',
+      provider_id: 'ddgs-search',
+      retrieval_provider_id: 'requests-fetch',
+      run_scope: 'EXTERNAL',
       duration_seconds: 300,
     },
   ],
@@ -215,7 +225,7 @@ const runListPayload = {
     {
       observation_id: 'VEDA-OBS-001',
       run_id: 'VEDA-RUN-001',
-      provider_id: 'vedic-astrology-local',
+      provider_id: 'requests-fetch',
       source_uri: 'file://vedic/source',
       canonical_uri: 'file://vedic/source',
       source_title: 'Phaladeepika sample edition',
@@ -229,6 +239,7 @@ const runListPayload = {
       authority_level: 'Tier A',
       state: 'GOVERNED',
       discovery_only: false,
+      provider_type: 'DIRECT_WEB',
       domain_metadata: {},
       trust_metadata: {},
       raw_reference: {},
@@ -446,8 +457,9 @@ describe('Admin Research Control Centre', () => {
     expect(await screen.findByText('Research Engine Status')).toBeInTheDocument()
     expect(screen.getByText('Vedic Astrology / Jyotisha')).toBeInTheDocument()
     expect(screen.getByText('One high-priority candidate awaits review.')).toBeInTheDocument()
-    expect(screen.getByText('vedic-astrology-local')).toBeInTheDocument()
-    expect(screen.getByText(/External web research status: LOCAL_ONLY/i)).toBeInTheDocument()
+    expect(screen.getByText('ddgs-search')).toBeInTheDocument()
+    expect(screen.getByText(/External web research status: ACTIVE/i)).toBeInTheDocument()
+    expect(screen.getByText(/Calls today 3/i)).toBeInTheDocument()
   })
 
   it('shows candidate evidence detail and submits an acknowledged high-stakes decision', async () => {

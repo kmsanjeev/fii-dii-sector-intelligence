@@ -37,6 +37,43 @@ def _mission_queries(mission: ResearchMissionRecord) -> list[str]:
     return [fallback[: cfg.VEDA_RESEARCH_MAX_QUERY_CHARS]] if fallback else []
 
 
+def _mission_metadata_context(mission: ResearchMissionRecord) -> dict[str, Any]:
+    strategy = dict(mission.query_strategy or {})
+    context: dict[str, Any] = {}
+    passthrough_keys = {
+        "title",
+        "claim_text",
+        "normalized_claim",
+        "topic_key",
+        "stance",
+        "candidate_type",
+        "priority",
+        "legacy_rule_id",
+        "legacy_rule_claim",
+        "domain",
+        "subdomain",
+        "search_terms",
+        "claim_ids",
+        "source_ids",
+        "conflict_ids",
+        "known_source_titles",
+        "known_source_work",
+        "requires_primary_source",
+        "evidence_class",
+        "high_stakes",
+    }
+    for key in passthrough_keys:
+        if key in strategy:
+            context[key] = strategy[key]
+    if "claim_text" not in context and mission.objective:
+        context["claim_text"] = mission.objective
+    if "title" not in context and mission.title:
+        context["title"] = mission.title
+    context["mission_title"] = mission.title
+    context["research_type"] = mission.research_type.value if hasattr(mission.research_type, "value") else str(mission.research_type)
+    return context
+
+
 class DDGSPlatformSearchProvider(BasePlatformResearchProvider):
     def descriptor(self) -> ResearchProviderDescriptor:
         enabled = bool(cfg.VEDA_RESEARCH_EXTERNAL_ENABLED and cfg.VEDA_RESEARCH_EXTERNAL_SEARCH_ENABLED)
@@ -72,6 +109,7 @@ class DDGSPlatformSearchProvider(BasePlatformResearchProvider):
             raise ResearchProviderTemporaryError("ddgs_not_installed") from exc
 
         queries = _mission_queries(mission)
+        context = _mission_metadata_context(mission)
         if not queries:
             return ProviderSearchBatch(documents=[], continuation_hint=None, query=None, search_metadata={"result_count": 0})
 
@@ -110,6 +148,7 @@ class DDGSPlatformSearchProvider(BasePlatformResearchProvider):
                     publisher=str(item.get("source") or "").strip() or None,
                     content="",
                     metadata={
+                        **context,
                         "snippet": snippet[: cfg.VEDA_RESEARCH_MAX_SNIPPET_CHARS],
                         "authority_score": 0.35,
                         "discovery_only": True,
@@ -145,6 +184,8 @@ class DDGSPlatformSearchProvider(BasePlatformResearchProvider):
         snippet = str(document.metadata.get("snippet") or "").strip()
         if not snippet:
             return []
+        metadata = dict(document.metadata)
+        metadata.setdefault("title", document.source_title)
         return [
             ProviderEvidenceHint(
                 passage=snippet,
@@ -152,12 +193,7 @@ class DDGSPlatformSearchProvider(BasePlatformResearchProvider):
                 normalized_text=sanitize_external_text(snippet.lower()),
                 confidence=0.35,
                 location=document.source_uri,
-                metadata={
-                    "title": document.source_title,
-                    "discovery_only": True,
-                    "source_class": "FOLKLORE_OR_UNVERIFIED",
-                    "verification_status": "UNVERIFIED",
-                },
+                metadata=metadata,
             )
         ]
 
@@ -229,6 +265,17 @@ class RequestsDirectRetrievalProvider(BasePlatformResearchProvider):
         content_type = str(response.headers.get("content-type") or "").lower()
         text = self._extract_text(body, content_type)
         text = text[: cfg.VEDA_RESEARCH_FETCH_MAX_TEXT_CHARS]
+        document.metadata.update(
+            {
+                "http_status": response.status_code,
+                "content_type": content_type,
+                "content_length": len(response.content),
+                "final_url": response.url,
+                "redirect_count": len(response.history),
+                "retrieved_at": _utc_now(),
+                "original_text": text[:1800],
+            }
+        )
         return text
 
     def fetch_metadata(self, document: ProviderDocument) -> dict[str, Any]:
@@ -241,20 +288,19 @@ class RequestsDirectRetrievalProvider(BasePlatformResearchProvider):
             snippet = sanitize_external_text(str(document.metadata.get("snippet") or ""))
         if not snippet:
             return []
+        metadata = dict(document.metadata)
+        metadata.setdefault("title", document.source_title)
+        metadata.setdefault("verification_status", "REFERENCE_NOT_VERIFIED")
+        metadata.setdefault("source_class", "FOLKLORE_OR_UNVERIFIED")
+        metadata.setdefault("discovery_only", True)
         return [
             ProviderEvidenceHint(
                 passage=snippet,
-                claim_hint=document.source_title,
-                normalized_text=sanitize_external_text(document.source_title.lower()),
-                confidence=0.45,
+                claim_hint=str(metadata.get("claim_text") or document.source_title),
+                normalized_text=sanitize_external_text(str(metadata.get("normalized_claim") or document.source_title).lower()),
+                confidence=max(0.45, float(metadata.get("authority_score", 0.45))),
                 location=document.source_uri,
-                metadata={
-                    "title": document.source_title,
-                    "discovery_only": True,
-                    "source_class": "FOLKLORE_OR_UNVERIFIED",
-                    "verification_status": "REFERENCE_NOT_VERIFIED",
-                    "search_query": document.metadata.get("search_query"),
-                },
+                metadata=metadata,
             )
         ]
 
@@ -277,4 +323,3 @@ class RequestsDirectRetrievalProvider(BasePlatformResearchProvider):
             node.decompose()
         lines = [unescape(line.strip()) for line in soup.get_text("\n").splitlines()]
         return "\n".join(line for line in lines if line)
-

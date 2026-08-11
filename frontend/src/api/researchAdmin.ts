@@ -43,6 +43,16 @@ export type ResearchProviderHealth = {
   status: string
   last_successful_use?: string | null
   capabilities: string[]
+  enabled?: boolean
+  cooldown_until?: string | null
+  last_failure?: string | null
+  last_error?: string | null
+  calls_today?: number
+  budget_used?: {
+    queries_today?: number
+    retrievals_today?: number
+    observations_today?: number
+  }
   [key: string]: unknown
 }
 
@@ -161,6 +171,8 @@ export type ResearchRunRow = {
   errors: string[]
   mission_title?: string
   provider_id?: string | null
+  retrieval_provider_id?: string | null
+  run_scope?: string
   duration_seconds?: number | null
 }
 
@@ -247,6 +259,7 @@ export type ResearchSourceSummary = {
   authority_level?: string | null
   state: string
   discovery_only: boolean
+  provider_type?: string | null
   domain_metadata: Record<string, unknown>
   trust_metadata: Record<string, unknown>
   raw_reference: Record<string, unknown>
