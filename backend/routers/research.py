@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 from engines.research.screener_engine import screen, compare, universe_stats
 from engines.research import notes_engine
 from engines.ai.research.platform.contracts import AdminAction
+from engines.ai.research.platform.runtime import get_research_platform_runtime
 from engines.ai.research.platform.service import get_research_platform_service
 from backend.auth.middleware import require_admin
 
@@ -116,6 +117,20 @@ class CandidateDecisionRequest(BaseModel):
     conflict_id: str | None = None
     conflict_resolution: str | None = None
     conflict_note: str | None = None
+
+
+class RuntimeControlRequest(BaseModel):
+    reason: str | None = None
+    enabled: bool | None = None
+
+
+class DomainStatusRequest(BaseModel):
+    status: str
+
+
+class DueRunRequest(BaseModel):
+    as_of: str | None = None
+    actor_id: str | None = None
 
 
 # ── Screener ───────────────────────────────────────────────────────────────────
@@ -248,13 +263,67 @@ def get_research_dashboard(domain_id: str | None = Query(None), current_user=Dep
 @router.get("/platform/health", tags=["research-admin"])
 def get_research_platform_health(current_user=Depends(require_admin)):
     service = get_research_platform_service()
-    return service.health()
+    runtime = get_research_platform_runtime()
+    return {
+        **service.health(),
+        "runtime": runtime.health(),
+    }
+
+
+@router.get("/platform/runtime", tags=["research-admin"])
+def get_research_runtime_status(current_user=Depends(require_admin)):
+    runtime = get_research_platform_runtime()
+    service = get_research_platform_service()
+    return {
+        "runtime": runtime.health(),
+        "controls": service.platform_runtime_state(),
+        "digests": service.list_digests(limit=10),
+    }
+
+
+@router.post("/platform/pause", tags=["research-admin"])
+def pause_research_runtime(req: RuntimeControlRequest | None = None, current_user=Depends(require_admin)):
+    runtime = get_research_platform_runtime()
+    return runtime.pause(actor_id=current_user.email, reason=req.reason if req else None)
+
+
+@router.post("/platform/resume", tags=["research-admin"])
+def resume_research_runtime(req: RuntimeControlRequest | None = None, current_user=Depends(require_admin)):
+    runtime = get_research_platform_runtime()
+    return runtime.resume(actor_id=current_user.email, reason=req.reason if req else None)
+
+
+@router.post("/platform/kill-switch", tags=["research-admin"])
+def toggle_research_kill_switch(req: RuntimeControlRequest, current_user=Depends(require_admin)):
+    runtime = get_research_platform_runtime()
+    return runtime.set_kill_switch(bool(req.enabled), actor_id=current_user.email, reason=req.reason)
+
+
+@router.post("/platform/run-due", tags=["research-admin"])
+def run_due_research_schedules(req: DueRunRequest | None = None, current_user=Depends(require_admin)):
+    runtime = get_research_platform_runtime()
+    return runtime.run_due_tasks(
+        as_of=req.as_of if req else None,
+        actor_id=req.actor_id if req and req.actor_id else current_user.email,
+    )
 
 
 @router.get("/domains", tags=["research-admin"])
 def list_research_domains(current_user=Depends(require_admin)):
     service = get_research_platform_service()
     return {"domains": [item.model_dump(mode="json") for item in service.list_domains()]}
+
+
+@router.post("/domains/{domain_id}/status", tags=["research-admin"])
+def set_research_domain_status(domain_id: str, req: DomainStatusRequest, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    try:
+        domain = service.set_domain_status(domain_id, req.status)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    return domain.model_dump(mode="json")
 
 
 @router.get("/missions", tags=["research-admin"])
@@ -479,3 +548,35 @@ def update_research_schedule(schedule_id: str, req: ScheduleUpdateRequest, curre
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     return schedule.model_dump(mode="json")
+
+
+@router.post("/providers/{provider_id}/enable", tags=["research-admin"])
+def enable_research_provider(provider_id: str, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    try:
+        return service.set_provider_enabled(provider_id, True)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.post("/providers/{provider_id}/disable", tags=["research-admin"])
+def disable_research_provider(provider_id: str, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    try:
+        return service.set_provider_enabled(provider_id, False)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.get("/digests", tags=["research-admin"])
+def list_research_digests(
+    digest_type: str | None = Query(None),
+    domain_id: str | None = Query(None),
+    limit: int = Query(30, ge=1, le=200),
+    current_user=Depends(require_admin),
+):
+    service = get_research_platform_service()
+    return {
+        "digests": service.list_digests(digest_type=digest_type, domain_id=domain_id, limit=limit),
+        "limit": limit,
+    }

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from engines.ai.research.platform.contracts import (
     AdminAction,
@@ -15,6 +16,7 @@ from engines.ai.research.platform.contracts import (
     ConfidenceDimensions,
     ConflictResolutionStatus,
     ContradictionStatus,
+    DomainStatus,
     KnowledgeZone,
     LedgerEventType,
     MisfirePolicy,
@@ -35,6 +37,7 @@ from engines.ai.research.platform.contracts import (
     ResearchMissionRecord,
     ResearchRunRecord,
     ResearchScheduleRecord,
+    ResearchType,
     ResearchValidationRecord,
     RunStatus,
     SafetyClass,
@@ -43,8 +46,15 @@ from engines.ai.research.platform.contracts import (
     TriggerType,
     ValidationStage,
     ValidationStatus,
+    ProviderStatus,
 )
-from engines.ai.research.platform.providers import BasePlatformResearchProvider, SyntheticFixtureProvider
+from engines.ai.research.platform.external_providers import DDGSPlatformSearchProvider, RequestsDirectRetrievalProvider
+from engines.ai.research.platform.providers import (
+    BasePlatformResearchProvider,
+    ResearchProviderAuthError,
+    ResearchProviderTemporaryError,
+    SyntheticFixtureProvider,
+)
 from engines.ai.research.platform.security import content_hash, detect_prompt_injection, is_safe_uri, normalize_uri, sanitize_external_text
 from engines.ai.research.platform.store import ResearchPlatformStore
 from engines.ai.research.platform.synthetic import SyntheticResearchDomainPlugin
@@ -83,9 +93,13 @@ class ResearchPlatformService:
         self.vedic_astrology_plugin = VedicAstrologyResearchDomain()
         default_provider = SyntheticFixtureProvider(self.fixture_path)
         astrology_provider = VedicAstrologyCorpusProvider(self.vedic_astrology_plugin)
+        ddgs_provider = DDGSPlatformSearchProvider()
+        requests_provider = RequestsDirectRetrievalProvider()
         self.providers: dict[str, BasePlatformResearchProvider] = {
             default_provider.descriptor().provider_id: default_provider,
             astrology_provider.descriptor().provider_id: astrology_provider,
+            ddgs_provider.descriptor().provider_id: ddgs_provider,
+            requests_provider.descriptor().provider_id: requests_provider,
         }
         if providers:
             self.providers.update(providers)
@@ -247,17 +261,19 @@ class ResearchPlatformService:
 
     def create_schedule(self, payload: dict[str, Any]) -> ResearchScheduleRecord:
         now = utc_now()
+        cadence_type = CadenceType(payload.get("cadence_type", "MANUAL_ONLY"))
+        timezone_name = payload.get("timezone", "Asia/Calcutta")
         record = ResearchScheduleRecord(
             schedule_id=self.store.next_id("schedule", "VEDA-RSCH-"),
             domain_id=payload["domain_id"],
             mission_id=payload["mission_id"],
-            cadence_type=payload.get("cadence_type", "MANUAL_ONLY"),
-            timezone=payload.get("timezone", "Asia/Calcutta"),
+            cadence_type=cadence_type,
+            timezone=timezone_name,
             enabled=bool(payload.get("enabled", True)),
-            next_run_at=payload.get("next_run_at"),
+            next_run_at=payload.get("next_run_at") or self._next_schedule_time(now, cadence_type, timezone_name),
             last_run_at=payload.get("last_run_at"),
             misfire_policy=payload.get("misfire_policy", "RUN_ONCE"),
-            overlap_policy=payload.get("overlap_policy", "SKIP"),
+            overlap_policy=payload.get("overlap_policy", "COALESCE" if cadence_type != CadenceType.MANUAL_ONLY else "SKIP"),
             priority=payload.get("priority", MissionPriority.P2),
             created_at=now,
             updated_at=now,
@@ -269,13 +285,18 @@ class ResearchPlatformService:
         schedule = self.store.get_schedule(schedule_id)
         if schedule is None:
             raise KeyError(f"Unknown schedule: {schedule_id}")
+        cadence_type = CadenceType(updates.get("cadence_type", schedule.cadence_type))
+        timezone_name = updates.get("timezone", schedule.timezone)
+        next_run_at = updates.get("next_run_at", schedule.next_run_at)
+        if updates.get("enabled", schedule.enabled) and cadence_type != CadenceType.MANUAL_ONLY and not next_run_at:
+            next_run_at = self._next_schedule_time(utc_now(), cadence_type, timezone_name)
         updated = ResearchScheduleRecord.model_validate(
             {
                 **schedule.model_dump(mode="json"),
                 "enabled": bool(updates.get("enabled", schedule.enabled)),
-                "cadence_type": CadenceType(updates.get("cadence_type", schedule.cadence_type)),
-                "timezone": updates.get("timezone", schedule.timezone),
-                "next_run_at": updates.get("next_run_at", schedule.next_run_at),
+                "cadence_type": cadence_type,
+                "timezone": timezone_name,
+                "next_run_at": next_run_at,
                 "last_run_at": updates.get("last_run_at", schedule.last_run_at),
                 "misfire_policy": MisfirePolicy(updates.get("misfire_policy", schedule.misfire_policy)),
                 "overlap_policy": OverlapPolicy(updates.get("overlap_policy", schedule.overlap_policy)),
@@ -293,10 +314,22 @@ class ResearchPlatformService:
         mission = self._require_mission(mission_id)
         if mission.status in {MissionStatus.CANCELLED, MissionStatus.ARCHIVED, MissionStatus.PAUSED}:
             raise RuntimeError(f"Mission {mission_id} is not runnable from state {mission.status.value}")
+        schedule = self.store.get_schedule(mission.schedule_id) if mission.schedule_id else None
+        return self._execute_run(mission, actor_id=actor_id, trigger_type=trigger_type, schedule=schedule)
+
+    def _execute_run(
+        self,
+        mission: ResearchMissionRecord,
+        *,
+        actor_id: str,
+        trigger_type: TriggerType,
+        schedule: ResearchScheduleRecord | None = None,
+        as_of: str | None = None,
+    ) -> ResearchRunRecord:
         domain = self._require_domain(mission.domain_id)
-        provider = self._resolve_provider(mission, domain)
-        prior_runs = self.store.list_runs_for_mission(mission_id)
-        now = utc_now()
+        search_providers, retrieval_provider = self._resolve_provider_chain(mission, domain)
+        prior_runs = self.store.list_runs_for_mission(mission.mission_id)
+        now = as_of or utc_now()
 
         run = ResearchRunRecord(
             run_id=self.store.next_id("run", "VEDA-RUN-"),
@@ -305,8 +338,27 @@ class ResearchPlatformService:
             trigger_type=trigger_type,
             started_at=now,
             status=RunStatus.RUNNING,
+            model_metadata={
+                "cycle": self._cycle_label_for_trigger(trigger_type, schedule),
+                "backlog_state": self.backlog_state(),
+                "budget_clock_at": now,
+            },
         )
         self.store.insert_run(run)
+        if trigger_type != TriggerType.MANUAL:
+            self._append_ledger(
+                event_type=LedgerEventType.SCHEDULE_TRIGGERED,
+                actor_type=ActorType.SCHEDULER,
+                actor_id=actor_id,
+                action="schedule_triggered",
+                domain_id=run.domain_id,
+                mission_id=run.mission_id,
+                run_id=run.run_id,
+                metadata={
+                    "schedule_id": schedule.schedule_id if schedule else None,
+                    "trigger_type": trigger_type.value,
+                },
+            )
         self._append_ledger(
             event_type=LedgerEventType.RUN_STARTED,
             actor_type=ActorType.ADMIN if trigger_type == TriggerType.MANUAL else ActorType.SYSTEM,
@@ -319,28 +371,44 @@ class ResearchPlatformService:
         )
 
         try:
-            batch = provider.search(mission, prior_run_count=len(prior_runs))
-            run.provider_calls += 1
-            run.queries_executed += 1
-            self._append_ledger(
-                event_type=LedgerEventType.QUERY_EXECUTED,
-                actor_type=ActorType.PROVIDER,
-                actor_id=provider.descriptor().provider_id,
-                action="provider_search",
-                domain_id=run.domain_id,
-                mission_id=run.mission_id,
-                run_id=run.run_id,
-                metadata={
-                    "query": batch.query,
-                    "continuation_hint": batch.continuation_hint,
-                    **dict(batch.search_metadata),
-                },
+            provider, batch = self._search_with_fallback(
+                mission,
+                run,
+                search_providers=search_providers,
+                prior_run_count=len(prior_runs),
             )
-            for document in batch.documents[: mission.research_budget.max_sources]:
-                self._process_document(provider, mission, run, document)
+            run.provider_calls += 1
+            if batch.query:
+                run.queries_executed += 1
+            if batch.query or batch.search_metadata:
+                self._append_ledger(
+                    event_type=LedgerEventType.QUERY_EXECUTED,
+                    actor_type=ActorType.PROVIDER,
+                    actor_id=provider.descriptor().provider_id,
+                    action="provider_search",
+                    domain_id=run.domain_id,
+                    mission_id=run.mission_id,
+                    run_id=run.run_id,
+                    metadata={
+                        "query": batch.query,
+                        "continuation_hint": batch.continuation_hint,
+                        **dict(batch.search_metadata),
+                    },
+                )
+
+            documents = list(batch.documents)
+            if len(documents) > mission.research_budget.max_sources:
+                run.errors.append("budget_exhausted")
+            for document in documents[: mission.research_budget.max_sources]:
+                if self._run_budget_exhausted(run, mission):
+                    run.errors.append("budget_exhausted")
+                    break
+                self._process_document(provider, retrieval_provider or provider, mission, run, document)
+
             run.continuation_required = bool(batch.continuation_hint)
             run.continuation_hint = batch.continuation_hint
-            run.status = RunStatus.PARTIAL if run.errors else RunStatus.SUCCESS
+            if run.status == RunStatus.RUNNING:
+                run.status = RunStatus.PARTIAL if run.errors else RunStatus.SUCCESS
         except Exception as exc:
             run.errors.append(str(exc))
             run.status = RunStatus.FAILED
@@ -356,7 +424,16 @@ class ResearchPlatformService:
             )
         finally:
             finished_at = utc_now()
-            run = run.model_copy(update={"completed_at": finished_at})
+            run = run.model_copy(
+                update={
+                    "completed_at": finished_at,
+                    "cost_metrics": {
+                        **dict(run.cost_metrics),
+                        "sources_processed": run.sources_discovered,
+                        "queries_executed": run.queries_executed,
+                    },
+                }
+            )
             self.store.update_run(run)
             mission_update = mission.model_copy(
                 update={
@@ -366,27 +443,55 @@ class ResearchPlatformService:
                 }
             )
             self.store.update_mission(mission_update)
-            if mission.schedule_id:
-                schedule = self.store.get_schedule(mission.schedule_id)
-                if schedule:
-                    self.store.upsert_schedule(
-                        schedule.model_copy(update={"last_run_at": finished_at, "updated_at": finished_at})
-                    )
+            if schedule:
+                self._finalize_schedule_after_run(schedule, finished_at)
+            self._append_ledger(
+                event_type=LedgerEventType.RUN_COMPLETED if run.status != RunStatus.FAILED else LedgerEventType.RUN_FAILED,
+                actor_type=ActorType.SYSTEM,
+                actor_id=actor_id,
+                action="complete_run" if run.status != RunStatus.FAILED else "run_failed",
+                domain_id=run.domain_id,
+                mission_id=run.mission_id,
+                run_id=run.run_id,
+                after_state=run.model_dump(mode="json"),
+                metadata={"status": run.status.value},
+            )
         return run
 
     def _process_document(
         self,
-        provider: BasePlatformResearchProvider,
+        search_provider: BasePlatformResearchProvider,
+        retrieval_provider: BasePlatformResearchProvider,
         mission: ResearchMissionRecord,
         run: ResearchRunRecord,
         document,
     ) -> None:
-        descriptor = provider.descriptor()
+        search_descriptor = search_provider.descriptor()
+        descriptor = retrieval_provider.descriptor()
         retrieved_at = utc_now()
-        raw_content = provider.retrieve(document)
-        prompt_injection = detect_prompt_injection(raw_content)
         canonical_uri = normalize_uri(document.source_uri)
         safe, unsafe_reason = is_safe_uri(document.source_uri, allowed_schemes=set(descriptor.allowed_uri_schemes))
+        raw_content = "" if not safe else retrieval_provider.retrieve(document)
+        prompt_injection = detect_prompt_injection(raw_content)
+        previous_observation = self.store.find_latest_observation(canonical_uri)
+        change_status = "NEW"
+        if previous_observation is not None:
+            change_status = "UNCHANGED" if previous_observation.content_hash == content_hash(raw_content) else "UPDATED"
+        if safe:
+            self._append_ledger(
+                event_type=LedgerEventType.SOURCE_RETRIEVED,
+                actor_type=ActorType.PROVIDER,
+                actor_id=descriptor.provider_id,
+                action="retrieve_source",
+                domain_id=mission.domain_id,
+                mission_id=mission.mission_id,
+                run_id=run.run_id,
+                metadata={
+                    "source_uri": document.source_uri,
+                    "discovery_provider": search_descriptor.provider_id,
+                    "change_status": change_status,
+                },
+            )
         observation = SourceObservationRecord(
             observation_id=self.store.next_id("observation", "VEDA-OBS-"),
             run_id=run.run_id,
@@ -407,9 +512,15 @@ class ResearchPlatformService:
                 "prompt_injection_detected": prompt_injection,
                 "unsafe_reason": unsafe_reason,
                 "authority_score": document.metadata.get("authority_score", 0.5),
+                "change_status": change_status,
             },
-            raw_reference=provider.fetch_metadata(document),
-            domain_metadata=dict(document.metadata),
+            raw_reference=retrieval_provider.fetch_metadata(document),
+            domain_metadata={
+                **dict(document.metadata),
+                "discovery_provider_id": search_descriptor.provider_id,
+                "retrieval_provider_id": descriptor.provider_id,
+                "change_status": change_status,
+            },
         )
 
         accepted, reject_reason = self.domain_plugins[mission.domain_id].validate_source(observation)
@@ -445,7 +556,7 @@ class ResearchPlatformService:
         self._append_ledger(
             event_type=LedgerEventType.SOURCE_DISCOVERED,
             actor_type=ActorType.PROVIDER,
-            actor_id=descriptor.provider_id,
+            actor_id=search_descriptor.provider_id,
             action="accept_source",
             domain_id=mission.domain_id,
             mission_id=mission.mission_id,
@@ -453,12 +564,13 @@ class ResearchPlatformService:
             metadata={"observation_id": observation.observation_id, "source_uri": observation.source_uri},
         )
 
-        for hint in provider.extract(document, content=raw_content):
+        for hint in retrieval_provider.extract(document, content=raw_content):
             normalized_text = sanitize_external_text(hint.normalized_text or hint.passage or hint.claim_hint)
             evidence_metadata = {
                 **hint.metadata,
                 "authority_score": document.metadata.get("authority_score", 0.5),
                 "prompt_injection_detected": prompt_injection,
+                "change_status": change_status,
             }
             evidence = ResearchEvidenceRecord(
                 evidence_id=self.store.next_id("evidence", "VEDA-EVD-"),
@@ -991,6 +1103,8 @@ class ResearchPlatformService:
         )
         dashboard["last_research_run"] = self._latest_run_timestamp(domain_id=domain_id)
         dashboard["next_expected_run"] = self._next_expected_run(domain_id=domain_id)
+        dashboard["backlog_state"] = self.backlog_state()
+        dashboard["runtime_controls"] = self.platform_runtime_state()
         dashboard["metrics"] = {
             "missions_active": dashboard["active_missions"],
             "runs_total": len(runs),
@@ -1014,6 +1128,8 @@ class ResearchPlatformService:
             "domains": [item.model_dump(mode="json") for item in domains],
             "provider_health": self._provider_health_rows(),
             "external_web_research_status": self._external_web_research_status(),
+            "daily_digest": next((item for item in self.list_digests(digest_type="DAILY", limit=1)), None),
+            "weekly_digest": next((item for item in self.list_digests(digest_type="WEEKLY", limit=1)), None),
             "knowledge_gaps": self.knowledge_gap_rows(domain_id=domain_id),
             "notifications": self.notification_rows(domain_id=domain_id),
             "analytics": self.analytics_bundle(domain_id=domain_id),
@@ -1506,15 +1622,324 @@ class ResearchPlatformService:
             "discovery_only": bool(metadata.get("discovery_only")),
         }
 
+    def backlog_state(self) -> str:
+        pending = sum(1 for item in self.store.list_candidates() if item.approval_status == ApprovalStatus.PENDING)
+        contradictions = sum(1 for item in self.store.list_candidates() if item.contradiction_status != ContradictionStatus.NONE)
+        weighted = pending + contradictions
+        if weighted >= cfg.VEDA_RESEARCH_BACKLOG_SATURATED:
+            return "SATURATED"
+        if weighted >= cfg.VEDA_RESEARCH_BACKLOG_HIGH:
+            return "HIGH"
+        if weighted >= cfg.VEDA_RESEARCH_BACKLOG_ELEVATED:
+            return "ELEVATED"
+        return "NORMAL"
+
+    def platform_runtime_state(self) -> dict[str, Any]:
+        return self.store.get_runtime_state("platform_controls") or {
+            "paused": False,
+            "kill_switch": False,
+            "updated_at": utc_now(),
+        }
+
+    def set_platform_runtime_state(
+        self,
+        *,
+        paused: bool | None = None,
+        kill_switch: bool | None = None,
+        actor_id: str = "admin",
+        reason: str | None = None,
+    ) -> dict[str, Any]:
+        existing = self.platform_runtime_state()
+        updated = {
+            **existing,
+            "paused": existing.get("paused", False) if paused is None else bool(paused),
+            "kill_switch": existing.get("kill_switch", False) if kill_switch is None else bool(kill_switch),
+            "updated_at": utc_now(),
+            "updated_by": actor_id,
+        }
+        self.store.set_runtime_state("platform_controls", updated, updated_at=updated["updated_at"])
+        return updated
+
+    def set_domain_status(self, domain_id: str, status: DomainStatus | str) -> ResearchDomainRecord:
+        domain = self._require_domain(domain_id)
+        updated = domain.model_copy(update={"status": DomainStatus(status), "updated_at": utc_now()})
+        self.store.upsert_domain(updated)
+        return updated
+
+    def set_provider_enabled(self, provider_id: str, enabled: bool) -> dict[str, Any]:
+        provider = self.providers.get(provider_id)
+        if provider is None:
+            raise KeyError(f"Unknown provider: {provider_id}")
+        current = self.store.get_provider_state(provider_id) or {}
+        state = {
+            **current,
+            "provider_id": provider_id,
+            "status": ProviderStatus.DISABLED.value if not enabled else ProviderStatus.HEALTHY.value,
+            "enabled": bool(enabled),
+            "updated_at": utc_now(),
+        }
+        self.store.upsert_provider_state(provider_id, state, updated_at=state["updated_at"])
+        return state
+
+    def run_due_schedules(self, *, as_of: str | None = None, actor_id: str = "scheduler") -> dict[str, Any]:
+        now = as_of or utc_now()
+        controls = self.platform_runtime_state()
+        if controls.get("kill_switch"):
+            return {"status": "KILL_SWITCH", "as_of": now, "runs_started": 0, "schedule_ids": []}
+        if controls.get("paused"):
+            return {"status": "PAUSED", "as_of": now, "runs_started": 0, "schedule_ids": []}
+
+        backlog_state = self.backlog_state()
+        started: list[str] = []
+        skipped: list[str] = []
+        for schedule in self.store.list_due_schedules(now):
+            mission = self.store.get_mission(schedule.mission_id)
+            domain = self.store.get_domain(schedule.domain_id)
+            if (
+                mission is None
+                or domain is None
+                or domain.status not in {DomainStatus.ACTIVE, DomainStatus.TEST}
+                or mission.status in {MissionStatus.PAUSED, MissionStatus.CANCELLED, MissionStatus.ARCHIVED}
+            ):
+                skipped.append(schedule.schedule_id)
+                self._finalize_schedule_after_run(schedule, now)
+                continue
+            if backlog_state in {"HIGH", "SATURATED"} and mission.research_type in {ResearchType.DISCOVERY, ResearchType.NOVELTY_SEARCH}:
+                skipped.append(schedule.schedule_id)
+                self._finalize_schedule_after_run(schedule, now)
+                continue
+            self._execute_run(
+                mission,
+                actor_id=actor_id,
+                trigger_type=self._trigger_for_schedule(schedule),
+                schedule=schedule,
+                as_of=now,
+            )
+            started.append(schedule.schedule_id)
+
+        if started:
+            self._update_digest_for_cycle(now, schedule_ids=started)
+        return {
+            "status": "SUCCESS" if started else "IDLE",
+            "as_of": now,
+            "runs_started": len(started),
+            "schedule_ids": started,
+            "skipped_schedule_ids": skipped,
+            "backlog_state": backlog_state,
+        }
+
+    def list_digests(self, *, digest_type: str | None = None, domain_id: str | None = None, limit: int = 30) -> list[dict[str, Any]]:
+        return self.store.list_digests(digest_type=digest_type, domain_id=domain_id, limit=limit)
+
+    def _resolve_provider_chain(
+        self,
+        mission: ResearchMissionRecord,
+        domain: ResearchDomainRecord,
+    ) -> tuple[list[BasePlatformResearchProvider], BasePlatformResearchProvider | None]:
+        strategy = dict(mission.query_strategy or {})
+        primary_id = strategy.get("search_provider_id") or strategy.get("provider_id") or domain.provider_policy.get("default_provider_id")
+        fallback_ids = list(strategy.get("fallback_provider_ids") or domain.provider_policy.get("fallback_provider_ids") or [])
+        provider_ids = [item for item in [primary_id, *fallback_ids] if item]
+        providers: list[BasePlatformResearchProvider] = []
+        for provider_id in provider_ids:
+            provider = self.providers.get(str(provider_id))
+            if provider is None:
+                raise KeyError(f"Unknown research provider: {provider_id}")
+            providers.append(provider)
+        retrieval_id = strategy.get("retrieval_provider_id") or domain.provider_policy.get("default_retrieval_provider_id")
+        retrieval_provider = self.providers.get(str(retrieval_id)) if retrieval_id else None
+        return providers, retrieval_provider
+
+    def _search_with_fallback(
+        self,
+        mission: ResearchMissionRecord,
+        run: ResearchRunRecord,
+        *,
+        search_providers: list[BasePlatformResearchProvider],
+        prior_run_count: int,
+    ) -> tuple[BasePlatformResearchProvider, Any]:
+        last_error: Exception | None = None
+        now = utc_now()
+        for provider in search_providers:
+            descriptor = provider.descriptor()
+            self._append_ledger(
+                event_type=LedgerEventType.PROVIDER_SELECTED,
+                actor_type=ActorType.SYSTEM,
+                actor_id=descriptor.provider_id,
+                action="provider_selected",
+                domain_id=mission.domain_id,
+                mission_id=mission.mission_id,
+                run_id=run.run_id,
+                metadata={"provider_id": descriptor.provider_id},
+            )
+            if not self._provider_available_for_run(descriptor.provider_id, provider, now):
+                last_error = RuntimeError(f"provider_unavailable:{descriptor.provider_id}")
+                continue
+            try:
+                batch = provider.search(mission, prior_run_count=prior_run_count)
+                self._mark_provider_success(descriptor.provider_id)
+                return provider, batch
+            except ResearchProviderAuthError as exc:
+                last_error = exc
+                self._mark_provider_failure(descriptor.provider_id, error=str(exc), hard=True)
+            except ResearchProviderTemporaryError as exc:
+                last_error = exc
+                self._mark_provider_failure(descriptor.provider_id, error=str(exc), hard=False)
+            except Exception as exc:
+                last_error = exc
+                self._mark_provider_failure(descriptor.provider_id, error=str(exc), hard=False)
+        if last_error is None:
+            raise RuntimeError("no_provider_available")
+        raise last_error
+
+    def _provider_available_for_run(self, provider_id: str, provider: BasePlatformResearchProvider, now: str) -> bool:
+        if not provider.is_available():
+            return False
+        state = self.store.get_provider_state(provider_id) or {}
+        if state.get("enabled") is False:
+            return False
+        cooldown_until = str(state.get("cooldown_until") or "")
+        if cooldown_until and cooldown_until > now:
+            return False
+        return True
+
+    def _mark_provider_success(self, provider_id: str) -> None:
+        state = self.store.get_provider_state(provider_id) or {"provider_id": provider_id, "enabled": True}
+        now = utc_now()
+        state.update(
+            {
+                "status": ProviderStatus.HEALTHY.value,
+                "last_success": now,
+                "last_failure": None,
+                "cooldown_until": None,
+                "consecutive_failures": 0,
+                "updated_at": now,
+            }
+        )
+        self.store.upsert_provider_state(provider_id, state, updated_at=now)
+
+    def _mark_provider_failure(self, provider_id: str, *, error: str, hard: bool) -> None:
+        state = self.store.get_provider_state(provider_id) or {"provider_id": provider_id, "enabled": True, "consecutive_failures": 0}
+        now = utc_now()
+        failures = int(state.get("consecutive_failures", 0)) + 1
+        cooldown_seconds = cfg.VEDA_CHAT_PROVIDER_HARD_FAILURE_COOLDOWN_S if hard else max(60, cfg.VEDA_RESEARCH_TIMEOUT_S * failures)
+        cooldown_until = self._shift_iso(now, seconds=cooldown_seconds)
+        state.update(
+            {
+                "status": ProviderStatus.COOLDOWN.value if hard else ProviderStatus.DEGRADED.value,
+                "last_failure": now,
+                "last_error": error,
+                "cooldown_until": cooldown_until if hard else state.get("cooldown_until"),
+                "consecutive_failures": failures,
+                "updated_at": now,
+            }
+        )
+        self.store.upsert_provider_state(provider_id, state, updated_at=now)
+
+    def _run_budget_exhausted(self, run: ResearchRunRecord, mission: ResearchMissionRecord) -> bool:
+        if run.queries_executed > mission.research_budget.max_queries:
+            return True
+        if run.sources_discovered >= mission.research_budget.max_sources:
+            return True
+        if run.provider_calls > mission.research_budget.max_provider_calls:
+            return True
+        started = datetime.fromisoformat(run.started_at.replace("Z", "+00:00"))
+        reference_time = str(run.model_metadata.get("budget_clock_at") or utc_now())
+        elapsed = (
+            datetime.fromisoformat(reference_time.replace("Z", "+00:00")) - started
+        ).total_seconds()
+        return elapsed > mission.research_budget.max_runtime_seconds
+
+    def _trigger_for_schedule(self, schedule: ResearchScheduleRecord) -> TriggerType:
+        mapping = {
+            CadenceType.HOURLY: TriggerType.HOURLY,
+            CadenceType.DAILY: TriggerType.DAILY,
+            CadenceType.WEEKLY: TriggerType.WEEKLY,
+            CadenceType.CUSTOM: TriggerType.SYSTEM_RETRY,
+            CadenceType.MANUAL_ONLY: TriggerType.MANUAL,
+        }
+        return mapping[schedule.cadence_type]
+
+    def _cycle_label_for_trigger(self, trigger_type: TriggerType, schedule: ResearchScheduleRecord | None) -> str:
+        if schedule is not None:
+            return schedule.cadence_type.value
+        return trigger_type.value
+
+    def _finalize_schedule_after_run(self, schedule: ResearchScheduleRecord, finished_at: str) -> ResearchScheduleRecord:
+        next_run_at = self._next_schedule_time(finished_at, schedule.cadence_type, schedule.timezone)
+        updated = schedule.model_copy(update={"last_run_at": finished_at, "next_run_at": next_run_at, "updated_at": utc_now()})
+        self.store.upsert_schedule(updated)
+        return updated
+
+    def _next_schedule_time(self, base_iso: str, cadence_type: CadenceType, timezone_name: str) -> str | None:
+        if cadence_type == CadenceType.MANUAL_ONLY:
+            return None
+        try:
+            tz = ZoneInfo(timezone_name.replace("Calcutta", "Kolkata"))
+        except Exception:
+            tz = ZoneInfo("Asia/Kolkata")
+        base = datetime.fromisoformat(base_iso.replace("Z", "+00:00")).astimezone(tz)
+        if cadence_type == CadenceType.HOURLY:
+            next_local = (base + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
+        elif cadence_type == CadenceType.DAILY:
+            next_local = (base + timedelta(days=1)).replace(hour=6, minute=0, second=0, microsecond=0)
+        elif cadence_type == CadenceType.WEEKLY:
+            next_local = (base + timedelta(days=7)).replace(hour=7, minute=0, second=0, microsecond=0)
+        else:
+            next_local = (base + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
+        return next_local.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+    def _shift_iso(self, iso_value: str, *, seconds: int) -> str:
+        base = datetime.fromisoformat(iso_value.replace("Z", "+00:00"))
+        return (base + timedelta(seconds=seconds)).astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+    def _update_digest_for_cycle(self, as_of: str, *, schedule_ids: list[str]) -> None:
+        schedules = [self.store.get_schedule(item) for item in schedule_ids]
+        schedules = [item for item in schedules if item is not None]
+        cadences = {item.cadence_type for item in schedules}
+        if CadenceType.DAILY in cadences:
+            self._create_digest("DAILY", as_of)
+        if CadenceType.WEEKLY in cadences:
+            self._create_digest("WEEKLY", as_of)
+
+    def _create_digest(self, digest_type: str, as_of: str) -> dict[str, Any]:
+        dashboard = self.dashboard_bundle()
+        payload = {
+            "digest_id": self.store.next_id("digest", "VEDA-RDIG-"),
+            "digest_type": digest_type,
+            "created_at": as_of,
+            "research_status": dashboard.get("research_status"),
+            "runs_completed": dashboard.get("runs_today"),
+            "runs_failed": dashboard.get("failed_runs"),
+            "new_candidates": dashboard.get("new_candidates"),
+            "pending_approvals": dashboard.get("pending_approvals"),
+            "high_priority_conflicts": dashboard.get("high_priority_conflicts"),
+            "knowledge_gaps": len(dashboard.get("knowledge_gaps", [])),
+            "provider_health": dashboard.get("provider_health", []),
+            "backlog_state": self.backlog_state(),
+        }
+        self.store.insert_digest(payload["digest_id"], digest_type, None, as_of, payload)
+        self._append_ledger(
+            event_type=LedgerEventType.DIGEST_UPDATED,
+            actor_type=ActorType.SYSTEM,
+            actor_id="digest_builder",
+            action="create_digest",
+            metadata={"digest_id": payload["digest_id"], "digest_type": digest_type},
+        )
+        return payload
+
     def _provider_health_rows(self) -> list[dict[str, Any]]:
         observations = self.store.list_observations()
         rows = []
         for provider_id, provider in self.providers.items():
             descriptor = provider.descriptor()
+            state = self.store.get_provider_state(provider_id) or {}
             last_use = max(
                 (item.retrieved_at for item in observations if item.provider_id == provider_id),
                 default=None,
             )
+            if not last_use:
+                last_use = state.get("last_success")
             rows.append(
                 {
                     **provider.health_check(),
@@ -1522,17 +1947,27 @@ class ResearchPlatformService:
                     "provider_type": descriptor.provider_type.value,
                     "capabilities": descriptor.capabilities,
                     "last_successful_use": last_use,
+                    "status": state.get("status") or (descriptor.status.value if hasattr(descriptor.status, "value") else str(descriptor.status)),
+                    "cooldown_until": state.get("cooldown_until"),
+                    "last_failure": state.get("last_failure"),
+                    "enabled": state.get("enabled", True),
                 }
             )
         return rows
 
     def _external_web_research_status(self) -> str:
-        provider_types = {provider.descriptor().provider_type.value for provider in self.providers.values()}
-        if provider_types & {"WEB_SEARCH", "DIRECT_WEB", "API", "CONNECTOR"}:
+        provider_rows = self._provider_health_rows()
+        external_rows = [row for row in provider_rows if row.get("provider_type") in {"WEB_SEARCH", "DIRECT_WEB", "API", "CONNECTOR"}]
+        if any(row.get("last_successful_use") for row in external_rows):
+            return "ACTIVE"
+        if any(row.get("enabled") and row.get("status") not in {"DISABLED", "UNAVAILABLE"} for row in external_rows):
             return "CONFIGURED"
         return "LOCAL_ONLY"
 
     def _engine_status(self) -> str:
+        controls = self.platform_runtime_state()
+        if controls.get("kill_switch") or controls.get("paused"):
+            return "PAUSED"
         health = self.health()
         if health["status"] == PlatformHealth.DEGRADED.value:
             return "DEGRADED"

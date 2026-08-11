@@ -9,6 +9,18 @@ from typing import Any
 from engines.ai.research.platform.contracts import EvidenceType, ResearchMissionRecord, ResearchProviderDescriptor
 
 
+class ResearchProviderError(RuntimeError):
+    """Base provider error used for retry/cooldown classification."""
+
+
+class ResearchProviderAuthError(ResearchProviderError):
+    """Provider credentials or authentication are invalid."""
+
+
+class ResearchProviderTemporaryError(ResearchProviderError):
+    """Transient provider/network failure."""
+
+
 @dataclass(slots=True)
 class ProviderEvidenceHint:
     passage: str
@@ -68,6 +80,9 @@ class BasePlatformResearchProvider(ABC):
     @abstractmethod
     def health_check(self) -> dict[str, Any]:
         raise NotImplementedError
+
+    def is_enabled(self) -> bool:
+        return self.is_available()
 
 
 class SyntheticFixtureProvider(BasePlatformResearchProvider):

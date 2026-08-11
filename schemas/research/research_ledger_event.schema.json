@@ -17,13 +17,18 @@
         "MISSION_CREATED",
         "MISSION_STARTED",
         "MISSION_PAUSED",
+        "SCHEDULE_TRIGGERED",
         "RUN_STARTED",
+        "RUN_COMPLETED",
         "QUERY_EXECUTED",
+        "PROVIDER_SELECTED",
         "SOURCE_DISCOVERED",
         "SOURCE_REJECTED",
+        "SOURCE_RETRIEVED",
         "EVIDENCE_CREATED",
         "CANDIDATE_CREATED",
         "CANDIDATE_MERGED",
+        "CANDIDATE_UPDATED",
         "VALIDATION_COMPLETED",
         "CONTRADICTION_FOUND",
         "FOLLOW_UP_CREATED",
@@ -31,7 +36,8 @@
         "ADMIN_REJECTED",
         "MORE_RESEARCH_REQUESTED",
         "RUN_FAILED",
-        "RUN_RECOVERED"
+        "RUN_RECOVERED",
+        "DIGEST_UPDATED"
       ],
       "title": "LedgerEventType",
       "type": "string"

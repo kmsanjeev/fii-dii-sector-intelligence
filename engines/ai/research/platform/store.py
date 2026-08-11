@@ -212,6 +212,28 @@ class ResearchPlatformStore:
                 );
                 CREATE INDEX IF NOT EXISTS idx_ledger_time
                     ON research_ledger (timestamp);
+
+                CREATE TABLE IF NOT EXISTS research_runtime_state (
+                    state_key TEXT PRIMARY KEY,
+                    updated_at TEXT NOT NULL,
+                    payload TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS research_provider_state (
+                    provider_id TEXT PRIMARY KEY,
+                    updated_at TEXT NOT NULL,
+                    payload TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS research_digests (
+                    digest_id TEXT PRIMARY KEY,
+                    digest_type TEXT NOT NULL,
+                    domain_id TEXT,
+                    created_at TEXT NOT NULL,
+                    payload TEXT NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS idx_digest_type_time
+                    ON research_digests (digest_type, created_at);
                 """
             )
 
@@ -382,6 +404,14 @@ class ResearchPlatformStore:
     def list_schedules(self) -> list[ResearchScheduleRecord]:
         with self._conn() as con:
             rows = con.execute("SELECT payload FROM research_schedules ORDER BY schedule_id").fetchall()
+        return [ResearchScheduleRecord.model_validate(json.loads(row["payload"])) for row in rows]
+
+    def list_due_schedules(self, as_of: str) -> list[ResearchScheduleRecord]:
+        with self._conn() as con:
+            rows = con.execute(
+                "SELECT payload FROM research_schedules WHERE enabled = 1 AND next_run_at IS NOT NULL AND next_run_at <= ? ORDER BY next_run_at, schedule_id",
+                (as_of,),
+            ).fetchall()
         return [ResearchScheduleRecord.model_validate(json.loads(row["payload"])) for row in rows]
 
     def insert_run(self, record: ResearchRunRecord) -> ResearchRunRecord:
@@ -738,3 +768,116 @@ class ResearchPlatformStore:
         with self._conn() as con:
             rows = con.execute("SELECT payload FROM research_core_knowledge ORDER BY core_id").fetchall()
         return [ResearchCoreKnowledgeRecord.model_validate(json.loads(row["payload"])) for row in rows]
+
+    def get_runtime_state(self, state_key: str) -> dict[str, Any] | None:
+        with self._conn() as con:
+            row = con.execute(
+                "SELECT payload FROM research_runtime_state WHERE state_key = ?",
+                (state_key,),
+            ).fetchone()
+        if row is None:
+            return None
+        return json.loads(row["payload"])
+
+    def set_runtime_state(self, state_key: str, payload: dict[str, Any], *, updated_at: str) -> dict[str, Any]:
+        serialized = json.dumps(payload)
+        with self._conn() as con:
+            con.execute(
+                "INSERT INTO research_runtime_state (state_key, updated_at, payload) VALUES (?, ?, ?) "
+                "ON CONFLICT(state_key) DO UPDATE SET updated_at = excluded.updated_at, payload = excluded.payload",
+                (state_key, updated_at, serialized),
+            )
+        return payload
+
+    def try_acquire_lease(self, state_key: str, *, owner_id: str, now: str, expires_at: str) -> bool:
+        with self._conn() as con:
+            con.execute("BEGIN IMMEDIATE")
+            row = con.execute(
+                "SELECT payload FROM research_runtime_state WHERE state_key = ?",
+                (state_key,),
+            ).fetchone()
+            if row is not None:
+                payload = json.loads(row["payload"])
+                current_owner = str(payload.get("owner_id") or "")
+                current_expiry = str(payload.get("expires_at") or "")
+                if current_owner and current_owner != owner_id and current_expiry and current_expiry > now:
+                    return False
+            payload = {"owner_id": owner_id, "acquired_at": now, "expires_at": expires_at}
+            con.execute(
+                "INSERT INTO research_runtime_state (state_key, updated_at, payload) VALUES (?, ?, ?) "
+                "ON CONFLICT(state_key) DO UPDATE SET updated_at = excluded.updated_at, payload = excluded.payload",
+                (state_key, now, json.dumps(payload)),
+            )
+        return True
+
+    def release_lease(self, state_key: str, *, owner_id: str, released_at: str) -> None:
+        with self._conn() as con:
+            row = con.execute(
+                "SELECT payload FROM research_runtime_state WHERE state_key = ?",
+                (state_key,),
+            ).fetchone()
+            if row is None:
+                return
+            payload = json.loads(row["payload"])
+            if str(payload.get("owner_id") or "") != owner_id:
+                return
+            payload.update({"owner_id": None, "released_at": released_at, "expires_at": released_at})
+            con.execute(
+                "UPDATE research_runtime_state SET updated_at = ?, payload = ? WHERE state_key = ?",
+                (released_at, json.dumps(payload), state_key),
+            )
+
+    def get_provider_state(self, provider_id: str) -> dict[str, Any] | None:
+        with self._conn() as con:
+            row = con.execute(
+                "SELECT payload FROM research_provider_state WHERE provider_id = ?",
+                (provider_id,),
+            ).fetchone()
+        if row is None:
+            return None
+        return json.loads(row["payload"])
+
+    def upsert_provider_state(self, provider_id: str, payload: dict[str, Any], *, updated_at: str) -> dict[str, Any]:
+        with self._conn() as con:
+            con.execute(
+                "INSERT INTO research_provider_state (provider_id, updated_at, payload) VALUES (?, ?, ?) "
+                "ON CONFLICT(provider_id) DO UPDATE SET updated_at = excluded.updated_at, payload = excluded.payload",
+                (provider_id, updated_at, json.dumps(payload)),
+            )
+        return payload
+
+    def list_provider_states(self) -> list[dict[str, Any]]:
+        with self._conn() as con:
+            rows = con.execute("SELECT payload FROM research_provider_state ORDER BY provider_id").fetchall()
+        return [json.loads(row["payload"]) for row in rows]
+
+    def insert_digest(self, digest_id: str, digest_type: str, domain_id: str | None, created_at: str, payload: dict[str, Any]) -> dict[str, Any]:
+        with self._conn() as con:
+            con.execute(
+                "INSERT INTO research_digests (digest_id, digest_type, domain_id, created_at, payload) VALUES (?, ?, ?, ?, ?)",
+                (digest_id, digest_type, domain_id, created_at, json.dumps(payload)),
+            )
+        return payload
+
+    def list_digests(self, *, digest_type: str | None = None, domain_id: str | None = None, limit: int = 100) -> list[dict[str, Any]]:
+        query = "SELECT payload FROM research_digests WHERE 1=1"
+        args: list[Any] = []
+        if digest_type:
+            query += " AND digest_type = ?"
+            args.append(digest_type)
+        if domain_id:
+            query += " AND domain_id = ?"
+            args.append(domain_id)
+        query += " ORDER BY created_at DESC, digest_id DESC LIMIT ?"
+        args.append(limit)
+        with self._conn() as con:
+            rows = con.execute(query, tuple(args)).fetchall()
+        return [json.loads(row["payload"]) for row in rows]
+
+    def find_latest_observation(self, canonical_uri: str) -> SourceObservationRecord | None:
+        with self._conn() as con:
+            row = con.execute(
+                "SELECT payload FROM research_observations WHERE canonical_uri = ? ORDER BY retrieved_at DESC, observation_id DESC LIMIT 1",
+                (canonical_uri,),
+            ).fetchone()
+        return self._load(row, SourceObservationRecord)

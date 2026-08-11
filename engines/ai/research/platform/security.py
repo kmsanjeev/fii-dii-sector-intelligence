@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import ipaddress
 import re
 from urllib.parse import urlparse, urlunparse
 
@@ -14,6 +15,7 @@ PROMPT_INJECTION_PATTERNS = [
 ]
 
 UNSAFE_SCHEMES = {"file", "javascript", "data", "ftp", "gopher", "chrome", "vscode"}
+UNSAFE_HOSTNAMES = {"localhost", "localhost.localdomain", "metadata.google.internal"}
 
 
 def normalize_uri(uri: str) -> str:
@@ -22,6 +24,30 @@ def normalize_uri(uri: str) -> str:
     netloc = parsed.netloc.lower()
     path = parsed.path or ""
     return urlunparse((scheme, netloc, path, "", parsed.query, ""))
+
+
+def _is_private_host(hostname: str | None) -> bool:
+    host = (hostname or "").strip().lower().rstrip(".")
+    if not host:
+        return True
+    if host in UNSAFE_HOSTNAMES or host.endswith(".local"):
+        return True
+    if host in {"::1"}:
+        return True
+    try:
+        ip = ipaddress.ip_address(host)
+    except ValueError:
+        return False
+    return any(
+        [
+            ip.is_private,
+            ip.is_loopback,
+            ip.is_link_local,
+            ip.is_reserved,
+            ip.is_multicast,
+            ip.is_unspecified,
+        ]
+    )
 
 
 def is_safe_uri(uri: str, *, allowed_schemes: set[str] | None = None) -> tuple[bool, str | None]:
@@ -33,6 +59,11 @@ def is_safe_uri(uri: str, *, allowed_schemes: set[str] | None = None) -> tuple[b
         return False, f"unsafe_uri_scheme:{scheme}"
     if allowed_schemes and scheme not in allowed_schemes:
         return False, f"scheme_not_allowed:{scheme}"
+    if scheme in {"http", "https"}:
+        if not parsed.netloc:
+            return False, "missing_network_location"
+        if _is_private_host(parsed.hostname):
+            return False, "unsafe_host"
     return True, None
 
 

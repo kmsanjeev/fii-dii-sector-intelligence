@@ -23,6 +23,7 @@ from backend.auth import router as auth_router
 from backend.auth.middleware import AuthMiddleware
 from backend.auth.store import init_db, bootstrap_admin, validate_runtime_auth_policy
 from backend.ws.live_ticker import live_ticker_endpoint
+from engines.common import config as cfg
 
 # ── App ───────────────────────────────────────────────────────────────────────
 
@@ -55,7 +56,20 @@ async def on_startup():
     data_loader.startup()
     from engines.orchestration.refresh_scheduler import start_scheduler
     start_scheduler()
+    if cfg.VEDA_RESEARCH_RUNTIME_ENABLED:
+        from engines.ai.research.platform.runtime import get_research_platform_runtime
+        get_research_platform_runtime().start()
     await voice.validate_voices_on_startup()
+
+
+@app.on_event("shutdown")
+async def on_shutdown():
+    from engines.orchestration.refresh_scheduler import stop_scheduler
+
+    stop_scheduler()
+    if cfg.VEDA_RESEARCH_RUNTIME_ENABLED:
+        from engines.ai.research.platform.runtime import get_research_platform_runtime
+        get_research_platform_runtime().stop()
 
 
 # ── Routers ───────────────────────────────────────────────────────────────────
