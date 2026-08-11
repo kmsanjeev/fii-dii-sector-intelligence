@@ -1,0 +1,1536 @@
+[
+  {
+    "lifecycle_id": "VEDA-CLFC-000001",
+    "capability_id": "VEDA-CAP-FOUNDATION-000001",
+    "current_status": "ACTIVE",
+    "allowed_next_statuses": [
+      "SUPERSEDED",
+      "DEPRECATED",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "PASS",
+      "reason": "Existing deterministic calculation capability is already governed by the P004 baseline.",
+      "evidence": [
+        "P004 validated baseline",
+        "P012 runtime boundary"
+      ],
+      "next_action": "Maintain regression protection through P014+."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "PASS",
+      "reason": "Knowledge linkage is sufficient to enter ruled engineering under P003 contracts.",
+      "evidence": [],
+      "next_action": "Create or refine the machine-readable rule package."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "PASS",
+      "reason": "Machine-readable rule packaging can proceed under existing governed contracts.",
+      "evidence": [],
+      "next_action": "Assemble the implementation package and validation fixtures."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
+      "evidence": [],
+      "next_action": "Proceed to validation."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "PASS",
+      "reason": "Validation evidence already exists for this capability.",
+      "evidence": [
+        "P004_AND_P012_VALIDATED"
+      ],
+      "next_action": "Maintain regression suites and proceed to shadow/activation policy."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "PASS",
+      "reason": "Existing foundation capability is already active and protected by current-production regression suites.",
+      "evidence": [],
+      "next_action": "Keep shadow comparison available for future migrations."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "PASS",
+      "reason": "The capability is already active in production and remains under regression protection.",
+      "evidence": [],
+      "next_action": "Do not bypass P013 for any future changes."
+    },
+    "rollback_supported": true,
+    "blocked_reason": null
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000002",
+    "capability_id": "VEDA-CAP-FOUNDATION-000002",
+    "current_status": "ACTIVE",
+    "allowed_next_statuses": [
+      "SUPERSEDED",
+      "DEPRECATED",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
+      "evidence": [
+        "VEDA-CAP-FOUNDATION-000001"
+      ],
+      "next_action": "Proceed to validation."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "PASS",
+      "reason": "Existing foundation capability is already active and protected by current-production regression suites.",
+      "evidence": [],
+      "next_action": "Keep shadow comparison available for future migrations."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "PASS",
+      "reason": "The capability is already active in production and remains under regression protection.",
+      "evidence": [],
+      "next_action": "Do not bypass P013 for any future changes."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000003",
+    "capability_id": "VEDA-CAP-TIMING-000001",
+    "current_status": "ACTIVE",
+    "allowed_next_statuses": [
+      "SUPERSEDED",
+      "DEPRECATED",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "PASS",
+      "reason": "Approved or implementation-ready governed knowledge is already linked.",
+      "evidence": [
+        "VEDA-CLM-000001",
+        "VEDA-CLM-000002",
+        "VEDA-CLM-000005",
+        "VEDA-CLM-000006",
+        "VEDA-RUL-DASHA-000001",
+        "VEDA-RUL-DASHA-000002"
+      ],
+      "next_action": "Continue through knowledge sufficiency and rule-engineering checks."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "PASS",
+      "reason": "Knowledge linkage is sufficient to enter ruled engineering under P003 contracts.",
+      "evidence": [
+        "VEDA-CLM-000001",
+        "VEDA-CLM-000002",
+        "VEDA-CLM-000005",
+        "VEDA-CLM-000006",
+        "VEDA-RUL-DASHA-000001",
+        "VEDA-RUL-DASHA-000002"
+      ],
+      "next_action": "Create or refine the machine-readable rule package."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "PASS",
+      "reason": "Machine-readable rule packaging can proceed under existing governed contracts.",
+      "evidence": [
+        "VEDA-RUL-DASHA-000001",
+        "VEDA-RUL-DASHA-000002"
+      ],
+      "next_action": "Assemble the implementation package and validation fixtures."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
+      "evidence": [
+        "VEDA-CAP-FOUNDATION-000001",
+        "VEDA-CAP-FOUNDATION-000002"
+      ],
+      "next_action": "Proceed to validation."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "A governed implementation package exists conceptually, but validation execution is still pending.",
+      "evidence": [],
+      "next_action": "Run unit, rule-fixture, boundary, and regression validation suites."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "PASS",
+      "reason": "Existing foundation capability is already active and protected by current-production regression suites.",
+      "evidence": [],
+      "next_action": "Keep shadow comparison available for future migrations."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "PASS",
+      "reason": "The capability is already active in production and remains under regression protection.",
+      "evidence": [],
+      "next_action": "Do not bypass P013 for any future changes."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "A governed implementation package exists conceptually, but validation execution is still pending."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000004",
+    "capability_id": "VEDA-CAP-DIGNITY-000001",
+    "current_status": "BLOCKED",
+    "allowed_next_statuses": [
+      "RESEARCHING",
+      "RULE_ENGINEERING"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "A legacy-unsourced mapping or draft rule exists, but no approved-core knowledge supports implementation yet.",
+      "evidence": [
+        "VEDA-RUL-DIGNITY-000001",
+        "VEDA-LMP-000002"
+      ],
+      "next_action": "Open or continue a provenance-recovery mission until approved-core dignity support exists."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [
+        "VEDA-RUL-DIGNITY-000001",
+        "VEDA-LMP-000002"
+      ],
+      "next_action": "Open or continue a provenance-recovery mission until approved-core dignity support exists."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [
+        "VEDA-RUL-DIGNITY-000001",
+        "VEDA-LMP-000002"
+      ],
+      "next_action": "Open or continue a provenance-recovery mission until approved-core dignity support exists."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
+      "evidence": [
+        "VEDA-CAP-FOUNDATION-000001",
+        "VEDA-CAP-FOUNDATION-000002"
+      ],
+      "next_action": "Proceed to validation."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "A legacy-unsourced mapping or draft rule exists, but no approved-core knowledge supports implementation yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000005",
+    "capability_id": "VEDA-CAP-INTERPRETATION-000001",
+    "current_status": "RESEARCHING",
+    "allowed_next_statuses": [
+      "KNOWLEDGE_APPROVED",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "BLOCKED_BY_CALCULATION",
+      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "evidence": [
+        "VEDA-CAP-DIGNITY-000001"
+      ],
+      "next_action": "Advance the prerequisite capabilities first."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000006",
+    "capability_id": "VEDA-CAP-VARGA-000001",
+    "current_status": "IDENTIFIED",
+    "allowed_next_statuses": [
+      "RESEARCHING",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
+      "evidence": [
+        "VEDA-CAP-FOUNDATION-000001"
+      ],
+      "next_action": "Proceed to validation."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000007",
+    "capability_id": "VEDA-CAP-VARGA-000002",
+    "current_status": "IDENTIFIED",
+    "allowed_next_statuses": [
+      "RESEARCHING",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "BLOCKED_BY_CALCULATION",
+      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "evidence": [
+        "VEDA-CAP-VARGA-000001",
+        "VEDA-CAP-INTERPRETATION-000001"
+      ],
+      "next_action": "Advance the prerequisite capabilities first."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000008",
+    "capability_id": "VEDA-CAP-VARGA-000003",
+    "current_status": "IDENTIFIED",
+    "allowed_next_statuses": [
+      "RESEARCHING",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
+      "evidence": [
+        "VEDA-CAP-FOUNDATION-000001"
+      ],
+      "next_action": "Proceed to validation."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000009",
+    "capability_id": "VEDA-CAP-VARGA-000004",
+    "current_status": "IDENTIFIED",
+    "allowed_next_statuses": [
+      "RESEARCHING",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "BLOCKED_BY_CALCULATION",
+      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "evidence": [
+        "VEDA-CAP-VARGA-000003",
+        "VEDA-CAP-INTERPRETATION-000001"
+      ],
+      "next_action": "Advance the prerequisite capabilities first."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000010",
+    "capability_id": "VEDA-CAP-RULE-000001",
+    "current_status": "RESEARCHING",
+    "allowed_next_statuses": [
+      "KNOWLEDGE_APPROVED",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "BLOCKED_BY_CALCULATION",
+      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "evidence": [
+        "VEDA-CAP-DIGNITY-000001"
+      ],
+      "next_action": "Advance the prerequisite capabilities first."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000011",
+    "capability_id": "VEDA-CAP-RULE-000002",
+    "current_status": "RESEARCHING",
+    "allowed_next_statuses": [
+      "KNOWLEDGE_APPROVED",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "BLOCKED_BY_CALCULATION",
+      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "evidence": [
+        "VEDA-CAP-DIGNITY-000001"
+      ],
+      "next_action": "Advance the prerequisite capabilities first."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000012",
+    "capability_id": "VEDA-CAP-TIMING-000002",
+    "current_status": "IDENTIFIED",
+    "allowed_next_statuses": [
+      "RESEARCHING",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
+      "evidence": [
+        "VEDA-CAP-FOUNDATION-000001"
+      ],
+      "next_action": "Proceed to validation."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000013",
+    "capability_id": "VEDA-CAP-TIMING-000003",
+    "current_status": "IDENTIFIED",
+    "allowed_next_statuses": [
+      "RESEARCHING",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
+      "evidence": [
+        "VEDA-CAP-FOUNDATION-000001"
+      ],
+      "next_action": "Proceed to validation."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000014",
+    "capability_id": "VEDA-CAP-STRENGTH-000001",
+    "current_status": "IDENTIFIED",
+    "allowed_next_statuses": [
+      "RESEARCHING",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
+      "evidence": [
+        "VEDA-CAP-FOUNDATION-000001",
+        "VEDA-CAP-FOUNDATION-000002"
+      ],
+      "next_action": "Proceed to validation."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000015",
+    "capability_id": "VEDA-CAP-STRENGTH-000002",
+    "current_status": "IDENTIFIED",
+    "allowed_next_statuses": [
+      "RESEARCHING",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
+      "evidence": [
+        "VEDA-CAP-FOUNDATION-000001",
+        "VEDA-CAP-FOUNDATION-000002"
+      ],
+      "next_action": "Proceed to validation."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000016",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "current_status": "RESEARCHING",
+    "allowed_next_statuses": [
+      "KNOWLEDGE_APPROVED",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "BLOCKED_BY_CALCULATION",
+      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "evidence": [
+        "VEDA-CAP-VARGA-000001",
+        "VEDA-CAP-VARGA-000002",
+        "VEDA-CAP-INTERPRETATION-000001",
+        "VEDA-CAP-RULE-000001"
+      ],
+      "next_action": "Advance the prerequisite capabilities first."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000017",
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "current_status": "RESEARCHING",
+    "allowed_next_statuses": [
+      "KNOWLEDGE_APPROVED",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "BLOCKED_BY_CALCULATION",
+      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "evidence": [
+        "VEDA-CAP-VARGA-000003",
+        "VEDA-CAP-VARGA-000004",
+        "VEDA-CAP-INTERPRETATION-000001"
+      ],
+      "next_action": "Advance the prerequisite capabilities first."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000018",
+    "capability_id": "VEDA-CAP-DOMAIN-000003",
+    "current_status": "RESEARCHING",
+    "allowed_next_statuses": [
+      "KNOWLEDGE_APPROVED",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "BLOCKED_BY_CALCULATION",
+      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "evidence": [
+        "VEDA-CAP-RULE-000001",
+        "VEDA-CAP-DIGNITY-000001"
+      ],
+      "next_action": "Advance the prerequisite capabilities first."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000019",
+    "capability_id": "VEDA-CAP-DOMAIN-000004",
+    "current_status": "RESEARCHING",
+    "allowed_next_statuses": [
+      "KNOWLEDGE_APPROVED",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "BLOCKED_BY_CALCULATION",
+      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "evidence": [
+        "VEDA-CAP-INTERPRETATION-000001"
+      ],
+      "next_action": "Advance the prerequisite capabilities first."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000020",
+    "capability_id": "VEDA-CAP-DOMAIN-000005",
+    "current_status": "RESEARCHING",
+    "allowed_next_statuses": [
+      "KNOWLEDGE_APPROVED",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "BLOCKED_BY_CALCULATION",
+      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "evidence": [
+        "VEDA-CAP-INTERPRETATION-000001"
+      ],
+      "next_action": "Advance the prerequisite capabilities first."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000021",
+    "capability_id": "VEDA-CAP-DOMAIN-000006",
+    "current_status": "RESEARCHING",
+    "allowed_next_statuses": [
+      "KNOWLEDGE_APPROVED",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "BLOCKED_BY_CALCULATION",
+      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "evidence": [
+        "VEDA-CAP-INTERPRETATION-000001"
+      ],
+      "next_action": "Advance the prerequisite capabilities first."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000022",
+    "capability_id": "VEDA-CAP-DOMAIN-000007",
+    "current_status": "RESEARCHING",
+    "allowed_next_statuses": [
+      "KNOWLEDGE_APPROVED",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "BLOCKED_BY_CALCULATION",
+      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "evidence": [
+        "VEDA-CAP-INTERPRETATION-000001"
+      ],
+      "next_action": "Advance the prerequisite capabilities first."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000023",
+    "capability_id": "VEDA-CAP-ADVANCED-000001",
+    "current_status": "IDENTIFIED",
+    "allowed_next_statuses": [
+      "RESEARCHING",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
+      "evidence": [
+        "VEDA-CAP-FOUNDATION-000001",
+        "VEDA-CAP-FOUNDATION-000002"
+      ],
+      "next_action": "Proceed to validation."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000024",
+    "capability_id": "VEDA-CAP-ADVANCED-000002",
+    "current_status": "IDENTIFIED",
+    "allowed_next_statuses": [
+      "RESEARCHING",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
+      "evidence": [
+        "VEDA-CAP-FOUNDATION-000001",
+        "VEDA-CAP-FOUNDATION-000002"
+      ],
+      "next_action": "Proceed to validation."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  }
+]

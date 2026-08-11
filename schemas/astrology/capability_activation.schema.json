@@ -1,0 +1,79 @@
+{
+  "$defs": {
+    "ActivationState": {
+      "enum": [
+        "INACTIVE",
+        "SHADOW",
+        "LIMITED",
+        "ACTIVE",
+        "PAUSED",
+        "ROLLED_BACK"
+      ],
+      "title": "ActivationState",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "activation_id": {
+      "title": "Activation Id",
+      "type": "string"
+    },
+    "capability_id": {
+      "title": "Capability Id",
+      "type": "string"
+    },
+    "activation_state": {
+      "$ref": "#/$defs/ActivationState"
+    },
+    "admin_activation_required": {
+      "default": true,
+      "title": "Admin Activation Required",
+      "type": "boolean"
+    },
+    "validation_passed": {
+      "default": false,
+      "title": "Validation Passed",
+      "type": "boolean"
+    },
+    "shadow_complete": {
+      "default": false,
+      "title": "Shadow Complete",
+      "type": "boolean"
+    },
+    "dependencies_satisfied": {
+      "default": false,
+      "title": "Dependencies Satisfied",
+      "type": "boolean"
+    },
+    "approval_required": {
+      "default": true,
+      "title": "Approval Required",
+      "type": "boolean"
+    },
+    "production_enabled": {
+      "default": false,
+      "title": "Production Enabled",
+      "type": "boolean"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "activation_id",
+    "capability_id",
+    "activation_state"
+  ],
+  "title": "CapabilityActivationRecord",
+  "type": "object"
+}

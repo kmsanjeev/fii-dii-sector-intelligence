@@ -1,0 +1,57 @@
+{
+  "$defs": {
+    "DependencyKind": {
+      "enum": [
+        "CAPABILITY",
+        "APPROVED_RULE",
+        "APPROVED_CLAIM",
+        "CHART_FACT",
+        "RUNTIME_PROFILE",
+        "SAFETY_POLICY"
+      ],
+      "title": "DependencyKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "dependency_id": {
+      "title": "Dependency Id",
+      "type": "string"
+    },
+    "capability_id": {
+      "title": "Capability Id",
+      "type": "string"
+    },
+    "depends_on": {
+      "title": "Depends On",
+      "type": "string"
+    },
+    "dependency_kind": {
+      "$ref": "#/$defs/DependencyKind"
+    },
+    "minimum_status": {
+      "title": "Minimum Status",
+      "type": "string"
+    },
+    "rationale": {
+      "title": "Rationale",
+      "type": "string"
+    },
+    "blocking": {
+      "default": true,
+      "title": "Blocking",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "dependency_id",
+    "capability_id",
+    "depends_on",
+    "dependency_kind",
+    "minimum_status",
+    "rationale"
+  ],
+  "title": "CapabilityDependencyRecord",
+  "type": "object"
+}

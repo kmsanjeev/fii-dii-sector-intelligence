@@ -1,0 +1,51 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "rollback_id": {
+      "title": "Rollback Id",
+      "type": "string"
+    },
+    "capability_id": {
+      "title": "Capability Id",
+      "type": "string"
+    },
+    "supported": {
+      "title": "Supported",
+      "type": "boolean"
+    },
+    "restore_target": {
+      "title": "Restore Target",
+      "type": "string"
+    },
+    "preserves_evidence": {
+      "default": true,
+      "title": "Preserves Evidence",
+      "type": "boolean"
+    },
+    "preserves_history": {
+      "default": true,
+      "title": "Preserves History",
+      "type": "boolean"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "rollback_id",
+    "capability_id",
+    "supported",
+    "restore_target"
+  ],
+  "title": "CapabilityRollbackRecord",
+  "type": "object"
+}

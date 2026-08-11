@@ -1,0 +1,81 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "package_id": {
+      "title": "Package Id",
+      "type": "string"
+    },
+    "capability_id": {
+      "title": "Capability Id",
+      "type": "string"
+    },
+    "approved_claim_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Approved Claim Ids",
+      "type": "array"
+    },
+    "approved_rule_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Approved Rule Ids",
+      "type": "array"
+    },
+    "calculation_dependencies": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Calculation Dependencies",
+      "type": "array"
+    },
+    "implementation_module": {
+      "title": "Implementation Module",
+      "type": "string"
+    },
+    "validation_datasets": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Validation Datasets",
+      "type": "array"
+    },
+    "shadow_policy": {
+      "title": "Shadow Policy",
+      "type": "string"
+    },
+    "activation_policy": {
+      "title": "Activation Policy",
+      "type": "string"
+    },
+    "documentation": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Documentation",
+      "type": "array"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "package_id",
+    "capability_id",
+    "implementation_module",
+    "shadow_policy",
+    "activation_policy"
+  ],
+  "title": "CapabilityImplementationPackageRecord",
+  "type": "object"
+}

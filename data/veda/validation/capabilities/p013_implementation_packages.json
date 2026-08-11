@@ -1,0 +1,628 @@
+[
+  {
+    "package_id": "VEDA-CPKG-000001",
+    "capability_id": "VEDA-CAP-FOUNDATION-000001",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "normalized_datetime",
+      "julian_day",
+      "ayanamsha",
+      "lagna",
+      "graha_longitudes"
+    ],
+    "implementation_module": "engines/intelligence/jyotisha_runtime.py",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000002",
+    "capability_id": "VEDA-CAP-FOUNDATION-000002",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "graha_longitudes",
+      "rashi",
+      "bhava",
+      "nakshatra",
+      "pada",
+      "retrograde"
+    ],
+    "implementation_module": "engines/intelligence/jyotisha_runtime.py",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000003",
+    "capability_id": "VEDA-CAP-TIMING-000001",
+    "approved_claim_ids": [
+      "VEDA-CLM-000001",
+      "VEDA-CLM-000002",
+      "VEDA-CLM-000005",
+      "VEDA-CLM-000006"
+    ],
+    "approved_rule_ids": [
+      "VEDA-RUL-DASHA-000001",
+      "VEDA-RUL-DASHA-000002"
+    ],
+    "calculation_dependencies": [
+      "janma_nakshatra",
+      "moon_longitude",
+      "dasha_sequence"
+    ],
+    "implementation_module": "engines/intelligence/jyotisha_runtime.py",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000004",
+    "capability_id": "VEDA-CAP-DIGNITY-000001",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [
+      "VEDA-RUL-DIGNITY-000001"
+    ],
+    "calculation_dependencies": [
+      "graha_longitudes",
+      "rashi",
+      "degrees_in_sign"
+    ],
+    "implementation_module": "engines/intelligence/kundli_engine.py::KundliEngine._dignity",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000005",
+    "capability_id": "VEDA-CAP-INTERPRETATION-000001",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "graha_longitudes",
+      "bhava",
+      "lordship",
+      "dignity"
+    ],
+    "implementation_module": "engines/intelligence/kundli_interpretator.py",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000006",
+    "capability_id": "VEDA-CAP-VARGA-000001",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "graha_longitudes",
+      "rashi"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000007",
+    "capability_id": "VEDA-CAP-VARGA-000002",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "d9_chart",
+      "graha_longitudes",
+      "bhava"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000008",
+    "capability_id": "VEDA-CAP-VARGA-000003",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "graha_longitudes",
+      "rashi"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000009",
+    "capability_id": "VEDA-CAP-VARGA-000004",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "d10_chart",
+      "graha_longitudes",
+      "bhava"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000010",
+    "capability_id": "VEDA-CAP-RULE-000001",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "graha_longitudes",
+      "bhava",
+      "lordship",
+      "aspects"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000011",
+    "capability_id": "VEDA-CAP-RULE-000002",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "graha_longitudes",
+      "bhava",
+      "lordship",
+      "aspects"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000012",
+    "capability_id": "VEDA-CAP-TIMING-000002",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "janma_nakshatra",
+      "moon_longitude"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000013",
+    "capability_id": "VEDA-CAP-TIMING-000003",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "janma_nakshatra",
+      "moon_longitude"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000014",
+    "capability_id": "VEDA-CAP-STRENGTH-000001",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "graha_longitudes",
+      "declination",
+      "time_of_birth"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000015",
+    "capability_id": "VEDA-CAP-STRENGTH-000002",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "graha_longitudes",
+      "rashi"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000016",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "d1_chart",
+      "seventh_house",
+      "lordship",
+      "venus",
+      "jupiter",
+      "d9_chart",
+      "dasha"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000017",
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "tenth_house",
+      "lordship",
+      "saturn",
+      "sun",
+      "d10_chart",
+      "dasha"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000018",
+    "capability_id": "VEDA-CAP-DOMAIN-000003",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "second_house",
+      "eleventh_house",
+      "lordship",
+      "dasha",
+      "yogas"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000019",
+    "capability_id": "VEDA-CAP-DOMAIN-000004",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "fifth_house",
+      "jupiter",
+      "d7_chart",
+      "dasha"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000020",
+    "capability_id": "VEDA-CAP-DOMAIN-000005",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "sixth_house",
+      "eighth_house",
+      "twelfth_house",
+      "dasha"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000021",
+    "capability_id": "VEDA-CAP-DOMAIN-000006",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "eighth_house",
+      "maraka_factors",
+      "dasha",
+      "ayurdaya_method"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000022",
+    "capability_id": "VEDA-CAP-DOMAIN-000007",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "chart_context",
+      "dasha",
+      "benefic_malefic_context"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000023",
+    "capability_id": "VEDA-CAP-ADVANCED-000001",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "chara_karakas",
+      "argala",
+      "arudha"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000024",
+    "capability_id": "VEDA-CAP-ADVANCED-000002",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "transit",
+      "lagna",
+      "tithi",
+      "nakshatra"
+    ],
+    "implementation_module": "UNASSIGNED",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  }
+]

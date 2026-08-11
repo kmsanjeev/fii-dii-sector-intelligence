@@ -1,0 +1,123 @@
+[
+  {
+    "phase": "P014",
+    "title": "Core Rule Migration & Graha/Bhava/Dignity",
+    "depends_on": [
+      "VEDA-CAP-DIGNITY-000001",
+      "VEDA-CAP-INTERPRETATION-000001"
+    ],
+    "rationale": "Dignity and foundational interpretive rules are the lowest-risk governed migration target after P013."
+  },
+  {
+    "phase": "P015",
+    "title": "Varga Calculation & Interpretation Programme",
+    "depends_on": [
+      "VEDA-CAP-VARGA-000001",
+      "VEDA-CAP-VARGA-000002",
+      "VEDA-CAP-VARGA-000003",
+      "VEDA-CAP-VARGA-000004"
+    ],
+    "rationale": "Marriage, career, and other domain expansions depend on governed divisional-chart capability."
+  },
+  {
+    "phase": "P016",
+    "title": "Yoga / Dosha Knowledge Programme",
+    "depends_on": [
+      "VEDA-CAP-RULE-000001",
+      "VEDA-CAP-RULE-000002"
+    ],
+    "rationale": "Composite analyses should not activate until Yoga and Dosha provenance is governed."
+  },
+  {
+    "phase": "P017",
+    "title": "Dasha Expansion & Timing Intelligence",
+    "depends_on": [
+      "VEDA-CAP-TIMING-000002",
+      "VEDA-CAP-TIMING-000003"
+    ],
+    "rationale": "Timing expansion comes after the foundational Vimshottari path and governed lifecycle are stable."
+  },
+  {
+    "phase": "P018",
+    "title": "Strength Systems",
+    "depends_on": [
+      "VEDA-CAP-STRENGTH-000001",
+      "VEDA-CAP-STRENGTH-000002"
+    ],
+    "rationale": "Shadbala and Ashtakavarga are downstream from foundation runtime and ontology coverage."
+  },
+  {
+    "phase": "P019",
+    "title": "Relationship & Marriage Intelligence",
+    "depends_on": [
+      "VEDA-CAP-DOMAIN-000001",
+      "VEDA-CAP-VARGA-000001",
+      "VEDA-CAP-VARGA-000002",
+      "VEDA-CAP-RULE-000001"
+    ],
+    "rationale": "Marriage intelligence depends on D9, foundational interpretation, and governed Yoga support."
+  },
+  {
+    "phase": "P020",
+    "title": "Career / Education / Wealth Intelligence",
+    "depends_on": [
+      "VEDA-CAP-DOMAIN-000002",
+      "VEDA-CAP-DOMAIN-000003",
+      "VEDA-CAP-VARGA-000003",
+      "VEDA-CAP-VARGA-000004"
+    ],
+    "rationale": "Career and finance require D10 plus high-stakes and safety governance."
+  },
+  {
+    "phase": "P021",
+    "title": "Children / Family / Property",
+    "depends_on": [
+      "VEDA-CAP-DOMAIN-000004"
+    ],
+    "rationale": "Family-domain work depends on the same governed lifecycle and likely additional Vargas."
+  },
+  {
+    "phase": "P022",
+    "title": "Health / Longevity Research Governance",
+    "depends_on": [
+      "VEDA-CAP-DOMAIN-000005",
+      "VEDA-CAP-DOMAIN-000006"
+    ],
+    "rationale": "High-stakes domains require the stricter lifecycle created in P013 before any runtime activation."
+  },
+  {
+    "phase": "P023",
+    "title": "Remedies Governance",
+    "depends_on": [
+      "VEDA-CAP-DOMAIN-000007"
+    ],
+    "rationale": "Remedies remain separately governed and cannot ride on interpretive phases."
+  },
+  {
+    "phase": "P024",
+    "title": "Muhurta / Electional Astrology",
+    "depends_on": [
+      "VEDA-CAP-ADVANCED-000002"
+    ],
+    "rationale": "Event-time and electional capabilities need dedicated runtime semantics and governed sources."
+  },
+  {
+    "phase": "P025",
+    "title": "Jaimini Systems",
+    "depends_on": [
+      "VEDA-CAP-ADVANCED-000001"
+    ],
+    "rationale": "Jaimini requires separate ontology, runtime facts, and evidence policy."
+  },
+  {
+    "phase": "P026",
+    "title": "Advanced Synthesis & Multi-Chart Reasoning",
+    "depends_on": [
+      "P019",
+      "P020",
+      "P022",
+      "P025"
+    ],
+    "rationale": "Multi-chart reasoning should only follow after major governed sub-capabilities exist."
+  }
+]

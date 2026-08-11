@@ -1,0 +1,153 @@
+{
+  "$defs": {
+    "CapabilityGateRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "gate": {
+          "title": "Gate",
+          "type": "string"
+        },
+        "decision": {
+          "$ref": "#/$defs/GateDecision"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "next_action": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Next Action"
+        }
+      },
+      "required": [
+        "gate",
+        "decision",
+        "reason"
+      ],
+      "title": "CapabilityGateRecord",
+      "type": "object"
+    },
+    "CapabilityStatus": {
+      "enum": [
+        "IDENTIFIED",
+        "RESEARCHING",
+        "KNOWLEDGE_APPROVED",
+        "RULE_ENGINEERING",
+        "IMPLEMENTATION_READY",
+        "IMPLEMENTING",
+        "VALIDATING",
+        "SHADOW",
+        "ACTIVATION_READY",
+        "ACTIVE",
+        "DEPRECATED",
+        "SUPERSEDED",
+        "BLOCKED"
+      ],
+      "title": "CapabilityStatus",
+      "type": "string"
+    },
+    "GateDecision": {
+      "enum": [
+        "PASS",
+        "RESEARCH_MORE",
+        "BLOCKED",
+        "BLOCKED_BY_CONFLICT",
+        "BLOCKED_BY_ONTOLOGY",
+        "BLOCKED_BY_CALCULATION",
+        "WAITING_FOR_VALIDATION",
+        "WAITING_FOR_SHADOW",
+        "WAITING_FOR_ADMIN"
+      ],
+      "title": "GateDecision",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "lifecycle_id": {
+      "title": "Lifecycle Id",
+      "type": "string"
+    },
+    "capability_id": {
+      "title": "Capability Id",
+      "type": "string"
+    },
+    "current_status": {
+      "$ref": "#/$defs/CapabilityStatus"
+    },
+    "allowed_next_statuses": {
+      "items": {
+        "$ref": "#/$defs/CapabilityStatus"
+      },
+      "title": "Allowed Next Statuses",
+      "type": "array"
+    },
+    "research_gate": {
+      "$ref": "#/$defs/CapabilityGateRecord"
+    },
+    "knowledge_gate": {
+      "$ref": "#/$defs/CapabilityGateRecord"
+    },
+    "rule_engineering_gate": {
+      "$ref": "#/$defs/CapabilityGateRecord"
+    },
+    "dependency_gate": {
+      "$ref": "#/$defs/CapabilityGateRecord"
+    },
+    "validation_gate": {
+      "$ref": "#/$defs/CapabilityGateRecord"
+    },
+    "shadow_gate": {
+      "$ref": "#/$defs/CapabilityGateRecord"
+    },
+    "activation_gate": {
+      "$ref": "#/$defs/CapabilityGateRecord"
+    },
+    "rollback_supported": {
+      "default": true,
+      "title": "Rollback Supported",
+      "type": "boolean"
+    },
+    "blocked_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Blocked Reason"
+    }
+  },
+  "required": [
+    "lifecycle_id",
+    "capability_id",
+    "current_status",
+    "research_gate",
+    "knowledge_gate",
+    "rule_engineering_gate",
+    "dependency_gate",
+    "validation_gate",
+    "shadow_gate",
+    "activation_gate"
+  ],
+  "title": "CapabilityLifecycleRecord",
+  "type": "object"
+}

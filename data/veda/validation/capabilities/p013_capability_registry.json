@@ -1,0 +1,1245 @@
+[
+  {
+    "capability_id": "VEDA-CAP-FOUNDATION-000001",
+    "name": "D1 canonical chart calculation",
+    "domain": "FOUNDATION",
+    "subdomain": "D1",
+    "capability_type": "CALCULATION",
+    "status": "ACTIVE",
+    "research_status": "P004_VALIDATED_DETERMINISTIC_BASELINE",
+    "knowledge_status": "P004_CANONICAL_CALCULATION_APPROVED",
+    "implementation_status": "P012_RUNTIME_FACADE_ROUTED",
+    "validation_status": "P004_AND_P012_VALIDATED",
+    "activation_status": "ACTIVE",
+    "safety_class": "LOW",
+    "dependencies": [],
+    "required_chart_facts": [
+      "normalized_datetime",
+      "julian_day",
+      "ayanamsha",
+      "lagna",
+      "graha_longitudes"
+    ],
+    "required_rules": [],
+    "required_sources": [],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD",
+      "STOCK_MARKET",
+      "COUNTRY_EVENT"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "FOUNDATION",
+    "change_classes": [
+      "ASTRONOMICAL_CALCULATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.95,
+      "source_confidence": 0.95,
+      "implementation_confidence": 0.92,
+      "calculation_confidence": 0.98,
+      "validation_confidence": 0.98,
+      "production_confidence": 0.95
+    },
+    "version": "1.0.0",
+    "notes": "Existing deterministic calculation capability governed by P004 and routed through the P012 runtime boundary."
+  },
+  {
+    "capability_id": "VEDA-CAP-FOUNDATION-000002",
+    "name": "Canonical graha and lagna chart facts",
+    "domain": "FOUNDATION",
+    "subdomain": "GRAHA_LAGNA_FACTS",
+    "capability_type": "DERIVED_FACT",
+    "status": "ACTIVE",
+    "research_status": "P012_CANONICAL_FACT_CONTRACT_ESTABLISHED",
+    "knowledge_status": "P003_ONTOLOGY_FACT_IDS_GOVERNED",
+    "implementation_status": "P012_FACT_NORMALIZATION_ACTIVE",
+    "validation_status": "P004_AND_P012_VALIDATED",
+    "activation_status": "ACTIVE",
+    "safety_class": "LOW",
+    "dependencies": [
+      "VEDA-CAP-FOUNDATION-000001"
+    ],
+    "required_chart_facts": [
+      "graha_longitudes",
+      "rashi",
+      "bhava",
+      "nakshatra",
+      "pada",
+      "retrograde"
+    ],
+    "required_rules": [],
+    "required_sources": [],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD",
+      "STOCK_MARKET",
+      "COUNTRY_EVENT"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "FOUNDATION",
+    "change_classes": [
+      "DERIVED_CHART_FACT"
+    ],
+    "confidence": {
+      "research_confidence": 0.9,
+      "source_confidence": 0.9,
+      "implementation_confidence": 0.92,
+      "calculation_confidence": 0.96,
+      "validation_confidence": 0.96,
+      "production_confidence": 0.94
+    },
+    "version": "1.0.0",
+    "notes": "Canonical fact contract is active and exposed through the Jyotisha runtime facade."
+  },
+  {
+    "capability_id": "VEDA-CAP-TIMING-000001",
+    "name": "Vimshottari runtime baseline",
+    "domain": "TIMING",
+    "subdomain": "VIMSHOTTARI",
+    "capability_type": "TIMING",
+    "status": "ACTIVE",
+    "research_status": "P002_P010_GOVERNED_FOUNDATION_AVAILABLE",
+    "knowledge_status": "APPROVED_RULES_PRESENT",
+    "implementation_status": "LEGACY_RUNTIME_PROTECTED",
+    "validation_status": "P001_P004_P012_RUNTIME_PROTECTED",
+    "activation_status": "ACTIVE",
+    "safety_class": "LOW",
+    "dependencies": [
+      "VEDA-CAP-FOUNDATION-000001",
+      "VEDA-CAP-FOUNDATION-000002"
+    ],
+    "required_chart_facts": [
+      "janma_nakshatra",
+      "moon_longitude",
+      "dasha_sequence"
+    ],
+    "required_rules": [
+      "VEDA-RUL-DASHA-000001",
+      "VEDA-RUL-DASHA-000002"
+    ],
+    "required_sources": [
+      "CLASSICAL_PRIMARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD"
+    ],
+    "approved_claim_ids": [
+      "VEDA-CLM-000001",
+      "VEDA-CLM-000002",
+      "VEDA-CLM-000005",
+      "VEDA-CLM-000006"
+    ],
+    "approved_rule_ids": [
+      "VEDA-RUL-DASHA-000001",
+      "VEDA-RUL-DASHA-000002"
+    ],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "TIMING",
+    "change_classes": [
+      "DERIVED_CHART_FACT",
+      "RULE_DETECTION"
+    ],
+    "confidence": {
+      "research_confidence": 0.88,
+      "source_confidence": 0.87,
+      "implementation_confidence": 0.86,
+      "calculation_confidence": 0.9,
+      "validation_confidence": 0.9,
+      "production_confidence": 0.88
+    },
+    "version": "1.0.0",
+    "notes": "Production timing exists but future expansions must follow the P013 lifecycle rather than bypassing governed rules."
+  },
+  {
+    "capability_id": "VEDA-CAP-DIGNITY-000001",
+    "name": "Graha dignity governed rule migration",
+    "domain": "STRENGTH",
+    "subdomain": "DIGNITY",
+    "capability_type": "DETECTION",
+    "status": "BLOCKED",
+    "research_status": "LEGACY_SCHEMA_MAPPING_EXISTS_BUT_PROVENANCE_INCOMPLETE",
+    "knowledge_status": "MISSING_APPROVED_CORE_FOR_DIGNITY_RULES",
+    "implementation_status": "DRAFT_RULE_PRESENT",
+    "validation_status": "BLOCKED_PENDING_APPROVED_CORE",
+    "activation_status": "INACTIVE",
+    "safety_class": "LOW",
+    "dependencies": [
+      "VEDA-CAP-FOUNDATION-000001",
+      "VEDA-CAP-FOUNDATION-000002"
+    ],
+    "required_chart_facts": [
+      "graha_longitudes",
+      "rashi",
+      "degrees_in_sign"
+    ],
+    "required_rules": [
+      "VEDA-RUL-DIGNITY-000001"
+    ],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "TRADITIONAL_SECONDARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD",
+      "STOCK_MARKET",
+      "COUNTRY_EVENT"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [
+      "VEDA-RUL-DIGNITY-000001"
+    ],
+    "legacy_mapping_ids": [
+      "VEDA-LMP-000002"
+    ],
+    "coverage_category": "Dignity",
+    "change_classes": [
+      "RULE_DETECTION"
+    ],
+    "confidence": {
+      "research_confidence": 0.42,
+      "source_confidence": 0.18,
+      "implementation_confidence": 0.55,
+      "calculation_confidence": 0.8,
+      "validation_confidence": 0.2,
+      "production_confidence": 0.15
+    },
+    "version": "1.0.0",
+    "notes": "Pilot capability remains blocked because the draft dignity rule is still legacy-unsourced and no approved-core dignity claim is linked."
+  },
+  {
+    "capability_id": "VEDA-CAP-INTERPRETATION-000001",
+    "name": "Graha and bhava interpretive rules",
+    "domain": "FOUNDATION",
+    "subdomain": "GRAHA_BHAVA_INTERPRETATION",
+    "capability_type": "INTERPRETATION",
+    "status": "RESEARCHING",
+    "research_status": "P005_TRACEABILITY_GAPS_OPEN",
+    "knowledge_status": "PARTIAL_APPROVED_CORE_ONLY",
+    "implementation_status": "LEGACY_INTERPRETATION_PATH_ACTIVE",
+    "validation_status": "NOT_GOVERNED_FOR_MIGRATION",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-FOUNDATION-000002",
+      "VEDA-CAP-DIGNITY-000001"
+    ],
+    "required_chart_facts": [
+      "graha_longitudes",
+      "bhava",
+      "lordship",
+      "dignity"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "Graha",
+    "change_classes": [
+      "INTERPRETATION",
+      "USER_PRESENTATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.5,
+      "source_confidence": 0.32,
+      "implementation_confidence": 0.48,
+      "calculation_confidence": 0.88,
+      "validation_confidence": 0.28,
+      "production_confidence": 0.24
+    },
+    "version": "1.0.0",
+    "notes": "Interpretation remains downstream from calculation and should migrate only after dignity and house-rule provenance is governed."
+  },
+  {
+    "capability_id": "VEDA-CAP-VARGA-000001",
+    "name": "Navamsha (D9) calculation",
+    "domain": "DIVISIONAL_CHARTS",
+    "subdomain": "D9",
+    "capability_type": "CALCULATION",
+    "status": "IDENTIFIED",
+    "research_status": "KNOWLEDGE_GAP_IDENTIFIED",
+    "knowledge_status": "NOT_YET_GOVERNED",
+    "implementation_status": "NO_P013_PACKAGE",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-FOUNDATION-000001"
+    ],
+    "required_chart_facts": [
+      "graha_longitudes",
+      "rashi"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "D9",
+    "change_classes": [
+      "ASTRONOMICAL_CALCULATION",
+      "DERIVED_CHART_FACT"
+    ],
+    "confidence": {
+      "research_confidence": 0.2,
+      "source_confidence": 0.15,
+      "implementation_confidence": 0.1,
+      "calculation_confidence": 0.0,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": "D9 is listed as a governed future capability but is not activated by P013."
+  },
+  {
+    "capability_id": "VEDA-CAP-VARGA-000002",
+    "name": "Navamsha (D9) interpretation",
+    "domain": "DIVISIONAL_CHARTS",
+    "subdomain": "D9_INTERPRETATION",
+    "capability_type": "INTERPRETATION",
+    "status": "IDENTIFIED",
+    "research_status": "KNOWLEDGE_GAP_IDENTIFIED",
+    "knowledge_status": "BLOCKED_BY_D9_CALCULATION",
+    "implementation_status": "NO_P013_PACKAGE",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-VARGA-000001",
+      "VEDA-CAP-INTERPRETATION-000001"
+    ],
+    "required_chart_facts": [
+      "d9_chart",
+      "graha_longitudes",
+      "bhava"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "D9",
+    "change_classes": [
+      "INTERPRETATION",
+      "USER_PRESENTATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.15,
+      "source_confidence": 0.12,
+      "implementation_confidence": 0.05,
+      "calculation_confidence": 0.0,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-VARGA-000003",
+    "name": "Dashamsha (D10) calculation",
+    "domain": "DIVISIONAL_CHARTS",
+    "subdomain": "D10",
+    "capability_type": "CALCULATION",
+    "status": "IDENTIFIED",
+    "research_status": "KNOWLEDGE_GAP_IDENTIFIED",
+    "knowledge_status": "NOT_YET_GOVERNED",
+    "implementation_status": "NO_P013_PACKAGE",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-FOUNDATION-000001"
+    ],
+    "required_chart_facts": [
+      "graha_longitudes",
+      "rashi"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "D10",
+    "change_classes": [
+      "ASTRONOMICAL_CALCULATION",
+      "DERIVED_CHART_FACT"
+    ],
+    "confidence": {
+      "research_confidence": 0.15,
+      "source_confidence": 0.12,
+      "implementation_confidence": 0.05,
+      "calculation_confidence": 0.0,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-VARGA-000004",
+    "name": "Dashamsha (D10) interpretation",
+    "domain": "DIVISIONAL_CHARTS",
+    "subdomain": "D10_INTERPRETATION",
+    "capability_type": "INTERPRETATION",
+    "status": "IDENTIFIED",
+    "research_status": "KNOWLEDGE_GAP_IDENTIFIED",
+    "knowledge_status": "BLOCKED_BY_D10_CALCULATION",
+    "implementation_status": "NO_P013_PACKAGE",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-VARGA-000003",
+      "VEDA-CAP-INTERPRETATION-000001"
+    ],
+    "required_chart_facts": [
+      "d10_chart",
+      "graha_longitudes",
+      "bhava"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "D10",
+    "change_classes": [
+      "INTERPRETATION",
+      "USER_PRESENTATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.15,
+      "source_confidence": 0.12,
+      "implementation_confidence": 0.05,
+      "calculation_confidence": 0.0,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-RULE-000001",
+    "name": "Yoga governed detection framework",
+    "domain": "RULE_SYSTEMS",
+    "subdomain": "YOGA",
+    "capability_type": "DETECTION",
+    "status": "RESEARCHING",
+    "research_status": "P005_CONFLICTS_AND_SOURCE_GAPS_OPEN",
+    "knowledge_status": "INSUFFICIENT_APPROVED_CORE",
+    "implementation_status": "LEGACY_LOGIC_NOT_MIGRATED",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-FOUNDATION-000002",
+      "VEDA-CAP-DIGNITY-000001"
+    ],
+    "required_chart_facts": [
+      "graha_longitudes",
+      "bhava",
+      "lordship",
+      "aspects"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "Yoga",
+    "change_classes": [
+      "RULE_DETECTION",
+      "INTERPRETATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.35,
+      "source_confidence": 0.25,
+      "implementation_confidence": 0.2,
+      "calculation_confidence": 0.82,
+      "validation_confidence": 0.1,
+      "production_confidence": 0.08
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-RULE-000002",
+    "name": "Dosha governed detection framework",
+    "domain": "RULE_SYSTEMS",
+    "subdomain": "DOSHA",
+    "capability_type": "DETECTION",
+    "status": "RESEARCHING",
+    "research_status": "P005_SOURCE_GAPS_OPEN",
+    "knowledge_status": "INSUFFICIENT_APPROVED_CORE",
+    "implementation_status": "LEGACY_LOGIC_NOT_MIGRATED",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "HIGH",
+    "dependencies": [
+      "VEDA-CAP-FOUNDATION-000002",
+      "VEDA-CAP-DIGNITY-000001"
+    ],
+    "required_chart_facts": [
+      "graha_longitudes",
+      "bhava",
+      "lordship",
+      "aspects"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "Dosha",
+    "change_classes": [
+      "RULE_DETECTION",
+      "INTERPRETATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.32,
+      "source_confidence": 0.21,
+      "implementation_confidence": 0.18,
+      "calculation_confidence": 0.8,
+      "validation_confidence": 0.08,
+      "production_confidence": 0.05
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-TIMING-000002",
+    "name": "Yogini Dasha expansion",
+    "domain": "TIMING",
+    "subdomain": "YOGINI_DASHA",
+    "capability_type": "TIMING",
+    "status": "IDENTIFIED",
+    "research_status": "KNOWLEDGE_GAP_IDENTIFIED",
+    "knowledge_status": "NOT_YET_GOVERNED",
+    "implementation_status": "NO_P013_PACKAGE",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-FOUNDATION-000001"
+    ],
+    "required_chart_facts": [
+      "janma_nakshatra",
+      "moon_longitude"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "TIMING",
+    "change_classes": [
+      "DERIVED_CHART_FACT",
+      "RULE_DETECTION"
+    ],
+    "confidence": {
+      "research_confidence": 0.1,
+      "source_confidence": 0.1,
+      "implementation_confidence": 0.0,
+      "calculation_confidence": 0.0,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-TIMING-000003",
+    "name": "Ashtottari Dasha expansion",
+    "domain": "TIMING",
+    "subdomain": "ASHTOTTARI_DASHA",
+    "capability_type": "TIMING",
+    "status": "IDENTIFIED",
+    "research_status": "KNOWLEDGE_GAP_IDENTIFIED",
+    "knowledge_status": "NOT_YET_GOVERNED",
+    "implementation_status": "NO_P013_PACKAGE",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-FOUNDATION-000001"
+    ],
+    "required_chart_facts": [
+      "janma_nakshatra",
+      "moon_longitude"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "TIMING",
+    "change_classes": [
+      "DERIVED_CHART_FACT",
+      "RULE_DETECTION"
+    ],
+    "confidence": {
+      "research_confidence": 0.1,
+      "source_confidence": 0.1,
+      "implementation_confidence": 0.0,
+      "calculation_confidence": 0.0,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-STRENGTH-000001",
+    "name": "Shadbala governed strength system",
+    "domain": "STRENGTH",
+    "subdomain": "SHADBALA",
+    "capability_type": "DERIVED_FACT",
+    "status": "IDENTIFIED",
+    "research_status": "KNOWLEDGE_GAP_IDENTIFIED",
+    "knowledge_status": "NOT_YET_GOVERNED",
+    "implementation_status": "NO_P013_PACKAGE",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-FOUNDATION-000001",
+      "VEDA-CAP-FOUNDATION-000002"
+    ],
+    "required_chart_facts": [
+      "graha_longitudes",
+      "declination",
+      "time_of_birth"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "TRADITIONAL_SECONDARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "Shadbala",
+    "change_classes": [
+      "DERIVED_CHART_FACT"
+    ],
+    "confidence": {
+      "research_confidence": 0.08,
+      "source_confidence": 0.08,
+      "implementation_confidence": 0.0,
+      "calculation_confidence": 0.0,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-STRENGTH-000002",
+    "name": "Ashtakavarga governed strength system",
+    "domain": "STRENGTH",
+    "subdomain": "ASHTAKAVARGA",
+    "capability_type": "DERIVED_FACT",
+    "status": "IDENTIFIED",
+    "research_status": "KNOWLEDGE_GAP_IDENTIFIED",
+    "knowledge_status": "NOT_YET_GOVERNED",
+    "implementation_status": "NO_P013_PACKAGE",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-FOUNDATION-000001",
+      "VEDA-CAP-FOUNDATION-000002"
+    ],
+    "required_chart_facts": [
+      "graha_longitudes",
+      "rashi"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "TRADITIONAL_SECONDARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "Ashtakavarga",
+    "change_classes": [
+      "DERIVED_CHART_FACT"
+    ],
+    "confidence": {
+      "research_confidence": 0.08,
+      "source_confidence": 0.08,
+      "implementation_confidence": 0.0,
+      "calculation_confidence": 0.0,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "name": "Marriage intelligence",
+    "domain": "LIFE_DOMAINS",
+    "subdomain": "MARRIAGE",
+    "capability_type": "COMPOSITE_ANALYSIS",
+    "status": "RESEARCHING",
+    "research_status": "P005_DOMAIN_GAPS_OPEN",
+    "knowledge_status": "DEPENDENCY_GAPS_OPEN",
+    "implementation_status": "LEGACY_HEURISTICS_NOT_MIGRATED",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-VARGA-000001",
+      "VEDA-CAP-VARGA-000002",
+      "VEDA-CAP-TIMING-000001",
+      "VEDA-CAP-INTERPRETATION-000001",
+      "VEDA-CAP-RULE-000001"
+    ],
+    "required_chart_facts": [
+      "d1_chart",
+      "seventh_house",
+      "lordship",
+      "venus",
+      "jupiter",
+      "d9_chart",
+      "dasha"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "Marriage",
+    "change_classes": [
+      "INTERPRETATION",
+      "USER_PRESENTATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.22,
+      "source_confidence": 0.18,
+      "implementation_confidence": 0.05,
+      "calculation_confidence": 0.78,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "name": "Career and education intelligence",
+    "domain": "LIFE_DOMAINS",
+    "subdomain": "CAREER",
+    "capability_type": "COMPOSITE_ANALYSIS",
+    "status": "RESEARCHING",
+    "research_status": "P005_DOMAIN_GAPS_OPEN",
+    "knowledge_status": "DEPENDENCY_GAPS_OPEN",
+    "implementation_status": "LEGACY_HEURISTICS_NOT_MIGRATED",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-VARGA-000003",
+      "VEDA-CAP-VARGA-000004",
+      "VEDA-CAP-TIMING-000001",
+      "VEDA-CAP-INTERPRETATION-000001"
+    ],
+    "required_chart_facts": [
+      "tenth_house",
+      "lordship",
+      "saturn",
+      "sun",
+      "d10_chart",
+      "dasha"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "Career",
+    "change_classes": [
+      "INTERPRETATION",
+      "USER_PRESENTATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.22,
+      "source_confidence": 0.18,
+      "implementation_confidence": 0.05,
+      "calculation_confidence": 0.78,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-DOMAIN-000003",
+    "name": "Finance intelligence",
+    "domain": "LIFE_DOMAINS",
+    "subdomain": "FINANCE",
+    "capability_type": "HIGH_STAKES",
+    "status": "RESEARCHING",
+    "research_status": "P005_R1_SAFETY_BOUNDARY_ACTIVE",
+    "knowledge_status": "HIGH_STAKES_APPROVED_CORE_REQUIRED",
+    "implementation_status": "LEGACY_HEURISTICS_SAFETY_BOUNDED",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "HIGH_STAKES",
+    "dependencies": [
+      "VEDA-CAP-TIMING-000001",
+      "VEDA-CAP-RULE-000001",
+      "VEDA-CAP-DIGNITY-000001"
+    ],
+    "required_chart_facts": [
+      "second_house",
+      "eleventh_house",
+      "lordship",
+      "dasha",
+      "yogas"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "TRADITIONAL_SECONDARY",
+      "EMPIRICAL_RESEARCH"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD",
+      "STOCK_MARKET"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "Finance",
+    "change_classes": [
+      "INTERPRETATION",
+      "USER_PRESENTATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.18,
+      "source_confidence": 0.12,
+      "implementation_confidence": 0.04,
+      "calculation_confidence": 0.75,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-DOMAIN-000004",
+    "name": "Children and family intelligence",
+    "domain": "LIFE_DOMAINS",
+    "subdomain": "CHILDREN",
+    "capability_type": "COMPOSITE_ANALYSIS",
+    "status": "RESEARCHING",
+    "research_status": "P005_DOMAIN_GAPS_OPEN",
+    "knowledge_status": "DEPENDENCY_GAPS_OPEN",
+    "implementation_status": "NO_P013_PACKAGE",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-TIMING-000001",
+      "VEDA-CAP-INTERPRETATION-000001"
+    ],
+    "required_chart_facts": [
+      "fifth_house",
+      "jupiter",
+      "d7_chart",
+      "dasha"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "Children",
+    "change_classes": [
+      "INTERPRETATION",
+      "USER_PRESENTATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.16,
+      "source_confidence": 0.12,
+      "implementation_confidence": 0.03,
+      "calculation_confidence": 0.72,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-DOMAIN-000005",
+    "name": "Health intelligence",
+    "domain": "LIFE_DOMAINS",
+    "subdomain": "HEALTH",
+    "capability_type": "HIGH_STAKES",
+    "status": "RESEARCHING",
+    "research_status": "P005_P1_RESEARCH_DEBT",
+    "knowledge_status": "HIGH_STAKES_APPROVED_CORE_REQUIRED",
+    "implementation_status": "SAFETY_REMEDIATED_ONLY",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "HIGH_STAKES",
+    "dependencies": [
+      "VEDA-CAP-TIMING-000001",
+      "VEDA-CAP-INTERPRETATION-000001"
+    ],
+    "required_chart_facts": [
+      "sixth_house",
+      "eighth_house",
+      "twelfth_house",
+      "dasha"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL",
+      "REST_STANDARD"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "Health",
+    "change_classes": [
+      "INTERPRETATION",
+      "USER_PRESENTATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.12,
+      "source_confidence": 0.1,
+      "implementation_confidence": 0.02,
+      "calculation_confidence": 0.7,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-DOMAIN-000006",
+    "name": "Longevity intelligence",
+    "domain": "ADVANCED",
+    "subdomain": "AYURDAYA",
+    "capability_type": "HIGH_STAKES",
+    "status": "RESEARCHING",
+    "research_status": "P005_R1_LONGEVITY_OUTPUT_BLOCKED",
+    "knowledge_status": "HIGH_STAKES_APPROVED_CORE_REQUIRED",
+    "implementation_status": "USER_OUTPUT_DISABLED_FOR_DETERMINISTIC_USE",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "HIGH_STAKES",
+    "dependencies": [
+      "VEDA-CAP-TIMING-000001",
+      "VEDA-CAP-INTERPRETATION-000001"
+    ],
+    "required_chart_facts": [
+      "eighth_house",
+      "maraka_factors",
+      "dasha",
+      "ayurdaya_method"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "Longevity",
+    "change_classes": [
+      "INTERPRETATION",
+      "USER_PRESENTATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.1,
+      "source_confidence": 0.08,
+      "implementation_confidence": 0.0,
+      "calculation_confidence": 0.65,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-DOMAIN-000007",
+    "name": "Remedy governance",
+    "domain": "ADVANCED",
+    "subdomain": "REMEDIES",
+    "capability_type": "REMEDY",
+    "status": "RESEARCHING",
+    "research_status": "P005_P1_RESEARCH_DEBT",
+    "knowledge_status": "HIGH_STAKES_APPROVED_CORE_REQUIRED",
+    "implementation_status": "NO_GOVERNED_RUNTIME",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "HIGH_STAKES",
+    "dependencies": [
+      "VEDA-CAP-TIMING-000001",
+      "VEDA-CAP-INTERPRETATION-000001"
+    ],
+    "required_chart_facts": [
+      "chart_context",
+      "dasha",
+      "benefic_malefic_context"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY",
+      "TRADITIONAL_SECONDARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "Remedies",
+    "change_classes": [
+      "INTERPRETATION",
+      "USER_PRESENTATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.08,
+      "source_confidence": 0.08,
+      "implementation_confidence": 0.0,
+      "calculation_confidence": 0.6,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-ADVANCED-000001",
+    "name": "Jaimini systems",
+    "domain": "ADVANCED",
+    "subdomain": "JAIMINI",
+    "capability_type": "COMPOSITE_ANALYSIS",
+    "status": "IDENTIFIED",
+    "research_status": "KNOWLEDGE_GAP_IDENTIFIED",
+    "knowledge_status": "NOT_YET_GOVERNED",
+    "implementation_status": "NO_P013_PACKAGE",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-FOUNDATION-000001",
+      "VEDA-CAP-FOUNDATION-000002"
+    ],
+    "required_chart_facts": [
+      "chara_karakas",
+      "argala",
+      "arudha"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY"
+    ],
+    "runtime_profile_support": [
+      "PERSONAL"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "Jaimini",
+    "change_classes": [
+      "DERIVED_CHART_FACT",
+      "RULE_DETECTION",
+      "INTERPRETATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.05,
+      "source_confidence": 0.05,
+      "implementation_confidence": 0.0,
+      "calculation_confidence": 0.0,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  },
+  {
+    "capability_id": "VEDA-CAP-ADVANCED-000002",
+    "name": "Muhurta and electional astrology",
+    "domain": "ADVANCED",
+    "subdomain": "MUHURTA",
+    "capability_type": "COMPOSITE_ANALYSIS",
+    "status": "IDENTIFIED",
+    "research_status": "KNOWLEDGE_GAP_IDENTIFIED",
+    "knowledge_status": "NOT_YET_GOVERNED",
+    "implementation_status": "NO_P013_PACKAGE",
+    "validation_status": "NOT_STARTED",
+    "activation_status": "INACTIVE",
+    "safety_class": "MODERATE",
+    "dependencies": [
+      "VEDA-CAP-FOUNDATION-000001",
+      "VEDA-CAP-FOUNDATION-000002"
+    ],
+    "required_chart_facts": [
+      "transit",
+      "lagna",
+      "tithi",
+      "nakshatra"
+    ],
+    "required_rules": [],
+    "required_sources": [
+      "CLASSICAL_PRIMARY"
+    ],
+    "runtime_profile_support": [
+      "EVENT",
+      "MARKET"
+    ],
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "draft_rule_ids": [],
+    "legacy_mapping_ids": [],
+    "coverage_category": "Muhurta",
+    "change_classes": [
+      "DERIVED_CHART_FACT",
+      "INTERPRETATION",
+      "USER_PRESENTATION"
+    ],
+    "confidence": {
+      "research_confidence": 0.05,
+      "source_confidence": 0.05,
+      "implementation_confidence": 0.0,
+      "calculation_confidence": 0.0,
+      "validation_confidence": 0.0,
+      "production_confidence": 0.0
+    },
+    "version": "1.0.0",
+    "notes": null
+  }
+]

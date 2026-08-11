@@ -14,6 +14,7 @@ from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
+from engines.ai.knowledge.astrology_capability_framework import get_jyotisha_capability_lifecycle_service
 from engines.research.screener_engine import screen, compare, universe_stats
 from engines.research import notes_engine
 from engines.ai.research.platform.contracts import AdminAction
@@ -332,6 +333,52 @@ def run_due_research_schedules(req: DueRunRequest | None = None, current_user=De
 def seed_astrology_external_pilot(current_user=Depends(require_admin)):
     service = get_research_platform_service()
     return service.seed_vedic_astrology_external_program(actor_id=current_user.email)
+
+
+@router.get("/capabilities", tags=["research-admin"])
+def list_jyotisha_capabilities(
+    category: str | None = Query(None),
+    status: str | None = Query(None),
+    safety_class: str | None = Query(None),
+    search: str | None = Query(None),
+    page: int = Query(1, ge=1),
+    per_page: int = Query(20, ge=1, le=200),
+    current_user=Depends(require_admin),
+):
+    service = get_jyotisha_capability_lifecycle_service()
+    return service.list_capability_rows(
+        category=category,
+        status=status,
+        safety_class=safety_class,
+        search=search,
+        page=page,
+        per_page=per_page,
+    )
+
+
+@router.get("/capabilities/{capability_id}", tags=["research-admin"])
+def get_jyotisha_capability_detail(capability_id: str, current_user=Depends(require_admin)):
+    service = get_jyotisha_capability_lifecycle_service()
+    try:
+        return service.get_capability_detail(capability_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.post("/capabilities/{capability_id}/research-mission", tags=["research-admin"])
+def create_capability_research_mission(capability_id: str, current_user=Depends(require_admin)):
+    capability_service = get_jyotisha_capability_lifecycle_service()
+    research_service = get_research_platform_service()
+    try:
+        return capability_service.create_research_mission(
+            research_service,
+            capability_id,
+            actor_id=current_user.email,
+        )
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
 
 
 @router.get("/domains", tags=["research-admin"])

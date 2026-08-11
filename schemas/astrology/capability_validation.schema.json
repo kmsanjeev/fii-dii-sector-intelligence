@@ -1,0 +1,87 @@
+{
+  "$defs": {
+    "ValidationStatus": {
+      "enum": [
+        "PASS",
+        "PASS_WITH_CONDITIONS",
+        "BLOCKED",
+        "NOT_STARTED"
+      ],
+      "title": "ValidationStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "validation_id": {
+      "title": "Validation Id",
+      "type": "string"
+    },
+    "capability_id": {
+      "title": "Capability Id",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/ValidationStatus"
+    },
+    "required_suites": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Suites",
+      "type": "array"
+    },
+    "completed_suites": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Completed Suites",
+      "type": "array"
+    },
+    "boundary_cases": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Boundary Cases",
+      "type": "array"
+    },
+    "negative_cases": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Negative Cases",
+      "type": "array"
+    },
+    "regression_suites": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Regression Suites",
+      "type": "array"
+    },
+    "shadow_required": {
+      "default": true,
+      "title": "Shadow Required",
+      "type": "boolean"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "validation_id",
+    "capability_id",
+    "status"
+  ],
+  "title": "CapabilityValidationRecord",
+  "type": "object"
+}

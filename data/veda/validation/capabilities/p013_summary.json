@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "created_at": "2026-08-11T00:00:00Z",
+    "created_by": "codex",
+    "updated_at": "2026-08-11T00:00:00Z",
+    "updated_by": "codex",
+    "change_reason": "P013 capability governance bundle export.",
+    "contract_version": "2026-08-11"
+  },
+  "summary": {
+    "capabilities_registered": 24,
+    "active_capabilities": 3,
+    "researching_capabilities": 10,
+    "blocked_capabilities": 1,
+    "activation_ready_capabilities": 0,
+    "high_stakes_capabilities": 4,
+    "mission_proposals": 22,
+    "dependency_edges": 138,
+    "pilot_capability_id": "VEDA-CAP-DIGNITY-000001",
+    "pilot_status": "BLOCKED",
+    "pilot_blocked_reason": "A legacy-unsourced mapping or draft rule exists, but no approved-core knowledge supports implementation yet.",
+    "next_recommended_phase": "P014 - Core Rule Migration & Graha/Bhava/Dignity",
+    "p012_runtime_integration": "YES",
+    "p011_rag_integration": "YES",
+    "p010_promotion_integration": "YES",
+    "p009_research_integration": "YES",
+    "production_capabilities_activated": 0,
+    "production_calculation_semantics_changed": "NO",
+    "production_interpretation_semantics_changed": "NO",
+    "approved_core_automatically_modified": "NO",
+    "runtime_surfaces_from_p012": 8,
+    "p001_fixture_pass_count": 11,
+    "p004_fixture_pass_count": 25,
+    "lifecycle_fail_closed": true
+  }
+}

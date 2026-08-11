@@ -1,0 +1,124 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-08-11T00:00:00Z",
+  "created_by": "codex",
+  "updated_at": "2026-08-11T00:00:00Z",
+  "updated_by": "codex",
+  "change_reason": "P013 capability governance bundle export.",
+  "contract_version": "2026-08-11",
+  "capability_id": "VEDA-CAP-DIGNITY-000001",
+  "name": "Graha dignity governed rule migration",
+  "legacy_behavior": "Current runtime computes exalted, exalted_exact, debilitated, moolatrikona, own_sign, friendly, enemy, and neutral states using hard-coded sign and degree tables.",
+  "legacy_location": "KundliEngine._dignity",
+  "draft_rule_id": "VEDA-RUL-DIGNITY-000001",
+  "draft_rule_status": "DRAFT",
+  "approved_core_available": false,
+  "research_gate": {
+    "gate": "research",
+    "decision": "RESEARCH_MORE",
+    "reason": "A legacy-unsourced mapping or draft rule exists, but no approved-core knowledge supports implementation yet.",
+    "evidence": [
+      "VEDA-RUL-DIGNITY-000001",
+      "VEDA-LMP-000002"
+    ],
+    "next_action": "Open or continue a provenance-recovery mission until approved-core dignity support exists."
+  },
+  "knowledge_gate": {
+    "gate": "knowledge",
+    "decision": "RESEARCH_MORE",
+    "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+    "evidence": [
+      "VEDA-RUL-DIGNITY-000001",
+      "VEDA-LMP-000002"
+    ],
+    "next_action": "Open or continue a provenance-recovery mission until approved-core dignity support exists."
+  },
+  "dependency_gate": {
+    "gate": "dependencies",
+    "decision": "PASS",
+    "reason": "Declared dependencies are satisfied or already active.",
+    "evidence": [
+      "VEDA-CAP-FOUNDATION-000001",
+      "VEDA-CAP-FOUNDATION-000002"
+    ],
+    "next_action": "Proceed to validation."
+  },
+  "validation_gate": {
+    "gate": "validation",
+    "decision": "BLOCKED",
+    "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+    "evidence": [],
+    "next_action": "Finish upstream gates before validation."
+  },
+  "shadow_gate": {
+    "gate": "shadow",
+    "decision": "WAITING_FOR_VALIDATION",
+    "reason": "Shadow deployment is only allowed after validation passes.",
+    "evidence": [],
+    "next_action": "Complete validation before entering shadow mode."
+  },
+  "activation_gate": {
+    "gate": "activation",
+    "decision": "WAITING_FOR_SHADOW",
+    "reason": "Activation cannot proceed before shadow completion.",
+    "evidence": [],
+    "next_action": "Complete validation and shadow review first."
+  },
+  "implementation_package": {
+    "package_id": "VEDA-CPKG-000004",
+    "capability_id": "VEDA-CAP-DIGNITY-000001",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [
+      "VEDA-RUL-DIGNITY-000001"
+    ],
+    "calculation_dependencies": [
+      "graha_longitudes",
+      "rashi",
+      "degrees_in_sign"
+    ],
+    "implementation_module": "engines/intelligence/kundli_engine.py::KundliEngine._dignity",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  "recommended_research_mission": {
+    "mission_id": "VEDA-CMIS-000004",
+    "capability_id": "VEDA-CAP-DIGNITY-000001",
+    "title": "Capability gap research: Graha dignity governed rule migration",
+    "objective": "Recover or validate approved-core knowledge for Graha dignity governed rule migration before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "A legacy-unsourced mapping or draft rule exists, but no approved-core knowledge supports implementation yet.",
+    "query_strategy": {
+      "domain": "STRENGTH",
+      "subdomain": "DIGNITY",
+      "required_rules": [
+        "VEDA-RUL-DIGNITY-000001"
+      ],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD",
+        "STOCK_MARKET",
+        "COUNTRY_EVENT"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "TRADITIONAL_SECONDARY"
+    ]
+  },
+  "final_status": "BLOCKED",
+  "blocked_reason": "A legacy-unsourced mapping or draft rule exists, but no approved-core knowledge supports implementation yet.",
+  "activation_ready": false,
+  "governance_outcome": "BLOCKED_WITH_EXPLICIT_REASON"
+}

@@ -1,0 +1,481 @@
+[
+  {
+    "mission_id": "VEDA-CMIS-000002",
+    "capability_id": "VEDA-CAP-FOUNDATION-000002",
+    "title": "Capability gap research: Canonical graha and lagna chart facts",
+    "objective": "Recover or validate approved-core knowledge for Canonical graha and lagna chart facts before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "FOUNDATION",
+      "subdomain": "GRAHA_LAGNA_FACTS",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD",
+        "STOCK_MARKET",
+        "COUNTRY_EVENT"
+      ]
+    },
+    "required_source_classes": []
+  },
+  {
+    "mission_id": "VEDA-CMIS-000004",
+    "capability_id": "VEDA-CAP-DIGNITY-000001",
+    "title": "Capability gap research: Graha dignity governed rule migration",
+    "objective": "Recover or validate approved-core knowledge for Graha dignity governed rule migration before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "A legacy-unsourced mapping or draft rule exists, but no approved-core knowledge supports implementation yet.",
+    "query_strategy": {
+      "domain": "STRENGTH",
+      "subdomain": "DIGNITY",
+      "required_rules": [
+        "VEDA-RUL-DIGNITY-000001"
+      ],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD",
+        "STOCK_MARKET",
+        "COUNTRY_EVENT"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "TRADITIONAL_SECONDARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000005",
+    "capability_id": "VEDA-CAP-INTERPRETATION-000001",
+    "title": "Capability gap research: Graha and bhava interpretive rules",
+    "objective": "Recover or validate approved-core knowledge for Graha and bhava interpretive rules before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "FOUNDATION",
+      "subdomain": "GRAHA_BHAVA_INTERPRETATION",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000006",
+    "capability_id": "VEDA-CAP-VARGA-000001",
+    "title": "Capability gap research: Navamsha (D9) calculation",
+    "objective": "Recover or validate approved-core knowledge for Navamsha (D9) calculation before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "DIVISIONAL_CHARTS",
+      "subdomain": "D9",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000007",
+    "capability_id": "VEDA-CAP-VARGA-000002",
+    "title": "Capability gap research: Navamsha (D9) interpretation",
+    "objective": "Recover or validate approved-core knowledge for Navamsha (D9) interpretation before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "DIVISIONAL_CHARTS",
+      "subdomain": "D9_INTERPRETATION",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000008",
+    "capability_id": "VEDA-CAP-VARGA-000003",
+    "title": "Capability gap research: Dashamsha (D10) calculation",
+    "objective": "Recover or validate approved-core knowledge for Dashamsha (D10) calculation before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "DIVISIONAL_CHARTS",
+      "subdomain": "D10",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000009",
+    "capability_id": "VEDA-CAP-VARGA-000004",
+    "title": "Capability gap research: Dashamsha (D10) interpretation",
+    "objective": "Recover or validate approved-core knowledge for Dashamsha (D10) interpretation before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "DIVISIONAL_CHARTS",
+      "subdomain": "D10_INTERPRETATION",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000010",
+    "capability_id": "VEDA-CAP-RULE-000001",
+    "title": "Capability gap research: Yoga governed detection framework",
+    "objective": "Recover or validate approved-core knowledge for Yoga governed detection framework before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "RULE_SYSTEMS",
+      "subdomain": "YOGA",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000011",
+    "capability_id": "VEDA-CAP-RULE-000002",
+    "title": "Capability gap research: Dosha governed detection framework",
+    "objective": "Recover or validate approved-core knowledge for Dosha governed detection framework before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "RULE_SYSTEMS",
+      "subdomain": "DOSHA",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000012",
+    "capability_id": "VEDA-CAP-TIMING-000002",
+    "title": "Capability gap research: Yogini Dasha expansion",
+    "objective": "Recover or validate approved-core knowledge for Yogini Dasha expansion before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "TIMING",
+      "subdomain": "YOGINI_DASHA",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000013",
+    "capability_id": "VEDA-CAP-TIMING-000003",
+    "title": "Capability gap research: Ashtottari Dasha expansion",
+    "objective": "Recover or validate approved-core knowledge for Ashtottari Dasha expansion before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "TIMING",
+      "subdomain": "ASHTOTTARI_DASHA",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000014",
+    "capability_id": "VEDA-CAP-STRENGTH-000001",
+    "title": "Capability gap research: Shadbala governed strength system",
+    "objective": "Recover or validate approved-core knowledge for Shadbala governed strength system before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "STRENGTH",
+      "subdomain": "SHADBALA",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "TRADITIONAL_SECONDARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000015",
+    "capability_id": "VEDA-CAP-STRENGTH-000002",
+    "title": "Capability gap research: Ashtakavarga governed strength system",
+    "objective": "Recover or validate approved-core knowledge for Ashtakavarga governed strength system before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "STRENGTH",
+      "subdomain": "ASHTAKAVARGA",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "TRADITIONAL_SECONDARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000016",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "title": "Capability gap research: Marriage intelligence",
+    "objective": "Recover or validate approved-core knowledge for Marriage intelligence before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "LIFE_DOMAINS",
+      "subdomain": "MARRIAGE",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000017",
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "title": "Capability gap research: Career and education intelligence",
+    "objective": "Recover or validate approved-core knowledge for Career and education intelligence before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "LIFE_DOMAINS",
+      "subdomain": "CAREER",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000018",
+    "capability_id": "VEDA-CAP-DOMAIN-000003",
+    "title": "Capability gap research: Finance intelligence",
+    "objective": "Recover or validate approved-core knowledge for Finance intelligence before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P0",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "LIFE_DOMAINS",
+      "subdomain": "FINANCE",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD",
+        "STOCK_MARKET"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "TRADITIONAL_SECONDARY",
+      "EMPIRICAL_RESEARCH"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000019",
+    "capability_id": "VEDA-CAP-DOMAIN-000004",
+    "title": "Capability gap research: Children and family intelligence",
+    "objective": "Recover or validate approved-core knowledge for Children and family intelligence before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "LIFE_DOMAINS",
+      "subdomain": "CHILDREN",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000020",
+    "capability_id": "VEDA-CAP-DOMAIN-000005",
+    "title": "Capability gap research: Health intelligence",
+    "objective": "Recover or validate approved-core knowledge for Health intelligence before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P0",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "LIFE_DOMAINS",
+      "subdomain": "HEALTH",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000021",
+    "capability_id": "VEDA-CAP-DOMAIN-000006",
+    "title": "Capability gap research: Longevity intelligence",
+    "objective": "Recover or validate approved-core knowledge for Longevity intelligence before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P0",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "ADVANCED",
+      "subdomain": "AYURDAYA",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000022",
+    "capability_id": "VEDA-CAP-DOMAIN-000007",
+    "title": "Capability gap research: Remedy governance",
+    "objective": "Recover or validate approved-core knowledge for Remedy governance before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P0",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "ADVANCED",
+      "subdomain": "REMEDIES",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY",
+      "TRADITIONAL_SECONDARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000023",
+    "capability_id": "VEDA-CAP-ADVANCED-000001",
+    "title": "Capability gap research: Jaimini systems",
+    "objective": "Recover or validate approved-core knowledge for Jaimini systems before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "ADVANCED",
+      "subdomain": "JAIMINI",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000024",
+    "capability_id": "VEDA-CAP-ADVANCED-000002",
+    "title": "Capability gap research: Muhurta and electional astrology",
+    "objective": "Recover or validate approved-core knowledge for Muhurta and electional astrology before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "ADVANCED",
+      "subdomain": "MUHURTA",
+      "required_rules": [],
+      "runtime_profiles": [
+        "EVENT",
+        "MARKET"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY"
+    ]
+  }
+]

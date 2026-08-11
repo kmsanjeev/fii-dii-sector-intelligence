@@ -1,0 +1,756 @@
+[
+  {
+    "validation_id": "VEDA-CVAL-000001",
+    "capability_id": "VEDA-CAP-FOUNDATION-000001",
+    "status": "PASS",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [
+      "unit_validation",
+      "regression_suites",
+      "rule_fixtures"
+    ],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": false,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000002",
+    "capability_id": "VEDA-CAP-FOUNDATION-000002",
+    "status": "PASS",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [
+      "unit_validation",
+      "regression_suites"
+    ],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": false,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000003",
+    "capability_id": "VEDA-CAP-TIMING-000001",
+    "status": "PASS",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [
+      "unit_validation",
+      "regression_suites"
+    ],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": false,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000004",
+    "capability_id": "VEDA-CAP-DIGNITY-000001",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000005",
+    "capability_id": "VEDA-CAP-INTERPRETATION-000001",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000006",
+    "capability_id": "VEDA-CAP-VARGA-000001",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000007",
+    "capability_id": "VEDA-CAP-VARGA-000002",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000008",
+    "capability_id": "VEDA-CAP-VARGA-000003",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000009",
+    "capability_id": "VEDA-CAP-VARGA-000004",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000010",
+    "capability_id": "VEDA-CAP-RULE-000001",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000011",
+    "capability_id": "VEDA-CAP-RULE-000002",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000012",
+    "capability_id": "VEDA-CAP-TIMING-000002",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000013",
+    "capability_id": "VEDA-CAP-TIMING-000003",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000014",
+    "capability_id": "VEDA-CAP-STRENGTH-000001",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000015",
+    "capability_id": "VEDA-CAP-STRENGTH-000002",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000016",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000017",
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000018",
+    "capability_id": "VEDA-CAP-DOMAIN-000003",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000019",
+    "capability_id": "VEDA-CAP-DOMAIN-000004",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000020",
+    "capability_id": "VEDA-CAP-DOMAIN-000005",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000021",
+    "capability_id": "VEDA-CAP-DOMAIN-000006",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000022",
+    "capability_id": "VEDA-CAP-DOMAIN-000007",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000023",
+    "capability_id": "VEDA-CAP-ADVANCED-000001",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  },
+  {
+    "validation_id": "VEDA-CVAL-000024",
+    "capability_id": "VEDA-CAP-ADVANCED-000002",
+    "status": "BLOCKED",
+    "required_suites": [
+      "unit_validation",
+      "rule_fixtures",
+      "boundary_cases",
+      "negative_cases",
+      "regression_suites"
+    ],
+    "completed_suites": [],
+    "boundary_cases": [
+      "lagna_boundary",
+      "timezone_normalization",
+      "ontology_id_integrity"
+    ],
+    "negative_cases": [
+      "unsupported_claim_block",
+      "missing_dependency_block",
+      "direct_activation_block"
+    ],
+    "regression_suites": [
+      "P001",
+      "P004",
+      "P011",
+      "P012"
+    ],
+    "shadow_required": true,
+    "notes": "Interpretive capabilities compare structural activation and evidence trace rather than exact prose."
+  }
+]

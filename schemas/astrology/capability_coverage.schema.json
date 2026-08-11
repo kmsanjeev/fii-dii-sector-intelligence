@@ -1,0 +1,54 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "category": {
+      "title": "Category",
+      "type": "string"
+    },
+    "total_capabilities": {
+      "title": "Total Capabilities",
+      "type": "integer"
+    },
+    "active_capabilities": {
+      "title": "Active Capabilities",
+      "type": "integer"
+    },
+    "researching_capabilities": {
+      "title": "Researching Capabilities",
+      "type": "integer"
+    },
+    "blocked_capabilities": {
+      "title": "Blocked Capabilities",
+      "type": "integer"
+    },
+    "implementation_ready_capabilities": {
+      "title": "Implementation Ready Capabilities",
+      "type": "integer"
+    },
+    "activation_ready_capabilities": {
+      "title": "Activation Ready Capabilities",
+      "type": "integer"
+    },
+    "high_stakes_capabilities": {
+      "title": "High Stakes Capabilities",
+      "type": "integer"
+    },
+    "coverage_percent": {
+      "title": "Coverage Percent",
+      "type": "number"
+    }
+  },
+  "required": [
+    "category",
+    "total_capabilities",
+    "active_capabilities",
+    "researching_capabilities",
+    "blocked_capabilities",
+    "implementation_ready_capabilities",
+    "activation_ready_capabilities",
+    "high_stakes_capabilities",
+    "coverage_percent"
+  ],
+  "title": "CapabilityCoverageRecord",
+  "type": "object"
+}

@@ -1,0 +1,1244 @@
+[
+  {
+    "dependency_id": "VEDA-CDEP-000001",
+    "capability_id": "VEDA-CAP-FOUNDATION-000001",
+    "depends_on": "normalized_datetime",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "D1 canonical chart calculation needs canonical fact `normalized_datetime` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000002",
+    "capability_id": "VEDA-CAP-FOUNDATION-000001",
+    "depends_on": "julian_day",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "D1 canonical chart calculation needs canonical fact `julian_day` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000003",
+    "capability_id": "VEDA-CAP-FOUNDATION-000001",
+    "depends_on": "ayanamsha",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "D1 canonical chart calculation needs canonical fact `ayanamsha` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000004",
+    "capability_id": "VEDA-CAP-FOUNDATION-000001",
+    "depends_on": "lagna",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "D1 canonical chart calculation needs canonical fact `lagna` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000005",
+    "capability_id": "VEDA-CAP-FOUNDATION-000001",
+    "depends_on": "graha_longitudes",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "D1 canonical chart calculation needs canonical fact `graha_longitudes` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000006",
+    "capability_id": "VEDA-CAP-FOUNDATION-000002",
+    "depends_on": "VEDA-CAP-FOUNDATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Canonical graha and lagna chart facts depends on D1 canonical chart calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000007",
+    "capability_id": "VEDA-CAP-FOUNDATION-000002",
+    "depends_on": "graha_longitudes",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Canonical graha and lagna chart facts needs canonical fact `graha_longitudes` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000008",
+    "capability_id": "VEDA-CAP-FOUNDATION-000002",
+    "depends_on": "rashi",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Canonical graha and lagna chart facts needs canonical fact `rashi` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000009",
+    "capability_id": "VEDA-CAP-FOUNDATION-000002",
+    "depends_on": "bhava",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Canonical graha and lagna chart facts needs canonical fact `bhava` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000010",
+    "capability_id": "VEDA-CAP-FOUNDATION-000002",
+    "depends_on": "nakshatra",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Canonical graha and lagna chart facts needs canonical fact `nakshatra` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000011",
+    "capability_id": "VEDA-CAP-FOUNDATION-000002",
+    "depends_on": "pada",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Canonical graha and lagna chart facts needs canonical fact `pada` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000012",
+    "capability_id": "VEDA-CAP-FOUNDATION-000002",
+    "depends_on": "retrograde",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Canonical graha and lagna chart facts needs canonical fact `retrograde` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000013",
+    "capability_id": "VEDA-CAP-TIMING-000001",
+    "depends_on": "VEDA-CAP-FOUNDATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Vimshottari runtime baseline depends on D1 canonical chart calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000014",
+    "capability_id": "VEDA-CAP-TIMING-000001",
+    "depends_on": "VEDA-CAP-FOUNDATION-000002",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Vimshottari runtime baseline depends on Canonical graha and lagna chart facts.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000015",
+    "capability_id": "VEDA-CAP-TIMING-000001",
+    "depends_on": "VEDA-RUL-DASHA-000001",
+    "dependency_kind": "APPROVED_RULE",
+    "minimum_status": "APPROVED_RULE_REQUIRED",
+    "rationale": "Vimshottari runtime baseline requires governed rule VEDA-RUL-DASHA-000001 before activation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000016",
+    "capability_id": "VEDA-CAP-TIMING-000001",
+    "depends_on": "VEDA-RUL-DASHA-000002",
+    "dependency_kind": "APPROVED_RULE",
+    "minimum_status": "APPROVED_RULE_REQUIRED",
+    "rationale": "Vimshottari runtime baseline requires governed rule VEDA-RUL-DASHA-000002 before activation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000017",
+    "capability_id": "VEDA-CAP-TIMING-000001",
+    "depends_on": "janma_nakshatra",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Vimshottari runtime baseline needs canonical fact `janma_nakshatra` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000018",
+    "capability_id": "VEDA-CAP-TIMING-000001",
+    "depends_on": "moon_longitude",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Vimshottari runtime baseline needs canonical fact `moon_longitude` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000019",
+    "capability_id": "VEDA-CAP-TIMING-000001",
+    "depends_on": "dasha_sequence",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Vimshottari runtime baseline needs canonical fact `dasha_sequence` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000020",
+    "capability_id": "VEDA-CAP-DIGNITY-000001",
+    "depends_on": "VEDA-CAP-FOUNDATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Graha dignity governed rule migration depends on D1 canonical chart calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000021",
+    "capability_id": "VEDA-CAP-DIGNITY-000001",
+    "depends_on": "VEDA-CAP-FOUNDATION-000002",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Graha dignity governed rule migration depends on Canonical graha and lagna chart facts.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000022",
+    "capability_id": "VEDA-CAP-DIGNITY-000001",
+    "depends_on": "VEDA-RUL-DIGNITY-000001",
+    "dependency_kind": "APPROVED_RULE",
+    "minimum_status": "APPROVED_RULE_REQUIRED",
+    "rationale": "Graha dignity governed rule migration requires governed rule VEDA-RUL-DIGNITY-000001 before activation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000023",
+    "capability_id": "VEDA-CAP-DIGNITY-000001",
+    "depends_on": "graha_longitudes",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Graha dignity governed rule migration needs canonical fact `graha_longitudes` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000024",
+    "capability_id": "VEDA-CAP-DIGNITY-000001",
+    "depends_on": "rashi",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Graha dignity governed rule migration needs canonical fact `rashi` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000025",
+    "capability_id": "VEDA-CAP-DIGNITY-000001",
+    "depends_on": "degrees_in_sign",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Graha dignity governed rule migration needs canonical fact `degrees_in_sign` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000026",
+    "capability_id": "VEDA-CAP-INTERPRETATION-000001",
+    "depends_on": "VEDA-CAP-FOUNDATION-000002",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Graha and bhava interpretive rules depends on Canonical graha and lagna chart facts.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000027",
+    "capability_id": "VEDA-CAP-INTERPRETATION-000001",
+    "depends_on": "VEDA-CAP-DIGNITY-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Graha and bhava interpretive rules depends on Graha dignity governed rule migration.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000028",
+    "capability_id": "VEDA-CAP-INTERPRETATION-000001",
+    "depends_on": "graha_longitudes",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Graha and bhava interpretive rules needs canonical fact `graha_longitudes` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000029",
+    "capability_id": "VEDA-CAP-INTERPRETATION-000001",
+    "depends_on": "bhava",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Graha and bhava interpretive rules needs canonical fact `bhava` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000030",
+    "capability_id": "VEDA-CAP-INTERPRETATION-000001",
+    "depends_on": "lordship",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Graha and bhava interpretive rules needs canonical fact `lordship` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000031",
+    "capability_id": "VEDA-CAP-INTERPRETATION-000001",
+    "depends_on": "dignity",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Graha and bhava interpretive rules needs canonical fact `dignity` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000032",
+    "capability_id": "VEDA-CAP-VARGA-000001",
+    "depends_on": "VEDA-CAP-FOUNDATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Navamsha (D9) calculation depends on D1 canonical chart calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000033",
+    "capability_id": "VEDA-CAP-VARGA-000001",
+    "depends_on": "graha_longitudes",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Navamsha (D9) calculation needs canonical fact `graha_longitudes` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000034",
+    "capability_id": "VEDA-CAP-VARGA-000001",
+    "depends_on": "rashi",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Navamsha (D9) calculation needs canonical fact `rashi` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000035",
+    "capability_id": "VEDA-CAP-VARGA-000002",
+    "depends_on": "VEDA-CAP-VARGA-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Navamsha (D9) interpretation depends on Navamsha (D9) calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000036",
+    "capability_id": "VEDA-CAP-VARGA-000002",
+    "depends_on": "VEDA-CAP-INTERPRETATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Navamsha (D9) interpretation depends on Graha and bhava interpretive rules.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000037",
+    "capability_id": "VEDA-CAP-VARGA-000002",
+    "depends_on": "d9_chart",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Navamsha (D9) interpretation needs canonical fact `d9_chart` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000038",
+    "capability_id": "VEDA-CAP-VARGA-000002",
+    "depends_on": "graha_longitudes",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Navamsha (D9) interpretation needs canonical fact `graha_longitudes` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000039",
+    "capability_id": "VEDA-CAP-VARGA-000002",
+    "depends_on": "bhava",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Navamsha (D9) interpretation needs canonical fact `bhava` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000040",
+    "capability_id": "VEDA-CAP-VARGA-000003",
+    "depends_on": "VEDA-CAP-FOUNDATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Dashamsha (D10) calculation depends on D1 canonical chart calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000041",
+    "capability_id": "VEDA-CAP-VARGA-000003",
+    "depends_on": "graha_longitudes",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Dashamsha (D10) calculation needs canonical fact `graha_longitudes` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000042",
+    "capability_id": "VEDA-CAP-VARGA-000003",
+    "depends_on": "rashi",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Dashamsha (D10) calculation needs canonical fact `rashi` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000043",
+    "capability_id": "VEDA-CAP-VARGA-000004",
+    "depends_on": "VEDA-CAP-VARGA-000003",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Dashamsha (D10) interpretation depends on Dashamsha (D10) calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000044",
+    "capability_id": "VEDA-CAP-VARGA-000004",
+    "depends_on": "VEDA-CAP-INTERPRETATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Dashamsha (D10) interpretation depends on Graha and bhava interpretive rules.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000045",
+    "capability_id": "VEDA-CAP-VARGA-000004",
+    "depends_on": "d10_chart",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Dashamsha (D10) interpretation needs canonical fact `d10_chart` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000046",
+    "capability_id": "VEDA-CAP-VARGA-000004",
+    "depends_on": "graha_longitudes",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Dashamsha (D10) interpretation needs canonical fact `graha_longitudes` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000047",
+    "capability_id": "VEDA-CAP-VARGA-000004",
+    "depends_on": "bhava",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Dashamsha (D10) interpretation needs canonical fact `bhava` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000048",
+    "capability_id": "VEDA-CAP-RULE-000001",
+    "depends_on": "VEDA-CAP-FOUNDATION-000002",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Yoga governed detection framework depends on Canonical graha and lagna chart facts.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000049",
+    "capability_id": "VEDA-CAP-RULE-000001",
+    "depends_on": "VEDA-CAP-DIGNITY-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Yoga governed detection framework depends on Graha dignity governed rule migration.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000050",
+    "capability_id": "VEDA-CAP-RULE-000001",
+    "depends_on": "graha_longitudes",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Yoga governed detection framework needs canonical fact `graha_longitudes` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000051",
+    "capability_id": "VEDA-CAP-RULE-000001",
+    "depends_on": "bhava",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Yoga governed detection framework needs canonical fact `bhava` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000052",
+    "capability_id": "VEDA-CAP-RULE-000001",
+    "depends_on": "lordship",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Yoga governed detection framework needs canonical fact `lordship` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000053",
+    "capability_id": "VEDA-CAP-RULE-000001",
+    "depends_on": "aspects",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Yoga governed detection framework needs canonical fact `aspects` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000054",
+    "capability_id": "VEDA-CAP-RULE-000002",
+    "depends_on": "VEDA-CAP-FOUNDATION-000002",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Dosha governed detection framework depends on Canonical graha and lagna chart facts.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000055",
+    "capability_id": "VEDA-CAP-RULE-000002",
+    "depends_on": "VEDA-CAP-DIGNITY-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Dosha governed detection framework depends on Graha dignity governed rule migration.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000056",
+    "capability_id": "VEDA-CAP-RULE-000002",
+    "depends_on": "graha_longitudes",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Dosha governed detection framework needs canonical fact `graha_longitudes` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000057",
+    "capability_id": "VEDA-CAP-RULE-000002",
+    "depends_on": "bhava",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Dosha governed detection framework needs canonical fact `bhava` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000058",
+    "capability_id": "VEDA-CAP-RULE-000002",
+    "depends_on": "lordship",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Dosha governed detection framework needs canonical fact `lordship` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000059",
+    "capability_id": "VEDA-CAP-RULE-000002",
+    "depends_on": "aspects",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Dosha governed detection framework needs canonical fact `aspects` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000060",
+    "capability_id": "VEDA-CAP-TIMING-000002",
+    "depends_on": "VEDA-CAP-FOUNDATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Yogini Dasha expansion depends on D1 canonical chart calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000061",
+    "capability_id": "VEDA-CAP-TIMING-000002",
+    "depends_on": "janma_nakshatra",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Yogini Dasha expansion needs canonical fact `janma_nakshatra` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000062",
+    "capability_id": "VEDA-CAP-TIMING-000002",
+    "depends_on": "moon_longitude",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Yogini Dasha expansion needs canonical fact `moon_longitude` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000063",
+    "capability_id": "VEDA-CAP-TIMING-000003",
+    "depends_on": "VEDA-CAP-FOUNDATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Ashtottari Dasha expansion depends on D1 canonical chart calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000064",
+    "capability_id": "VEDA-CAP-TIMING-000003",
+    "depends_on": "janma_nakshatra",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Ashtottari Dasha expansion needs canonical fact `janma_nakshatra` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000065",
+    "capability_id": "VEDA-CAP-TIMING-000003",
+    "depends_on": "moon_longitude",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Ashtottari Dasha expansion needs canonical fact `moon_longitude` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000066",
+    "capability_id": "VEDA-CAP-STRENGTH-000001",
+    "depends_on": "VEDA-CAP-FOUNDATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Shadbala governed strength system depends on D1 canonical chart calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000067",
+    "capability_id": "VEDA-CAP-STRENGTH-000001",
+    "depends_on": "VEDA-CAP-FOUNDATION-000002",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Shadbala governed strength system depends on Canonical graha and lagna chart facts.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000068",
+    "capability_id": "VEDA-CAP-STRENGTH-000001",
+    "depends_on": "graha_longitudes",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Shadbala governed strength system needs canonical fact `graha_longitudes` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000069",
+    "capability_id": "VEDA-CAP-STRENGTH-000001",
+    "depends_on": "declination",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Shadbala governed strength system needs canonical fact `declination` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000070",
+    "capability_id": "VEDA-CAP-STRENGTH-000001",
+    "depends_on": "time_of_birth",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Shadbala governed strength system needs canonical fact `time_of_birth` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000071",
+    "capability_id": "VEDA-CAP-STRENGTH-000002",
+    "depends_on": "VEDA-CAP-FOUNDATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Ashtakavarga governed strength system depends on D1 canonical chart calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000072",
+    "capability_id": "VEDA-CAP-STRENGTH-000002",
+    "depends_on": "VEDA-CAP-FOUNDATION-000002",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Ashtakavarga governed strength system depends on Canonical graha and lagna chart facts.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000073",
+    "capability_id": "VEDA-CAP-STRENGTH-000002",
+    "depends_on": "graha_longitudes",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Ashtakavarga governed strength system needs canonical fact `graha_longitudes` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000074",
+    "capability_id": "VEDA-CAP-STRENGTH-000002",
+    "depends_on": "rashi",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Ashtakavarga governed strength system needs canonical fact `rashi` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000075",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "depends_on": "VEDA-CAP-VARGA-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Marriage intelligence depends on Navamsha (D9) calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000076",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "depends_on": "VEDA-CAP-VARGA-000002",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Marriage intelligence depends on Navamsha (D9) interpretation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000077",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "depends_on": "VEDA-CAP-TIMING-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Marriage intelligence depends on Vimshottari runtime baseline.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000078",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "depends_on": "VEDA-CAP-INTERPRETATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Marriage intelligence depends on Graha and bhava interpretive rules.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000079",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "depends_on": "VEDA-CAP-RULE-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Marriage intelligence depends on Yoga governed detection framework.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000080",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "depends_on": "d1_chart",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Marriage intelligence needs canonical fact `d1_chart` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000081",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "depends_on": "seventh_house",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Marriage intelligence needs canonical fact `seventh_house` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000082",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "depends_on": "lordship",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Marriage intelligence needs canonical fact `lordship` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000083",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "depends_on": "venus",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Marriage intelligence needs canonical fact `venus` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000084",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "depends_on": "jupiter",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Marriage intelligence needs canonical fact `jupiter` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000085",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "depends_on": "d9_chart",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Marriage intelligence needs canonical fact `d9_chart` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000086",
+    "capability_id": "VEDA-CAP-DOMAIN-000001",
+    "depends_on": "dasha",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Marriage intelligence needs canonical fact `dasha` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000087",
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "depends_on": "VEDA-CAP-VARGA-000003",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Career and education intelligence depends on Dashamsha (D10) calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000088",
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "depends_on": "VEDA-CAP-VARGA-000004",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Career and education intelligence depends on Dashamsha (D10) interpretation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000089",
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "depends_on": "VEDA-CAP-TIMING-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Career and education intelligence depends on Vimshottari runtime baseline.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000090",
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "depends_on": "VEDA-CAP-INTERPRETATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Career and education intelligence depends on Graha and bhava interpretive rules.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000091",
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "depends_on": "tenth_house",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Career and education intelligence needs canonical fact `tenth_house` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000092",
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "depends_on": "lordship",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Career and education intelligence needs canonical fact `lordship` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000093",
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "depends_on": "saturn",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Career and education intelligence needs canonical fact `saturn` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000094",
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "depends_on": "sun",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Career and education intelligence needs canonical fact `sun` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000095",
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "depends_on": "d10_chart",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Career and education intelligence needs canonical fact `d10_chart` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000096",
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "depends_on": "dasha",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Career and education intelligence needs canonical fact `dasha` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000097",
+    "capability_id": "VEDA-CAP-DOMAIN-000003",
+    "depends_on": "VEDA-CAP-TIMING-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Finance intelligence depends on Vimshottari runtime baseline.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000098",
+    "capability_id": "VEDA-CAP-DOMAIN-000003",
+    "depends_on": "VEDA-CAP-RULE-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Finance intelligence depends on Yoga governed detection framework.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000099",
+    "capability_id": "VEDA-CAP-DOMAIN-000003",
+    "depends_on": "VEDA-CAP-DIGNITY-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Finance intelligence depends on Graha dignity governed rule migration.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000100",
+    "capability_id": "VEDA-CAP-DOMAIN-000003",
+    "depends_on": "second_house",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Finance intelligence needs canonical fact `second_house` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000101",
+    "capability_id": "VEDA-CAP-DOMAIN-000003",
+    "depends_on": "eleventh_house",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Finance intelligence needs canonical fact `eleventh_house` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000102",
+    "capability_id": "VEDA-CAP-DOMAIN-000003",
+    "depends_on": "lordship",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Finance intelligence needs canonical fact `lordship` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000103",
+    "capability_id": "VEDA-CAP-DOMAIN-000003",
+    "depends_on": "dasha",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Finance intelligence needs canonical fact `dasha` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000104",
+    "capability_id": "VEDA-CAP-DOMAIN-000003",
+    "depends_on": "yogas",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Finance intelligence needs canonical fact `yogas` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000105",
+    "capability_id": "VEDA-CAP-DOMAIN-000004",
+    "depends_on": "VEDA-CAP-TIMING-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Children and family intelligence depends on Vimshottari runtime baseline.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000106",
+    "capability_id": "VEDA-CAP-DOMAIN-000004",
+    "depends_on": "VEDA-CAP-INTERPRETATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Children and family intelligence depends on Graha and bhava interpretive rules.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000107",
+    "capability_id": "VEDA-CAP-DOMAIN-000004",
+    "depends_on": "fifth_house",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Children and family intelligence needs canonical fact `fifth_house` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000108",
+    "capability_id": "VEDA-CAP-DOMAIN-000004",
+    "depends_on": "jupiter",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Children and family intelligence needs canonical fact `jupiter` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000109",
+    "capability_id": "VEDA-CAP-DOMAIN-000004",
+    "depends_on": "d7_chart",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Children and family intelligence needs canonical fact `d7_chart` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000110",
+    "capability_id": "VEDA-CAP-DOMAIN-000004",
+    "depends_on": "dasha",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Children and family intelligence needs canonical fact `dasha` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000111",
+    "capability_id": "VEDA-CAP-DOMAIN-000005",
+    "depends_on": "VEDA-CAP-TIMING-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Health intelligence depends on Vimshottari runtime baseline.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000112",
+    "capability_id": "VEDA-CAP-DOMAIN-000005",
+    "depends_on": "VEDA-CAP-INTERPRETATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Health intelligence depends on Graha and bhava interpretive rules.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000113",
+    "capability_id": "VEDA-CAP-DOMAIN-000005",
+    "depends_on": "sixth_house",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Health intelligence needs canonical fact `sixth_house` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000114",
+    "capability_id": "VEDA-CAP-DOMAIN-000005",
+    "depends_on": "eighth_house",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Health intelligence needs canonical fact `eighth_house` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000115",
+    "capability_id": "VEDA-CAP-DOMAIN-000005",
+    "depends_on": "twelfth_house",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Health intelligence needs canonical fact `twelfth_house` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000116",
+    "capability_id": "VEDA-CAP-DOMAIN-000005",
+    "depends_on": "dasha",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Health intelligence needs canonical fact `dasha` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000117",
+    "capability_id": "VEDA-CAP-DOMAIN-000006",
+    "depends_on": "VEDA-CAP-TIMING-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Longevity intelligence depends on Vimshottari runtime baseline.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000118",
+    "capability_id": "VEDA-CAP-DOMAIN-000006",
+    "depends_on": "VEDA-CAP-INTERPRETATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Longevity intelligence depends on Graha and bhava interpretive rules.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000119",
+    "capability_id": "VEDA-CAP-DOMAIN-000006",
+    "depends_on": "eighth_house",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Longevity intelligence needs canonical fact `eighth_house` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000120",
+    "capability_id": "VEDA-CAP-DOMAIN-000006",
+    "depends_on": "maraka_factors",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Longevity intelligence needs canonical fact `maraka_factors` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000121",
+    "capability_id": "VEDA-CAP-DOMAIN-000006",
+    "depends_on": "dasha",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Longevity intelligence needs canonical fact `dasha` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000122",
+    "capability_id": "VEDA-CAP-DOMAIN-000006",
+    "depends_on": "ayurdaya_method",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Longevity intelligence needs canonical fact `ayurdaya_method` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000123",
+    "capability_id": "VEDA-CAP-DOMAIN-000007",
+    "depends_on": "VEDA-CAP-TIMING-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Remedy governance depends on Vimshottari runtime baseline.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000124",
+    "capability_id": "VEDA-CAP-DOMAIN-000007",
+    "depends_on": "VEDA-CAP-INTERPRETATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Remedy governance depends on Graha and bhava interpretive rules.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000125",
+    "capability_id": "VEDA-CAP-DOMAIN-000007",
+    "depends_on": "chart_context",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Remedy governance needs canonical fact `chart_context` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000126",
+    "capability_id": "VEDA-CAP-DOMAIN-000007",
+    "depends_on": "dasha",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Remedy governance needs canonical fact `dasha` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000127",
+    "capability_id": "VEDA-CAP-DOMAIN-000007",
+    "depends_on": "benefic_malefic_context",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Remedy governance needs canonical fact `benefic_malefic_context` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000128",
+    "capability_id": "VEDA-CAP-ADVANCED-000001",
+    "depends_on": "VEDA-CAP-FOUNDATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Jaimini systems depends on D1 canonical chart calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000129",
+    "capability_id": "VEDA-CAP-ADVANCED-000001",
+    "depends_on": "VEDA-CAP-FOUNDATION-000002",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Jaimini systems depends on Canonical graha and lagna chart facts.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000130",
+    "capability_id": "VEDA-CAP-ADVANCED-000001",
+    "depends_on": "chara_karakas",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Jaimini systems needs canonical fact `chara_karakas` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000131",
+    "capability_id": "VEDA-CAP-ADVANCED-000001",
+    "depends_on": "argala",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Jaimini systems needs canonical fact `argala` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000132",
+    "capability_id": "VEDA-CAP-ADVANCED-000001",
+    "depends_on": "arudha",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Jaimini systems needs canonical fact `arudha` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000133",
+    "capability_id": "VEDA-CAP-ADVANCED-000002",
+    "depends_on": "VEDA-CAP-FOUNDATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Muhurta and electional astrology depends on D1 canonical chart calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000134",
+    "capability_id": "VEDA-CAP-ADVANCED-000002",
+    "depends_on": "VEDA-CAP-FOUNDATION-000002",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Muhurta and electional astrology depends on Canonical graha and lagna chart facts.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000135",
+    "capability_id": "VEDA-CAP-ADVANCED-000002",
+    "depends_on": "transit",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Muhurta and electional astrology needs canonical fact `transit` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000136",
+    "capability_id": "VEDA-CAP-ADVANCED-000002",
+    "depends_on": "lagna",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Muhurta and electional astrology needs canonical fact `lagna` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000137",
+    "capability_id": "VEDA-CAP-ADVANCED-000002",
+    "depends_on": "tithi",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Muhurta and electional astrology needs canonical fact `tithi` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000138",
+    "capability_id": "VEDA-CAP-ADVANCED-000002",
+    "depends_on": "nakshatra",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Muhurta and electional astrology needs canonical fact `nakshatra` from the P012 runtime boundary.",
+    "blocking": false
+  }
+]

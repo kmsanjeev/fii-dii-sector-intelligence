@@ -1,0 +1,267 @@
+{
+  "$defs": {
+    "ActivationState": {
+      "enum": [
+        "INACTIVE",
+        "SHADOW",
+        "LIMITED",
+        "ACTIVE",
+        "PAUSED",
+        "ROLLED_BACK"
+      ],
+      "title": "ActivationState",
+      "type": "string"
+    },
+    "CapabilityConfidenceDimensions": {
+      "additionalProperties": false,
+      "properties": {
+        "research_confidence": {
+          "default": 0.0,
+          "title": "Research Confidence",
+          "type": "number"
+        },
+        "source_confidence": {
+          "default": 0.0,
+          "title": "Source Confidence",
+          "type": "number"
+        },
+        "implementation_confidence": {
+          "default": 0.0,
+          "title": "Implementation Confidence",
+          "type": "number"
+        },
+        "calculation_confidence": {
+          "default": 0.0,
+          "title": "Calculation Confidence",
+          "type": "number"
+        },
+        "validation_confidence": {
+          "default": 0.0,
+          "title": "Validation Confidence",
+          "type": "number"
+        },
+        "production_confidence": {
+          "default": 0.0,
+          "title": "Production Confidence",
+          "type": "number"
+        }
+      },
+      "title": "CapabilityConfidenceDimensions",
+      "type": "object"
+    },
+    "CapabilityStatus": {
+      "enum": [
+        "IDENTIFIED",
+        "RESEARCHING",
+        "KNOWLEDGE_APPROVED",
+        "RULE_ENGINEERING",
+        "IMPLEMENTATION_READY",
+        "IMPLEMENTING",
+        "VALIDATING",
+        "SHADOW",
+        "ACTIVATION_READY",
+        "ACTIVE",
+        "DEPRECATED",
+        "SUPERSEDED",
+        "BLOCKED"
+      ],
+      "title": "CapabilityStatus",
+      "type": "string"
+    },
+    "CapabilityType": {
+      "enum": [
+        "CALCULATION",
+        "DERIVED_FACT",
+        "DETECTION",
+        "TIMING",
+        "INTERPRETATION",
+        "COMPOSITE_ANALYSIS",
+        "REMEDY",
+        "HIGH_STAKES"
+      ],
+      "title": "CapabilityType",
+      "type": "string"
+    },
+    "ChangeClass": {
+      "enum": [
+        "ASTRONOMICAL_CALCULATION",
+        "DERIVED_CHART_FACT",
+        "RULE_DETECTION",
+        "INTERPRETATION",
+        "USER_PRESENTATION"
+      ],
+      "title": "ChangeClass",
+      "type": "string"
+    },
+    "SafetyClass": {
+      "enum": [
+        "LOW",
+        "MODERATE",
+        "HIGH",
+        "CRITICAL",
+        "HIGH_STAKES"
+      ],
+      "title": "SafetyClass",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "capability_id": {
+      "title": "Capability Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "domain": {
+      "title": "Domain",
+      "type": "string"
+    },
+    "subdomain": {
+      "title": "Subdomain",
+      "type": "string"
+    },
+    "capability_type": {
+      "$ref": "#/$defs/CapabilityType"
+    },
+    "status": {
+      "$ref": "#/$defs/CapabilityStatus"
+    },
+    "research_status": {
+      "title": "Research Status",
+      "type": "string"
+    },
+    "knowledge_status": {
+      "title": "Knowledge Status",
+      "type": "string"
+    },
+    "implementation_status": {
+      "title": "Implementation Status",
+      "type": "string"
+    },
+    "validation_status": {
+      "title": "Validation Status",
+      "type": "string"
+    },
+    "activation_status": {
+      "$ref": "#/$defs/ActivationState"
+    },
+    "safety_class": {
+      "$ref": "#/$defs/SafetyClass"
+    },
+    "dependencies": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Dependencies",
+      "type": "array"
+    },
+    "required_chart_facts": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Chart Facts",
+      "type": "array"
+    },
+    "required_rules": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Rules",
+      "type": "array"
+    },
+    "required_sources": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Sources",
+      "type": "array"
+    },
+    "runtime_profile_support": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Runtime Profile Support",
+      "type": "array"
+    },
+    "approved_claim_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Approved Claim Ids",
+      "type": "array"
+    },
+    "approved_rule_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Approved Rule Ids",
+      "type": "array"
+    },
+    "draft_rule_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Draft Rule Ids",
+      "type": "array"
+    },
+    "legacy_mapping_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Legacy Mapping Ids",
+      "type": "array"
+    },
+    "coverage_category": {
+      "title": "Coverage Category",
+      "type": "string"
+    },
+    "change_classes": {
+      "items": {
+        "$ref": "#/$defs/ChangeClass"
+      },
+      "title": "Change Classes",
+      "type": "array"
+    },
+    "confidence": {
+      "$ref": "#/$defs/CapabilityConfidenceDimensions"
+    },
+    "version": {
+      "default": "1.0.0",
+      "title": "Version",
+      "type": "string"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "capability_id",
+    "name",
+    "domain",
+    "subdomain",
+    "capability_type",
+    "status",
+    "research_status",
+    "knowledge_status",
+    "implementation_status",
+    "validation_status",
+    "activation_status",
+    "safety_class",
+    "coverage_category",
+    "confidence"
+  ],
+  "title": "CapabilityRegistryRecord",
+  "type": "object"
+}
