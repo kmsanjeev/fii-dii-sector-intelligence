@@ -36,6 +36,8 @@ class ProviderDocument:
 class ProviderSearchBatch:
     documents: list[ProviderDocument]
     continuation_hint: str | None = None
+    query: str | None = None
+    search_metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class BasePlatformResearchProvider(ABC):
@@ -103,7 +105,17 @@ class SyntheticFixtureProvider(BasePlatformResearchProvider):
         batch = batches.get(batch_id) or {}
         documents = [self._load_document(item) for item in batch.get("sources", [])]
         next_hint = sequence[prior_run_count + 1] if prior_run_count + 1 < len(sequence) else None
-        return ProviderSearchBatch(documents=documents, continuation_hint=next_hint)
+        return ProviderSearchBatch(
+            documents=documents,
+            continuation_hint=next_hint,
+            query=" | ".join(sequence[: prior_run_count + 1]),
+            search_metadata={
+                "batch_id": batch_id,
+                "sequence": sequence,
+                "selected_results": [item.source_uri for item in documents],
+                "result_count": len(documents),
+            },
+        )
 
     def retrieve(self, document: ProviderDocument) -> str:
         return document.content

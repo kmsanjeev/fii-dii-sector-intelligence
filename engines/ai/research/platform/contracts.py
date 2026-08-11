@@ -16,7 +16,7 @@ CONTRACT_VERSION = getattr(cfg, "VEDA_RESEARCH_PLATFORM_VERSION", "2026-08-10")
 SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
 ISO_TS_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T")
 
-DOMAIN_ID_RE = re.compile(r"^VEDA-DOMAIN-[A-Z0-9_]+$")
+DOMAIN_ID_RE = re.compile(r"^VEDA-DOMAIN-[A-Z0-9_-]+$")
 MISSION_ID_RE = re.compile(r"^VEDA-RM-\d{6}$")
 SCHEDULE_ID_RE = re.compile(r"^VEDA-RSCH-\d{6}$")
 RUN_ID_RE = re.compile(r"^VEDA-RUN-\d{6}$")
@@ -66,6 +66,11 @@ class ResearchType(str, Enum):
     UPDATE_MONITORING = "UPDATE_MONITORING"
     NOVELTY_SEARCH = "NOVELTY_SEARCH"
     EMPIRICAL_VALIDATION = "EMPIRICAL_VALIDATION"
+    LEGACY_RULE_PROVENANCE = "LEGACY_RULE_PROVENANCE"
+    CLASSICAL_RULE_EXTRACTION = "CLASSICAL_RULE_EXTRACTION"
+    TRANSLATION_VARIANCE = "TRANSLATION_VARIANCE"
+    ONTOLOGY_EXPANSION = "ONTOLOGY_EXPANSION"
+    DOMAIN_DEEP_RESEARCH = "DOMAIN_DEEP_RESEARCH"
 
 
 class MissionPriority(str, Enum):
@@ -140,6 +145,7 @@ class CandidateType(str, Enum):
     KNOWLEDGE_GAP = "KNOWLEDGE_GAP"
     DEPRECATION_CANDIDATE = "DEPRECATION_CANDIDATE"
     EMPIRICAL_FINDING = "EMPIRICAL_FINDING"
+    ONTOLOGY_EXTENSION = "ONTOLOGY_EXTENSION"
 
 
 class NoveltyStatus(str, Enum):
@@ -1015,6 +1021,14 @@ class ResearchDomainPlugin(ABC):
     authority_policy: dict[str, Any]
     validation_policy: dict[str, Any]
     safety_policy: dict[str, Any]
+
+    @abstractmethod
+    def domain_record(self) -> ResearchDomainRecord:
+        raise NotImplementedError
+
+    @abstractmethod
+    def seed_core_knowledge(self) -> list[ResearchCoreKnowledgeRecord]:
+        raise NotImplementedError
 
     @abstractmethod
     def normalize_candidate(

@@ -1,0 +1,674 @@
+[
+  {
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "Knowledge Gap - VEDA-P005-LGC-0001",
+    "objective": "Research provenance for VEDA-P005-LGC-0001 in domain YOGA.",
+    "research_type": "LEGACY_RULE_PROVENANCE",
+    "priority": "P2",
+    "status": "QUEUED",
+    "created_by": "system",
+    "query_strategy": {
+      "provider_id": "vedic-astrology-local",
+      "queries": [
+        "Planet is own-sign/exalted/moolatrikona and in H1/H4/H7/H10",
+        "Emit one of Hamsa, Malavya, Bhadra, Ruchaka, or Sasa Yoga with score 18 / BUY"
+      ],
+      "include_uploads": true,
+      "legacy_rule_id": "VEDA-P005-LGC-0001",
+      "legacy_rule_claim": "Pancha Mahapurusha family is implemented as a simplified kendra+dignity check only.",
+      "topic_key": "YOGA::VEDA_P005_LGC_0001",
+      "stance": "PROVENANCE_RECOVERY",
+      "candidate_type": "PROVENANCE_CANDIDATE",
+      "domain": "YOGA",
+      "subdomain": "VEDA-P005-LGC-0001",
+      "search_terms": [
+        "Planet is own-sign/exalted/moolatrikona and in H1/H4/H7/H10",
+        "Emit one of Hamsa, Malavya, Bhadra, Ruchaka, or Sasa Yoga with score 18 / BUY"
+      ],
+      "requires_primary_source": true
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY",
+      "REFERENCE_EDITION"
+    ],
+    "minimum_independent_sources": 2,
+    "known_claim_ids": [],
+    "known_conflict_ids": [],
+    "known_gap_ids": [
+      "VEDA-P005-LGC-0001"
+    ],
+    "safety_class": "LOW",
+    "completion_policy": {
+      "auto_complete": false
+    },
+    "research_budget": {
+      "max_queries": 2,
+      "max_sources": 4,
+      "max_provider_calls": 2,
+      "max_runtime_seconds": 120,
+      "max_model_calls": 0,
+      "max_cost": 0,
+      "max_follow_up_depth": 2,
+      "max_retries": 1,
+      "cooldown_seconds": 0
+    },
+    "notes": "Pancha Mahapurusha family is implemented as a simplified kendra+dignity check only."
+  },
+  {
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "Knowledge Gap - VEDA-P005-LGC-0002",
+    "objective": "Research provenance for VEDA-P005-LGC-0002 in domain YOGA.",
+    "research_type": "LEGACY_RULE_PROVENANCE",
+    "priority": "P2",
+    "status": "QUEUED",
+    "created_by": "system",
+    "query_strategy": {
+      "provider_id": "vedic-astrology-local",
+      "queries": [
+        "Jupiter in a kendra from Moon by house offset 0/3/6/9",
+        "Emit Gaja Kesari Yoga with score 15 / BUY"
+      ],
+      "include_uploads": true,
+      "legacy_rule_id": "VEDA-P005-LGC-0002",
+      "legacy_rule_claim": "Governed pilot mapping exists in P003, but it is still marked legacy-unsourced rather than text-validated.",
+      "topic_key": "YOGA::VEDA_P005_LGC_0002",
+      "stance": "PROVENANCE_RECOVERY",
+      "candidate_type": "PROVENANCE_CANDIDATE",
+      "domain": "YOGA",
+      "subdomain": "VEDA-P005-LGC-0002",
+      "search_terms": [
+        "Jupiter in a kendra from Moon by house offset 0/3/6/9",
+        "Emit Gaja Kesari Yoga with score 15 / BUY"
+      ],
+      "requires_primary_source": true
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY",
+      "REFERENCE_EDITION"
+    ],
+    "minimum_independent_sources": 2,
+    "known_claim_ids": [],
+    "known_conflict_ids": [],
+    "known_gap_ids": [
+      "VEDA-P005-LGC-0002"
+    ],
+    "safety_class": "LOW",
+    "completion_policy": {
+      "auto_complete": false
+    },
+    "research_budget": {
+      "max_queries": 2,
+      "max_sources": 4,
+      "max_provider_calls": 2,
+      "max_runtime_seconds": 120,
+      "max_model_calls": 0,
+      "max_cost": 0,
+      "max_follow_up_depth": 2,
+      "max_retries": 1,
+      "cooldown_seconds": 0
+    },
+    "notes": "Governed pilot mapping exists in P003, but it is still marked legacy-unsourced rather than text-validated."
+  },
+  {
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "Knowledge Gap - VEDA-P005-LGC-0003",
+    "objective": "Research provenance for VEDA-P005-LGC-0003 in domain YOGA.",
+    "research_type": "LEGACY_RULE_PROVENANCE",
+    "priority": "P2",
+    "status": "QUEUED",
+    "created_by": "system",
+    "query_strategy": {
+      "provider_id": "vedic-astrology-local",
+      "queries": [
+        "2H lord placed in 11H or 11H lord in 2H or same planet rules both",
+        "Emit Dhana Yoga with score 12 / BUY"
+      ],
+      "include_uploads": true,
+      "legacy_rule_id": "VEDA-P005-LGC-0003",
+      "legacy_rule_claim": "Current personal rule is a narrow wealth-house connection heuristic.",
+      "topic_key": "YOGA::VEDA_P005_LGC_0003",
+      "stance": "PROVENANCE_RECOVERY",
+      "candidate_type": "PROVENANCE_CANDIDATE",
+      "domain": "YOGA",
+      "subdomain": "VEDA-P005-LGC-0003",
+      "search_terms": [
+        "2H lord placed in 11H or 11H lord in 2H or same planet rules both",
+        "Emit Dhana Yoga with score 12 / BUY"
+      ],
+      "requires_primary_source": true
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY",
+      "REFERENCE_EDITION"
+    ],
+    "minimum_independent_sources": 2,
+    "known_claim_ids": [],
+    "known_conflict_ids": [],
+    "known_gap_ids": [
+      "VEDA-P005-LGC-0003"
+    ],
+    "safety_class": "LOW",
+    "completion_policy": {
+      "auto_complete": false
+    },
+    "research_budget": {
+      "max_queries": 2,
+      "max_sources": 4,
+      "max_provider_calls": 2,
+      "max_runtime_seconds": 120,
+      "max_model_calls": 0,
+      "max_cost": 0,
+      "max_follow_up_depth": 2,
+      "max_retries": 1,
+      "cooldown_seconds": 0
+    },
+    "notes": "Current personal rule is a narrow wealth-house connection heuristic."
+  },
+  {
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "Knowledge Gap - VEDA-P005-LGC-0004",
+    "objective": "Research provenance for VEDA-P005-LGC-0004 in domain YOGA.",
+    "research_type": "LEGACY_RULE_PROVENANCE",
+    "priority": "P2",
+    "status": "QUEUED",
+    "created_by": "system",
+    "query_strategy": {
+      "provider_id": "vedic-astrology-local",
+      "queries": [
+        "Debilitated planet whose debilitation-sign lord is in H1/H4/H7/H10",
+        "Emit Neecha Bhanga (<planet>) with score 8 / HOLD"
+      ],
+      "include_uploads": true,
+      "legacy_rule_id": "VEDA-P005-LGC-0004",
+      "legacy_rule_claim": "Cancellation logic is materially simplified and ignores multiple classical exceptions.",
+      "topic_key": "YOGA::VEDA_P005_LGC_0004",
+      "stance": "PROVENANCE_RECOVERY",
+      "candidate_type": "PROVENANCE_CANDIDATE",
+      "domain": "YOGA",
+      "subdomain": "VEDA-P005-LGC-0004",
+      "search_terms": [
+        "Debilitated planet whose debilitation-sign lord is in H1/H4/H7/H10",
+        "Emit Neecha Bhanga (<planet>) with score 8 / HOLD"
+      ],
+      "requires_primary_source": true
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY",
+      "REFERENCE_EDITION"
+    ],
+    "minimum_independent_sources": 2,
+    "known_claim_ids": [],
+    "known_conflict_ids": [],
+    "known_gap_ids": [
+      "VEDA-P005-LGC-0004"
+    ],
+    "safety_class": "LOW",
+    "completion_policy": {
+      "auto_complete": false
+    },
+    "research_budget": {
+      "max_queries": 2,
+      "max_sources": 4,
+      "max_provider_calls": 2,
+      "max_runtime_seconds": 120,
+      "max_model_calls": 0,
+      "max_cost": 0,
+      "max_follow_up_depth": 2,
+      "max_retries": 1,
+      "cooldown_seconds": 0
+    },
+    "notes": "Cancellation logic is materially simplified and ignores multiple classical exceptions."
+  },
+  {
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "Knowledge Gap - VEDA-P005-LGC-0005",
+    "objective": "Research provenance for VEDA-P005-LGC-0005 in domain YOGA.",
+    "research_type": "LEGACY_RULE_PROVENANCE",
+    "priority": "P2",
+    "status": "QUEUED",
+    "created_by": "system",
+    "query_strategy": {
+      "provider_id": "vedic-astrology-local",
+      "queries": [
+        "All seven classical planets fall between Rahu and Ketu by a min/max longitude arc heuristic",
+        "Emit Kaal Sarp Yoga with score -12 / CAUTION"
+      ],
+      "include_uploads": true,
+      "legacy_rule_id": "VEDA-P005-LGC-0005",
+      "legacy_rule_claim": "Name differs from stock path (`Kala Sarpa`) and no cancellation school logic is implemented.",
+      "topic_key": "YOGA::VEDA_P005_LGC_0005",
+      "stance": "PROVENANCE_RECOVERY",
+      "candidate_type": "PROVENANCE_CANDIDATE",
+      "domain": "YOGA",
+      "subdomain": "VEDA-P005-LGC-0005",
+      "search_terms": [
+        "All seven classical planets fall between Rahu and Ketu by a min/max longitude arc heuristic",
+        "Emit Kaal Sarp Yoga with score -12 / CAUTION"
+      ],
+      "requires_primary_source": true
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY",
+      "REFERENCE_EDITION"
+    ],
+    "minimum_independent_sources": 2,
+    "known_claim_ids": [],
+    "known_conflict_ids": [],
+    "known_gap_ids": [
+      "VEDA-P005-LGC-0005"
+    ],
+    "safety_class": "LOW",
+    "completion_policy": {
+      "auto_complete": false
+    },
+    "research_budget": {
+      "max_queries": 2,
+      "max_sources": 4,
+      "max_provider_calls": 2,
+      "max_runtime_seconds": 120,
+      "max_model_calls": 0,
+      "max_cost": 0,
+      "max_follow_up_depth": 2,
+      "max_retries": 1,
+      "cooldown_seconds": 0
+    },
+    "notes": "Name differs from stock path (`Kala Sarpa`) and no cancellation school logic is implemented."
+  },
+  {
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "Knowledge Gap - VEDA-P005-LGC-0006",
+    "objective": "Research provenance for VEDA-P005-LGC-0006 in domain YOGA.",
+    "research_type": "LEGACY_RULE_PROVENANCE",
+    "priority": "P2",
+    "status": "QUEUED",
+    "created_by": "system",
+    "query_strategy": {
+      "provider_id": "vedic-astrology-local",
+      "queries": [
+        "No non-node planet occupies adjacent houses from Moon",
+        "Emit Kemadruma Yoga with score -6 / CAUTION"
+      ],
+      "include_uploads": true,
+      "legacy_rule_id": "VEDA-P005-LGC-0006",
+      "legacy_rule_claim": "House-based adjacency test is a simplified loneliness heuristic.",
+      "topic_key": "YOGA::VEDA_P005_LGC_0006",
+      "stance": "PROVENANCE_RECOVERY",
+      "candidate_type": "PROVENANCE_CANDIDATE",
+      "domain": "YOGA",
+      "subdomain": "VEDA-P005-LGC-0006",
+      "search_terms": [
+        "No non-node planet occupies adjacent houses from Moon",
+        "Emit Kemadruma Yoga with score -6 / CAUTION"
+      ],
+      "requires_primary_source": true
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY",
+      "REFERENCE_EDITION"
+    ],
+    "minimum_independent_sources": 2,
+    "known_claim_ids": [],
+    "known_conflict_ids": [],
+    "known_gap_ids": [
+      "VEDA-P005-LGC-0006"
+    ],
+    "safety_class": "LOW",
+    "completion_policy": {
+      "auto_complete": false
+    },
+    "research_budget": {
+      "max_queries": 2,
+      "max_sources": 4,
+      "max_provider_calls": 2,
+      "max_runtime_seconds": 120,
+      "max_model_calls": 0,
+      "max_cost": 0,
+      "max_follow_up_depth": 2,
+      "max_retries": 1,
+      "cooldown_seconds": 0
+    },
+    "notes": "House-based adjacency test is a simplified loneliness heuristic."
+  },
+  {
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "Knowledge Gap - VEDA-P005-LGC-0007",
+    "objective": "Research provenance for VEDA-P005-LGC-0007 in domain DOSHA.",
+    "research_type": "LEGACY_RULE_PROVENANCE",
+    "priority": "P2",
+    "status": "QUEUED",
+    "created_by": "system",
+    "query_strategy": {
+      "provider_id": "vedic-astrology-local",
+      "queries": [
+        "Mars in H1/H2/H4/H7/H8/H12",
+        "Emit Manglik Dosha with marriage-specific description and remedy"
+      ],
+      "include_uploads": true,
+      "legacy_rule_id": "VEDA-P005-LGC-0007",
+      "legacy_rule_claim": "Current rule is direct and user-facing in marriage contexts, but no school-variance handling is present.",
+      "topic_key": "DOSHA::VEDA_P005_LGC_0007",
+      "stance": "PROVENANCE_RECOVERY",
+      "candidate_type": "PROVENANCE_CANDIDATE",
+      "domain": "DOSHA",
+      "subdomain": "VEDA-P005-LGC-0007",
+      "search_terms": [
+        "Mars in H1/H2/H4/H7/H8/H12",
+        "Emit Manglik Dosha with marriage-specific description and remedy"
+      ],
+      "requires_primary_source": true
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY",
+      "REFERENCE_EDITION"
+    ],
+    "minimum_independent_sources": 2,
+    "known_claim_ids": [],
+    "known_conflict_ids": [],
+    "known_gap_ids": [
+      "VEDA-P005-LGC-0007"
+    ],
+    "safety_class": "LOW",
+    "completion_policy": {
+      "auto_complete": false
+    },
+    "research_budget": {
+      "max_queries": 2,
+      "max_sources": 4,
+      "max_provider_calls": 2,
+      "max_runtime_seconds": 120,
+      "max_model_calls": 0,
+      "max_cost": 0,
+      "max_follow_up_depth": 2,
+      "max_retries": 1,
+      "cooldown_seconds": 0
+    },
+    "notes": "Current rule is direct and user-facing in marriage contexts, but no school-variance handling is present."
+  },
+  {
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "Knowledge Gap - VEDA-P005-LGC-0008",
+    "objective": "Research provenance for VEDA-P005-LGC-0008 in domain DOSHA.",
+    "research_type": "LEGACY_RULE_PROVENANCE",
+    "priority": "P2",
+    "status": "QUEUED",
+    "created_by": "system",
+    "query_strategy": {
+      "provider_id": "vedic-astrology-local",
+      "queries": [
+        "Saturn in H1/H4/H7 from Lagna, plus a mild Moon-relative variant",
+        "Emit Shani Dosha or Shani Dosha (from Moon)"
+      ],
+      "include_uploads": true,
+      "legacy_rule_id": "VEDA-P005-LGC-0008",
+      "legacy_rule_claim": "This is a bespoke platform dosha rather than a governed classical rule.",
+      "topic_key": "DOSHA::VEDA_P005_LGC_0008",
+      "stance": "PROVENANCE_RECOVERY",
+      "candidate_type": "PROVENANCE_CANDIDATE",
+      "domain": "DOSHA",
+      "subdomain": "VEDA-P005-LGC-0008",
+      "search_terms": [
+        "Saturn in H1/H4/H7 from Lagna, plus a mild Moon-relative variant",
+        "Emit Shani Dosha or Shani Dosha (from Moon)"
+      ],
+      "requires_primary_source": true
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY",
+      "REFERENCE_EDITION"
+    ],
+    "minimum_independent_sources": 2,
+    "known_claim_ids": [],
+    "known_conflict_ids": [],
+    "known_gap_ids": [
+      "VEDA-P005-LGC-0008"
+    ],
+    "safety_class": "LOW",
+    "completion_policy": {
+      "auto_complete": false
+    },
+    "research_budget": {
+      "max_queries": 2,
+      "max_sources": 4,
+      "max_provider_calls": 2,
+      "max_runtime_seconds": 120,
+      "max_model_calls": 0,
+      "max_cost": 0,
+      "max_follow_up_depth": 2,
+      "max_retries": 1,
+      "cooldown_seconds": 0
+    },
+    "notes": "This is a bespoke platform dosha rather than a governed classical rule."
+  },
+  {
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "Knowledge Gap - VEDA-P005-LGC-0009",
+    "objective": "Research provenance for VEDA-P005-LGC-0009 in domain DOSHA.",
+    "research_type": "LEGACY_RULE_PROVENANCE",
+    "priority": "P2",
+    "status": "QUEUED",
+    "created_by": "system",
+    "query_strategy": {
+      "provider_id": "vedic-astrology-local",
+      "queries": [
+        "Sun and Rahu conjunct by same house",
+        "Emit Surya Chandal Dosha with remedy text"
+      ],
+      "include_uploads": true,
+      "legacy_rule_id": "VEDA-P005-LGC-0009",
+      "legacy_rule_claim": "No orb handling or source linkage is present.",
+      "topic_key": "DOSHA::VEDA_P005_LGC_0009",
+      "stance": "PROVENANCE_RECOVERY",
+      "candidate_type": "PROVENANCE_CANDIDATE",
+      "domain": "DOSHA",
+      "subdomain": "VEDA-P005-LGC-0009",
+      "search_terms": [
+        "Sun and Rahu conjunct by same house",
+        "Emit Surya Chandal Dosha with remedy text"
+      ],
+      "requires_primary_source": true
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY",
+      "REFERENCE_EDITION"
+    ],
+    "minimum_independent_sources": 2,
+    "known_claim_ids": [],
+    "known_conflict_ids": [],
+    "known_gap_ids": [
+      "VEDA-P005-LGC-0009"
+    ],
+    "safety_class": "LOW",
+    "completion_policy": {
+      "auto_complete": false
+    },
+    "research_budget": {
+      "max_queries": 2,
+      "max_sources": 4,
+      "max_provider_calls": 2,
+      "max_runtime_seconds": 120,
+      "max_model_calls": 0,
+      "max_cost": 0,
+      "max_follow_up_depth": 2,
+      "max_retries": 1,
+      "cooldown_seconds": 0
+    },
+    "notes": "No orb handling or source linkage is present."
+  },
+  {
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "Knowledge Gap - VEDA-P005-LGC-0010",
+    "objective": "Research provenance for VEDA-P005-LGC-0010 in domain DOSHA.",
+    "research_type": "LEGACY_RULE_PROVENANCE",
+    "priority": "P2",
+    "status": "QUEUED",
+    "created_by": "system",
+    "query_strategy": {
+      "provider_id": "vedic-astrology-local",
+      "queries": [
+        "Jupiter and Rahu conjunct by same house",
+        "Emit Guru Chandal Dosha with remedy text"
+      ],
+      "include_uploads": true,
+      "legacy_rule_id": "VEDA-P005-LGC-0010",
+      "legacy_rule_claim": "Same-house logic is treated as sufficient for the full dosha label.",
+      "topic_key": "DOSHA::VEDA_P005_LGC_0010",
+      "stance": "PROVENANCE_RECOVERY",
+      "candidate_type": "PROVENANCE_CANDIDATE",
+      "domain": "DOSHA",
+      "subdomain": "VEDA-P005-LGC-0010",
+      "search_terms": [
+        "Jupiter and Rahu conjunct by same house",
+        "Emit Guru Chandal Dosha with remedy text"
+      ],
+      "requires_primary_source": true
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY",
+      "REFERENCE_EDITION"
+    ],
+    "minimum_independent_sources": 2,
+    "known_claim_ids": [],
+    "known_conflict_ids": [],
+    "known_gap_ids": [
+      "VEDA-P005-LGC-0010"
+    ],
+    "safety_class": "LOW",
+    "completion_policy": {
+      "auto_complete": false
+    },
+    "research_budget": {
+      "max_queries": 2,
+      "max_sources": 4,
+      "max_provider_calls": 2,
+      "max_runtime_seconds": 120,
+      "max_model_calls": 0,
+      "max_cost": 0,
+      "max_follow_up_depth": 2,
+      "max_retries": 1,
+      "cooldown_seconds": 0
+    },
+    "notes": "Same-house logic is treated as sufficient for the full dosha label."
+  },
+  {
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "Knowledge Gap - VEDA-P005-LGC-0011",
+    "objective": "Research provenance for VEDA-P005-LGC-0011 in domain DOSHA.",
+    "research_type": "LEGACY_RULE_PROVENANCE",
+    "priority": "P2",
+    "status": "QUEUED",
+    "created_by": "system",
+    "query_strategy": {
+      "provider_id": "vedic-astrology-local",
+      "queries": [
+        "Moon and Saturn conjunct by same house",
+        "Emit Shani-Chandra Yoga with mental-health colored prose and remedy text"
+      ],
+      "include_uploads": true,
+      "legacy_rule_id": "VEDA-P005-LGC-0011",
+      "legacy_rule_claim": "High-stakes emotional language is deterministic but unsourced.",
+      "topic_key": "DOSHA::VEDA_P005_LGC_0011",
+      "stance": "PROVENANCE_RECOVERY",
+      "candidate_type": "PROVENANCE_CANDIDATE",
+      "domain": "DOSHA",
+      "subdomain": "VEDA-P005-LGC-0011",
+      "search_terms": [
+        "Moon and Saturn conjunct by same house",
+        "Emit Shani-Chandra Yoga with mental-health colored prose and remedy text"
+      ],
+      "requires_primary_source": true
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY",
+      "REFERENCE_EDITION"
+    ],
+    "minimum_independent_sources": 2,
+    "known_claim_ids": [],
+    "known_conflict_ids": [],
+    "known_gap_ids": [
+      "VEDA-P005-LGC-0011"
+    ],
+    "safety_class": "LOW",
+    "completion_policy": {
+      "auto_complete": false
+    },
+    "research_budget": {
+      "max_queries": 2,
+      "max_sources": 4,
+      "max_provider_calls": 2,
+      "max_runtime_seconds": 120,
+      "max_model_calls": 0,
+      "max_cost": 0,
+      "max_follow_up_depth": 2,
+      "max_retries": 1,
+      "cooldown_seconds": 0
+    },
+    "notes": "High-stakes emotional language is deterministic but unsourced."
+  },
+  {
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "Knowledge Gap - VEDA-P005-LGC-0012",
+    "objective": "Research provenance for VEDA-P005-LGC-0012 in domain REMEDIES.",
+    "research_type": "LEGACY_RULE_PROVENANCE",
+    "priority": "P1",
+    "status": "QUEUED",
+    "created_by": "system",
+    "query_strategy": {
+      "provider_id": "vedic-astrology-local",
+      "queries": [
+        "Weak planets, active doshas, or Kaal Sarp Yoga",
+        "Return Lal Kitab farmans and dosha remedies"
+      ],
+      "include_uploads": true,
+      "legacy_rule_id": "VEDA-P005-LGC-0012",
+      "legacy_rule_claim": "Remedial content is tradition-specific, cost-bearing in effect, and not governed by source passages.",
+      "topic_key": "REMEDIES::VEDA_P005_LGC_0012",
+      "stance": "PROVENANCE_RECOVERY",
+      "candidate_type": "PROVENANCE_CANDIDATE",
+      "domain": "REMEDIES",
+      "subdomain": "VEDA-P005-LGC-0012",
+      "search_terms": [
+        "Weak planets, active doshas, or Kaal Sarp Yoga",
+        "Return Lal Kitab farmans and dosha remedies"
+      ],
+      "requires_primary_source": true
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "CLASSICAL_COMMENTARY",
+      "REFERENCE_EDITION"
+    ],
+    "minimum_independent_sources": 2,
+    "known_claim_ids": [],
+    "known_conflict_ids": [],
+    "known_gap_ids": [
+      "VEDA-P005-LGC-0012"
+    ],
+    "safety_class": "HIGH_STAKES",
+    "completion_policy": {
+      "auto_complete": false
+    },
+    "research_budget": {
+      "max_queries": 2,
+      "max_sources": 4,
+      "max_provider_calls": 2,
+      "max_runtime_seconds": 120,
+      "max_model_calls": 0,
+      "max_cost": 0,
+      "max_follow_up_depth": 2,
+      "max_retries": 1,
+      "cooldown_seconds": 0
+    },
+    "notes": "Remedial content is tradition-specific, cost-bearing in effect, and not governed by source passages."
+  }
+]

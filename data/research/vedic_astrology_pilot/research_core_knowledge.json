@@ -1,0 +1,272 @@
+[
+  {
+    "contract_version": "2026-08-10",
+    "core_id": "VEDA-RCORE-000001",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "title": "Synthetic gamma requires independent confirmation",
+    "claim": "Synthetic gamma requires multi-source confirmation before approval.",
+    "normalized_claim": "synthetic gamma requires multi-source confirmation before approval",
+    "topic_key": "synthetic.gamma.confirmation",
+    "stance": "REQUIRES_CONFIRMATION",
+    "source_ids": [],
+    "approval_status": "APPROVED",
+    "knowledge_zone": "APPROVED_CORE",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 1.0,
+      "authority_confidence": 1.0,
+      "cross_source_confidence": 1.0,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 1.0,
+      "contradiction_confidence": 1.0,
+      "domain_confidence": 1.0
+    },
+    "created_at": "2026-08-11T00:12:52.681774Z",
+    "updated_at": "2026-08-11T00:12:52.681774Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "core_id": "VEDA-RCORE-000002",
+    "domain_id": "VEDA-DOMAIN-SYNTHETIC",
+    "title": "Synthetic beta increases evidence durability",
+    "claim": "Synthetic beta increases evidence durability in the approved core baseline.",
+    "normalized_claim": "synthetic beta increases evidence durability in the approved core baseline",
+    "topic_key": "synthetic.beta.durability",
+    "stance": "POSITIVE",
+    "source_ids": [],
+    "approval_status": "APPROVED",
+    "knowledge_zone": "APPROVED_CORE",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 1.0,
+      "authority_confidence": 0.9,
+      "cross_source_confidence": 0.9,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 1.0,
+      "contradiction_confidence": 1.0,
+      "domain_confidence": 0.9
+    },
+    "created_at": "2026-08-11T00:12:52.681774Z",
+    "updated_at": "2026-08-11T00:12:52.681774Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "core_id": "VEDA-RCORE-100001",
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "DASHA - Vimshottari Dasha Foundations",
+    "claim": "The standard Vimshottari Mahadasha order in the pilot corpus runs Sun, Moon, Mars, Rahu, Jupiter, Saturn, Mercury, Ketu, and Venus, and the full cycle totals 120 years.",
+    "normalized_claim": "the standard vimshottari mahadasha order in the pilot corpus runs sun moon mars rahu jupiter saturn mercury ketu and venus and the full cycle totals 120 years",
+    "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+    "stance": "SEQUENCE_DEFINED",
+    "source_ids": [
+      "VEDA-SRC-000001",
+      "VEDA-SRC-000002"
+    ],
+    "approval_status": "APPROVED",
+    "knowledge_zone": "APPROVED_CORE",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 1.0,
+      "authority_confidence": 0.88,
+      "cross_source_confidence": 1.0,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.85,
+      "contradiction_confidence": 1.0,
+      "domain_confidence": 0.955
+    },
+    "created_at": "2026-08-11T00:00:01Z",
+    "updated_at": "2026-08-11T00:00:01Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "core_id": "VEDA-RCORE-100002",
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "DASHA - Vimshottari Dasha Foundations",
+    "claim": "The birth balance of a Vimshottari period is derived from the elapsed portion of the Moon's stay in the Janma Nakshatra and subtracted from the full dasha span of the ruling planet.",
+    "normalized_claim": "the birth balance of a vimshottari period is derived from the elapsed portion of the moon s stay in the janma nakshatra and subtracted from the full dasha span of the ruling planet",
+    "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+    "stance": "BIRTH_BALANCE_FROM_JANMA_NAKSHATRA",
+    "source_ids": [
+      "VEDA-SRC-000001"
+    ],
+    "approval_status": "APPROVED",
+    "knowledge_zone": "APPROVED_CORE",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 0.5,
+      "authority_confidence": 0.9,
+      "cross_source_confidence": 0.5,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.85,
+      "contradiction_confidence": 1.0,
+      "domain_confidence": 0.7917
+    },
+    "created_at": "2026-08-11T00:00:01Z",
+    "updated_at": "2026-08-11T00:00:01Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "core_id": "VEDA-RCORE-100003",
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "DASHA - Vimshottari Dasha Foundations",
+    "claim": "The Hora Sara translation note preserves a variant in which opening-dasha selection can depend on whether Lagna is stronger than the Moon, so VEDA must treat opening-dasha rules as source-scoped rather than universal.",
+    "normalized_claim": "the hora sara translation note preserves a variant in which opening dasha selection can depend on whether lagna is stronger than the moon so veda must treat opening dasha rules as source scoped rather than universal",
+    "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+    "stance": "LAGNA_STRENGTH_VARIANT",
+    "source_ids": [
+      "VEDA-SRC-000002"
+    ],
+    "approval_status": "APPROVED",
+    "knowledge_zone": "APPROVED_CORE",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 0.5,
+      "authority_confidence": 0.86,
+      "cross_source_confidence": 0.5,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.85,
+      "contradiction_confidence": 1.0,
+      "domain_confidence": 0.785
+    },
+    "created_at": "2026-08-11T00:00:01Z",
+    "updated_at": "2026-08-11T00:00:01Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "core_id": "VEDA-RCORE-100004",
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "DASHA - Interpretation Method",
+    "claim": "Dasha interpretation should apply the planet's qualities, its action and livelihood indications, and the effects arising from house placement, aspect, and yoga rather than relying on period names alone.",
+    "normalized_claim": "dasha interpretation should apply the planet s qualities its action and livelihood indications and the effects arising from house placement aspect and yoga rather than relying on period names alone",
+    "topic_key": "DASHA::INTERPRETATION_METHOD",
+    "stance": "INTERPRET_BY_PLANET_HOUSE_ASPECT_YOGA",
+    "source_ids": [
+      "VEDA-SRC-000003"
+    ],
+    "approval_status": "APPROVED",
+    "knowledge_zone": "APPROVED_CORE",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 0.5,
+      "authority_confidence": 0.88,
+      "cross_source_confidence": 0.5,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.85,
+      "contradiction_confidence": 1.0,
+      "domain_confidence": 0.7883
+    },
+    "created_at": "2026-08-11T00:00:01Z",
+    "updated_at": "2026-08-11T00:00:01Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "core_id": "VEDA-RCORE-100005",
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "DASHA - Vimshottari Dasha Foundations",
+    "claim": "BPHS presents Vimshottari as the default general-purpose dasha for the general populace within its dasha chapter hierarchy.",
+    "normalized_claim": "bphs presents vimshottari as the default general purpose dasha for the general populace within its dasha chapter hierarchy",
+    "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+    "stance": "DEFAULT_FOR_GENERAL_POPULATION",
+    "source_ids": [
+      "VEDA-SRC-000001"
+    ],
+    "approval_status": "APPROVED",
+    "knowledge_zone": "APPROVED_CORE",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 0.5,
+      "authority_confidence": 0.9,
+      "cross_source_confidence": 0.5,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.85,
+      "contradiction_confidence": 0.45,
+      "domain_confidence": 0.7
+    },
+    "created_at": "2026-08-11T00:00:01Z",
+    "updated_at": "2026-08-11T00:00:01Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "core_id": "VEDA-RCORE-100006",
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "DASHA - Vimshottari Dasha Foundations",
+    "claim": "Even where Vimshottari is treated as the default path, other dashas remain valid in special cases or alternate source scopes, so VEDA must preserve coexistence metadata instead of collapsing everything into a single exclusive rule.",
+    "normalized_claim": "even where vimshottari is treated as the default path other dashas remain valid in special cases or alternate source scopes so veda must preserve coexistence metadata instead of collapsing everything into a single exclusive rule",
+    "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+    "stance": "ALTERNATE_SCOPES_PRESERVED",
+    "source_ids": [
+      "VEDA-SRC-000001",
+      "VEDA-SRC-000002"
+    ],
+    "approval_status": "APPROVED",
+    "knowledge_zone": "APPROVED_CORE",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 1.0,
+      "authority_confidence": 0.88,
+      "cross_source_confidence": 1.0,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.85,
+      "contradiction_confidence": 0.45,
+      "domain_confidence": 0.8633
+    },
+    "created_at": "2026-08-11T00:00:01Z",
+    "updated_at": "2026-08-11T00:00:01Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "core_id": "VEDA-RCORE-200001",
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "Vimshottari sequence and birth-balance baseline",
+    "claim": "Governed rule VEDA-RUL-DASHA-000001 for Vimshottari sequence and birth-balance baseline.",
+    "normalized_claim": "vimshottari sequence and birth balance baseline",
+    "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+    "stance": "GOVERNED_VIMSHOTTARI_BASELINE",
+    "source_ids": [
+      "VEDA-SRC-000001",
+      "VEDA-SRC-000003"
+    ],
+    "approval_status": "APPROVED",
+    "knowledge_zone": "APPROVED_CORE",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 1.0,
+      "authority_confidence": 0.89,
+      "cross_source_confidence": 1.0,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.85,
+      "contradiction_confidence": 1.0,
+      "domain_confidence": 0.935
+    },
+    "created_at": "2026-08-11T00:00:01Z",
+    "updated_at": "2026-08-11T00:00:01Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "core_id": "VEDA-RCORE-200002",
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "title": "Vimshottari default-path governance with coexistence metadata",
+    "claim": "Governed rule VEDA-RUL-DASHA-000002 for Vimshottari default-path governance with coexistence metadata.",
+    "normalized_claim": "vimshottari default path governance with coexistence metadata",
+    "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+    "stance": "GOVERNED_DEFAULT_WITH_COEXISTENCE",
+    "source_ids": [
+      "VEDA-SRC-000001",
+      "VEDA-SRC-000002"
+    ],
+    "approval_status": "APPROVED",
+    "knowledge_zone": "APPROVED_CORE",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 1.0,
+      "authority_confidence": 0.88,
+      "cross_source_confidence": 1.0,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.85,
+      "contradiction_confidence": 0.8,
+      "domain_confidence": 0.8825
+    },
+    "created_at": "2026-08-11T00:00:01Z",
+    "updated_at": "2026-08-11T00:00:01Z"
+  }
+]

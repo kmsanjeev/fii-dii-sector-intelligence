@@ -1,0 +1,4582 @@
+[
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000001",
+    "candidate_id": "VEDA-RCND-000001",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 0.5,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000001"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:00:17Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000002",
+    "candidate_id": "VEDA-RCND-000001",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000001"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:00:19Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000003",
+    "candidate_id": "VEDA-RCND-000001",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000001"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Evidence linkage present.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:00:21Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000004",
+    "candidate_id": "VEDA-RCND-000001",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000001"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:00:23Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000005",
+    "candidate_id": "VEDA-RCND-000001",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 0.3,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000001"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Contradiction status is DIRECT.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:00:25Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000006",
+    "candidate_id": "VEDA-RCND-000001",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 0.5,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000001"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:00:27Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000007",
+    "candidate_id": "VEDA-RCND-000001",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000001"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Ontology mapping completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:00:29Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000008",
+    "candidate_id": "VEDA-RCND-000001",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000001"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:00:31Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000009",
+    "candidate_id": "VEDA-RCND-000001",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000001"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Safety class is LOW.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:00:33Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000010",
+    "candidate_id": "VEDA-RCND-000001",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000001"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:00:35Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000011",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 0.5,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:00:47Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000012",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:00:49Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000013",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Evidence linkage present.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:00:51Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000014",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:00:53Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000015",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 0.3,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Contradiction status is DIRECT.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:00:55Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000016",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 0.5,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:00:57Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000017",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Ontology mapping completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:00:59Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000018",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:01Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000019",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Safety class is LOW.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:03Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000020",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:05Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000021",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 0.5,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003"
+      ],
+      "source_ids": [
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 1
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:21Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000022",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.35,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003"
+      ],
+      "source_ids": [
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 1
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:23Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000023",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 0.65,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003"
+      ],
+      "source_ids": [
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 1
+    },
+    "reason": "Evidence linkage present, but source verification remains partial.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:01:25Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000024",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003"
+      ],
+      "source_ids": [
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 1
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:27Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000025",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003"
+      ],
+      "source_ids": [
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 1
+    },
+    "reason": "Contradiction status is NONE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:29Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000026",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 0.5,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003"
+      ],
+      "source_ids": [
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 1
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:01:31Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000027",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 0.7,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003"
+      ],
+      "source_ids": [
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 1
+    },
+    "reason": "Ontology gaps remain: PANCHA_MAHAPURUSHA_FAMILY",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:01:33Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000028",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003"
+      ],
+      "source_ids": [
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 1
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:35Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000029",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003"
+      ],
+      "source_ids": [
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 1
+    },
+    "reason": "Safety class is MODERATE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:37Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000030",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003"
+      ],
+      "source_ids": [
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 1
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:39Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000031",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 2
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:48Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000032",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.35,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 2
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:50Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000033",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 0.65,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 2
+    },
+    "reason": "Evidence linkage present, but source verification remains partial.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:01:52Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000034",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 2
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:54Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000035",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 2
+    },
+    "reason": "Contradiction status is NONE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:56Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000036",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 2
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:01:58Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000037",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 0.7,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 2
+    },
+    "reason": "Ontology gaps remain: PANCHA_MAHAPURUSHA_FAMILY",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:02:00Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000038",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 2
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:02Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000039",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 2
+    },
+    "reason": "Safety class is MODERATE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:04Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000040",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 2
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:06Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000041",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 3
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:15Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000042",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.35,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 3
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:17Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000043",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 0.65,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 3
+    },
+    "reason": "Evidence linkage present, but source verification remains partial.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:02:19Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000044",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 3
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:21Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000045",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 3
+    },
+    "reason": "Contradiction status is NONE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:23Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000046",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 3
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:25Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000047",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 0.7,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 3
+    },
+    "reason": "Ontology gaps remain: PANCHA_MAHAPURUSHA_FAMILY",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:02:27Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000048",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 3
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:29Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000049",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 3
+    },
+    "reason": "Safety class is MODERATE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:31Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000050",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf"
+      ],
+      "support_count": 3
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:33Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000051",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:42Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000052",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.35,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:44Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000053",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 0.65,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Evidence linkage present, but source verification remains partial.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:02:46Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000054",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:48Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000055",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Contradiction status is NONE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:50Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000056",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:52Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000057",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 0.7,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Ontology gaps remain: PANCHA_MAHAPURUSHA_FAMILY",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:02:54Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000058",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:56Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000059",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Safety class is MODERATE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:02:58Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000060",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:00Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000061",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 0.5,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:14Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000062",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:16Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000063",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Evidence linkage present.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:18Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000064",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:20Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000065",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 0.3,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Contradiction status is CONTEXTUAL.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:03:22Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000066",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 0.5,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:03:24Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000067",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Ontology mapping completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:26Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000068",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:28Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000069",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Safety class is LOW.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:30Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000070",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:32Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000071",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 0.5,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:42Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000072",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:44Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000073",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Evidence linkage present.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:46Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000074",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:48Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000075",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 0.3,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Contradiction status is CONTEXTUAL.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:03:50Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000076",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 0.5,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:03:52Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000077",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Ontology mapping completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:54Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000078",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:56Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000079",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Safety class is LOW.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:03:58Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000080",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:00Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000081",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 0.5,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:12Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000082",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.86,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:14Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000083",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Evidence linkage present.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:16Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000084",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:18Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000085",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 0.3,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Contradiction status is DIRECT.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:04:20Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000086",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 0.5,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:04:22Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000087",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Ontology mapping completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:24Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000088",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:26Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000089",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Safety class is LOW.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:28Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000090",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:30Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000091",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:39Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000092",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.88,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:41Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000093",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Evidence linkage present.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:43Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000094",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:45Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000095",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 0.3,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Contradiction status is CONTEXTUAL.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:04:47Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000096",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:49Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000097",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Ontology mapping completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:51Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000098",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:53Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000099",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Safety class is LOW.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:55Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000100",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:04:57Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000101",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 0.5,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007",
+        "VEDA-EVD-000011"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:05:22Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000102",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007",
+        "VEDA-EVD-000011"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:05:24Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000103",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007",
+        "VEDA-EVD-000011"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Evidence linkage present.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:05:26Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000104",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007",
+        "VEDA-EVD-000011"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:05:28Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000105",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 0.3,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007",
+        "VEDA-EVD-000011"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Contradiction status is CONTEXTUAL.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:05:30Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000106",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 0.5,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007",
+        "VEDA-EVD-000011"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:05:32Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000107",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007",
+        "VEDA-EVD-000011"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Ontology mapping completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:05:34Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000108",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007",
+        "VEDA-EVD-000011"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:05:36Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000109",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007",
+        "VEDA-EVD-000011"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Safety class is LOW.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:05:38Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000110",
+    "candidate_id": "VEDA-RCND-000004",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000007",
+        "VEDA-EVD-000011"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "support_count": 1
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:05:40Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000111",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:05:47Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000112",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.8867,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:05:49Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000113",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Evidence linkage present.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:05:51Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000114",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:05:53Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000115",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 0.3,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Contradiction status is CONTEXTUAL.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:05:55Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000116",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:05:57Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000117",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Ontology mapping completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:05:59Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000118",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:01Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000119",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Safety class is LOW.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:03Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000120",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:05Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000121",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002",
+        "VEDA-EVD-000013"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:18Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000122",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.88,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002",
+        "VEDA-EVD-000013"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:20Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000123",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002",
+        "VEDA-EVD-000013"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Evidence linkage present.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:22Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000124",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002",
+        "VEDA-EVD-000013"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:24Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000125",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 0.3,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002",
+        "VEDA-EVD-000013"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Contradiction status is DIRECT.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:06:26Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000126",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002",
+        "VEDA-EVD-000013"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:28Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000127",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002",
+        "VEDA-EVD-000013"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Ontology mapping completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:30Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000128",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002",
+        "VEDA-EVD-000013"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:32Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000129",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002",
+        "VEDA-EVD-000013"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Safety class is LOW.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:34Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000130",
+    "candidate_id": "VEDA-RCND-000002",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000002",
+        "VEDA-EVD-000013"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:36Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000131",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 0.5,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009",
+        "VEDA-EVD-000014"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:45Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000132",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.86,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009",
+        "VEDA-EVD-000014"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:47Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000133",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009",
+        "VEDA-EVD-000014"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Evidence linkage present.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:49Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000134",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009",
+        "VEDA-EVD-000014"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:51Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000135",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 0.3,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009",
+        "VEDA-EVD-000014"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Contradiction status is DIRECT.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:06:53Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000136",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 0.5,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009",
+        "VEDA-EVD-000014"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:06:55Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000137",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009",
+        "VEDA-EVD-000014"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Ontology mapping completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:57Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000138",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009",
+        "VEDA-EVD-000014"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:06:59Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000139",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009",
+        "VEDA-EVD-000014"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Safety class is LOW.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:01Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000140",
+    "candidate_id": "VEDA-RCND-000006",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000009",
+        "VEDA-EVD-000014"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 1
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:03Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000141",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012",
+        "VEDA-EVD-000015"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:10Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000142",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.88,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012",
+        "VEDA-EVD-000015"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:12Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000143",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012",
+        "VEDA-EVD-000015"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Evidence linkage present.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:14Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000144",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012",
+        "VEDA-EVD-000015"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:16Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000145",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 0.3,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012",
+        "VEDA-EVD-000015"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Contradiction status is CONTEXTUAL.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:07:18Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000146",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012",
+        "VEDA-EVD-000015"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:20Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000147",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012",
+        "VEDA-EVD-000015"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Ontology mapping completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:22Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000148",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012",
+        "VEDA-EVD-000015"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:24Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000149",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012",
+        "VEDA-EVD-000015"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Safety class is LOW.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:26Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000150",
+    "candidate_id": "VEDA-RCND-000005",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.7,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000008",
+        "VEDA-EVD-000010",
+        "VEDA-EVD-000012",
+        "VEDA-EVD-000015"
+      ],
+      "source_ids": [
+        "VEDA-SRC-000001",
+        "VEDA-SRC-000002"
+      ],
+      "support_count": 2
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:28Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000151",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:41Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000152",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.35,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:43Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000153",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 0.65,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Evidence linkage present, but source verification remains partial.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:07:45Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000154",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:47Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000155",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Contradiction status is NONE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:49Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000156",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:51Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000157",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 0.7,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Ontology gaps remain: PANCHA_MAHAPURUSHA_FAMILY",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:07:53Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000158",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:55Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000159",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Safety class is MODERATE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:57Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000160",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:07:59Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000161",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:08Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000162",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.35,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:10Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000163",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 0.65,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Evidence linkage present, but source verification remains partial.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:08:12Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000164",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:14Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000165",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Contradiction status is NONE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:16Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000166",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:18Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000167",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 0.7,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Ontology gaps remain: PANCHA_MAHAPURUSHA_FAMILY",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:08:20Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000168",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:22Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000169",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Safety class is MODERATE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:24Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000170",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:26Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000171",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:35Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000172",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.35,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:37Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000173",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 0.65,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Evidence linkage present, but source verification remains partial.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:08:39Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000174",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:41Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000175",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Contradiction status is NONE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:43Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000176",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:45Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000177",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 0.7,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Ontology gaps remain: PANCHA_MAHAPURUSHA_FAMILY",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:08:47Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000178",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:49Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000179",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Safety class is MODERATE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:51Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000180",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:08:53Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000181",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V1_SOURCE_VALIDATION",
+    "result": "V1_SOURCE_VALIDATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018",
+        "VEDA-EVD-000019"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Accepted sources attached.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:09:02Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000182",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V2_AUTHORITY_VALIDATION",
+    "result": "V2_AUTHORITY_VALIDATION",
+    "score": 0.35,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018",
+        "VEDA-EVD-000019"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Authority based on source metadata.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:09:04Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000183",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V3_PROVENANCE_VALIDATION",
+    "result": "V3_PROVENANCE_VALIDATION",
+    "score": 0.65,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018",
+        "VEDA-EVD-000019"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Evidence linkage present, but source verification remains partial.",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:09:06Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000184",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "result": "V4_EXISTING_KNOWLEDGE_CHECK",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018",
+        "VEDA-EVD-000019"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Existing knowledge comparison completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:09:08Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000185",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V5_CONTRADICTION_CHECK",
+    "result": "V5_CONTRADICTION_CHECK",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018",
+        "VEDA-EVD-000019"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Contradiction status is NONE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:09:10Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000186",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V6_CROSS_SOURCE_SUPPORT",
+    "result": "V6_CROSS_SOURCE_SUPPORT",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018",
+        "VEDA-EVD-000019"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Independent source count evaluated.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:09:12Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000187",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V7_ONTOLOGY_COMPATIBILITY",
+    "result": "V7_ONTOLOGY_COMPATIBILITY",
+    "score": 0.7,
+    "status": "PASS_WITH_CONDITIONS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018",
+        "VEDA-EVD-000019"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Ontology gaps remain: PANCHA_MAHAPURUSHA_FAMILY",
+    "requires_follow_up": true,
+    "created_at": "2026-08-11T00:09:14Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000188",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V8_RULE_IMPACT",
+    "result": "V8_RULE_IMPACT",
+    "score": 0.0,
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018",
+        "VEDA-EVD-000019"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "No rule impact promotion occurs in P006.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:09:16Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000189",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V9_SAFETY_CLASSIFICATION",
+    "result": "V9_SAFETY_CLASSIFICATION",
+    "score": 1.0,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018",
+        "VEDA-EVD-000019"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Safety class is MODERATE.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:09:18Z"
+  },
+  {
+    "contract_version": "2026-08-10",
+    "validation_id": "VEDA-RVAL-000190",
+    "candidate_id": "VEDA-RCND-000003",
+    "validator": "V10_NOVELTY_ASSESSMENT",
+    "result": "V10_NOVELTY_ASSESSMENT",
+    "score": 0.9,
+    "status": "PASS",
+    "evidence": {
+      "evidence_ids": [
+        "VEDA-EVD-000003",
+        "VEDA-EVD-000004",
+        "VEDA-EVD-000005",
+        "VEDA-EVD-000006",
+        "VEDA-EVD-000016",
+        "VEDA-EVD-000017",
+        "VEDA-EVD-000018",
+        "VEDA-EVD-000019"
+      ],
+      "source_ids": [
+        "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+        "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+        "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+        "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+      ],
+      "support_count": 4
+    },
+    "reason": "Novelty assessment completed.",
+    "requires_follow_up": false,
+    "created_at": "2026-08-11T00:09:20Z"
+  }
+]

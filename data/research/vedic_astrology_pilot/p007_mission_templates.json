@@ -1,0 +1,186 @@
+[
+  {
+    "template_id": "VEDA-RMT-ASTRO-000001",
+    "research_type": "LEGACY_RULE_PROVENANCE",
+    "objective": "Find authoritative textual support or contradiction for an existing unsourced VEDA rule.",
+    "inputs": [
+      "legacy_rule_id",
+      "domain",
+      "current_logic"
+    ],
+    "required_sources": {
+      "minimum_primary": 1,
+      "minimum_independent_sources": 2
+    },
+    "completion_condition": [
+      "SOURCE_SUPPORT_FOUND",
+      "SOURCE_CONTRADICTION_FOUND",
+      "INSUFFICIENT_EVIDENCE"
+    ]
+  },
+  {
+    "template_id": "VEDA-RMT-ASTRO-000002",
+    "research_type": "CLASSICAL_RULE_EXTRACTION",
+    "objective": "Extract candidate Jyotisha claims from registered classical or commentarial sources.",
+    "inputs": [
+      "source_id",
+      "work",
+      "topics"
+    ],
+    "required_sources": {
+      "minimum_primary": 1,
+      "minimum_independent_sources": 1
+    },
+    "completion_condition": [
+      "CLAIMS_EXTRACTED",
+      "NO_RELEVANT_PASSAGES"
+    ]
+  },
+  {
+    "template_id": "VEDA-RMT-ASTRO-000003",
+    "research_type": "CROSS_SOURCE_VALIDATION",
+    "objective": "Compare an existing claim against parallel passages or authorities across texts, editions, and scopes.",
+    "inputs": [
+      "claim_id",
+      "topic",
+      "source_ids"
+    ],
+    "required_sources": {
+      "minimum_primary": 1,
+      "minimum_independent_sources": 2
+    },
+    "completion_condition": [
+      "CROSS_SOURCE_SUPPORT_ESTABLISHED",
+      "CONFLICT_IDENTIFIED",
+      "NEEDS_MORE_RESEARCH"
+    ]
+  },
+  {
+    "template_id": "VEDA-RMT-ASTRO-000004",
+    "research_type": "CONTRADICTION_RESOLUTION",
+    "objective": "Resolve or preserve contradiction context across Jyotisha sources without forcing false consensus.",
+    "inputs": [
+      "conflict_id",
+      "claim_ids",
+      "source_ids"
+    ],
+    "required_sources": {
+      "minimum_primary": 1,
+      "minimum_independent_sources": 2
+    },
+    "completion_condition": [
+      "CONTEXT_DEPENDENT_RESULT",
+      "SOURCE_A_PREFERRED",
+      "SOURCE_B_PREFERRED",
+      "INSUFFICIENT_EVIDENCE"
+    ]
+  },
+  {
+    "template_id": "VEDA-RMT-ASTRO-000005",
+    "research_type": "KNOWLEDGE_GAP",
+    "objective": "Turn known VEDA interpretive gaps into governed research missions.",
+    "inputs": [
+      "gap_id",
+      "domain",
+      "legacy_rule_ids"
+    ],
+    "required_sources": {
+      "minimum_primary": 0,
+      "minimum_independent_sources": 1
+    },
+    "completion_condition": [
+      "MISSION_QUEUE_CREATED",
+      "GAP_DEFERRED"
+    ]
+  },
+  {
+    "template_id": "VEDA-RMT-ASTRO-000006",
+    "research_type": "SOURCE_VERIFICATION",
+    "objective": "Verify metadata, edition, translator, commentator, and citation integrity for a discovered source.",
+    "inputs": [
+      "source_uri",
+      "work",
+      "edition_clues"
+    ],
+    "required_sources": {
+      "minimum_primary": 0,
+      "minimum_independent_sources": 1
+    },
+    "completion_condition": [
+      "SOURCE_VERIFIED",
+      "REFERENCE_NOT_VERIFIED",
+      "SOURCE_REJECTED"
+    ]
+  },
+  {
+    "template_id": "VEDA-RMT-ASTRO-000007",
+    "research_type": "TRANSLATION_VARIANCE",
+    "objective": "Compare translation and commentary variance for the same underlying Jyotisha passage.",
+    "inputs": [
+      "passage_id",
+      "source_ids"
+    ],
+    "required_sources": {
+      "minimum_primary": 1,
+      "minimum_independent_sources": 2
+    },
+    "completion_condition": [
+      "VARIANCE_CAPTURED",
+      "NO_MATERIAL_VARIANCE"
+    ]
+  },
+  {
+    "template_id": "VEDA-RMT-ASTRO-000008",
+    "research_type": "ONTOLOGY_EXPANSION",
+    "objective": "Capture a recurring Jyotisha concept that current P003 ontology cannot represent.",
+    "inputs": [
+      "candidate_text",
+      "repeated_contexts"
+    ],
+    "required_sources": {
+      "minimum_primary": 0,
+      "minimum_independent_sources": 1
+    },
+    "completion_condition": [
+      "ONTOLOGY_GAP_REGISTERED",
+      "EXISTING_ENTITY_CONFIRMED"
+    ]
+  },
+  {
+    "template_id": "VEDA-RMT-ASTRO-000009",
+    "research_type": "DOMAIN_DEEP_RESEARCH",
+    "objective": "Explore a bounded Jyotisha life-domain topic using governed source and conflict controls.",
+    "inputs": [
+      "domain",
+      "subdomain",
+      "existing_rule_ids"
+    ],
+    "required_sources": {
+      "minimum_primary": 1,
+      "minimum_independent_sources": 2
+    },
+    "completion_condition": [
+      "CANDIDATES_CREATED",
+      "CONFLICTS_CREATED",
+      "NEEDS_MORE_RESEARCH"
+    ]
+  },
+  {
+    "template_id": "VEDA-RMT-ASTRO-000010",
+    "research_type": "UPDATE_MONITORING",
+    "objective": "Monitor previously discovered or uploaded astrology materials for changed or newly accessible evidence.",
+    "inputs": [
+      "source_id",
+      "source_uri"
+    ],
+    "required_sources": {
+      "minimum_primary": 0,
+      "minimum_independent_sources": 1
+    },
+    "completion_condition": [
+      "NO_CHANGE",
+      "UPDATED_SOURCE",
+      "REMOVED_SOURCE"
+    ]
+  }
+]

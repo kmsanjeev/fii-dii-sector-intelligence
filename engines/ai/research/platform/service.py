@@ -48,6 +48,7 @@ from engines.ai.research.platform.providers import BasePlatformResearchProvider,
 from engines.ai.research.platform.security import content_hash, detect_prompt_injection, is_safe_uri, normalize_uri, sanitize_external_text
 from engines.ai.research.platform.store import ResearchPlatformStore
 from engines.ai.research.platform.synthetic import SyntheticResearchDomainPlugin
+from engines.ai.research.domains.vedic_astrology import VedicAstrologyCorpusProvider, VedicAstrologyResearchDomain
 from engines.common import config as cfg
 
 
@@ -79,14 +80,18 @@ class ResearchPlatformService:
         self.store = ResearchPlatformStore(db_path=db_path)
         self.fixture_path = Path(fixture_path or (cfg.VEDA_RESEARCH_PLATFORM_FIXTURE_DIR / "synthetic_research_fixture.json"))
         self.synthetic_plugin = SyntheticResearchDomainPlugin(self.fixture_path)
+        self.vedic_astrology_plugin = VedicAstrologyResearchDomain()
         default_provider = SyntheticFixtureProvider(self.fixture_path)
+        astrology_provider = VedicAstrologyCorpusProvider(self.vedic_astrology_plugin)
         self.providers: dict[str, BasePlatformResearchProvider] = {
             default_provider.descriptor().provider_id: default_provider,
+            astrology_provider.descriptor().provider_id: astrology_provider,
         }
         if providers:
             self.providers.update(providers)
         self.domain_plugins = {
             self.synthetic_plugin.domain_id: self.synthetic_plugin,
+            self.vedic_astrology_plugin.domain_id: self.vedic_astrology_plugin,
         }
         if domain_plugins:
             self.domain_plugins.update(domain_plugins)
@@ -94,9 +99,10 @@ class ResearchPlatformService:
         self._bootstrap_defaults()
 
     def _bootstrap_defaults(self) -> None:
-        self.store.upsert_domain(self.synthetic_plugin.domain_record())
-        for record in self.synthetic_plugin.seed_core_knowledge():
-            self.store.upsert_core_knowledge(record)
+        for plugin in self.domain_plugins.values():
+            self.store.upsert_domain(plugin.domain_record())
+            for record in plugin.seed_core_knowledge():
+                self.store.upsert_core_knowledge(record)
 
     def list_domains(self) -> list[ResearchDomainRecord]:
         return self.store.list_domains()
@@ -309,7 +315,11 @@ class ResearchPlatformService:
                 domain_id=run.domain_id,
                 mission_id=run.mission_id,
                 run_id=run.run_id,
-                metadata={"continuation_hint": batch.continuation_hint},
+                metadata={
+                    "query": batch.query,
+                    "continuation_hint": batch.continuation_hint,
+                    **dict(batch.search_metadata),
+                },
             )
             for document in batch.documents[: mission.research_budget.max_sources]:
                 self._process_document(provider, mission, run, document)
@@ -476,11 +486,17 @@ class ResearchPlatformService:
     ) -> ResearchCandidateRecord:
         plugin = self.domain_plugins[mission.domain_id]
         draft = plugin.normalize_candidate(evidence, observation, mission)
-        existing = self.store.find_candidate_by_normalized_claim(mission.domain_id, draft["normalized_claim"])
+        existing = self.store.find_candidate_by_normalized_claim(
+            mission.domain_id,
+            draft["normalized_claim"],
+            exclude_archived=False,
+        )
+        source_key = observation.domain_metadata.get("source_id") or observation.canonical_uri
 
         if existing is not None:
+            before = existing.model_dump(mode="json")
             evidence_ids = sorted({*existing.evidence_ids, evidence.evidence_id})
-            source_ids = sorted({*existing.source_ids, observation.observation_id})
+            source_ids = sorted({*existing.source_ids, source_key})
             updated = existing.model_copy(
                 update={
                     "mission_id": mission.mission_id,
@@ -503,6 +519,8 @@ class ResearchPlatformService:
                 mission_id=mission.mission_id,
                 run_id=run.run_id,
                 candidate_id=updated.candidate_id,
+                before_state=before,
+                after_state=updated.model_dump(mode="json"),
                 metadata={"evidence_id": evidence.evidence_id},
             )
             return updated
@@ -523,7 +541,7 @@ class ResearchPlatformService:
             topic_key=draft["topic_key"],
             stance=draft["stance"],
             evidence_ids=[evidence.evidence_id],
-            source_ids=[observation.observation_id],
+            source_ids=[source_key],
             existing_knowledge_matches=list(comparison.get("existing_knowledge_matches", [])),
             novelty_status=NoveltyStatus(comparison.get("novelty_status", NoveltyStatus.UNKNOWN.value)),
             contradiction_status=ContradictionStatus(conflict_payload.get("contradiction_status", ContradictionStatus.NONE.value)),
@@ -593,8 +611,25 @@ class ResearchPlatformService:
         source_confidence = min(1.0, source_count / max(1, mission.minimum_independent_sources))
         authority_scores = [float(item.domain_metadata.get("authority_score", 0.5)) for item in evidence_records] or [0.0]
         authority_confidence = sum(authority_scores) / len(authority_scores)
+        provenance_needs_review = any(
+            item.domain_metadata.get("verification_status") in {"REFERENCE_NOT_VERIFIED", "UNVERIFIED"}
+            or bool(item.domain_metadata.get("discovery_only"))
+            for item in evidence_records
+        )
         provenance_confidence = 1.0 if evidence_records else 0.0
+        if provenance_needs_review and provenance_confidence:
+            provenance_confidence = 0.65
         cross_source_confidence = min(1.0, source_count / max(1, mission.minimum_independent_sources))
+        ontology_matches = list(candidate.metadata.get("ontology_matches", []))
+        ontology_gaps = list(candidate.metadata.get("ontology_gaps", []))
+        if ontology_matches and not ontology_gaps:
+            ontology_confidence = 1.0
+        elif ontology_matches and ontology_gaps:
+            ontology_confidence = 0.7
+        elif ontology_gaps:
+            ontology_confidence = 0.35
+        else:
+            ontology_confidence = 0.8
         novelty_confidence = {
             NoveltyStatus.NEW: 0.9,
             NoveltyStatus.KNOWN: 0.7,
@@ -628,7 +663,15 @@ class ResearchPlatformService:
                 "Authority based on source metadata.",
                 False,
             ),
-            (ValidationStage.V3_PROVENANCE_VALIDATION, ValidationStatus.PASS if evidence_records else ValidationStatus.FAIL, provenance_confidence, "Evidence linkage present.", False),
+            (
+                ValidationStage.V3_PROVENANCE_VALIDATION,
+                ValidationStatus.PASS if evidence_records and not provenance_needs_review else (
+                    ValidationStatus.PASS_WITH_CONDITIONS if evidence_records else ValidationStatus.FAIL
+                ),
+                provenance_confidence,
+                "Evidence linkage present." if not provenance_needs_review else "Evidence linkage present, but source verification remains partial.",
+                provenance_needs_review,
+            ),
             (ValidationStage.V4_EXISTING_KNOWLEDGE_CHECK, ValidationStatus.PASS, novelty_confidence, "Existing knowledge comparison completed.", False),
             (
                 ValidationStage.V5_CONTRADICTION_CHECK,
@@ -644,7 +687,13 @@ class ResearchPlatformService:
                 "Independent source count evaluated.",
                 source_count < mission.minimum_independent_sources,
             ),
-            (ValidationStage.V7_ONTOLOGY_COMPATIBILITY, ValidationStatus.PASS, 1.0, "Synthetic domain is ontology-compatible by construction.", False),
+            (
+                ValidationStage.V7_ONTOLOGY_COMPATIBILITY,
+                ValidationStatus.PASS if not ontology_gaps else ValidationStatus.PASS_WITH_CONDITIONS,
+                ontology_confidence,
+                "Ontology mapping completed." if not ontology_gaps else f"Ontology gaps remain: {', '.join(ontology_gaps[:4])}",
+                bool(ontology_gaps),
+            ),
             (ValidationStage.V8_RULE_IMPACT, ValidationStatus.NOT_APPLICABLE, 0.0, "No rule impact promotion occurs in P006.", False),
             (
                 ValidationStage.V9_SAFETY_CLASSIFICATION,

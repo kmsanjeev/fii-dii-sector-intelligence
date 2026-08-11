@@ -1,0 +1,684 @@
+[
+  {
+    "contract_version": "2026-08-10",
+    "candidate_id": "VEDA-RCND-000001",
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000001",
+    "title": "DASHA - Vimshottari Dasha Foundations",
+    "candidate_type": "CLAIM_UPDATE",
+    "claim": "The birth balance of a Vimshottari period is derived from the elapsed portion of the Moon's stay in the Janma Nakshatra and subtracted from the full dasha span of the ruling planet.",
+    "normalized_claim": "the birth balance of a vimshottari period is derived from the elapsed portion of the moon s stay in the janma nakshatra and subtracted from the full dasha span of the ruling planet",
+    "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+    "stance": "BIRTH_BALANCE_FROM_JANMA_NAKSHATRA",
+    "evidence_ids": [
+      "VEDA-EVD-000001"
+    ],
+    "source_ids": [
+      "VEDA-SRC-000001"
+    ],
+    "existing_knowledge_matches": [
+      "VEDA-RCORE-100002"
+    ],
+    "novelty_status": "KNOWN",
+    "contradiction_status": "DIRECT",
+    "validation_status": "PASS_WITH_CONDITIONS",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 0.5,
+      "authority_confidence": 0.9,
+      "cross_source_confidence": 0.5,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.7,
+      "contradiction_confidence": 0.3,
+      "domain_confidence": 0.65
+    },
+    "priority": "P1",
+    "safety_class": "LOW",
+    "approval_status": "APPROVED",
+    "knowledge_zone": "RESEARCH_CANDIDATE",
+    "promotion_state": "PROMOTION_READY",
+    "created_at": "2026-08-11T00:00:15Z",
+    "updated_at": "2026-08-11T00:05:02Z",
+    "merged_into_candidate_id": null,
+    "support_count": 1,
+    "metadata": {
+      "title": "DASHA - Vimshottari Dasha Foundations",
+      "claim_text": "The birth balance of a Vimshottari period is derived from the elapsed portion of the Moon's stay in the Janma Nakshatra and subtracted from the full dasha span of the ruling planet.",
+      "claim_id": "VEDA-CLM-000002",
+      "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+      "stance": "BIRTH_BALANCE_FROM_JANMA_NAKSHATRA",
+      "domain": "DASHA",
+      "subdomain": "VIMSHOTTARI_DASHA_FOUNDATIONS",
+      "candidate_type": "CLAIM_UPDATE",
+      "priority": "P1",
+      "source_id": "VEDA-SRC-000001",
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "passage_id": "VEDA-PSG-000002",
+      "claim_ids": [
+        "VEDA-CLM-000002"
+      ],
+      "conflict_ids": [],
+      "citation_label": "BPHS Ch. 46 v. 16 (Santhanam tr.)",
+      "source_class": "CLASSICAL_PRIMARY",
+      "evidence_class": "CLASSICAL_TEXTUAL",
+      "quality_grade": "B",
+      "authority_score": 0.9,
+      "verification_status": "PASSAGE_VERIFIED",
+      "supports_claim": true,
+      "prompt_injection_detected": false,
+      "ontology_matches": [
+        "VEDA-DASHA-VIMSHOTTARI",
+        "VEDA-GRAHA-MOON"
+      ],
+      "ontology_gaps": [],
+      "source_profile": {
+        "source_class": "CLASSICAL_PRIMARY",
+        "verification_status": "PASSAGE_VERIFIED",
+        "discovery_only": false,
+        "authority_score": 0.9,
+        "textual_authority": 1.0,
+        "provenance_quality": 0.95
+      },
+      "authority_profile": {
+        "textual_authority": 1.0,
+        "source_quality": 0.85,
+        "provenance_quality": 0.95,
+        "authority_score": 0.9
+      },
+      "current_knowledge_comparison_hint": null,
+      "current_knowledge_comparison": {
+        "novelty_status": "KNOWN",
+        "comparison_outcome": "EXACT_MATCH",
+        "existing_knowledge_matches": [
+          "VEDA-RCORE-100002"
+        ],
+        "topic_matches": [
+          "VEDA-RCORE-100001",
+          "VEDA-RCORE-100002",
+          "VEDA-RCORE-100003",
+          "VEDA-RCORE-100005",
+          "VEDA-RCORE-100006",
+          "VEDA-RCORE-200001",
+          "VEDA-RCORE-200002"
+        ],
+        "legacy_match_status": null
+      },
+      "conflict_analysis": "Candidate stance BIRTH_BALANCE_FROM_JANMA_NAKSHATRA conflicts with approved core stance SEQUENCE_DEFINED."
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "candidate_id": "VEDA-RCND-000004",
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "mission_id": "VEDA-RM-000004",
+    "run_id": "VEDA-RUN-000004",
+    "title": "DASHA - Vimshottari Dasha Foundations",
+    "candidate_type": "CLAIM_UPDATE",
+    "claim": "BPHS presents Vimshottari as the default general-purpose dasha for the general populace within its dasha chapter hierarchy.",
+    "normalized_claim": "bphs presents vimshottari as the default general purpose dasha for the general populace within its dasha chapter hierarchy",
+    "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+    "stance": "DEFAULT_FOR_GENERAL_POPULATION",
+    "evidence_ids": [
+      "VEDA-EVD-000007",
+      "VEDA-EVD-000011"
+    ],
+    "source_ids": [
+      "VEDA-SRC-000001"
+    ],
+    "existing_knowledge_matches": [
+      "VEDA-RCORE-100005"
+    ],
+    "novelty_status": "KNOWN",
+    "contradiction_status": "CONTEXTUAL",
+    "validation_status": "PASS_WITH_CONDITIONS",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 0.5,
+      "authority_confidence": 0.9,
+      "cross_source_confidence": 0.5,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.7,
+      "contradiction_confidence": 0.3,
+      "domain_confidence": 0.65
+    },
+    "priority": "P1",
+    "safety_class": "LOW",
+    "approval_status": "NEEDS_MORE_RESEARCH",
+    "knowledge_zone": "RESEARCH_CANDIDATE",
+    "promotion_state": "NONE",
+    "created_at": "2026-08-11T00:03:12Z",
+    "updated_at": "2026-08-11T00:05:42Z",
+    "merged_into_candidate_id": null,
+    "support_count": 1,
+    "metadata": {
+      "title": "DASHA - Vimshottari Dasha Foundations",
+      "claim_text": "BPHS presents Vimshottari as the default general-purpose dasha for the general populace within its dasha chapter hierarchy.",
+      "claim_id": "VEDA-CLM-000005",
+      "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+      "stance": "DEFAULT_FOR_GENERAL_POPULATION",
+      "domain": "DASHA",
+      "subdomain": "VIMSHOTTARI_DASHA_FOUNDATIONS",
+      "candidate_type": "CLAIM_UPDATE",
+      "priority": "P1",
+      "source_id": "VEDA-SRC-000001",
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "passage_id": "VEDA-PSG-000004",
+      "claim_ids": [
+        "VEDA-CLM-000005"
+      ],
+      "conflict_ids": [
+        "VEDA-CNF-000001"
+      ],
+      "citation_label": "BPHS Ch. 46 vv. 2-5 (Santhanam tr.)",
+      "source_class": "CLASSICAL_PRIMARY",
+      "evidence_class": "CLASSICAL_TEXTUAL",
+      "quality_grade": "B",
+      "authority_score": 0.9,
+      "verification_status": "PASSAGE_VERIFIED",
+      "supports_claim": true,
+      "prompt_injection_detected": false,
+      "ontology_matches": [
+        "VEDA-DASHA-VIMSHOTTARI"
+      ],
+      "ontology_gaps": [],
+      "source_profile": {
+        "source_class": "CLASSICAL_PRIMARY",
+        "verification_status": "PASSAGE_VERIFIED",
+        "discovery_only": false,
+        "authority_score": 0.9,
+        "textual_authority": 1.0,
+        "provenance_quality": 0.95
+      },
+      "authority_profile": {
+        "textual_authority": 1.0,
+        "source_quality": 0.85,
+        "provenance_quality": 0.95,
+        "authority_score": 0.9
+      },
+      "current_knowledge_comparison_hint": null,
+      "current_knowledge_comparison": {
+        "novelty_status": "KNOWN",
+        "comparison_outcome": "EXACT_MATCH",
+        "existing_knowledge_matches": [
+          "VEDA-RCORE-100005"
+        ],
+        "topic_matches": [
+          "VEDA-RCORE-100001",
+          "VEDA-RCORE-100002",
+          "VEDA-RCORE-100003",
+          "VEDA-RCORE-100005",
+          "VEDA-RCORE-100006",
+          "VEDA-RCORE-200001",
+          "VEDA-RCORE-200002"
+        ],
+        "legacy_match_status": null
+      },
+      "conflict_analysis": "The BPHS passage gives Vimshottari a preferred place for the general populace, while the broader chapter context and the Hora Sara commentary preserve multiple dasha systems and source-scoped exceptions. The tension is about implementation scope, not a clean textual contradiction."
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "candidate_id": "VEDA-RCND-000002",
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000005",
+    "title": "DASHA - Vimshottari Dasha Foundations",
+    "candidate_type": "CLAIM_UPDATE",
+    "claim": "The standard Vimshottari Mahadasha order in the pilot corpus runs Sun, Moon, Mars, Rahu, Jupiter, Saturn, Mercury, Ketu, and Venus, and the full cycle totals 120 years.",
+    "normalized_claim": "the standard vimshottari mahadasha order in the pilot corpus runs sun moon mars rahu jupiter saturn mercury ketu and venus and the full cycle totals 120 years",
+    "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+    "stance": "SEQUENCE_DEFINED",
+    "evidence_ids": [
+      "VEDA-EVD-000002",
+      "VEDA-EVD-000013"
+    ],
+    "source_ids": [
+      "VEDA-SRC-000001",
+      "VEDA-SRC-000002"
+    ],
+    "existing_knowledge_matches": [
+      "VEDA-RCORE-100001"
+    ],
+    "novelty_status": "KNOWN",
+    "contradiction_status": "DIRECT",
+    "validation_status": "PASS_WITH_CONDITIONS",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 1.0,
+      "authority_confidence": 0.88,
+      "cross_source_confidence": 1.0,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.7,
+      "contradiction_confidence": 0.3,
+      "domain_confidence": 0.8133
+    },
+    "priority": "P1",
+    "safety_class": "LOW",
+    "approval_status": "PENDING",
+    "knowledge_zone": "RESEARCH_CANDIDATE",
+    "promotion_state": "NONE",
+    "created_at": "2026-08-11T00:00:45Z",
+    "updated_at": "2026-08-11T00:06:38Z",
+    "merged_into_candidate_id": null,
+    "support_count": 2,
+    "metadata": {
+      "title": "DASHA - Vimshottari Dasha Foundations",
+      "claim_text": "The standard Vimshottari Mahadasha order in the pilot corpus runs Sun, Moon, Mars, Rahu, Jupiter, Saturn, Mercury, Ketu, and Venus, and the full cycle totals 120 years.",
+      "claim_id": "VEDA-CLM-000001",
+      "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+      "stance": "SEQUENCE_DEFINED",
+      "domain": "DASHA",
+      "subdomain": "VIMSHOTTARI_DASHA_FOUNDATIONS",
+      "candidate_type": "CLAIM_UPDATE",
+      "priority": "P1",
+      "source_id": "VEDA-SRC-000001",
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "passage_id": "VEDA-PSG-000001",
+      "claim_ids": [
+        "VEDA-CLM-000001"
+      ],
+      "conflict_ids": [],
+      "citation_label": "BPHS Ch. 46 vv. 12-15 (Santhanam tr.)",
+      "source_class": "CLASSICAL_PRIMARY",
+      "evidence_class": "CLASSICAL_TEXTUAL",
+      "quality_grade": "B",
+      "authority_score": 0.9,
+      "verification_status": "PASSAGE_VERIFIED",
+      "supports_claim": true,
+      "prompt_injection_detected": false,
+      "ontology_matches": [
+        "VEDA-DASHA-VIMSHOTTARI",
+        "VEDA-DASHA-MAHADASHA",
+        "VEDA-GRAHA-MERCURY",
+        "VEDA-GRAHA-JUPITER",
+        "VEDA-GRAHA-SATURN",
+        "VEDA-GRAHA-VENUS",
+        "VEDA-GRAHA-MOON",
+        "VEDA-GRAHA-MARS",
+        "VEDA-GRAHA-RAHU",
+        "VEDA-GRAHA-KETU",
+        "VEDA-GRAHA-SUN"
+      ],
+      "ontology_gaps": [],
+      "source_profile": {
+        "source_class": "CLASSICAL_PRIMARY",
+        "verification_status": "PASSAGE_VERIFIED",
+        "discovery_only": false,
+        "authority_score": 0.9,
+        "textual_authority": 1.0,
+        "provenance_quality": 0.95
+      },
+      "authority_profile": {
+        "textual_authority": 1.0,
+        "source_quality": 0.85,
+        "provenance_quality": 0.95,
+        "authority_score": 0.9
+      },
+      "current_knowledge_comparison_hint": null,
+      "current_knowledge_comparison": {
+        "novelty_status": "KNOWN",
+        "comparison_outcome": "EXACT_MATCH",
+        "existing_knowledge_matches": [
+          "VEDA-RCORE-100001"
+        ],
+        "topic_matches": [
+          "VEDA-RCORE-100001",
+          "VEDA-RCORE-100002",
+          "VEDA-RCORE-100003",
+          "VEDA-RCORE-100005",
+          "VEDA-RCORE-100006",
+          "VEDA-RCORE-200001",
+          "VEDA-RCORE-200002"
+        ],
+        "legacy_match_status": null
+      },
+      "conflict_analysis": "Candidate stance SEQUENCE_DEFINED conflicts with approved core stance BIRTH_BALANCE_FROM_JANMA_NAKSHATRA."
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "candidate_id": "VEDA-RCND-000006",
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000005",
+    "title": "DASHA - Vimshottari Dasha Foundations",
+    "candidate_type": "CLAIM_UPDATE",
+    "claim": "The Hora Sara translation note preserves a variant in which opening-dasha selection can depend on whether Lagna is stronger than the Moon, so VEDA must treat opening-dasha rules as source-scoped rather than universal.",
+    "normalized_claim": "the hora sara translation note preserves a variant in which opening dasha selection can depend on whether lagna is stronger than the moon so veda must treat opening dasha rules as source scoped rather than universal",
+    "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+    "stance": "LAGNA_STRENGTH_VARIANT",
+    "evidence_ids": [
+      "VEDA-EVD-000009",
+      "VEDA-EVD-000014"
+    ],
+    "source_ids": [
+      "VEDA-SRC-000002"
+    ],
+    "existing_knowledge_matches": [
+      "VEDA-RCORE-100003"
+    ],
+    "novelty_status": "KNOWN",
+    "contradiction_status": "DIRECT",
+    "validation_status": "PASS_WITH_CONDITIONS",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 0.5,
+      "authority_confidence": 0.86,
+      "cross_source_confidence": 0.5,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.7,
+      "contradiction_confidence": 0.3,
+      "domain_confidence": 0.6433
+    },
+    "priority": "P1",
+    "safety_class": "LOW",
+    "approval_status": "PENDING",
+    "knowledge_zone": "RESEARCH_CANDIDATE",
+    "promotion_state": "NONE",
+    "created_at": "2026-08-11T00:04:10Z",
+    "updated_at": "2026-08-11T00:07:05Z",
+    "merged_into_candidate_id": null,
+    "support_count": 1,
+    "metadata": {
+      "title": "DASHA - Vimshottari Dasha Foundations",
+      "claim_text": "The Hora Sara translation note preserves a variant in which opening-dasha selection can depend on whether Lagna is stronger than the Moon, so VEDA must treat opening-dasha rules as source-scoped rather than universal.",
+      "claim_id": "VEDA-CLM-000003",
+      "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+      "stance": "LAGNA_STRENGTH_VARIANT",
+      "domain": "DASHA",
+      "subdomain": "VIMSHOTTARI_DASHA_FOUNDATIONS",
+      "candidate_type": "CLAIM_UPDATE",
+      "priority": "P1",
+      "source_id": "VEDA-SRC-000002",
+      "source_ids": [
+        "VEDA-SRC-000002"
+      ],
+      "passage_id": "VEDA-PSG-000005",
+      "claim_ids": [
+        "VEDA-CLM-000003"
+      ],
+      "conflict_ids": [],
+      "citation_label": "Hora Sara editorial note at p. 192 (Santhanam tr.)",
+      "source_class": "CLASSICAL_PRIMARY",
+      "evidence_class": "CLASSICAL_TEXTUAL",
+      "quality_grade": "B",
+      "authority_score": 0.86,
+      "verification_status": "PASSAGE_VERIFIED",
+      "supports_claim": true,
+      "prompt_injection_detected": false,
+      "ontology_matches": [
+        "VEDA-GRAHA-MOON",
+        "VEDA-VARGA-D02"
+      ],
+      "ontology_gaps": [],
+      "source_profile": {
+        "source_class": "CLASSICAL_PRIMARY",
+        "verification_status": "PASSAGE_VERIFIED",
+        "discovery_only": false,
+        "authority_score": 0.86,
+        "textual_authority": 1.0,
+        "provenance_quality": 0.95
+      },
+      "authority_profile": {
+        "textual_authority": 1.0,
+        "source_quality": 0.85,
+        "provenance_quality": 0.95,
+        "authority_score": 0.86
+      },
+      "current_knowledge_comparison_hint": null,
+      "current_knowledge_comparison": {
+        "novelty_status": "KNOWN",
+        "comparison_outcome": "EXACT_MATCH",
+        "existing_knowledge_matches": [
+          "VEDA-RCORE-100003"
+        ],
+        "topic_matches": [
+          "VEDA-RCORE-100001",
+          "VEDA-RCORE-100002",
+          "VEDA-RCORE-100003",
+          "VEDA-RCORE-100005",
+          "VEDA-RCORE-100006",
+          "VEDA-RCORE-200001",
+          "VEDA-RCORE-200002"
+        ],
+        "legacy_match_status": null
+      },
+      "conflict_analysis": "Candidate stance LAGNA_STRENGTH_VARIANT conflicts with approved core stance SEQUENCE_DEFINED."
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "candidate_id": "VEDA-RCND-000005",
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "mission_id": "VEDA-RM-000001",
+    "run_id": "VEDA-RUN-000005",
+    "title": "DASHA - Vimshottari Dasha Foundations",
+    "candidate_type": "CLAIM_UPDATE",
+    "claim": "Even where Vimshottari is treated as the default path, other dashas remain valid in special cases or alternate source scopes, so VEDA must preserve coexistence metadata instead of collapsing everything into a single exclusive rule.",
+    "normalized_claim": "even where vimshottari is treated as the default path other dashas remain valid in special cases or alternate source scopes so veda must preserve coexistence metadata instead of collapsing everything into a single exclusive rule",
+    "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+    "stance": "ALTERNATE_SCOPES_PRESERVED",
+    "evidence_ids": [
+      "VEDA-EVD-000008",
+      "VEDA-EVD-000010",
+      "VEDA-EVD-000012",
+      "VEDA-EVD-000015"
+    ],
+    "source_ids": [
+      "VEDA-SRC-000001",
+      "VEDA-SRC-000002"
+    ],
+    "existing_knowledge_matches": [
+      "VEDA-RCORE-100006"
+    ],
+    "novelty_status": "KNOWN",
+    "contradiction_status": "CONTEXTUAL",
+    "validation_status": "PASS_WITH_CONDITIONS",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 1.0,
+      "authority_confidence": 0.88,
+      "cross_source_confidence": 1.0,
+      "provenance_confidence": 1.0,
+      "novelty_confidence": 0.7,
+      "contradiction_confidence": 0.3,
+      "domain_confidence": 0.8133
+    },
+    "priority": "P1",
+    "safety_class": "LOW",
+    "approval_status": "PENDING",
+    "knowledge_zone": "RESEARCH_CANDIDATE",
+    "promotion_state": "NONE",
+    "created_at": "2026-08-11T00:03:40Z",
+    "updated_at": "2026-08-11T00:07:30Z",
+    "merged_into_candidate_id": null,
+    "support_count": 2,
+    "metadata": {
+      "title": "DASHA - Vimshottari Dasha Foundations",
+      "claim_text": "Even where Vimshottari is treated as the default path, other dashas remain valid in special cases or alternate source scopes, so VEDA must preserve coexistence metadata instead of collapsing everything into a single exclusive rule.",
+      "claim_id": "VEDA-CLM-000006",
+      "topic_key": "DASHA::VIMSHOTTARI_DASHA_FOUNDATIONS",
+      "stance": "ALTERNATE_SCOPES_PRESERVED",
+      "domain": "DASHA",
+      "subdomain": "VIMSHOTTARI_DASHA_FOUNDATIONS",
+      "candidate_type": "CLAIM_UPDATE",
+      "priority": "P1",
+      "source_id": "VEDA-SRC-000001",
+      "source_ids": [
+        "VEDA-SRC-000001"
+      ],
+      "passage_id": "VEDA-PSG-000004",
+      "claim_ids": [
+        "VEDA-CLM-000006"
+      ],
+      "conflict_ids": [
+        "VEDA-CNF-000001"
+      ],
+      "citation_label": "BPHS Ch. 46 vv. 2-5 (Santhanam tr.)",
+      "source_class": "CLASSICAL_PRIMARY",
+      "evidence_class": "CLASSICAL_TEXTUAL",
+      "quality_grade": "B",
+      "authority_score": 0.9,
+      "verification_status": "PASSAGE_VERIFIED",
+      "supports_claim": true,
+      "prompt_injection_detected": false,
+      "ontology_matches": [
+        "VEDA-DASHA-VIMSHOTTARI"
+      ],
+      "ontology_gaps": [],
+      "source_profile": {
+        "source_class": "CLASSICAL_PRIMARY",
+        "verification_status": "PASSAGE_VERIFIED",
+        "discovery_only": false,
+        "authority_score": 0.9,
+        "textual_authority": 1.0,
+        "provenance_quality": 0.95
+      },
+      "authority_profile": {
+        "textual_authority": 1.0,
+        "source_quality": 0.85,
+        "provenance_quality": 0.95,
+        "authority_score": 0.9
+      },
+      "current_knowledge_comparison_hint": null,
+      "current_knowledge_comparison": {
+        "novelty_status": "KNOWN",
+        "comparison_outcome": "EXACT_MATCH",
+        "existing_knowledge_matches": [
+          "VEDA-RCORE-100006"
+        ],
+        "topic_matches": [
+          "VEDA-RCORE-100001",
+          "VEDA-RCORE-100002",
+          "VEDA-RCORE-100003",
+          "VEDA-RCORE-100005",
+          "VEDA-RCORE-100006",
+          "VEDA-RCORE-200001",
+          "VEDA-RCORE-200002"
+        ],
+        "legacy_match_status": null
+      },
+      "conflict_analysis": "The BPHS passage gives Vimshottari a preferred place for the general populace, while the broader chapter context and the Hora Sara commentary preserve multiple dasha systems and source-scoped exceptions. The tension is about implementation scope, not a clean textual contradiction."
+    }
+  },
+  {
+    "contract_version": "2026-08-10",
+    "candidate_id": "VEDA-RCND-000003",
+    "domain_id": "VEDA-DOMAIN-VEDIC-ASTROLOGY",
+    "mission_id": "VEDA-RM-000002",
+    "run_id": "VEDA-RUN-000006",
+    "title": "VEDA-P005-LGC-0001",
+    "candidate_type": "PROVENANCE_CANDIDATE",
+    "claim": "Pancha Mahapurusha-family detections in VEDA currently depend on kendra placement and dignity heuristics and require governed provenance recovery before migration.",
+    "normalized_claim": "pancha mahapurusha family detections in veda currently depend on kendra placement and dignity heuristics and require governed provenance recovery before migration",
+    "topic_key": "YOGA::PANCHA_MAHAPURUSHA_SIMPLIFIED",
+    "stance": "PROVENANCE_RECOVERY",
+    "evidence_ids": [
+      "VEDA-EVD-000003",
+      "VEDA-EVD-000004",
+      "VEDA-EVD-000005",
+      "VEDA-EVD-000006",
+      "VEDA-EVD-000016",
+      "VEDA-EVD-000017",
+      "VEDA-EVD-000018",
+      "VEDA-EVD-000019"
+    ],
+    "source_ids": [
+      "veda://upload/26342d562eb64209958cb5f00572db60.pdf",
+      "veda://upload/330224fa3b9d409392f68972199ff0b7.pdf",
+      "veda://upload/7430aad7a36d4ab5bab526491126c577.pdf",
+      "veda://upload/942054578ee44e57a083ad39a7b12cfe.pdf"
+    ],
+    "existing_knowledge_matches": [],
+    "novelty_status": "NEW",
+    "contradiction_status": "NONE",
+    "validation_status": "PASS_WITH_CONDITIONS",
+    "confidence": {
+      "contract_version": "2026-08-10",
+      "source_confidence": 1.0,
+      "authority_confidence": 0.35,
+      "cross_source_confidence": 1.0,
+      "provenance_confidence": 0.65,
+      "novelty_confidence": 0.9,
+      "contradiction_confidence": 1.0,
+      "domain_confidence": 0.8167
+    },
+    "priority": "P2",
+    "safety_class": "MODERATE",
+    "approval_status": "REJECTED",
+    "knowledge_zone": "RESEARCH_ARCHIVE",
+    "promotion_state": "NONE",
+    "created_at": "2026-08-11T00:01:19Z",
+    "updated_at": "2026-08-11T00:09:22Z",
+    "merged_into_candidate_id": null,
+    "support_count": 4,
+    "metadata": {
+      "title": "VEDA-P005-LGC-0001",
+      "claim_text": "Pancha Mahapurusha-family detections in VEDA currently depend on kendra placement and dignity heuristics and require governed provenance recovery before migration.",
+      "topic_key": "YOGA::PANCHA_MAHAPURUSHA_SIMPLIFIED",
+      "stance": "PROVENANCE_RECOVERY",
+      "candidate_type": "PROVENANCE_CANDIDATE",
+      "priority": "P2",
+      "legacy_rule_id": "VEDA-P005-LGC-0001",
+      "domain": "YOGA",
+      "subdomain": "PANCHA_MAHAPURUSHA",
+      "search_terms": [
+        "predictive astrology",
+        "pancha mahapurusha",
+        "exaltation",
+        "mooltrikona",
+        "kendra"
+      ],
+      "authority_score": 0.35,
+      "verification_status": "REFERENCE_NOT_VERIFIED",
+      "source_class": "REFERENCE_EDITION",
+      "evidence_class": "DISCOVERY_ONLY",
+      "quality_grade": "U",
+      "discovery_only": true,
+      "reference_not_verified": true,
+      "requires_primary_source": true,
+      "inference": true,
+      "supports_claim": true,
+      "source_ids": [],
+      "claim_ids": [],
+      "conflict_ids": [],
+      "prompt_injection_detected": false,
+      "ontology_matches": [
+        "VEDA-HCLASS-KENDRA"
+      ],
+      "ontology_gaps": [
+        "PANCHA_MAHAPURUSHA_FAMILY"
+      ],
+      "source_profile": {
+        "source_class": "REFERENCE_EDITION",
+        "verification_status": "REFERENCE_NOT_VERIFIED",
+        "discovery_only": true,
+        "authority_score": 0.35,
+        "textual_authority": 0.7,
+        "provenance_quality": 0.45
+      },
+      "authority_profile": {
+        "textual_authority": 0.7,
+        "source_quality": 0.35,
+        "provenance_quality": 0.45,
+        "authority_score": 0.35
+      },
+      "current_knowledge_comparison_hint": null,
+      "current_knowledge_comparison": {
+        "novelty_status": "NEW",
+        "comparison_outcome": "NEW",
+        "existing_knowledge_matches": [],
+        "topic_matches": [],
+        "legacy_match_status": "SUPPORTS_LEGACY_RULE"
+      },
+      "conflict_analysis": "No contradiction detected."
+    }
+  }
+]
