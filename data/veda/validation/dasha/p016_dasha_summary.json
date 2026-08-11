@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "phase": "VEDA-P016",
+    "version": "P016_CANONICAL_TIMING",
+    "created_at": "2026-08-11T00:00:00Z"
+  },
+  "summary": {
+    "implementations_inventoried": 2,
+    "validation_fixture_count": 6,
+    "approved_timing_claims": 2,
+    "timing_rules": 2,
+    "research_missions": 4,
+    "shadow_comparisons": 4,
+    "unexplained_divergences": 0,
+    "production_interpretation_activated": "NO",
+    "production_calculation_semantics_changed": "NO",
+    "high_stakes_timing_activated": "NO"
+  },
+  "validation": {
+    "is_valid": true,
+    "sequence_ok": true,
+    "structural_shadow_ok": true,
+    "long_horizon_ok": true,
+    "fixture_count": 6,
+    "unexplained_divergences": []
+  },
+  "long_horizon": {
+    "horizon_years": 237.625,
+    "contiguous": true,
+    "full_cycle_years": 120.0,
+    "full_cycle_ok": true
+  },
+  "rag_diagnostics": {
+    "status": "AVAILABLE",
+    "queries": [
+      "What determines Vimshottari Mahadasha results?",
+      "What is VEDA's approved Vimshottari sequence?"
+    ],
+    "result_counts": [
+      4,
+      4
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+[
+  {
+    "dasha_id": "VEDA-DASHA-VIMSHOTTARI",
+    "name": "Vimshottari Dasha",
+    "sequence": [
+      "Ketu",
+      "Venus",
+      "Sun",
+      "Moon",
+      "Mars",
+      "Rahu",
+      "Jupiter",
+      "Saturn",
+      "Mercury"
+    ],
+    "nominal_years": {
+      "Ketu": 7,
+      "Venus": 20,
+      "Sun": 6,
+      "Moon": 10,
+      "Mars": 7,
+      "Rahu": 18,
+      "Jupiter": 16,
+      "Saturn": 19,
+      "Mercury": 17
+    },
+    "total_years": 120.0,
+    "birth_balance": "MOON_NAKSHATRA_REMAINDER",
+    "calculation_version": "P016_CANONICAL_TIMING",
+    "classification": "PRIMARY",
+    "production_paths": [
+      "Personal Kundli",
+      "REST Kundli",
+      "Stock Kundli",
+      "Country Kundli"
+    ],
+    "interpretation_status": "FOUNDATION_RESEARCH_REQUIRED"
+  },
+  {
+    "dasha_id": "VEDA-DASHA-YOGINI",
+    "name": "Yogini Dasha",
+    "classification": "INVENTORY_ONLY",
+    "status": "OUT_OF_SCOPE"
+  },
+  {
+    "dasha_id": "VEDA-DASHA-ASHTOTTARI",
+    "name": "Ashtottari Dasha",
+    "classification": "INVENTORY_ONLY",
+    "status": "OUT_OF_SCOPE"
+  }
+]

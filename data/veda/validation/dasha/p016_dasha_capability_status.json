@@ -1,0 +1,57 @@
+[
+  {
+    "capability_id": "VEDA-CAP-VIMSHOTTARI-SEQUENCE",
+    "calculation": "ACTIVATION_READY",
+    "research": "APPROVED_CORE",
+    "rules": [
+      "VEDA-RUL-DASHA-000001"
+    ],
+    "shadow": "PASS_STRUCTURAL",
+    "status": "ACTIVATION_READY",
+    "production_activation": "NOT_EXECUTED"
+  },
+  {
+    "capability_id": "VEDA-CAP-VIMSHOTTARI-BALANCE",
+    "calculation": "ACTIVATION_READY",
+    "research": "APPROVED_CORE",
+    "rules": [
+      "VEDA-RUL-DASHA-000002"
+    ],
+    "shadow": "PASS_STRUCTURAL",
+    "status": "ACTIVATION_READY",
+    "production_activation": "NOT_EXECUTED"
+  },
+  {
+    "capability_id": "VEDA-CAP-MAHADASHA",
+    "calculation": "ACTIVATION_READY",
+    "research": "APPROVED_CORE",
+    "rules": [
+      "VEDA-RUL-DASHA-000001",
+      "VEDA-RUL-DASHA-000002"
+    ],
+    "shadow": "PASS_STRUCTURAL",
+    "status": "ACTIVATION_READY",
+    "production_activation": "NOT_EXECUTED"
+  },
+  {
+    "capability_id": "VEDA-CAP-ANTARDASHA",
+    "calculation": "ACTIVATION_READY",
+    "research": "APPROVED_CORE",
+    "rules": [
+      "VEDA-RUL-DASHA-000001",
+      "VEDA-RUL-DASHA-000002"
+    ],
+    "shadow": "PASS_STRUCTURAL",
+    "status": "ACTIVATION_READY",
+    "production_activation": "NOT_EXECUTED"
+  },
+  {
+    "capability_id": "VEDA-CAP-DASHA-INTERPRETATION-FOUNDATION",
+    "calculation": "NOT_APPLICABLE",
+    "research": "RESEARCH_REQUIRED",
+    "rules": [],
+    "shadow": "NOT_AVAILABLE",
+    "status": "BLOCKED",
+    "production_activation": "NOT_EXECUTED"
+  }
+]

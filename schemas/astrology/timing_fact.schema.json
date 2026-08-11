@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VEDA Canonical Vimshottari Timing Fact",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["dasha_system", "calculation_version", "validation_status", "source_nakshatra", "source_moon_longitude"],
+  "properties": {
+    "dasha_system": {"const": "VEDA-DASHA-VIMSHOTTARI"},
+    "level": {"enum": ["MAHADASHA", "ANTARDASHA", "PRATYANTARDASHA"]},
+    "lord": {"type": "string"},
+    "parent_lord": {"type": ["string", "null"]},
+    "start_utc": {"type": "string", "format": "date-time"},
+    "end_utc": {"type": "string", "format": "date-time"},
+    "start_local": {"type": ["string", "null"]},
+    "end_local": {"type": ["string", "null"]},
+    "duration_years": {"type": "number", "minimum": 0},
+    "birth_balance_years": {"type": ["number", "null"], "minimum": 0},
+    "source_moon_longitude": {"type": "number", "minimum": 0, "exclusiveMaximum": 360},
+    "calculation_version": {"type": "string"},
+    "validation_status": {"type": "string"},
+    "source_nakshatra": {"type": "object"}
+  }
+}
