@@ -369,6 +369,36 @@ export type ResearchIndexSyncRecord = {
   result: Record<string, unknown>
 }
 
+export type ResearchRagDiagnosticsRequest = {
+  query: string
+  mode?: 'unified' | 'legacy' | 'shadow'
+  top_k?: number
+}
+
+export type ResearchRagDiagnosticsResponse = {
+  query: string
+  mode: string
+  resolved_mode: string
+  context: string
+  summary: Record<string, unknown>
+  results: Array<Record<string, unknown>>
+  shadow_summary?: Record<string, unknown>
+  shadow_results?: Array<Record<string, unknown>>
+  retrieval_audit?: Record<string, unknown>
+  approved_core: {
+    result_count: number
+    ontology_matches: Array<{
+      entity_id: string
+      alias: string
+      canonical_name?: string
+      entity_type?: string
+    }>
+    ontology_gaps: string[]
+    source_class_diversity: Record<string, number>
+    results: Array<Record<string, unknown>>
+  }
+}
+
 export type ResearchValidationRecord = {
   validation_id: string
   validator: string
@@ -531,3 +561,6 @@ export const fetchResearchSchedules = (domainId?: string) =>
 
 export const updateResearchSchedule = (scheduleId: string, payload: Record<string, unknown>) =>
   api.put<ResearchScheduleRow>(`/research/schedules/${scheduleId}`, payload).then(r => r.data)
+
+export const runResearchRagDiagnostics = (payload: ResearchRagDiagnosticsRequest) =>
+  api.post<ResearchRagDiagnosticsResponse>('/research/rag/diagnostics', payload).then(r => r.data)

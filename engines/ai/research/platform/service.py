@@ -59,6 +59,10 @@ from engines.ai.research.platform.contracts import (
     ProviderStatus,
 )
 from engines.ai.knowledge.unified_runtime_sync import refresh_unified_retrieval_assets
+from engines.ai.knowledge.retrieval_rollout import (
+    build_legacy_bundle as build_legacy_retrieval_bundle,
+    build_retrieval_audit,
+)
 from engines.ai.research.platform.external_providers import DDGSPlatformSearchProvider, RequestsDirectRetrievalProvider
 from engines.ai.research.platform.promotion import PromotionMaterializationResult, VedicAstrologyPromotionMaterializer
 from engines.ai.research.platform.providers import (
@@ -2465,6 +2469,132 @@ class ResearchPlatformService:
             "current_knowledge_comparison": dict(candidate.metadata.get("current_knowledge_comparison", {})),
             "status": candidate.approval_status.value,
         }
+
+    def run_rag_diagnostics(
+        self,
+        *,
+        query: str,
+        mode: str = "unified",
+        top_k: int = 6,
+    ) -> dict[str, Any]:
+        from engines.ai.knowledge.approved_core_rag import diagnose_approved_core_query
+        from engines.ai.knowledge.unified_retriever import UnifiedHybridRetriever
+
+        normalized_mode = str(mode or "unified").strip().lower() or "unified"
+        if normalized_mode not in {"unified", "legacy", "shadow"}:
+            raise ValueError(f"Unsupported retrieval mode: {mode}")
+
+        effective_top_k = max(int(top_k), 1)
+        approved_core = diagnose_approved_core_query(
+            query,
+            top_k=effective_top_k,
+            domain_id=self.vedic_astrology_plugin.domain_id,
+        )
+
+        if normalized_mode == "unified":
+            primary_bundle = UnifiedHybridRetriever(top_k=effective_top_k).build_context_bundle(query, top_k=effective_top_k)
+            audit = build_retrieval_audit(
+                configured_primary_mode="unified",
+                resolved_primary_mode="unified",
+                primary_bundle=primary_bundle,
+                shadow_mode=None,
+                shadow_bundle=None,
+            )
+            return {
+                "query": query,
+                "mode": normalized_mode,
+                "resolved_mode": "unified",
+                "context": primary_bundle.get("context") or "",
+                "summary": primary_bundle.get("summary") or {},
+                "results": primary_bundle.get("results") or [],
+                "retrieval_audit": audit,
+                "approved_core": {
+                    **approved_core,
+                    "result_count": len(approved_core.get("results") or []),
+                },
+            }
+
+        legacy_bundle = self._build_legacy_diagnostic_bundle(query, top_k=effective_top_k)
+        if normalized_mode == "legacy":
+            audit = build_retrieval_audit(
+                configured_primary_mode="legacy",
+                resolved_primary_mode="legacy",
+                primary_bundle=legacy_bundle,
+                shadow_mode=None,
+                shadow_bundle=None,
+            )
+            return {
+                "query": query,
+                "mode": normalized_mode,
+                "resolved_mode": "legacy",
+                "context": legacy_bundle.get("context") or "",
+                "summary": legacy_bundle.get("summary") or {},
+                "results": legacy_bundle.get("results") or [],
+                "retrieval_audit": audit,
+                "approved_core": {
+                    **approved_core,
+                    "result_count": len(approved_core.get("results") or []),
+                },
+            }
+
+        unified_bundle = UnifiedHybridRetriever(top_k=effective_top_k).build_context_bundle(query, top_k=effective_top_k)
+        audit = build_retrieval_audit(
+            configured_primary_mode="unified",
+            resolved_primary_mode="unified",
+            primary_bundle=unified_bundle,
+            shadow_mode="legacy",
+            shadow_bundle=legacy_bundle,
+        )
+        return {
+            "query": query,
+            "mode": normalized_mode,
+            "resolved_mode": "shadow",
+            "context": unified_bundle.get("context") or "",
+            "summary": unified_bundle.get("summary") or {},
+            "results": unified_bundle.get("results") or [],
+            "shadow_summary": legacy_bundle.get("summary") or {},
+            "shadow_results": legacy_bundle.get("results") or [],
+            "retrieval_audit": audit,
+            "approved_core": {
+                **approved_core,
+                "result_count": len(approved_core.get("results") or []),
+            },
+        }
+
+    def _build_legacy_diagnostic_bundle(self, query: str, *, top_k: int) -> dict[str, Any]:
+        from engines.ai.capabilities import get_repo_capability_service
+        from engines.ai.knowledge.retriever import HybridRetriever
+        from engines.ai.knowledge.review_service import get_knowledge_review_service
+
+        reviewed_results: list[dict[str, Any]] = []
+        reviewed_context = ""
+        repo_results: list[dict[str, Any]] = []
+        repo_context = ""
+
+        try:
+            review_service = get_knowledge_review_service()
+            reviewed_results = list(review_service.search(query, top_k=min(top_k, 3)) or [])
+            reviewed_context = str(review_service.build_context(query, top_k=min(top_k, 2)) or "")
+        except Exception:
+            reviewed_results = []
+            reviewed_context = ""
+
+        try:
+            repo_service = get_repo_capability_service()
+            repo_results = list(repo_service.search(query, top_k=min(top_k, 3)) or [])
+            repo_context = str(repo_service.build_context(query, top_k=min(top_k, 2)) or "")
+        except Exception:
+            repo_results = []
+            repo_context = ""
+
+        legacy_results = list(HybridRetriever(top_k=max(top_k, 3)).retrieve(query, domain=None) or [])[: max(top_k, 3)]
+        return build_legacy_retrieval_bundle(
+            reviewed_results=reviewed_results,
+            repo_results=repo_results,
+            legacy_results=legacy_results,
+            reviewed_context=reviewed_context,
+            repo_context=repo_context,
+        )
 
     def list_ledger_rows(
         self,

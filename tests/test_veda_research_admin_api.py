@@ -228,3 +228,60 @@ def test_candidate_promotion_routes_materialize_core_and_allow_rollback(tmp_dir,
     assert candidate_detail.status_code == 200
     assert candidate_detail.json()["candidate"]["promotion_state"] == "BLOCKED"
     assert candidate_detail.json()["promotion_history"][-1]["promotion_status"] == "ROLLED_BACK"
+
+
+def test_p011_research_admin_rag_diagnostics_route_returns_approved_core_details(tmp_dir, monkeypatch):
+    service = _service(tmp_dir)
+    _seed_synthetic_mission(service)
+    client = _client(service, monkeypatch)
+
+    monkeypatch.setattr(
+        service,
+        "run_rag_diagnostics",
+        lambda query, mode, top_k: {
+            "query": query,
+            "mode": mode,
+            "resolved_mode": "unified",
+            "context": "APPROVED CORE KNOWLEDGE:\n- [1] approved core knowledge | source=approved core knowledge",
+            "summary": {
+                "approved_core_count": 1,
+                "citation_count": 1,
+                "knowledge_classes": ["APPROVED_CORE"],
+            },
+            "results": [
+                {
+                    "doc_id": "core_vimshottari_current",
+                    "knowledge_class": "APPROVED_CORE",
+                    "version_state": "CURRENT",
+                    "citations": [{"citation_label": "BPHS ch.46 v.12"}],
+                }
+            ],
+            "retrieval_audit": {
+                "resolved_primary_mode": "unified",
+                "primary_approved_core_hits": 1,
+                "primary_citation_count": 1,
+            },
+            "approved_core": {
+                "result_count": 1,
+                "ontology_matches": [{"entity_id": "VEDA-GRAHA-JUPITER"}],
+                "results": [
+                    {
+                        "doc_id": "core_vimshottari_current",
+                        "knowledge_class": "APPROVED_CORE",
+                    }
+                ],
+            },
+        },
+    )
+
+    response = client.post(
+        "/api/research/rag/diagnostics",
+        json={"query": "What supports the Vimshottari starting Dasha rule?", "mode": "unified", "top_k": 4},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["resolved_mode"] == "unified"
+    assert payload["summary"]["approved_core_count"] == 1
+    assert payload["approved_core"]["result_count"] == 1
+    assert payload["results"][0]["knowledge_class"] == "APPROVED_CORE"

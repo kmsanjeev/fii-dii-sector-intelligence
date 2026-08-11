@@ -20,6 +20,7 @@ import {
   pauseResearchMission,
   promoteResearchCandidate,
   rollbackResearchPromotion,
+  runResearchRagDiagnostics,
   resumeResearchMission,
   triggerResearchMission,
   updateResearchSchedule,
@@ -30,6 +31,7 @@ import {
   type ResearchDashboardResponse,
   type ResearchKnowledgeGap,
   type ResearchNotification,
+  type ResearchRagDiagnosticsResponse,
   type ResearchScheduleRow,
 } from '../../api/researchAdmin'
 
@@ -691,6 +693,8 @@ export function ResearchAdminConsole() {
   const [newMissionQuestion, setNewMissionQuestion] = useState('')
   const [newMissionType, setNewMissionType] = useState('CLAIM_VALIDATION')
   const [newMissionPriority, setNewMissionPriority] = useState('P2')
+  const [ragDiagnosticsQuery, setRagDiagnosticsQuery] = useState('What supports the Vimshottari starting Dasha rule?')
+  const [ragDiagnosticsMode, setRagDiagnosticsMode] = useState<'unified' | 'legacy' | 'shadow'>('unified')
   const section = (searchParams.get('research') as Section | null) || 'dashboard'
 
   const setSection = (value: Section) => {
@@ -820,6 +824,14 @@ export function ResearchAdminConsole() {
       qc.invalidateQueries({ queryKey: ['research-dashboard'] })
       qc.invalidateQueries({ queryKey: ['research-schedules'] })
     },
+  })
+
+  const ragDiagnosticsMutation = useMutation({
+    mutationFn: () => runResearchRagDiagnostics({
+      query: ragDiagnosticsQuery,
+      mode: ragDiagnosticsMode,
+      top_k: 6,
+    }),
   })
 
   const dashboard = dashboardQuery.data
@@ -1355,6 +1367,114 @@ export function ResearchAdminConsole() {
               </pre>
             </div>
           </div>
+          <div style={{ ...SURFACE, padding: 14 }}>
+            <div style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, marginBottom: 10 }}>ADMIN RAG DIAGNOSTICS</div>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 10 }}>
+              <input
+                value={ragDiagnosticsQuery}
+                onChange={e => setRagDiagnosticsQuery(e.target.value)}
+                placeholder="What supports the Vimshottari starting Dasha rule?"
+                style={{ ...inputStyle, flex: 1, minWidth: 280 }}
+              />
+              <select value={ragDiagnosticsMode} onChange={e => setRagDiagnosticsMode(e.target.value as 'unified' | 'legacy' | 'shadow')} style={inputStyle}>
+                <option value="unified">UNIFIED</option>
+                <option value="legacy">LEGACY</option>
+                <option value="shadow">SHADOW</option>
+              </select>
+              <button
+                onClick={() => ragDiagnosticsMutation.mutate()}
+                disabled={ragDiagnosticsMutation.isPending || !ragDiagnosticsQuery.trim()}
+                style={buttonStyle('info')}
+              >
+                {ragDiagnosticsMutation.isPending ? 'Running…' : 'Run Retrieval Diagnostic'}
+              </button>
+            </div>
+            {ragDiagnosticsMutation.isError && (
+              <div style={{ color: danger, fontSize: 12 }}>RAG diagnostics are unavailable right now.</div>
+            )}
+            {ragDiagnosticsMutation.data && (
+              <RagDiagnosticsPanel diagnostics={ragDiagnosticsMutation.data} />
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function RagDiagnosticsPanel({ diagnostics }: { diagnostics: ResearchRagDiagnosticsResponse }) {
+  const results = diagnostics.results ?? []
+  const approvedCoreMatches = diagnostics.approved_core?.results ?? []
+  return (
+    <div style={{ display: 'grid', gap: 10 }}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <Badge label={`MODE ${diagnostics.resolved_mode.toUpperCase()}`} color={info} />
+        <Badge label={`RESULTS ${results.length}`} color={accent} />
+        <Badge label={`APPROVED CORE ${diagnostics.approved_core?.result_count ?? 0}`} color={accent} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div style={{ border: `1px solid ${line}`, borderRadius: 6, padding: 12 }}>
+          <div style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, marginBottom: 8 }}>ONTOLOGY MATCHES</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
+            {(diagnostics.approved_core?.ontology_matches ?? []).map(item => (
+              <Badge key={`${item.entity_id}-${item.alias}`} label={`${item.canonical_name || item.entity_id} (${item.alias})`} color={info} />
+            ))}
+            {(diagnostics.approved_core?.ontology_matches ?? []).length === 0 && <span style={{ color: muted, fontSize: 12 }}>No governed ontology alias match.</span>}
+          </div>
+          <div style={{ color: muted, fontSize: 11 }}>
+            Source-class diversity: {JSON.stringify(diagnostics.approved_core?.source_class_diversity ?? {})}
+          </div>
+        </div>
+        <div style={{ border: `1px solid ${line}`, borderRadius: 6, padding: 12 }}>
+          <div style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, marginBottom: 8 }}>RETRIEVAL AUDIT</div>
+          <pre style={{ margin: 0, color: muted, fontSize: 11, whiteSpace: 'pre-wrap' }}>
+            {JSON.stringify(diagnostics.retrieval_audit ?? {}, null, 2)}
+          </pre>
+        </div>
+      </div>
+      <div style={{ border: `1px solid ${line}`, borderRadius: 6, padding: 12 }}>
+        <div style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, marginBottom: 8 }}>RETRIEVED RESULTS</div>
+        <div style={{ display: 'grid', gap: 8 }}>
+          {results.map((item, index) => (
+            <div key={String(item.doc_id || index)} style={{ borderBottom: `1px solid ${line}`, paddingBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
+                <div style={{ color: text, fontSize: 12, fontWeight: 700 }}>{String(item.entity || item.title || item.doc_id || `Result ${index + 1}`)}</div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  <Badge label={String(item.knowledge_class || 'UNKNOWN')} color={item.knowledge_class === 'APPROVED_CORE' ? accent : info} />
+                  {Boolean(item.version_state) && <Badge label={String(item.version_state)} color={statusColor(String(item.version_state))} />}
+                </div>
+              </div>
+              <div style={{ color: muted, fontSize: 11, marginTop: 6 }}>
+                {String(item.domain || 'UNKNOWN')} | source {String(item.source_type || 'unknown')} | score {Number(item.retrieval_score || item.combined_score || 0).toFixed(3)}
+              </div>
+              <div style={{ color: text, fontSize: 12, marginTop: 6 }}>{shortText(String(item.summary || item.text || ''), 220)}</div>
+              {Array.isArray(item.citation_labels) && item.citation_labels.length > 0 && (
+                <div style={{ color: muted, fontSize: 11, marginTop: 6 }}>
+                  Citations: {item.citation_labels.slice(0, 3).join(', ')}
+                </div>
+              )}
+              {Array.isArray(item.conflict_details) && item.conflict_details.length > 0 && (
+                <div style={{ color: warn, fontSize: 11, marginTop: 6 }}>
+                  Conflicts: {item.conflict_details.map((conflict: any) => String(conflict.topic || conflict.conflict_id || 'Conflict')).join(' | ')}
+                </div>
+              )}
+            </div>
+          ))}
+          {results.length === 0 && <div style={{ color: muted, fontSize: 12 }}>No retrieval results available for this query.</div>}
+        </div>
+      </div>
+      <div style={{ border: `1px solid ${line}`, borderRadius: 6, padding: 12 }}>
+        <div style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, marginBottom: 8 }}>FINAL CONTEXT</div>
+        <pre style={{ margin: 0, color: muted, fontSize: 11, whiteSpace: 'pre-wrap' }}>
+          {diagnostics.context}
+        </pre>
+      </div>
+      {approvedCoreMatches.length > 0 && (
+        <div style={{ border: `1px solid ${line}`, borderRadius: 6, padding: 12 }}>
+          <div style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, marginBottom: 8 }}>APPROVED CORE MATCHES</div>
+          <pre style={{ margin: 0, color: muted, fontSize: 11, whiteSpace: 'pre-wrap' }}>
+            {JSON.stringify(approvedCoreMatches, null, 2)}
+          </pre>
         </div>
       )}
     </div>

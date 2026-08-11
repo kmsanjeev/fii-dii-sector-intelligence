@@ -37,6 +37,7 @@ class UnifiedCorpusBuilder:
         self._unified_docs_path = Path(unified_docs_path or cfg.VEDA_UNIFIED_KNOWLEDGE_DOCS)
         self._manifest_path = Path(manifest_path or cfg.VEDA_UNIFIED_KNOWLEDGE_MANIFEST)
         self._metadata_path = Path(metadata_path or cfg.VEDA_UNIFIED_KNOWLEDGE_METADATA)
+        self._enable_core_store_fallback = core_docs_path is None and unified_docs_path is None
 
     def run(self) -> dict[str, Any]:
         records = []
@@ -50,6 +51,13 @@ class UnifiedCorpusBuilder:
 
         for label, path in inputs.items():
             raw_docs = self._load_jsonl(path)
+            if (
+                label == "approved_core_docs"
+                and not raw_docs
+                and self._enable_core_store_fallback
+                and path.resolve() == cfg.VEDA_APPROVED_CORE_KNOWLEDGE_DOCS.resolve()
+            ):
+                raw_docs = self._load_current_core_docs()
             input_counts[label] = len(raw_docs)
             for doc in raw_docs:
                 records.append(normalize_knowledge_record(doc))
@@ -108,6 +116,23 @@ class UnifiedCorpusBuilder:
                 docs.append(json.loads(line))
             except json.JSONDecodeError:
                 logger.warning("[UnifiedCorpus] Skipping invalid JSONL line from %s", path)
+        return docs
+
+    def _load_current_core_docs(self) -> list[dict[str, Any]]:
+        try:
+            from engines.ai.research.platform.service import get_research_platform_service
+        except Exception as exc:
+            logger.warning("[UnifiedCorpus] Approved-core fallback unavailable: %s", exc)
+            return []
+
+        service = get_research_platform_service()
+        docs: list[dict[str, Any]] = []
+        for domain in service.store.list_domains():
+            for record in service.store.list_core_knowledge(domain.domain_id):
+                if hasattr(service, "_core_doc_from_record"):
+                    docs.append(service._core_doc_from_record(record))  # noqa: SLF001
+        if docs:
+            logger.info("[UnifiedCorpus] Loaded %s approved-core docs from runtime store fallback", len(docs))
         return docs
 
     def _count_by(self, records, field_name: str) -> dict[str, int]:
@@ -204,6 +229,7 @@ class UnifiedCorpusBuilder:
                     "entity",
                     "text_len",
                     "tag_count",
+                    "knowledge_class",
                     "saved_at",
                     "effective_date",
                     "freshness_class",
@@ -220,6 +246,7 @@ class UnifiedCorpusBuilder:
                         "entity": record.entity,
                         "text_len": len(record.text),
                         "tag_count": len(record.tags),
+                        "knowledge_class": record.knowledge_class,
                         "saved_at": record.saved_at or "",
                         "effective_date": record.effective_date or "",
                         "freshness_class": record.freshness_class,

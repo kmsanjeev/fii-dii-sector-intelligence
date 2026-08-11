@@ -233,15 +233,24 @@ def _empty_local_evidence() -> dict[str, Any]:
         "used": False,
         "source_count": 0,
         "evidence_kinds": [],
+        "knowledge_classes": [],
+        "approved_core_count": 0,
+        "reviewed_internal_count": 0,
+        "local_platform_count": 0,
+        "legacy_unsourced_count": 0,
         "predictive_ml_count": 0,
         "platform_snapshot_count": 0,
         "approved_memory_count": 0,
         "attachment_memory_count": 0,
         "repo_count": 0,
+        "conflict_count": 0,
+        "citation_count": 0,
+        "high_stakes_count": 0,
         "top_date": None,
         "sources": [],
         "conflict_note": None,
         "freshness_note": None,
+        "known_conflicts": [],
     }
 
 
@@ -252,11 +261,23 @@ def _empty_retrieval_audit(configured_primary_mode: str = "unified") -> dict[str
         "resolved_primary_mode": configured_primary_mode,
         "primary_used": False,
         "primary_source_count": 0,
+        "primary_approved_core_hits": 0,
+        "primary_reviewed_internal_hits": 0,
+        "primary_local_platform_hits": 0,
+        "primary_ml_hits": 0,
+        "primary_conflict_count": 0,
+        "primary_citation_count": 0,
         "primary_attribution_quality": 0.0,
         "primary_duplicate_noise": 0.0,
         "shadow_mode": None,
         "shadow_used": False,
         "shadow_source_count": 0,
+        "shadow_approved_core_hits": 0,
+        "shadow_reviewed_internal_hits": 0,
+        "shadow_local_platform_hits": 0,
+        "shadow_ml_hits": 0,
+        "shadow_conflict_count": 0,
+        "shadow_citation_count": 0,
         "shadow_attribution_quality": 0.0,
         "shadow_duplicate_noise": 0.0,
         "overlap_count": 0,
@@ -518,15 +539,31 @@ class ChatEngine:
             system_prompt += (
                 "\n\nSOURCE TRANSPARENCY RULES:"
                 "\n- If you use local platform intelligence only, say that plainly when it helps the user."
+                "\n- If you use approved core knowledge, describe it as approved or governed Veda knowledge rather than temporary research."
                 "\n- If you use uploaded files, say the answer includes the user's uploaded material."
                 "\n- If you use outside research, mention the source name/title and date in plain language."
                 "\n- If outside information is thin, stale, cached, conflicting, or unavailable, state that clearly and lower confidence."
                 "\n- Never present uncertain freshness as confirmed fact."
+                "\n- Do not fabricate chapter, verse, page, author, or source details. Use only citation metadata actually present in the context."
+                "\n- If a statement goes beyond retrieved support, label it as inference instead of presenting it as quoted or source-proven."
             )
+            if int(self.last_local_evidence.get("approved_core_count") or 0) > 0:
+                system_prompt += (
+                    "\n- Prefer approved core knowledge over temporary research when both are present, unless the answer explicitly needs to compare them."
+                    "\n- If approved core and temporary research differ, preserve the difference instead of flattening it into one claim."
+                )
+            if int(self.last_local_evidence.get("conflict_count") or 0) > 0:
+                system_prompt += (
+                    "\n- If governed sources conflict, say that plainly and keep the disagreement visible."
+                )
             if int(self.last_local_evidence.get("predictive_ml_count") or 0) > 0:
                 system_prompt += (
                     "\n- If a point comes from predictive ML evidence, describe it as scored or predictive local evidence, not confirmed fact."
                     "\n- Never imply that uploaded books, approved memory, or outside research changed the ML model itself."
+                )
+            if int(self.last_local_evidence.get("high_stakes_count") or 0) > 0:
+                system_prompt += (
+                    "\n- High-stakes safeguards still apply. Do not turn longevity, death, health, fertility, finance, or remedies into deterministic factual certainty."
                 )
 
         ext_context = ""

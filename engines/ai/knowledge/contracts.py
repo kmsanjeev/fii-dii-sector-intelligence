@@ -144,9 +144,20 @@ class KnowledgeEvidenceRecord:
     summary: str
     entity_keys: KnowledgeEntityKeys = field(default_factory=KnowledgeEntityKeys)
     tags: list[str] = field(default_factory=list)
+    knowledge_class: str = "LOCAL_PLATFORM_EVIDENCE"
     confidence: float | None = None
     approval_state: str = "unknown"
     evidence_kind: str = "descriptive_knowledge"
+    claim_ids: list[str] = field(default_factory=list)
+    passage_ids: list[str] = field(default_factory=list)
+    source_ids: list[str] = field(default_factory=list)
+    rule_ids: list[str] = field(default_factory=list)
+    conflict_ids: list[str] = field(default_factory=list)
+    citations: list[dict[str, Any]] = field(default_factory=list)
+    authority: dict[str, Any] = field(default_factory=dict)
+    version: str | None = None
+    version_state: str | None = None
+    high_stakes: bool = False
     provenance: KnowledgeProvenance = field(
         default_factory=lambda: KnowledgeProvenance(source_kind="unknown")
     )
@@ -181,12 +192,23 @@ class KnowledgeEvidenceRecord:
             "text": self.text,
             "summary": self.summary,
             "tags": list(self.tags),
+            "knowledge_class": self.knowledge_class,
             "saved_at": self.saved_at,
             "effective_date": self.effective_date,
             "freshness_class": self.freshness_class,
             "freshness": self.freshness.to_dict(),
             "confidence": self.confidence,
             "evidence_kind": self.evidence_kind,
+            "claim_ids": list(self.claim_ids),
+            "passage_ids": list(self.passage_ids),
+            "source_ids": list(self.source_ids),
+            "rule_ids": list(self.rule_ids),
+            "conflict_ids": list(self.conflict_ids),
+            "citations": list(self.citations),
+            "authority": dict(self.authority),
+            "version": self.version,
+            "version_state": self.version_state,
+            "high_stakes": self.high_stakes,
             "provenance": self.provenance.to_dict(),
             "approval_state": self.approval_state,
             "license_name": self.license_name,
@@ -320,6 +342,7 @@ def from_platform_doc(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
         text=text,
         summary=summary,
         tags=tags,
+        knowledge_class="ML_PREDICTION" if predictive else "LOCAL_PLATFORM_EVIDENCE",
         approval_state="system_generated",
         evidence_kind=evidence_kind,
         provenance=provenance,
@@ -395,6 +418,7 @@ def from_reviewed_memory(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
         text=text,
         summary=summary,
         tags=_unique_tags(meta.get("tags"), intent, "reviewed_memory"),
+        knowledge_class="REVIEWED_INTERNAL",
         approval_state="user_approved",
         evidence_kind="approved_memory",
         provenance=provenance,
@@ -430,6 +454,17 @@ def from_approved_core(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
             }
         )
     latest_source_date = str(meta.get("latest_source_date") or "").strip() or None
+    claim_ids = [str(item).strip() for item in list(meta.get("claim_ids") or []) if str(item).strip()]
+    passage_ids = [str(item).strip() for item in list(meta.get("passage_ids") or []) if str(item).strip()]
+    source_ids = [str(item).strip() for item in list(meta.get("source_ids") or []) if str(item).strip()]
+    rule_ids = [str(item).strip() for item in list(meta.get("rule_ids") or []) if str(item).strip()]
+    conflict_ids = [str(item).strip() for item in list(meta.get("conflict_ids") or []) if str(item).strip()]
+    citations = [
+        citation
+        for citation in list(meta.get("citations") or [])
+        if isinstance(citation, dict)
+    ]
+    authority = dict(meta.get("authority") or {})
     provenance = KnowledgeProvenance(
         source_kind="approved_core_knowledge",
         source_label="approved_core",
@@ -473,8 +508,19 @@ def from_approved_core(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
         text=text or summary or entity,
         summary=summary,
         tags=_unique_tags(meta.get("tags"), intent, "approved_core"),
+        knowledge_class="APPROVED_CORE",
         approval_state="admin_promoted_core",
         evidence_kind="approved_core_knowledge",
+        claim_ids=claim_ids,
+        passage_ids=passage_ids,
+        source_ids=source_ids,
+        rule_ids=rule_ids,
+        conflict_ids=conflict_ids,
+        citations=citations,
+        authority=authority,
+        version=str(meta.get("version") or "").strip() or None,
+        version_state=str(meta.get("version_state") or "").strip() or None,
+        high_stakes=bool(meta.get("high_stakes")),
         provenance=provenance,
         freshness=KnowledgeFreshness(
             classification="governed_core",
@@ -525,6 +571,7 @@ def from_attachment_chunk(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
         text=text,
         summary=summary,
         tags=_unique_tags(meta.get("tags"), intent, attachment_name, "attachment_memory"),
+        knowledge_class="REVIEWED_INTERNAL",
         approval_state="user_approved",
         evidence_kind="attachment_memory",
         provenance=provenance,
@@ -571,6 +618,7 @@ def from_repo_capability(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
         text=text,
         summary=summary,
         tags=_unique_tags(meta.get("tags"), repo_label, "mit_repo_capability"),
+        knowledge_class="REVIEWED_INTERNAL",
         approval_state="user_approved",
         evidence_kind="mit_repo_capability",
         provenance=provenance,

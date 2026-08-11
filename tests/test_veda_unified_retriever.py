@@ -217,3 +217,82 @@ def test_unified_retriever_boosts_repo_results_for_repo_queries(monkeypatch):
     results = retriever.retrieve("Which MIT repo workflow or prompt should improve memory capability?")
 
     assert results[0]["source_type"] == "mit_repo_capability"
+
+
+def test_p011_unified_retriever_surfaces_approved_core_separately_and_filters_superseded(monkeypatch):
+    monkeypatch.setattr(
+        "engines.ai.knowledge.unified_retriever._bm25_query",
+        lambda query, top_k: [
+            {
+                "doc_id": "platform_astro_note",
+                "source_type": "platform_intelligence",
+                "knowledge_class": "LOCAL_PLATFORM_EVIDENCE",
+                "domain": "ASTROLOGY",
+                "entity": "VIMSHOTTARI_DASHA",
+                "text": "Local astrology note describes the currently implemented Vimshottari baseline.",
+                "summary": "Local astrology note for Vimshottari.",
+                "effective_date": "2026-08-11",
+                "freshness_class": "dated_snapshot",
+            }
+        ][:top_k],
+    )
+    monkeypatch.setattr("engines.ai.knowledge.unified_retriever._faiss_query", lambda query, top_k: [])
+    monkeypatch.setattr(
+        "engines.ai.knowledge.unified_retriever._approved_core_query",
+        lambda query, top_k: [
+            {
+                "doc_id": "core_vimshottari_current",
+                "source_type": "approved_core",
+                "knowledge_class": "APPROVED_CORE",
+                "domain": "DASHA",
+                "entity": "VIMSHOTTARI_DASHA",
+                "text": "Approved core says Vimshottari uses the standard nine-graha Mahadasha order.",
+                "summary": "Approved core Vimshottari sequence.",
+                "freshness_class": "governed_core",
+                "version": "1.0.0",
+                "version_state": "CURRENT",
+                "authority": {"authority_score": 0.96, "domain_confidence": 0.95},
+                "citations": [
+                    {
+                        "citation_label": "BPHS ch.46 v.12",
+                        "citation_type": "PRIMARY_TEXT_CITATION",
+                    }
+                ],
+                "conflict_details": [
+                    {
+                        "conflict_id": "VEDA-CFL-000111",
+                        "topic": "Alternate dasha scope",
+                        "resolution_status": "CONTEXT_DEPENDENT",
+                    }
+                ],
+                "retrieval_score": 0.88,
+            },
+            {
+                "doc_id": "core_vimshottari_old",
+                "source_type": "approved_core",
+                "knowledge_class": "APPROVED_CORE",
+                "domain": "DASHA",
+                "entity": "VIMSHOTTARI_DASHA",
+                "text": "Superseded note should not survive active retrieval.",
+                "summary": "Old core note.",
+                "freshness_class": "governed_core",
+                "version": "0.9.0",
+                "version_state": "SUPERSEDED",
+                "authority": {"authority_score": 0.99, "domain_confidence": 0.99},
+                "citations": [],
+                "conflict_details": [],
+                "retrieval_score": 0.99,
+            },
+        ][:top_k],
+    )
+
+    retriever = UnifiedHybridRetriever(top_k=4)
+    bundle = retriever.build_context_bundle("What does approved Vimshottari knowledge say?", top_k=3)
+
+    assert "APPROVED CORE KNOWLEDGE:" in bundle["context"]
+    assert "KNOWN CONFLICTS:" in bundle["context"]
+    assert "LOCAL PLATFORM EVIDENCE:" in bundle["context"]
+    assert "BPHS ch.46 v.12" in bundle["context"]
+    assert bundle["summary"]["approved_core_count"] == 1
+    assert bundle["summary"]["citation_count"] == 1
+    assert all(item.get("version_state") != "SUPERSEDED" for item in bundle["results"])

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Callable
@@ -27,7 +27,11 @@ class RetrievalBenchmarkCase:
     expected_domains: list[str]
     expected_source_types: list[str]
     expected_terms: list[str]
+    expected_knowledge_classes: list[str] = field(default_factory=list)
     requires_freshness: bool = False
+    requires_approved_core: bool = False
+    requires_citation: bool = False
+    requires_conflict: bool = False
 
 
 def load_benchmark_cases(path: Path | None = None) -> list[RetrievalBenchmarkCase]:
@@ -58,6 +62,37 @@ def evaluate_bundle(case: RetrievalBenchmarkCase, bundle: dict[str, Any], *, top
     raw_sources = list(summary.get("sources") or [])
     sources = raw_sources[:top_k]
     relevant_count = sum(1 for source in sources if _source_matches_case(source, case))
+    knowledge_class_hit = not case.expected_knowledge_classes or any(
+        str(source.get("knowledge_class") or "") in case.expected_knowledge_classes
+        for source in sources
+    )
+    approved_core_hit = not case.requires_approved_core or any(
+        str(source.get("knowledge_class") or "") == "APPROVED_CORE"
+        or str(source.get("source_type") or "") == "approved_core"
+        for source in sources
+    )
+    citation_hit = not case.requires_citation or any(
+        (
+            isinstance(source.get("citation_labels"), list)
+            and len(source.get("citation_labels") or []) > 0
+        )
+        or (
+            isinstance(source.get("citations"), list)
+            and len(source.get("citations") or []) > 0
+        )
+        for source in sources
+    )
+    conflict_hit = not case.requires_conflict or bool(summary.get("conflict_note")) or any(
+        (
+            isinstance(source.get("conflict_details"), list)
+            and len(source.get("conflict_details") or []) > 0
+        )
+        or (
+            isinstance(source.get("conflict_ids"), list)
+            and len(source.get("conflict_ids") or []) > 0
+        )
+        for source in sources
+    )
     freshness_hit = not case.requires_freshness or any(
         str(source.get("source_type") or "") == "platform_intelligence" and str(source.get("date") or "").strip()
         for source in sources
@@ -68,6 +103,10 @@ def evaluate_bundle(case: RetrievalBenchmarkCase, bundle: dict[str, Any], *, top
         "query": case.query,
         "hit": relevant_count > 0,
         "top_k_relevance": round(relevant_count / max(len(sources), 1), 3) if sources else 0.0,
+        "knowledge_class_hit": knowledge_class_hit,
+        "approved_core_hit": approved_core_hit,
+        "citation_hit": citation_hit,
+        "conflict_hit": conflict_hit,
         "duplicate_noise": duplicate_noise_score(sources),
         "source_attribution_quality": attribution_quality_score(sources),
         "freshness_hit": freshness_hit,
@@ -81,6 +120,10 @@ def summarize_case_metrics(metrics: list[dict[str, Any]]) -> dict[str, Any]:
             "case_count": 0,
             "hit_rate": 0.0,
             "top_k_relevance": 0.0,
+            "knowledge_class_hit_rate": 0.0,
+            "approved_core_hit_rate": 0.0,
+            "citation_hit_rate": 0.0,
+            "conflict_hit_rate": 0.0,
             "duplicate_noise": 0.0,
             "source_attribution_quality": 0.0,
             "freshness_hit_rate": 0.0,
@@ -91,6 +134,10 @@ def summarize_case_metrics(metrics: list[dict[str, Any]]) -> dict[str, Any]:
         "case_count": case_count,
         "hit_rate": round(sum(1.0 if item["hit"] else 0.0 for item in metrics) / case_count, 3),
         "top_k_relevance": round(sum(float(item["top_k_relevance"]) for item in metrics) / case_count, 3),
+        "knowledge_class_hit_rate": round(sum(1.0 if item["knowledge_class_hit"] else 0.0 for item in metrics) / case_count, 3),
+        "approved_core_hit_rate": round(sum(1.0 if item["approved_core_hit"] else 0.0 for item in metrics) / case_count, 3),
+        "citation_hit_rate": round(sum(1.0 if item["citation_hit"] else 0.0 for item in metrics) / case_count, 3),
+        "conflict_hit_rate": round(sum(1.0 if item["conflict_hit"] else 0.0 for item in metrics) / case_count, 3),
         "duplicate_noise": round(sum(float(item["duplicate_noise"]) for item in metrics) / case_count, 3),
         "source_attribution_quality": round(sum(float(item["source_attribution_quality"]) for item in metrics) / case_count, 3),
         "freshness_hit_rate": round(sum(1.0 if item["freshness_hit"] else 0.0 for item in metrics) / case_count, 3),

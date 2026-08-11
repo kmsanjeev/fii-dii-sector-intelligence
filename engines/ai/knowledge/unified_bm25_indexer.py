@@ -88,7 +88,25 @@ def _search_text(doc: dict[str, Any]) -> str:
     entity_keys = doc.get("entity_keys", {}) or {}
     provenance = doc.get("provenance", {}) or {}
     tags = " ".join(str(tag) for tag in doc.get("tags", []) or [])
+    citations = " ".join(
+        str(part or "")
+        for citation in doc.get("citations", []) or []
+        if isinstance(citation, dict)
+        for part in (
+            citation.get("citation_type"),
+            citation.get("work"),
+            citation.get("author"),
+            citation.get("chapter"),
+            citation.get("section"),
+            citation.get("verse"),
+            citation.get("page"),
+            citation.get("citation_label"),
+            citation.get("excerpt"),
+        )
+    )
+    authority = doc.get("authority", {}) or {}
     parts = [
+        doc.get("knowledge_class", ""),
         doc.get("source_type", ""),
         doc.get("evidence_kind", ""),
         doc.get("domain", ""),
@@ -97,9 +115,17 @@ def _search_text(doc: dict[str, Any]) -> str:
         doc.get("text", ""),
         doc.get("model_name", ""),
         doc.get("model_version", ""),
+        doc.get("version", ""),
+        doc.get("version_state", ""),
         doc.get("score_meaning", ""),
         doc.get("reliability_note", ""),
         tags,
+        " ".join(str(item) for item in doc.get("claim_ids", []) or []),
+        " ".join(str(item) for item in doc.get("passage_ids", []) or []),
+        " ".join(str(item) for item in doc.get("source_ids", []) or []),
+        " ".join(str(item) for item in doc.get("rule_ids", []) or []),
+        " ".join(str(item) for item in doc.get("conflict_ids", []) or []),
+        citations,
         entity_keys.get("symbol", ""),
         entity_keys.get("sector", ""),
         entity_keys.get("topic", ""),
@@ -109,6 +135,8 @@ def _search_text(doc: dict[str, Any]) -> str:
         provenance.get("repo_label", ""),
         provenance.get("attachment_name", ""),
         provenance.get("license_name", ""),
+        authority.get("authority_confidence", ""),
+        authority.get("domain_confidence", ""),
     ]
     return " ".join(str(part or "") for part in parts if str(part or "").strip())
 

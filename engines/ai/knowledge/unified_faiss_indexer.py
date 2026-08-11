@@ -137,17 +137,45 @@ class UnifiedFAISSIndexer:
 
 def _embed_text(doc: dict[str, Any]) -> str:
     tags = ", ".join(str(tag) for tag in doc.get("tags", []) or [])
+    citations = " ".join(
+        str(part or "")
+        for citation in doc.get("citations", []) or []
+        if isinstance(citation, dict)
+        for part in (
+            citation.get("citation_type"),
+            citation.get("work"),
+            citation.get("author"),
+            citation.get("chapter"),
+            citation.get("section"),
+            citation.get("verse"),
+            citation.get("page"),
+            citation.get("citation_label"),
+            citation.get("excerpt"),
+        )
+    )
+    authority = doc.get("authority", {}) or {}
     return " ".join(
         part
         for part in [
+            f"Knowledge class: {doc.get('knowledge_class', '')}.",
             f"Source type: {doc.get('source_type', '')}.",
             f"Evidence kind: {doc.get('evidence_kind', '')}.",
             f"Domain: {doc.get('domain', '')}.",
             f"Entity: {doc.get('entity', '')}.",
+            f"Version: {doc.get('version', '')}.",
+            f"Version state: {doc.get('version_state', '')}.",
             f"Model name: {doc.get('model_name', '')}.",
             f"Model version: {doc.get('model_version', '')}.",
+            f"Authority confidence: {authority.get('authority_confidence', '')}.",
+            f"Domain confidence: {authority.get('domain_confidence', '')}.",
             f"Score meaning: {doc.get('score_meaning', '')}.",
             f"Reliability note: {doc.get('reliability_note', '')}.",
+            f"Claim ids: {' '.join(str(item) for item in doc.get('claim_ids', []) or [])}.",
+            f"Passage ids: {' '.join(str(item) for item in doc.get('passage_ids', []) or [])}.",
+            f"Source ids: {' '.join(str(item) for item in doc.get('source_ids', []) or [])}.",
+            f"Rule ids: {' '.join(str(item) for item in doc.get('rule_ids', []) or [])}.",
+            f"Conflict ids: {' '.join(str(item) for item in doc.get('conflict_ids', []) or [])}.",
+            f"Citations: {citations}.",
             f"Summary: {doc.get('summary', '')}.",
             f"Tags: {tags}.",
             str(doc.get("text", "")).strip(),

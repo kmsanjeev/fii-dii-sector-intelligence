@@ -439,3 +439,106 @@ def test_chat_engine_marks_research_as_temporary_and_flags_memory_conflict(monke
     assert engine.last_research["temporary"] is True
     assert engine.last_research["save_requires_review"] is True
     assert "more cautious than the saved memory" in (engine.last_research["conflict_note"] or "")
+
+
+def test_p011_chat_engine_adds_approved_core_grounding_rules(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(cfg, "VEDA_UNIFIED_RETRIEVAL_ENABLED", True)
+
+    engine = ChatEngine()
+    captured: dict[str, str] = {}
+
+    class FakeUnifiedRetriever:
+        def build_context_bundle(self, query: str, *, top_k: int = 4):
+            return {
+                "context": (
+                    "APPROVED CORE KNOWLEDGE:\n"
+                    "- [1] approved core knowledge | source=approved core knowledge | domain=DASHA | version=1.0.0:CURRENT\n"
+                    "  citations: BPHS ch.46 v.12\n"
+                    "  The approved core Vimshottari baseline uses the classical nine-graha sequence.\n\n"
+                    "KNOWN CONFLICTS:\n"
+                    "- Alternate dasha scope | type=DIFFERENT_SCOPE | status=CONTEXT_DEPENDENT"
+                ),
+                "summary": {
+                    "used": True,
+                    "source_count": 1,
+                    "evidence_kinds": ["approved_core_claim"],
+                    "knowledge_classes": ["APPROVED_CORE"],
+                    "approved_core_count": 1,
+                    "reviewed_internal_count": 0,
+                    "local_platform_count": 0,
+                    "legacy_unsourced_count": 0,
+                    "predictive_ml_count": 0,
+                    "platform_snapshot_count": 0,
+                    "approved_memory_count": 0,
+                    "attachment_memory_count": 0,
+                    "repo_count": 0,
+                    "conflict_count": 1,
+                    "citation_count": 1,
+                    "high_stakes_count": 1,
+                    "top_date": "2026-08-11",
+                    "sources": [
+                        {
+                            "source_id": "VEDA-RCORE-000111",
+                            "source_type": "approved_core",
+                            "source_label": "approved core knowledge",
+                            "evidence_kind": "approved_core_claim",
+                            "evidence_label": "approved core knowledge",
+                            "domain": "DASHA",
+                            "title": "Vimshottari baseline",
+                            "entity": "VIMSHOTTARI_DASHA",
+                            "date": "2026-08-11",
+                            "freshness_class": "governed_core",
+                            "summary": "Approved core Vimshottari baseline.",
+                            "version": "1.0.0",
+                            "version_state": "CURRENT",
+                            "high_stakes": True,
+                            "citations": [{"citation_label": "BPHS ch.46 v.12"}],
+                            "rank": 1,
+                        }
+                    ],
+                    "conflict_note": "Sources differ on scope for alternate dasha usage.",
+                    "freshness_note": None,
+                    "known_conflicts": [
+                        {
+                            "conflict_id": "VEDA-CFL-000111",
+                            "topic": "Alternate dasha scope",
+                            "resolution_status": "CONTEXT_DEPENDENT",
+                        }
+                    ],
+                },
+                "results": [],
+            }
+
+    engine._retriever = FakeUnifiedRetriever()
+    monkeypatch.setattr(engine, "_get_external_research_context", lambda *args, **kwargs: "")
+    monkeypatch.setattr(
+        engine,
+        "_active_providers",
+        lambda: [
+            {
+                "name": "OpenAI",
+                "env_var": "OPENAI_API_KEY",
+                "base_url": "https://api.openai.com/v1",
+                "model": "gpt-4o-mini",
+                "extra_headers": {},
+            }
+        ],
+    )
+    monkeypatch.setattr(engine, "_get_client", lambda provider: object())
+
+    def fake_run_turn(client, model, system_prompt, user_message, use_tools=True, voice_mode=False):
+        captured["system_prompt"] = system_prompt
+        return {"status": "ok", "reply": "Governed answer."}
+
+    monkeypatch.setattr(engine, "_run_turn", fake_run_turn)
+
+    reply = engine.chat("What does approved Vimshottari knowledge say?")
+
+    assert reply == "Governed answer."
+    assert "approved or governed Veda knowledge" in captured["system_prompt"]
+    assert "Do not fabricate chapter, verse, page, author, or source details" in captured["system_prompt"]
+    assert "label it as inference" in captured["system_prompt"]
+    assert "preserve the difference instead of flattening it into one claim" in captured["system_prompt"]
+    assert "keep the disagreement visible" in captured["system_prompt"]
+    assert "High-stakes safeguards still apply" in captured["system_prompt"]

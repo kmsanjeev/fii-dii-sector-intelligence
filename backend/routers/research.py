@@ -141,6 +141,12 @@ class DueRunRequest(BaseModel):
     actor_id: str | None = None
 
 
+class RagDiagnosticsRequest(BaseModel):
+    query: str
+    mode: str = "unified"
+    top_k: int = 6
+
+
 # ── Screener ───────────────────────────────────────────────────────────────────
 
 @router.post("/screen")
@@ -638,3 +644,12 @@ def list_research_digests(
         "digests": service.list_digests(digest_type=digest_type, domain_id=domain_id, limit=limit),
         "limit": limit,
     }
+
+
+@router.post("/rag/diagnostics", tags=["research-admin"])
+def run_research_rag_diagnostics(req: RagDiagnosticsRequest, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    try:
+        return service.run_rag_diagnostics(query=req.query, mode=req.mode, top_k=req.top_k)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))

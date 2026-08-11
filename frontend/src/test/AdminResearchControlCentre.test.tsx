@@ -23,6 +23,7 @@ const researchApiMock = vi.hoisted(() => ({
   pauseResearchMission: vi.fn(),
   promoteResearchCandidate: vi.fn(),
   rollbackResearchPromotion: vi.fn(),
+  runResearchRagDiagnostics: vi.fn(),
   resumeResearchMission: vi.fn(),
   triggerResearchMission: vi.fn(),
   updateResearchSchedule: vi.fn(),
@@ -49,6 +50,7 @@ vi.mock('../api/researchAdmin', async () => {
     pauseResearchMission: researchApiMock.pauseResearchMission,
     promoteResearchCandidate: researchApiMock.promoteResearchCandidate,
     rollbackResearchPromotion: researchApiMock.rollbackResearchPromotion,
+    runResearchRagDiagnostics: researchApiMock.runResearchRagDiagnostics,
     resumeResearchMission: researchApiMock.resumeResearchMission,
     triggerResearchMission: researchApiMock.triggerResearchMission,
     updateResearchSchedule: researchApiMock.updateResearchSchedule,
@@ -467,6 +469,49 @@ beforeEach(() => {
   researchApiMock.rollbackResearchPromotion.mockResolvedValue({
     rollback: { rollback_id: 'VEDA-RRBK-000001', promotion_id: 'VEDA-RPRM-000001' },
   })
+  researchApiMock.runResearchRagDiagnostics.mockResolvedValue({
+    query: 'What supports the Vimshottari starting Dasha rule?',
+    mode: 'unified',
+    resolved_mode: 'unified',
+    context: 'APPROVED CORE KNOWLEDGE:\n- Vimshottari governed claim.',
+    summary: { approved_core_count: 1 },
+    results: [
+      {
+        doc_id: 'veda_core_veda_rcore_100001',
+        knowledge_class: 'APPROVED_CORE',
+        source_type: 'approved_core',
+        entity: 'DASHA - Vimshottari Dasha Foundations',
+        domain: 'DASHA',
+        retrieval_score: 0.91,
+        citation_labels: ['BPHS 46.1-2'],
+        version_state: 'CURRENT',
+      },
+    ],
+    retrieval_audit: {
+      resolved_primary_mode: 'unified',
+      primary_approved_core_hits: 1,
+      primary_citation_count: 1,
+    },
+    approved_core: {
+      result_count: 1,
+      ontology_matches: [
+        {
+          entity_id: 'VEDA-DASHA-VIMSHOTTARI',
+          alias: 'vimshottari',
+          canonical_name: 'Vimshottari Dasha',
+          entity_type: 'DASHA',
+        },
+      ],
+      ontology_gaps: [],
+      source_class_diversity: { CLASSICAL_PRIMARY: 1 },
+      results: [
+        {
+          doc_id: 'veda_core_veda_rcore_100001',
+          knowledge_class: 'APPROVED_CORE',
+        },
+      ],
+    },
+  })
   researchApiMock.resumeResearchMission.mockResolvedValue(missionListPayload.missions[0])
   researchApiMock.triggerResearchMission.mockResolvedValue(runListPayload.runs[0])
   researchApiMock.updateResearchSchedule.mockResolvedValue(missionDetailPayload.schedule)
@@ -588,5 +633,26 @@ describe('Admin Research Control Centre', () => {
         promotion_notes: 'Promote as governed core knowledge pilot.',
       })
     })
+  })
+
+  it('runs admin rag diagnostics and renders approved-core retrieval details', async () => {
+    renderConsole()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Analytics' }))
+    expect(await screen.findByText('ADMIN RAG DIAGNOSTICS')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Run Retrieval Diagnostic' }))
+
+    await waitFor(() => {
+      expect(researchApiMock.runResearchRagDiagnostics).toHaveBeenCalledWith({
+        query: 'What supports the Vimshottari starting Dasha rule?',
+        mode: 'unified',
+        top_k: 6,
+      })
+    })
+
+    expect(await screen.findByText('APPROVED CORE MATCHES')).toBeInTheDocument()
+    expect(screen.getByText(/DASHA - Vimshottari Dasha Foundations/)).toBeInTheDocument()
+    expect(screen.getByText(/BPHS 46.1-2/)).toBeInTheDocument()
   })
 })

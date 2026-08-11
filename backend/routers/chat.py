@@ -11,7 +11,7 @@ Sessions are stored in-memory and expire after 2 hours of inactivity.
 from __future__ import annotations
 import os
 import time
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile
 from pydantic import BaseModel, Field
@@ -69,6 +69,7 @@ class ChatLocalEvidenceSource(BaseModel):
     source_label: str
     evidence_kind: str
     evidence_label: str
+    knowledge_class: Optional[str] = None
     domain: str
     title: str
     entity: Optional[str] = None
@@ -83,6 +84,18 @@ class ChatLocalEvidenceSource(BaseModel):
     model_version: Optional[str] = None
     score_meaning: Optional[str] = None
     reliability_note: Optional[str] = None
+    claim_ids: list[str] = Field(default_factory=list)
+    passage_ids: list[str] = Field(default_factory=list)
+    source_ids: list[str] = Field(default_factory=list)
+    rule_ids: list[str] = Field(default_factory=list)
+    conflict_ids: list[str] = Field(default_factory=list)
+    version: Optional[str] = None
+    version_state: Optional[str] = None
+    high_stakes: bool = False
+    authority: dict[str, Any] = Field(default_factory=dict)
+    citations: list[dict[str, Any]] = Field(default_factory=list)
+    citation_labels: list[str] = Field(default_factory=list)
+    conflict_details: list[dict[str, Any]] = Field(default_factory=list)
     rank: int = 0
 
 
@@ -90,15 +103,24 @@ class ChatLocalEvidenceMeta(BaseModel):
     used: bool = False
     source_count: int = 0
     evidence_kinds: list[str] = Field(default_factory=list)
+    knowledge_classes: list[str] = Field(default_factory=list)
+    approved_core_count: int = 0
+    reviewed_internal_count: int = 0
+    local_platform_count: int = 0
+    legacy_unsourced_count: int = 0
     predictive_ml_count: int = 0
     platform_snapshot_count: int = 0
     approved_memory_count: int = 0
     attachment_memory_count: int = 0
     repo_count: int = 0
+    conflict_count: int = 0
+    citation_count: int = 0
+    high_stakes_count: int = 0
     top_date: Optional[str] = None
     sources: list[ChatLocalEvidenceSource] = Field(default_factory=list)
     conflict_note: Optional[str] = None
     freshness_note: Optional[str] = None
+    known_conflicts: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class ChatRetrievalAudit(BaseModel):
@@ -107,11 +129,23 @@ class ChatRetrievalAudit(BaseModel):
     resolved_primary_mode: str = "unified"
     primary_used: bool = False
     primary_source_count: int = 0
+    primary_approved_core_hits: int = 0
+    primary_reviewed_internal_hits: int = 0
+    primary_local_platform_hits: int = 0
+    primary_ml_hits: int = 0
+    primary_conflict_count: int = 0
+    primary_citation_count: int = 0
     primary_attribution_quality: float = 0.0
     primary_duplicate_noise: float = 0.0
     shadow_mode: Optional[str] = None
     shadow_used: bool = False
     shadow_source_count: int = 0
+    shadow_approved_core_hits: int = 0
+    shadow_reviewed_internal_hits: int = 0
+    shadow_local_platform_hits: int = 0
+    shadow_ml_hits: int = 0
+    shadow_conflict_count: int = 0
+    shadow_citation_count: int = 0
     shadow_attribution_quality: float = 0.0
     shadow_duplicate_noise: float = 0.0
     overlap_count: int = 0
