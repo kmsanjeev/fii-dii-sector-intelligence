@@ -209,9 +209,23 @@ class ResearchPlatformService:
         )
         return updated
 
-    def resume_mission(self, mission_id: str, *, actor_id: str = "admin") -> ResearchMissionRecord:
+    def resume_mission(
+        self,
+        mission_id: str,
+        *,
+        actor_id: str = "admin",
+        priority: MissionPriority | str | None = None,
+        notes: str | None = None,
+    ) -> ResearchMissionRecord:
         mission = self._require_mission(mission_id)
-        updated = mission.model_copy(update={"status": MissionStatus.ACTIVE, "updated_at": utc_now()})
+        updates: dict[str, Any] = {"updated_at": utc_now()}
+        if mission.status == MissionStatus.PAUSED:
+            updates["status"] = MissionStatus.ACTIVE
+        if priority is not None:
+            updates["priority"] = priority if isinstance(priority, MissionPriority) else MissionPriority(priority)
+        if notes:
+            updates["notes"] = notes
+        updated = mission.model_copy(update=updates)
         self.store.update_mission(updated)
         self._append_ledger(
             event_type=LedgerEventType.MISSION_STARTED,
@@ -260,6 +274,7 @@ class ResearchPlatformService:
                 **schedule.model_dump(mode="json"),
                 "enabled": bool(updates.get("enabled", schedule.enabled)),
                 "cadence_type": CadenceType(updates.get("cadence_type", schedule.cadence_type)),
+                "timezone": updates.get("timezone", schedule.timezone),
                 "next_run_at": updates.get("next_run_at", schedule.next_run_at),
                 "last_run_at": updates.get("last_run_at", schedule.last_run_at),
                 "misfire_policy": MisfirePolicy(updates.get("misfire_policy", schedule.misfire_policy)),
@@ -790,10 +805,28 @@ class ResearchPlatformService:
         actor_id: str,
         reason: str,
         conditions: list[str] | None = None,
+        acknowledged_high_stakes: bool = False,
+        conflict_id: str | None = None,
+        conflict_resolution: str | None = None,
+        conflict_note: str | None = None,
     ) -> ResearchApprovalRecord:
         action = action if isinstance(action, AdminAction) else AdminAction(action)
         candidate = self._require_candidate(candidate_id)
         before = candidate.model_dump(mode="json")
+
+        if conflict_resolution and not conflict_id:
+            candidate_conflicts = self.store.list_conflicts_for_candidate(candidate_id)
+            if len(candidate_conflicts) == 1:
+                conflict_id = candidate_conflicts[0].conflict_id
+            elif len(candidate_conflicts) > 1:
+                raise RuntimeError("Conflict resolution requires an explicit conflict selection when multiple conflicts exist")
+
+        if (
+            candidate.safety_class in {SafetyClass.HIGH, SafetyClass.HIGH_STAKES, SafetyClass.CRITICAL}
+            and action in {AdminAction.APPROVE, AdminAction.APPROVE_WITH_CONDITIONS}
+            and not acknowledged_high_stakes
+        ):
+            raise RuntimeError("High-stakes candidate approval requires explicit acknowledgement")
 
         updates: dict[str, Any] = {"updated_at": utc_now()}
         if action == AdminAction.APPROVE:
@@ -851,8 +884,19 @@ class ResearchPlatformService:
             before_state=before,
             after_state=updated.model_dump(mode="json"),
             reason=reason,
-            metadata={"approval_id": approval.approval_id},
+            metadata={
+                "approval_id": approval.approval_id,
+                "conflict_id": conflict_id,
+                "conflict_resolution": conflict_resolution,
+            },
         )
+
+        if conflict_id and conflict_resolution:
+            self._apply_conflict_resolution(
+                conflict_id,
+                resolution_status=conflict_resolution,
+                note=conflict_note or reason,
+            )
 
         if action == AdminAction.REQUEST_MORE_RESEARCH:
             self._create_follow_up_mission(updated, reason=reason, actor_id=actor_id)
@@ -884,6 +928,706 @@ class ResearchPlatformService:
 
     def list_ledger_events(self) -> list[ResearchLedgerEventRecord]:
         return self.store.list_ledger_events()
+
+    def archive_mission(self, mission_id: str, *, actor_id: str = "admin", notes: str | None = None) -> ResearchMissionRecord:
+        mission = self._require_mission(mission_id)
+        updated = mission.model_copy(
+            update={
+                "status": MissionStatus.ARCHIVED,
+                "updated_at": utc_now(),
+                "notes": notes or mission.notes,
+            }
+        )
+        self.store.update_mission(updated)
+        self._append_ledger(
+            event_type=LedgerEventType.MISSION_PAUSED,
+            actor_type=ActorType.ADMIN,
+            actor_id=actor_id,
+            action="archive_mission",
+            domain_id=updated.domain_id,
+            mission_id=updated.mission_id,
+            before_state=mission.model_dump(mode="json"),
+            after_state=updated.model_dump(mode="json"),
+            reason=notes,
+        )
+        return updated
+
+    def dashboard_bundle(self, *, domain_id: str | None = None) -> dict[str, Any]:
+        dashboard = self.dashboard().model_dump(mode="json")
+        domains = [item for item in self.list_domains() if domain_id in {None, item.domain_id}]
+        missions = [item for item in self.list_missions() if domain_id in {None, item.domain_id}]
+        runs = [item for item in self.list_runs() if domain_id in {None, item.domain_id}]
+        observations = [item for item in self.store.list_observations() if domain_id in {None, self._domain_for_run(item.run_id)}]
+        evidence = [item for item in self.store.list_evidence() if domain_id in {None, item.domain_id}]
+        candidates = [item for item in self.store.list_candidates() if domain_id in {None, item.domain_id}]
+        conflicts = [item for item in self.store.list_conflicts() if any(candidate.candidate_id == item.candidate_id for candidate in candidates)]
+        dashboard["engine_status"] = self._engine_status()
+        dashboard["active_domains"] = sum(1 for item in domains if item.status.value == "ACTIVE")
+        dashboard["active_missions"] = sum(1 for item in missions if item.status == MissionStatus.ACTIVE)
+        dashboard["runs_today"] = sum(1 for item in runs if item.started_at.startswith(utc_now()[:10]))
+        dashboard["successful_runs"] = sum(1 for item in runs if item.status == RunStatus.SUCCESS)
+        dashboard["failed_runs"] = sum(1 for item in runs if item.status == RunStatus.FAILED)
+        dashboard["sources_today"] = sum(1 for item in observations if item.retrieved_at.startswith(utc_now()[:10]))
+        dashboard["new_candidates"] = sum(1 for item in candidates if item.created_at.startswith(utc_now()[:10]))
+        dashboard["pending_approvals"] = sum(1 for item in candidates if item.approval_status == ApprovalStatus.PENDING)
+        dashboard["approved_today"] = self._count_today_approvals(
+            {ApprovalStatus.APPROVED, ApprovalStatus.APPROVED_WITH_CONDITIONS},
+            domain_id=domain_id,
+        )
+        dashboard["rejected_today"] = self._count_today_approvals(
+            {ApprovalStatus.REJECTED, ApprovalStatus.ARCHIVED},
+            domain_id=domain_id,
+        )
+        dashboard["needs_more_research"] = sum(
+            1
+            for item in candidates
+            if item.approval_status == ApprovalStatus.NEEDS_MORE_RESEARCH
+        )
+        dashboard["high_priority_conflicts"] = sum(
+            1
+            for item in candidates
+            if item.priority in {MissionPriority.P0, MissionPriority.P1}
+            and item.contradiction_status != ContradictionStatus.NONE
+        )
+        dashboard["last_research_run"] = self._latest_run_timestamp(domain_id=domain_id)
+        dashboard["next_expected_run"] = self._next_expected_run(domain_id=domain_id)
+        dashboard["metrics"] = {
+            "missions_active": dashboard["active_missions"],
+            "runs_total": len(runs),
+            "runs_failed": dashboard["failed_runs"],
+            "sources_discovered": len(observations),
+            "sources_rejected": sum(1 for item in observations if item.access_status != SourceAccessStatus.ACCEPTED),
+            "evidence_created": len(evidence),
+            "candidates_created": len(candidates),
+            "candidate_duplicates": sum(1 for item in candidates if item.support_count > 1),
+            "contradictions_found": len(conflicts),
+            "pending_reviews": dashboard["pending_approvals"],
+            "approvals": self._count_approval_total(
+                {ApprovalStatus.APPROVED, ApprovalStatus.APPROVED_WITH_CONDITIONS},
+                domain_id=domain_id,
+            ),
+            "rejections": self._count_approval_total({ApprovalStatus.REJECTED}, domain_id=domain_id),
+            "follow_ups": sum(1 for item in missions if item.parent_candidate_id is not None),
+        }
+        return {
+            **dashboard,
+            "domains": [item.model_dump(mode="json") for item in domains],
+            "provider_health": self._provider_health_rows(),
+            "external_web_research_status": self._external_web_research_status(),
+            "knowledge_gaps": self.knowledge_gap_rows(domain_id=domain_id),
+            "notifications": self.notification_rows(domain_id=domain_id),
+            "analytics": self.analytics_bundle(domain_id=domain_id),
+            "coverage": self.coverage_rows(domain_id=domain_id),
+        }
+
+    def list_mission_rows(
+        self,
+        *,
+        domain_id: str | None = None,
+        status: str | None = None,
+        research_type: str | None = None,
+        search: str | None = None,
+        page: int = 1,
+        per_page: int = 20,
+    ) -> dict[str, Any]:
+        runs = self.store.list_runs()
+        candidates = self.store.list_candidates()
+        schedules = {item.schedule_id: item for item in self.store.list_schedules()}
+        missions = []
+        for mission in self.store.list_missions():
+            if domain_id and mission.domain_id != domain_id:
+                continue
+            if status and mission.status.value != status:
+                continue
+            if research_type and mission.research_type.value != research_type:
+                continue
+            if search and search.lower() not in " ".join(
+                filter(None, [mission.title, mission.objective, mission.notes or ""])
+            ).lower():
+                continue
+            mission_runs = [item for item in runs if item.mission_id == mission.mission_id]
+            mission_candidates = [item for item in candidates if item.mission_id == mission.mission_id]
+            mission_schedule = schedules.get(mission.schedule_id) if mission.schedule_id else None
+            missions.append(
+                {
+                    **mission.model_dump(mode="json"),
+                    "last_run": mission.last_run_at,
+                    "next_run": mission_schedule.next_run_at if mission_schedule else None,
+                    "candidate_count": len(mission_candidates),
+                    "open_conflicts": sum(
+                        1 for item in mission_candidates if item.contradiction_status != ContradictionStatus.NONE
+                    ),
+                    "follow_up_mission_count": sum(
+                        1 for item in self.store.list_missions() if item.parent_mission_id == mission.mission_id
+                    ),
+                }
+            )
+        missions.sort(key=lambda item: (item["priority"], item["updated_at"], item["mission_id"]))
+        paged, total = self._paginate(missions, page=page, per_page=per_page)
+        return {"missions": paged, "total": total, "page": page, "per_page": per_page, "returned": len(paged)}
+
+    def get_mission_detail(self, mission_id: str) -> dict[str, Any]:
+        mission = self._require_mission(mission_id)
+        runs = [item.model_dump(mode="json") for item in self.store.list_runs_for_mission(mission_id)]
+        candidates = [
+            self._candidate_summary(item)
+            for item in self.store.list_candidates()
+            if item.mission_id == mission_id
+        ]
+        follow_up_missions = [
+            item.model_dump(mode="json")
+            for item in self.store.list_missions()
+            if item.parent_mission_id == mission_id or item.parent_candidate_id in {row["candidate_id"] for row in candidates}
+        ]
+        schedule = self.store.get_schedule(mission.schedule_id) if mission.schedule_id else None
+        ledger = [
+            item.model_dump(mode="json")
+            for item in self.store.list_ledger_events()
+            if item.mission_id == mission_id
+        ]
+        return {
+            "mission": mission.model_dump(mode="json"),
+            "schedule": schedule.model_dump(mode="json") if schedule else None,
+            "run_history": runs,
+            "candidate_history": candidates,
+            "follow_up_missions": follow_up_missions,
+            "ledger": ledger,
+            "open_conflicts": sum(1 for item in candidates if item["contradiction_status"] != ContradictionStatus.NONE.value),
+        }
+
+    def list_run_rows(
+        self,
+        *,
+        domain_id: str | None = None,
+        mission_id: str | None = None,
+        status: str | None = None,
+        page: int = 1,
+        per_page: int = 20,
+        include_sources: bool = False,
+    ) -> dict[str, Any]:
+        mission_lookup = {item.mission_id: item for item in self.store.list_missions()}
+        runs = []
+        source_rows: list[dict[str, Any]] = []
+        for run in self.store.list_runs():
+            if domain_id and run.domain_id != domain_id:
+                continue
+            if mission_id and run.mission_id != mission_id:
+                continue
+            if status and run.status.value != status:
+                continue
+            mission = mission_lookup.get(run.mission_id)
+            provider_id = str(mission.query_strategy.get("provider_id")) if mission else None
+            run_rows = self.store.list_observations_for_run(run.run_id)
+            if include_sources:
+                source_rows.extend(self._source_summary(item) for item in run_rows)
+            runs.append(
+                {
+                    **run.model_dump(mode="json"),
+                    "mission_title": mission.title if mission else run.mission_id,
+                    "provider_id": provider_id,
+                    "duration_seconds": self._duration_seconds(run.started_at, run.completed_at),
+                }
+            )
+        runs.sort(key=lambda item: (item["started_at"], item["run_id"]), reverse=True)
+        paged, total = self._paginate(runs, page=page, per_page=per_page)
+        payload = {"runs": paged, "total": total, "page": page, "per_page": per_page, "returned": len(paged)}
+        if include_sources:
+            payload["sources"] = source_rows
+        return payload
+
+    def get_run_detail(self, run_id: str) -> dict[str, Any]:
+        run = self._require_run(run_id)
+        mission = self._require_mission(run.mission_id)
+        observations = self.store.list_observations_for_run(run_id)
+        evidence = [item for item in self.store.list_evidence() if item.run_id == run_id]
+        candidates = [item for item in self.store.list_candidates() if item.run_id == run_id]
+        ledger = [item for item in self.store.list_ledger_events() if item.run_id == run_id]
+        return {
+            "run": run.model_dump(mode="json"),
+            "mission": mission.model_dump(mode="json"),
+            "observations": [self._source_summary(item) for item in observations],
+            "evidence": [item.model_dump(mode="json") for item in evidence],
+            "candidates": [self._candidate_summary(item) for item in candidates],
+            "timeline": [item.model_dump(mode="json") for item in ledger],
+        }
+
+    def list_candidate_rows(
+        self,
+        *,
+        domain_id: str | None = None,
+        approval_status: str | None = None,
+        priority: str | None = None,
+        search: str | None = None,
+        contradiction_only: bool = False,
+        high_stakes_only: bool = False,
+        promotion_state: str | None = None,
+        sort_by: str = "updated_at",
+        sort_dir: str = "desc",
+        page: int = 1,
+        per_page: int = 20,
+    ) -> dict[str, Any]:
+        candidates = []
+        for candidate in self.store.list_candidates():
+            if domain_id and candidate.domain_id != domain_id:
+                continue
+            if approval_status and candidate.approval_status.value != approval_status:
+                continue
+            if priority and candidate.priority.value != priority:
+                continue
+            if promotion_state and candidate.promotion_state.value != promotion_state:
+                continue
+            if contradiction_only and candidate.contradiction_status == ContradictionStatus.NONE:
+                continue
+            if high_stakes_only and candidate.safety_class not in {SafetyClass.HIGH, SafetyClass.HIGH_STAKES, SafetyClass.CRITICAL}:
+                continue
+            if search and search.lower() not in " ".join(
+                filter(None, [candidate.title, candidate.claim, candidate.topic_key])
+            ).lower():
+                continue
+            candidates.append(self._candidate_summary(candidate))
+        reverse = sort_dir.lower() != "asc"
+        candidates.sort(key=lambda item: self._candidate_sort_key(item, sort_by), reverse=reverse)
+        paged, total = self._paginate(candidates, page=page, per_page=per_page)
+        return {"candidates": paged, "total": total, "page": page, "per_page": per_page, "returned": len(paged)}
+
+    def get_candidate_review_bundle(self, candidate_id: str) -> dict[str, Any]:
+        candidate = self._require_candidate(candidate_id)
+        mission = self._require_mission(candidate.mission_id)
+        run = self._require_run(candidate.run_id)
+        evidence_rows = [self.store.get_evidence(item) for item in candidate.evidence_ids]
+        evidence_rows = [item for item in evidence_rows if item is not None]
+        observations = [self.store.get_observation(item.observation_id) for item in evidence_rows]
+        observations = [item for item in observations if item is not None]
+        validations = self.store.list_validations_for_candidate(candidate_id)
+        approvals = self.store.list_approvals_for_candidate(candidate_id)
+        conflicts = self.store.list_conflicts_for_candidate(candidate_id)
+        related_candidates = [
+            self._candidate_summary(item)
+            for item in self.store.find_candidates_by_topic(candidate.domain_id, candidate.topic_key)
+            if item.candidate_id != candidate.candidate_id
+        ]
+        follow_up_missions = [
+            item.model_dump(mode="json")
+            for item in self.store.list_missions()
+            if item.parent_candidate_id == candidate_id
+        ]
+        ledger = [item.model_dump(mode="json") for item in self.store.list_ledger_for_candidate(candidate_id)]
+        source_index = {item.observation_id: item for item in observations}
+        evidence_view = []
+        for evidence in evidence_rows:
+            observation = source_index.get(evidence.observation_id)
+            evidence_view.append(
+                {
+                    **evidence.model_dump(mode="json"),
+                    "source": self._source_summary(observation) if observation else None,
+                    "presentation": {
+                        "source_text": observation.raw_reference.get("original_text") if observation else None,
+                        "translation": evidence.passage,
+                        "model_summary": evidence.claim_hint,
+                        "model_inference": bool(evidence.domain_metadata.get("inference")),
+                    },
+                }
+            )
+        return {
+            "candidate": self._candidate_summary(candidate),
+            "mission": mission.model_dump(mode="json"),
+            "run": run.model_dump(mode="json"),
+            "evidence_summary": evidence_view,
+            "source_observations": [self._source_summary(item) for item in observations],
+            "validation_summary": [item.model_dump(mode="json") for item in validations],
+            "approval_history": [item.model_dump(mode="json") for item in approvals],
+            "conflicts": [item.model_dump(mode="json") for item in conflicts],
+            "related_candidates": related_candidates,
+            "follow_up_missions": follow_up_missions,
+            "ledger": ledger,
+            "novelty": candidate.novelty_status.value,
+            "contradiction": candidate.contradiction_status.value,
+            "confidence": candidate.confidence.model_dump(mode="json"),
+            "current_knowledge_comparison": dict(candidate.metadata.get("current_knowledge_comparison", {})),
+            "status": candidate.approval_status.value,
+        }
+
+    def list_ledger_rows(
+        self,
+        *,
+        limit: int = 200,
+        page: int = 1,
+        domain_id: str | None = None,
+        mission_id: str | None = None,
+        run_id: str | None = None,
+        candidate_id: str | None = None,
+        event_type: str | None = None,
+        actor_type: str | None = None,
+        search: str | None = None,
+    ) -> dict[str, Any]:
+        rows = []
+        for event in self.store.list_ledger_events():
+            if domain_id and event.domain_id != domain_id:
+                continue
+            if mission_id and event.mission_id != mission_id:
+                continue
+            if run_id and event.run_id != run_id:
+                continue
+            if candidate_id and event.candidate_id != candidate_id:
+                continue
+            if event_type and event.event_type.value != event_type:
+                continue
+            if actor_type and event.actor_type.value != actor_type:
+                continue
+            if search and search.lower() not in json.dumps(event.model_dump(mode="json")).lower():
+                continue
+            rows.append(event.model_dump(mode="json"))
+        rows.sort(key=lambda item: (item["timestamp"], item["event_id"]), reverse=True)
+        paged, total = self._paginate(rows, page=page, per_page=limit)
+        return {"events": paged, "returned": len(paged), "total": total, "page": page, "per_page": limit}
+
+    def list_schedule_rows(self, *, domain_id: str | None = None) -> dict[str, Any]:
+        missions = {item.mission_id: item for item in self.store.list_missions()}
+        schedules = []
+        for schedule in self.store.list_schedules():
+            if domain_id and schedule.domain_id != domain_id:
+                continue
+            mission = missions.get(schedule.mission_id)
+            schedules.append(
+                {
+                    **schedule.model_dump(mode="json"),
+                    "mission_title": mission.title if mission else schedule.mission_id,
+                    "mission_status": mission.status.value if mission else None,
+                }
+            )
+        return {"schedules": schedules, "returned": len(schedules)}
+
+    def notification_rows(self, *, domain_id: str | None = None) -> list[dict[str, Any]]:
+        candidates = [item for item in self.store.list_candidates() if domain_id in {None, item.domain_id}]
+        missions = [item for item in self.store.list_missions() if domain_id in {None, item.domain_id}]
+        runs = [item for item in self.store.list_runs() if domain_id in {None, item.domain_id}]
+        notifications: list[dict[str, Any]] = []
+        seen: set[str] = set()
+
+        def push(kind: str, entity_id: str, message: str, priority: str, target: str) -> None:
+            key = f"{kind}:{entity_id}:{message}"
+            if key in seen:
+                return
+            seen.add(key)
+            notifications.append(
+                {
+                    "id": key,
+                    "kind": kind,
+                    "entity_id": entity_id,
+                    "message": message,
+                    "priority": priority,
+                    "target": target,
+                }
+            )
+
+        for candidate in candidates:
+            if candidate.approval_status == ApprovalStatus.PENDING and candidate.priority in {MissionPriority.P0, MissionPriority.P1}:
+                push("NEW_HIGH_PRIORITY_CANDIDATE", candidate.candidate_id, f"{candidate.title} awaits review.", candidate.priority.value, "queue")
+            if candidate.contradiction_status != ContradictionStatus.NONE:
+                push("NEW_CONTRADICTION", candidate.candidate_id, f"{candidate.title} carries an unresolved contradiction.", candidate.priority.value, "contradictions")
+            if candidate.support_count > 1:
+                push("CANDIDATE_ENRICHED", candidate.candidate_id, f"{candidate.title} received additional evidence.", candidate.priority.value, "queue")
+            if candidate.safety_class in {SafetyClass.HIGH, SafetyClass.HIGH_STAKES, SafetyClass.CRITICAL}:
+                push("HIGH_STAKES_CANDIDATE", candidate.candidate_id, f"{candidate.title} requires explicit high-stakes review.", candidate.priority.value, "queue")
+        for run in runs:
+            if run.status == RunStatus.FAILED:
+                push("RUN_FAILED", run.run_id, f"Research run {run.run_id} failed.", "P1", "runs")
+        mission_failures: dict[str, int] = {}
+        for run in runs:
+            if run.status == RunStatus.FAILED:
+                mission_failures[run.mission_id] = mission_failures.get(run.mission_id, 0) + 1
+        for mission in missions:
+            if mission_failures.get(mission.mission_id, 0) >= 2:
+                push("MISSION_REPEATED_FAILURE", mission.mission_id, f"{mission.title} has repeated run failures.", mission.priority.value, "missions")
+        return notifications
+
+    def analytics_bundle(self, *, domain_id: str | None = None) -> dict[str, Any]:
+        candidates = [item for item in self.store.list_candidates() if domain_id in {None, item.domain_id}]
+        missions = [item for item in self.store.list_missions() if domain_id in {None, item.domain_id}]
+        runs = [item for item in self.store.list_runs() if domain_id in {None, item.domain_id}]
+        approvals = self.store.list_approvals()
+        source_rows = [item for item in self.store.list_observations() if domain_id in {None, self._domain_for_run(item.run_id)}]
+        domain_candidate_ids = {item.candidate_id for item in candidates}
+        filtered_approvals = [item for item in approvals if item.candidate_id in domain_candidate_ids]
+        approved_count = sum(1 for item in filtered_approvals if item.status in {ApprovalStatus.APPROVED, ApprovalStatus.APPROVED_WITH_CONDITIONS})
+        rejected_count = sum(1 for item in filtered_approvals if item.status == ApprovalStatus.REJECTED)
+        avg_review_age_days = round(
+            sum(self._age_days(item.created_at) for item in candidates if item.approval_status == ApprovalStatus.PENDING) /
+            max(1, sum(1 for item in candidates if item.approval_status == ApprovalStatus.PENDING)),
+            2,
+        )
+        quality_buckets: dict[str, int] = {}
+        for row in source_rows:
+            label = str(row.domain_metadata.get("source_class") or row.source_type.value)
+            quality_buckets[label] = quality_buckets.get(label, 0) + 1
+        return {
+            "research_volume": {
+                "missions": len(missions),
+                "runs": len(runs),
+                "sources": len(source_rows),
+                "candidates": len(candidates),
+            },
+            "approval_rate": approved_count,
+            "rejection_rate": rejected_count,
+            "contradiction_rate": sum(1 for item in candidates if item.contradiction_status != ContradictionStatus.NONE),
+            "legacy_rule_provenance_progress": self._legacy_progress(domain_id=domain_id),
+            "average_review_age_days": avg_review_age_days,
+            "mission_success_failure": {
+                "successful_runs": sum(1 for item in runs if item.status == RunStatus.SUCCESS),
+                "failed_runs": sum(1 for item in runs if item.status == RunStatus.FAILED),
+            },
+            "source_quality": quality_buckets,
+        }
+
+    def coverage_rows(self, *, domain_id: str | None = None) -> list[dict[str, Any]]:
+        if domain_id and domain_id != self.vedic_astrology_plugin.domain_id:
+            return []
+        if hasattr(self.vedic_astrology_plugin, "build_coverage_matrix"):
+            return self.vedic_astrology_plugin.build_coverage_matrix()
+        return []
+
+    def knowledge_gap_rows(self, *, domain_id: str | None = None) -> list[dict[str, Any]]:
+        if domain_id and domain_id != self.vedic_astrology_plugin.domain_id:
+            return []
+        if not hasattr(self.vedic_astrology_plugin, "generate_gap_missions"):
+            return []
+        existing_missions = self.store.list_missions()
+        candidates = self.store.list_candidates()
+        rows = []
+        for item in self.vedic_astrology_plugin.generate_gap_missions(limit=16):
+            gap_id = next(iter(item.get("known_gap_ids", [])), None)
+            gap_missions = [mission for mission in existing_missions if gap_id and gap_id in mission.known_gap_ids]
+            gap_candidates = [candidate for candidate in candidates if candidate.mission_id in {mission.mission_id for mission in gap_missions}]
+            rows.append(
+                {
+                    "gap_id": gap_id,
+                    "domain": item.get("query_strategy", {}).get("domain") or item.get("title"),
+                    "gap": item.get("objective"),
+                    "priority": item.get("priority"),
+                    "legacy_rule_ids": item.get("known_gap_ids", []),
+                    "mission_count": len(gap_missions),
+                    "candidate_count": len(gap_candidates),
+                    "status": gap_missions[0].status.value if gap_missions else item.get("status", "QUEUED"),
+                }
+            )
+        return rows
+
+    def _apply_conflict_resolution(self, conflict_id: str, *, resolution_status: str, note: str | None) -> ResearchConflictRecord:
+        conflict = self.store.get_conflict(conflict_id)
+        if conflict is None:
+            raise KeyError(f"Unknown conflict: {conflict_id}")
+        updated = conflict.model_copy(
+            update={
+                "resolution_status": ConflictResolutionStatus(resolution_status),
+                "approved_resolution": note or conflict.approved_resolution,
+            }
+        )
+        self.store.update_conflict(updated)
+        return updated
+
+    def _candidate_summary(self, candidate: ResearchCandidateRecord) -> dict[str, Any]:
+        mission = self.store.get_mission(candidate.mission_id)
+        approvals = self.store.list_approvals_for_candidate(candidate.candidate_id)
+        conflicts = self.store.list_conflicts_for_candidate(candidate.candidate_id)
+        source_quality = round(candidate.confidence.authority_confidence, 4)
+        evidence_count = len(candidate.evidence_ids)
+        source_count = len(candidate.source_ids)
+        evolution = "NEW"
+        if candidate.support_count > 1:
+            evolution = "UPDATED - NEW EVIDENCE"
+        elif conflicts:
+            evolution = "UPDATED - CONFLICT FOUND"
+        elif candidate.updated_at != candidate.created_at:
+            evolution = "UPDATED - CONFIDENCE CHANGED"
+        recommendation = "REVIEW"
+        if candidate.approval_status == ApprovalStatus.APPROVED:
+            recommendation = "PROMOTION_READY"
+        elif candidate.approval_status == ApprovalStatus.NEEDS_MORE_RESEARCH:
+            recommendation = "FOLLOW_UP_RESEARCH"
+        elif candidate.contradiction_status != ContradictionStatus.NONE:
+            recommendation = "REVIEW_CONTRADICTION"
+        elif candidate.validation_status == ValidationStatus.PASS:
+            recommendation = "APPROVE_CANDIDATE"
+        elif candidate.validation_status == ValidationStatus.PASS_WITH_CONDITIONS:
+            recommendation = "APPROVE_WITH_CONDITIONS"
+        return {
+            **candidate.model_dump(mode="json"),
+            "mission_title": mission.title if mission else candidate.mission_id,
+            "evidence_count": evidence_count,
+            "source_count": source_count,
+            "source_quality": source_quality,
+            "cross_source_support": candidate.confidence.cross_source_confidence,
+            "high_stakes": candidate.safety_class in {SafetyClass.HIGH, SafetyClass.HIGH_STAKES, SafetyClass.CRITICAL},
+            "research_recommendation": recommendation,
+            "age_days": self._age_days(candidate.created_at),
+            "evolution_status": evolution,
+            "approval_history_count": len(approvals),
+            "conflict_count": len(conflicts),
+        }
+
+    def _candidate_sort_key(self, candidate: dict[str, Any], sort_by: str) -> Any:
+        if sort_by == "priority":
+            return candidate["priority"]
+        if sort_by == "confidence":
+            return candidate.get("confidence", {}).get("domain_confidence", 0)
+        if sort_by == "evidence":
+            return candidate.get("evidence_count", 0)
+        if sort_by == "high_stakes":
+            return 1 if candidate.get("high_stakes") else 0
+        if sort_by == "contradictions":
+            return candidate.get("conflict_count", 0)
+        if sort_by == "newest":
+            return candidate.get("created_at")
+        if sort_by == "oldest":
+            return candidate.get("created_at")
+        return candidate.get("updated_at")
+
+    def _source_summary(self, observation: SourceObservationRecord | None) -> dict[str, Any]:
+        if observation is None:
+            return {}
+        evidence_rows = [item for item in self.store.list_evidence() if item.observation_id == observation.observation_id]
+        candidate_ids = []
+        for candidate in self.store.list_candidates():
+            if set(candidate.evidence_ids) & {item.evidence_id for item in evidence_rows}:
+                candidate_ids.append(candidate.candidate_id)
+        metadata = dict(observation.domain_metadata)
+        authority = metadata.get("authority_profile", {})
+        state = "DISCOVERY_ONLY" if metadata.get("discovery_only") else (
+            "REJECTED" if observation.access_status != SourceAccessStatus.ACCEPTED else "EVIDENTIARY"
+        )
+        if metadata.get("source_id") and not metadata.get("discovery_only"):
+            state = "GOVERNED"
+        return {
+            **observation.model_dump(mode="json"),
+            "claims_supported": metadata.get("claim_ids", []),
+            "candidate_ids": candidate_ids,
+            "authority_level": authority.get("authority_tier") or metadata.get("source_class"),
+            "state": state,
+            "discovery_only": bool(metadata.get("discovery_only")),
+        }
+
+    def _provider_health_rows(self) -> list[dict[str, Any]]:
+        observations = self.store.list_observations()
+        rows = []
+        for provider_id, provider in self.providers.items():
+            descriptor = provider.descriptor()
+            last_use = max(
+                (item.retrieved_at for item in observations if item.provider_id == provider_id),
+                default=None,
+            )
+            rows.append(
+                {
+                    **provider.health_check(),
+                    "provider_id": provider_id,
+                    "provider_type": descriptor.provider_type.value,
+                    "capabilities": descriptor.capabilities,
+                    "last_successful_use": last_use,
+                }
+            )
+        return rows
+
+    def _external_web_research_status(self) -> str:
+        provider_types = {provider.descriptor().provider_type.value for provider in self.providers.values()}
+        if provider_types & {"WEB_SEARCH", "DIRECT_WEB", "API", "CONNECTOR"}:
+            return "CONFIGURED"
+        return "LOCAL_ONLY"
+
+    def _engine_status(self) -> str:
+        health = self.health()
+        if health["status"] == PlatformHealth.DEGRADED.value:
+            return "DEGRADED"
+        if any(item.status == RunStatus.RUNNING for item in self.store.list_runs()):
+            return "RUNNING"
+        domains = self.store.list_domains()
+        if domains and all(item.status.value in {"PAUSED", "DISABLED", "RETIRED"} for item in domains):
+            return "PAUSED"
+        if domains or self.store.list_runs():
+            return "IDLE"
+        return "PAUSED"
+
+    def _legacy_progress(self, *, domain_id: str | None = None) -> dict[str, Any]:
+        if domain_id not in {None, self.vedic_astrology_plugin.domain_id}:
+            return {"total": 0, "source_validated": 0, "under_research": 0, "unsourced": 0, "unresolved": 0}
+        legacy_rules = getattr(self.vedic_astrology_plugin, "p005_legacy_rules", [])
+        missions = self.store.list_missions()
+        candidates = self.store.list_candidates()
+        source_validated = sum(1 for item in legacy_rules if item.get("source_status") == "SOURCE_VALIDATED")
+        under_research = sum(1 for item in missions if item.parent_candidate_id is None and item.known_gap_ids)
+        unresolved = sum(1 for item in candidates if item.approval_status == ApprovalStatus.NEEDS_MORE_RESEARCH)
+        unsourced = sum(1 for item in legacy_rules if str(item.get("source_status", "")).startswith("LEGACY_"))
+        return {
+            "total": len(legacy_rules),
+            "source_validated": source_validated,
+            "under_research": under_research,
+            "unsourced": unsourced,
+            "unresolved": unresolved,
+        }
+
+    def _domain_for_run(self, run_id: str) -> str | None:
+        run = self.store.get_run(run_id)
+        return run.domain_id if run else None
+
+    def _count_today_approvals(self, statuses: set[ApprovalStatus], *, domain_id: str | None = None) -> int:
+        today = utc_now()[:10]
+        candidate_lookup = {item.candidate_id: item for item in self.store.list_candidates()}
+        return sum(
+            1 for item in self.store.list_approvals()
+            if item.decided_at.startswith(today)
+            and item.status in statuses
+            and domain_id in {
+                None,
+                candidate_lookup.get(item.candidate_id).domain_id if candidate_lookup.get(item.candidate_id) else None,
+            }
+        )
+
+    def _count_approval_total(self, statuses: set[ApprovalStatus], *, domain_id: str | None = None) -> int:
+        candidate_lookup = {item.candidate_id: item for item in self.store.list_candidates()}
+        return sum(
+            1
+            for item in self.store.list_approvals()
+            if item.status in statuses
+            and domain_id in {
+                None,
+                candidate_lookup.get(item.candidate_id).domain_id if candidate_lookup.get(item.candidate_id) else None,
+            }
+        )
+
+    def _latest_run_timestamp(self, *, domain_id: str | None = None) -> str | None:
+        runs = [item for item in self.store.list_runs() if domain_id in {None, item.domain_id}]
+        if not runs:
+            return None
+        return max(item.started_at for item in runs)
+
+    def _next_expected_run(self, *, domain_id: str | None = None) -> str | None:
+        schedules = [item for item in self.store.list_schedules() if domain_id in {None, item.domain_id} and item.enabled]
+        next_values = [item.next_run_at for item in schedules if item.next_run_at]
+        if not next_values:
+            return None
+        return min(next_values)
+
+    def _paginate(self, rows: list[Any], *, page: int, per_page: int) -> tuple[list[Any], int]:
+        total = len(rows)
+        start = max(0, (page - 1) * per_page)
+        end = start + per_page
+        return rows[start:end], total
+
+    def _age_days(self, iso_timestamp: str) -> int:
+        try:
+            current = datetime.now(timezone.utc)
+            created = datetime.fromisoformat(iso_timestamp.replace("Z", "+00:00"))
+        except ValueError:
+            return 0
+        return max(0, int((current - created).days))
+
+    def _duration_seconds(self, started_at: str, completed_at: str | None) -> float | None:
+        if not completed_at:
+            return None
+        try:
+            started = datetime.fromisoformat(started_at.replace("Z", "+00:00"))
+            completed = datetime.fromisoformat(completed_at.replace("Z", "+00:00"))
+        except ValueError:
+            return None
+        return round((completed - started).total_seconds(), 2)
 
     def export_snapshot(self, export_dir: Path | None = None) -> dict[str, Path]:
         base_dir = Path(export_dir or cfg.VEDA_RESEARCH_PLATFORM_EXPORT_DIR)

@@ -597,6 +597,19 @@ class ResearchPlatformStore:
             )
         return record
 
+    def update_conflict(self, record: ResearchConflictRecord) -> ResearchConflictRecord:
+        with self._conn() as con:
+            con.execute(
+                "UPDATE research_conflicts SET conflict_type = ?, resolution_status = ?, payload = ? WHERE conflict_id = ?",
+                (
+                    record.conflict_type.value,
+                    record.resolution_status.value,
+                    self._dump(record),
+                    record.conflict_id,
+                ),
+            )
+        return record
+
     def list_conflicts(self) -> list[ResearchConflictRecord]:
         with self._conn() as con:
             rows = con.execute("SELECT payload FROM research_conflicts ORDER BY created_at, conflict_id").fetchall()
@@ -609,6 +622,14 @@ class ResearchPlatformStore:
                 (candidate_id,),
             ).fetchall()
         return [ResearchConflictRecord.model_validate(json.loads(row["payload"])) for row in rows]
+
+    def get_conflict(self, conflict_id: str) -> ResearchConflictRecord | None:
+        with self._conn() as con:
+            row = con.execute(
+                "SELECT payload FROM research_conflicts WHERE conflict_id = ?",
+                (conflict_id,),
+            ).fetchone()
+        return self._load(row, ResearchConflictRecord)
 
     def insert_approval(self, record: ResearchApprovalRecord) -> ResearchApprovalRecord:
         with self._conn() as con:

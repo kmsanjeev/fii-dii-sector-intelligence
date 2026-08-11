@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { ResearchAdminConsole } from '../components/admin/ResearchAdminConsole'
 
 const API = '/api/auth'
 
@@ -385,16 +386,23 @@ function PasswordTab() {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export function AdminPage() {
-  const [tab, setTab] = useState<'users' | 'apikeys' | 'config' | 'password'>('users')
-
   const storedUser = (() => {
     try { return JSON.parse(localStorage.getItem('cfip_user') || 'null') } catch { return null }
   })()
 
   const isAdmin = !storedUser || storedUser.role === 'admin'
+  const defaultTab: 'users' | 'apikeys' | 'config' | 'password' | 'research' = isAdmin ? 'users' : 'apikeys'
+  const [tab, setTab] = useState<'users' | 'apikeys' | 'config' | 'password' | 'research'>(defaultTab)
+
+  useEffect(() => {
+    if (!isAdmin && ['users', 'config', 'research'].includes(tab)) {
+      setTab('apikeys')
+    }
+  }, [isAdmin, tab])
 
   const TABS = [
     { key: 'users',    label: 'Users',       adminOnly: true  },
+    { key: 'research', label: 'Research',    adminOnly: true  },
     { key: 'apikeys',  label: 'API Keys',    adminOnly: false },
     { key: 'config',   label: 'Auth Config', adminOnly: true  },
     { key: 'password', label: 'My Password', adminOnly: false },
@@ -419,6 +427,7 @@ export function AdminPage() {
       </div>
 
       {tab === 'users'    && <UsersTab currentUser={storedUser} />}
+      {tab === 'research' && isAdmin && <ResearchAdminConsole />}
       {tab === 'apikeys'  && <ApiKeysTab />}
       {tab === 'config'   && isAdmin && <AuthConfigTab />}
       {tab === 'password' && <PasswordTab />}

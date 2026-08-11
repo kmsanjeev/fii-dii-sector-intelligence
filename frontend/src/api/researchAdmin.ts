@@ -1,0 +1,428 @@
+import { api } from './client'
+
+export type ResearchPriority = 'P0' | 'P1' | 'P2' | 'P3' | 'P4'
+
+export type ResearchDashboardResponse = {
+  research_status: string
+  engine_status: string
+  active_domains: number
+  active_missions: number
+  runs_today: number
+  successful_runs: number
+  failed_runs: number
+  sources_today: number
+  new_candidates: number
+  pending_approvals: number
+  needs_more_research: number
+  high_priority_conflicts: number
+  approved_today: number
+  rejected_today: number
+  last_research_run?: string | null
+  next_expected_run?: string | null
+  metrics: Record<string, number>
+  domains: ResearchDomain[]
+  provider_health: ResearchProviderHealth[]
+  external_web_research_status: string
+  knowledge_gaps: ResearchKnowledgeGap[]
+  notifications: ResearchNotification[]
+  analytics: ResearchAnalytics
+  coverage: ResearchCoverageRow[]
+}
+
+export type ResearchDomain = {
+  domain_id: string
+  name: string
+  status: string
+  description: string
+  schedule_policy: Record<string, string>
+}
+
+export type ResearchProviderHealth = {
+  provider_id: string
+  provider_type: string
+  status: string
+  last_successful_use?: string | null
+  capabilities: string[]
+  [key: string]: unknown
+}
+
+export type ResearchNotification = {
+  id: string
+  kind: string
+  entity_id: string
+  message: string
+  priority: string
+  target: string
+}
+
+export type ResearchKnowledgeGap = {
+  gap_id?: string | null
+  domain: string
+  gap: string
+  priority: string
+  legacy_rule_ids: string[]
+  mission_count: number
+  candidate_count: number
+  status: string
+}
+
+export type ResearchCoverageRow = {
+  domain: string
+  existing_rules: number
+  source_validated: number
+  under_research: number
+  conflicts: number
+  coverage: string
+  recommended_action: string
+}
+
+export type ResearchAnalytics = {
+  research_volume: {
+    missions: number
+    runs: number
+    sources: number
+    candidates: number
+  }
+  approval_rate: number
+  rejection_rate: number
+  contradiction_rate: number
+  legacy_rule_provenance_progress: {
+    total: number
+    source_validated: number
+    under_research: number
+    unsourced: number
+    unresolved: number
+  }
+  average_review_age_days: number
+  mission_success_failure: {
+    successful_runs: number
+    failed_runs: number
+  }
+  source_quality: Record<string, number>
+}
+
+export type ResearchMissionRow = {
+  mission_id: string
+  domain_id: string
+  title: string
+  objective: string
+  research_type: string
+  priority: ResearchPriority
+  status: string
+  created_at: string
+  updated_at: string
+  last_run?: string | null
+  next_run?: string | null
+  candidate_count: number
+  open_conflicts: number
+  follow_up_mission_count: number
+  known_gap_ids: string[]
+  required_source_classes: string[]
+  minimum_independent_sources: number
+  query_strategy: Record<string, unknown>
+  notes?: string | null
+}
+
+export type ResearchMissionListResponse = {
+  missions: ResearchMissionRow[]
+  total: number
+  page: number
+  per_page: number
+  returned: number
+}
+
+export type ResearchMissionDetailResponse = {
+  mission: ResearchMissionRow
+  schedule?: ResearchScheduleRow | null
+  run_history: ResearchRunRow[]
+  candidate_history: ResearchCandidateRow[]
+  follow_up_missions: ResearchMissionRow[]
+  ledger: ResearchLedgerEvent[]
+  open_conflicts: number
+}
+
+export type ResearchRunRow = {
+  run_id: string
+  mission_id: string
+  domain_id: string
+  trigger_type: string
+  started_at: string
+  completed_at?: string | null
+  status: string
+  provider_calls: number
+  queries_executed: number
+  sources_discovered: number
+  sources_accepted: number
+  sources_rejected: number
+  evidence_created: number
+  candidates_created: number
+  duplicates_detected: number
+  conflicts_created: number
+  errors: string[]
+  mission_title?: string
+  provider_id?: string | null
+  duration_seconds?: number | null
+}
+
+export type ResearchRunListResponse = {
+  runs: ResearchRunRow[]
+  total: number
+  page: number
+  per_page: number
+  returned: number
+  sources?: ResearchSourceSummary[]
+}
+
+export type ResearchRunDetailResponse = {
+  run: ResearchRunRow
+  mission: ResearchMissionRow
+  observations: ResearchSourceSummary[]
+  evidence: ResearchEvidenceView[]
+  candidates: ResearchCandidateRow[]
+  timeline: ResearchLedgerEvent[]
+}
+
+export type ResearchCandidateRow = {
+  candidate_id: string
+  domain_id: string
+  mission_id: string
+  run_id: string
+  title: string
+  candidate_type: string
+  claim: string
+  topic_key: string
+  priority: ResearchPriority
+  approval_status: string
+  promotion_state: string
+  novelty_status: string
+  contradiction_status: string
+  validation_status: string
+  safety_class: string
+  confidence: {
+    source_confidence: number
+    authority_confidence: number
+    cross_source_confidence: number
+    provenance_confidence: number
+    novelty_confidence: number
+    contradiction_confidence: number
+    domain_confidence: number
+  }
+  mission_title: string
+  evidence_count: number
+  source_count: number
+  source_quality: number
+  cross_source_support: number
+  high_stakes: boolean
+  research_recommendation: string
+  age_days: number
+  evolution_status: string
+  approval_history_count: number
+  conflict_count: number
+  created_at: string
+  updated_at: string
+}
+
+export type ResearchCandidateListResponse = {
+  candidates: ResearchCandidateRow[]
+  total: number
+  page: number
+  per_page: number
+  returned: number
+}
+
+export type ResearchSourceSummary = {
+  observation_id: string
+  run_id: string
+  provider_id: string
+  source_uri: string
+  canonical_uri: string
+  source_title: string
+  source_type: string
+  author?: string | null
+  publisher?: string | null
+  retrieved_at: string
+  access_status: string
+  claims_supported: string[]
+  candidate_ids: string[]
+  authority_level?: string | null
+  state: string
+  discovery_only: boolean
+  domain_metadata: Record<string, unknown>
+  trust_metadata: Record<string, unknown>
+  raw_reference: Record<string, unknown>
+}
+
+export type ResearchEvidenceView = {
+  evidence_id: string
+  observation_id: string
+  passage: string
+  claim_hint: string
+  confidence: number
+  domain_metadata: Record<string, unknown>
+  source?: ResearchSourceSummary | null
+  presentation: {
+    source_text?: string | null
+    translation?: string | null
+    model_summary?: string | null
+    model_inference: boolean
+  }
+}
+
+export type ResearchConflict = {
+  conflict_id: string
+  topic: string
+  candidate_id: string
+  conflicting_candidate_id?: string | null
+  conflicting_core_id?: string | null
+  conflict_type: string
+  analysis: string
+  resolution_status: string
+  approved_resolution?: string | null
+  confidence: number
+  created_at: string
+}
+
+export type ResearchApprovalRecord = {
+  approval_id: string
+  candidate_id: string
+  action: string
+  status: string
+  decided_by: string
+  decided_at: string
+  reason: string
+  conditions: string[]
+  promotion_state: string
+}
+
+export type ResearchValidationRecord = {
+  validation_id: string
+  validator: string
+  status: string
+  reason: string
+  score: number
+  requires_follow_up: boolean
+}
+
+export type ResearchLedgerEvent = {
+  event_id: string
+  timestamp: string
+  event_type: string
+  domain_id?: string | null
+  mission_id?: string | null
+  run_id?: string | null
+  candidate_id?: string | null
+  actor_type: string
+  actor_id: string
+  action: string
+  reason?: string | null
+  metadata: Record<string, unknown>
+}
+
+export type ResearchCandidateDetailResponse = {
+  candidate: ResearchCandidateRow
+  mission: ResearchMissionRow
+  run: ResearchRunRow
+  evidence_summary: ResearchEvidenceView[]
+  source_observations: ResearchSourceSummary[]
+  validation_summary: ResearchValidationRecord[]
+  approval_history: ResearchApprovalRecord[]
+  conflicts: ResearchConflict[]
+  related_candidates: ResearchCandidateRow[]
+  follow_up_missions: ResearchMissionRow[]
+  ledger: ResearchLedgerEvent[]
+  novelty: string
+  contradiction: string
+  confidence: ResearchCandidateRow['confidence']
+  current_knowledge_comparison: Record<string, unknown>
+  status: string
+}
+
+export type ResearchLedgerResponse = {
+  events: ResearchLedgerEvent[]
+  returned: number
+  total: number
+  page: number
+  per_page: number
+}
+
+export type ResearchScheduleRow = {
+  schedule_id: string
+  domain_id: string
+  mission_id: string
+  cadence_type: string
+  timezone: string
+  enabled: boolean
+  next_run_at?: string | null
+  last_run_at?: string | null
+  misfire_policy: string
+  overlap_policy: string
+  priority: ResearchPriority
+  mission_title?: string
+  mission_status?: string | null
+}
+
+export type ResearchSchedulesResponse = {
+  schedules: ResearchScheduleRow[]
+  returned: number
+}
+
+export type CandidateDecisionPayload = {
+  action: string
+  reason: string
+  conditions?: string[]
+  acknowledged_high_stakes?: boolean
+  conflict_id?: string | null
+  conflict_resolution?: string | null
+  conflict_note?: string | null
+}
+
+export const fetchResearchDashboard = (domainId?: string) =>
+  api.get<ResearchDashboardResponse>('/research/dashboard', { params: domainId ? { domain_id: domainId } : undefined }).then(r => r.data)
+
+export const fetchResearchPlatformHealth = () =>
+  api.get<{ status: string; providers: Record<string, unknown>; failed_runs: number; db_path: string }>('/research/platform/health').then(r => r.data)
+
+export const fetchResearchDomains = () =>
+  api.get<{ domains: ResearchDomain[] }>('/research/domains').then(r => r.data)
+
+export const fetchResearchMissions = (params: Record<string, unknown>) =>
+  api.get<ResearchMissionListResponse>('/research/missions', { params }).then(r => r.data)
+
+export const createResearchMission = (payload: Record<string, unknown>) =>
+  api.post<ResearchMissionRow>('/research/missions', payload).then(r => r.data)
+
+export const fetchResearchMissionDetail = (missionId: string) =>
+  api.get<ResearchMissionDetailResponse>(`/research/missions/${missionId}`).then(r => r.data)
+
+export const pauseResearchMission = (missionId: string, payload?: { notes?: string; mode?: string }) =>
+  api.post<ResearchMissionRow>(`/research/missions/${missionId}/pause`, payload ?? {}).then(r => r.data)
+
+export const resumeResearchMission = (missionId: string, payload?: { priority?: string; notes?: string }) =>
+  api.post<ResearchMissionRow>(`/research/missions/${missionId}/resume`, payload ?? {}).then(r => r.data)
+
+export const triggerResearchMission = (missionId: string) =>
+  api.post<ResearchRunRow>(`/research/missions/${missionId}/trigger`).then(r => r.data)
+
+export const fetchResearchRuns = (params: Record<string, unknown>) =>
+  api.get<ResearchRunListResponse>('/research/runs', { params }).then(r => r.data)
+
+export const fetchResearchRunDetail = (runId: string) =>
+  api.get<ResearchRunDetailResponse>(`/research/runs/${runId}`).then(r => r.data)
+
+export const fetchResearchCandidates = (params: Record<string, unknown>) =>
+  api.get<ResearchCandidateListResponse>('/research/candidates', { params }).then(r => r.data)
+
+export const fetchResearchCandidateDetail = (candidateId: string) =>
+  api.get<ResearchCandidateDetailResponse>(`/research/candidates/${candidateId}`).then(r => r.data)
+
+export const decideResearchCandidate = (candidateId: string, payload: CandidateDecisionPayload) =>
+  api.post<ResearchApprovalRecord>(`/research/candidates/${candidateId}/decision`, payload).then(r => r.data)
+
+export const fetchResearchLedger = (params: Record<string, unknown>) =>
+  api.get<ResearchLedgerResponse>('/research/ledger', { params }).then(r => r.data)
+
+export const fetchResearchSchedules = (domainId?: string) =>
+  api.get<ResearchSchedulesResponse>('/research/schedules', { params: domainId ? { domain_id: domainId } : undefined }).then(r => r.data)
+
+export const updateResearchSchedule = (scheduleId: string, payload: Record<string, unknown>) =>
+  api.put<ResearchScheduleRow>(`/research/schedules/${scheduleId}`, payload).then(r => r.data)
