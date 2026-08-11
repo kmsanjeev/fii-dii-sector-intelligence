@@ -144,7 +144,10 @@
     "PromotionState": {
       "enum": [
         "NONE",
-        "PROMOTION_READY"
+        "PROMOTION_READY",
+        "PROMOTED",
+        "PROMOTED_WITH_CONDITIONS",
+        "BLOCKED"
       ],
       "title": "PromotionState",
       "type": "string"

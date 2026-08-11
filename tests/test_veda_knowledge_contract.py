@@ -7,6 +7,7 @@ from engines.ai.capabilities.service import RepoCapabilityService
 from engines.ai.knowledge.contracts import (
     CONTRACT_VERSION,
     from_attachment_chunk,
+    from_approved_core,
     from_platform_doc,
     from_repo_capability,
     from_reviewed_memory,
@@ -273,3 +274,35 @@ def test_contract_auto_routes_current_doc_shapes(monkeypatch, tmp_dir):
 
     assert record.source_type == "user_reviewed"
     assert record.domain == "MARKET"
+
+
+def test_contract_normalizes_approved_core_doc():
+    doc = {
+        "doc_id": "veda_core_claim_1",
+        "domain": "VEDA",
+        "entity": "VIMSHOTTARI_DASHA",
+        "text": "Approved core claim for Vimshottari dasha foundation.",
+        "meta": {
+            "memory_type": "approved_core",
+            "governance_zone": "APPROVED_CORE",
+            "core_id": "VEDA-RCORE-000123",
+            "promotion_id": "VEDA-RPRM-000123",
+            "claim_ids": ["VEDA-CLM-000123"],
+            "passage_ids": ["VEDA-PSG-000123"],
+            "source_ids": ["VEDA-SRC-000123"],
+            "rule_ids": ["VEDA-RUL-DASHA-000123"],
+            "high_stakes": False,
+            "created_at": "2026-08-11T05:00:00Z",
+        },
+    }
+
+    routed = normalize_knowledge_record(doc)
+    direct = from_approved_core(doc)
+
+    assert routed.source_type == "approved_core"
+    assert routed.approval_state == "admin_promoted_core"
+    assert routed.provenance.source_kind == "approved_core_knowledge"
+    assert routed.provenance.details["promotion_id"] == "VEDA-RPRM-000123"
+    assert routed.provenance.details["claim_ids"] == ["VEDA-CLM-000123"]
+    assert routed.freshness.classification == "governed_core"
+    assert direct.entity == "VIMSHOTTARI_DASHA"

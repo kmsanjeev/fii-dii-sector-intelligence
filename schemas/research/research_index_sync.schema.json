@@ -1,0 +1,66 @@
+{
+  "$defs": {
+    "IndexSyncStatus": {
+      "enum": [
+        "SUCCESS",
+        "PENDING",
+        "FAILED"
+      ],
+      "title": "IndexSyncStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "index_sync_id": {
+      "title": "Index Sync Id",
+      "type": "string"
+    },
+    "promotion_id": {
+      "title": "Promotion Id",
+      "type": "string"
+    },
+    "domain_id": {
+      "title": "Domain Id",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/IndexSyncStatus"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "completed_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Completed At"
+    },
+    "result": {
+      "additionalProperties": true,
+      "title": "Result",
+      "type": "object"
+    }
+  },
+  "required": [
+    "index_sync_id",
+    "promotion_id",
+    "domain_id",
+    "status",
+    "created_at"
+  ],
+  "title": "ResearchIndexSyncRecord",
+  "type": "object"
+}

@@ -8,10 +8,26 @@ from fastapi.testclient import TestClient
 from backend.auth.middleware import AuthMiddleware
 from backend.routers import research as research_router
 from engines.ai.research.platform.contracts import SafetyClass
+from engines.ai.research.platform import service as service_module
 from engines.ai.research.platform.service import ResearchPlatformService
+from engines.common import config as cfg
 
 
 FIXTURE_PATH = Path(__file__).resolve().parents[1] / "data" / "research" / "fixtures" / "synthetic_research_fixture.json"
+
+
+def _stub_sync(*, reason: str, source_doc_id: str | None = None):
+    return {
+        "ok": True,
+        "skipped": False,
+        "reason": reason,
+        "source_doc_id": source_doc_id,
+        "total_records": 3,
+        "bm25_ready": True,
+        "faiss_ready": False,
+        "faiss_skipped": True,
+        "mode": "bm25_only",
+    }
 
 
 def _service(tmp_dir) -> ResearchPlatformService:
@@ -173,3 +189,42 @@ def test_needs_more_research_decision_creates_follow_up_and_preserves_history(tm
     assert candidate_payload["follow_up_missions"]
     assert any(item["event_type"] == "MORE_RESEARCH_REQUESTED" for item in ledger_payload["events"])
     assert any(item["event_type"] == "FOLLOW_UP_CREATED" for item in ledger_payload["events"])
+
+
+def test_candidate_promotion_routes_materialize_core_and_allow_rollback(tmp_dir, monkeypatch):
+    monkeypatch.setattr(service_module, "refresh_unified_retrieval_assets", _stub_sync)
+    monkeypatch.setattr(cfg, "VEDA_APPROVED_CORE_KNOWLEDGE_DOCS", tmp_dir / "intelligence" / "rag_knowledge" / "veda_core_documents.jsonl")
+
+    service = _service(tmp_dir)
+    _seed_synthetic_mission(service)
+    candidate = next(item for item in service.list_candidates() if item.title == "Synthetic alpha improves evidence durability")
+    client = _client(service, monkeypatch)
+
+    approval = client.post(
+        f"/api/research/candidates/{candidate.candidate_id}/decision",
+        json={"action": "APPROVE", "reason": "Promote a deterministic synthetic candidate."},
+    )
+    preflight = client.get(f"/api/research/candidates/{candidate.candidate_id}/promotion-preflight")
+    promotion = client.post(
+        f"/api/research/candidates/{candidate.candidate_id}/promote",
+        json={"promotion_notes": "P010 admin API promotion test."},
+    )
+
+    assert approval.status_code == 200
+    assert preflight.status_code == 200
+    assert preflight.json()["status"] == "PASS"
+    assert promotion.status_code == 200
+    assert promotion.json()["promotion"]["promotion_status"] == "PROMOTED"
+
+    promotion_id = promotion.json()["promotion"]["promotion_id"]
+    rollback = client.post(
+        f"/api/research/promotions/{promotion_id}/rollback",
+        json={"reason": "Validate rollback path after API promotion."},
+    )
+    candidate_detail = client.get(f"/api/research/candidates/{candidate.candidate_id}")
+
+    assert rollback.status_code == 200
+    assert rollback.json()["rollback"]["promotion_id"] == promotion_id
+    assert candidate_detail.status_code == 200
+    assert candidate_detail.json()["candidate"]["promotion_state"] == "BLOCKED"
+    assert candidate_detail.json()["promotion_history"][-1]["promotion_status"] == "ROLLED_BACK"

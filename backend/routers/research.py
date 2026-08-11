@@ -119,6 +119,14 @@ class CandidateDecisionRequest(BaseModel):
     conflict_note: str | None = None
 
 
+class CandidatePromotionRequest(BaseModel):
+    promotion_notes: str | None = None
+
+
+class PromotionRollbackRequest(BaseModel):
+    reason: str
+
+
 class RuntimeControlRequest(BaseModel):
     reason: str | None = None
     enabled: bool | None = None
@@ -510,6 +518,44 @@ def decide_research_candidate(candidate_id: str, req: CandidateDecisionRequest, 
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     return approval.model_dump(mode="json")
+
+
+@router.get("/candidates/{candidate_id}/promotion-preflight", tags=["research-admin"])
+def preview_candidate_promotion(candidate_id: str, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    try:
+        preflight = service.run_promotion_preflight(candidate_id, actor_id=current_user.email)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    return preflight.model_dump(mode="json")
+
+
+@router.post("/candidates/{candidate_id}/promote", tags=["research-admin"])
+def promote_research_candidate(candidate_id: str, req: CandidatePromotionRequest | None = None, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    try:
+        return service.promote_candidate(
+            candidate_id,
+            actor_id=current_user.email,
+            promotion_notes=req.promotion_notes if req else None,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.post("/promotions/{promotion_id}/rollback", tags=["research-admin"])
+def rollback_promoted_candidate(promotion_id: str, req: PromotionRollbackRequest, current_user=Depends(require_admin)):
+    service = get_research_platform_service()
+    try:
+        return service.rollback_promotion(promotion_id, actor_id=current_user.email, reason=req.reason)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
 
 
 @router.get("/ledger", tags=["research-admin"])

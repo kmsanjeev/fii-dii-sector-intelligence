@@ -28,6 +28,10 @@ CONFLICT_ID_RE = re.compile(r"^VEDA-RCNF-\d{6}$")
 APPROVAL_ID_RE = re.compile(r"^VEDA-RAPR-\d{6}$")
 LEDGER_ID_RE = re.compile(r"^VEDA-LED-\d{6}$")
 CORE_ID_RE = re.compile(r"^VEDA-RCORE-\d{6}$")
+PREFLIGHT_ID_RE = re.compile(r"^VEDA-RPFL-\d{6}$")
+PROMOTION_ID_RE = re.compile(r"^VEDA-RPRM-\d{6}$")
+ROLLBACK_ID_RE = re.compile(r"^VEDA-RRBK-\d{6}$")
+INDEX_SYNC_ID_RE = re.compile(r"^VEDA-RIDX-\d{6}$")
 
 
 def _is_iso_datetime(value: str) -> bool:
@@ -214,12 +218,45 @@ class AdminAction(str, Enum):
 class PromotionState(str, Enum):
     NONE = "NONE"
     PROMOTION_READY = "PROMOTION_READY"
+    PROMOTED = "PROMOTED"
+    PROMOTED_WITH_CONDITIONS = "PROMOTED_WITH_CONDITIONS"
+    BLOCKED = "BLOCKED"
 
 
 class KnowledgeZone(str, Enum):
     APPROVED_CORE = "APPROVED_CORE"
     RESEARCH_CANDIDATE = "RESEARCH_CANDIDATE"
     RESEARCH_ARCHIVE = "RESEARCH_ARCHIVE"
+
+
+class PromotionStatus(str, Enum):
+    QUEUED = "QUEUED"
+    PREFLIGHT = "PREFLIGHT"
+    PROMOTING = "PROMOTING"
+    PROMOTED = "PROMOTED"
+    PROMOTED_WITH_CONDITIONS = "PROMOTED_WITH_CONDITIONS"
+    BLOCKED = "BLOCKED"
+    FAILED = "FAILED"
+    ROLLED_BACK = "ROLLED_BACK"
+
+
+class PromotionPreflightStatus(str, Enum):
+    PASS = "PASS"
+    PASS_WITH_CONDITIONS = "PASS_WITH_CONDITIONS"
+    BLOCKED = "BLOCKED"
+
+
+class CoreVersionState(str, Enum):
+    CURRENT = "CURRENT"
+    SUPERSEDED = "SUPERSEDED"
+    DEPRECATED = "DEPRECATED"
+    WITHDRAWN = "WITHDRAWN"
+
+
+class IndexSyncStatus(str, Enum):
+    SUCCESS = "SUCCESS"
+    PENDING = "PENDING"
+    FAILED = "FAILED"
 
 
 class ConflictResolutionStatus(str, Enum):
@@ -321,6 +358,14 @@ class LedgerEventType(str, Enum):
     ADMIN_APPROVED = "ADMIN_APPROVED"
     ADMIN_REJECTED = "ADMIN_REJECTED"
     MORE_RESEARCH_REQUESTED = "MORE_RESEARCH_REQUESTED"
+    PROMOTION_PREFLIGHT = "PROMOTION_PREFLIGHT"
+    PROMOTION_STARTED = "PROMOTION_STARTED"
+    PROMOTION_COMPLETED = "PROMOTION_COMPLETED"
+    PROMOTION_BLOCKED = "PROMOTION_BLOCKED"
+    PROMOTION_FAILED = "PROMOTION_FAILED"
+    PROMOTION_ROLLED_BACK = "PROMOTION_ROLLED_BACK"
+    INDEX_SYNC_COMPLETED = "INDEX_SYNC_COMPLETED"
+    INDEX_SYNC_PENDING = "INDEX_SYNC_PENDING"
     RUN_FAILED = "RUN_FAILED"
     RUN_RECOVERED = "RUN_RECOVERED"
     DIGEST_UPDATED = "DIGEST_UPDATED"
@@ -864,6 +909,7 @@ class ResearchApprovalRecord(PlatformArtifact):
     candidate_id: str
     action: AdminAction
     status: ApprovalStatus
+    actor_type: ActorType = ActorType.ADMIN
     decided_by: str
     decided_at: str
     reason: str
@@ -968,9 +1014,26 @@ class ResearchCoreKnowledgeRecord(PlatformArtifact):
     topic_key: str
     stance: str
     source_ids: list[str] = Field(default_factory=list)
+    passage_ids: list[str] = Field(default_factory=list)
+    claim_ids: list[str] = Field(default_factory=list)
+    conflict_ids: list[str] = Field(default_factory=list)
+    rule_ids: list[str] = Field(default_factory=list)
     approval_status: ApprovalStatus = ApprovalStatus.APPROVED
     knowledge_zone: KnowledgeZone = KnowledgeZone.APPROVED_CORE
     confidence: ConfidenceDimensions
+    candidate_id: str | None = None
+    approval_id: str | None = None
+    promotion_id: str | None = None
+    version: str = "1.0.0"
+    version_state: CoreVersionState = CoreVersionState.CURRENT
+    supersedes_core_id: str | None = None
+    superseded_by_core_id: str | None = None
+    retrieval_classification: str = "APPROVED_CORE"
+    high_stakes: bool = False
+    created_by: str = "system"
+    updated_by: str = "system"
+    change_reason: str = "Seeded governed core knowledge."
+    lineage: dict[str, Any] = Field(default_factory=dict)
     created_at: str
     updated_at: str
 
@@ -991,6 +1054,283 @@ class ResearchCoreKnowledgeRecord(PlatformArtifact):
     @field_validator("created_at", "updated_at")
     @classmethod
     def _validate_core_times(cls, value: str) -> str:
+        if not _is_iso_datetime(value):
+            raise ValueError("datetime fields must be ISO-8601 strings")
+        return value
+
+    @field_validator("version")
+    @classmethod
+    def _validate_core_version(cls, value: str) -> str:
+        if not SEMVER_RE.fullmatch(value):
+            raise ValueError("version must use semantic versioning")
+        return value
+
+    @field_validator("candidate_id")
+    @classmethod
+    def _validate_core_candidate_id(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        if not CANDIDATE_ID_RE.fullmatch(value):
+            raise ValueError("candidate_id must match VEDA-RCND-000001")
+        return value
+
+    @field_validator("approval_id")
+    @classmethod
+    def _validate_core_approval_id(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        if not APPROVAL_ID_RE.fullmatch(value):
+            raise ValueError("approval_id must match VEDA-RAPR-000001")
+        return value
+
+    @field_validator("promotion_id")
+    @classmethod
+    def _validate_core_promotion_id(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        if not PROMOTION_ID_RE.fullmatch(value):
+            raise ValueError("promotion_id must match VEDA-RPRM-000001")
+        return value
+
+    @field_validator("supersedes_core_id", "superseded_by_core_id")
+    @classmethod
+    def _validate_core_refs(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        if not CORE_ID_RE.fullmatch(value):
+            raise ValueError("core references must match VEDA-RCORE-000001")
+        return value
+
+    @field_validator("passage_ids")
+    @classmethod
+    def _validate_core_passage_ids(cls, value: list[str]) -> list[str]:
+        for item in value:
+            if not re.fullmatch(r"VEDA-PSG-\d{6}", item):
+                raise ValueError("passage_ids must match VEDA-PSG-000001")
+        return value
+
+    @field_validator("claim_ids")
+    @classmethod
+    def _validate_core_claim_ids(cls, value: list[str]) -> list[str]:
+        for item in value:
+            if not re.fullmatch(r"VEDA-CLM-\d{6}", item):
+                raise ValueError("claim_ids must match VEDA-CLM-000001")
+        return value
+
+    @field_validator("conflict_ids")
+    @classmethod
+    def _validate_core_conflict_ids(cls, value: list[str]) -> list[str]:
+        for item in value:
+            if not re.fullmatch(r"VEDA-CNF-\d{6}", item):
+                raise ValueError("conflict_ids must match VEDA-CNF-000001")
+        return value
+
+    @field_validator("rule_ids")
+    @classmethod
+    def _validate_core_rule_ids(cls, value: list[str]) -> list[str]:
+        for item in value:
+            if not re.fullmatch(r"VEDA-RUL-[A-Z0-9_]+-\d{6}", item):
+                raise ValueError("rule_ids must match VEDA-RUL-AREA-000001")
+        return value
+
+
+class ResearchPromotionPreflightRecord(PlatformArtifact):
+    preflight_id: str
+    candidate_id: str
+    domain_id: str
+    approval_id: str | None = None
+    promotion_id: str | None = None
+    status: PromotionPreflightStatus
+    proposed_operation: str
+    checks: list[dict[str, Any]] = Field(default_factory=list)
+    blocking_reasons: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    required_actions: list[str] = Field(default_factory=list)
+    source_ids: list[str] = Field(default_factory=list)
+    evidence_ids: list[str] = Field(default_factory=list)
+    existing_core_ids: list[str] = Field(default_factory=list)
+    high_stakes: bool = False
+    created_at: str
+
+    @field_validator("preflight_id")
+    @classmethod
+    def _validate_preflight_id(cls, value: str) -> str:
+        if not PREFLIGHT_ID_RE.fullmatch(value):
+            raise ValueError("preflight_id must match VEDA-RPFL-000001")
+        return value
+
+    @field_validator("candidate_id")
+    @classmethod
+    def _validate_preflight_candidate_id(cls, value: str) -> str:
+        if not CANDIDATE_ID_RE.fullmatch(value):
+            raise ValueError("candidate_id must match VEDA-RCND-000001")
+        return value
+
+    @field_validator("domain_id")
+    @classmethod
+    def _validate_preflight_domain_id(cls, value: str) -> str:
+        if not DOMAIN_ID_RE.fullmatch(value):
+            raise ValueError("domain_id must match VEDA-DOMAIN-...")
+        return value
+
+    @field_validator("approval_id")
+    @classmethod
+    def _validate_preflight_approval_id(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        if not APPROVAL_ID_RE.fullmatch(value):
+            raise ValueError("approval_id must match VEDA-RAPR-000001")
+        return value
+
+    @field_validator("promotion_id")
+    @classmethod
+    def _validate_preflight_promotion_id(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        if not PROMOTION_ID_RE.fullmatch(value):
+            raise ValueError("promotion_id must match VEDA-RPRM-000001")
+        return value
+
+    @field_validator("created_at")
+    @classmethod
+    def _validate_preflight_created_at(cls, value: str) -> str:
+        if not _is_iso_datetime(value):
+            raise ValueError("created_at must be ISO-8601")
+        return value
+
+
+class ResearchPromotionRecord(PlatformArtifact):
+    promotion_id: str
+    candidate_id: str
+    domain_id: str
+    approval_id: str
+    promotion_status: PromotionStatus
+    preflight_result: PromotionPreflightStatus
+    source_ids: list[str] = Field(default_factory=list)
+    passage_ids: list[str] = Field(default_factory=list)
+    claim_ids: list[str] = Field(default_factory=list)
+    rule_ids: list[str] = Field(default_factory=list)
+    conflict_ids: list[str] = Field(default_factory=list)
+    core_ids: list[str] = Field(default_factory=list)
+    previous_version_ids: list[str] = Field(default_factory=list)
+    created_at: str
+    completed_at: str | None = None
+    promoted_by: str
+    promotion_notes: str | None = None
+    index_sync_status: IndexSyncStatus = IndexSyncStatus.PENDING
+
+    @field_validator("promotion_id")
+    @classmethod
+    def _validate_promotion_id(cls, value: str) -> str:
+        if not PROMOTION_ID_RE.fullmatch(value):
+            raise ValueError("promotion_id must match VEDA-RPRM-000001")
+        return value
+
+    @field_validator("candidate_id")
+    @classmethod
+    def _validate_promotion_candidate_id(cls, value: str) -> str:
+        if not CANDIDATE_ID_RE.fullmatch(value):
+            raise ValueError("candidate_id must match VEDA-RCND-000001")
+        return value
+
+    @field_validator("domain_id")
+    @classmethod
+    def _validate_promotion_domain_id(cls, value: str) -> str:
+        if not DOMAIN_ID_RE.fullmatch(value):
+            raise ValueError("domain_id must match VEDA-DOMAIN-...")
+        return value
+
+    @field_validator("approval_id")
+    @classmethod
+    def _validate_promotion_approval_id(cls, value: str) -> str:
+        if not APPROVAL_ID_RE.fullmatch(value):
+            raise ValueError("approval_id must match VEDA-RAPR-000001")
+        return value
+
+    @field_validator("created_at", "completed_at")
+    @classmethod
+    def _validate_promotion_times(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        if not _is_iso_datetime(value):
+            raise ValueError("datetime fields must be ISO-8601 strings")
+        return value
+
+
+class ResearchRollbackRecord(PlatformArtifact):
+    rollback_id: str
+    promotion_id: str
+    domain_id: str
+    affected_core_ids: list[str] = Field(default_factory=list)
+    restored_core_ids: list[str] = Field(default_factory=list)
+    rolled_back_by: str
+    rolled_back_at: str
+    reason: str
+
+    @field_validator("rollback_id")
+    @classmethod
+    def _validate_rollback_id(cls, value: str) -> str:
+        if not ROLLBACK_ID_RE.fullmatch(value):
+            raise ValueError("rollback_id must match VEDA-RRBK-000001")
+        return value
+
+    @field_validator("promotion_id")
+    @classmethod
+    def _validate_rollback_promotion_id(cls, value: str) -> str:
+        if not PROMOTION_ID_RE.fullmatch(value):
+            raise ValueError("promotion_id must match VEDA-RPRM-000001")
+        return value
+
+    @field_validator("domain_id")
+    @classmethod
+    def _validate_rollback_domain_id(cls, value: str) -> str:
+        if not DOMAIN_ID_RE.fullmatch(value):
+            raise ValueError("domain_id must match VEDA-DOMAIN-...")
+        return value
+
+    @field_validator("rolled_back_at")
+    @classmethod
+    def _validate_rollback_time(cls, value: str) -> str:
+        if not _is_iso_datetime(value):
+            raise ValueError("rolled_back_at must be ISO-8601")
+        return value
+
+
+class ResearchIndexSyncRecord(PlatformArtifact):
+    index_sync_id: str
+    promotion_id: str
+    domain_id: str
+    status: IndexSyncStatus
+    created_at: str
+    completed_at: str | None = None
+    result: dict[str, Any] = Field(default_factory=dict)
+
+    @field_validator("index_sync_id")
+    @classmethod
+    def _validate_index_sync_id(cls, value: str) -> str:
+        if not INDEX_SYNC_ID_RE.fullmatch(value):
+            raise ValueError("index_sync_id must match VEDA-RIDX-000001")
+        return value
+
+    @field_validator("promotion_id")
+    @classmethod
+    def _validate_index_sync_promotion_id(cls, value: str) -> str:
+        if not PROMOTION_ID_RE.fullmatch(value):
+            raise ValueError("promotion_id must match VEDA-RPRM-000001")
+        return value
+
+    @field_validator("domain_id")
+    @classmethod
+    def _validate_index_sync_domain_id(cls, value: str) -> str:
+        if not DOMAIN_ID_RE.fullmatch(value):
+            raise ValueError("domain_id must match VEDA-DOMAIN-...")
+        return value
+
+    @field_validator("created_at", "completed_at")
+    @classmethod
+    def _validate_index_sync_times(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
         if not _is_iso_datetime(value):
             raise ValueError("datetime fields must be ISO-8601 strings")
         return value
@@ -1099,6 +1439,10 @@ def schema_documents() -> dict[str, dict[str, Any]]:
         "research_validation.schema.json": ResearchValidationRecord.model_json_schema(),
         "research_conflict.schema.json": ResearchConflictRecord.model_json_schema(),
         "research_approval.schema.json": ResearchApprovalRecord.model_json_schema(),
+        "research_promotion_preflight.schema.json": ResearchPromotionPreflightRecord.model_json_schema(),
+        "research_promotion.schema.json": ResearchPromotionRecord.model_json_schema(),
+        "research_rollback.schema.json": ResearchRollbackRecord.model_json_schema(),
+        "research_index_sync.schema.json": ResearchIndexSyncRecord.model_json_schema(),
         "research_ledger_event.schema.json": ResearchLedgerEventRecord.model_json_schema(),
     }
 
@@ -1145,11 +1489,15 @@ __all__ = [
     "ResearchEvidenceRecord",
     "ResearchLedgerEventRecord",
     "ResearchMissionRecord",
+    "ResearchPromotionPreflightRecord",
+    "ResearchPromotionRecord",
     "ResearchProviderDescriptor",
+    "ResearchRollbackRecord",
     "ResearchRunRecord",
     "ResearchScheduleRecord",
     "ResearchType",
     "ResearchValidationRecord",
+    "ResearchIndexSyncRecord",
     "RunStatus",
     "SafetyClass",
     "SourceAccessStatus",
@@ -1157,6 +1505,10 @@ __all__ = [
     "TriggerType",
     "ValidationStage",
     "ValidationStatus",
+    "CoreVersionState",
+    "IndexSyncStatus",
+    "PromotionPreflightStatus",
+    "PromotionStatus",
     "schema_documents",
     "write_json_schemas",
 ]

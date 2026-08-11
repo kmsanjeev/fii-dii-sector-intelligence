@@ -300,11 +300,73 @@ export type ResearchApprovalRecord = {
   candidate_id: string
   action: string
   status: string
+  actor_type?: string
   decided_by: string
   decided_at: string
   reason: string
   conditions: string[]
   promotion_state: string
+}
+
+export type ResearchPromotionPreflightRecord = {
+  preflight_id: string
+  candidate_id: string
+  domain_id: string
+  approval_id?: string | null
+  promotion_id?: string | null
+  status: string
+  proposed_operation: string
+  checks: Array<{ code: string; status: string; message: string }>
+  blocking_reasons: string[]
+  warnings: string[]
+  required_actions: string[]
+  source_ids: string[]
+  evidence_ids: string[]
+  existing_core_ids: string[]
+  high_stakes: boolean
+  created_at: string
+}
+
+export type ResearchPromotionRecord = {
+  promotion_id: string
+  candidate_id: string
+  domain_id: string
+  approval_id: string
+  promotion_status: string
+  preflight_result: string
+  source_ids: string[]
+  passage_ids: string[]
+  claim_ids: string[]
+  rule_ids: string[]
+  conflict_ids: string[]
+  core_ids: string[]
+  previous_version_ids: string[]
+  created_at: string
+  completed_at?: string | null
+  promoted_by: string
+  promotion_notes?: string | null
+  index_sync_status: string
+}
+
+export type ResearchRollbackRecord = {
+  rollback_id: string
+  promotion_id: string
+  domain_id: string
+  affected_core_ids: string[]
+  restored_core_ids: string[]
+  rolled_back_by: string
+  rolled_back_at: string
+  reason: string
+}
+
+export type ResearchIndexSyncRecord = {
+  index_sync_id: string
+  promotion_id: string
+  domain_id: string
+  status: string
+  created_at: string
+  completed_at?: string | null
+  result: Record<string, unknown>
 }
 
 export type ResearchValidationRecord = {
@@ -340,6 +402,11 @@ export type ResearchCandidateDetailResponse = {
   validation_summary: ResearchValidationRecord[]
   approval_history: ResearchApprovalRecord[]
   conflicts: ResearchConflict[]
+  promotion_preflights: ResearchPromotionPreflightRecord[]
+  promotion_history: ResearchPromotionRecord[]
+  rollback_history: ResearchRollbackRecord[]
+  index_sync_history: ResearchIndexSyncRecord[]
+  core_history: Array<Record<string, unknown>>
   related_candidates: ResearchCandidateRow[]
   follow_up_missions: ResearchMissionRow[]
   ledger: ResearchLedgerEvent[]
@@ -389,6 +456,14 @@ export type CandidateDecisionPayload = {
   conflict_note?: string | null
 }
 
+export type CandidatePromotionPayload = {
+  promotion_notes?: string | null
+}
+
+export type PromotionRollbackPayload = {
+  reason: string
+}
+
 export const fetchResearchDashboard = (domainId?: string) =>
   api.get<ResearchDashboardResponse>('/research/dashboard', { params: domainId ? { domain_id: domainId } : undefined }).then(r => r.data)
 
@@ -430,6 +505,23 @@ export const fetchResearchCandidateDetail = (candidateId: string) =>
 
 export const decideResearchCandidate = (candidateId: string, payload: CandidateDecisionPayload) =>
   api.post<ResearchApprovalRecord>(`/research/candidates/${candidateId}/decision`, payload).then(r => r.data)
+
+export const fetchResearchCandidatePromotionPreflight = (candidateId: string) =>
+  api.get<ResearchPromotionPreflightRecord>(`/research/candidates/${candidateId}/promotion-preflight`).then(r => r.data)
+
+export const promoteResearchCandidate = (candidateId: string, payload?: CandidatePromotionPayload) =>
+  api.post<{
+    preflight: ResearchPromotionPreflightRecord
+    promotion: ResearchPromotionRecord
+    index_sync?: ResearchIndexSyncRecord | null
+    core_records: Array<Record<string, unknown>>
+  }>(`/research/candidates/${candidateId}/promote`, payload ?? {}).then(r => r.data)
+
+export const rollbackResearchPromotion = (promotionId: string, payload: PromotionRollbackPayload) =>
+  api.post<{
+    rollback: ResearchRollbackRecord
+    index_sync: ResearchIndexSyncRecord
+  }>(`/research/promotions/${promotionId}/rollback`, payload).then(r => r.data)
 
 export const fetchResearchLedger = (params: Record<string, unknown>) =>
   api.get<ResearchLedgerResponse>('/research/ledger', { params }).then(r => r.data)

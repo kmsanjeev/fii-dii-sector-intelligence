@@ -8,6 +8,8 @@ from typing import Any, Iterable, Iterator
 
 from engines.ai.research.platform.contracts import (
     ApprovalStatus,
+    CoreVersionState,
+    IndexSyncStatus,
     KnowledgeZone,
     MissionStatus,
     ResearchApprovalRecord,
@@ -16,8 +18,12 @@ from engines.ai.research.platform.contracts import (
     ResearchCoreKnowledgeRecord,
     ResearchDomainRecord,
     ResearchEvidenceRecord,
+    ResearchIndexSyncRecord,
     ResearchLedgerEventRecord,
     ResearchMissionRecord,
+    ResearchPromotionPreflightRecord,
+    ResearchPromotionRecord,
+    ResearchRollbackRecord,
     ResearchRunRecord,
     ResearchScheduleRecord,
     ResearchValidationRecord,
@@ -49,6 +55,12 @@ class ResearchPlatformStore:
         finally:
             con.close()
 
+    def _ensure_column(self, con: sqlite3.Connection, table_name: str, column_name: str, ddl: str) -> None:
+        rows = con.execute(f"PRAGMA table_info({table_name})").fetchall()
+        if any(str(row["name"]) == column_name for row in rows):
+            return
+        con.execute(f"ALTER TABLE {table_name} ADD COLUMN {ddl}")
+
     def _init_db(self) -> None:
         with self._conn() as con:
             con.executescript(
@@ -71,6 +83,7 @@ class ResearchPlatformStore:
                     normalized_claim TEXT NOT NULL,
                     topic_key TEXT NOT NULL,
                     stance TEXT NOT NULL,
+                    version_state TEXT NOT NULL DEFAULT 'CURRENT',
                     updated_at TEXT NOT NULL,
                     payload TEXT NOT NULL
                 );
@@ -213,6 +226,51 @@ class ResearchPlatformStore:
                 CREATE INDEX IF NOT EXISTS idx_ledger_time
                     ON research_ledger (timestamp);
 
+                CREATE TABLE IF NOT EXISTS research_promotion_preflights (
+                    preflight_id TEXT PRIMARY KEY,
+                    candidate_id TEXT NOT NULL,
+                    domain_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    payload TEXT NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS idx_promotion_preflights_candidate
+                    ON research_promotion_preflights (candidate_id, created_at);
+
+                CREATE TABLE IF NOT EXISTS research_promotions (
+                    promotion_id TEXT PRIMARY KEY,
+                    candidate_id TEXT NOT NULL,
+                    domain_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    completed_at TEXT,
+                    payload TEXT NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS idx_promotions_candidate
+                    ON research_promotions (candidate_id, created_at);
+
+                CREATE TABLE IF NOT EXISTS research_rollbacks (
+                    rollback_id TEXT PRIMARY KEY,
+                    promotion_id TEXT NOT NULL,
+                    domain_id TEXT NOT NULL,
+                    rolled_back_at TEXT NOT NULL,
+                    payload TEXT NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS idx_rollbacks_promotion
+                    ON research_rollbacks (promotion_id, rolled_back_at);
+
+                CREATE TABLE IF NOT EXISTS research_index_sync (
+                    index_sync_id TEXT PRIMARY KEY,
+                    promotion_id TEXT NOT NULL,
+                    domain_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    completed_at TEXT,
+                    payload TEXT NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS idx_index_sync_promotion
+                    ON research_index_sync (promotion_id, created_at);
+
                 CREATE TABLE IF NOT EXISTS research_runtime_state (
                     state_key TEXT PRIMARY KEY,
                     updated_at TEXT NOT NULL,
@@ -235,6 +293,12 @@ class ResearchPlatformStore:
                 CREATE INDEX IF NOT EXISTS idx_digest_type_time
                     ON research_digests (digest_type, created_at);
                 """
+            )
+            self._ensure_column(
+                con,
+                "research_core_knowledge",
+                "version_state",
+                "version_state TEXT NOT NULL DEFAULT 'CURRENT'",
             )
 
     def next_id(self, kind: str, prefix: str) -> str:
@@ -297,16 +361,17 @@ class ResearchPlatformStore:
     def upsert_core_knowledge(self, record: ResearchCoreKnowledgeRecord) -> ResearchCoreKnowledgeRecord:
         with self._conn() as con:
             con.execute(
-                "INSERT INTO research_core_knowledge (core_id, domain_id, normalized_claim, topic_key, stance, updated_at, payload) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?) "
+                "INSERT INTO research_core_knowledge (core_id, domain_id, normalized_claim, topic_key, stance, version_state, updated_at, payload) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
                 "ON CONFLICT(core_id) DO UPDATE SET normalized_claim = excluded.normalized_claim, topic_key = excluded.topic_key, "
-                "stance = excluded.stance, updated_at = excluded.updated_at, payload = excluded.payload",
+                "stance = excluded.stance, version_state = excluded.version_state, updated_at = excluded.updated_at, payload = excluded.payload",
                 (
                     record.core_id,
                     record.domain_id,
                     record.normalized_claim,
                     record.topic_key,
                     record.stance,
+                    record.version_state.value,
                     record.updated_at,
                     self._dump(record),
                 ),
@@ -316,10 +381,23 @@ class ResearchPlatformStore:
     def list_core_knowledge(self, domain_id: str) -> list[ResearchCoreKnowledgeRecord]:
         with self._conn() as con:
             rows = con.execute(
-                "SELECT payload FROM research_core_knowledge WHERE domain_id = ? ORDER BY core_id",
-                (domain_id,),
+                "SELECT payload FROM research_core_knowledge WHERE domain_id = ? AND version_state = ? ORDER BY core_id",
+                (domain_id, CoreVersionState.CURRENT.value),
             ).fetchall()
         return [ResearchCoreKnowledgeRecord.model_validate(json.loads(row["payload"])) for row in rows]
+
+    def list_all_core_knowledge(self) -> list[ResearchCoreKnowledgeRecord]:
+        with self._conn() as con:
+            rows = con.execute("SELECT payload FROM research_core_knowledge ORDER BY core_id").fetchall()
+        return [ResearchCoreKnowledgeRecord.model_validate(json.loads(row["payload"])) for row in rows]
+
+    def get_core_knowledge(self, core_id: str) -> ResearchCoreKnowledgeRecord | None:
+        with self._conn() as con:
+            row = con.execute(
+                "SELECT payload FROM research_core_knowledge WHERE core_id = ?",
+                (core_id,),
+            ).fetchone()
+        return self._load(row, ResearchCoreKnowledgeRecord)
 
     def create_mission(self, record: ResearchMissionRecord) -> ResearchMissionRecord:
         with self._conn() as con:
@@ -689,6 +767,133 @@ class ResearchPlatformStore:
             ).fetchall()
         return [ResearchApprovalRecord.model_validate(json.loads(row["payload"])) for row in rows]
 
+    def insert_promotion_preflight(self, record: ResearchPromotionPreflightRecord) -> ResearchPromotionPreflightRecord:
+        with self._conn() as con:
+            con.execute(
+                "INSERT INTO research_promotion_preflights (preflight_id, candidate_id, domain_id, status, created_at, payload) VALUES (?, ?, ?, ?, ?, ?)",
+                (
+                    record.preflight_id,
+                    record.candidate_id,
+                    record.domain_id,
+                    record.status.value,
+                    record.created_at,
+                    self._dump(record),
+                ),
+            )
+        return record
+
+    def list_promotion_preflights_for_candidate(self, candidate_id: str) -> list[ResearchPromotionPreflightRecord]:
+        with self._conn() as con:
+            rows = con.execute(
+                "SELECT payload FROM research_promotion_preflights WHERE candidate_id = ? ORDER BY created_at, preflight_id",
+                (candidate_id,),
+            ).fetchall()
+        return [ResearchPromotionPreflightRecord.model_validate(json.loads(row["payload"])) for row in rows]
+
+    def insert_promotion(self, record: ResearchPromotionRecord) -> ResearchPromotionRecord:
+        with self._conn() as con:
+            con.execute(
+                "INSERT INTO research_promotions (promotion_id, candidate_id, domain_id, status, created_at, completed_at, payload) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (
+                    record.promotion_id,
+                    record.candidate_id,
+                    record.domain_id,
+                    record.promotion_status.value,
+                    record.created_at,
+                    record.completed_at,
+                    self._dump(record),
+                ),
+            )
+        return record
+
+    def update_promotion(self, record: ResearchPromotionRecord) -> ResearchPromotionRecord:
+        with self._conn() as con:
+            con.execute(
+                "UPDATE research_promotions SET status = ?, completed_at = ?, payload = ? WHERE promotion_id = ?",
+                (
+                    record.promotion_status.value,
+                    record.completed_at,
+                    self._dump(record),
+                    record.promotion_id,
+                ),
+            )
+        return record
+
+    def get_promotion(self, promotion_id: str) -> ResearchPromotionRecord | None:
+        with self._conn() as con:
+            row = con.execute(
+                "SELECT payload FROM research_promotions WHERE promotion_id = ?",
+                (promotion_id,),
+            ).fetchone()
+        return self._load(row, ResearchPromotionRecord)
+
+    def list_promotions_for_candidate(self, candidate_id: str) -> list[ResearchPromotionRecord]:
+        with self._conn() as con:
+            rows = con.execute(
+                "SELECT payload FROM research_promotions WHERE candidate_id = ? ORDER BY created_at, promotion_id",
+                (candidate_id,),
+            ).fetchall()
+        return [ResearchPromotionRecord.model_validate(json.loads(row["payload"])) for row in rows]
+
+    def insert_rollback(self, record: ResearchRollbackRecord) -> ResearchRollbackRecord:
+        with self._conn() as con:
+            con.execute(
+                "INSERT INTO research_rollbacks (rollback_id, promotion_id, domain_id, rolled_back_at, payload) VALUES (?, ?, ?, ?, ?)",
+                (
+                    record.rollback_id,
+                    record.promotion_id,
+                    record.domain_id,
+                    record.rolled_back_at,
+                    self._dump(record),
+                ),
+            )
+        return record
+
+    def list_rollbacks_for_promotion(self, promotion_id: str) -> list[ResearchRollbackRecord]:
+        with self._conn() as con:
+            rows = con.execute(
+                "SELECT payload FROM research_rollbacks WHERE promotion_id = ? ORDER BY rolled_back_at, rollback_id",
+                (promotion_id,),
+            ).fetchall()
+        return [ResearchRollbackRecord.model_validate(json.loads(row["payload"])) for row in rows]
+
+    def insert_index_sync(self, record: ResearchIndexSyncRecord) -> ResearchIndexSyncRecord:
+        with self._conn() as con:
+            con.execute(
+                "INSERT INTO research_index_sync (index_sync_id, promotion_id, domain_id, status, created_at, completed_at, payload) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (
+                    record.index_sync_id,
+                    record.promotion_id,
+                    record.domain_id,
+                    record.status.value,
+                    record.created_at,
+                    record.completed_at,
+                    self._dump(record),
+                ),
+            )
+        return record
+
+    def update_index_sync(self, record: ResearchIndexSyncRecord) -> ResearchIndexSyncRecord:
+        with self._conn() as con:
+            con.execute(
+                "UPDATE research_index_sync SET status = ?, completed_at = ?, payload = ? WHERE index_sync_id = ?",
+                (
+                    record.status.value,
+                    record.completed_at,
+                    self._dump(record),
+                    record.index_sync_id,
+                ),
+            )
+        return record
+
+    def list_index_sync_for_promotion(self, promotion_id: str) -> list[ResearchIndexSyncRecord]:
+        with self._conn() as con:
+            rows = con.execute(
+                "SELECT payload FROM research_index_sync WHERE promotion_id = ? ORDER BY created_at, index_sync_id",
+                (promotion_id,),
+            ).fetchall()
+        return [ResearchIndexSyncRecord.model_validate(json.loads(row["payload"])) for row in rows]
+
     def append_ledger_event(self, record: ResearchLedgerEventRecord) -> ResearchLedgerEventRecord:
         with self._conn() as con:
             con.execute(
@@ -761,6 +966,10 @@ class ResearchPlatformStore:
             "research_validations": dump_all(self.list_validations()),
             "research_conflicts": dump_all(self.list_conflicts()),
             "research_approvals": dump_all(self.list_approvals()),
+            "research_promotion_preflights": dump_all(self.list_promotion_preflights()),
+            "research_promotions": dump_all(self.list_promotions()),
+            "research_rollbacks": dump_all(self.list_rollbacks()),
+            "research_index_sync": dump_all(self.list_index_sync()),
             "research_ledger_events": dump_all(self.list_ledger_events()),
         }
 
@@ -768,6 +977,26 @@ class ResearchPlatformStore:
         with self._conn() as con:
             rows = con.execute("SELECT payload FROM research_core_knowledge ORDER BY core_id").fetchall()
         return [ResearchCoreKnowledgeRecord.model_validate(json.loads(row["payload"])) for row in rows]
+
+    def list_promotion_preflights(self) -> list[ResearchPromotionPreflightRecord]:
+        with self._conn() as con:
+            rows = con.execute("SELECT payload FROM research_promotion_preflights ORDER BY created_at, preflight_id").fetchall()
+        return [ResearchPromotionPreflightRecord.model_validate(json.loads(row["payload"])) for row in rows]
+
+    def list_promotions(self) -> list[ResearchPromotionRecord]:
+        with self._conn() as con:
+            rows = con.execute("SELECT payload FROM research_promotions ORDER BY created_at, promotion_id").fetchall()
+        return [ResearchPromotionRecord.model_validate(json.loads(row["payload"])) for row in rows]
+
+    def list_rollbacks(self) -> list[ResearchRollbackRecord]:
+        with self._conn() as con:
+            rows = con.execute("SELECT payload FROM research_rollbacks ORDER BY rolled_back_at, rollback_id").fetchall()
+        return [ResearchRollbackRecord.model_validate(json.loads(row["payload"])) for row in rows]
+
+    def list_index_sync(self) -> list[ResearchIndexSyncRecord]:
+        with self._conn() as con:
+            rows = con.execute("SELECT payload FROM research_index_sync ORDER BY created_at, index_sync_id").fetchall()
+        return [ResearchIndexSyncRecord.model_validate(json.loads(row["payload"])) for row in rows]
 
     def get_runtime_state(self, state_key: str) -> dict[str, Any] | None:
         with self._conn() as con:

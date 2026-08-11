@@ -23,6 +23,7 @@ class UnifiedCorpusBuilder:
         self,
         *,
         platform_docs_path: Path | None = None,
+        core_docs_path: Path | None = None,
         reviewed_docs_path: Path | None = None,
         capability_docs_path: Path | None = None,
         unified_docs_path: Path | None = None,
@@ -30,6 +31,7 @@ class UnifiedCorpusBuilder:
         metadata_path: Path | None = None,
     ):
         self._platform_docs_path = Path(platform_docs_path or (cfg.INTELLIGENCE_DIR / "rag_knowledge" / "documents.jsonl"))
+        self._core_docs_path = Path(core_docs_path or cfg.VEDA_APPROVED_CORE_KNOWLEDGE_DOCS)
         self._reviewed_docs_path = Path(reviewed_docs_path or cfg.VEDA_APPROVED_KNOWLEDGE_DOCS)
         self._capability_docs_path = Path(capability_docs_path or cfg.VEDA_APPROVED_CAPABILITY_DOCS)
         self._unified_docs_path = Path(unified_docs_path or cfg.VEDA_UNIFIED_KNOWLEDGE_DOCS)
@@ -40,6 +42,7 @@ class UnifiedCorpusBuilder:
         records = []
         inputs = {
             "platform_docs": self._platform_docs_path,
+            "approved_core_docs": self._core_docs_path,
             "reviewed_memory_docs": self._reviewed_docs_path,
             "mit_capability_docs": self._capability_docs_path,
         }
@@ -83,9 +86,10 @@ class UnifiedCorpusBuilder:
         }
         self._write_manifest(summary)
         logger.info(
-            "[UnifiedCorpus] Built %s records from platform=%s reviewed=%s capability=%s",
+            "[UnifiedCorpus] Built %s records from platform=%s core=%s reviewed=%s capability=%s",
             len(records),
             input_counts["platform_docs"],
+            input_counts["approved_core_docs"],
             input_counts["reviewed_memory_docs"],
             input_counts["mit_capability_docs"],
         )

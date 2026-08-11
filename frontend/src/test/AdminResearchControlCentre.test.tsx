@@ -9,6 +9,7 @@ const researchApiMock = vi.hoisted(() => ({
   createResearchMission: vi.fn(),
   decideResearchCandidate: vi.fn(),
   fetchResearchCandidateDetail: vi.fn(),
+  fetchResearchCandidatePromotionPreflight: vi.fn(),
   fetchResearchCandidates: vi.fn(),
   fetchResearchDashboard: vi.fn(),
   fetchResearchDomains: vi.fn(),
@@ -20,6 +21,8 @@ const researchApiMock = vi.hoisted(() => ({
   fetchResearchRuns: vi.fn(),
   fetchResearchSchedules: vi.fn(),
   pauseResearchMission: vi.fn(),
+  promoteResearchCandidate: vi.fn(),
+  rollbackResearchPromotion: vi.fn(),
   resumeResearchMission: vi.fn(),
   triggerResearchMission: vi.fn(),
   updateResearchSchedule: vi.fn(),
@@ -32,6 +35,7 @@ vi.mock('../api/researchAdmin', async () => {
     createResearchMission: researchApiMock.createResearchMission,
     decideResearchCandidate: researchApiMock.decideResearchCandidate,
     fetchResearchCandidateDetail: researchApiMock.fetchResearchCandidateDetail,
+    fetchResearchCandidatePromotionPreflight: researchApiMock.fetchResearchCandidatePromotionPreflight,
     fetchResearchCandidates: researchApiMock.fetchResearchCandidates,
     fetchResearchDashboard: researchApiMock.fetchResearchDashboard,
     fetchResearchDomains: researchApiMock.fetchResearchDomains,
@@ -43,6 +47,8 @@ vi.mock('../api/researchAdmin', async () => {
     fetchResearchRuns: researchApiMock.fetchResearchRuns,
     fetchResearchSchedules: researchApiMock.fetchResearchSchedules,
     pauseResearchMission: researchApiMock.pauseResearchMission,
+    promoteResearchCandidate: researchApiMock.promoteResearchCandidate,
+    rollbackResearchPromotion: researchApiMock.rollbackResearchPromotion,
     resumeResearchMission: researchApiMock.resumeResearchMission,
     triggerResearchMission: researchApiMock.triggerResearchMission,
     updateResearchSchedule: researchApiMock.updateResearchSchedule,
@@ -368,6 +374,11 @@ const candidateDetailPayload = {
   confidence: candidateListPayload.candidates[0].confidence,
   current_knowledge_comparison: { outcome: 'EXTENDS_EXISTING' },
   status: 'PENDING',
+  promotion_preflights: [],
+  promotion_history: [],
+  rollback_history: [],
+  index_sync_history: [],
+  core_history: [],
 }
 
 
@@ -419,6 +430,21 @@ beforeEach(() => {
   })
   researchApiMock.fetchResearchCandidates.mockResolvedValue(candidateListPayload)
   researchApiMock.fetchResearchCandidateDetail.mockResolvedValue(candidateDetailPayload)
+  researchApiMock.fetchResearchCandidatePromotionPreflight.mockResolvedValue({
+    preflight_id: 'VEDA-RPFL-000001',
+    candidate_id: 'VEDA-RC-001',
+    domain_id: 'VEDA-DOMAIN-VEDIC-ASTROLOGY',
+    approval_id: 'VEDA-RAPR-001',
+    promotion_id: null,
+    status: 'PASS_WITH_CONDITIONS',
+    proposed_operation: 'PROMOTE_WITH_CONDITIONS',
+    checks: [],
+    blocking_reasons: [],
+    warnings: ['Conflict metadata remains attached to promoted knowledge.'],
+    required_actions: [],
+    existing_core_ids: [],
+    created_at: '2026-08-11T06:05:00Z',
+  })
   researchApiMock.fetchResearchLedger.mockResolvedValue({
     events: candidateDetailPayload.ledger,
     returned: 1,
@@ -432,6 +458,15 @@ beforeEach(() => {
   })
   researchApiMock.createResearchMission.mockResolvedValue(missionListPayload.missions[0])
   researchApiMock.pauseResearchMission.mockResolvedValue(missionListPayload.missions[0])
+  researchApiMock.promoteResearchCandidate.mockResolvedValue({
+    preflight: { status: 'PASS_WITH_CONDITIONS' },
+    promotion: { promotion_id: 'VEDA-RPRM-000001', promotion_status: 'PROMOTED_WITH_CONDITIONS' },
+    index_sync: { status: 'SYNCED' },
+    core_records: [{ core_id: 'VEDA-RCORE-000001' }],
+  })
+  researchApiMock.rollbackResearchPromotion.mockResolvedValue({
+    rollback: { rollback_id: 'VEDA-RRBK-000001', promotion_id: 'VEDA-RPRM-000001' },
+  })
   researchApiMock.resumeResearchMission.mockResolvedValue(missionListPayload.missions[0])
   researchApiMock.triggerResearchMission.mockResolvedValue(runListPayload.runs[0])
   researchApiMock.updateResearchSchedule.mockResolvedValue(missionDetailPayload.schedule)
@@ -514,6 +549,44 @@ describe('Admin Research Control Centre', () => {
           domain_id: 'VEDA-DOMAIN-VEDIC-ASTROLOGY',
         }),
       )
+    })
+  })
+
+  it('runs promotion preflight and promotion for an approved candidate without changing approval semantics', async () => {
+    const promotionReadyDetail = {
+      ...candidateDetailPayload,
+      candidate: {
+        ...candidateDetailPayload.candidate,
+        approval_status: 'APPROVED_WITH_CONDITIONS',
+        promotion_state: 'PROMOTION_READY',
+      },
+      status: 'APPROVED_WITH_CONDITIONS',
+    }
+
+    researchApiMock.fetchResearchCandidateDetail.mockResolvedValue(promotionReadyDetail)
+
+    renderConsole()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Approval Queue' }))
+    fireEvent.click(await screen.findByText('Dasha foundation refinement'))
+
+    expect(await screen.findByText('PROMOTION TO CORE KNOWLEDGE')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByPlaceholderText('Promotion notes'), {
+      target: { value: 'Promote as governed core knowledge pilot.' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Run Promotion Preflight' }))
+
+    await waitFor(() => {
+      expect(researchApiMock.fetchResearchCandidatePromotionPreflight).toHaveBeenCalledWith('VEDA-RC-001')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Promote to Core Knowledge' }))
+
+    await waitFor(() => {
+      expect(researchApiMock.promoteResearchCandidate).toHaveBeenCalledWith('VEDA-RC-001', {
+        promotion_notes: 'Promote as governed core knowledge pilot.',
+      })
     })
   })
 })

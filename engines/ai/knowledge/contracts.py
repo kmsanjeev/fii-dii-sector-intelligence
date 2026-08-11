@@ -261,6 +261,8 @@ def normalize_knowledge_record(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
     domain = str(doc.get("domain") or "").upper()
     meta = _coerce_meta(doc)
     memory_type = str(meta.get("memory_type") or "").lower()
+    if memory_type == "approved_core" or str(meta.get("governance_zone") or "").upper() == "APPROVED_CORE":
+        return from_approved_core(doc)
     if memory_type == "attachment_chunk" or domain == "USER_ATTACHMENT_KNOWLEDGE":
         return from_attachment_chunk(doc)
     if domain == "MIT_REPO_CAPABILITY":
@@ -405,6 +407,82 @@ def from_reviewed_memory(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
             "Approved memory can add durable context, but it is not model output and may be older than "
             "the latest market state."
         ),
+    )
+
+
+def from_approved_core(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
+    meta = _coerce_meta(doc)
+    entity = str(doc.get("entity") or "Approved core knowledge")
+    text = str(doc.get("text") or "").strip()
+    summary = _compact_text(meta.get("summary") or text or entity, cfg.VEDA_KNOWLEDGE_MAX_SUMMARY_CHARS)
+    intent = str(meta.get("intent") or meta.get("domain") or "ASTRO").strip().upper() or "ASTRO"
+    saved_at = str(meta.get("saved_at") or meta.get("promoted_at") or "").strip() or None
+    source_rows = []
+    for source in meta.get("research_sources", []) or []:
+        if not isinstance(source, dict):
+            continue
+        source_rows.append(
+            {
+                "title": _compact_text(source.get("title") or "Governed source", 180),
+                "url": str(source.get("url") or "").strip() or None,
+                "published_at": str(source.get("published_at") or "").strip() or None,
+                "excerpt": _compact_text(source.get("excerpt") or "", cfg.VEDA_ATTACHMENT_EXCERPT_CHARS) or None,
+            }
+        )
+    latest_source_date = str(meta.get("latest_source_date") or "").strip() or None
+    provenance = KnowledgeProvenance(
+        source_kind="approved_core_knowledge",
+        source_label="approved_core",
+        storage_key=str(doc.get("doc_id") or ""),
+        source_title=entity,
+        source_url=source_rows[0]["url"] if len(source_rows) == 1 else None,
+        source_date=latest_source_date,
+        details={
+            "governance_zone": "APPROVED_CORE",
+            "core_id": str(meta.get("core_id") or "").strip() or None,
+            "candidate_id": str(meta.get("candidate_id") or "").strip() or None,
+            "approval_id": str(meta.get("approval_id") or "").strip() or None,
+            "promotion_id": str(meta.get("promotion_id") or "").strip() or None,
+            "claim_ids": list(meta.get("claim_ids") or []),
+            "passage_ids": list(meta.get("passage_ids") or []),
+            "source_ids": list(meta.get("source_ids") or []),
+            "rule_ids": list(meta.get("rule_ids") or []),
+            "conflict_ids": list(meta.get("conflict_ids") or []),
+            "research_sources": source_rows,
+            "high_stakes": bool(meta.get("high_stakes")),
+            "allowed_output_mode": str(meta.get("allowed_output_mode") or "").strip() or None,
+            "version": str(meta.get("version") or "").strip() or None,
+        },
+    )
+    reliability_note = (
+        "This is governed approved-core knowledge promoted from reviewed research evidence. "
+        "It remains distinct from temporary external research and from production rule activation."
+    )
+    if bool(meta.get("high_stakes")):
+        reliability_note += " High-stakes safeguards still apply to user-facing output."
+    return KnowledgeEvidenceRecord(
+        doc_id=str(doc.get("doc_id") or ""),
+        source_type="approved_core",
+        domain=intent,
+        entity=entity,
+        entity_keys=KnowledgeEntityKeys(
+            intent=intent,
+            topic=str(meta.get("topic_key") or entity),
+            parent_doc_id=str(meta.get("candidate_id") or "").strip() or None,
+        ),
+        text=text or summary or entity,
+        summary=summary,
+        tags=_unique_tags(meta.get("tags"), intent, "approved_core"),
+        approval_state="admin_promoted_core",
+        evidence_kind="approved_core_knowledge",
+        provenance=provenance,
+        freshness=KnowledgeFreshness(
+            classification="governed_core",
+            saved_at=saved_at,
+            effective_date=latest_source_date,
+            note="Approved core knowledge is durable governed knowledge promoted after explicit Admin approval.",
+        ),
+        reliability_note=reliability_note,
     )
 
 

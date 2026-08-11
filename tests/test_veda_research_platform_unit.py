@@ -37,6 +37,10 @@ def test_research_platform_writes_json_schemas(tmp_dir):
         "research_validation.schema.json",
         "research_conflict.schema.json",
         "research_approval.schema.json",
+        "research_promotion_preflight.schema.json",
+        "research_promotion.schema.json",
+        "research_rollback.schema.json",
+        "research_index_sync.schema.json",
         "research_ledger_event.schema.json",
     }
     for path in written:

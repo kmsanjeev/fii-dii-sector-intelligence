@@ -1,0 +1,133 @@
+{
+  "$defs": {
+    "PromotionPreflightStatus": {
+      "enum": [
+        "PASS",
+        "PASS_WITH_CONDITIONS",
+        "BLOCKED"
+      ],
+      "title": "PromotionPreflightStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "preflight_id": {
+      "title": "Preflight Id",
+      "type": "string"
+    },
+    "candidate_id": {
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "domain_id": {
+      "title": "Domain Id",
+      "type": "string"
+    },
+    "approval_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approval Id"
+    },
+    "promotion_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Promotion Id"
+    },
+    "status": {
+      "$ref": "#/$defs/PromotionPreflightStatus"
+    },
+    "proposed_operation": {
+      "title": "Proposed Operation",
+      "type": "string"
+    },
+    "checks": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Checks",
+      "type": "array"
+    },
+    "blocking_reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Blocking Reasons",
+      "type": "array"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    },
+    "required_actions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Actions",
+      "type": "array"
+    },
+    "source_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Ids",
+      "type": "array"
+    },
+    "evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "existing_core_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Existing Core Ids",
+      "type": "array"
+    },
+    "high_stakes": {
+      "default": false,
+      "title": "High Stakes",
+      "type": "boolean"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "preflight_id",
+    "candidate_id",
+    "domain_id",
+    "status",
+    "proposed_operation",
+    "created_at"
+  ],
+  "title": "ResearchPromotionPreflightRecord",
+  "type": "object"
+}

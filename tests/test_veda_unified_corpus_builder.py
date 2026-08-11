@@ -174,3 +174,50 @@ def test_unified_corpus_builder_reports_exact_duplicates(tmp_dir):
     assert summary["duplicate_group_count"] == 1
     assert summary["duplicates"][0]["count"] == 2
     assert set(summary["duplicates"][0]["doc_ids"]) == {"sector_banking_a", "sector_banking_b"}
+
+
+def test_unified_corpus_builder_includes_approved_core_documents(tmp_dir):
+    approved_core_docs_path = tmp_dir / "approved_core_docs.jsonl"
+    unified_docs_path = tmp_dir / "veda_unified_documents.jsonl"
+    manifest_path = tmp_dir / "veda_unified_manifest.json"
+    metadata_path = tmp_dir / "veda_unified_metadata.csv"
+
+    _write_jsonl(
+        approved_core_docs_path,
+        [
+            {
+                "doc_id": "veda_core_claim_1",
+                "domain": "VEDA",
+                "entity": "VIMSHOTTARI_DASHA",
+                "text": "Approved core claim for Vimshottari dasha foundation.",
+                "meta": {
+                    "memory_type": "approved_core",
+                    "governance_zone": "APPROVED_CORE",
+                    "core_id": "VEDA-RCORE-000123",
+                    "promotion_id": "VEDA-RPRM-000123",
+                    "claim_ids": ["VEDA-CLM-000123"],
+                    "passage_ids": ["VEDA-PSG-000123"],
+                    "source_ids": ["VEDA-SRC-000123"],
+                    "created_at": "2026-08-11T05:00:00Z",
+                },
+            }
+        ],
+    )
+
+    builder = UnifiedCorpusBuilder(
+        platform_docs_path=tmp_dir / "missing_platform.jsonl",
+        reviewed_docs_path=tmp_dir / "missing_reviewed.jsonl",
+        capability_docs_path=tmp_dir / "missing_capability.jsonl",
+        core_docs_path=approved_core_docs_path,
+        unified_docs_path=unified_docs_path,
+        manifest_path=manifest_path,
+        metadata_path=metadata_path,
+    )
+    summary = builder.run()
+
+    assert summary["total_records"] == 1
+    assert summary["source_counts"]["approved_core"] == 1
+    docs = [json.loads(line) for line in unified_docs_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    assert docs[0]["source_type"] == "approved_core"
+    assert docs[0]["freshness_class"] == "governed_core"
+    assert docs[0]["provenance"]["details"]["core_id"] == "VEDA-RCORE-000123"

@@ -1,0 +1,58 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "rollback_id": {
+      "title": "Rollback Id",
+      "type": "string"
+    },
+    "promotion_id": {
+      "title": "Promotion Id",
+      "type": "string"
+    },
+    "domain_id": {
+      "title": "Domain Id",
+      "type": "string"
+    },
+    "affected_core_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Affected Core Ids",
+      "type": "array"
+    },
+    "restored_core_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Restored Core Ids",
+      "type": "array"
+    },
+    "rolled_back_by": {
+      "title": "Rolled Back By",
+      "type": "string"
+    },
+    "rolled_back_at": {
+      "title": "Rolled Back At",
+      "type": "string"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "rollback_id",
+    "promotion_id",
+    "domain_id",
+    "rolled_back_by",
+    "rolled_back_at",
+    "reason"
+  ],
+  "title": "ResearchRollbackRecord",
+  "type": "object"
+}

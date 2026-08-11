@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router-dom'
 import {
   createResearchMission,
   decideResearchCandidate,
+  fetchResearchCandidatePromotionPreflight,
   fetchResearchCandidateDetail,
   fetchResearchCandidates,
   fetchResearchDashboard,
@@ -17,6 +18,8 @@ import {
   fetchResearchRuns,
   fetchResearchSchedules,
   pauseResearchMission,
+  promoteResearchCandidate,
+  rollbackResearchPromotion,
   resumeResearchMission,
   triggerResearchMission,
   updateResearchSchedule,
@@ -125,6 +128,8 @@ function shortText(value: string, length = 140) {
 
 function statusColor(value: string) {
   if (value.includes('FAIL') || value.includes('ERROR') || value.includes('REJECT')) return danger
+  if (value.includes('BLOCKED')) return danger
+  if (value.includes('PROMOTED')) return accent
   if (value.includes('PENDING') || value.includes('NEEDS_MORE_RESEARCH') || value.includes('CONTRADICTION')) return warn
   if (value.includes('APPROVED') || value.includes('ACTIVE') || value.includes('SUCCESS') || value.includes('RUNNING')) return accent
   if (value.includes('PROMOTION_READY')) return info
@@ -299,6 +304,8 @@ function CandidateDetail({
     queryFn: () => fetchResearchCandidateDetail(candidateId!),
     enabled: Boolean(candidateId),
   })
+  const [promotionNotes, setPromotionNotes] = useState('')
+  const [rollbackReason, setRollbackReason] = useState('')
   const decisionMutation = useMutation({
     mutationFn: (payload: CandidateDecisionPayload) => decideResearchCandidate(candidateId!, payload),
     onSuccess: () => {
@@ -308,6 +315,34 @@ function CandidateDetail({
       qc.invalidateQueries({ queryKey: ['research-ledger'] })
       qc.invalidateQueries({ queryKey: ['research-missions'] })
       qc.invalidateQueries({ queryKey: ['research-runs'] })
+    },
+  })
+  const preflightMutation = useMutation({
+    mutationFn: () => fetchResearchCandidatePromotionPreflight(candidateId!),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['research-candidates'] })
+      qc.invalidateQueries({ queryKey: ['research-candidate-detail', candidateId] })
+      qc.invalidateQueries({ queryKey: ['research-ledger'] })
+    },
+  })
+  const promoteMutation = useMutation({
+    mutationFn: () => promoteResearchCandidate(candidateId!, { promotion_notes: promotionNotes || null }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['research-dashboard', domainId] })
+      qc.invalidateQueries({ queryKey: ['research-candidates'] })
+      qc.invalidateQueries({ queryKey: ['research-candidate-detail', candidateId] })
+      qc.invalidateQueries({ queryKey: ['research-ledger'] })
+      setPromotionNotes('')
+    },
+  })
+  const rollbackMutation = useMutation({
+    mutationFn: (promotionId: string) => rollbackResearchPromotion(promotionId, { reason: rollbackReason || 'Rollback requested by admin.' }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['research-dashboard', domainId] })
+      qc.invalidateQueries({ queryKey: ['research-candidates'] })
+      qc.invalidateQueries({ queryKey: ['research-candidate-detail', candidateId] })
+      qc.invalidateQueries({ queryKey: ['research-ledger'] })
+      setRollbackReason('')
     },
   })
 
@@ -323,6 +358,10 @@ function CandidateDetail({
 
   const detail = detailQuery.data
   const candidate = detail.candidate
+  const latestPreflight = detail.promotion_preflights[detail.promotion_preflights.length - 1]
+  const latestPromotion = detail.promotion_history[detail.promotion_history.length - 1]
+  const canPromote = candidate.promotion_state === 'PROMOTION_READY' || latestPreflight?.status === 'PASS' || latestPreflight?.status === 'PASS_WITH_CONDITIONS'
+  const canRollback = latestPromotion && ['PROMOTED', 'PROMOTED_WITH_CONDITIONS'].includes(latestPromotion.promotion_status)
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
@@ -354,6 +393,102 @@ function CandidateDetail({
           {JSON.stringify(detail.current_knowledge_comparison, null, 2)}
         </pre>
       </div>
+
+      {(candidate.approval_status.startsWith('APPROVED') || detail.promotion_history.length > 0 || detail.promotion_preflights.length > 0) && (
+        <div style={{ ...SURFACE, padding: 14 }}>
+          <div style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, marginBottom: 10 }}>PROMOTION TO CORE KNOWLEDGE</div>
+          <div style={{ display: 'grid', gap: 10 }}>
+            <div style={{ color: text, fontSize: 12, lineHeight: 1.6 }}>
+              Approval and promotion are separate actions. Promotion writes governed Core Knowledge and keeps production astrology behaviour unchanged.
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
+              <StatTile label="Promotion State" value={candidate.promotion_state.replaceAll('_', ' ')} tone={statusColor(candidate.promotion_state)} />
+              <StatTile label="Latest Preflight" value={(latestPreflight?.status || 'NONE').replaceAll('_', ' ')} tone={statusColor(latestPreflight?.status || 'NONE')} />
+              <StatTile label="Latest Promotion" value={(latestPromotion?.promotion_status || 'NONE').replaceAll('_', ' ')} tone={statusColor(latestPromotion?.promotion_status || 'NONE')} />
+              <StatTile label="Core Versions" value={detail.core_history.length} tone={info} />
+            </div>
+            {latestPreflight && (
+              <div style={{ border: `1px solid ${line}`, borderRadius: 6, padding: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+                  <Badge label={latestPreflight.status.replaceAll('_', ' ')} color={statusColor(latestPreflight.status)} />
+                  <Badge label={latestPreflight.proposed_operation.replaceAll('_', ' ')} color={info} />
+                </div>
+                {latestPreflight.blocking_reasons.length > 0 && (
+                  <div style={{ color: danger, fontSize: 12, marginBottom: 8 }}>
+                    {latestPreflight.blocking_reasons.join(' ')}
+                  </div>
+                )}
+                {latestPreflight.warnings.length > 0 && (
+                  <div style={{ color: warn, fontSize: 12, marginBottom: 8 }}>
+                    {latestPreflight.warnings.join(' ')}
+                  </div>
+                )}
+                {latestPreflight.required_actions.length > 0 && (
+                  <div style={{ color: muted, fontSize: 11 }}>
+                    Required actions: {latestPreflight.required_actions.join(' | ')}
+                  </div>
+                )}
+              </div>
+            )}
+            <textarea
+              value={promotionNotes}
+              onChange={e => setPromotionNotes(e.target.value)}
+              placeholder="Promotion notes"
+              style={{ ...inputStyle, minHeight: 70, resize: 'vertical' }}
+            />
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button
+                onClick={() => preflightMutation.mutate()}
+                disabled={preflightMutation.isPending}
+                style={buttonStyle('info')}
+              >
+                {preflightMutation.isPending ? 'Running Preflight…' : 'Run Promotion Preflight'}
+              </button>
+              <button
+                onClick={() => promoteMutation.mutate()}
+                disabled={promoteMutation.isPending || !canPromote}
+                style={buttonStyle('accent')}
+              >
+                {promoteMutation.isPending ? 'Promoting…' : 'Promote to Core Knowledge'}
+              </button>
+            </div>
+            {canRollback && (
+              <div style={{ display: 'grid', gap: 8 }}>
+                <textarea
+                  value={rollbackReason}
+                  onChange={e => setRollbackReason(e.target.value)}
+                  placeholder="Rollback reason"
+                  style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }}
+                />
+                <div>
+                  <button
+                    onClick={() => rollbackMutation.mutate(latestPromotion.promotion_id)}
+                    disabled={rollbackMutation.isPending || !rollbackReason.trim()}
+                    style={buttonStyle('danger')}
+                  >
+                    {rollbackMutation.isPending ? 'Rolling Back…' : 'Rollback Latest Promotion'}
+                  </button>
+                </div>
+              </div>
+            )}
+            {detail.promotion_history.length > 0 && (
+              <div style={{ display: 'grid', gap: 8 }}>
+                {detail.promotion_history.map(item => (
+                  <div key={item.promotion_id} style={{ borderBottom: `1px solid ${line}`, paddingBottom: 8 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
+                      <Badge label={item.promotion_status} color={statusColor(item.promotion_status)} />
+                      <div style={{ color: muted, fontSize: 11 }}>{formatStamp(item.completed_at || item.created_at)}</div>
+                    </div>
+                    <div style={{ color: text, fontSize: 12, marginTop: 6 }}>
+                      {item.promotion_id} · Index sync {item.index_sync_status.replaceAll('_', ' ')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div style={{ ...SURFACE, padding: 14 }}>
         <div style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, marginBottom: 10 }}>SUPPORTING SOURCES / PASSAGES</div>

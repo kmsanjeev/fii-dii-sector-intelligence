@@ -1,0 +1,163 @@
+{
+  "$defs": {
+    "IndexSyncStatus": {
+      "enum": [
+        "SUCCESS",
+        "PENDING",
+        "FAILED"
+      ],
+      "title": "IndexSyncStatus",
+      "type": "string"
+    },
+    "PromotionPreflightStatus": {
+      "enum": [
+        "PASS",
+        "PASS_WITH_CONDITIONS",
+        "BLOCKED"
+      ],
+      "title": "PromotionPreflightStatus",
+      "type": "string"
+    },
+    "PromotionStatus": {
+      "enum": [
+        "QUEUED",
+        "PREFLIGHT",
+        "PROMOTING",
+        "PROMOTED",
+        "PROMOTED_WITH_CONDITIONS",
+        "BLOCKED",
+        "FAILED",
+        "ROLLED_BACK"
+      ],
+      "title": "PromotionStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "default": "2026-08-10",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "promotion_id": {
+      "title": "Promotion Id",
+      "type": "string"
+    },
+    "candidate_id": {
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "domain_id": {
+      "title": "Domain Id",
+      "type": "string"
+    },
+    "approval_id": {
+      "title": "Approval Id",
+      "type": "string"
+    },
+    "promotion_status": {
+      "$ref": "#/$defs/PromotionStatus"
+    },
+    "preflight_result": {
+      "$ref": "#/$defs/PromotionPreflightStatus"
+    },
+    "source_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Ids",
+      "type": "array"
+    },
+    "passage_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Passage Ids",
+      "type": "array"
+    },
+    "claim_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Claim Ids",
+      "type": "array"
+    },
+    "rule_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Rule Ids",
+      "type": "array"
+    },
+    "conflict_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Conflict Ids",
+      "type": "array"
+    },
+    "core_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Core Ids",
+      "type": "array"
+    },
+    "previous_version_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Previous Version Ids",
+      "type": "array"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "completed_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Completed At"
+    },
+    "promoted_by": {
+      "title": "Promoted By",
+      "type": "string"
+    },
+    "promotion_notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Promotion Notes"
+    },
+    "index_sync_status": {
+      "$ref": "#/$defs/IndexSyncStatus",
+      "default": "PENDING"
+    }
+  },
+  "required": [
+    "promotion_id",
+    "candidate_id",
+    "domain_id",
+    "approval_id",
+    "promotion_status",
+    "preflight_result",
+    "created_at",
+    "promoted_by"
+  ],
+  "title": "ResearchPromotionRecord",
+  "type": "object"
+}
