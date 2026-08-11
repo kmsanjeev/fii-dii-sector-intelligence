@@ -31,7 +31,7 @@ def test_chat_engine_attachment_prompt_explains_reviewed_save_flow(monkeypatch):
     )
     monkeypatch.setattr(engine, "_get_client", lambda provider: object())
 
-    def fake_run_turn(client, model, system_prompt, user_message, use_tools=True):
+    def fake_run_turn(client, model, system_prompt, user_message, use_tools=True, voice_mode=False):
         captured["system_prompt"] = system_prompt
         return {"status": "ok", "reply": "I studied the uploaded material."}
 
@@ -75,7 +75,7 @@ def test_chat_engine_cools_down_provider_after_auth_failure(monkeypatch):
     monkeypatch.setattr(engine, "_get_rag_context", lambda *args, **kwargs: "")
     monkeypatch.setattr(engine, "_get_external_research_context", lambda *args, **kwargs: "")
 
-    def fake_run_turn(client, model, system_prompt, user_message, use_tools=True):
+    def fake_run_turn(client, model, system_prompt, user_message, use_tools=True, voice_mode=False):
         if user_message == "hello" and model == "gpt-4o-mini" and "Incorrect API key" not in system_prompt:
             current = getattr(fake_run_turn, "calls", 0)
             fake_run_turn.calls = current + 1
@@ -358,7 +358,7 @@ def test_chat_engine_tracks_local_evidence_and_instructs_ml_separation(monkeypat
     )
     monkeypatch.setattr(engine, "_get_client", lambda provider: object())
 
-    def fake_run_turn(client, model, system_prompt, user_message, use_tools=True):
+    def fake_run_turn(client, model, system_prompt, user_message, use_tools=True, voice_mode=False):
         captured["system_prompt"] = system_prompt
         return {"status": "ok", "reply": "Local answer."}
 
