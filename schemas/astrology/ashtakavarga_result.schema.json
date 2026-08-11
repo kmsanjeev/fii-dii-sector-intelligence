@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VEDA Ashtakavarga Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["system", "mode", "subject_entity", "rashis", "status", "calculation_version", "source_claim_ids"],
+  "properties": {
+    "system": {"const": "ASHTAKAVARGA"},
+    "mode": {"enum": ["BAV", "SAV"]},
+    "subject_entity": {"type": "string"},
+    "rashis": {"type": "array", "items": {"type": "object"}},
+    "status": {"type": "string"},
+    "calculation_version": {"type": "string"},
+    "source_claim_ids": {"type": "array", "items": {"type": "string"}}
+  }
+}

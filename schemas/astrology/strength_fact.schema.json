@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VEDA Canonical Strength Fact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["strength_system", "subject_entity", "component", "raw_value", "normalized_value", "unit", "threshold", "classification", "calculation_rule_id", "source_claim_ids", "runtime_version", "validation_status", "interpretation_status"],
+  "properties": {
+    "strength_system": {"enum": ["DIGNITY", "SHADBALA", "ASHTAKAVARGA", "BAV", "SAV"]},
+    "subject_entity": {"type": "string"},
+    "component": {"type": ["string", "null"]},
+    "raw_value": {"type": ["number", "null"]},
+    "normalized_value": {"type": ["number", "null"]},
+    "unit": {"type": ["string", "null"]},
+    "threshold": {"type": ["number", "null"]},
+    "classification": {"type": ["string", "null"]},
+    "calculation_rule_id": {"type": ["string", "null"]},
+    "source_claim_ids": {"type": "array", "items": {"type": "string"}},
+    "runtime_version": {"type": "string"},
+    "validation_status": {"type": "string"},
+    "interpretation_status": {"type": "string"}
+  }
+}

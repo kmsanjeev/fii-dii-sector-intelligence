@@ -1,0 +1,26 @@
+[
+  {
+    "capability_id": "VEDA-CAP-STRENGTH-000001",
+    "dependency": "P012 canonical graha/chart facts",
+    "status": "AVAILABLE_BOUNDARY_ONLY",
+    "blocking": true
+  },
+  {
+    "capability_id": "VEDA-CAP-STRENGTH-000001",
+    "dependency": "P014 dignity",
+    "status": "AVAILABLE_SEPARATE_CONCEPT",
+    "blocking": false
+  },
+  {
+    "capability_id": "VEDA-CAP-STRENGTH-000002",
+    "dependency": "P012 canonical graha/rashi facts",
+    "status": "AVAILABLE_BOUNDARY_ONLY",
+    "blocking": true
+  },
+  {
+    "capability_id": "VEDA-CAP-STRENGTH-000002",
+    "dependency": "P017 Yoga/Dosha",
+    "status": "NO_AUTOMATIC_CONSUMPTION",
+    "blocking": false
+  }
+]

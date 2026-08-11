@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VEDA Shadbala Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["system", "subject_entity", "components", "total", "status", "calculation_version", "source_claim_ids"],
+  "properties": {
+    "system": {"const": "SHADBALA"},
+    "subject_entity": {"type": "string"},
+    "components": {"type": "array", "items": {"$ref": "strength_fact.schema.json"}},
+    "total": {"type": ["number", "null"]},
+    "status": {"type": "string"},
+    "calculation_version": {"type": "string"},
+    "source_claim_ids": {"type": "array", "items": {"type": "string"}}
+  }
+}

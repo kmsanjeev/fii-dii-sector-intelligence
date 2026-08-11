@@ -1,0 +1,26 @@
+[
+  {
+    "fixture_id": "P018-CONTRACT-001",
+    "system": "SHADBALA",
+    "case": "missing_component",
+    "expected_status": "BLOCKED_BY_COMPONENTS"
+  },
+  {
+    "fixture_id": "P018-CONTRACT-002",
+    "system": "ASHTAKAVARGA",
+    "case": "missing_bav",
+    "expected_status": "BLOCKED_BY_BAV"
+  },
+  {
+    "fixture_id": "P018-CONTRACT-003",
+    "system": "DIGNITY",
+    "case": "separate_from_quantitative_strength",
+    "expected_status": "GOVERNED_SEPARATE_SYSTEM"
+  },
+  {
+    "fixture_id": "P018-CONTRACT-004",
+    "system": "SHADBALA",
+    "case": "no_false_precision",
+    "expected_status": "RESEARCH_REQUIRED"
+  }
+]
