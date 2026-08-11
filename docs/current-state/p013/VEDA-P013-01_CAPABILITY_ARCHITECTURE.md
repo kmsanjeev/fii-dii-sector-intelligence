@@ -12,7 +12,7 @@ The capability registry is machine-readable and links every future Jyotisha capa
 | `VEDA-CAP-FOUNDATION-000001` | D1 canonical chart calculation | ACTIVE | FOUNDATION | D1 | LOW |
 | `VEDA-CAP-FOUNDATION-000002` | Canonical graha and lagna chart facts | ACTIVE | FOUNDATION | GRAHA_LAGNA_FACTS | LOW |
 | `VEDA-CAP-TIMING-000001` | Vimshottari runtime baseline | ACTIVE | TIMING | VIMSHOTTARI | LOW |
-| `VEDA-CAP-DIGNITY-000001` | Graha dignity governed rule migration | BLOCKED | STRENGTH | DIGNITY | LOW |
+| `VEDA-CAP-DIGNITY-000001` | Graha dignity governed rule migration | ACTIVATION_READY | STRENGTH | DIGNITY | LOW |
 | `VEDA-CAP-INTERPRETATION-000001` | Graha and bhava interpretive rules | RESEARCHING | FOUNDATION | GRAHA_BHAVA_INTERPRETATION | MODERATE |
 | `VEDA-CAP-VARGA-000001` | Navamsha (D9) calculation | IDENTIFIED | DIVISIONAL_CHARTS | D9 | MODERATE |
 | `VEDA-CAP-VARGA-000002` | Navamsha (D9) interpretation | IDENTIFIED | DIVISIONAL_CHARTS | D9_INTERPRETATION | MODERATE |

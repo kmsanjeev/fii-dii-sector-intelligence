@@ -165,11 +165,11 @@
     "domain": "STRENGTH",
     "subdomain": "DIGNITY",
     "capability_type": "DETECTION",
-    "status": "BLOCKED",
-    "research_status": "LEGACY_SCHEMA_MAPPING_EXISTS_BUT_PROVENANCE_INCOMPLETE",
-    "knowledge_status": "MISSING_APPROVED_CORE_FOR_DIGNITY_RULES",
-    "implementation_status": "DRAFT_RULE_PRESENT",
-    "validation_status": "BLOCKED_PENDING_APPROVED_CORE",
+    "status": "ACTIVATION_READY",
+    "research_status": "P014_FOUNDATION_RESEARCH_COMPLETE",
+    "knowledge_status": "APPROVED_CORE_AVAILABLE_WITH_CONDITIONAL_VARIANCE",
+    "implementation_status": "GOVERNED_RULE_EVALUATOR_AVAILABLE",
+    "validation_status": "P014_VALIDATED_WITH_SHADOW_VARIANCE_EXPLICIT",
     "activation_status": "INACTIVE",
     "safety_class": "LOW",
     "dependencies": [
@@ -182,7 +182,7 @@
       "degrees_in_sign"
     ],
     "required_rules": [
-      "VEDA-RUL-DIGNITY-000001"
+      "VEDA-RUL-DIGNITY-000002"
     ],
     "required_sources": [
       "CLASSICAL_PRIMARY",
@@ -194,28 +194,36 @@
       "STOCK_MARKET",
       "COUNTRY_EVENT"
     ],
-    "approved_claim_ids": [],
-    "approved_rule_ids": [],
+    "approved_claim_ids": [
+      "VEDA-CLM-000007",
+      "VEDA-CLM-000008",
+      "VEDA-CLM-000009",
+      "VEDA-CLM-000010"
+    ],
+    "approved_rule_ids": [
+      "VEDA-RUL-DIGNITY-000002"
+    ],
     "draft_rule_ids": [
       "VEDA-RUL-DIGNITY-000001"
     ],
     "legacy_mapping_ids": [
-      "VEDA-LMP-000002"
+      "VEDA-LMP-000002",
+      "VEDA-LMP-000004"
     ],
     "coverage_category": "Dignity",
     "change_classes": [
       "RULE_DETECTION"
     ],
     "confidence": {
-      "research_confidence": 0.42,
-      "source_confidence": 0.18,
-      "implementation_confidence": 0.55,
-      "calculation_confidence": 0.8,
-      "validation_confidence": 0.2,
-      "production_confidence": 0.15
+      "research_confidence": 0.82,
+      "source_confidence": 0.74,
+      "implementation_confidence": 0.85,
+      "calculation_confidence": 0.92,
+      "validation_confidence": 0.84,
+      "production_confidence": 0.61
     },
     "version": "1.0.0",
-    "notes": "Pilot capability remains blocked because the draft dignity rule is still legacy-unsourced and no approved-core dignity claim is linked."
+    "notes": "P014 closes the approved-core blocker with governed dignity foundations. Production activation remains separate because planetary friendship/enmity and node-dignity branches still need wider source governance."
   },
   {
     "capability_id": "VEDA-CAP-INTERPRETATION-000001",

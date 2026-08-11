@@ -212,40 +212,45 @@
   {
     "lifecycle_id": "VEDA-CLFC-000004",
     "capability_id": "VEDA-CAP-DIGNITY-000001",
-    "current_status": "BLOCKED",
+    "current_status": "ACTIVATION_READY",
     "allowed_next_statuses": [
-      "RESEARCHING",
-      "RULE_ENGINEERING"
+      "ACTIVE",
+      "BLOCKED"
     ],
     "research_gate": {
       "gate": "research",
-      "decision": "RESEARCH_MORE",
-      "reason": "A legacy-unsourced mapping or draft rule exists, but no approved-core knowledge supports implementation yet.",
+      "decision": "PASS",
+      "reason": "Approved or implementation-ready governed knowledge is already linked.",
       "evidence": [
-        "VEDA-RUL-DIGNITY-000001",
-        "VEDA-LMP-000002"
+        "VEDA-CLM-000007",
+        "VEDA-CLM-000008",
+        "VEDA-CLM-000009",
+        "VEDA-CLM-000010",
+        "VEDA-RUL-DIGNITY-000002"
       ],
-      "next_action": "Open or continue a provenance-recovery mission until approved-core dignity support exists."
+      "next_action": "Continue through knowledge sufficiency and rule-engineering checks."
     },
     "knowledge_gate": {
       "gate": "knowledge",
-      "decision": "RESEARCH_MORE",
-      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "decision": "PASS",
+      "reason": "Knowledge linkage is sufficient to enter ruled engineering under P003 contracts.",
       "evidence": [
-        "VEDA-RUL-DIGNITY-000001",
-        "VEDA-LMP-000002"
+        "VEDA-CLM-000007",
+        "VEDA-CLM-000008",
+        "VEDA-CLM-000009",
+        "VEDA-CLM-000010",
+        "VEDA-RUL-DIGNITY-000002"
       ],
-      "next_action": "Open or continue a provenance-recovery mission until approved-core dignity support exists."
+      "next_action": "Create or refine the machine-readable rule package."
     },
     "rule_engineering_gate": {
       "gate": "rule_engineering",
-      "decision": "BLOCKED",
-      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "decision": "PASS",
+      "reason": "Machine-readable rule packaging can proceed under existing governed contracts.",
       "evidence": [
-        "VEDA-RUL-DIGNITY-000001",
-        "VEDA-LMP-000002"
+        "VEDA-RUL-DIGNITY-000002"
       ],
-      "next_action": "Open or continue a provenance-recovery mission until approved-core dignity support exists."
+      "next_action": "Assemble the implementation package and validation fixtures."
     },
     "dependency_gate": {
       "gate": "dependencies",
@@ -259,27 +264,29 @@
     },
     "validation_gate": {
       "gate": "validation",
-      "decision": "BLOCKED",
-      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
-      "evidence": [],
-      "next_action": "Finish upstream gates before validation."
+      "decision": "PASS",
+      "reason": "Validation evidence already exists for this capability.",
+      "evidence": [
+        "P014_VALIDATED_WITH_SHADOW_VARIANCE_EXPLICIT"
+      ],
+      "next_action": "Maintain regression suites and proceed to shadow/activation policy."
     },
     "shadow_gate": {
       "gate": "shadow",
-      "decision": "WAITING_FOR_VALIDATION",
-      "reason": "Shadow deployment is only allowed after validation passes.",
+      "decision": "PASS",
+      "reason": "Shadow policy requirements are satisfied for this capability.",
       "evidence": [],
-      "next_action": "Complete validation before entering shadow mode."
+      "next_action": "Continue monitoring or proceed to Admin activation review."
     },
     "activation_gate": {
       "gate": "activation",
-      "decision": "WAITING_FOR_SHADOW",
-      "reason": "Activation cannot proceed before shadow completion.",
+      "decision": "WAITING_FOR_ADMIN",
+      "reason": "Capability is activation-ready but still requires an explicit Admin activation decision.",
       "evidence": [],
-      "next_action": "Complete validation and shadow review first."
+      "next_action": "Admin may approve LIMITED or ACTIVE rollout after reviewing shadow evidence."
     },
     "rollback_supported": true,
-    "blocked_reason": "A legacy-unsourced mapping or draft rule exists, but no approved-core knowledge supports implementation yet."
+    "blocked_reason": null
   },
   {
     "lifecycle_id": "VEDA-CLFC-000005",
@@ -312,12 +319,13 @@
     },
     "dependency_gate": {
       "gate": "dependencies",
-      "decision": "BLOCKED_BY_CALCULATION",
-      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
       "evidence": [
+        "VEDA-CAP-FOUNDATION-000002",
         "VEDA-CAP-DIGNITY-000001"
       ],
-      "next_action": "Advance the prerequisite capabilities first."
+      "next_action": "Proceed to validation."
     },
     "validation_gate": {
       "gate": "validation",
@@ -624,12 +632,13 @@
     },
     "dependency_gate": {
       "gate": "dependencies",
-      "decision": "BLOCKED_BY_CALCULATION",
-      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
       "evidence": [
+        "VEDA-CAP-FOUNDATION-000002",
         "VEDA-CAP-DIGNITY-000001"
       ],
-      "next_action": "Advance the prerequisite capabilities first."
+      "next_action": "Proceed to validation."
     },
     "validation_gate": {
       "gate": "validation",
@@ -686,12 +695,13 @@
     },
     "dependency_gate": {
       "gate": "dependencies",
-      "decision": "BLOCKED_BY_CALCULATION",
-      "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
       "evidence": [
+        "VEDA-CAP-FOUNDATION-000002",
         "VEDA-CAP-DIGNITY-000001"
       ],
-      "next_action": "Advance the prerequisite capabilities first."
+      "next_action": "Proceed to validation."
     },
     "validation_gate": {
       "gate": "validation",
@@ -1130,8 +1140,7 @@
       "decision": "BLOCKED_BY_CALCULATION",
       "reason": "One or more prerequisite capabilities are not yet active or activation-ready.",
       "evidence": [
-        "VEDA-CAP-RULE-000001",
-        "VEDA-CAP-DIGNITY-000001"
+        "VEDA-CAP-RULE-000001"
       ],
       "next_action": "Advance the prerequisite capabilities first."
     },

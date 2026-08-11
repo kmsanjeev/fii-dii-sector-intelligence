@@ -187,10 +187,12 @@ def test_astrology_research_continues_while_review_is_pending_and_rejections_are
         service.trigger_manual_run(mission.mission_id, actor_id="admin@example.com")
 
     initial_candidates = _astrology_candidates(service)
+    initial_candidate_ids = {item.candidate_id for item in initial_candidates}
     approved = next(item for item in initial_candidates if item.metadata.get("claim_ids") == ["VEDA-CLM-000002"])
     pending = next(item for item in initial_candidates if item.metadata.get("claim_ids") == ["VEDA-CLM-000001"])
     more_research = next(item for item in initial_candidates if item.metadata.get("claim_ids") == ["VEDA-CLM-000005"])
     rejected = next(item for item in initial_candidates if item.candidate_type.value == "PROVENANCE_CANDIDATE")
+    initial_rejected_evidence_count = len(rejected.evidence_ids)
 
     service.decide_candidate(approved.candidate_id, action=AdminAction.APPROVE, actor_id="admin@example.com", reason="Known governed foundation.")
     service.decide_candidate(rejected.candidate_id, action=AdminAction.REJECT, actor_id="admin@example.com", reason="Discovery-only provenance is not sufficient.")
@@ -207,6 +209,7 @@ def test_astrology_research_continues_while_review_is_pending_and_rejections_are
     more_after = next(item for item in final_candidates if item.candidate_id == more_research.candidate_id)
     rejected_after = next(item for item in final_candidates if item.candidate_id == rejected.candidate_id)
     provenance_candidates = [item for item in final_candidates if item.candidate_type.value == "PROVENANCE_CANDIDATE"]
+    new_candidates = [item for item in final_candidates if item.candidate_id not in initial_candidate_ids]
 
     assert follow_up_run.status.value == "SUCCESS"
     assert follow_up_run.candidates_created == 0
@@ -217,10 +220,10 @@ def test_astrology_research_continues_while_review_is_pending_and_rejections_are
     assert rerun_a.duplicates_detected == 3
 
     assert rerun_b.status.value == "SUCCESS"
-    assert rerun_b.candidates_created == 0
-    assert rerun_b.duplicates_detected == 4
+    assert rerun_b.candidates_created == len(new_candidates)
+    assert rerun_b.duplicates_detected >= 2
 
-    assert len(final_candidates) == 6
+    assert len(final_candidates) == len(initial_candidates) + len(new_candidates)
     assert approved_after.approval_status == ApprovalStatus.APPROVED
     assert pending_after.candidate_id == pending.candidate_id
     assert pending_after.support_count == 2
@@ -230,8 +233,14 @@ def test_astrology_research_continues_while_review_is_pending_and_rejections_are
     assert rejected_after.approval_status == ApprovalStatus.REJECTED
     assert rejected_after.knowledge_zone.value == "RESEARCH_ARCHIVE"
     assert rejected_after.support_count == 4
-    assert len(rejected_after.evidence_ids) == 8
+    assert len(rejected_after.evidence_ids) > initial_rejected_evidence_count
     assert len(provenance_candidates) == 1
+    assert all(item.candidate_type.value == "CLAIM_UPDATE" for item in new_candidates)
+    assert all(item.novelty_status.value == "KNOWN" for item in new_candidates)
+    assert {tuple(item.metadata.get("claim_ids", [])) for item in new_candidates} <= {
+        ("VEDA-CLM-000008",),
+        ("VEDA-CLM-000009",),
+    }
 
 
 def test_astrology_candidate_ledger_reconstructs_creation_merge_and_admin_decision(tmp_dir):

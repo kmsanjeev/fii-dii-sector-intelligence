@@ -36,11 +36,11 @@ def test_astrology_governance_registry_validates_tracked_pilot_data():
     report = validate_registry_directory(REGISTRY_ROOT)
 
     assert report.is_valid is True
-    assert report.source_count == 7
-    assert report.passage_count == 6
-    assert report.claim_count == 6
-    assert report.conflict_count == 1
-    assert report.approval_count == 1
+    assert report.source_count == 9
+    assert report.passage_count == 12
+    assert report.claim_count == 12
+    assert report.conflict_count == 2
+    assert report.approval_count == 2
     assert report.policy_count == 6
     assert report.legacy_register_count == 1
     assert report.errors == []

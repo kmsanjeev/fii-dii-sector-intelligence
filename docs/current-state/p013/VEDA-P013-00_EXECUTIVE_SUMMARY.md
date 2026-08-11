@@ -6,8 +6,8 @@ Key outcomes:
 
 - Capabilities registered: `24`
 - Dependency edges recorded: `138`
-- Research mission proposals generated: `22`
-- Pilot capability: `VEDA-CAP-DIGNITY-000001` -> `BLOCKED`
+- Research mission proposals generated: `21`
+- Pilot capability: `VEDA-CAP-DIGNITY-000001` -> `ACTIVATION_READY`
 - Lifecycle fail-closed: `True`
 
 Production expectations remain unchanged:

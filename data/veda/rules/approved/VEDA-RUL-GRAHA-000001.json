@@ -1,0 +1,99 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-08-11T00:00:00Z",
+  "created_by": "codex",
+  "updated_at": "2026-08-11T00:00:00Z",
+  "updated_by": "codex",
+  "change_reason": "P014 governed graha foundation rule registration.",
+  "supersedes": null,
+  "superseded_by": null,
+  "notes": "Governed sign-lordship table registered for downstream dignity and house-lord logic. The full lookup table remains in the P014 validation bundle while the ontology rule preserves provenance, dependencies, and runtime-safe contract metadata.",
+  "contract_version": "2026-08-10",
+  "rule_id": "VEDA-RUL-GRAHA-000001",
+  "title": "Graha sign lordship foundation",
+  "domain": "GRAHA",
+  "subdomain": "SIGN_LORDSHIP_FOUNDATION",
+  "rule_type": "FOUNDATIONAL_ALGORITHM",
+  "status": "IMPLEMENTATION_READY",
+  "source_class": "TRADITIONAL_SECONDARY",
+  "approval_status": "IMPLEMENTATION_READY",
+  "evidence_types": [
+    "TRADITIONAL_INTERPRETIVE"
+  ],
+  "high_stakes": false,
+  "requires_safety_review": false,
+  "allowed_output_mode": "STANDARD",
+  "authority": {
+    "textual": 3,
+    "traditional": 4,
+    "cross_source": 3,
+    "empirical": 0,
+    "implementation": 4,
+    "notes": "Foundational rule mirrors a governed sign-lordship table needed by later dignity and house-lord logic."
+  },
+  "provenance": {
+    "source_ids": [
+      "VEDA-SRC-000008"
+    ],
+    "passage_ids": [
+      "VEDA-PSG-000007"
+    ],
+    "claim_ids": [
+      "VEDA-CLM-000007"
+    ],
+    "conflict_ids": [],
+    "legacy_provenance_status": null
+  },
+  "conditions": {
+    "all": [
+      {
+        "condition_id": "COND-GRAHA-000001",
+        "subject": {
+          "ref": "chart.planets.sun.entity_id",
+          "ref_type": "FACT_PATH",
+          "property_name": null
+        },
+        "operator": "EQUALS",
+        "object": null,
+        "value": null,
+        "value_entity_id": "VEDA-GRAHA-SUN",
+        "value_entity_ids": [],
+        "all": [],
+        "any": [],
+        "none": [],
+        "notes": "Canonical runtime exposes ontology-normalized graha identifiers before sign-lordship evaluation."
+      }
+    ],
+    "any": [],
+    "none": []
+  },
+  "modifiers": [],
+  "exceptions": [],
+  "confirmations": [],
+  "activations": [],
+  "outcomes": [
+    {
+      "outcome_id": "OUT-GRAHA-000001",
+      "outcome_type": "CONTRACT_METADATA",
+      "target": {
+        "ref": "chart.foundation.sign_lordship",
+        "ref_type": "FACT_PATH",
+        "property_name": null
+      },
+      "value": "SIGN_LORDSHIP_TABLE_REGISTERED",
+      "value_entity_id": null,
+      "value_entity_ids": [
+        "VEDA-GRAHA-SUN",
+        "VEDA-GRAHA-MOON",
+        "VEDA-GRAHA-MARS",
+        "VEDA-GRAHA-MERCURY",
+        "VEDA-GRAHA-JUPITER",
+        "VEDA-GRAHA-VENUS",
+        "VEDA-GRAHA-SATURN"
+      ],
+      "description": "Governed sign-lordship rows are available for dignity and house-lord dependent capabilities; the P014 validation bundle preserves the full sign-to-lord table."
+    }
+  ],
+  "depends_on_rule_ids": [],
+  "cancelled_by_rule_ids": []
+}

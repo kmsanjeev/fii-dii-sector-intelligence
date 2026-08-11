@@ -61,8 +61,13 @@ class VedicAstrologyCorpusProvider(BasePlatformResearchProvider):
         strategy = self._active_strategy(mission, prior_run_count)
         queries = self._build_queries(mission, strategy)
         scored: list[tuple[float, ProviderDocument]] = []
+        isolate_injected_fixture = (
+            bool(strategy.get("inject_malicious_source") or strategy.get("inject_unsupported_source"))
+            and not any(strategy.get(key) for key in ("source_ids", "claim_ids", "topics"))
+        )
 
-        scored.extend(self._search_governed_passages(strategy, queries))
+        if not isolate_injected_fixture:
+            scored.extend(self._search_governed_passages(strategy, queries))
         if strategy.get("include_uploads"):
             scored.extend(self._search_uploads(strategy, queries))
         if strategy.get("inject_malicious_source"):

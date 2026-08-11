@@ -41,7 +41,7 @@
     "activation_state": "INACTIVE",
     "admin_activation_required": true,
     "validation_passed": false,
-    "shadow_complete": false,
+    "shadow_complete": true,
     "dependencies_satisfied": true,
     "approval_required": true,
     "production_enabled": false,
@@ -54,7 +54,7 @@
     "admin_activation_required": true,
     "validation_passed": false,
     "shadow_complete": false,
-    "dependencies_satisfied": false,
+    "dependencies_satisfied": true,
     "approval_required": true,
     "production_enabled": false,
     "notes": "Activation remains separate from implementation and requires an explicit Admin action."
@@ -114,7 +114,7 @@
     "admin_activation_required": true,
     "validation_passed": false,
     "shadow_complete": false,
-    "dependencies_satisfied": false,
+    "dependencies_satisfied": true,
     "approval_required": true,
     "production_enabled": false,
     "notes": "Activation remains separate from implementation and requires an explicit Admin action."
@@ -126,7 +126,7 @@
     "admin_activation_required": true,
     "validation_passed": false,
     "shadow_complete": false,
-    "dependencies_satisfied": false,
+    "dependencies_satisfied": true,
     "approval_required": true,
     "production_enabled": false,
     "notes": "Activation remains separate from implementation and requires an explicit Admin action."

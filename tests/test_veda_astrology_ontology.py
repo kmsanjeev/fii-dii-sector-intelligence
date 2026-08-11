@@ -39,9 +39,9 @@ def test_astrology_ontology_validation_succeeds_for_tracked_files():
     assert report.is_valid is True
     assert report.entity_count == 131
     assert report.relation_count == 34
-    assert report.approved_rule_count == 2
+    assert report.approved_rule_count == 5
     assert report.draft_rule_count == 2
-    assert report.legacy_mapping_count == 3
+    assert report.legacy_mapping_count == 6
     assert report.chart_contract_count == 1
     assert report.evaluation_contract_count == 1
     assert report.errors == []

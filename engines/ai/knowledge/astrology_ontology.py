@@ -1873,6 +1873,17 @@ def default_documents() -> dict[str, Any]:
         notes="This record demonstrates that compound legacy yoga logic can be mapped into nested conditions and modifiers.",
     )
 
+    # P014 extends the approved-core foundation baseline with governed Graha/Bhava/Dignity rules.
+    from engines.ai.knowledge.astrology_foundation_migration import (
+        foundation_legacy_mappings as _p014_legacy_mappings,
+        foundation_rules as _p014_rules,
+    )
+
+    for payload in _p014_rules():
+        documents[f"rules/approved/{payload['rule_id']}.json"] = payload
+    for payload in _p014_legacy_mappings():
+        documents[f"rules/legacy_mappings/{payload['legacy_mapping_id']}.json"] = payload
+
     documents["rules/contracts/chart_facts_contract.sample.json"] = ChartFactsContract.model_validate(
         {
             "contract_version": CONTRACT_VERSION,
@@ -2204,6 +2215,7 @@ def validate_ontology_directory(
             )
 
     rules = approved_rules + draft_rules
+    all_rule_ids = {rule.rule_id for rule in rules}
     rule_ids: set[str] = set()
     for rule in rules:
         if rule.rule_id in rule_ids:
@@ -2227,7 +2239,7 @@ def validate_ontology_directory(
                 rule.rule_id,
                 node,
                 entity_ids,
-                rule_ids,
+                all_rule_ids,
                 claim_ids,
                 passage_ids,
                 source_ids,
@@ -2239,7 +2251,7 @@ def validate_ontology_directory(
                 f"{rule.rule_id}:{modifier.modifier_id}",
                 modifier.condition,
                 entity_ids,
-                rule_ids,
+                all_rule_ids,
                 claim_ids,
                 passage_ids,
                 source_ids,
@@ -2251,7 +2263,7 @@ def validate_ontology_directory(
                 f"{rule.rule_id}:{exception.exception_id}",
                 exception.conditions,
                 entity_ids,
-                rule_ids,
+                all_rule_ids,
                 claim_ids,
                 passage_ids,
                 source_ids,
@@ -2263,7 +2275,7 @@ def validate_ontology_directory(
                 f"{rule.rule_id}:{confirmation.confirmation_id}",
                 confirmation.condition,
                 entity_ids,
-                rule_ids,
+                all_rule_ids,
                 claim_ids,
                 passage_ids,
                 source_ids,
@@ -2275,7 +2287,7 @@ def validate_ontology_directory(
                 f"{rule.rule_id}:{activation.activation_id}",
                 activation.condition,
                 entity_ids,
-                rule_ids,
+                all_rule_ids,
                 claim_ids,
                 passage_ids,
                 source_ids,
@@ -2288,7 +2300,7 @@ def validate_ontology_directory(
                     f"{rule.rule_id}:{outcome.outcome_id}",
                     outcome.target,
                     entity_ids,
-                    rule_ids,
+                    all_rule_ids,
                     claim_ids,
                     passage_ids,
                     source_ids,
@@ -2305,7 +2317,7 @@ def validate_ontology_directory(
                         f"{rule.rule_id}:{outcome.outcome_id}: missing value_entity_ids reference {entity_id}"
                     )
         for ref_id in rule.depends_on_rule_ids + rule.cancelled_by_rule_ids:
-            if ref_id not in rule_ids:
+            if ref_id not in all_rule_ids:
                 report.broken_references.append(f"{rule.rule_id}: missing rule dependency reference {ref_id}")
 
     _validate_rule_dependencies(rules, report)
@@ -2320,7 +2332,7 @@ def validate_ontology_directory(
                 mapping = LegacyKnowledgeMappingRecord.model_validate(_load_json(path))
                 legacy_mappings.append(mapping)
                 for rule_id in mapping.target_rule_ids:
-                    if rule_id not in rule_ids:
+                    if rule_id not in all_rule_ids:
                         report.broken_references.append(
                             f"{mapping.legacy_mapping_id}: missing target rule reference {rule_id}"
                         )

@@ -1,0 +1,105 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-08-11T00:00:00Z",
+  "created_by": "codex",
+  "updated_at": "2026-08-11T00:00:00Z",
+  "updated_by": "codex",
+  "change_reason": "P014 governed dignity rule registration.",
+  "supersedes": null,
+  "superseded_by": null,
+  "notes": "The rule covers classical seven-graha exaltation, debilitation, own-sign, and conditional moolatrikona while keeping node and friendship variance outside the activated baseline. The full dignity lookup tables remain in the P014 validation bundle and are surfaced through the governed evaluator, not as opaque ontology extras.",
+  "contract_version": "2026-08-10",
+  "rule_id": "VEDA-RUL-DIGNITY-000002",
+  "title": "Classical seven-graha dignity foundation",
+  "domain": "DIGNITY",
+  "subdomain": "GRAHA_DIGNITY_FOUNDATION",
+  "rule_type": "DIGNITY",
+  "status": "IMPLEMENTATION_READY",
+  "source_class": "TRADITIONAL_SECONDARY",
+  "approval_status": "IMPLEMENTATION_READY",
+  "evidence_types": [
+    "TRADITIONAL_INTERPRETIVE"
+  ],
+  "high_stakes": false,
+  "requires_safety_review": false,
+  "allowed_output_mode": "STANDARD",
+  "authority": {
+    "textual": 3,
+    "traditional": 4,
+    "cross_source": 4,
+    "empirical": 0,
+    "implementation": 4,
+    "notes": "Exaltation and debilitation are cross-verified; moolatrikona remains conditional because the secondary source set preserves differing degree windows."
+  },
+  "provenance": {
+    "source_ids": [
+      "VEDA-SRC-000008",
+      "VEDA-SRC-000009"
+    ],
+    "passage_ids": [
+      "VEDA-PSG-000008",
+      "VEDA-PSG-000009",
+      "VEDA-PSG-000012"
+    ],
+    "claim_ids": [
+      "VEDA-CLM-000008",
+      "VEDA-CLM-000009",
+      "VEDA-CLM-000010"
+    ],
+    "conflict_ids": [
+      "VEDA-CNF-000002"
+    ],
+    "legacy_provenance_status": null
+  },
+  "conditions": {
+    "all": [
+      {
+        "condition_id": "COND-DIGNITY-000101",
+        "subject": {
+          "ref": "chart.planets.sun.entity_id",
+          "ref_type": "FACT_PATH",
+          "property_name": null
+        },
+        "operator": "EQUALS",
+        "object": null,
+        "value": null,
+        "value_entity_id": "VEDA-GRAHA-SUN",
+        "value_entity_ids": [],
+        "all": [],
+        "any": [],
+        "none": [],
+        "notes": "Canonical runtime exposes ontology-normalized graha entities before governed dignity evaluation."
+      }
+    ],
+    "any": [],
+    "none": []
+  },
+  "modifiers": [],
+  "exceptions": [],
+  "confirmations": [],
+  "activations": [],
+  "outcomes": [
+    {
+      "outcome_id": "OUT-DIGNITY-000101",
+      "outcome_type": "CONTRACT_METADATA",
+      "target": {
+        "ref": "chart.planets[*].dignity",
+        "ref_type": "FACT_PATH",
+        "property_name": null
+      },
+      "value": "CLASSICAL_DIGNITY_TABLE_REGISTERED",
+      "value_entity_id": null,
+      "value_entity_ids": [
+        "VEDA-DIGNITY-EXALTATION",
+        "VEDA-DIGNITY-DEBILITATION",
+        "VEDA-DIGNITY-MOOLATRIKONA",
+        "VEDA-DIGNITY-OWN_SIGN"
+      ],
+      "description": "Governed dignity rows are available for shadow comparison and future controlled activation; conditional moolatrikona variance and unresolved node branches remain explicit in P014 validation artifacts."
+    }
+  ],
+  "depends_on_rule_ids": [
+    "VEDA-RUL-GRAHA-000001"
+  ],
+  "cancelled_by_rule_ids": []
+}

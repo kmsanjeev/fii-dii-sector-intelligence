@@ -5,7 +5,6 @@ Research cannot jump directly to production implementation. The current gap-driv
 | Capability | Proposed Mission | Research Type | Priority |
 | --- | --- | --- | --- |
 | `VEDA-CAP-FOUNDATION-000002` | Capability gap research: Canonical graha and lagna chart facts | KNOWLEDGE_GAP | P1 |
-| `VEDA-CAP-DIGNITY-000001` | Capability gap research: Graha dignity governed rule migration | KNOWLEDGE_GAP | P1 |
 | `VEDA-CAP-INTERPRETATION-000001` | Capability gap research: Graha and bhava interpretive rules | KNOWLEDGE_GAP | P1 |
 | `VEDA-CAP-VARGA-000001` | Capability gap research: Navamsha (D9) calculation | KNOWLEDGE_GAP | P1 |
 | `VEDA-CAP-VARGA-000002` | Capability gap research: Navamsha (D9) interpretation | KNOWLEDGE_GAP | P1 |

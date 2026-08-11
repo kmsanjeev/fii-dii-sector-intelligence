@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-08-11T00:00:00Z",
+  "created_by": "codex",
+  "updated_at": "2026-08-11T00:00:00Z",
+  "updated_by": "codex",
+  "change_reason": "P014 governed foundation mapping for legacy foundational behavior.",
+  "supersedes": null,
+  "superseded_by": null,
+  "notes": "P014 preserves legacy history while linking governed foundation rules to current runtime behavior.",
+  "contract_version": "2026-08-10",
+  "legacy_mapping_id": "VEDA-LMP-000006",
+  "legacy_location": "engines/intelligence/kundli_engine.py",
+  "legacy_function": "FINANCIAL_HOUSES",
+  "legacy_behavior": "Current runtime couples house meaning and class semantics inside downstream interpretation helpers.",
+  "target_rule_ids": [
+    "VEDA-RUL-BHAVA-000001"
+  ],
+  "mapping_status": "MAPPED_TO_SCHEMA",
+  "semantic_match": "PARTIAL",
+  "known_differences": [
+    "The governed P014 bhava foundation rule only captures structural classes such as kendra and dusthana, not domain-specific financial narratives."
+  ],
+  "source_status": "LEGACY_PARTIALLY_SOURCED",
+  "migration_recommendation": "Keep the production implementation untouched until explicit Admin activation authorizes the governed replacement."
+}

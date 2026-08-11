@@ -32,7 +32,7 @@ def test_p013_capability_admin_routes_return_registry_and_detail(tmp_dir, monkey
     )
     client = _client(capability_service, research_service, monkeypatch)
 
-    listing = client.get("/api/research/capabilities", params={"status": "BLOCKED", "search": "dignity"})
+    listing = client.get("/api/research/capabilities", params={"status": "ACTIVATION_READY", "search": "dignity"})
     detail = client.get("/api/research/capabilities/VEDA-CAP-DIGNITY-000001")
 
     assert listing.status_code == 200
@@ -43,9 +43,9 @@ def test_p013_capability_admin_routes_return_registry_and_detail(tmp_dir, monkey
     assert listing_payload["returned"] >= 1
     assert listing_payload["capabilities"][0]["capability_id"] == "VEDA-CAP-DIGNITY-000001"
     assert detail_payload["capability"]["capability_id"] == "VEDA-CAP-DIGNITY-000001"
-    assert detail_payload["lifecycle"]["research_gate"]["decision"] == "RESEARCH_MORE"
-    assert detail_payload["research_mission_proposal"]["research_type"] == "KNOWLEDGE_GAP"
-    assert detail_payload["transition_preview"]["ACTIVE"]["allowed"] is False
+    assert detail_payload["lifecycle"]["research_gate"]["decision"] == "PASS"
+    assert detail_payload["research_mission_proposal"] is None
+    assert detail_payload["transition_preview"]["ACTIVE"]["allowed"] is True
 
 
 def test_p013_capability_route_can_materialize_gap_research_mission(tmp_dir, monkeypatch):
@@ -56,8 +56,8 @@ def test_p013_capability_route_can_materialize_gap_research_mission(tmp_dir, mon
     )
     client = _client(capability_service, research_service, monkeypatch)
 
-    first = client.post("/api/research/capabilities/VEDA-CAP-DIGNITY-000001/research-mission")
-    second = client.post("/api/research/capabilities/VEDA-CAP-DIGNITY-000001/research-mission")
+    first = client.post("/api/research/capabilities/VEDA-CAP-VARGA-000001/research-mission")
+    second = client.post("/api/research/capabilities/VEDA-CAP-VARGA-000001/research-mission")
 
     assert first.status_code == 200
     assert second.status_code == 200

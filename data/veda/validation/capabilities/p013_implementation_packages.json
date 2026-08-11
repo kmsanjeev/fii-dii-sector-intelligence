@@ -90,16 +90,21 @@
   {
     "package_id": "VEDA-CPKG-000004",
     "capability_id": "VEDA-CAP-DIGNITY-000001",
-    "approved_claim_ids": [],
+    "approved_claim_ids": [
+      "VEDA-CLM-000007",
+      "VEDA-CLM-000008",
+      "VEDA-CLM-000009",
+      "VEDA-CLM-000010"
+    ],
     "approved_rule_ids": [
-      "VEDA-RUL-DIGNITY-000001"
+      "VEDA-RUL-DIGNITY-000002"
     ],
     "calculation_dependencies": [
       "graha_longitudes",
       "rashi",
       "degrees_in_sign"
     ],
-    "implementation_module": "engines/intelligence/kundli_engine.py::KundliEngine._dignity",
+    "implementation_module": "engines/ai/knowledge/astrology_foundation_migration.py::evaluate_dignity",
     "validation_datasets": [
       "P001 fixtures",
       "P004 fixtures",

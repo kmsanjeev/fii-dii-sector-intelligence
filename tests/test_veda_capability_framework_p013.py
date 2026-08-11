@@ -54,7 +54,7 @@ def test_p013_summary_records_fail_closed_framework_and_zero_new_activation():
 
     assert summary["capabilities_registered"] >= 20
     assert summary["pilot_capability_id"] == "VEDA-CAP-DIGNITY-000001"
-    assert summary["pilot_status"] == "BLOCKED"
+    assert summary["pilot_status"] == "ACTIVATION_READY"
     assert summary["next_recommended_phase"].startswith("P014")
     assert summary["production_capabilities_activated"] == 0
     assert summary["production_calculation_semantics_changed"] == "NO"
@@ -63,17 +63,21 @@ def test_p013_summary_records_fail_closed_framework_and_zero_new_activation():
     assert summary["lifecycle_fail_closed"] is True
 
 
-def test_p013_dignity_pilot_is_explicitly_blocked_pending_approved_core():
+def test_p013_dignity_pilot_reaches_activation_ready_without_auto_activation():
     service = JyotishaCapabilityLifecycleService()
     pilot = service.pilot_capability()
 
     assert pilot["capability_id"] == "VEDA-CAP-DIGNITY-000001"
-    assert pilot["approved_core_available"] is False
-    assert pilot["final_status"] == "BLOCKED"
-    assert pilot["governance_outcome"] == "BLOCKED_WITH_EXPLICIT_REASON"
-    assert pilot["research_gate"]["decision"] == "RESEARCH_MORE"
-    assert "approved-core" in pilot["research_gate"]["next_action"].lower()
-    assert "legacy-unsourced" in pilot["blocked_reason"].lower()
+    assert pilot["approved_core_available"] is True
+    assert pilot["approved_rule_ids"] == ["VEDA-RUL-DIGNITY-000002"]
+    assert pilot["final_status"] == "ACTIVATION_READY"
+    assert pilot["governance_outcome"] == "ACTIVATION_READY"
+    assert pilot["research_gate"]["decision"] == "PASS"
+    assert pilot["validation_gate"]["decision"] == "PASS"
+    assert pilot["shadow_gate"]["decision"] == "PASS"
+    assert pilot["activation_gate"]["decision"] == "WAITING_FOR_ADMIN"
+    assert pilot["recommended_research_mission"] is None
+    assert pilot["blocked_reason"] is None
 
 
 def test_p013_prevents_direct_transition_from_researching_to_active():
@@ -100,18 +104,18 @@ def test_p013_capability_gap_mission_is_created_once_and_then_deduplicated(tmp_d
 
     first = capability_service.create_research_mission(
         research_service,
-        "VEDA-CAP-DIGNITY-000001",
+        "VEDA-CAP-VARGA-000001",
         actor_id="admin@example.com",
     )
     second = capability_service.create_research_mission(
         research_service,
-        "VEDA-CAP-DIGNITY-000001",
+        "VEDA-CAP-VARGA-000001",
         actor_id="admin@example.com",
     )
 
     assert first["duplicate"] is False
     assert first["mission"]["domain_id"] == "VEDA-DOMAIN-VEDIC-ASTROLOGY"
     assert first["mission"]["research_type"] == "KNOWLEDGE_GAP"
-    assert first["mission"]["known_gap_ids"] == ["VEDA-CAP-DIGNITY-000001"]
+    assert first["mission"]["known_gap_ids"] == ["VEDA-CAP-VARGA-000001"]
     assert second["duplicate"] is True
     assert second["mission"]["mission_id"] == first["mission"]["mission_id"]
