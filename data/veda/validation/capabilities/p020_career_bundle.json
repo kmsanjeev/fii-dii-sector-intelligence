@@ -1,0 +1,1354 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "created_at": "2026-08-14T00:00:00Z",
+    "updated_at": "2026-08-14T00:00:00Z",
+    "created_by": "codex",
+    "updated_by": "codex",
+    "phase": "VEDA-P020",
+    "contract_version": "2026-08-14"
+  },
+  "domain_registry": [
+    {
+      "version": "1.0.0",
+      "created_at": "2026-08-14T00:00:00Z",
+      "updated_at": "2026-08-14T00:00:00Z",
+      "created_by": "codex",
+      "updated_by": "codex",
+      "domain_id": "CAREER",
+      "capability_id": "VEDA-CAP-DOMAIN-000002",
+      "name": "Career and education intelligence",
+      "risk_class": "HIGH_STAKES",
+      "required_fact_types": [
+        "NATAL",
+        "BHAVA",
+        "LORDSHIP",
+        "DIGNITY",
+        "VARGA",
+        "DASHA"
+      ],
+      "required_capabilities": [
+        "VEDA-CAP-FOUNDATION-000002",
+        "VEDA-CAP-VARGA-000003",
+        "VEDA-CAP-VARGA-000004",
+        "VEDA-CAP-TIMING-000001"
+      ],
+      "optional_capabilities": [
+        "VEDA-CAP-DIGNITY-000001"
+      ],
+      "high_stakes": true,
+      "research_status": "RESEARCHING",
+      "knowledge_status": "PARTIAL",
+      "implementation_status": "SHADOW_ONLY",
+      "validation_status": "PASS_WITH_CONDITIONS",
+      "activation_status": "INACTIVE"
+    },
+    {
+      "version": "1.0.0",
+      "created_at": "2026-08-14T00:00:00Z",
+      "updated_at": "2026-08-14T00:00:00Z",
+      "created_by": "codex",
+      "updated_by": "codex",
+      "domain_id": "FINANCE",
+      "capability_id": "VEDA-CAP-DOMAIN-000003",
+      "name": "Finance intelligence",
+      "risk_class": "HIGH_STAKES",
+      "required_fact_types": [
+        "NATAL",
+        "BHAVA",
+        "LORDSHIP",
+        "DIGNITY",
+        "VARGA",
+        "DASHA",
+        "TRANSIT"
+      ],
+      "required_capabilities": [
+        "VEDA-CAP-FOUNDATION-000002",
+        "VEDA-CAP-VARGA-000003",
+        "VEDA-CAP-VARGA-000004",
+        "VEDA-CAP-TIMING-000001"
+      ],
+      "optional_capabilities": [
+        "VEDA-CAP-DIGNITY-000001"
+      ],
+      "high_stakes": true,
+      "research_status": "RESEARCHING",
+      "knowledge_status": "PARTIAL",
+      "implementation_status": "SHADOW_ONLY",
+      "validation_status": "PASS_WITH_CONDITIONS",
+      "activation_status": "INACTIVE"
+    },
+    {
+      "version": "1.0.0",
+      "created_at": "2026-08-14T00:00:00Z",
+      "updated_at": "2026-08-14T00:00:00Z",
+      "created_by": "codex",
+      "updated_by": "codex",
+      "domain_id": "D10_CALCULATION",
+      "capability_id": "VEDA-CAP-VARGA-000003",
+      "name": "Dashamsha calculation",
+      "risk_class": "CALCULATION",
+      "required_fact_types": [
+        "NATAL"
+      ],
+      "required_capabilities": [
+        "VEDA-CAP-FOUNDATION-000001",
+        "VEDA-CAP-FOUNDATION-000002"
+      ],
+      "optional_capabilities": [],
+      "high_stakes": false,
+      "research_status": "VALIDATED_BUT_NOT_DOMAIN_GOVERNED",
+      "knowledge_status": "GOVERNED_CALCULATION",
+      "implementation_status": "CALCULATION_READY",
+      "validation_status": "SHADOW_VALIDATED",
+      "activation_status": "ACTIVE"
+    },
+    {
+      "version": "1.0.0",
+      "created_at": "2026-08-14T00:00:00Z",
+      "updated_at": "2026-08-14T00:00:00Z",
+      "created_by": "codex",
+      "updated_by": "codex",
+      "domain_id": "D10_INTERPRETATION",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "name": "Dashamsha interpretation",
+      "risk_class": "HIGH_STAKES",
+      "required_fact_types": [
+        "VARGA",
+        "DASHA",
+        "DIGNITY",
+        "TRANSIT"
+      ],
+      "required_capabilities": [
+        "VEDA-CAP-VARGA-000003",
+        "VEDA-CAP-TIMING-000001",
+        "VEDA-CAP-DIGNITY-000001"
+      ],
+      "optional_capabilities": [
+        "VEDA-CAP-FOUNDATION-000002"
+      ],
+      "high_stakes": true,
+      "research_status": "RESEARCHING",
+      "knowledge_status": "PARTIAL",
+      "implementation_status": "SHADOW_ONLY",
+      "validation_status": "RESEARCH_REQUIRED",
+      "activation_status": "INACTIVE"
+    }
+  ],
+  "evidence_contract": {
+    "evidence_contract_id": "VEDA-P020-EVIDENCE-CONTRACT",
+    "distinguish_fact_rule_signal": true,
+    "allowed_evidence_types": [
+      "SUPPORTING",
+      "OPPOSING",
+      "CONTEXTUAL",
+      "CONDITIONAL",
+      "CANCELLING",
+      "UNKNOWN",
+      "CONFLICTING",
+      "BLOCKED"
+    ],
+    "source_layers": [
+      "NATAL",
+      "BHAVA",
+      "LORDSHIP",
+      "DIGNITY",
+      "VARGA",
+      "DASHA",
+      "YOGA_DOSHA",
+      "STRENGTH",
+      "TRANSIT",
+      "APPROVED_CORE",
+      "RESEARCH_ONLY",
+      "ML_EVIDENCE",
+      "TEMPORARY_RESEARCH"
+    ]
+  },
+  "evidence_classification": [
+    {
+      "source_layer": "NATAL",
+      "evidence_type": "SUPPORTING",
+      "status": "APPROVED_CORE"
+    },
+    {
+      "source_layer": "BHAVA",
+      "evidence_type": "CONTEXTUAL",
+      "status": "APPROVED_CORE"
+    },
+    {
+      "source_layer": "LORDSHIP",
+      "evidence_type": "SUPPORTING",
+      "status": "APPROVED_CORE"
+    },
+    {
+      "source_layer": "DIGNITY",
+      "evidence_type": "CONDITIONAL",
+      "status": "GOVERNED"
+    },
+    {
+      "source_layer": "VARGA",
+      "evidence_type": "SUPPORTING",
+      "status": "GOVERNED"
+    },
+    {
+      "source_layer": "DASHA",
+      "evidence_type": "CONDITIONAL",
+      "status": "GOVERNED"
+    },
+    {
+      "source_layer": "YOGA_DOSHA",
+      "evidence_type": "CONTEXTUAL",
+      "status": "RESEARCH_ONLY"
+    },
+    {
+      "source_layer": "STRENGTH",
+      "evidence_type": "CONTEXTUAL",
+      "status": "IMPLEMENTED_UNVALIDATED"
+    },
+    {
+      "source_layer": "TRANSIT",
+      "evidence_type": "CONDITIONAL",
+      "status": "IMPLEMENTED_UNVALIDATED"
+    },
+    {
+      "source_layer": "APPROVED_CORE",
+      "evidence_type": "SUPPORTING",
+      "status": "GOVERNED"
+    },
+    {
+      "source_layer": "RESEARCH_ONLY",
+      "evidence_type": "UNKNOWN",
+      "status": "RESEARCH_ONLY"
+    },
+    {
+      "source_layer": "ML_EVIDENCE",
+      "evidence_type": "CONFLICTING",
+      "status": "RESEARCH_ONLY"
+    },
+    {
+      "source_layer": "TEMPORARY_RESEARCH",
+      "evidence_type": "BLOCKED",
+      "status": "TEMPORARY"
+    }
+  ],
+  "evidence_records": [
+    {
+      "evidence_id": "VEDA-P020-EVID-000001",
+      "domain_id": "CAREER",
+      "evidence_type": "SUPPORTING",
+      "source_layer": "NATAL",
+      "source_fact_id": "VEDA-FACT-D1-000001",
+      "rule_id": "VEDA-RUL-P020-CAREER-001",
+      "claim_ids": [
+        "VEDA-P020-CLM-000001"
+      ],
+      "direction": "SUPPORTING",
+      "weight_or_importance": "PRIMARY",
+      "confidence": "MODERATE",
+      "dependency_status": "RESOLVED",
+      "validation_status": "SHADOW_VALIDATED",
+      "temporal_scope": "STATIC_CHART",
+      "explainability_trace": [
+        "career synthesis begins with natal chart facts",
+        "natal facts are required before higher-level interpretation"
+      ]
+    },
+    {
+      "evidence_id": "VEDA-P020-EVID-000002",
+      "domain_id": "CAREER",
+      "evidence_type": "CONDITIONAL",
+      "source_layer": "D10_INTERPRETATION",
+      "source_fact_id": "VEDA-FACT-D10-000001",
+      "rule_id": "VEDA-RUL-P020-D10-001",
+      "claim_ids": [
+        "VEDA-P020-CLM-000002"
+      ],
+      "direction": "CONDITIONAL",
+      "weight_or_importance": "PRIMARY",
+      "confidence": "LOW",
+      "dependency_status": "BLOCKED_RESEARCH",
+      "validation_status": "RESEARCH_REQUIRED",
+      "temporal_scope": "TIMING_AND_CONTEXT",
+      "explainability_trace": [
+        "D10 supports professional context only",
+        "D10 interpretation stays research-only"
+      ]
+    },
+    {
+      "evidence_id": "VEDA-P020-EVID-000003",
+      "domain_id": "FINANCE",
+      "evidence_type": "OPPOSING",
+      "source_layer": "APPROVED_CORE",
+      "source_fact_id": "VEDA-FACT-BOUNDARY-000001",
+      "rule_id": "VEDA-RUL-P020-SAFETY-001",
+      "claim_ids": [
+        "VEDA-P020-CLM-000003"
+      ],
+      "direction": "OPPOSING",
+      "weight_or_importance": "PRIMARY",
+      "confidence": "HIGH",
+      "dependency_status": "RESOLVED",
+      "validation_status": "GOVERNED",
+      "temporal_scope": "ALWAYS",
+      "explainability_trace": [
+        "finance is high stakes",
+        "deterministic wealth prediction remains blocked"
+      ]
+    },
+    {
+      "evidence_id": "VEDA-P020-EVID-000004",
+      "domain_id": "FINANCE",
+      "evidence_type": "CONTEXTUAL",
+      "source_layer": "TRANSIT",
+      "source_fact_id": "VEDA-FACT-TRANSIT-000001",
+      "rule_id": "VEDA-RUL-P020-TRANSIT-001",
+      "claim_ids": [
+        "VEDA-P020-CLM-000004"
+      ],
+      "direction": "CONTEXTUAL",
+      "weight_or_importance": "SECONDARY",
+      "confidence": "LOW",
+      "dependency_status": "IMPLEMENTED_UNVALIDATED",
+      "validation_status": "IMPLEMENTATION_UNVALIDATED",
+      "temporal_scope": "WINDOWED",
+      "explainability_trace": [
+        "transit may be used as contextual timing only",
+        "transit interpretation in P019 remains unvalidated"
+      ]
+    }
+  ],
+  "dependency_graph": [
+    {
+      "domain_id": "CAREER",
+      "required": [
+        "NATAL",
+        "BHAVA",
+        "LORDSHIP",
+        "DIGNITY",
+        "VARGA",
+        "DASHA"
+      ],
+      "optional": [
+        "YOGA_DOSHA",
+        "STRENGTH",
+        "TRANSIT"
+      ],
+      "blocked": [
+        "DETERMINISTIC_OUTCOME",
+        "UNVALIDATED_WEALTH_PROMISE"
+      ],
+      "research_only": [
+        "ML_EVIDENCE",
+        "TEMPORARY_RESEARCH"
+      ]
+    },
+    {
+      "domain_id": "FINANCE",
+      "required": [
+        "NATAL",
+        "BHAVA",
+        "LORDSHIP",
+        "DIGNITY",
+        "VARGA",
+        "DASHA",
+        "TRANSIT"
+      ],
+      "optional": [
+        "YOGA_DOSHA",
+        "STRENGTH"
+      ],
+      "blocked": [
+        "DETERMINISTIC_OUTCOME",
+        "PERSONALIZED_INVESTMENT_ADVICE"
+      ],
+      "research_only": [
+        "ML_EVIDENCE",
+        "TEMPORARY_RESEARCH"
+      ]
+    }
+  ],
+  "aggregation_model": {
+    "chain": [
+      "Canonical chart facts",
+      "Domain-relevant fact selection",
+      "Governed rule evaluation",
+      "Supporting and opposing evidence",
+      "Dependency status",
+      "Conflict handling",
+      "Synthesis result",
+      "Explainability trace",
+      "RAG / user output"
+    ],
+    "fact_selection_policy": "Keep only facts that belong to the active domain and preserve source provenance.",
+    "rule_policy": "Rules may confirm or block evidence, but they do not replace source facts.",
+    "conflict_policy": "Conflicts are explicit artifacts and never silently folded into a positive claim."
+  },
+  "conflict_framework": [
+    {
+      "conflict_id": "VEDA-P020-CNF-000001",
+      "domain_id": "CAREER",
+      "conflict_type": "SCOPE_COLLISION",
+      "status": "CONTEXT_DEPENDENT",
+      "description": "D10 should support professional context, but it must not be promoted to deterministic career prediction.",
+      "resolution": "Use D10 as one supporting signal inside the governed synthesis chain."
+    },
+    {
+      "conflict_id": "VEDA-P020-CNF-000002",
+      "domain_id": "FINANCE",
+      "conflict_type": "HIGH_STAKES_BOUNDARY",
+      "status": "BLOCKED",
+      "description": "Finance language can look predictive even when the underlying evidence is only contextual.",
+      "resolution": "Block end-user deterministic outputs until the safety review path is explicitly approved."
+    },
+    {
+      "conflict_id": "VEDA-P020-CNF-000003",
+      "domain_id": "TRANSIT",
+      "conflict_type": "IMPLEMENTATION_UNVALIDATED",
+      "status": "RESEARCH_REQUIRED",
+      "description": "Transit support exists in the runtime, but the interpretation layer remains implementation-unvalidated.",
+      "resolution": "Carry transit forward as contextual timing only."
+    }
+  ],
+  "confidence_model": {
+    "policy": "Qualitative only",
+    "bands": [
+      "LOW",
+      "MODERATE",
+      "HIGH"
+    ],
+    "signals": [
+      "source diversity",
+      "rule provenance",
+      "validation state",
+      "dependency readiness",
+      "safety boundary status"
+    ],
+    "notes": "No false numerical precision; the bundle uses qualitative confidence labels only."
+  },
+  "temporal_context": {
+    "natal": "Static chart facts remain the reference base.",
+    "dasha": "Time-scoped and necessary for timing-dependent synthesis.",
+    "transit": "Contextual timing only until the interpretation layer is validated.",
+    "boundary_note": "Temporal evidence cannot be upgraded into deterministic outcome claims."
+  },
+  "varga_context": {
+    "approved_calculation": "D10 calculation is a governed supporting fact.",
+    "interpretation_state": "D10 interpretation remains research-only.",
+    "current_limiter": "The synthesis layer may reference D10, but it may not claim guaranteed career or wealth outcomes."
+  },
+  "yoga_dosha_context": {
+    "status": "RESEARCH_ONLY",
+    "boundary": "Yoga and dosha evidence may contribute context, but it is not sufficient on its own for life-domain conclusions."
+  },
+  "strength_context": {
+    "shadbala": "IMPLEMENTED_UNVALIDATED",
+    "drik_bala": "IMPLEMENTED_UNVALIDATED",
+    "bav": "IMPLEMENTED_UNVALIDATED",
+    "sav": "IMPLEMENTED_UNVALIDATED",
+    "full_shadbala": "CALCULABLE_WITH_UNVALIDATED_COMPONENTS"
+  },
+  "transit_context": {
+    "p019_state": "INACTIVE / IMPLEMENTED_UNVALIDATED",
+    "sade_sati": "RESEARCH_LIMITED",
+    "dhaiya": "RESEARCH_LIMITED",
+    "rule": "Transit may remain contextual, but it cannot override the safety boundary."
+  },
+  "explainability_graph": {
+    "trace": [
+      "Canonical chart facts",
+      "Domain-relevant selection",
+      "Rule match",
+      "Support / opposition evidence",
+      "Dependency state",
+      "Conflict handling",
+      "Synthesis result",
+      "Output boundary check"
+    ],
+    "required_properties": [
+      "source provenance",
+      "rule provenance",
+      "confidence",
+      "conflict",
+      "dependency state",
+      "validation state",
+      "high-stakes boundary"
+    ]
+  },
+  "research_programme": [
+    {
+      "mission_id": "VEDA-P020-MIS-000001",
+      "topic": "Career synthesis boundaries",
+      "priority": "P1",
+      "status": "QUEUED",
+      "objective": "Extract classical and governed support for career synthesis without activating deterministic prediction."
+    },
+    {
+      "mission_id": "VEDA-P020-MIS-000002",
+      "topic": "Finance safety boundary",
+      "priority": "P0",
+      "status": "QUEUED",
+      "objective": "Confirm that wealth and finance language remains high-stakes and non-deterministic."
+    },
+    {
+      "mission_id": "VEDA-P020-MIS-000003",
+      "topic": "D10 interpretation limits",
+      "priority": "P1",
+      "status": "QUEUED",
+      "objective": "Validate Dashamsha as a professional-context signal while keeping interpretation research-only."
+    },
+    {
+      "mission_id": "VEDA-P020-MIS-000004",
+      "topic": "Evidence conflict handling",
+      "priority": "P2",
+      "status": "QUEUED",
+      "objective": "Document how conflicting or blocked evidence is surfaced in explainability traces."
+    }
+  ],
+  "pilot_domain_selection": [
+    "CAREER",
+    "FINANCE"
+  ],
+  "pilot_synthesis_engine": {
+    "mode": "SHADOW_ONLY",
+    "output_policy": "Research-only",
+    "consumer_state": "No runtime activation",
+    "pilot_domains": [
+      "CAREER",
+      "FINANCE"
+    ],
+    "notes": "This phase defines the synthesis contract and explainability path only."
+  },
+  "safety_boundaries": [
+    "No deterministic prediction of career, wealth, marriage, health, or longevity.",
+    "No financial advice framing.",
+    "No suppression of conflicts or blocked evidence.",
+    "No silent upgrade of unvalidated transit or strength components.",
+    "No false precision in confidence reporting."
+  ],
+  "rag_integration": {
+    "local_first": true,
+    "approved_core_separation": true,
+    "temporary_research_isolation": true,
+    "notes": "Approved core, research-only evidence, and temporary research must remain distinct in retrieval and explanation."
+  },
+  "claims": [
+    {
+      "claim_id": "VEDA-P020-CLM-000001",
+      "domain_id": "CAREER",
+      "claim_text": "Career synthesis must combine natal, bhava, lordship, dignity, varga, and dasha evidence before any explanation is surfaced.",
+      "interpretation_type": "DERIVED_RULE",
+      "support_level": "MULTI_SOURCE",
+      "evidence_types": [
+        "SUPPORTING",
+        "CONTEXTUAL",
+        "CONDITIONAL"
+      ],
+      "conflicting_claims": [
+        "VEDA-P020-CLM-000002"
+      ],
+      "research_status": "NEEDS_MORE_RESEARCH",
+      "approval_status": "NOT_SUBMITTED",
+      "high_stakes": true,
+      "requires_safety_review": true,
+      "allowed_output_mode": "RESEARCH_ONLY"
+    },
+    {
+      "claim_id": "VEDA-P020-CLM-000002",
+      "domain_id": "CAREER",
+      "claim_text": "D10 can inform professional context, but it does not authorise deterministic career prediction.",
+      "interpretation_type": "IMPLEMENTATION_NOTE",
+      "support_level": "CONFLICTED",
+      "evidence_types": [
+        "CONDITIONAL",
+        "OPPOSING"
+      ],
+      "conflicting_claims": [
+        "VEDA-P020-CLM-000001"
+      ],
+      "research_status": "REVIEWED",
+      "approval_status": "APPROVED_WITH_CONDITIONS",
+      "high_stakes": true,
+      "requires_safety_review": true,
+      "allowed_output_mode": "TRADITIONAL_INTERPRETATION_ONLY"
+    },
+    {
+      "claim_id": "VEDA-P020-CLM-000003",
+      "domain_id": "FINANCE",
+      "claim_text": "Finance and wealth outputs remain high-stakes and must not be framed as guaranteed outcomes.",
+      "interpretation_type": "HYPOTHESIS",
+      "support_level": "CROSS_VERIFIED",
+      "evidence_types": [
+        "OPPOSING",
+        "CONTEXTUAL"
+      ],
+      "conflicting_claims": [
+        "VEDA-P020-CLM-000004"
+      ],
+      "research_status": "UNDER_REVIEW",
+      "approval_status": "NOT_SUBMITTED",
+      "high_stakes": true,
+      "requires_safety_review": true,
+      "allowed_output_mode": "NO_END_USER_OUTPUT"
+    },
+    {
+      "claim_id": "VEDA-P020-CLM-000004",
+      "domain_id": "FINANCE",
+      "claim_text": "Transit context may be used only as timing context, not as proof of financial success.",
+      "interpretation_type": "IMPLEMENTATION_NOTE",
+      "support_level": "SINGLE_SOURCE",
+      "evidence_types": [
+        "CONTEXTUAL",
+        "BLOCKED"
+      ],
+      "conflicting_claims": [
+        "VEDA-P020-CLM-000003"
+      ],
+      "research_status": "UNDER_REVIEW",
+      "approval_status": "NOT_SUBMITTED",
+      "high_stakes": true,
+      "requires_safety_review": true,
+      "allowed_output_mode": "RESEARCH_ONLY"
+    }
+  ],
+  "validation_fixtures": [
+    {
+      "fixture_id": "VEDA-P020-FIX-000001",
+      "domain_id": "CAREER",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Sun",
+      "longitude": 0.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Sun",
+        "source_longitude": 0.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-ARIES",
+        "varga_degree": 0.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-ARIES",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000002",
+      "domain_id": "CAREER",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Sun",
+      "longitude": 14.999999,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Sun",
+        "source_longitude": 14.999999,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-LEO",
+        "varga_degree": 29.99999,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-LEO",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000003",
+      "domain_id": "CAREER",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Sun",
+      "longitude": 15.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Sun",
+        "source_longitude": 15.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-VIRGO",
+        "varga_degree": 0.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-VIRGO",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000004",
+      "domain_id": "CAREER",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Sun",
+      "longitude": 29.999999,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Sun",
+        "source_longitude": 29.999999,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-CAPRICORN",
+        "varga_degree": 29.99999,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-CAPRICORN",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000005",
+      "domain_id": "CAREER",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Sun",
+      "longitude": 30.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Sun",
+        "source_longitude": 30.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-CAPRICORN",
+        "varga_degree": 0.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-CAPRICORN",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000006",
+      "domain_id": "CAREER",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Sun",
+      "longitude": 95.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Sun",
+        "source_longitude": 95.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-ARIES",
+        "varga_degree": 20.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-ARIES",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000007",
+      "domain_id": "CAREER",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Jupiter",
+      "longitude": 0.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Jupiter",
+        "source_longitude": 0.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-ARIES",
+        "varga_degree": 0.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-ARIES",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000008",
+      "domain_id": "CAREER",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Jupiter",
+      "longitude": 14.999999,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Jupiter",
+        "source_longitude": 14.999999,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-LEO",
+        "varga_degree": 29.99999,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-LEO",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000009",
+      "domain_id": "CAREER",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Jupiter",
+      "longitude": 15.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Jupiter",
+        "source_longitude": 15.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-VIRGO",
+        "varga_degree": 0.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-VIRGO",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000010",
+      "domain_id": "CAREER",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Jupiter",
+      "longitude": 29.999999,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Jupiter",
+        "source_longitude": 29.999999,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-CAPRICORN",
+        "varga_degree": 29.99999,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-CAPRICORN",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000011",
+      "domain_id": "CAREER",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Jupiter",
+      "longitude": 30.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Jupiter",
+        "source_longitude": 30.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-CAPRICORN",
+        "varga_degree": 0.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-CAPRICORN",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000012",
+      "domain_id": "CAREER",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Jupiter",
+      "longitude": 95.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Jupiter",
+        "source_longitude": 95.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-ARIES",
+        "varga_degree": 20.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-ARIES",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000013",
+      "domain_id": "FINANCE",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Moon",
+      "longitude": 0.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Moon",
+        "source_longitude": 0.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-ARIES",
+        "varga_degree": 0.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-ARIES",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000014",
+      "domain_id": "FINANCE",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Moon",
+      "longitude": 14.999999,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Moon",
+        "source_longitude": 14.999999,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-LEO",
+        "varga_degree": 29.99999,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-LEO",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000015",
+      "domain_id": "FINANCE",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Moon",
+      "longitude": 15.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Moon",
+        "source_longitude": 15.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-VIRGO",
+        "varga_degree": 0.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-VIRGO",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000016",
+      "domain_id": "FINANCE",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Moon",
+      "longitude": 29.999999,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Moon",
+        "source_longitude": 29.999999,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-CAPRICORN",
+        "varga_degree": 29.99999,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-CAPRICORN",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000017",
+      "domain_id": "FINANCE",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Moon",
+      "longitude": 30.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Moon",
+        "source_longitude": 30.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-CAPRICORN",
+        "varga_degree": 0.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-CAPRICORN",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000018",
+      "domain_id": "FINANCE",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Moon",
+      "longitude": 95.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Moon",
+        "source_longitude": 95.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-ARIES",
+        "varga_degree": 20.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-ARIES",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000019",
+      "domain_id": "FINANCE",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Saturn",
+      "longitude": 0.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Saturn",
+        "source_longitude": 0.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-ARIES",
+        "varga_degree": 0.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-ARIES",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000020",
+      "domain_id": "FINANCE",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Saturn",
+      "longitude": 14.999999,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Saturn",
+        "source_longitude": 14.999999,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-LEO",
+        "varga_degree": 29.99999,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-LEO",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000021",
+      "domain_id": "FINANCE",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Saturn",
+      "longitude": 15.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Saturn",
+        "source_longitude": 15.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-VIRGO",
+        "varga_degree": 0.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-VIRGO",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000022",
+      "domain_id": "FINANCE",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Saturn",
+      "longitude": 29.999999,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Saturn",
+        "source_longitude": 29.999999,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-CAPRICORN",
+        "varga_degree": 29.99999,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-CAPRICORN",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000023",
+      "domain_id": "FINANCE",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Saturn",
+      "longitude": 30.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Saturn",
+        "source_longitude": 30.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-CAPRICORN",
+        "varga_degree": 0.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-CAPRICORN",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    },
+    {
+      "fixture_id": "VEDA-P020-FIX-000024",
+      "domain_id": "FINANCE",
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "planet_id": "Saturn",
+      "longitude": 95.0,
+      "expected_fact": {
+        "varga": "D10",
+        "planet_id": "Saturn",
+        "source_longitude": 95.0,
+        "division": 10,
+        "varga_sign": "VEDA-RASHI-ARIES",
+        "varga_degree": 20.0,
+        "calculation_rule_id": "VEDA-RUL-VARGA-010",
+        "runtime_version": "P012_CANONICAL_RUNTIME",
+        "validation_status": "VALIDATED",
+        "interpretation_status": "RESEARCHING"
+      },
+      "expected_varga_sign": "VEDA-RASHI-ARIES",
+      "expected_rule_id": "VEDA-RUL-VARGA-010",
+      "boundary_case": true,
+      "validation_status": "VALIDATED"
+    }
+  ],
+  "capability_status": [
+    {
+      "capability_id": "VEDA-CAP-DOMAIN-000002",
+      "domain_id": "CAREER",
+      "name": "Career and education intelligence",
+      "risk_class": "HIGH_STAKES",
+      "required_fact_types": [
+        "NATAL",
+        "BHAVA",
+        "LORDSHIP",
+        "DIGNITY",
+        "VARGA",
+        "DASHA"
+      ],
+      "required_capabilities": [
+        "VEDA-CAP-FOUNDATION-000002",
+        "VEDA-CAP-VARGA-000003",
+        "VEDA-CAP-VARGA-000004",
+        "VEDA-CAP-TIMING-000001"
+      ],
+      "optional_capabilities": [
+        "VEDA-CAP-DIGNITY-000001"
+      ],
+      "high_stakes": true,
+      "research_status": "RESEARCHING",
+      "knowledge_status": "PARTIAL",
+      "implementation_status": "SHADOW_ONLY",
+      "validation_status": "PASS_WITH_CONDITIONS",
+      "activation_status": "INACTIVE",
+      "confidence_band": "LOW",
+      "notes": "Shadow-only domain synthesis"
+    },
+    {
+      "capability_id": "VEDA-CAP-DOMAIN-000003",
+      "domain_id": "FINANCE",
+      "name": "Finance intelligence",
+      "risk_class": "HIGH_STAKES",
+      "required_fact_types": [
+        "NATAL",
+        "BHAVA",
+        "LORDSHIP",
+        "DIGNITY",
+        "VARGA",
+        "DASHA",
+        "TRANSIT"
+      ],
+      "required_capabilities": [
+        "VEDA-CAP-FOUNDATION-000002",
+        "VEDA-CAP-VARGA-000003",
+        "VEDA-CAP-VARGA-000004",
+        "VEDA-CAP-TIMING-000001"
+      ],
+      "optional_capabilities": [
+        "VEDA-CAP-DIGNITY-000001"
+      ],
+      "high_stakes": true,
+      "research_status": "RESEARCHING",
+      "knowledge_status": "PARTIAL",
+      "implementation_status": "SHADOW_ONLY",
+      "validation_status": "PASS_WITH_CONDITIONS",
+      "activation_status": "INACTIVE",
+      "confidence_band": "LOW",
+      "notes": "Shadow-only domain synthesis"
+    },
+    {
+      "capability_id": "VEDA-CAP-VARGA-000003",
+      "domain_id": "D10_CALCULATION",
+      "name": "Dashamsha calculation",
+      "risk_class": "CALCULATION",
+      "required_fact_types": [
+        "NATAL"
+      ],
+      "required_capabilities": [
+        "VEDA-CAP-FOUNDATION-000001",
+        "VEDA-CAP-FOUNDATION-000002"
+      ],
+      "optional_capabilities": [],
+      "high_stakes": false,
+      "research_status": "VALIDATED_BUT_NOT_DOMAIN_GOVERNED",
+      "knowledge_status": "GOVERNED_CALCULATION",
+      "implementation_status": "CALCULATION_READY",
+      "validation_status": "SHADOW_VALIDATED",
+      "activation_status": "ACTIVE",
+      "confidence_band": "HIGH",
+      "notes": "Existing calculation is governed"
+    },
+    {
+      "capability_id": "VEDA-CAP-VARGA-000004",
+      "domain_id": "D10_INTERPRETATION",
+      "name": "Dashamsha interpretation",
+      "risk_class": "HIGH_STAKES",
+      "required_fact_types": [
+        "VARGA",
+        "DASHA",
+        "DIGNITY",
+        "TRANSIT"
+      ],
+      "required_capabilities": [
+        "VEDA-CAP-VARGA-000003",
+        "VEDA-CAP-TIMING-000001",
+        "VEDA-CAP-DIGNITY-000001"
+      ],
+      "optional_capabilities": [
+        "VEDA-CAP-FOUNDATION-000002"
+      ],
+      "high_stakes": true,
+      "research_status": "RESEARCHING",
+      "knowledge_status": "PARTIAL",
+      "implementation_status": "SHADOW_ONLY",
+      "validation_status": "RESEARCH_REQUIRED",
+      "activation_status": "INACTIVE",
+      "confidence_band": "LOW",
+      "notes": "Shadow-only domain synthesis"
+    }
+  ],
+  "research_missions": [
+    {
+      "mission_id": "VEDA-P020-MIS-000001",
+      "topic": "Career synthesis boundaries",
+      "priority": "P1",
+      "status": "QUEUED",
+      "objective": "Extract classical and governed support for career synthesis without activating deterministic prediction."
+    },
+    {
+      "mission_id": "VEDA-P020-MIS-000002",
+      "topic": "Finance safety boundary",
+      "priority": "P0",
+      "status": "QUEUED",
+      "objective": "Confirm that wealth and finance language remains high-stakes and non-deterministic."
+    },
+    {
+      "mission_id": "VEDA-P020-MIS-000003",
+      "topic": "D10 interpretation limits",
+      "priority": "P1",
+      "status": "QUEUED",
+      "objective": "Validate Dashamsha as a professional-context signal while keeping interpretation research-only."
+    },
+    {
+      "mission_id": "VEDA-P020-MIS-000004",
+      "topic": "Evidence conflict handling",
+      "priority": "P2",
+      "status": "QUEUED",
+      "objective": "Document how conflicting or blocked evidence is surfaced in explainability traces."
+    }
+  ],
+  "shadow_validation": [
+    {
+      "planet_id": "Sun",
+      "longitude": 0.0,
+      "governed_sign": "VEDA-RASHI-ARIES",
+      "legacy_sign": "VEDA-RASHI-ARIES",
+      "classification": "MATCH"
+    },
+    {
+      "planet_id": "Jupiter",
+      "longitude": 95.0,
+      "governed_sign": "VEDA-RASHI-ARIES",
+      "legacy_sign": "VEDA-RASHI-ARIES",
+      "classification": "MATCH"
+    },
+    {
+      "planet_id": "Moon",
+      "longitude": 29.999999,
+      "governed_sign": "VEDA-RASHI-CAPRICORN",
+      "legacy_sign": "VEDA-RASHI-CAPRICORN",
+      "classification": "MATCH"
+    },
+    {
+      "planet_id": "Saturn",
+      "longitude": 189.999999,
+      "governed_sign": "VEDA-RASHI-CAPRICORN",
+      "legacy_sign": "VEDA-RASHI-CAPRICORN",
+      "classification": "MATCH"
+    }
+  ],
+  "summary": {
+    "registry_rows": 4,
+    "capability_rows": 4,
+    "evidence_rows": 4,
+    "claims": 4,
+    "research_missions": 4,
+    "validation_fixtures": 24,
+    "shadow_cases": 4,
+    "shadow_mismatches": 0,
+    "high_stakes_domains": 3,
+    "production_activation": 1
+  }
+}

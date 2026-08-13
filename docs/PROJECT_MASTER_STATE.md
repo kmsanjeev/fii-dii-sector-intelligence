@@ -1,6 +1,6 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.72.9 | 2026-08-04
+# Version 4.73.0 | 2026-08-14
 
 ---
 
@@ -84,6 +84,12 @@ Latest Jyotish programme audit on 2026-08-05:
 - important product-positioning note:
   - the repo should not promise autonomous "accurate prediction in all aspects"
   - the safe target is accurate calculation, accurate source retrieval, accurate citation, and controlled testing of predictive hypotheses
+
+Latest P020 governance follow-up on 2026-08-14:
+- a shadow-only career / education / wealth synthesis bundle is now present
+- D10 is reused as a governed supporting fact, not a deterministic outcome
+- finance remains high-stakes and inactive at the synthesis layer
+- runtime activation was not changed
 
 Project root: `D:\Projects\fii-dii-sector-intelligence`
 

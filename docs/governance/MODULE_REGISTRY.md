@@ -520,6 +520,7 @@ Phase 12 ML: XGBoost+LightGBM, 24 features, 4 outputs (accumulation/bull_run/com
 Phase 13 RAG: FAISS+BM25 hybrid, 6 domain indexes, RRF retrieval
 Phase 14 Chatbot: Groq llama-3.3-70b-versatile (primary), multi-provider fallback via llm_client.py; 11 tools; /api/chat endpoint
 Phase D Chat UI: ChatPage.tsx, session-aware, 6 suggested prompts
+Phase P020: shadow-only career/education/wealth governance bundle with D10 validation and no runtime activation
 
 Agents: intent_router.py, chat_engine.py, tools/ registry; tool calling in OpenAI/Groq format
 

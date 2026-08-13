@@ -1,0 +1,115 @@
+[
+  {
+    "capability_id": "VEDA-CAP-DOMAIN-000002",
+    "domain_id": "CAREER",
+    "name": "Career and education intelligence",
+    "risk_class": "HIGH_STAKES",
+    "required_fact_types": [
+      "NATAL",
+      "BHAVA",
+      "LORDSHIP",
+      "DIGNITY",
+      "VARGA",
+      "DASHA"
+    ],
+    "required_capabilities": [
+      "VEDA-CAP-FOUNDATION-000002",
+      "VEDA-CAP-VARGA-000003",
+      "VEDA-CAP-VARGA-000004",
+      "VEDA-CAP-TIMING-000001"
+    ],
+    "optional_capabilities": [
+      "VEDA-CAP-DIGNITY-000001"
+    ],
+    "high_stakes": true,
+    "research_status": "RESEARCHING",
+    "knowledge_status": "PARTIAL",
+    "implementation_status": "SHADOW_ONLY",
+    "validation_status": "PASS_WITH_CONDITIONS",
+    "activation_status": "INACTIVE",
+    "confidence_band": "LOW",
+    "notes": "Shadow-only domain synthesis"
+  },
+  {
+    "capability_id": "VEDA-CAP-DOMAIN-000003",
+    "domain_id": "FINANCE",
+    "name": "Finance intelligence",
+    "risk_class": "HIGH_STAKES",
+    "required_fact_types": [
+      "NATAL",
+      "BHAVA",
+      "LORDSHIP",
+      "DIGNITY",
+      "VARGA",
+      "DASHA",
+      "TRANSIT"
+    ],
+    "required_capabilities": [
+      "VEDA-CAP-FOUNDATION-000002",
+      "VEDA-CAP-VARGA-000003",
+      "VEDA-CAP-VARGA-000004",
+      "VEDA-CAP-TIMING-000001"
+    ],
+    "optional_capabilities": [
+      "VEDA-CAP-DIGNITY-000001"
+    ],
+    "high_stakes": true,
+    "research_status": "RESEARCHING",
+    "knowledge_status": "PARTIAL",
+    "implementation_status": "SHADOW_ONLY",
+    "validation_status": "PASS_WITH_CONDITIONS",
+    "activation_status": "INACTIVE",
+    "confidence_band": "LOW",
+    "notes": "Shadow-only domain synthesis"
+  },
+  {
+    "capability_id": "VEDA-CAP-VARGA-000003",
+    "domain_id": "D10_CALCULATION",
+    "name": "Dashamsha calculation",
+    "risk_class": "CALCULATION",
+    "required_fact_types": [
+      "NATAL"
+    ],
+    "required_capabilities": [
+      "VEDA-CAP-FOUNDATION-000001",
+      "VEDA-CAP-FOUNDATION-000002"
+    ],
+    "optional_capabilities": [],
+    "high_stakes": false,
+    "research_status": "VALIDATED_BUT_NOT_DOMAIN_GOVERNED",
+    "knowledge_status": "GOVERNED_CALCULATION",
+    "implementation_status": "CALCULATION_READY",
+    "validation_status": "SHADOW_VALIDATED",
+    "activation_status": "ACTIVE",
+    "confidence_band": "HIGH",
+    "notes": "Existing calculation is governed"
+  },
+  {
+    "capability_id": "VEDA-CAP-VARGA-000004",
+    "domain_id": "D10_INTERPRETATION",
+    "name": "Dashamsha interpretation",
+    "risk_class": "HIGH_STAKES",
+    "required_fact_types": [
+      "VARGA",
+      "DASHA",
+      "DIGNITY",
+      "TRANSIT"
+    ],
+    "required_capabilities": [
+      "VEDA-CAP-VARGA-000003",
+      "VEDA-CAP-TIMING-000001",
+      "VEDA-CAP-DIGNITY-000001"
+    ],
+    "optional_capabilities": [
+      "VEDA-CAP-FOUNDATION-000002"
+    ],
+    "high_stakes": true,
+    "research_status": "RESEARCHING",
+    "knowledge_status": "PARTIAL",
+    "implementation_status": "SHADOW_ONLY",
+    "validation_status": "RESEARCH_REQUIRED",
+    "activation_status": "INACTIVE",
+    "confidence_band": "LOW",
+    "notes": "Shadow-only domain synthesis"
+  }
+]

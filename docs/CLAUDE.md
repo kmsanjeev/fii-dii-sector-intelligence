@@ -41,7 +41,7 @@ docs/
 │   ├── THEME_INTELLIGENCE.md           ← 35% (rotation engines planned but not built)
 │   ├── STOCK_INTELLIGENCE.md           ← 100% complete (Phase 8 + A + TI done)
 │   ├── FUNDAMENTAL_INTELLIGENCE.md     ← 100% complete (Phase 15/15B/16 done)
-│   ├── AI_PLATFORM.md                  ← 100% complete (Phase 12-14 + D done)
+│   ├── AI_PLATFORM.md                  ← 100% complete (Phase 12-14 + D done, P020 governance extension)
 │   ├── GUI_PLATFORM.md                 ← 100% complete (Phase 10+11 done, KLineChart Pro)
 │   └── EXECUTION_PLATFORM.md          ← 100% complete (Phase 20-25 done)
 │

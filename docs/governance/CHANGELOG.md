@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## 2026-08-14 | VEDA-P020 career / education / wealth governance bundle
+
+### Context
+P020 added a shadow-only life-domain synthesis foundation for career,
+education, and wealth reasoning. The phase preserves the distinction between
+facts, rule matches, supporting signals, and conflicts while keeping runtime
+activation unchanged.
+
+### Files Added
+- engines/ai/knowledge/career_wealth_governance.py
+- tests/test_veda_p020_career.py
+- docs/current-state/p020/VEDA-P020-00_EXECUTIVE_SUMMARY.md
+- docs/current-state/p020/VEDA-P020-01_CAPABILITY_REGISTRY.md
+- docs/current-state/p020/VEDA-P020-02_EVIDENCE_AND_CONFLICTS.md
+- docs/current-state/p020/VEDA-P020-03_VALIDATION_PLAN.md
+- docs/current-state/p020/VEDA-P020-04_FINAL_ACCEPTANCE.md
+
+### Notes
+- P020 exports `p020_career_bundle.json` plus split registry, validation,
+  capability-status, and research-mission artifacts.
+- D10 shadow validation matches the legacy dashamsha formula.
+
 ## 2026-08-10 | Systematic commit of Kiro AI research foundation additions
 
 ### Context

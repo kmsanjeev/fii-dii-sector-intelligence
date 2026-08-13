@@ -463,3 +463,23 @@ Overall: 100% of full vision complete (Investment Operating System LIVE)
 [x] Phase 6 -- MIT Git capability intake
 [x] Phase 7 -- MCP fallback connectors
 [x] Phase 8 -- hardening, automated verification, and rollout checklist
+
+---
+
+# SECTION 28 - Veda Career / Education / Wealth Governance (2026-08-14) [COMPLETE]
+
+[x] Phase P020 -- shadow-only career, education, and wealth synthesis
+    governance bundle added with D10 validation, evidence classification,
+    conflict handling, explainability trace, and no runtime activation
+[x] Output artifacts written:
+    `data/veda/validation/capabilities/p020_career_bundle.json`
+    `data/veda/validation/capabilities/p020_career_registry.json`
+    `data/veda/validation/capabilities/p020_career_validation.json`
+    `data/veda/validation/capabilities/p020_career_capability_status.json`
+    `data/veda/validation/capabilities/p020_career_research_missions.json`
+[x] Docs added under `docs/current-state/p020/`
+[x] D10 shadow validation matches the legacy dashamsha formula
+[x] Governance docs updated:
+    `docs/governance/CHANGELOG.md`, `docs/governance/MODULE_REGISTRY.md`,
+    `docs/PROJECT_MASTER_STATE.md`, `docs/CLAUDE.md`,
+    `docs/modules/AI_PLATFORM.md`

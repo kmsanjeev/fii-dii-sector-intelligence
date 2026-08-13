@@ -418,6 +418,14 @@ Important note:
 - the separate detailed browser + microphone acceptance round is intentionally
   left to the later human QA pass requested for this project
 - browser UI QA has now passed through Selenium on 2026-08-04
+
+### Phase 9 -- P020 governance foundation
+
+- build shadow-only career, education, and wealth synthesis governance
+- preserve fact, rule, signal, and conflict separation
+- keep runtime activation unchanged
+
+Status: COMPLETE (2026-08-14)
 - the remaining open live QA scope is microphone capture and spoken-audio
   behavior
 
