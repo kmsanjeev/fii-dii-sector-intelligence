@@ -17,6 +17,7 @@ const researchApiMock = vi.hoisted(() => ({
   fetchResearchMissionDetail: vi.fn(),
   fetchResearchMissions: vi.fn(),
   fetchResearchPlatformHealth: vi.fn(),
+  fetchCareerValidatedProfiles: vi.fn(),
   fetchResearchRunDetail: vi.fn(),
   fetchResearchRuns: vi.fn(),
   fetchResearchSchedules: vi.fn(),
@@ -44,6 +45,7 @@ vi.mock('../api/researchAdmin', async () => {
     fetchResearchMissionDetail: researchApiMock.fetchResearchMissionDetail,
     fetchResearchMissions: researchApiMock.fetchResearchMissions,
     fetchResearchPlatformHealth: researchApiMock.fetchResearchPlatformHealth,
+    fetchCareerValidatedProfiles: researchApiMock.fetchCareerValidatedProfiles,
     fetchResearchRunDetail: researchApiMock.fetchResearchRunDetail,
     fetchResearchRuns: researchApiMock.fetchResearchRuns,
     fetchResearchSchedules: researchApiMock.fetchResearchSchedules,
@@ -419,6 +421,29 @@ beforeEach(() => {
     failed_runs: 0,
     db_path: 'tmp/research.sqlite3',
   })
+  researchApiMock.fetchCareerValidatedProfiles.mockResolvedValue({
+    records: [],
+    total: 12318,
+    returned: 1,
+    summary: {
+      profiles_total: 12318,
+      canonical_rows: 2053,
+      synthetic_rows: 10265,
+      synthetic_rate: 0.8333,
+      symbols_total: 2053,
+      industries_covered: 18,
+      top_industries: [
+        { industry: 'BANKING', count: 800 },
+        { industry: 'IT', count: 660 },
+        { industry: 'METAL', count: 540 },
+      ],
+      domain_counts: [
+        { domain_id: 'LEADERSHIP', count: 2053 },
+        { domain_id: 'ANALYTICS', count: 2053 },
+      ],
+      as_of: '2026-08-14T00:00:00Z',
+    },
+  })
   researchApiMock.fetchResearchMissions.mockResolvedValue(missionListPayload)
   researchApiMock.fetchResearchMissionDetail.mockResolvedValue(missionDetailPayload)
   researchApiMock.fetchResearchRuns.mockResolvedValue(runListPayload)
@@ -535,6 +560,7 @@ describe('Admin Research Control Centre', () => {
 
     expect(await screen.findByText('Research Control Centre')).toBeInTheDocument()
     expect(await screen.findByText('Research Engine Status')).toBeInTheDocument()
+    expect(await screen.findByText('CAREER / PROFESSION VALIDATION')).toBeInTheDocument()
     expect(screen.getByText('Vedic Astrology / Jyotisha')).toBeInTheDocument()
     expect(screen.getByText('One high-priority candidate awaits review.')).toBeInTheDocument()
     expect(screen.getByText('ddgs-search')).toBeInTheDocument()

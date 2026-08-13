@@ -343,6 +343,21 @@ Legend:  [x] Completed  [-] In Progress  [ ] Not Started
 
 ---
 
+# SECTION 26 — Career / Profession Validation [COMPLETE]
+
+[x] engines/career/veda_p021_engine.py (shadow-only career/profession synthesis)
+[x] engines/career/fetchers/career_sources_ingest.py (kundli + classification ingest)
+[x] backend/routers/career_validation.py (/api/career/validated)
+[x] frontend/src/components/admin/CareerOverviewTile.tsx (admin summary tile)
+[x] data/veda/career_validated_profiles.csv (12,096 rows, 2,016 symbols)
+[x] data/veda/validation/capabilities/p021_career_bundle.json
+[x] data/veda/validation/capabilities/p021_career_registry.json
+[x] data/veda/validation/capabilities/p021_career_validation.json
+[x] docs/current-state/p021/VEDA-P021-00_EXECUTIVE_SUMMARY.md
+[x] docs/current-state/p021/VEDA-P021-01_VALIDATION_AND_SHADOWS.md
+
+---
+
 # CURRENT PLATFORM COMPLETION (2026-07-09)
 
 ```

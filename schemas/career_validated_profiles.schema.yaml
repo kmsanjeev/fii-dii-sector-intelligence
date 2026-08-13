@@ -1,0 +1,53 @@
+type: object
+required:
+  - symbol
+  - domain_id
+  - role_id
+  - canonical_role
+  - detected_synonyms
+  - skills
+  - industry
+  - confidence_score
+  - provenance
+  - shadow_payload_id
+  - created_at
+  - validated_by
+properties:
+  symbol:
+    type: string
+  domain_id:
+    type: string
+  role_id:
+    type: string
+  canonical_role:
+    type: string
+  detected_synonyms:
+    type: array
+    items:
+      type: string
+  skills:
+    type: array
+    items:
+      type: string
+  industry:
+    type: string
+  confidence_score:
+    type: number
+    minimum: 0
+    maximum: 1
+  provenance:
+    type: array
+    items:
+      type: object
+      required:
+        - source
+        - url
+        - fetch_date
+  shadow_payload_id:
+    anyOf:
+      - type: string
+      - type: "null"
+  created_at:
+    type: string
+  validated_by:
+    type: string

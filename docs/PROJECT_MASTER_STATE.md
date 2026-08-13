@@ -91,6 +91,12 @@ Latest P020 governance follow-up on 2026-08-14:
 - finance remains high-stakes and inactive at the synthesis layer
 - runtime activation was not changed
 
+Latest P021 governance follow-up on 2026-08-14:
+- career / profession validation now sits on top of the existing kundli data
+- the exported profile set contains 12,096 rows across 2,016 symbols
+- canonical rows remain separate from shadow-synthesized alternatives
+- the admin dashboard now surfaces summary metrics without changing runtime prediction semantics
+
 Project root: `D:\Projects\fii-dii-sector-intelligence`
 
 ## Intelligence Cascade: COMPLETE

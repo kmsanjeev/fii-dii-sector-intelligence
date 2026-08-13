@@ -17,6 +17,10 @@ Users interact via natural language. Agents access live data via tool calls back
 Latest approved extension: Veda Research Mode rollout completed through Phase 8
 on 2026-08-04, with follow-up hardening continuing where needed.
 
+Latest governed shadow extension: P021 adds a career / profession validation
+summary tile and validated CSV output without altering production prediction
+semantics.
+
 ---
 
 # Vision

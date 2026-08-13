@@ -399,6 +399,42 @@ export type ResearchRagDiagnosticsResponse = {
   }
 }
 
+export type CareerValidatedProfile = {
+  symbol: string
+  domain_id: string
+  role_id: string
+  canonical_role: string
+  detected_synonyms: string
+  skills: string
+  industry: string
+  confidence_score: number
+  provenance: string
+  shadow_payload_id: string | null
+  created_at: string
+  validated_by: string
+  supporting_signals?: string
+  opposing_signals?: string
+}
+
+export type CareerValidationSummary = {
+  profiles_total: number
+  canonical_rows: number
+  synthetic_rows: number
+  synthetic_rate: number
+  symbols_total: number
+  industries_covered: number
+  top_industries: Array<{ industry: string; count: number }>
+  domain_counts: Array<{ domain_id: string; count: number }>
+  as_of: string
+}
+
+export type CareerValidatedProfilesResponse = {
+  records: CareerValidatedProfile[]
+  total: number
+  returned: number
+  summary: CareerValidationSummary
+}
+
 export type ResearchValidationRecord = {
   validation_id: string
   validator: string
@@ -564,3 +600,6 @@ export const updateResearchSchedule = (scheduleId: string, payload: Record<strin
 
 export const runResearchRagDiagnostics = (payload: ResearchRagDiagnosticsRequest) =>
   api.post<ResearchRagDiagnosticsResponse>('/research/rag/diagnostics', payload).then(r => r.data)
+
+export const fetchCareerValidatedProfiles = (params?: Record<string, unknown>) =>
+  api.get<CareerValidatedProfilesResponse>('/career/validated', { params }).then(r => r.data)

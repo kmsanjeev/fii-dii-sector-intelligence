@@ -2,8 +2,8 @@
   "meta": {
     "baseline_id": "VEDA-P001-M003",
     "generated_on": "2026-08-10",
-    "openapi_path_count": 128,
-    "operation_count": 140
+    "openapi_path_count": 129,
+    "operation_count": 141
   },
   "critical_endpoints": [
     {
@@ -850,6 +850,33 @@
       ],
       "path_params": [],
       "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/career/validated",
+      "owner": "career",
+      "operation_id": "get_validated_profiles_api_career_validated_get",
+      "tags": [
+        "career"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "domain_id",
+        "industry",
+        "limit",
+        "offset",
+        "symbol"
+      ],
       "response_codes": [
         "200",
         "422"

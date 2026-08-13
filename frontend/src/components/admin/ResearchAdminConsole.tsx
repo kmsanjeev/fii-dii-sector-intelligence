@@ -34,6 +34,7 @@ import {
   type ResearchRagDiagnosticsResponse,
   type ResearchScheduleRow,
 } from '../../api/researchAdmin'
+import { CareerOverviewTile } from './CareerOverviewTile'
 
 type Section =
   | 'dashboard'
@@ -617,6 +618,8 @@ function DashboardView({
         <StatTile label="Open Contradictions" value={dashboard.high_priority_conflicts} tone={warn} onClick={onOpenContradictions} />
         <StatTile label="Knowledge Gaps" value={dashboard.knowledge_gaps.length} tone={info} onClick={onOpenGaps} />
       </div>
+
+      <CareerOverviewTile />
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 12 }}>
         <div style={{ ...SURFACE, padding: 14 }}>

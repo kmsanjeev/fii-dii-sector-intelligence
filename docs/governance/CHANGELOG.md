@@ -1,5 +1,32 @@
 # CHANGELOG
 
+## 2026-08-14 | VEDA-P021 career / profession validation & shadow synthesis
+
+### Context
+P021 adds a governed career / profession synthesis layer on top of the
+existing kundli outputs. It keeps the shadow/canonical split explicit, adds a
+validated CSV artifact, and surfaces a small admin summary tile without
+changing production prediction behavior.
+
+### Files Added
+- engines/career/veda_p021_engine.py
+- engines/career/fetchers/career_sources_ingest.py
+- backend/routers/career_validation.py
+- frontend/src/components/admin/CareerOverviewTile.tsx
+- tests/test_veda_p021_career.py
+- data/veda/career_validated_profiles.csv
+- data/veda/validation/capabilities/p021_career_bundle.json
+- data/veda/validation/capabilities/p021_career_registry.json
+- data/veda/validation/capabilities/p021_career_validation.json
+- docs/current-state/p021/VEDA-P021-00_EXECUTIVE_SUMMARY.md
+- docs/current-state/p021/VEDA-P021-01_VALIDATION_AND_SHADOWS.md
+
+### Notes
+- The exported dataset contains 12,096 profiles across 2,016 symbols.
+- The canonical/synthetic split is explicit: 2,016 canonical rows and 10,080
+  shadow rows.
+- D10, dasha, strength, and transit context are used as governed evidence only.
+
 ## 2026-08-14 | VEDA-P020 career / education / wealth governance bundle
 
 ### Context

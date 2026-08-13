@@ -1,0 +1,528 @@
+{
+  "meta": {
+    "phase": "VEDA-P021",
+    "contract_version": "2026-08-14",
+    "version": "1.0.0",
+    "created_at": "2026-08-14T00:00:00Z",
+    "updated_at": "2026-08-14T00:00:00Z",
+    "created_by": "codex",
+    "updated_by": "codex"
+  },
+  "domain_registry": [
+    {
+      "domain_id": "LEADERSHIP",
+      "canonical_role": "Chief Executive Officer",
+      "role_family": "leadership",
+      "status": "SHADOW_ONLY",
+      "high_stakes": true,
+      "supported_signals": [
+        "Sagittarius",
+        "Leo",
+        "Aries",
+        "Capricorn",
+        "Saturn",
+        "Sun",
+        "Mars"
+      ]
+    },
+    {
+      "domain_id": "ANALYTICS",
+      "canonical_role": "Research Strategist",
+      "role_family": "analysis",
+      "status": "SHADOW_ONLY",
+      "high_stakes": false,
+      "supported_signals": [
+        "Virgo",
+        "Gemini",
+        "Aquarius",
+        "Jupiter",
+        "Mercury"
+      ]
+    },
+    {
+      "domain_id": "COMMUNICATION",
+      "canonical_role": "Communications Lead",
+      "role_family": "communication",
+      "status": "SHADOW_ONLY",
+      "high_stakes": false,
+      "supported_signals": [
+        "Virgo",
+        "Gemini",
+        "Libra",
+        "Cancer",
+        "Venus",
+        "Mercury",
+        "Moon"
+      ]
+    },
+    {
+      "domain_id": "FINANCE",
+      "canonical_role": "Portfolio Manager",
+      "role_family": "finance",
+      "status": "SHADOW_ONLY",
+      "high_stakes": true,
+      "supported_signals": [
+        "Taurus",
+        "Libra",
+        "Pisces",
+        "Capricorn",
+        "Saturn",
+        "Jupiter",
+        "Venus"
+      ]
+    },
+    {
+      "domain_id": "TECHNOLOGY",
+      "canonical_role": "Technical Architect",
+      "role_family": "technology",
+      "status": "SHADOW_ONLY",
+      "high_stakes": false,
+      "supported_signals": [
+        "Virgo",
+        "Aquarius",
+        "Gemini",
+        "Capricorn",
+        "Saturn",
+        "Mercury",
+        "Mars"
+      ]
+    },
+    {
+      "domain_id": "EDUCATION",
+      "canonical_role": "Advisor and Mentor",
+      "role_family": "education",
+      "status": "SHADOW_ONLY",
+      "high_stakes": true,
+      "supported_signals": [
+        "Virgo",
+        "Sagittarius",
+        "Pisces",
+        "Cancer",
+        "Jupiter",
+        "Mercury",
+        "Moon"
+      ]
+    }
+  ],
+  "evidence_contract": {
+    "distinguish_fact_rule_signal": true,
+    "requires_provenance_for_every_row": true,
+    "supports_shadow_synthesis": true,
+    "blocks_pii": true,
+    "supports_supporting_and_opposing_signals": true,
+    "timing_context": [
+      "Dasha",
+      "Transit"
+    ],
+    "divisional_context": [
+      "D10"
+    ],
+    "high_stakes_domains": [
+      "LEADERSHIP",
+      "FINANCE",
+      "EDUCATION"
+    ]
+  },
+  "dependency_graph": [
+    {
+      "node": "kundli_signals.csv",
+      "depends_on": [],
+      "purpose": "base chart timing inputs"
+    },
+    {
+      "node": "company_classification_v4.csv",
+      "depends_on": [],
+      "purpose": "industry and sector mapping"
+    },
+    {
+      "node": "kundli JSON charts",
+      "depends_on": [
+        "kundli_signals.csv"
+      ],
+      "purpose": "house and transit evidence"
+    },
+    {
+      "node": "role synthesis",
+      "depends_on": [
+        "kundli_signals.csv",
+        "company_classification_v4.csv",
+        "kundli JSON charts"
+      ],
+      "purpose": "career role generation"
+    },
+    {
+      "node": "shadow validation",
+      "depends_on": [
+        "role synthesis"
+      ],
+      "purpose": "canonical vs synthetic split"
+    },
+    {
+      "node": "CSV export",
+      "depends_on": [
+        "shadow validation"
+      ],
+      "purpose": "validated profile output"
+    }
+  ],
+  "confidence_model": {
+    "base": 0.52,
+    "support_increment": 0.025,
+    "opposition_penalty": 0.03,
+    "astro_bonus": {
+      "BUY": 0.02,
+      "HOLD": 0.01,
+      "CAUTION": -0.01
+    },
+    "range": [
+      0.0,
+      1.0
+    ]
+  },
+  "conflict_framework": [
+    {
+      "conflict_id": "P021-CONFLICT-000001",
+      "type": "ROLE_TIE",
+      "resolution": "highest confidence wins; ties prefer the rule order",
+      "scope": "per-symbol"
+    },
+    {
+      "conflict_id": "P021-CONFLICT-000002",
+      "type": "HIGH_STAKES_BOUNDARY",
+      "resolution": "career/finance/education remain governed shadow outputs only",
+      "scope": "all rows"
+    }
+  ],
+  "explainability_graph": {
+    "supporting": {
+      "leadership": [
+        "10H strength",
+        "Sun/Saturn/Mars lordship",
+        "Raja Yoga"
+      ],
+      "analysis": [
+        "Mercury/Jupiter lordship",
+        "11H strength",
+        "Gaja Kesari"
+      ],
+      "communication": [
+        "Mercury/Venus/Moon lordship",
+        "2H/11H strength"
+      ],
+      "finance": [
+        "2H/11H strength",
+        "Jupiter/Venus lordship",
+        "Dhana Yoga"
+      ],
+      "technology": [
+        "Mercury/Saturn/Mars lordship",
+        "8H/11H strength"
+      ],
+      "education": [
+        "5H strength",
+        "Jupiter/Mercury lordship",
+        "Gaja Kesari"
+      ]
+    },
+    "opposing": {
+      "all_domains": [
+        "Kemdrum",
+        "very weak 10H/2H/5H signals",
+        "astro_score<=25"
+      ]
+    },
+    "timing": [
+      "mahadasha",
+      "antardasha",
+      "transit_jupiter",
+      "transit_saturn"
+    ]
+  },
+  "sample_profiles": [
+    {
+      "symbol": "20MICRONS",
+      "domain_id": "FINANCE",
+      "role_id": "P021-20MICRONS-FINANCE",
+      "canonical_role": "Portfolio Manager",
+      "detected_synonyms": "[\"Portfolio Manager\", \"Investment Analyst\", \"Treasury Manager\", \"Corporate Finance Lead\"]",
+      "skills": "[\"capital allocation\", \"risk management\", \"valuation\", \"portfolio construction\", \"Scorpio lagna context\", \"Venus period timing\", \"INDUSTRIAL MINERALS industry lens\"]",
+      "industry": "INDUSTRIAL MINERALS",
+      "confidence_score": 0.92,
+      "provenance": "[{\"source\": \"kundli_signals.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli_signals.csv\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"kundli/20MICRONS_kundli.json\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli\\\\20MICRONS_kundli.json\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"company_classification_v4.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\reference\\\\company_classification_v4.csv\", \"fetch_date\": \"2026-08-14\"}]",
+      "shadow_payload_id": NaN,
+      "created_at": "2026-08-14T00:00:00Z",
+      "validated_by": "automated",
+      "supporting_signals": "[\"mahadasha=Venus\", \"antardasha=Saturn\", \"yoga=Dhana Yoga\", \"yoga=Raja Yoga\", \"astro_action=BUY\", \"2H_strength=strong\", \"11H_strength=strong\", \"11H_sign=Virgo\"]",
+      "opposing_signals": "[\"yoga=Kemdrum\"]"
+    },
+    {
+      "symbol": "20MICRONS",
+      "domain_id": "TECHNOLOGY",
+      "role_id": "P021-20MICRONS-TECHNOLOGY",
+      "canonical_role": "Technical Architect",
+      "detected_synonyms": "[\"Technical Architect\", \"Software Engineer\", \"Systems Architect\", \"Automation Engineer\"]",
+      "skills": "[\"systems design\", \"automation\", \"technical analysis\", \"process engineering\", \"Scorpio lagna context\", \"Venus period timing\", \"INDUSTRIAL MINERALS industry lens\"]",
+      "industry": "INDUSTRIAL MINERALS",
+      "confidence_score": 0.825,
+      "provenance": "[{\"source\": \"kundli_signals.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli_signals.csv\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"kundli/20MICRONS_kundli.json\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli\\\\20MICRONS_kundli.json\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"company_classification_v4.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\reference\\\\company_classification_v4.csv\", \"fetch_date\": \"2026-08-14\"}]",
+      "shadow_payload_id": "P021-SHADOW-20MICRONS-TECHNOLOGY",
+      "created_at": "2026-08-14T00:00:00Z",
+      "validated_by": "automated",
+      "supporting_signals": "[\"lagna_lord=Mars\", \"antardasha=Saturn\", \"yoga=Dhana Yoga\", \"yoga=Viparita Raja\", \"8H_sign=Gemini\"]",
+      "opposing_signals": "[\"yoga=Kemdrum\"]"
+    },
+    {
+      "symbol": "20MICRONS",
+      "domain_id": "EDUCATION",
+      "role_id": "P021-20MICRONS-EDUCATION",
+      "canonical_role": "Advisor and Mentor",
+      "detected_synonyms": "[\"Advisor and Mentor\", \"Teacher\", \"Trainer\", \"Learning Strategist\"]",
+      "skills": "[\"teaching\", \"coaching\", \"curriculum design\", \"advisory work\", \"Scorpio lagna context\", \"Venus period timing\", \"INDUSTRIAL MINERALS industry lens\"]",
+      "industry": "INDUSTRIAL MINERALS",
+      "confidence_score": 0.82,
+      "provenance": "[{\"source\": \"kundli_signals.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli_signals.csv\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"kundli/20MICRONS_kundli.json\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli\\\\20MICRONS_kundli.json\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"company_classification_v4.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\reference\\\\company_classification_v4.csv\", \"fetch_date\": \"2026-08-14\"}]",
+      "shadow_payload_id": "P021-SHADOW-20MICRONS-EDUCATION",
+      "created_at": "2026-08-14T00:00:00Z",
+      "validated_by": "automated",
+      "supporting_signals": "[\"yoga=Gaja Kesari\", \"yoga=Dhana Yoga\", \"yoga=Raja Yoga\", \"5H_strength=strong\", \"5H_sign=Pisces\", \"jupiter_transit=Cancer\"]",
+      "opposing_signals": "[\"yoga=Kemdrum\"]"
+    },
+    {
+      "symbol": "20MICRONS",
+      "domain_id": "LEADERSHIP",
+      "role_id": "P021-20MICRONS-LEADERSHIP",
+      "canonical_role": "Chief Executive Officer",
+      "detected_synonyms": "[\"Chief Executive Officer\", \"Managing Director\", \"Executive Director\", \"Business Head\"]",
+      "skills": "[\"strategy\", \"governance\", \"stakeholder leadership\", \"execution\", \"Scorpio lagna context\", \"Venus period timing\", \"INDUSTRIAL MINERALS industry lens\"]",
+      "industry": "INDUSTRIAL MINERALS",
+      "confidence_score": 0.81,
+      "provenance": "[{\"source\": \"kundli_signals.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli_signals.csv\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"kundli/20MICRONS_kundli.json\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli\\\\20MICRONS_kundli.json\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"company_classification_v4.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\reference\\\\company_classification_v4.csv\", \"fetch_date\": \"2026-08-14\"}]",
+      "shadow_payload_id": "P021-SHADOW-20MICRONS-LEADERSHIP",
+      "created_at": "2026-08-14T00:00:00Z",
+      "validated_by": "automated",
+      "supporting_signals": "[\"lagna_lord=Mars\", \"antardasha=Saturn\", \"yoga=Gaja Kesari\", \"yoga=Raja Yoga\", \"astro_action=BUY\", \"10H_strength=strong\", \"10H_sign=Leo\", \"10H_lord=Sun\"]",
+      "opposing_signals": "[\"yoga=Kemdrum\"]"
+    },
+    {
+      "symbol": "20MICRONS",
+      "domain_id": "ANALYTICS",
+      "role_id": "P021-20MICRONS-ANALYTICS",
+      "canonical_role": "Research Strategist",
+      "detected_synonyms": "[\"Research Strategist\", \"Research Analyst\", \"Business Analyst\", \"Insight Lead\"]",
+      "skills": "[\"research\", \"pattern recognition\", \"forecasting\", \"model validation\", \"Scorpio lagna context\", \"Venus period timing\", \"INDUSTRIAL MINERALS industry lens\"]",
+      "industry": "INDUSTRIAL MINERALS",
+      "confidence_score": 0.73,
+      "provenance": "[{\"source\": \"kundli_signals.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli_signals.csv\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"kundli/20MICRONS_kundli.json\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli\\\\20MICRONS_kundli.json\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"company_classification_v4.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\reference\\\\company_classification_v4.csv\", \"fetch_date\": \"2026-08-14\"}]",
+      "shadow_payload_id": "P021-SHADOW-20MICRONS-ANALYTICS",
+      "created_at": "2026-08-14T00:00:00Z",
+      "validated_by": "automated",
+      "supporting_signals": "[\"yoga=Gaja Kesari\", \"yoga=Viparita Raja\", \"11H_strength=strong\", \"8H_sign=Gemini\"]",
+      "opposing_signals": "[\"yoga=Kemdrum\"]"
+    },
+    {
+      "symbol": "20MICRONS",
+      "domain_id": "COMMUNICATION",
+      "role_id": "P021-20MICRONS-COMMUNICATION",
+      "canonical_role": "Communications Lead",
+      "detected_synonyms": "[\"Communications Lead\", \"Product Marketer\", \"Brand Strategist\", \"Client Relations Lead\"]",
+      "skills": "[\"communication\", \"storytelling\", \"networking\", \"negotiation\", \"Scorpio lagna context\", \"Venus period timing\", \"INDUSTRIAL MINERALS industry lens\"]",
+      "industry": "INDUSTRIAL MINERALS",
+      "confidence_score": 0.73,
+      "provenance": "[{\"source\": \"kundli_signals.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli_signals.csv\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"kundli/20MICRONS_kundli.json\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli\\\\20MICRONS_kundli.json\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"company_classification_v4.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\reference\\\\company_classification_v4.csv\", \"fetch_date\": \"2026-08-14\"}]",
+      "shadow_payload_id": "P021-SHADOW-20MICRONS-COMMUNICATION",
+      "created_at": "2026-08-14T00:00:00Z",
+      "validated_by": "automated",
+      "supporting_signals": "[\"mahadasha=Venus\", \"yoga=Gaja Kesari\", \"yoga=Raja Yoga\", \"11H_strength=strong\"]",
+      "opposing_signals": "[\"yoga=Kemdrum\"]"
+    },
+    {
+      "symbol": "21STCENMGM",
+      "domain_id": "TECHNOLOGY",
+      "role_id": "P021-21STCENMGM-TECHNOLOGY",
+      "canonical_role": "Technical Architect",
+      "detected_synonyms": "[\"Technical Architect\", \"Software Engineer\", \"Systems Architect\", \"Automation Engineer\"]",
+      "skills": "[\"systems design\", \"automation\", \"technical analysis\", \"process engineering\", \"Gemini lagna context\", \"Jupiter period timing\", \"OTHER CAPITAL MARKET RELATED SERVICES industry lens\"]",
+      "industry": "OTHER CAPITAL MARKET RELATED SERVICES",
+      "confidence_score": 0.68,
+      "provenance": "[{\"source\": \"kundli_signals.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli_signals.csv\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"kundli/21STCENMGM_kundli.json\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli\\\\21STCENMGM_kundli.json\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"company_classification_v4.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\reference\\\\company_classification_v4.csv\", \"fetch_date\": \"2026-08-14\"}]",
+      "shadow_payload_id": NaN,
+      "created_at": "2026-08-14T00:00:00Z",
+      "validated_by": "automated",
+      "supporting_signals": "[\"lagna=Gemini\", \"lagna_lord=Mercury\", \"yoga=Neecha Bhanga\", \"industry_bonus=0.08\"]",
+      "opposing_signals": "[\"astro_score<=25\"]"
+    },
+    {
+      "symbol": "21STCENMGM",
+      "domain_id": "EDUCATION",
+      "role_id": "P021-21STCENMGM-EDUCATION",
+      "canonical_role": "Advisor and Mentor",
+      "detected_synonyms": "[\"Advisor and Mentor\", \"Teacher\", \"Trainer\", \"Learning Strategist\"]",
+      "skills": "[\"teaching\", \"coaching\", \"curriculum design\", \"advisory work\", \"Gemini lagna context\", \"Jupiter period timing\", \"OTHER CAPITAL MARKET RELATED SERVICES industry lens\"]",
+      "industry": "OTHER CAPITAL MARKET RELATED SERVICES",
+      "confidence_score": 0.675,
+      "provenance": "[{\"source\": \"kundli_signals.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli_signals.csv\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"kundli/21STCENMGM_kundli.json\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli\\\\21STCENMGM_kundli.json\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"company_classification_v4.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\reference\\\\company_classification_v4.csv\", \"fetch_date\": \"2026-08-14\"}]",
+      "shadow_payload_id": "P021-SHADOW-21STCENMGM-EDUCATION",
+      "created_at": "2026-08-14T00:00:00Z",
+      "validated_by": "automated",
+      "supporting_signals": "[\"lagna_lord=Mercury\", \"mahadasha=Jupiter\", \"yoga=Gaja Kesari\", \"5H_strength=strong\", \"jupiter_transit=Cancer\"]",
+      "opposing_signals": "[\"astro_score<=25\"]"
+    },
+    {
+      "symbol": "21STCENMGM",
+      "domain_id": "ANALYTICS",
+      "role_id": "P021-21STCENMGM-ANALYTICS",
+      "canonical_role": "Research Strategist",
+      "detected_synonyms": "[\"Research Strategist\", \"Research Analyst\", \"Business Analyst\", \"Insight Lead\"]",
+      "skills": "[\"research\", \"pattern recognition\", \"forecasting\", \"model validation\", \"Gemini lagna context\", \"Jupiter period timing\", \"OTHER CAPITAL MARKET RELATED SERVICES industry lens\"]",
+      "industry": "OTHER CAPITAL MARKET RELATED SERVICES",
+      "confidence_score": 0.655,
+      "provenance": "[{\"source\": \"kundli_signals.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli_signals.csv\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"kundli/21STCENMGM_kundli.json\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli\\\\21STCENMGM_kundli.json\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"company_classification_v4.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\reference\\\\company_classification_v4.csv\", \"fetch_date\": \"2026-08-14\"}]",
+      "shadow_payload_id": "P021-SHADOW-21STCENMGM-ANALYTICS",
+      "created_at": "2026-08-14T00:00:00Z",
+      "validated_by": "automated",
+      "supporting_signals": "[\"lagna=Gemini\", \"lagna_lord=Mercury\", \"mahadasha=Jupiter\", \"yoga=Gaja Kesari\", \"yoga=Neecha Bhanga\", \"astro_action=CAUTION\", \"industry_bonus=0.03\"]",
+      "opposing_signals": "[\"astro_score<=25\"]"
+    },
+    {
+      "symbol": "21STCENMGM",
+      "domain_id": "FINANCE",
+      "role_id": "P021-21STCENMGM-FINANCE",
+      "canonical_role": "Portfolio Manager",
+      "detected_synonyms": "[\"Portfolio Manager\", \"Investment Analyst\", \"Treasury Manager\", \"Corporate Finance Lead\"]",
+      "skills": "[\"capital allocation\", \"risk management\", \"valuation\", \"portfolio construction\", \"Gemini lagna context\", \"Jupiter period timing\", \"OTHER CAPITAL MARKET RELATED SERVICES industry lens\"]",
+      "industry": "OTHER CAPITAL MARKET RELATED SERVICES",
+      "confidence_score": 0.58,
+      "provenance": "[{\"source\": \"kundli_signals.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli_signals.csv\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"kundli/21STCENMGM_kundli.json\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli\\\\21STCENMGM_kundli.json\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"company_classification_v4.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\reference\\\\company_classification_v4.csv\", \"fetch_date\": \"2026-08-14\"}]",
+      "shadow_payload_id": "P021-SHADOW-21STCENMGM-FINANCE",
+      "created_at": "2026-08-14T00:00:00Z",
+      "validated_by": "automated",
+      "supporting_signals": "[\"mahadasha=Jupiter\", \"2H_strength=strong\"]",
+      "opposing_signals": "[\"astro_score<=25\"]"
+    },
+    {
+      "symbol": "21STCENMGM",
+      "domain_id": "COMMUNICATION",
+      "role_id": "P021-21STCENMGM-COMMUNICATION",
+      "canonical_role": "Communications Lead",
+      "detected_synonyms": "[\"Communications Lead\", \"Product Marketer\", \"Brand Strategist\", \"Client Relations Lead\"]",
+      "skills": "[\"communication\", \"storytelling\", \"networking\", \"negotiation\", \"Gemini lagna context\", \"Jupiter period timing\", \"OTHER CAPITAL MARKET RELATED SERVICES industry lens\"]",
+      "industry": "OTHER CAPITAL MARKET RELATED SERVICES",
+      "confidence_score": 0.555,
+      "provenance": "[{\"source\": \"kundli_signals.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli_signals.csv\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"kundli/21STCENMGM_kundli.json\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli\\\\21STCENMGM_kundli.json\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"company_classification_v4.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\reference\\\\company_classification_v4.csv\", \"fetch_date\": \"2026-08-14\"}]",
+      "shadow_payload_id": "P021-SHADOW-21STCENMGM-COMMUNICATION",
+      "created_at": "2026-08-14T00:00:00Z",
+      "validated_by": "automated",
+      "supporting_signals": "[\"lagna=Gemini\", \"lagna_lord=Mercury\", \"yoga=Gaja Kesari\", \"astro_action=CAUTION\", \"2H_sign=Cancer\"]",
+      "opposing_signals": "[\"astro_score<=25\"]"
+    },
+    {
+      "symbol": "21STCENMGM",
+      "domain_id": "LEADERSHIP",
+      "role_id": "P021-21STCENMGM-LEADERSHIP",
+      "canonical_role": "Chief Executive Officer",
+      "detected_synonyms": "[\"Chief Executive Officer\", \"Managing Director\", \"Executive Director\", \"Business Head\"]",
+      "skills": "[\"strategy\", \"governance\", \"stakeholder leadership\", \"execution\", \"Gemini lagna context\", \"Jupiter period timing\", \"OTHER CAPITAL MARKET RELATED SERVICES industry lens\"]",
+      "industry": "OTHER CAPITAL MARKET RELATED SERVICES",
+      "confidence_score": 0.415,
+      "provenance": "[{\"source\": \"kundli_signals.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli_signals.csv\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"kundli/21STCENMGM_kundli.json\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\intelligence\\\\kundli\\\\21STCENMGM_kundli.json\", \"fetch_date\": \"2026-08-14\"}, {\"source\": \"company_classification_v4.csv\", \"url\": \"D:\\\\Projects\\\\fii-dii-sector-intelligence\\\\data\\\\reference\\\\company_classification_v4.csv\", \"fetch_date\": \"2026-08-14\"}]",
+      "shadow_payload_id": "P021-SHADOW-21STCENMGM-LEADERSHIP",
+      "created_at": "2026-08-14T00:00:00Z",
+      "validated_by": "automated",
+      "supporting_signals": "[\"yoga=Gaja Kesari\"]",
+      "opposing_signals": "[\"astro_score<=25\", \"10H_strength=weak\"]"
+    }
+  ],
+  "shadow_validation": {
+    "is_valid": true,
+    "row_count": 12096,
+    "symbol_count": 2016,
+    "canonical_rows": 2016,
+    "synthetic_rows": 10080,
+    "shadow_mismatches": []
+  },
+  "summary": {
+    "profiles_total": 12096,
+    "canonical_rows": 2016,
+    "synthetic_rows": 10080,
+    "synthetic_rate": 0.8333,
+    "symbols_total": 2016,
+    "industries_covered": 182,
+    "top_industries": [
+      {
+        "industry": "PHARMACEUTICALS",
+        "count": 624
+      },
+      {
+        "industry": "RESIDENTIAL COMMERCIAL PROJECTS",
+        "count": 450
+      },
+      {
+        "industry": "OTHER TEXTILE PRODUCTS",
+        "count": 438
+      },
+      {
+        "industry": "AUTO COMPONENTS AND EQUIPMENTS",
+        "count": 432
+      },
+      {
+        "industry": "NON BANKING FINANCIAL COMPANY NBFC",
+        "count": 414
+      },
+      {
+        "industry": "CIVIL CONSTRUCTION",
+        "count": 378
+      },
+      {
+        "industry": "INDUSTRIAL PRODUCTS",
+        "count": 378
+      },
+      {
+        "industry": "SPECIALTY CHEMICALS",
+        "count": 348
+      },
+      {
+        "industry": "IRON AND STEEL PRODUCTS",
+        "count": 336
+      },
+      {
+        "industry": "COMPUTERS - SOFTWARE AND CONSULTING",
+        "count": 234
+      },
+      {
+        "industry": "IT ENABLED SERVICES",
+        "count": 210
+      },
+      {
+        "industry": "DIVERSIFIED COMMERCIAL SERVICES",
+        "count": 210
+      }
+    ],
+    "domain_counts": [
+      {
+        "domain_id": "ANALYTICS",
+        "count": 2016
+      },
+      {
+        "domain_id": "COMMUNICATION",
+        "count": 2016
+      },
+      {
+        "domain_id": "EDUCATION",
+        "count": 2016
+      },
+      {
+        "domain_id": "FINANCE",
+        "count": 2016
+      },
+      {
+        "domain_id": "LEADERSHIP",
+        "count": 2016
+      },
+      {
+        "domain_id": "TECHNOLOGY",
+        "count": 2016
+      }
+    ],
+    "as_of": "2026-08-14T00:00:00Z"
+  }
+}
