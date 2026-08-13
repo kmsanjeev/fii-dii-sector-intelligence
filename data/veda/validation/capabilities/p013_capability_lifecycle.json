@@ -853,6 +853,70 @@
   },
   {
     "lifecycle_id": "VEDA-CLFC-000014",
+    "capability_id": "VEDA-CAP-TIMING-000004",
+    "current_status": "IDENTIFIED",
+    "allowed_next_statuses": [
+      "RESEARCHING",
+      "BLOCKED"
+    ],
+    "research_gate": {
+      "gate": "research",
+      "decision": "RESEARCH_MORE",
+      "reason": "No approved-core evidence is linked to this capability yet.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "knowledge_gate": {
+      "gate": "knowledge",
+      "decision": "RESEARCH_MORE",
+      "reason": "Approved knowledge is not yet sufficient for rule engineering.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "rule_engineering_gate": {
+      "gate": "rule_engineering",
+      "decision": "BLOCKED",
+      "reason": "Rule engineering cannot begin until knowledge sufficiency passes.",
+      "evidence": [],
+      "next_action": "Create a knowledge-gap research mission."
+    },
+    "dependency_gate": {
+      "gate": "dependencies",
+      "decision": "PASS",
+      "reason": "Declared dependencies are satisfied or already active.",
+      "evidence": [
+        "VEDA-CAP-FOUNDATION-000001",
+        "VEDA-CAP-FOUNDATION-000002",
+        "VEDA-CAP-TIMING-000001"
+      ],
+      "next_action": "Proceed to validation."
+    },
+    "validation_gate": {
+      "gate": "validation",
+      "decision": "BLOCKED",
+      "reason": "Validation cannot complete until rule engineering and dependency gates pass.",
+      "evidence": [],
+      "next_action": "Finish upstream gates before validation."
+    },
+    "shadow_gate": {
+      "gate": "shadow",
+      "decision": "WAITING_FOR_VALIDATION",
+      "reason": "Shadow deployment is only allowed after validation passes.",
+      "evidence": [],
+      "next_action": "Complete validation before entering shadow mode."
+    },
+    "activation_gate": {
+      "gate": "activation",
+      "decision": "WAITING_FOR_SHADOW",
+      "reason": "Activation cannot proceed before shadow completion.",
+      "evidence": [],
+      "next_action": "Complete validation and shadow review first."
+    },
+    "rollback_supported": true,
+    "blocked_reason": "No approved-core evidence is linked to this capability yet."
+  },
+  {
+    "lifecycle_id": "VEDA-CLFC-000015",
     "capability_id": "VEDA-CAP-STRENGTH-000001",
     "current_status": "IDENTIFIED",
     "allowed_next_statuses": [
@@ -915,7 +979,7 @@
     "blocked_reason": "No approved-core evidence is linked to this capability yet."
   },
   {
-    "lifecycle_id": "VEDA-CLFC-000015",
+    "lifecycle_id": "VEDA-CLFC-000016",
     "capability_id": "VEDA-CAP-STRENGTH-000002",
     "current_status": "IDENTIFIED",
     "allowed_next_statuses": [
@@ -978,7 +1042,7 @@
     "blocked_reason": "No approved-core evidence is linked to this capability yet."
   },
   {
-    "lifecycle_id": "VEDA-CLFC-000016",
+    "lifecycle_id": "VEDA-CLFC-000017",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "current_status": "RESEARCHING",
     "allowed_next_statuses": [
@@ -1043,7 +1107,7 @@
     "blocked_reason": "No approved-core evidence is linked to this capability yet."
   },
   {
-    "lifecycle_id": "VEDA-CLFC-000017",
+    "lifecycle_id": "VEDA-CLFC-000018",
     "capability_id": "VEDA-CAP-DOMAIN-000002",
     "current_status": "RESEARCHING",
     "allowed_next_statuses": [
@@ -1107,7 +1171,7 @@
     "blocked_reason": "No approved-core evidence is linked to this capability yet."
   },
   {
-    "lifecycle_id": "VEDA-CLFC-000018",
+    "lifecycle_id": "VEDA-CLFC-000019",
     "capability_id": "VEDA-CAP-DOMAIN-000003",
     "current_status": "RESEARCHING",
     "allowed_next_statuses": [
@@ -1169,7 +1233,7 @@
     "blocked_reason": "No approved-core evidence is linked to this capability yet."
   },
   {
-    "lifecycle_id": "VEDA-CLFC-000019",
+    "lifecycle_id": "VEDA-CLFC-000020",
     "capability_id": "VEDA-CAP-DOMAIN-000004",
     "current_status": "RESEARCHING",
     "allowed_next_statuses": [
@@ -1231,7 +1295,7 @@
     "blocked_reason": "No approved-core evidence is linked to this capability yet."
   },
   {
-    "lifecycle_id": "VEDA-CLFC-000020",
+    "lifecycle_id": "VEDA-CLFC-000021",
     "capability_id": "VEDA-CAP-DOMAIN-000005",
     "current_status": "RESEARCHING",
     "allowed_next_statuses": [
@@ -1293,7 +1357,7 @@
     "blocked_reason": "No approved-core evidence is linked to this capability yet."
   },
   {
-    "lifecycle_id": "VEDA-CLFC-000021",
+    "lifecycle_id": "VEDA-CLFC-000022",
     "capability_id": "VEDA-CAP-DOMAIN-000006",
     "current_status": "RESEARCHING",
     "allowed_next_statuses": [
@@ -1355,7 +1419,7 @@
     "blocked_reason": "No approved-core evidence is linked to this capability yet."
   },
   {
-    "lifecycle_id": "VEDA-CLFC-000022",
+    "lifecycle_id": "VEDA-CLFC-000023",
     "capability_id": "VEDA-CAP-DOMAIN-000007",
     "current_status": "RESEARCHING",
     "allowed_next_statuses": [
@@ -1417,7 +1481,7 @@
     "blocked_reason": "No approved-core evidence is linked to this capability yet."
   },
   {
-    "lifecycle_id": "VEDA-CLFC-000023",
+    "lifecycle_id": "VEDA-CLFC-000024",
     "capability_id": "VEDA-CAP-ADVANCED-000001",
     "current_status": "IDENTIFIED",
     "allowed_next_statuses": [
@@ -1480,7 +1544,7 @@
     "blocked_reason": "No approved-core evidence is linked to this capability yet."
   },
   {
-    "lifecycle_id": "VEDA-CLFC-000024",
+    "lifecycle_id": "VEDA-CLFC-000025",
     "capability_id": "VEDA-CAP-ADVANCED-000002",
     "current_status": "IDENTIFIED",
     "allowed_next_statuses": [

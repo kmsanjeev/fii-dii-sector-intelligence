@@ -80,6 +80,16 @@ def test_p013_dignity_pilot_reaches_activation_ready_without_auto_activation():
     assert pilot["blocked_reason"] is None
 
 
+def test_p013_transit_capability_is_registered_but_not_activated():
+    service = JyotishaCapabilityLifecycleService()
+    transit = next(item for item in service.registry_records() if item.capability_id == "VEDA-CAP-TIMING-000004")
+
+    assert transit.capability_type.value == "TIMING"
+    assert transit.status.value == "IDENTIFIED"
+    assert transit.implementation_status == "P019_READ_ONLY_RUNTIME_AVAILABLE"
+    assert transit.validation_status == "IMPLEMENTED_UNVALIDATED"
+
+
 def test_p013_prevents_direct_transition_from_researching_to_active():
     service = JyotishaCapabilityLifecycleService()
 

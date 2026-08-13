@@ -216,6 +216,30 @@
   },
   {
     "mission_id": "VEDA-CMIS-000014",
+    "capability_id": "VEDA-CAP-TIMING-000004",
+    "title": "Capability gap research: Transit / gochar structural comparison",
+    "objective": "Recover or validate approved-core knowledge for Transit / gochar structural comparison before rule engineering and implementation.",
+    "research_type": "KNOWLEDGE_GAP",
+    "priority": "P1",
+    "reason": "No approved-core evidence is linked to this capability yet.",
+    "query_strategy": {
+      "domain": "TIMING",
+      "subdomain": "GOCHAR",
+      "required_rules": [],
+      "runtime_profiles": [
+        "PERSONAL",
+        "REST_STANDARD",
+        "STOCK_MARKET",
+        "COUNTRY_EVENT"
+      ]
+    },
+    "required_source_classes": [
+      "CLASSICAL_PRIMARY",
+      "TRADITIONAL_SECONDARY"
+    ]
+  },
+  {
+    "mission_id": "VEDA-CMIS-000015",
     "capability_id": "VEDA-CAP-STRENGTH-000001",
     "title": "Capability gap research: Shadbala governed strength system",
     "objective": "Recover or validate approved-core knowledge for Shadbala governed strength system before rule engineering and implementation.",
@@ -236,7 +260,7 @@
     ]
   },
   {
-    "mission_id": "VEDA-CMIS-000015",
+    "mission_id": "VEDA-CMIS-000016",
     "capability_id": "VEDA-CAP-STRENGTH-000002",
     "title": "Capability gap research: Ashtakavarga governed strength system",
     "objective": "Recover or validate approved-core knowledge for Ashtakavarga governed strength system before rule engineering and implementation.",
@@ -257,7 +281,7 @@
     ]
   },
   {
-    "mission_id": "VEDA-CMIS-000016",
+    "mission_id": "VEDA-CMIS-000017",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "title": "Capability gap research: Marriage intelligence",
     "objective": "Recover or validate approved-core knowledge for Marriage intelligence before rule engineering and implementation.",
@@ -279,7 +303,7 @@
     ]
   },
   {
-    "mission_id": "VEDA-CMIS-000017",
+    "mission_id": "VEDA-CMIS-000018",
     "capability_id": "VEDA-CAP-DOMAIN-000002",
     "title": "Capability gap research: Career and education intelligence",
     "objective": "Recover or validate approved-core knowledge for Career and education intelligence before rule engineering and implementation.",
@@ -301,7 +325,7 @@
     ]
   },
   {
-    "mission_id": "VEDA-CMIS-000018",
+    "mission_id": "VEDA-CMIS-000019",
     "capability_id": "VEDA-CAP-DOMAIN-000003",
     "title": "Capability gap research: Finance intelligence",
     "objective": "Recover or validate approved-core knowledge for Finance intelligence before rule engineering and implementation.",
@@ -325,7 +349,7 @@
     ]
   },
   {
-    "mission_id": "VEDA-CMIS-000019",
+    "mission_id": "VEDA-CMIS-000020",
     "capability_id": "VEDA-CAP-DOMAIN-000004",
     "title": "Capability gap research: Children and family intelligence",
     "objective": "Recover or validate approved-core knowledge for Children and family intelligence before rule engineering and implementation.",
@@ -347,7 +371,7 @@
     ]
   },
   {
-    "mission_id": "VEDA-CMIS-000020",
+    "mission_id": "VEDA-CMIS-000021",
     "capability_id": "VEDA-CAP-DOMAIN-000005",
     "title": "Capability gap research: Health intelligence",
     "objective": "Recover or validate approved-core knowledge for Health intelligence before rule engineering and implementation.",
@@ -369,7 +393,7 @@
     ]
   },
   {
-    "mission_id": "VEDA-CMIS-000021",
+    "mission_id": "VEDA-CMIS-000022",
     "capability_id": "VEDA-CAP-DOMAIN-000006",
     "title": "Capability gap research: Longevity intelligence",
     "objective": "Recover or validate approved-core knowledge for Longevity intelligence before rule engineering and implementation.",
@@ -390,7 +414,7 @@
     ]
   },
   {
-    "mission_id": "VEDA-CMIS-000022",
+    "mission_id": "VEDA-CMIS-000023",
     "capability_id": "VEDA-CAP-DOMAIN-000007",
     "title": "Capability gap research: Remedy governance",
     "objective": "Recover or validate approved-core knowledge for Remedy governance before rule engineering and implementation.",
@@ -412,7 +436,7 @@
     ]
   },
   {
-    "mission_id": "VEDA-CMIS-000023",
+    "mission_id": "VEDA-CMIS-000024",
     "capability_id": "VEDA-CAP-ADVANCED-000001",
     "title": "Capability gap research: Jaimini systems",
     "objective": "Recover or validate approved-core knowledge for Jaimini systems before rule engineering and implementation.",
@@ -432,7 +456,7 @@
     ]
   },
   {
-    "mission_id": "VEDA-CMIS-000024",
+    "mission_id": "VEDA-CMIS-000025",
     "capability_id": "VEDA-CAP-ADVANCED-000002",
     "title": "Capability gap research: Muhurta and electional astrology",
     "objective": "Recover or validate approved-core knowledge for Muhurta and electional astrology before rule engineering and implementation.",

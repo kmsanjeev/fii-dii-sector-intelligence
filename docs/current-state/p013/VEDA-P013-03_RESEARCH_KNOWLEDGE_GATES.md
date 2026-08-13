@@ -14,6 +14,7 @@ Research cannot jump directly to production implementation. The current gap-driv
 | `VEDA-CAP-RULE-000002` | Capability gap research: Dosha governed detection framework | KNOWLEDGE_GAP | P1 |
 | `VEDA-CAP-TIMING-000002` | Capability gap research: Yogini Dasha expansion | KNOWLEDGE_GAP | P1 |
 | `VEDA-CAP-TIMING-000003` | Capability gap research: Ashtottari Dasha expansion | KNOWLEDGE_GAP | P1 |
+| `VEDA-CAP-TIMING-000004` | Capability gap research: Transit / gochar structural comparison | KNOWLEDGE_GAP | P1 |
 | `VEDA-CAP-STRENGTH-000001` | Capability gap research: Shadbala governed strength system | KNOWLEDGE_GAP | P1 |
 | `VEDA-CAP-STRENGTH-000002` | Capability gap research: Ashtakavarga governed strength system | KNOWLEDGE_GAP | P1 |
 | `VEDA-CAP-DOMAIN-000001` | Capability gap research: Marriage intelligence | KNOWLEDGE_GAP | P1 |

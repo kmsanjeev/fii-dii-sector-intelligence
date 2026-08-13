@@ -345,6 +345,32 @@
   },
   {
     "package_id": "VEDA-CPKG-000014",
+    "capability_id": "VEDA-CAP-TIMING-000004",
+    "approved_claim_ids": [],
+    "approved_rule_ids": [],
+    "calculation_dependencies": [
+      "transit",
+      "lagna",
+      "moon_longitude",
+      "graha_longitudes"
+    ],
+    "implementation_module": "engines/transit_gochar.py",
+    "validation_datasets": [
+      "P001 fixtures",
+      "P004 fixtures",
+      "P012 runtime fixtures"
+    ],
+    "shadow_policy": "Shadow against the legacy/runtime-protected path before any production activation.",
+    "activation_policy": "Admin activation required after validation and shadow acceptance.",
+    "documentation": [
+      "VEDA-P013-06_IMPLEMENTATION_PACKAGE_STANDARD.md",
+      "VEDA-P013-07_VALIDATION_STANDARD.md",
+      "VEDA-P013-08_SHADOW_DEPLOYMENT.md"
+    ],
+    "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
+  },
+  {
+    "package_id": "VEDA-CPKG-000015",
     "capability_id": "VEDA-CAP-STRENGTH-000001",
     "approved_claim_ids": [],
     "approved_rule_ids": [],
@@ -369,7 +395,7 @@
     "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
   },
   {
-    "package_id": "VEDA-CPKG-000015",
+    "package_id": "VEDA-CPKG-000016",
     "capability_id": "VEDA-CAP-STRENGTH-000002",
     "approved_claim_ids": [],
     "approved_rule_ids": [],
@@ -393,7 +419,7 @@
     "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
   },
   {
-    "package_id": "VEDA-CPKG-000016",
+    "package_id": "VEDA-CPKG-000017",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "approved_claim_ids": [],
     "approved_rule_ids": [],
@@ -422,7 +448,7 @@
     "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
   },
   {
-    "package_id": "VEDA-CPKG-000017",
+    "package_id": "VEDA-CPKG-000018",
     "capability_id": "VEDA-CAP-DOMAIN-000002",
     "approved_claim_ids": [],
     "approved_rule_ids": [],
@@ -450,7 +476,7 @@
     "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
   },
   {
-    "package_id": "VEDA-CPKG-000018",
+    "package_id": "VEDA-CPKG-000019",
     "capability_id": "VEDA-CAP-DOMAIN-000003",
     "approved_claim_ids": [],
     "approved_rule_ids": [],
@@ -477,7 +503,7 @@
     "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
   },
   {
-    "package_id": "VEDA-CPKG-000019",
+    "package_id": "VEDA-CPKG-000020",
     "capability_id": "VEDA-CAP-DOMAIN-000004",
     "approved_claim_ids": [],
     "approved_rule_ids": [],
@@ -503,7 +529,7 @@
     "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
   },
   {
-    "package_id": "VEDA-CPKG-000020",
+    "package_id": "VEDA-CPKG-000021",
     "capability_id": "VEDA-CAP-DOMAIN-000005",
     "approved_claim_ids": [],
     "approved_rule_ids": [],
@@ -529,7 +555,7 @@
     "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
   },
   {
-    "package_id": "VEDA-CPKG-000021",
+    "package_id": "VEDA-CPKG-000022",
     "capability_id": "VEDA-CAP-DOMAIN-000006",
     "approved_claim_ids": [],
     "approved_rule_ids": [],
@@ -555,7 +581,7 @@
     "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
   },
   {
-    "package_id": "VEDA-CPKG-000022",
+    "package_id": "VEDA-CPKG-000023",
     "capability_id": "VEDA-CAP-DOMAIN-000007",
     "approved_claim_ids": [],
     "approved_rule_ids": [],
@@ -580,7 +606,7 @@
     "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
   },
   {
-    "package_id": "VEDA-CPKG-000023",
+    "package_id": "VEDA-CPKG-000024",
     "capability_id": "VEDA-CAP-ADVANCED-000001",
     "approved_claim_ids": [],
     "approved_rule_ids": [],
@@ -605,7 +631,7 @@
     "notes": "Package references governed knowledge and runtime dependencies without activating the capability."
   },
   {
-    "package_id": "VEDA-CPKG-000024",
+    "package_id": "VEDA-CPKG-000025",
     "capability_id": "VEDA-CAP-ADVANCED-000002",
     "approved_claim_ids": [],
     "approved_rule_ids": [],

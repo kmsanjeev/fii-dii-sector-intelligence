@@ -1,0 +1,31 @@
+{
+  "phase_id": "VEDA-P019",
+  "phase_name": "Transit / Gochar Foundation",
+  "claims": [
+    {
+      "claim_id": "VEDA-P019-CLM-000001",
+      "statement": "Transit positions are computed from the canonical Kundli astronomy core rather than a separate ephemeris path.",
+      "status": "IMPLEMENTED_UNVALIDATED"
+    },
+    {
+      "claim_id": "VEDA-P019-CLM-000002",
+      "statement": "Transit facts can be referenced against Lagna and Moon without changing production interpretation semantics.",
+      "status": "IMPLEMENTED_UNVALIDATED"
+    },
+    {
+      "claim_id": "VEDA-P019-CLM-000003",
+      "statement": "The API surface is additive and read-only through /api/gochar/*.",
+      "status": "IMPLEMENTED_UNVALIDATED"
+    },
+    {
+      "claim_id": "VEDA-P019-CLM-000004",
+      "statement": "Sade Sati structural detection is exposed as a governed research rule, not as an activation-ready prediction.",
+      "status": "RESEARCH_REQUIRED"
+    },
+    {
+      "claim_id": "VEDA-P019-CLM-000005",
+      "statement": "Dhaiya structural detection is exposed as a governed research rule, not as an activation-ready prediction.",
+      "status": "RESEARCH_REQUIRED"
+    }
+  ]
+}

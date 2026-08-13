@@ -586,6 +586,69 @@
   },
   {
     "dependency_id": "VEDA-CDEP-000066",
+    "capability_id": "VEDA-CAP-TIMING-000004",
+    "depends_on": "VEDA-CAP-FOUNDATION-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Transit / gochar structural comparison depends on D1 canonical chart calculation.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000067",
+    "capability_id": "VEDA-CAP-TIMING-000004",
+    "depends_on": "VEDA-CAP-FOUNDATION-000002",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Transit / gochar structural comparison depends on Canonical graha and lagna chart facts.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000068",
+    "capability_id": "VEDA-CAP-TIMING-000004",
+    "depends_on": "VEDA-CAP-TIMING-000001",
+    "dependency_kind": "CAPABILITY",
+    "minimum_status": "ACTIVE_OR_ACTIVATION_READY",
+    "rationale": "Transit / gochar structural comparison depends on Vimshottari runtime baseline.",
+    "blocking": true
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000069",
+    "capability_id": "VEDA-CAP-TIMING-000004",
+    "depends_on": "transit",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Transit / gochar structural comparison needs canonical fact `transit` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000070",
+    "capability_id": "VEDA-CAP-TIMING-000004",
+    "depends_on": "lagna",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Transit / gochar structural comparison needs canonical fact `lagna` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000071",
+    "capability_id": "VEDA-CAP-TIMING-000004",
+    "depends_on": "moon_longitude",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Transit / gochar structural comparison needs canonical fact `moon_longitude` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000072",
+    "capability_id": "VEDA-CAP-TIMING-000004",
+    "depends_on": "graha_longitudes",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Transit / gochar structural comparison needs canonical fact `graha_longitudes` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000073",
     "capability_id": "VEDA-CAP-STRENGTH-000001",
     "depends_on": "VEDA-CAP-FOUNDATION-000001",
     "dependency_kind": "CAPABILITY",
@@ -594,7 +657,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000067",
+    "dependency_id": "VEDA-CDEP-000074",
     "capability_id": "VEDA-CAP-STRENGTH-000001",
     "depends_on": "VEDA-CAP-FOUNDATION-000002",
     "dependency_kind": "CAPABILITY",
@@ -603,7 +666,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000068",
+    "dependency_id": "VEDA-CDEP-000075",
     "capability_id": "VEDA-CAP-STRENGTH-000001",
     "depends_on": "graha_longitudes",
     "dependency_kind": "CHART_FACT",
@@ -612,7 +675,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000069",
+    "dependency_id": "VEDA-CDEP-000076",
     "capability_id": "VEDA-CAP-STRENGTH-000001",
     "depends_on": "declination",
     "dependency_kind": "CHART_FACT",
@@ -621,7 +684,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000070",
+    "dependency_id": "VEDA-CDEP-000077",
     "capability_id": "VEDA-CAP-STRENGTH-000001",
     "depends_on": "time_of_birth",
     "dependency_kind": "CHART_FACT",
@@ -630,7 +693,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000071",
+    "dependency_id": "VEDA-CDEP-000078",
     "capability_id": "VEDA-CAP-STRENGTH-000002",
     "depends_on": "VEDA-CAP-FOUNDATION-000001",
     "dependency_kind": "CAPABILITY",
@@ -639,7 +702,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000072",
+    "dependency_id": "VEDA-CDEP-000079",
     "capability_id": "VEDA-CAP-STRENGTH-000002",
     "depends_on": "VEDA-CAP-FOUNDATION-000002",
     "dependency_kind": "CAPABILITY",
@@ -648,7 +711,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000073",
+    "dependency_id": "VEDA-CDEP-000080",
     "capability_id": "VEDA-CAP-STRENGTH-000002",
     "depends_on": "graha_longitudes",
     "dependency_kind": "CHART_FACT",
@@ -657,7 +720,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000074",
+    "dependency_id": "VEDA-CDEP-000081",
     "capability_id": "VEDA-CAP-STRENGTH-000002",
     "depends_on": "rashi",
     "dependency_kind": "CHART_FACT",
@@ -666,7 +729,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000075",
+    "dependency_id": "VEDA-CDEP-000082",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "depends_on": "VEDA-CAP-VARGA-000001",
     "dependency_kind": "CAPABILITY",
@@ -675,7 +738,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000076",
+    "dependency_id": "VEDA-CDEP-000083",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "depends_on": "VEDA-CAP-VARGA-000002",
     "dependency_kind": "CAPABILITY",
@@ -684,7 +747,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000077",
+    "dependency_id": "VEDA-CDEP-000084",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "depends_on": "VEDA-CAP-TIMING-000001",
     "dependency_kind": "CAPABILITY",
@@ -693,7 +756,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000078",
+    "dependency_id": "VEDA-CDEP-000085",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "depends_on": "VEDA-CAP-INTERPRETATION-000001",
     "dependency_kind": "CAPABILITY",
@@ -702,7 +765,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000079",
+    "dependency_id": "VEDA-CDEP-000086",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "depends_on": "VEDA-CAP-RULE-000001",
     "dependency_kind": "CAPABILITY",
@@ -711,7 +774,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000080",
+    "dependency_id": "VEDA-CDEP-000087",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "depends_on": "d1_chart",
     "dependency_kind": "CHART_FACT",
@@ -720,7 +783,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000081",
+    "dependency_id": "VEDA-CDEP-000088",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "depends_on": "seventh_house",
     "dependency_kind": "CHART_FACT",
@@ -729,7 +792,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000082",
+    "dependency_id": "VEDA-CDEP-000089",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "depends_on": "lordship",
     "dependency_kind": "CHART_FACT",
@@ -738,7 +801,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000083",
+    "dependency_id": "VEDA-CDEP-000090",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "depends_on": "venus",
     "dependency_kind": "CHART_FACT",
@@ -747,7 +810,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000084",
+    "dependency_id": "VEDA-CDEP-000091",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "depends_on": "jupiter",
     "dependency_kind": "CHART_FACT",
@@ -756,7 +819,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000085",
+    "dependency_id": "VEDA-CDEP-000092",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "depends_on": "d9_chart",
     "dependency_kind": "CHART_FACT",
@@ -765,7 +828,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000086",
+    "dependency_id": "VEDA-CDEP-000093",
     "capability_id": "VEDA-CAP-DOMAIN-000001",
     "depends_on": "dasha",
     "dependency_kind": "CHART_FACT",
@@ -774,7 +837,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000087",
+    "dependency_id": "VEDA-CDEP-000094",
     "capability_id": "VEDA-CAP-DOMAIN-000002",
     "depends_on": "VEDA-CAP-VARGA-000003",
     "dependency_kind": "CAPABILITY",
@@ -783,7 +846,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000088",
+    "dependency_id": "VEDA-CDEP-000095",
     "capability_id": "VEDA-CAP-DOMAIN-000002",
     "depends_on": "VEDA-CAP-VARGA-000004",
     "dependency_kind": "CAPABILITY",
@@ -792,7 +855,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000089",
+    "dependency_id": "VEDA-CDEP-000096",
     "capability_id": "VEDA-CAP-DOMAIN-000002",
     "depends_on": "VEDA-CAP-TIMING-000001",
     "dependency_kind": "CAPABILITY",
@@ -801,7 +864,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000090",
+    "dependency_id": "VEDA-CDEP-000097",
     "capability_id": "VEDA-CAP-DOMAIN-000002",
     "depends_on": "VEDA-CAP-INTERPRETATION-000001",
     "dependency_kind": "CAPABILITY",
@@ -810,7 +873,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000091",
+    "dependency_id": "VEDA-CDEP-000098",
     "capability_id": "VEDA-CAP-DOMAIN-000002",
     "depends_on": "tenth_house",
     "dependency_kind": "CHART_FACT",
@@ -819,7 +882,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000092",
+    "dependency_id": "VEDA-CDEP-000099",
     "capability_id": "VEDA-CAP-DOMAIN-000002",
     "depends_on": "lordship",
     "dependency_kind": "CHART_FACT",
@@ -828,7 +891,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000093",
+    "dependency_id": "VEDA-CDEP-000100",
     "capability_id": "VEDA-CAP-DOMAIN-000002",
     "depends_on": "saturn",
     "dependency_kind": "CHART_FACT",
@@ -837,7 +900,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000094",
+    "dependency_id": "VEDA-CDEP-000101",
     "capability_id": "VEDA-CAP-DOMAIN-000002",
     "depends_on": "sun",
     "dependency_kind": "CHART_FACT",
@@ -846,7 +909,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000095",
+    "dependency_id": "VEDA-CDEP-000102",
     "capability_id": "VEDA-CAP-DOMAIN-000002",
     "depends_on": "d10_chart",
     "dependency_kind": "CHART_FACT",
@@ -855,7 +918,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000096",
+    "dependency_id": "VEDA-CDEP-000103",
     "capability_id": "VEDA-CAP-DOMAIN-000002",
     "depends_on": "dasha",
     "dependency_kind": "CHART_FACT",
@@ -864,7 +927,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000097",
+    "dependency_id": "VEDA-CDEP-000104",
     "capability_id": "VEDA-CAP-DOMAIN-000003",
     "depends_on": "VEDA-CAP-TIMING-000001",
     "dependency_kind": "CAPABILITY",
@@ -873,7 +936,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000098",
+    "dependency_id": "VEDA-CDEP-000105",
     "capability_id": "VEDA-CAP-DOMAIN-000003",
     "depends_on": "VEDA-CAP-RULE-000001",
     "dependency_kind": "CAPABILITY",
@@ -882,7 +945,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000099",
+    "dependency_id": "VEDA-CDEP-000106",
     "capability_id": "VEDA-CAP-DOMAIN-000003",
     "depends_on": "VEDA-CAP-DIGNITY-000001",
     "dependency_kind": "CAPABILITY",
@@ -891,7 +954,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000100",
+    "dependency_id": "VEDA-CDEP-000107",
     "capability_id": "VEDA-CAP-DOMAIN-000003",
     "depends_on": "second_house",
     "dependency_kind": "CHART_FACT",
@@ -900,7 +963,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000101",
+    "dependency_id": "VEDA-CDEP-000108",
     "capability_id": "VEDA-CAP-DOMAIN-000003",
     "depends_on": "eleventh_house",
     "dependency_kind": "CHART_FACT",
@@ -909,7 +972,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000102",
+    "dependency_id": "VEDA-CDEP-000109",
     "capability_id": "VEDA-CAP-DOMAIN-000003",
     "depends_on": "lordship",
     "dependency_kind": "CHART_FACT",
@@ -918,7 +981,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000103",
+    "dependency_id": "VEDA-CDEP-000110",
     "capability_id": "VEDA-CAP-DOMAIN-000003",
     "depends_on": "dasha",
     "dependency_kind": "CHART_FACT",
@@ -927,7 +990,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000104",
+    "dependency_id": "VEDA-CDEP-000111",
     "capability_id": "VEDA-CAP-DOMAIN-000003",
     "depends_on": "yogas",
     "dependency_kind": "CHART_FACT",
@@ -936,7 +999,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000105",
+    "dependency_id": "VEDA-CDEP-000112",
     "capability_id": "VEDA-CAP-DOMAIN-000004",
     "depends_on": "VEDA-CAP-TIMING-000001",
     "dependency_kind": "CAPABILITY",
@@ -945,7 +1008,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000106",
+    "dependency_id": "VEDA-CDEP-000113",
     "capability_id": "VEDA-CAP-DOMAIN-000004",
     "depends_on": "VEDA-CAP-INTERPRETATION-000001",
     "dependency_kind": "CAPABILITY",
@@ -954,7 +1017,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000107",
+    "dependency_id": "VEDA-CDEP-000114",
     "capability_id": "VEDA-CAP-DOMAIN-000004",
     "depends_on": "fifth_house",
     "dependency_kind": "CHART_FACT",
@@ -963,7 +1026,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000108",
+    "dependency_id": "VEDA-CDEP-000115",
     "capability_id": "VEDA-CAP-DOMAIN-000004",
     "depends_on": "jupiter",
     "dependency_kind": "CHART_FACT",
@@ -972,7 +1035,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000109",
+    "dependency_id": "VEDA-CDEP-000116",
     "capability_id": "VEDA-CAP-DOMAIN-000004",
     "depends_on": "d7_chart",
     "dependency_kind": "CHART_FACT",
@@ -981,7 +1044,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000110",
+    "dependency_id": "VEDA-CDEP-000117",
     "capability_id": "VEDA-CAP-DOMAIN-000004",
     "depends_on": "dasha",
     "dependency_kind": "CHART_FACT",
@@ -990,7 +1053,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000111",
+    "dependency_id": "VEDA-CDEP-000118",
     "capability_id": "VEDA-CAP-DOMAIN-000005",
     "depends_on": "VEDA-CAP-TIMING-000001",
     "dependency_kind": "CAPABILITY",
@@ -999,7 +1062,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000112",
+    "dependency_id": "VEDA-CDEP-000119",
     "capability_id": "VEDA-CAP-DOMAIN-000005",
     "depends_on": "VEDA-CAP-INTERPRETATION-000001",
     "dependency_kind": "CAPABILITY",
@@ -1008,7 +1071,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000113",
+    "dependency_id": "VEDA-CDEP-000120",
     "capability_id": "VEDA-CAP-DOMAIN-000005",
     "depends_on": "sixth_house",
     "dependency_kind": "CHART_FACT",
@@ -1017,7 +1080,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000114",
+    "dependency_id": "VEDA-CDEP-000121",
     "capability_id": "VEDA-CAP-DOMAIN-000005",
     "depends_on": "eighth_house",
     "dependency_kind": "CHART_FACT",
@@ -1026,7 +1089,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000115",
+    "dependency_id": "VEDA-CDEP-000122",
     "capability_id": "VEDA-CAP-DOMAIN-000005",
     "depends_on": "twelfth_house",
     "dependency_kind": "CHART_FACT",
@@ -1035,7 +1098,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000116",
+    "dependency_id": "VEDA-CDEP-000123",
     "capability_id": "VEDA-CAP-DOMAIN-000005",
     "depends_on": "dasha",
     "dependency_kind": "CHART_FACT",
@@ -1044,7 +1107,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000117",
+    "dependency_id": "VEDA-CDEP-000124",
     "capability_id": "VEDA-CAP-DOMAIN-000006",
     "depends_on": "VEDA-CAP-TIMING-000001",
     "dependency_kind": "CAPABILITY",
@@ -1053,7 +1116,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000118",
+    "dependency_id": "VEDA-CDEP-000125",
     "capability_id": "VEDA-CAP-DOMAIN-000006",
     "depends_on": "VEDA-CAP-INTERPRETATION-000001",
     "dependency_kind": "CAPABILITY",
@@ -1062,7 +1125,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000119",
+    "dependency_id": "VEDA-CDEP-000126",
     "capability_id": "VEDA-CAP-DOMAIN-000006",
     "depends_on": "eighth_house",
     "dependency_kind": "CHART_FACT",
@@ -1071,7 +1134,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000120",
+    "dependency_id": "VEDA-CDEP-000127",
     "capability_id": "VEDA-CAP-DOMAIN-000006",
     "depends_on": "maraka_factors",
     "dependency_kind": "CHART_FACT",
@@ -1080,7 +1143,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000121",
+    "dependency_id": "VEDA-CDEP-000128",
     "capability_id": "VEDA-CAP-DOMAIN-000006",
     "depends_on": "dasha",
     "dependency_kind": "CHART_FACT",
@@ -1089,7 +1152,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000122",
+    "dependency_id": "VEDA-CDEP-000129",
     "capability_id": "VEDA-CAP-DOMAIN-000006",
     "depends_on": "ayurdaya_method",
     "dependency_kind": "CHART_FACT",
@@ -1098,7 +1161,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000123",
+    "dependency_id": "VEDA-CDEP-000130",
     "capability_id": "VEDA-CAP-DOMAIN-000007",
     "depends_on": "VEDA-CAP-TIMING-000001",
     "dependency_kind": "CAPABILITY",
@@ -1107,7 +1170,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000124",
+    "dependency_id": "VEDA-CDEP-000131",
     "capability_id": "VEDA-CAP-DOMAIN-000007",
     "depends_on": "VEDA-CAP-INTERPRETATION-000001",
     "dependency_kind": "CAPABILITY",
@@ -1116,7 +1179,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000125",
+    "dependency_id": "VEDA-CDEP-000132",
     "capability_id": "VEDA-CAP-DOMAIN-000007",
     "depends_on": "chart_context",
     "dependency_kind": "CHART_FACT",
@@ -1125,7 +1188,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000126",
+    "dependency_id": "VEDA-CDEP-000133",
     "capability_id": "VEDA-CAP-DOMAIN-000007",
     "depends_on": "dasha",
     "dependency_kind": "CHART_FACT",
@@ -1134,7 +1197,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000127",
+    "dependency_id": "VEDA-CDEP-000134",
     "capability_id": "VEDA-CAP-DOMAIN-000007",
     "depends_on": "benefic_malefic_context",
     "dependency_kind": "CHART_FACT",
@@ -1143,7 +1206,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000128",
+    "dependency_id": "VEDA-CDEP-000135",
     "capability_id": "VEDA-CAP-ADVANCED-000001",
     "depends_on": "VEDA-CAP-FOUNDATION-000001",
     "dependency_kind": "CAPABILITY",
@@ -1152,7 +1215,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000129",
+    "dependency_id": "VEDA-CDEP-000136",
     "capability_id": "VEDA-CAP-ADVANCED-000001",
     "depends_on": "VEDA-CAP-FOUNDATION-000002",
     "dependency_kind": "CAPABILITY",
@@ -1161,7 +1224,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000130",
+    "dependency_id": "VEDA-CDEP-000137",
     "capability_id": "VEDA-CAP-ADVANCED-000001",
     "depends_on": "chara_karakas",
     "dependency_kind": "CHART_FACT",
@@ -1170,7 +1233,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000131",
+    "dependency_id": "VEDA-CDEP-000138",
     "capability_id": "VEDA-CAP-ADVANCED-000001",
     "depends_on": "argala",
     "dependency_kind": "CHART_FACT",
@@ -1179,7 +1242,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000132",
+    "dependency_id": "VEDA-CDEP-000139",
     "capability_id": "VEDA-CAP-ADVANCED-000001",
     "depends_on": "arudha",
     "dependency_kind": "CHART_FACT",
@@ -1188,7 +1251,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000133",
+    "dependency_id": "VEDA-CDEP-000140",
     "capability_id": "VEDA-CAP-ADVANCED-000002",
     "depends_on": "VEDA-CAP-FOUNDATION-000001",
     "dependency_kind": "CAPABILITY",
@@ -1197,7 +1260,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000134",
+    "dependency_id": "VEDA-CDEP-000141",
     "capability_id": "VEDA-CAP-ADVANCED-000002",
     "depends_on": "VEDA-CAP-FOUNDATION-000002",
     "dependency_kind": "CAPABILITY",
@@ -1206,7 +1269,7 @@
     "blocking": true
   },
   {
-    "dependency_id": "VEDA-CDEP-000135",
+    "dependency_id": "VEDA-CDEP-000142",
     "capability_id": "VEDA-CAP-ADVANCED-000002",
     "depends_on": "transit",
     "dependency_kind": "CHART_FACT",
@@ -1215,7 +1278,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000136",
+    "dependency_id": "VEDA-CDEP-000143",
     "capability_id": "VEDA-CAP-ADVANCED-000002",
     "depends_on": "lagna",
     "dependency_kind": "CHART_FACT",
@@ -1224,7 +1287,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000137",
+    "dependency_id": "VEDA-CDEP-000144",
     "capability_id": "VEDA-CAP-ADVANCED-000002",
     "depends_on": "tithi",
     "dependency_kind": "CHART_FACT",
@@ -1233,7 +1296,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000138",
+    "dependency_id": "VEDA-CDEP-000145",
     "capability_id": "VEDA-CAP-ADVANCED-000002",
     "depends_on": "nakshatra",
     "dependency_kind": "CHART_FACT",

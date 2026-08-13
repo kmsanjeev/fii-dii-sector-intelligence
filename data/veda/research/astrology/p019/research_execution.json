@@ -1,0 +1,34 @@
+{
+  "phase_id": "VEDA-P019",
+  "status": "IN_PROGRESS",
+  "milestones": [
+    {
+      "milestone_id": "M002",
+      "title": "Transit Ontology & Fact Contract",
+      "status": "COMPLETE",
+      "notes": "Transit fact models and snapshot contract added in engines/transit_gochar.py."
+    },
+    {
+      "milestone_id": "M003",
+      "title": "Transit Astronomy Boundary",
+      "status": "COMPLETE",
+      "notes": "Transit calculations reuse the canonical Kundli Swiss Ephemeris core."
+    },
+    {
+      "milestone_id": "M004",
+      "title": "Natal/Transit Comparison Engine",
+      "status": "COMPLETE",
+      "notes": "Comparison engine compares transit bodies to Lagna and Moon reference points."
+    },
+    {
+      "milestone_id": "M015",
+      "title": "Transit Rule Schema & Evaluation",
+      "status": "COMPLETE",
+      "notes": "Structural timing rules are emitted as research-only rule results."
+    }
+  ],
+  "open_gaps": [
+    "Passage-level provenance for Sade Sati and Dhaiya still needs stronger source validation.",
+    "Broader transit rule coverage is intentionally deferred."
+  ]
+}

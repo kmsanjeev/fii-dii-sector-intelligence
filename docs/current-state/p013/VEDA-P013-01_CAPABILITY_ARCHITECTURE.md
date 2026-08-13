@@ -22,6 +22,7 @@ The capability registry is machine-readable and links every future Jyotisha capa
 | `VEDA-CAP-RULE-000002` | Dosha governed detection framework | RESEARCHING | RULE_SYSTEMS | DOSHA | HIGH |
 | `VEDA-CAP-TIMING-000002` | Yogini Dasha expansion | IDENTIFIED | TIMING | YOGINI_DASHA | MODERATE |
 | `VEDA-CAP-TIMING-000003` | Ashtottari Dasha expansion | IDENTIFIED | TIMING | ASHTOTTARI_DASHA | MODERATE |
+| `VEDA-CAP-TIMING-000004` | Transit / gochar structural comparison | IDENTIFIED | TIMING | GOCHAR | MODERATE |
 | `VEDA-CAP-STRENGTH-000001` | Shadbala governed strength system | IDENTIFIED | STRENGTH | SHADBALA | MODERATE |
 | `VEDA-CAP-STRENGTH-000002` | Ashtakavarga governed strength system | IDENTIFIED | STRENGTH | ASHTAKAVARGA | MODERATE |
 | `VEDA-CAP-DOMAIN-000001` | Marriage intelligence | RESEARCHING | LIFE_DOMAINS | MARRIAGE | MODERATE |

@@ -2,8 +2,8 @@
   "meta": {
     "baseline_id": "VEDA-P001-M003",
     "generated_on": "2026-08-10",
-    "openapi_path_count": 125,
-    "operation_count": 137
+    "openapi_path_count": 128,
+    "operation_count": 140
   },
   "critical_endpoints": [
     {
@@ -149,6 +149,82 @@
       "path_params": [],
       "query_params": [
         "generate_narrative"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/gochar/stock/{symbol}",
+      "owner": "gochar",
+      "operation_id": "stock_gochar_api_gochar_stock__symbol__get",
+      "tags": [
+        "gochar"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [
+        "exchange",
+        "timezone_name",
+        "transit_time"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/gochar/human",
+      "owner": "gochar",
+      "operation_id": "human_gochar_api_gochar_human_post",
+      "tags": [
+        "gochar"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/gochar/country/{name}",
+      "owner": "gochar",
+      "operation_id": "country_gochar_api_gochar_country__name__get",
+      "tags": [
+        "gochar"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "timezone_name",
+        "transit_time"
       ],
       "response_codes": [
         "200",
@@ -1747,6 +1823,82 @@
       "query_params": [],
       "response_codes": [
         "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/gochar/country/{name}",
+      "owner": "gochar",
+      "operation_id": "country_gochar_api_gochar_country__name__get",
+      "tags": [
+        "gochar"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "timezone_name",
+        "transit_time"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/gochar/human",
+      "owner": "gochar",
+      "operation_id": "human_gochar_api_gochar_human_post",
+      "tags": [
+        "gochar"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/gochar/stock/{symbol}",
+      "owner": "gochar",
+      "operation_id": "stock_gochar_api_gochar_stock__symbol__get",
+      "tags": [
+        "gochar"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [
+        "exchange",
+        "timezone_name",
+        "transit_time"
+      ],
+      "response_codes": [
+        "200",
+        "422"
       ],
       "response_content_types": [
         "application/json"

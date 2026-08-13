@@ -1,0 +1,26 @@
+{
+  "phase_id": "VEDA-P019",
+  "source_policy": "Canonical Kundli runtime first; no tropical transit substitute.",
+  "source_classes": [
+    {
+      "name": "Swiss Ephemeris / Kundli runtime",
+      "quality": "CANONICAL_RUNTIME",
+      "status": "IMPLEMENTED"
+    },
+    {
+      "name": "Classical transit passages",
+      "quality": "RESEARCH_REQUIRED",
+      "status": "INCOMPLETE"
+    },
+    {
+      "name": "Structural timing rules",
+      "quality": "IMPLEMENTED_UNVALIDATED",
+      "status": "RESEARCH_ONLY"
+    }
+  ],
+  "known_gaps": [
+    "Sade Sati claims need stronger explicit source verification.",
+    "Dhaiya claims need stronger passage-level provenance.",
+    "Transit inference should remain read-only until validation is complete."
+  ]
+}
