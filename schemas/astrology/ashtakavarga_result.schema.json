@@ -11,6 +11,8 @@
     "rashis": {"type": "array", "items": {"type": "object"}},
     "status": {"type": "string"},
     "calculation_version": {"type": "string"},
-    "source_claim_ids": {"type": "array", "items": {"type": "string"}}
+    "source_claim_ids": {"type": "array", "items": {"type": "string"}},
+    "total_bindus": {"type": "integer"},
+    "bav_results": {"type": "object"}
   }
 }

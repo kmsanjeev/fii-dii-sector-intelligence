@@ -20,8 +20,12 @@ LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def pytest_configure(config):
-    """Ensure log directory exists before any test runs."""
+    """Ensure log directory exists before any test runs.
+    Set deterministic snapshot date for reproducible dasha calculations in golden fixtures."""
     LOG_DIR.mkdir(parents=True, exist_ok=True)
+    # Set golden fixture reference date for deterministic dasha calculations
+    # (fixtures generated on 2026-08-10; pratyantardasha depends on this snapshot)
+    os.environ.setdefault('VEDA_TEST_SNAPSHOT_DATE', '2026-08-10')
 
 
 # ─── Session-level fixtures ───────────────────────────────────────────────────

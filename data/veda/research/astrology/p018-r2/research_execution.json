@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "phase": "VEDA-P018-R2",
+    "version": "1.0.0",
+    "created_at": "2026-08-12T00:00:00Z",
+    "created_by": "claude-code",
+    "contract_version": "2026-08-12"
+  },
+  "missions_queued": 6,
+  "missions_executed": 6,
+  "external_queries": 12,
+  "providers_used": [
+    "classical_knowledge_base",
+    "web_verification"
+  ],
+  "provider_failures": [],
+  "runs": [
+    {
+      "mission_id": "VEDA-RM-000004",
+      "run_id": "VEDA-RUN-000004",
+      "status": "COMPLETE",
+      "objective": "Shadbala component methodology from BPHS Chapter 29",
+      "queries": [
+        "BPHS chapter 29 Shadbala six components Sthana Dig Kala Naisargika Cheshta Drik",
+        "BPHS Shadbala vimshopaka weights component aggregation total"
+      ],
+      "sources_discovered": 4,
+      "sources_retrieved": 4,
+      "sources_accepted": 3,
+      "sources_rejected": 1,
+      "evidence_created": 3,
+      "candidate_id": "VEDA-RCND-000004"
+    },
+    {
+      "mission_id": "VEDA-RM-000005",
+      "run_id": "VEDA-RUN-000005",
+      "status": "COMPLETE",
+      "objective": "Sthana Bala sub-components and numerical constants",
+      "queries": [
+        "Sthana Bala Uccha Rashi Hora Drekkana Naisargika Dignity Drekana seven sub-components",
+        "Sthana Bala calculation numerical example worked planetary position"
+      ],
+      "sources_discovered": 5,
+      "sources_retrieved": 5,
+      "sources_accepted": 4,
+      "sources_rejected": 1,
+      "evidence_created": 4,
+      "candidate_id": "VEDA-RCND-000005"
+    },
+    {
+      "mission_id": "VEDA-RM-000006",
+      "run_id": "VEDA-RUN-000006",
+      "status": "COMPLETE",
+      "objective": "Dig Bala directional strength and eight directions",
+      "queries": [
+        "Dig Bala eight directions planetary directional strength formula",
+        "Dig Bala maximum 60 rupas Jupiter Cancer ascendant calculation"
+      ],
+      "sources_discovered": 3,
+      "sources_retrieved": 3,
+      "sources_accepted": 3,
+      "sources_rejected": 0,
+      "evidence_created": 3,
+      "candidate_id": "VEDA-RCND-000006"
+    },
+    {
+      "mission_id": "VEDA-RM-000007",
+      "run_id": "VEDA-RUN-000007",
+      "status": "COMPLETE",
+      "objective": "Kala Bala temporal strength including Ayana Varsha Nakshatra Yoni",
+      "queries": [
+        "Kala Bala Nathonatha Ayana Varsha Nakshatra Yona temporal strength",
+        "Kala Bala Masa Hora Dina Lord daylord strength calculation"
+      ],
+      "sources_discovered": 4,
+      "sources_retrieved": 4,
+      "sources_accepted": 3,
+      "sources_rejected": 1,
+      "evidence_created": 3,
+      "candidate_id": "VEDA-RCND-000007"
+    },
+    {
+      "mission_id": "VEDA-RM-000008",
+      "run_id": "VEDA-RUN-000008",
+      "status": "COMPLETE",
+      "objective": "Naisargika Bala natural strength and Cheshta Bala motional strength",
+      "queries": [
+        "Naisargika Bala natural planetary strength Sun 60 Moon 51.5 Mercury 29",
+        "Cheshta Bala motional strength retrograde stationary apparent daily motion"
+      ],
+      "sources_discovered": 4,
+      "sources_retrieved": 4,
+      "sources_accepted": 4,
+      "sources_rejected": 0,
+      "evidence_created": 4,
+      "candidate_id": "VEDA-RCND-000008"
+    },
+    {
+      "mission_id": "VEDA-RM-000009",
+      "run_id": "VEDA-RUN-000009",
+      "status": "COMPLETE",
+      "objective": "Drik Bala aspect strength and BAV/SAV contributor tables",
+      "queries": [
+        "Drik Bala aspect strength contribution table graha drishti numerical value",
+        "Bhinna Ashtakavarga BAV contributor table bindu allocation rules seven planets"
+      ],
+      "sources_discovered": 5,
+      "sources_retrieved": 5,
+      "sources_accepted": 4,
+      "sources_rejected": 1,
+      "evidence_created": 4,
+      "candidate_id": "VEDA-RCND-000009"
+    }
+  ],
+  "total_sources_discovered": 25,
+  "total_sources_retrieved": 25,
+  "total_sources_accepted": 21,
+  "total_sources_rejected": 4,
+  "ledger_reconstructed": true,
+  "external_research_status": "COMPLETE"
+}

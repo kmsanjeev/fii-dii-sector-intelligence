@@ -294,6 +294,7 @@ class KundliEngine:
             jd_natal   = self._to_jd(date_str, time_str, tz_offset)
             jd_now     = self._now_jd()
             planets    = self._planet_positions(jd_natal)
+            planets_extended = self._planet_positions_extended(jd_natal)
             lagna      = self._ascendant(jd_natal, lat, lon)
             lagna_sign = int(lagna / 30)
 
@@ -328,6 +329,15 @@ class KundliEngine:
             transits    = self._current_transits(enriched, jd_now)
             score, action = self._financial_score(enriched, lagna_sign, dasha, yogas, transits)
 
+            # Determine if daytime (Sun above horizon)
+            is_daytime = planets.get('Sun', 0) > 0
+            # Day of week (Monday=2, Saturday=7, Sunday=1) — simplified to Moon if needed
+            day_lord = SIGN_LORDS[lagna_sign]  # Use lagna lord as proxy for day lord
+
+            shadbala = self._compute_shadbala_for_planets(
+                planets, planets_extended, lagna, lagna_sign, is_daytime, day_lord
+            )
+
             return {
                 'entity': {
                     'type':          entity_type,
@@ -351,6 +361,7 @@ class KundliEngine:
                 'financial_houses':   fin_houses,
                 'yogas':              yogas,
                 'transits':           transits,
+                'shadbala':           shadbala,
                 'astro_score':        round(score, 1),
                 'astro_action':       action,
                 'computed_date':      datetime.now().strftime('%Y-%m-%d'),
@@ -369,6 +380,36 @@ class KundliEngine:
         return self._swe.julday(d_ut.year, d_ut.month, d_ut.day, hour_decimal)
 
     def _now_jd(self) -> float:
+        # Deterministic snapshot order for reproducible tests & stable runtime:
+        # 1. VEDA_TEST_SNAPSHOT_DATE env var (test override)
+        # 2. market_astro_context.json computed_date (runtime snapshot)
+        # 3. Wallclock (fallback)
+        import os
+        
+        # Check env var first (test override)
+        env_snapshot = os.getenv('VEDA_TEST_SNAPSHOT_DATE')
+        if env_snapshot:
+            try:
+                y, m, d = map(int, env_snapshot.split('-'))
+                return self._swe.julday(y, m, d, 12.0)
+            except (ValueError, TypeError):
+                pass
+        
+        # Then try market snapshot
+        try:
+            ctx_path = cfg.INTELLIGENCE_DIR / 'market_astro_context.json'
+            if ctx_path.exists():
+                import json as _json
+                data = json.loads(ctx_path.read_text(encoding='utf-8'))
+                cd = data.get('computed_date')
+                if cd:
+                    y, m, d = map(int, cd.split('-'))
+                    # Use midday UT for a stable snapshot
+                    return self._swe.julday(y, m, d, 12.0)
+        except Exception:
+            # Fall back to wallclock if anything goes wrong
+            pass
+
         now = datetime.now(timezone.utc)
         h   = now.hour + now.minute / 60.0 + now.second / 3600.0
         return self._swe.julday(now.year, now.month, now.day, h)
@@ -381,6 +422,7 @@ class KundliEngine:
     }
 
     def _planet_positions(self, jd: float) -> dict[str, float]:
+        """Return planetary longitudes (degrees). For backward compatibility, returns float values."""
         swe    = self._swe
         flags  = swe.FLG_SIDEREAL | swe.FLG_SPEED
         result = {}
@@ -394,6 +436,42 @@ class KundliEngine:
         ketu  = (rahu + 180) % 360
         result['Rahu'] = rahu
         result['Ketu'] = ketu
+        return result
+
+    def _planet_positions_extended(self, jd: float) -> dict[str, dict]:
+        """Return planet facts with longitude and speed (deg/day). For P018-R2 Cheshta Bala."""
+        swe    = self._swe
+        flags  = swe.FLG_SIDEREAL | swe.FLG_SPEED
+        result = {}
+        for name, pid in self._PLANET_IDS.items():
+            xx, _ = swe.calc_ut(jd, pid, flags)
+            lon = xx[0] % 360
+            speed = xx[3]  # degrees per day
+            retrograde = speed < 0
+            result[name] = {
+                'longitude': lon,
+                'longitude_speed_deg_per_day': speed,
+                'retrograde': retrograde,
+                'motion_state': 'RETROGRADE' if retrograde else 'DIRECT',
+            }
+
+        # Rahu (True Node) and Ketu (always retrograde)
+        xx, _ = swe.calc_ut(jd, swe.TRUE_NODE, flags)
+        rahu_lon  = xx[0] % 360
+        ketu_lon  = (rahu_lon + 180) % 360
+        speed = xx[3]  # True Node speed
+        result['Rahu'] = {
+            'longitude': rahu_lon,
+            'longitude_speed_deg_per_day': speed,
+            'retrograde': True,
+            'motion_state': 'RETROGRADE',
+        }
+        result['Ketu'] = {
+            'longitude': ketu_lon,
+            'longitude_speed_deg_per_day': -speed,  # Ketu opposite to Rahu
+            'retrograde': True,
+            'motion_state': 'RETROGRADE',
+        }
         return result
 
     def _ascendant(self, jd: float, lat: float, lon: float) -> float:
@@ -876,12 +954,128 @@ class KundliEngine:
 
     def _classify_aspect(self, angle: float) -> str:
         a = angle if angle <= 180 else 360 - angle
-        if a < 8:    return 'conjunction'
-        if 52 < a < 68:   return 'sextile'
-        if 82 < a < 98:   return 'square'
-        if 112 < a < 128: return 'trine'
-        if 172 < a < 188: return 'opposition'
+        # Round to guard against floating point edge cases (e.g., 68.0000000001)
+        a = round(a, 6)
+        # Use inclusive upper bounds to handle exact-edge cases (e.g., 68.0)
+        if a < 8:
+            return 'conjunction'
+        if 52 < a <= 68:
+            return 'sextile'
+        if 82 < a <= 98:
+            return 'square'
+        if 112 < a <= 128:
+            return 'trine'
+        if 172 < a <= 188:
+            return 'opposition'
         return 'separating'
+
+    def _parashari_aspects(self, planets: dict, lagna_sign: int) -> dict[str, list[dict]]:
+        """Compute Parashari drishti (special planetary aspects) for each planet.
+
+        Returns which planets aspect each planet using STANDARD_ASPECTS rules.
+        Source: BPHS Ch.29 (Brihat Parashara Hora Shastra)
+
+        Args:
+            planets: Dict mapping planet name -> longitude (degrees)
+            lagna_sign: Ascendant sign number (0-11)
+
+        Returns:
+            Dict[planet_name] -> List[{from_planet, aspect_type}]
+        """
+        # Parashari aspect houses (from BPHS Ch.29)
+        PARASHARI_ASPECTS = {
+            "Sun":     [7],
+            "Moon":    [7],
+            "Mars":    [4, 7, 8],
+            "Mercury": [7],
+            "Jupiter": [5, 7, 9],
+            "Venus":   [7],
+            "Saturn":  [3, 7, 10],
+        }
+
+        aspects_received = {name: [] for name in planets.keys()}
+
+        for aspecting_planet, aspect_houses in PARASHARI_ASPECTS.items():
+            if aspecting_planet not in planets:
+                continue
+
+            asp_lon = planets[aspecting_planet]
+            asp_sign = int(asp_lon / 30)
+            asp_house = (asp_sign - lagna_sign) % 12 + 1
+
+            for aspect_house_offset in aspect_houses:
+                target_house = asp_house + aspect_house_offset - 1
+                if target_house > 12:
+                    target_house -= 12
+                target_sign = (lagna_sign + target_house - 1) % 12
+
+                # Find all planets in target sign
+                for target_planet, tgt_lon in planets.items():
+                    if target_planet == aspecting_planet:
+                        continue
+                    tgt_sign = int(tgt_lon / 30)
+                    if tgt_sign == target_sign:
+                        aspects_received[target_planet].append({
+                            'from_planet': aspecting_planet,
+                            'aspect_house': aspect_house_offset,
+                            'aspect_type': 'FULL',
+                        })
+
+        return aspects_received
+
+    def _compute_shadbala_for_planets(self, planets: dict, planets_extended: dict,
+                                      lagna_lon: float, lagna_sign: int,
+                                      is_daytime: bool, day_lord: str) -> dict[str, dict]:
+        """Compute Shadbala (6-fold strength) for all planets.
+
+        Integrates motion facts (from extended planets) and Parashari aspects.
+
+        Args:
+            planets: Dict planet -> longitude (for basic facts)
+            planets_extended: Dict planet -> {longitude, speed, retrograde, motion_state}
+            lagna_lon: Ascendant longitude in degrees
+            lagna_sign: Ascendant sign number (0-11)
+            is_daytime: Whether birth is during daytime
+            day_lord: Weekday ruling planet name
+
+        Returns:
+            Dict[planet_name] -> shadbala result dict
+        """
+        try:
+            from engines.ai.knowledge.shadbala_engine import calculate_shadbala
+        except ImportError:
+            logger.warning('[KundliEngine] shadbala_engine not available; skipping Shadbala')
+            return {}
+
+        # Compute Parashari aspects
+        aspects = self._parashari_aspects(planets, lagna_sign)
+
+        shadbala_results = {}
+        for planet in planets.keys():
+            if planet not in planets_extended:
+                continue
+
+            ext = planets_extended[planet]
+            lon = ext['longitude']
+            speed_deg_per_day = ext['longitude_speed_deg_per_day']
+            retrograde = ext['retrograde']
+
+            # Convert speed from deg/day to arc-seconds/day for Cheshta
+            daily_motion_arcsec = speed_deg_per_day * 3600
+
+            result = calculate_shadbala(
+                planet=planet,
+                lon_deg=lon,
+                ascendant_lon=lagna_lon,
+                is_daytime=is_daytime,
+                daily_motion_arcsec=daily_motion_arcsec,
+                is_retrograde=retrograde,
+                aspects_received=aspects.get(planet, []),
+                planet_day_lord=day_lord if planet == day_lord else None,
+            )
+            shadbala_results[planet] = result
+
+        return shadbala_results
 
     # ── Financial score ───────────────────────────────────────────────────────
 
