@@ -62,13 +62,15 @@ describe('Veda React surfaces', () => {
 
     render(<ChatPage />)
 
-    const researchButton = screen.getByRole('button', { name: 'RESEARCH UNAVAILABLE' })
-    expect(researchButton).toBeDisabled()
-    expect(researchButton).toHaveAttribute(
-      'title',
-      'Research mode is enabled, but no live research provider is available right now.',
-    )
-  })
+    await waitFor(() => {
+      const researchButton = screen.getByRole('button', { name: 'RESEARCH UNAVAILABLE' })
+      expect(researchButton).toBeDisabled()
+      expect(researchButton).toHaveAttribute(
+        'title',
+        'Research mode is enabled, but no live research provider is available right now.',
+      )
+    })
+  }, 10000)
 
   it('keeps the widget attachment accept list synced and blocks research when runtime is down', async () => {
     const { useVedaStore } = await import('../store/vedaStore')

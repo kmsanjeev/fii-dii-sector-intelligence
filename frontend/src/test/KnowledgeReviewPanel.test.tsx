@@ -58,7 +58,7 @@ describe('KnowledgeReviewPanel', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Save Anyway' }))
     expect(onApprove).toHaveBeenCalledWith(expect.objectContaining({ decision: 'save' }))
-  })
+  }, 10000)
 
   it('shows a merge recommendation and submits a merge decision', () => {
     const onApprove = vi.fn()

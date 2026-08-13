@@ -115,7 +115,7 @@ def run_smoke() -> dict:
     backend_handles: list | None = None
     frontend_handles: list | None = None
 
-    with tempfile.TemporaryDirectory() as temp_dir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
         log_dir = Path(temp_dir)
         try:
             backend_proc, backend_handles = _start_backend(log_dir)
