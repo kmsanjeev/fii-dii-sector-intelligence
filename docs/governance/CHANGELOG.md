@@ -1,5 +1,64 @@
 # CHANGELOG
 
+## 2026-08-14 | VEDA-P023 education / learning intelligence synthesis foundation
+
+### Context
+P023 establishes a governed education synthesis engine following the P020/P022 pattern.
+It implements non-suppressive evidence aggregation for education outcomes with 8 immutable
+safety boundaries, preserving all classical research freedoms while restricting production
+certainty claims.
+
+### Files Added
+- engines/education/__init__.py
+- engines/education/m001_existing_education_logic_inventory.py
+- engines/ai/knowledge/education_governance.py
+- engines/intelligence/education_evidence_aggregation.py
+- engines/intelligence/education_synthesis_engine.py
+- tests/test_veda_p023_education.py (28 tests)
+- docs/current-state/p023/VEDA-P023-EXECUTIVE-SUMMARY.md
+- docs/current-state/p023/VEDA-P023-FINAL-COMPLETION-DASHBOARD.md
+
+### Key Deliverables
+- 12 evidence layers (NATAL, 4TH_BHAVA, 5TH_BHAVA, 9TH_BHAVA, LORDSHIP, EDUCATION_KARAKA, D24_EDUCATION, EDUCATION_YOGA, DIGNITY, STRENGTH, DASHA, APPROVED_CORE)
+- Non-suppressive conflict handling (preserves ALL contradictions)
+- Qualitative confidence bands (LOW, MODERATE, HIGH, RESEARCH_REQUIRED — no percentages)
+- SHADOW_ONLY synthesis output with explicit state marking
+- 8 immutable safety boundaries (no outcome guarantees, no false precision, no silent suppression)
+- Full P020/P022/P015/P016/P017/P018/P019 boundary preservation
+
+### Test Results
+- P023 focused tests: 28/28 PASS
+- Full Python regression: 611/611 PASS (583 baseline + 28 new)
+- Frontend tests: 27/27 PASS
+- Frontend production build: SUCCESS
+- Runtime smoke checks: PASS
+- RAG determinism: PASS
+
+### Acceptance Criteria
+All 57 acceptance criteria PASS (AC01-AC57)
+
+### Commit & Tag
+- Commit: 5fefec06 — "feat(veda): establish governed education synthesis foundation (P023)"
+- Tag: veda-p023-education-synthesis-foundation
+- Status: COMPLETE & FROZEN
+
+### Notes
+- D24 (Chaturvimshamsha) calculation ACTIVE; interpretation RESEARCH_ONLY
+- Strength components marked IMPLEMENTED_UNVALIDATED (Cheshta, Drik, BAV, SAV)
+- Research freedom explicitly preserved (calculation, rule evaluation, experimental prediction, shadow synthesis, backtesting, ML training)
+- Production activation pathway impossible (governance enforced at synthesis layer)
+
+## 2026-08-14 | VEDA-P022 wealth / resource synthesis foundation
+
+### Context
+P022 establishes a governed wealth synthesis engine that preserves research freedom
+while restricting production certainty. Implements comprehensive evidence aggregation
+with non-suppressive conflict handling.
+
+### Commit & Tag
+- Commit: 4eb8770e — "feat(veda): establish governed VEDA wealth synthesis foundation (P022)"
+- Tag: veda-p022-wealth-synthesis-foundation
+
 ## 2026-08-14 | VEDA-P021 career / profession validation & shadow synthesis
 
 ### Context
