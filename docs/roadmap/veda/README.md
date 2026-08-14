@@ -13,5 +13,6 @@ The implemented baseline is frozen through P026 plus STD-001, STD-002, STD-003, 
 - `VEDA-ADM-EMP-001` is implemented/frozen by its own acceptance record; the next operational step is to supply legitimate governed case data.
 - ADM-EMP-001 implementation: `38bd7a03`, tag `veda-adm-emp-001-case-intake-console`.
 - STD-003 is implemented/frozen by its current-state acceptance record; COMM-001 and LANG-001 remain planned successor modules.
+- STD-003 implementation: `c73261e1`, tag `veda-std-003-conversational-intelligence-standard`.
 
 This directory is the VEDA roadmap, status, and cold-start entrypoint. Do not use the historical P000/P013 roadmap files or the governance-audit P027 pathway to infer current scope.

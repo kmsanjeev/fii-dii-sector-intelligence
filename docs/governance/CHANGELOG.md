@@ -19,6 +19,8 @@ transition metadata.
 ### Implementation
 - Focused tests: `6 passed`; existing chat/router subset: `27 passed`.
 - Human-quality improvement is not claimed without human ratings.
+- Commit: `c73261e1` — `feat(veda): establish universal conversational intelligence standard`
+- Tag: `veda-std-003-conversational-intelligence-standard`
 
 ## 2026-08-14 | VEDA-ADM-EMP-001 empirical case intake and bulk import console
 

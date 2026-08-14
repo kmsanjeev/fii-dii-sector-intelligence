@@ -2,7 +2,10 @@
 
 Status: IMPLEMENTED / FROZEN / PASS_WITH_CONDITION pending full regression completion.
 
-Focused STD-003 tests: `6 passed`. Existing ChatEngine/router subset: `27 passed`.
+Implementation commit: `c73261e1`.
+Implementation tag: `veda-std-003-conversational-intelligence-standard`.
+
+Focused STD-003 tests: `7 passed`. Existing ChatEngine/router subset: `27 passed`.
 The full Python baseline remains subject to the repository's known
 network-sensitive timeout condition and is reported separately.
 
