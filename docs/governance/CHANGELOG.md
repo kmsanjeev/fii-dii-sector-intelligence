@@ -9,6 +9,8 @@ versus contextual resolution, unknown candidates, domain-aware `MD`, and
 understanding-versus-usage controls. The seed corpus contains 550 records and
 the benchmark contains 100 cases.
 
+Release: commit `9d15dcb8`, tag `veda-lang-001-wave1-language-intelligence`.
+
 - LANG-001: IMPLEMENTED / FROZEN
 - STD-003, COMM-001: IMPLEMENTED / FROZEN
 - COMM-002, GROUP-001, LANG-002+: PLANNED

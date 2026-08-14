@@ -15,5 +15,5 @@ expected known resolutions and 0/10 fabricated unknown definitions.
 Successors remain COMM-002 planned, GROUP-001 planned, LANG-002+ planned,
 EMP-001 active longitudinal, and P027 reserved/unassigned.
 
-LANG-001 is the implemented/frozen Wave-1 language layer; its exact commit and
-tag are recorded after the release freeze in the roadmap and changelog.
+LANG-001 is the implemented/frozen Wave-1 language layer at commit `9d15dcb8`
+with tag `veda-lang-001-wave1-language-intelligence`.
