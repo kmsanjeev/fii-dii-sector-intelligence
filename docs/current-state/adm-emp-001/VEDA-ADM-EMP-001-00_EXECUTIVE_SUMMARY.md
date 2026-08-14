@@ -12,3 +12,6 @@ longitudinal programme and `PRED-M4` remains `INSUFFICIENT_SAMPLE`.
 
 Inherited: RM-001, STD-001, STD-002, PRED-001, PRED-002, and PRED-003.
 P027 remains reserved/unassigned and STD-003 remains planned/not implemented.
+
+Implementation commit: `38bd7a03`.
+Implementation tag: `veda-adm-emp-001-case-intake-console`.

@@ -12,11 +12,14 @@ Inheritance rule: future work must inspect existing implementation, knowledge, a
 
 | File | Why affected | Update made | Current status | Commit/tag reference |
 |---|---|---|---|---|
-| `docs/roadmap/veda/README.md` | VEDA cold-start entrypoint | Added RM-001 commit/tag, maturity, empirical status, and next-candidate pointer | Current | `1fa05f35`, `veda-rm-001-roadmap-rebaseline` |
+| `docs/roadmap/veda/README.md` | VEDA cold-start entrypoint | Added RM-001 and ADM-EMP-001 commit/tag references, maturity, empirical status, and next operational step | Current | `38bd7a03`, `veda-adm-emp-001-case-intake-console` |
 | `docs/PROJECT_MASTER_STATE.md` | Shared project status still exposed the pre-RM-001 Veda roadmap | Marked the Phase-8 material historical and pointed to the authoritative RM-001 registry | Current pointer; historical detail retained | `1fa05f35`, `veda-rm-001-roadmap-rebaseline` |
 | `docs/governance/CHANGELOG.md` | Repository execution log | Added the RM-001 governance/rebaseline entry | Current | `1fa05f35`, `veda-rm-001-roadmap-rebaseline` |
 | `docs/roadmap/veda/VEDA-RM-001-12_FINAL_ACCEPTANCE.md` | RM-001 acceptance record | Added this synchronization register | Current | `1fa05f35`, `veda-rm-001-roadmap-rebaseline` |
+| `docs/current-state/adm-emp-001/VEDA-ADM-EMP-001-04_FINAL_ACCEPTANCE.md` | ADM-EMP-001 phase acceptance | Records implementation status, exact commit/tag, test condition, and empirical empty state | Current | `38bd7a03`, `veda-adm-emp-001-case-intake-console` |
 
 No separate VEDA progress ledger, dependency/status register, or START_HERE file exists. The RM-001 roadmap README is the authoritative VEDA entrypoint; platform `MASTER_CHECKLIST.md` and `MASTER_ROADMAP.md` are unrelated Capital Flow Intelligence planning records and were not modified. Historical P026/PRED-003 acceptance records remain historical records and retain accurate results.
 
-Stale references found: 2. Stale references corrected: 2. Documentation fully synchronized: YES.
+RM-001 was the prior governance baseline; ADM-EMP-001 now supersedes its deferred/captured status for the implemented intake capability. No dedicated VEDA progress ledger, dependency/status register, or START_HERE file exists. The RM-001 README remains the authoritative VEDA entrypoint; platform `MASTER_CHECKLIST.md` and `MASTER_ROADMAP.md` are unrelated Capital Flow Intelligence planning records and were not modified. Historical records remain preserved.
+
+Stale references found: 3. Stale references corrected: 3. Documentation fully synchronized: YES.

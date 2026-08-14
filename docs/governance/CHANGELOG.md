@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## 2026-08-14 | VEDA-ADM-EMP-001 empirical case intake and bulk import console
+
+### Context
+ADM-EMP-001 implements the Admin-only path for governed single-case entry,
+CSV/XLSX preview and import, provenance/cutoff validation, duplicate and
+case-family review, audit history, and shared-store case linkage. It does not
+create empirical records, a parallel database, P027, or STD-003.
+
+### Status
+- ADM-EMP-001: IMPLEMENTED / FROZEN
+- EMP-001: ACTIVE LONGITUDINAL; production real cases remain `0`
+- PRED-M4: `INSUFFICIENT_SAMPLE`
+- P027: RESERVED / UNASSIGNED
+- STD-003: PLANNED / NOT IMPLEMENTED
+
+### Commit & Tag
+- Implementation commit: `38bd7a03` — `feat(veda): add empirical case intake and bulk import console`
+- Tag: `veda-adm-emp-001-case-intake-console`
+
 ## 2026-08-14 | VEDA-RM-001 roadmap rebaseline and future programme registry
 
 ### Context
@@ -10,7 +29,7 @@ historical roadmap references. P027 remains reserved and unassigned.
 ### Governance Updates
 - Added the authoritative roadmap and future registry under `docs/roadmap/veda/`.
 - Classified historical P000/P013 roadmap material and the governance-audit P027 pathway without deleting archival evidence.
-- Captured STD-003, ADM-EMP-001, and EMP-001 as future/longitudinal work without implementing them.
+- Captured STD-003 and EMP-001 as planned/longitudinal work; ADM-EMP-001 was subsequently implemented/frozen.
 - Synchronized the project-state pointer and VEDA cold-start entrypoint.
 
 ### Commit & Tag

@@ -2,6 +2,9 @@
 
 Status: PASS_WITH_CONDITION / FROZEN
 
+Implementation commit: `38bd7a03`.
+Implementation tag: `veda-adm-emp-001-case-intake-console`.
+
 The phase is scoped to governed intake capability. It does not create real
 empirical cases, alter prediction logic, begin P027, or implement STD-003.
 
