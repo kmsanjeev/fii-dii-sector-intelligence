@@ -1,5 +1,8 @@
 # LANG-001-R1 Final Acceptance
 
+Implementation commit: `14dd32c2ac73e34c3eb53a359b34a8638155eb9e`.
+Release tag: `veda-lang-001-r1-resolution-hardening`.
+
 Original published baseline: 54/90 (60%), unknown fabricated definitions 0/10.
 Corrected original benchmark: 90/90 (100%). Adversarial benchmark: 49/49
 known (100%). Holdout: 29/29 known (100%). Unknown fabricated-definition rate
