@@ -13,5 +13,5 @@
 | P022 | Health / Longevity Research Governance | VEDA-CAP-DOMAIN-000005, VEDA-CAP-DOMAIN-000006 |
 | P023 | Remedies Governance | VEDA-CAP-DOMAIN-000007 |
 | P024 | Governed Marriage / Relationship Intelligence | VEDA-CAP-ADVANCED-000002 |
-| P025 | Jaimini Systems | VEDA-CAP-ADVANCED-000001 |
+| P025 | Governed Progeny / Children / Fertility Intelligence | VEDA-CAP-ADVANCED-000001 |
 | P026 | Advanced Synthesis & Multi-Chart Reasoning | P019, P020, P022, P025 |

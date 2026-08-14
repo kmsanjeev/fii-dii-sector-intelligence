@@ -1853,9 +1853,9 @@ class JyotishaCapabilityLifecycleService:
             },
             {
                 "phase": "P025",
-                "title": "Jaimini Systems",
+                "title": "Governed Progeny / Children / Fertility Intelligence",
                 "depends_on": ["VEDA-CAP-ADVANCED-000001"],
-                "rationale": "Jaimini requires separate ontology, runtime facts, and evidence policy.",
+                "rationale": "Children and fertility research requires D7 governance, high-stakes controls, and a medical-safety boundary before interpretation activation.",
             },
             {
                 "phase": "P026",
