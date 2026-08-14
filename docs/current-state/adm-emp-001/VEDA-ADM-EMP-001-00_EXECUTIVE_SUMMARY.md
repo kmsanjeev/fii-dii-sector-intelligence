@@ -11,7 +11,8 @@ eligible case count remain `0`; `VEDA-EMP-001` continues as an active
 longitudinal programme and `PRED-M4` remains `INSUFFICIENT_SAMPLE`.
 
 Inherited: RM-001, STD-001, STD-002, PRED-001, PRED-002, and PRED-003.
-P027 remains reserved/unassigned and STD-003 remains planned/not implemented.
+P027 remains reserved/unassigned. STD-003 was planned at the time of this
+phase and is now implemented/frozen by its later acceptance record.
 
 Implementation commit: `38bd7a03`.
 Implementation tag: `veda-adm-emp-001-case-intake-console`.

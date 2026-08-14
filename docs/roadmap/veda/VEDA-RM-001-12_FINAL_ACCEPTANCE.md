@@ -17,6 +17,7 @@ Inheritance rule: future work must inspect existing implementation, knowledge, a
 | `docs/governance/CHANGELOG.md` | Repository execution log | Added the RM-001 governance/rebaseline entry | Current | `1fa05f35`, `veda-rm-001-roadmap-rebaseline` |
 | `docs/roadmap/veda/VEDA-RM-001-12_FINAL_ACCEPTANCE.md` | RM-001 acceptance record | Added this synchronization register | Current | `1fa05f35`, `veda-rm-001-roadmap-rebaseline` |
 | `docs/current-state/adm-emp-001/VEDA-ADM-EMP-001-04_FINAL_ACCEPTANCE.md` | ADM-EMP-001 phase acceptance | Records implementation status, exact commit/tag, test condition, and empirical empty state | Current | `38bd7a03`, `veda-adm-emp-001-case-intake-console` |
+| `docs/standards/veda/` and `docs/current-state/std-003/` | STD-003 implementation | Records the frozen conversational standard, current-state evidence, tests, limitations, and successor boundaries | Current | STD-003 implementation commit/tag |
 
 No separate VEDA progress ledger, dependency/status register, or START_HERE file exists. The RM-001 roadmap README is the authoritative VEDA entrypoint; platform `MASTER_CHECKLIST.md` and `MASTER_ROADMAP.md` are unrelated Capital Flow Intelligence planning records and were not modified. Historical P026/PRED-003 acceptance records remain historical records and retain accurate results.
 

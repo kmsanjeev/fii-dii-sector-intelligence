@@ -27,6 +27,7 @@ from typing import Any
 from engines.common import config as cfg
 from engines.common.logger import get_logger
 from engines.ai.chatbot.intent_router import detect_intent, get_system_prompt
+from engines.ai.chatbot.conversation_intelligence import analyze_conversation, prompt_guidance
 from engines.ai.chatbot.tools.tool_registry import TOOLS, TOOL_FUNCTIONS
 from engines.ai.chatbot.safety import sanitize_reply
 from engines.ai.knowledge.response_quality import deduplicate_safety_messages
@@ -354,6 +355,7 @@ class ChatEngine:
             "unified" if cfg.VEDA_UNIFIED_RETRIEVAL_ENABLED else "legacy"
         )
         self.last_orchestration: dict = {}
+        self.last_conversational_context: dict = {}
         self._research_service = None
         self._knowledge_review_service = None
         self._repo_capability_service = None
@@ -495,7 +497,10 @@ class ChatEngine:
         configured_primary_mode = "unified" if cfg.VEDA_UNIFIED_RETRIEVAL_ENABLED else "legacy"
         self.last_retrieval_audit = _empty_retrieval_audit(configured_primary_mode)
         intent       = detect_intent(user_message)
+        conversational_context = analyze_conversation(user_message, history=self.history)
+        self.last_conversational_context = conversational_context.to_dict()
         is_greeting  = intent.intent_type == "GREETING"
+        is_small_talk = conversational_context.conversation_type == "SMALL_TALK"
         try:
             from engines.ai.orchestration import AgentOrchestrator
             orchestration_mode = str(getattr(cfg, "VEDA_ORCHESTRATION_MODE", "SHADOW")).upper()
@@ -514,6 +519,7 @@ class ChatEngine:
                 "error": type(exc).__name__,
             }
         system_prompt = get_system_prompt(intent)
+        system_prompt += prompt_guidance(conversational_context)
 
         # ── Voice-mode fast path: instant reply for common greetings ──────
         # Skips LLM entirely, cutting first-response latency from ~3-5s to <50ms.
@@ -534,7 +540,7 @@ class ChatEngine:
             system_prompt += self._VOICE_ADDENDUM
 
         # A "hi" needs no market context and must never trigger a tool call
-        rag_context = "" if is_greeting else self._get_rag_context(user_message, intent)
+        rag_context = "" if (is_greeting or is_small_talk) else self._get_rag_context(user_message, intent)
         if rag_context:
             system_prompt += f"\n\nRelevant intelligence context:\n{rag_context}"
         if self.last_orchestration.get("mode") == "ASSISTED":
@@ -560,7 +566,7 @@ class ChatEngine:
             system_prompt += (
                 f"\n\nAttachment context:\n{attachment_context}"
             )
-        if not is_greeting:
+        if not is_greeting and not is_small_talk:
             system_prompt += (
                 "\n\nSOURCE TRANSPARENCY RULES:"
                 "\n- If you use local platform intelligence only, say that plainly when it helps the user."
@@ -592,7 +598,7 @@ class ChatEngine:
                 )
 
         ext_context = ""
-        if not is_greeting:
+        if not is_greeting and not is_small_talk:
             ext_context = self._get_external_research_context(
                 user_message,
                 intent=intent,

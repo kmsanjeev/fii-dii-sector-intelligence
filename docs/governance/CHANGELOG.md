@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## 2026-08-14 | VEDA-STD-003 conversational intelligence standard
+
+### Context
+STD-003 adds a deterministic conversational context layer over the existing
+ChatEngine. It supports the ten V1 conversation types, English/Hindi/Hinglish
+language and code-switching signals, contextual idioms/slang, pragmatic
+dimensions, proficiency adaptation, safe expression guidance, and multi-turn
+transition metadata.
+
+### Status
+- STD-003: IMPLEMENTED / FROZEN
+- Existing ChatEngine remains the response owner.
+- PRED-001/002/003, EMP-001, ADM-EMP-001, trust-aware RAG, and safety remain intact.
+- P027: RESERVED / UNASSIGNED
+- COMM-001, LANG-001, COMM-002, GROUP-001, and LANG-002+: PLANNED successor work.
+
+### Implementation
+- Focused tests: `6 passed`; existing chat/router subset: `27 passed`.
+- Human-quality improvement is not claimed without human ratings.
+
 ## 2026-08-14 | VEDA-ADM-EMP-001 empirical case intake and bulk import console
 
 ### Context

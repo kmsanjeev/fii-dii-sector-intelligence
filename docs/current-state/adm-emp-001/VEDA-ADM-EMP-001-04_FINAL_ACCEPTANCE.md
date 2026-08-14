@@ -19,4 +19,5 @@ passed, and the actual API runtime smoke passed.
 Current production empirical counts remain `0` cases and `0` eligible cases.
 Test/synthetic records are excluded from empirical statistics. `EMP-001`
 remains active longitudinal, `PRED-M4` remains `INSUFFICIENT_SAMPLE`, P027 is
-reserved/unassigned, and STD-003 is planned/not implemented.
+reserved/unassigned. STD-003 was planned at the time of this phase and is now
+implemented/frozen by its later acceptance record.

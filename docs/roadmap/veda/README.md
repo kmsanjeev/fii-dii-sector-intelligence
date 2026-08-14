@@ -2,7 +2,7 @@
 
 Read this directory before starting any future VEDA work. `VEDA-RM-001-05_FUTURE_PHASE_REGISTRY.md` is the single authoritative future registry; historical roadmaps remain preserved and are classified in `VEDA-RM-001-02_ROADMAP_CONFLICT_AUDIT.md` and `VEDA-RM-001-03_SUPERSESSION_REGISTER.md`.
 
-The implemented baseline is frozen through P026 plus STD-001, STD-002, and PRED-001 through PRED-003. P027 is reserved but unassigned. ADM-EMP-001 is implemented/frozen; STD-003 remains planned and unimplemented.
+The implemented baseline is frozen through P026 plus STD-001, STD-002, STD-003, and PRED-001 through PRED-003. P027 is reserved but unassigned. ADM-EMP-001 is implemented/frozen; EMP-001 remains longitudinal.
 
 ## Current Status
 
@@ -12,5 +12,6 @@ The implemented baseline is frozen through P026 plus STD-001, STD-002, and PRED-
 - Empirical status: `VEDA-EMP-001` remains longitudinal; real eligible cases and verified outcomes remain `0`; `PRED-M4` is `INSUFFICIENT_SAMPLE`.
 - `VEDA-ADM-EMP-001` is implemented/frozen by its own acceptance record; the next operational step is to supply legitimate governed case data.
 - ADM-EMP-001 implementation: `38bd7a03`, tag `veda-adm-emp-001-case-intake-console`.
+- STD-003 is implemented/frozen by its current-state acceptance record; COMM-001 and LANG-001 remain planned successor modules.
 
 This directory is the VEDA roadmap, status, and cold-start entrypoint. Do not use the historical P000/P013 roadmap files or the governance-audit P027 pathway to infer current scope.
