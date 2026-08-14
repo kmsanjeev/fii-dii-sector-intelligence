@@ -17,3 +17,11 @@ EMP-001 active longitudinal, and P027 reserved/unassigned.
 
 LANG-001 is the implemented/frozen Wave-1 language layer at commit `9d15dcb8`
 with tag `veda-lang-001-wave1-language-intelligence`.
+
+## Acceptance Register
+
+AC01-AC77: PASS. AC78 (full Python no LANG-001-specific failure):
+PASS_WITH_CONDITION because the 688-test suite timed out in the known external
+research path after 76% without reporting a LANG-001 failure. AC79-AC92: PASS.
+
+Totals: PASS 91, PASS_WITH_CONDITION 1, BLOCKED 0, FAIL 0, TOTAL 92.
