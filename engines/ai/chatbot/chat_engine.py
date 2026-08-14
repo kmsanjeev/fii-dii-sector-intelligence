@@ -29,6 +29,7 @@ from engines.common.logger import get_logger
 from engines.ai.chatbot.intent_router import detect_intent, get_system_prompt
 from engines.ai.chatbot.conversation_intelligence import ConversationContext, analyze_conversation, prompt_guidance
 from engines.ai.chatbot.response_adaptation import build_adaptation_profile
+from engines.ai.chatbot.group_conversation import analyze_group_turn
 from engines.ai.chatbot.tools.tool_registry import TOOLS, TOOL_FUNCTIONS
 from engines.ai.chatbot.safety import sanitize_reply
 from engines.ai.knowledge.response_quality import deduplicate_safety_messages
@@ -358,6 +359,7 @@ class ChatEngine:
         self.last_orchestration: dict = {}
         self.last_conversational_context: dict = {}
         self.last_response_adaptation: dict = {}
+        self.last_group_context: dict = {}
         self._research_service = None
         self._knowledge_review_service = None
         self._repo_capability_service = None
@@ -476,6 +478,7 @@ class ChatEngine:
         voice_mode: bool = False,
         research_mode: bool = False,
         attachment_context: str = "",
+        group_context: dict[str, Any] | None = None,
     ) -> str:
         """
         Process one user turn and return the assistant's reply.
@@ -516,6 +519,29 @@ class ChatEngine:
         self.last_response_adaptation = build_adaptation_profile(
             conversational_context, user_message=user_message, history=self.history,
         ).to_dict()
+        self.last_group_context = {}
+        if group_context:
+            try:
+                group = analyze_group_turn(
+                    user_message,
+                    conversation_id=str(group_context.get("conversation_id", "conversation-1")),
+                    speaker_id=str(group_context.get("speaker_id", "user")),
+                    speaker_name=group_context.get("speaker_name"),
+                    participants=group_context.get("participants"),
+                    turn_id=str(group_context.get("turn_id", "turn-current")),
+                    timestamp=group_context.get("timestamp"),
+                    reply_to_turn_id=group_context.get("reply_to_turn_id"),
+                    reply_to_speaker_id=group_context.get("reply_to_speaker_id"),
+                    addressed_to=group_context.get("addressed_to"),
+                    chart_subject_id=group_context.get("chart_subject_id"),
+                    subject_label=group_context.get("subject_label"),
+                    quoted_turn_id=group_context.get("quoted_turn_id"),
+                    history=group_context.get("history", self.history),
+                )
+                self.last_group_context = group.to_dict()
+                self.last_conversational_context["group"] = self.last_group_context
+            except Exception as exc:
+                self.last_group_context = {"analysis_failed": type(exc).__name__, "participation_decision": "OBSERVE"}
         is_greeting  = intent.intent_type == "GREETING"
         is_small_talk = conversational_context.conversation_type == "SMALL_TALK"
         try:
@@ -539,6 +565,12 @@ class ChatEngine:
         system_prompt += prompt_guidance(
             conversational_context, user_message=user_message, history=self.history,
         )
+        if self.last_group_context:
+            system_prompt += (
+                "\n\nGROUP CONTEXT (trusted transport metadata plus bounded analysis; do not expose internal IDs):\n"
+                f"{self.last_group_context}\n"
+                "Preserve speaker/subject/addressee separation, attribute claims, and do not interrupt when participation is OBSERVE."
+            )
 
         # ── Voice-mode fast path: instant reply for common greetings ──────
         # Skips LLM entirely, cutting first-response latency from ~3-5s to <50ms.

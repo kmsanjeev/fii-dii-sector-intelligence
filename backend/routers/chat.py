@@ -177,6 +177,19 @@ class ChatRequest(BaseModel):
     mode: str = "text"          # "voice" -> spoken-style replies (Phase V2)
     research_mode: bool = False
     attachments: list[ChatAttachment] = Field(default_factory=list)
+    # Optional group metadata; absent requests retain the legacy single-user path.
+    conversation_id: Optional[str] = None
+    speaker_id: Optional[str] = None
+    speaker_name: Optional[str] = None
+    speaker_role: Optional[str] = None
+    participants: list[dict[str, Any]] = Field(default_factory=list)
+    turn_id: Optional[str] = None
+    reply_to_turn_id: Optional[str] = None
+    reply_to_speaker_id: Optional[str] = None
+    addressed_to: list[str] = Field(default_factory=list)
+    chart_subject_id: Optional[str] = None
+    subject_label: Optional[str] = None
+    quoted_turn_id: Optional[str] = None
 
 
 class ChatResponse(BaseModel):
@@ -389,11 +402,31 @@ async def chat(req: ChatRequest):
         if req.attachments:
             from engines.ai.attachments import get_attachment_service
             attachment_context = get_attachment_service().build_prompt_context(req.attachments)
+        chat_kwargs = {
+            "voice_mode": (req.mode == "voice"),
+            "research_mode": req.research_mode,
+            "attachment_context": attachment_context,
+        }
+        if any((req.conversation_id, req.speaker_id, req.speaker_name, req.speaker_role,
+                req.participants, req.turn_id, req.reply_to_turn_id, req.reply_to_speaker_id,
+                req.addressed_to, req.chart_subject_id, req.subject_label, req.quoted_turn_id)):
+            chat_kwargs["group_context"] = {
+                "conversation_id": req.conversation_id or "conversation-1",
+                "speaker_id": req.speaker_id or "user",
+                "speaker_name": req.speaker_name,
+                "speaker_role": req.speaker_role,
+                "participants": req.participants,
+                "turn_id": req.turn_id or "turn-current",
+                "reply_to_turn_id": req.reply_to_turn_id,
+                "reply_to_speaker_id": req.reply_to_speaker_id,
+                "addressed_to": req.addressed_to,
+                "chart_subject_id": req.chart_subject_id,
+                "subject_label": req.subject_label,
+                "quoted_turn_id": req.quoted_turn_id,
+            }
         reply = engine.chat(
             req.message,
-            voice_mode=(req.mode == "voice"),
-            research_mode=req.research_mode,
-            attachment_context=attachment_context,
+            **chat_kwargs,
         )
     except EnvironmentError as e:
         raise HTTPException(status_code=503, detail=str(e))

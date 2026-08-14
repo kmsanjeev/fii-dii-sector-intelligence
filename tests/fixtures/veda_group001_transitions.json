@@ -1,0 +1,17 @@
+[
+  {"from":"general","to":"portfolio allocation"},
+  {"from":"portfolio allocation","to":"tax impact"},
+  {"from":"tax impact","to":"portfolio allocation"},
+  {"from":"jyotisha","to":"health question"},
+  {"from":"health question","to":"jyotisha"},
+  {"from":"software design","to":"portfolio allocation"},
+  {"from":"portfolio allocation","to":"software design"},
+  {"from":"general","to":"jyotisha"},
+  {"from":"jyotisha","to":"general"},
+  {"from":"general","to":"tax impact"},
+  {"from":"tax impact","to":"health question"},
+  {"from":"health question","to":"general"},
+  {"from":"software design","to":"jyotisha"},
+  {"from":"jyotisha","to":"software design"},
+  {"from":"general","to":"portfolio allocation"}
+]

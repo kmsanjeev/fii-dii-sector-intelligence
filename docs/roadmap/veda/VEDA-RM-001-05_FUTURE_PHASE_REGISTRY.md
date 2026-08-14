@@ -10,7 +10,7 @@ This is the single authoritative future registry.
 | VEDA-COMM-001 | Conversation-Type & Pragmatic Understanding Engine | E | IMPLEMENTED / FROZEN | STD-003 | Deterministic context, pragmatic intent, multi-turn stability, and ChatEngine fallback; see `docs/current-state/comm-001/` |
 | VEDA-LANG-001 | English/Hindi/Hinglish idiom, phrase & slang intelligence | E | IMPLEMENTED / FROZEN | STD-003, COMM-001 | Deterministic Wave-1 registry and contextual resolver; see `docs/current-state/lang-001/` |
 | VEDA-COMM-002 | Adaptive Conversational Response Engine | E | IMPLEMENTED / FROZEN | STD-003, COMM-001, LANG-001, LANG-001-R1 | Deterministic adaptation profile and response benchmark; human A/B validation remains pending; see `docs/current-state/comm-002/` |
-| VEDA-GROUP-001 | Multi-Speaker / Group Conversation Intelligence | E | PLANNED | STD-003, COMM-001 | Speaker/turn provenance required |
+| VEDA-GROUP-001 | Multi-Speaker / Group Conversation Intelligence | E | IMPLEMENTED / FROZEN | STD-003, COMM-001, COMM-002 | Deterministic participant/turn, reply/addressee, topic, position, conflict, and subject attribution layer; see `docs/current-state/group-001/` |
 | VEDA-LANG-002+ | Additional language packs | E | PLANNED | LANG-001, quality gates | Language-specific authorization |
 | VEDA-ADM-EMP-001 | Empirical Case Intake & Bulk Import Console | F/D | IMPLEMENTED / FROZEN | EMP-001, shared case registry | Preview → validate → accept → ingest; see `docs/current-state/adm-emp-001/` |
 
