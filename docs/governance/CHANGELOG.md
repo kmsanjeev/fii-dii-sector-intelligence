@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-15 | VEDA-COMM-002 adaptive conversational response engine
+
+Extended the existing ChatEngine with a deterministic, bounded response-adaptation profile sourced from COMM-001 and LANG-001/R1 context. The profile adapts formality, directness, depth, technicality, warmth, structure, clarification, repetition avoidance, and expression restraint without creating a second response owner or adding routine provider calls. The 60-scenario property benchmark meets the technical gate; blind Founder A/B ratings remain pending.
+
+- COMM-002: IMPLEMENTED / FROZEN
+- STD-003, COMM-001, LANG-001, LANG-001-R1: IMPLEMENTED / FROZEN
+- GROUP-001, LANG-002+: PLANNED
+- EMP-001: ACTIVE LONGITUDINAL
+- P027: RESERVED / UNASSIGNED
+
 ## 2026-08-14 | VEDA-LANG-001-R1 resolution hardening
 
 Extended the existing deterministic resolver with Unicode normalization,

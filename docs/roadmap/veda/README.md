@@ -12,10 +12,11 @@ The implemented baseline is frozen through P026 plus STD-001, STD-002, STD-003, 
 - Empirical status: `VEDA-EMP-001` remains longitudinal; real eligible cases and verified outcomes remain `0`; `PRED-M4` is `INSUFFICIENT_SAMPLE`.
 - `VEDA-ADM-EMP-001` is implemented/frozen by its own acceptance record; the next operational step is to supply legitimate governed case data.
 - ADM-EMP-001 implementation: `38bd7a03`, tag `veda-adm-emp-001-case-intake-console`.
-- STD-003 is implemented/frozen by its current-state acceptance record; COMM-001 is implemented/frozen by `docs/current-state/comm-001/`; LANG-001 is implemented/frozen by `docs/current-state/lang-001/`; COMM-002 and GROUP-001 remain planned successor modules.
+- STD-003 is implemented/frozen by its current-state acceptance record; COMM-001 is implemented/frozen by `docs/current-state/comm-001/`; LANG-001 and LANG-001-R1 are implemented/frozen by their current-state records; COMM-002 is implemented/frozen by `docs/current-state/comm-002/`; GROUP-001 and LANG-002+ remain planned successor modules.
 - STD-003 implementation: `c73261e1`, tag `veda-std-003-conversational-intelligence-standard`.
 - COMM-001 implementation: `676f0aca`, tag `veda-comm-001-pragmatic-understanding-engine`.
 - LANG-001 implementation: `9d15dcb8` with tag `veda-lang-001-wave1-language-intelligence`.
-- LANG-001-R1 resolution hardening: evidence is in `docs/current-state/lang-001-r1/`; COMM-002 remains not started.
+- LANG-001-R1 resolution hardening: evidence is in `docs/current-state/lang-001-r1/`.
+- COMM-002 implementation: evidence is in `docs/current-state/comm-002/`; deterministic adaptation gates pass and Founder blind A/B validation remains pending.
 
 This directory is the VEDA roadmap, status, and cold-start entrypoint. Do not use the historical P000/P013 roadmap files or the governance-audit P027 pathway to infer current scope.

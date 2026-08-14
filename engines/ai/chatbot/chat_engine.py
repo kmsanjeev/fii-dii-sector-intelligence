@@ -28,6 +28,7 @@ from engines.common import config as cfg
 from engines.common.logger import get_logger
 from engines.ai.chatbot.intent_router import detect_intent, get_system_prompt
 from engines.ai.chatbot.conversation_intelligence import ConversationContext, analyze_conversation, prompt_guidance
+from engines.ai.chatbot.response_adaptation import build_adaptation_profile
 from engines.ai.chatbot.tools.tool_registry import TOOLS, TOOL_FUNCTIONS
 from engines.ai.chatbot.safety import sanitize_reply
 from engines.ai.knowledge.response_quality import deduplicate_safety_messages
@@ -356,6 +357,7 @@ class ChatEngine:
         )
         self.last_orchestration: dict = {}
         self.last_conversational_context: dict = {}
+        self.last_response_adaptation: dict = {}
         self._research_service = None
         self._knowledge_review_service = None
         self._repo_capability_service = None
@@ -511,6 +513,9 @@ class ChatEngine:
                 evidence=[f"analyzer_failure:{type(exc).__name__}"],
             )
         self.last_conversational_context = conversational_context.to_dict()
+        self.last_response_adaptation = build_adaptation_profile(
+            conversational_context, user_message=user_message, history=self.history,
+        ).to_dict()
         is_greeting  = intent.intent_type == "GREETING"
         is_small_talk = conversational_context.conversation_type == "SMALL_TALK"
         try:
@@ -531,7 +536,9 @@ class ChatEngine:
                 "error": type(exc).__name__,
             }
         system_prompt = get_system_prompt(intent)
-        system_prompt += prompt_guidance(conversational_context)
+        system_prompt += prompt_guidance(
+            conversational_context, user_message=user_message, history=self.history,
+        )
 
         # ── Voice-mode fast path: instant reply for common greetings ──────
         # Skips LLM entirely, cutting first-response latency from ~3-5s to <50ms.

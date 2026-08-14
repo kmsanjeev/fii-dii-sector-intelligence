@@ -14,7 +14,7 @@ no parallel language system or general-RAG content. Overall acceptance is
 PASS_WITH_CONDITION because the repository-wide Python suite retains its known
 network/research timeout; all LANG-001-R1-specific focused tests pass.
 
-Successors remain COMM-002 planned, GROUP-001 planned, LANG-002+ planned,
+COMM-002 is now implemented/frozen in `docs/current-state/comm-002/`. GROUP-001 and LANG-002+ remain planned,
 EMP-001 active longitudinal, and P027 reserved/unassigned.
 
 Focused R1/LANG/COMM/STD/chat suites: 39 passed. Frontend: 29 passed. Build:
