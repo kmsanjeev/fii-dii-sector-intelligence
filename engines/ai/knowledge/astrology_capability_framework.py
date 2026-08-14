@@ -1847,7 +1847,7 @@ class JyotishaCapabilityLifecycleService:
             },
             {
                 "phase": "P024",
-                "title": "Muhurta / Electional Astrology",
+                "title": "Governed Marriage / Relationship Intelligence",
                 "depends_on": ["VEDA-CAP-ADVANCED-000002"],
                 "rationale": "Event-time and electional capabilities need dedicated runtime semantics and governed sources.",
             },
