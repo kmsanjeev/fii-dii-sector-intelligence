@@ -31,7 +31,7 @@ transition metadata.
 - Existing ChatEngine remains the response owner.
 - PRED-001/002/003, EMP-001, ADM-EMP-001, trust-aware RAG, and safety remain intact.
 - P027: RESERVED / UNASSIGNED
-- COMM-001, LANG-001, COMM-002, GROUP-001, and LANG-002+: PLANNED successor work.
+- COMM-001: IMPLEMENTED / FROZEN; LANG-001, COMM-002, GROUP-001, and LANG-002+: PLANNED successor work.
 
 ### Implementation
 - Focused tests: `6 passed`; existing chat/router subset: `27 passed`.
