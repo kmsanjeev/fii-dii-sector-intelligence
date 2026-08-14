@@ -15,8 +15,9 @@ created. Focused tests cover taxonomy, language, code switching, expressions,
 pragmatics, proficiency, multi-turn adaptation, and fallback.
 
 STD-001, STD-002, RM-001, PRED-001/002/003, EMP-001, and ADM-EMP-001 remain
-inherited or compatible. P027 remains reserved/unassigned; COMM-001,
-LANG-001, COMM-002, GROUP-001, and LANG-002+ remain planned successor work.
+inherited or compatible. P027 remains reserved/unassigned; COMM-001 and
+LANG-001 are implemented/frozen successor layers; COMM-002, GROUP-001, and
+LANG-002+ remain planned.
 
 ## Acceptance Register
 

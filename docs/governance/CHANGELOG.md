@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-08-14 | VEDA-LANG-001 Wave-1 language intelligence
+
+LANG-001 adds one deterministic governed English/Hindi/Hinglish expression
+registry and resolver. It covers idioms, phrases, slang, colloquialisms,
+proverbs, internet slang, abbreviations, and professional jargon with literal
+versus contextual resolution, unknown candidates, domain-aware `MD`, and
+understanding-versus-usage controls. The seed corpus contains 550 records and
+the benchmark contains 100 cases.
+
+- LANG-001: IMPLEMENTED / FROZEN
+- STD-003, COMM-001: IMPLEMENTED / FROZEN
+- COMM-002, GROUP-001, LANG-002+: PLANNED
+- EMP-001: ACTIVE LONGITUDINAL
+- P027: RESERVED / UNASSIGNED
+
 ## 2026-08-14 | VEDA-COMM-001 pragmatic understanding engine
 
 COMM-001 operationalizes the existing STD-003 conversational analyzer without
@@ -11,7 +26,7 @@ neutral ChatEngine failure fallback. The deterministic initial benchmark is
 
 - COMM-001: IMPLEMENTED / FROZEN
 - STD-003: IMPLEMENTED / FROZEN
-- LANG-001, COMM-002, GROUP-001: PLANNED
+- LANG-001: IMPLEMENTED / FROZEN; COMM-002, GROUP-001: PLANNED
 - EMP-001: ACTIVE LONGITUDINAL
 - P027: RESERVED / UNASSIGNED
 - Commit: `676f0aca`
@@ -31,7 +46,7 @@ transition metadata.
 - Existing ChatEngine remains the response owner.
 - PRED-001/002/003, EMP-001, ADM-EMP-001, trust-aware RAG, and safety remain intact.
 - P027: RESERVED / UNASSIGNED
-- COMM-001: IMPLEMENTED / FROZEN; LANG-001, COMM-002, GROUP-001, and LANG-002+: PLANNED successor work.
+- COMM-001, LANG-001: IMPLEMENTED / FROZEN; COMM-002, GROUP-001, and LANG-002+: PLANNED successor work.
 
 ### Implementation
 - Focused tests: `6 passed`; existing chat/router subset: `27 passed`.

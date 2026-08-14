@@ -12,8 +12,9 @@ The implemented baseline is frozen through P026 plus STD-001, STD-002, STD-003, 
 - Empirical status: `VEDA-EMP-001` remains longitudinal; real eligible cases and verified outcomes remain `0`; `PRED-M4` is `INSUFFICIENT_SAMPLE`.
 - `VEDA-ADM-EMP-001` is implemented/frozen by its own acceptance record; the next operational step is to supply legitimate governed case data.
 - ADM-EMP-001 implementation: `38bd7a03`, tag `veda-adm-emp-001-case-intake-console`.
-- STD-003 is implemented/frozen by its current-state acceptance record; COMM-001 is implemented/frozen by `docs/current-state/comm-001/`; LANG-001, COMM-002, and GROUP-001 remain planned successor modules.
+- STD-003 is implemented/frozen by its current-state acceptance record; COMM-001 is implemented/frozen by `docs/current-state/comm-001/`; LANG-001 is implemented/frozen by `docs/current-state/lang-001/`; COMM-002 and GROUP-001 remain planned successor modules.
 - STD-003 implementation: `c73261e1`, tag `veda-std-003-conversational-intelligence-standard`.
 - COMM-001 implementation: `676f0aca`, tag `veda-comm-001-pragmatic-understanding-engine`.
+- LANG-001 implementation: current freeze commit and tag `veda-lang-001-wave1-language-intelligence`.
 
 This directory is the VEDA roadmap, status, and cold-start entrypoint. Do not use the historical P000/P013 roadmap files or the governance-audit P027 pathway to infer current scope.

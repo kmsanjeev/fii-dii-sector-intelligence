@@ -218,7 +218,7 @@ tracker (wake word from non-chat pages, drawer/page state sync, orb animation).
 > `docs/roadmap/veda/README.md` and
 > `docs/roadmap/veda/VEDA-RM-001-05_FUTURE_PHASE_REGISTRY.md`.
 > RM-001 freezes the implemented Veda baseline through P026 plus STD-001,
-> STD-002, STD-003, COMM-001, and PRED-001 through PRED-003; P027 is reserved and
+> STD-002, STD-003, COMM-001, LANG-001, and PRED-001 through PRED-003; P027 is reserved and
 > unassigned.
 
 As of 2026-08-04, the approved Veda upgrade path is complete through Phase 8

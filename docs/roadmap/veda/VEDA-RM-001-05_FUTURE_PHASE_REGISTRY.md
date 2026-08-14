@@ -8,7 +8,7 @@ This is the single authoritative future registry.
 | VEDA-EMP-001 | Empirical case acquisition and learning | D/C | ACTIVE_LONGITUDINAL | PRED-001–003 | Requires legitimate cases; no new store |
 | VEDA-STD-003 | Universal Conversational Intelligence, Pragmatics & Multilingual Expression Standard | B/E | IMPLEMENTED / FROZEN | STD-001, STD-002, RM-001 | Shared context foundations; see `docs/current-state/std-003/` |
 | VEDA-COMM-001 | Conversation-Type & Pragmatic Understanding Engine | E | IMPLEMENTED / FROZEN | STD-003 | Deterministic context, pragmatic intent, multi-turn stability, and ChatEngine fallback; see `docs/current-state/comm-001/` |
-| VEDA-LANG-001 | English/Hindi/Hinglish idiom, phrase & slang intelligence | E | PLANNED | STD-003 | Full governed language pack remains planned; no blind mirroring |
+| VEDA-LANG-001 | English/Hindi/Hinglish idiom, phrase & slang intelligence | E | IMPLEMENTED / FROZEN | STD-003, COMM-001 | Deterministic Wave-1 registry and contextual resolver; see `docs/current-state/lang-001/` |
 | VEDA-COMM-002 | Adaptive Conversational Response Engine | E | PLANNED | STD-003, COMM-001, LANG-001 | Response benchmark gate |
 | VEDA-GROUP-001 | Multi-Speaker / Group Conversation Intelligence | E | PLANNED | STD-003, COMM-001 | Speaker/turn provenance required |
 | VEDA-LANG-002+ | Additional language packs | E | PLANNED | LANG-001, quality gates | Language-specific authorization |

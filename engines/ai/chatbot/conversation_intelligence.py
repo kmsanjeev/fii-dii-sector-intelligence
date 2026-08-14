@@ -10,6 +10,8 @@ import re
 from dataclasses import asdict, dataclass, field
 from typing import Any, Iterable
 
+from engines.ai.chatbot.language_intelligence import resolve_expressions
+
 
 CONVERSATION_TYPES = (
     "SMALL_TALK", "HEART_TO_HEART", "PILLOW_TALK", "SWEET_TALK", "PEP_TALK",
@@ -89,6 +91,9 @@ class ConversationContext:
     state_stable: bool = True
     evidence: list[str] = field(default_factory=list)
     understood_not_mirrored: bool = False
+    expression_evidence: list[dict[str, Any]] = field(default_factory=list)
+    unknown_expressions: list[dict[str, str]] = field(default_factory=list)
+    metalinguistic_use: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -231,6 +236,9 @@ def analyze_conversation(text: str, history: list[dict[str, Any]] | None = None)
         secondary = [ranked[0][0]] if ranked[0][0] != primary else secondary
     kind_for_intent = secondary[0] if primary == "TRANSITIONING" and secondary else (primary if primary in CONVERSATION_TYPES else (previous or "UNKNOWN"))
     primary_intent, secondary_intents = _intent(value, kind_for_intent)
+    expression_result = resolve_expressions(
+        text, history=history, domain=domain, conversation_type=kind_for_intent,
+    )
     literal = value or "empty user message"
     pragmatic = "literal meaning retained; no private intent asserted"
     alternative = None
@@ -275,7 +283,8 @@ def analyze_conversation(text: str, history: list[dict[str, Any]] | None = None)
         alternative_interpretation=alternative, pragmatic_interpretation=pragmatic, ambiguity_state=ambiguity,
         response_strategy=strategy, expression_level=2 if language == "HINGLISH" else 1, confidence=confidence,
         transition_confidence=transition_confidence, transition_from=transition_from, state_stable=not bool(transition_from) or short_follow_up,
-        evidence=evidence, understood_not_mirrored=bool(slang),
+        evidence=evidence, understood_not_mirrored=bool(slang), expression_evidence=expression_result["resolved"],
+        unknown_expressions=expression_result["unknown_expressions"], metalinguistic_use=expression_result["metalinguistic_use"],
     )
 
 
@@ -286,6 +295,7 @@ def prompt_guidance(context: ConversationContext) -> str:
         f"language={context.language}; type={context.conversation_type}; intent={context.primary_intent}; tone={context.tone}; "
         f"formality={context.formality}; directness={context.directness}; strategy={context.response_strategy}; "
         f"domain={context.domain or 'unknown'}; proficiency={context.user_proficiency}; ambiguity={context.ambiguity_state}.\n"
+        f"expression_evidence={[item['record']['canonical_expression'] for item in context.expression_evidence[:4]]}; "
         f"Use a {context.response_strategy.lower().replace('_', ' ')} response. {slang_rule} Preserve safety, factual boundaries, and uncertainty."
     )
 
