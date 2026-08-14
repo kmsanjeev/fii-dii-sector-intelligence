@@ -498,10 +498,15 @@ class ChatEngine:
         is_greeting  = intent.intent_type == "GREETING"
         try:
             from engines.ai.orchestration import AgentOrchestrator
-            self.last_orchestration = AgentOrchestrator().shadow_trace(
-                user_message,
-                domain=intent.intent_type,
-            )
+            orchestration_mode = str(getattr(cfg, "VEDA_ORCHESTRATION_MODE", "SHADOW")).upper()
+            if orchestration_mode == "OFF":
+                self.last_orchestration = {"mode": "OFF", "response_path_unchanged": True}
+            else:
+                self.last_orchestration = AgentOrchestrator().shadow_trace(
+                    user_message,
+                    domain=intent.intent_type,
+                    mode=orchestration_mode,
+                )
         except Exception as exc:
             self.last_orchestration = {
                 "mode": "SHADOW",
@@ -532,6 +537,12 @@ class ChatEngine:
         rag_context = "" if is_greeting else self._get_rag_context(user_message, intent)
         if rag_context:
             system_prompt += f"\n\nRelevant intelligence context:\n{rag_context}"
+        if self.last_orchestration.get("mode") == "ASSISTED":
+            route = self.last_orchestration.get("assisted_evidence") or {}
+            system_prompt += (
+                "\n\nOrchestrator-assisted routing context (not a new knowledge source):\n"
+                f"intent={route.get('route')}; capabilities={route.get('required_capabilities', [])}."
+            )
 
         if attachment_context:
             system_prompt += (

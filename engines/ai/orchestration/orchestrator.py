@@ -97,11 +97,14 @@ class AgentOrchestrator:
             request.warnings.append("RESEARCH_REQUIRED:" + escalation.reason)
         return WorkflowResult(request=request, route=route, retrieval=retrieval, warnings=warnings, audit_ledger={"workflow_id": request.request_id, "request_id": request.request_id, "agents_invoked": route, "knowledge_retrieved": request.evidence_ids, "facts_used": [], "rules_used": [], "patterns_used": [], "prediction_created": request.mode in {"SHADOW", "BACKTEST"}, "failure_fallback": bool(warnings), "workflow_version": self.workflow_version})
 
-    def shadow_trace(self, query: str, *, domain: str | None = None) -> dict[str, Any]:
-        """Cheap Stage-A trace for normal chat; it never changes the reply."""
+    def shadow_trace(self, query: str, *, domain: str | None = None, mode: str = "SHADOW") -> dict[str, Any]:
+        """Cheap trace for normal chat; assisted mode remains response-owner safe."""
         request = self.route(query, domain=domain)
+        resolved_mode = str(mode or "SHADOW").upper()
+        if resolved_mode not in {"OFF", "SHADOW", "ASSISTED"}:
+            resolved_mode = "SHADOW"
         return {
-            "mode": "SHADOW",
+            "mode": resolved_mode,
             "request_id": request.request_id,
             "intent_type": request.intent_type,
             "domain": request.domain,
@@ -109,6 +112,10 @@ class AgentOrchestrator:
             "required_capabilities": request.required_capabilities,
             "prediction_intent": request.intent_type in {"PREDICTIVE", "TIMING"},
             "response_path_unchanged": True,
+            "assisted_evidence": {
+                "route": request.intent_type,
+                "required_capabilities": request.required_capabilities,
+            } if resolved_mode == "ASSISTED" else {},
             "workflow_version": self.workflow_version,
         }
 

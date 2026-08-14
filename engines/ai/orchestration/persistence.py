@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import sqlite3
 from dataclasses import asdict
 from datetime import date, datetime, timezone
@@ -230,6 +231,13 @@ class DurablePredictionRegistry:
     def counts(self) -> dict[str, int]:
         with self._connect() as con:
             return {"predictions": con.execute("SELECT COUNT(*) FROM pred_predictions").fetchone()[0], "outcomes": con.execute("SELECT COUNT(*) FROM pred_outcomes").fetchone()[0], "evaluations": con.execute("SELECT COUNT(*) FROM pred_evaluations").fetchone()[0]}
+
+    def record_audit_event(self, event_type: str, payload: dict[str, Any], *, event_id: str | None = None) -> str:
+        """Append an idempotent workflow/audit event to the shared ledger."""
+        identifier = event_id or f"{event_type}:{hashlib.sha256(_json(payload).encode('utf-8')).hexdigest()[:16]}"
+        with self._connect() as con:
+            con.execute("INSERT OR IGNORE INTO pred_audit_ledger VALUES (?,?,?,?)", (identifier, event_type, utc_now(), _json(payload)))
+        return identifier
 
 
 __all__ = ["CONFIDENCE_BANDS", "EVENT_TYPES", "VERIFICATION_STATES", "DurablePredictionRegistry", "false_negative_status", "score_prediction"]
