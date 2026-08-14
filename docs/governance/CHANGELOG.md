@@ -9,6 +9,7 @@ Added a deterministic, metadata-first group understanding layer over the existin
 - LANG-002+: PLANNED
 - EMP-001: ACTIVE LONGITUDINAL
 - P027: RESERVED / UNASSIGNED
+- Implementation: `925b76f2`; release tag: `veda-group-001-multi-speaker-intelligence`.
 
 ## 2026-08-15 | VEDA-COMM-002 adaptive conversational response engine
 

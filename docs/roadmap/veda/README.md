@@ -20,5 +20,6 @@ The implemented baseline is frozen through P026 plus STD-001, STD-002, STD-003, 
 - COMM-002 implementation: evidence is in `docs/current-state/comm-002/`; deterministic adaptation gates pass and Founder blind A/B validation remains pending.
 - COMM-002 implementation commit: `f2907971`; release tag: `veda-comm-002-adaptive-response-engine`.
 - GROUP-001 implementation: evidence is in `docs/current-state/group-001/`; human group evaluation remains pending.
+- GROUP-001 implementation commit: `925b76f2`; release tag: `veda-group-001-multi-speaker-intelligence`.
 
 This directory is the VEDA roadmap, status, and cold-start entrypoint. Do not use the historical P000/P013 roadmap files or the governance-audit P027 pathway to infer current scope.
