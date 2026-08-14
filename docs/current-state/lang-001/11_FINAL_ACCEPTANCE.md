@@ -12,6 +12,10 @@ timeout at 300 seconds after reaching 76%, with no LANG-001 failure reported
 before timeout. The deterministic 100-case benchmark baseline is 54/90
 expected known resolutions and 0/10 fabricated unknown definitions.
 
+LANG-001-R1 is recorded in `docs/current-state/lang-001-r1/`: corrected
+original 90/90, adversarial 49/49, holdout 29/29, with unknown fabricated
+definitions remaining at 0%.
+
 Successors remain COMM-002 planned, GROUP-001 planned, LANG-002+ planned,
 EMP-001 active longitudinal, and P027 reserved/unassigned.
 

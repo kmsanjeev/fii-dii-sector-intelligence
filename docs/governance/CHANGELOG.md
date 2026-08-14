@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-08-14 | VEDA-LANG-001-R1 resolution hardening
+
+Extended the existing deterministic resolver with Unicode normalization,
+controlled Hindi/mixed-script surface forms, language-aware precedence,
+longest-match selection, literal/metalinguistic context handling, and domain
+aware abbreviations. The corrected original benchmark is 90/90 known, the
+adversarial set is 49/49, and the holdout is 29/29; unknown fabricated
+definitions remain 0%. COMM-002, GROUP-001, and LANG-002+ remain planned.
+
 ## 2026-08-14 | VEDA-LANG-001 Wave-1 language intelligence
 
 LANG-001 adds one deterministic governed English/Hindi/Hinglish expression

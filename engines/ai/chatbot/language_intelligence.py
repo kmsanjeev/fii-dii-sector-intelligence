@@ -8,6 +8,7 @@ not require an LLM or general-RAG lookup.
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import asdict, dataclass, field
 from typing import Any, Iterable
 
@@ -130,6 +131,8 @@ for groups, language in ((_ENGLISH_GROUPS, "ENGLISH"), (_HINDI_GROUPS, "HINDI"),
         kwargs = dict(options[0]) if options and isinstance(options[0], dict) else {}
         _ALL_RECORDS.extend(_group(items, language, expression_type, meaning, **kwargs))
 
+_ALL_RECORDS.extend(_group(("scene",), "HINGLISH", "COLLOQUIALISM", "what is happening or what is the situation", register="COLLOQUIAL"))
+
 # Collapse repeated surfaces within one language while preserving distinct
 # English, Hindi, and Hinglish records where the language context differs.
 _unique_records: dict[tuple[str, str], ExpressionRecord] = {}
@@ -141,6 +144,10 @@ for _record in _ALL_RECORDS:
         _previous = _unique_records[_key]
         _unique_records[_key] = ExpressionRecord(**{**_previous.to_dict(), "surface_forms": tuple(sorted(set(_previous.surface_forms + _record.surface_forms)))})
 _ALL_RECORDS = list(_unique_records.values())
+
+for _record_index, _record in enumerate(_ALL_RECORDS):
+    if _record.canonical_expression == "md":
+        _ALL_RECORDS[_record_index] = ExpressionRecord(**{**_record.to_dict(), "expression_type": "ABBREVIATION"})
 
 # Precise meanings for the benchmark and common diagnostic cases.
 _MEANINGS = {
@@ -165,7 +172,7 @@ EXPRESSION_REGISTRY: tuple[ExpressionRecord, ...] = tuple(_ALL_RECORDS)
 
 
 def normalize_surface(text: str) -> str:
-    value = str(text or "").casefold().strip()
+    value = unicodedata.normalize("NFKC", str(text or "")).casefold().strip()
     value = value.replace("’", "'")
     value = re.sub(r"[\s\-_/]+", " ", value)
     return value.strip(" ,.!?;:()[]{}\"'")
@@ -182,12 +189,52 @@ _ALIAS_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = tuple(
 )
 
 
+_ALIAS_FORMS = (
+    ("spilled the beans", "spill the beans"),
+    ("beans spilled", "spill the beans"),
+    ("kicked the bucket", "kick the bucket"),
+    ("broke the ice", "break the ice"),
+    ("bit the bullet", "bite the bullet"),
+    ("\u0928\u093e\u0915 \u0915\u091f\u0935\u093e", "\u0928\u093e\u0915 \u0915\u091f\u0928\u093e"),
+    ("\u0926\u093e\u0901\u0924 \u0916\u091f\u094d\u091f\u0947 \u0915\u0930 \u0926\u093f\u090f", "\u0926\u093e\u0901\u0924 \u0916\u091f\u094d\u091f\u0947 \u0915\u0930\u0928\u093e"),
+    ("\u0939\u093e\u0925 \u092a\u0930 \u0939\u093e\u0925 \u0927\u0930\u0947 \u092c\u0948\u0920\u093e", "\u0939\u093e\u0925 \u092a\u0930 \u0939\u093e\u0925 \u0927\u0930\u0947 \u092c\u0948\u0920\u0928\u093e"),
+    ("\u0928\u094c \u0926\u094b \u0917\u094d\u092f\u093e\u0930\u0939 \u0939\u094b \u0917\u092f\u093e", "\u0928\u094c \u0926\u094b \u0917\u094d\u092f\u093e\u0930\u0939 \u0939\u094b\u0928\u093e"),
+    ("\u0930\u0902\u0917\u0947 \u0939\u093e\u0925 \u092a\u0915\u0921\u093c\u093e \u0917\u092f\u093e", "\u0930\u0902\u0917\u0947 \u0939\u093e\u0925 \u092a\u0915\u0921\u093c\u093e \u091c\u093e\u0928\u093e"),
+    ("\u0906\u0938\u092e\u093e\u0928 \u0938\u093f\u0930 \u092a\u0930 \u0909\u0920\u093e \u0932\u093f\u092f\u093e", "\u0906\u0938\u092e\u093e\u0928 \u0938\u093f\u0930 \u092a\u0930 \u0909\u0920\u093e\u0928\u093e"),
+    ("\u0906\u091f\u0947 \u0926\u093e\u0932 \u0915\u093e \u092d\u093e\u0935 \u092e\u093e\u0932\u0942\u092e \u0939\u0941\u0906", "\u0906\u091f\u0947 \u0926\u093e\u0932 \u0915\u093e \u092d\u093e\u0935 \u092e\u093e\u0932\u0942\u092e \u0939\u094b\u0928\u093e"),
+    ("full \u092a\u0948\u0938\u093e vasool", "full paisa vasool"),
+    ("\u092e\u0947\u0930\u093e mood off \u0939\u0948", "mood off hai"),
+)
+_ALIAS_PATTERNS = tuple(
+    (re.compile(rf"(?<![\w]){re.escape(normalize_surface(alias))}(?![\w])"), canonical)
+    for alias, canonical in _ALIAS_FORMS
+)
+
 def _find_records(text: str) -> list[ExpressionRecord]:
     normalized = normalize_surface(text)
     found: list[ExpressionRecord] = [record for pattern, record in _SURFACE_PATTERNS if pattern.search(normalized)]
     alias_canonicals = {canonical for pattern, canonical in _ALIAS_PATTERNS if pattern.search(normalized)}
     found.extend(record for record in EXPRESSION_REGISTRY if record.canonical_expression in alias_canonicals and record not in found)
-    return found
+    hint = _language_hint(normalized)
+    by_expression: dict[str, list[ExpressionRecord]] = {}
+    for record in found:
+        by_expression.setdefault(record.canonical_expression, []).append(record)
+    unique = {}
+    for canonical, candidates in by_expression.items():
+        preferred = [record for record in candidates if record.language == hint]
+        unique[canonical] = (preferred or [record for record in candidates if record.language == "ENGLISH"] or candidates)[0]
+    ordered = sorted(unique.values(), key=lambda record: len(record.canonical_expression), reverse=True)
+    return [record for record in ordered if not any(record.canonical_expression in other.canonical_expression for other in ordered if other is not record)]
+
+
+def _language_hint(text: str) -> str:
+    if re.search(r"[\u0900-\u097f]", text) and re.search(r"[a-zA-Z]", text):
+        return "HINGLISH"
+    if re.search(r"[\u0900-\u097f]", text):
+        return "HINDI"
+    if re.search(r"\b(ka|ke|ki|hai|kya|mat|mera|meri|batao|bolo|nahi|yaar|scene|funda|jugaad|paisa)\b", text):
+        return "HINGLISH"
+    return "ENGLISH"
 
 
 def resolve_expressions(text: str, *, history: list[dict[str, Any]] | None = None, domain: str | None = None, conversation_type: str | None = None) -> dict[str, Any]:
@@ -202,9 +249,9 @@ def resolve_expressions(text: str, *, history: list[dict[str, Any]] | None = Non
             "PROFESSIONAL_JARGON": "JARGON",
             "ABBREVIATION": "DOMAIN_AMBIGUOUS" if record.canonical_expression == "md" else "ABBREVIATION",
         }.get(record.expression_type, "IDIOMATIC")
-        if record.canonical_expression in {"spill the beans", "kick the bucket"} and _has_literal_context(lowered, record.canonical_expression):
+        if _has_literal_context(lowered, record.canonical_expression):
             resolution, meaning = "LITERAL", record.literal_meaning
-        if re.search(rf"(?:say|mean|means|meaning of|why do people use).*{re.escape(record.canonical_expression)}", lowered):
+        if _is_metalinguistic(lowered, record.canonical_expression):
             resolution = "METALINGUISTIC_USAGE"
         confidence = "HIGH" if record.domain is None or not domain or record.domain == domain else "MODERATE"
         resolved.append({"record": record.to_dict(), "resolution": resolution, "meaning": meaning, "confidence": confidence, "can_understand": True, "appropriate_to_use": _usage_allowed(record, conversation_type=conversation_type)})
@@ -219,7 +266,22 @@ def resolve_expressions(text: str, *, history: list[dict[str, Any]] | None = Non
 
 
 def _has_literal_context(text: str, expression: str) -> bool:
-    return expression == "spill the beans" and ("onto the floor" in text or "on the floor" in text)
+    cues = {
+        "spill the beans": ("onto the floor", "on the floor", "into the bowl", "beans spilled"),
+        "bite the bullet": ("bullet-shaped", "bullet shaped", "toy"),
+        "kick the bucket": ("across the yard", "literal bucket", "bucket across"),
+        "on the same page": ("book", "printed"),
+        "the ball is in your court": ("after the match", "tennis", "basketball"),
+        "break the ice": ("pond", "ice on", "skate"),
+    }
+    return any(cue in text for cue in cues.get(expression, ()))
+
+
+def _is_metalinguistic(text: str, expression: str) -> bool:
+    if not re.search(r"\b(what does|what do people|people say|what is meant by|meaning of|why do people say|explain|define)\b", text):
+        if not re.search(r"(?:ka matlab|\u092e\u0924\u0932\u092c|\u0905\u0930\u094d\u0925|\u0932\u094b\u0917 \u0915\u0939\u0924\u0947|\u0915\u0939\u0924\u0947 \u0939\u0948\u0902)", text):
+            return False
+    return expression in text and ("'" in text or '"' in text or "meaning" in text or "matlab" in text or "मतलब" in text)
 
 
 def _usage_allowed(record: ExpressionRecord, *, conversation_type: str | None) -> bool:

@@ -16,5 +16,6 @@ The implemented baseline is frozen through P026 plus STD-001, STD-002, STD-003, 
 - STD-003 implementation: `c73261e1`, tag `veda-std-003-conversational-intelligence-standard`.
 - COMM-001 implementation: `676f0aca`, tag `veda-comm-001-pragmatic-understanding-engine`.
 - LANG-001 implementation: `9d15dcb8` with tag `veda-lang-001-wave1-language-intelligence`.
+- LANG-001-R1 resolution hardening: evidence is in `docs/current-state/lang-001-r1/`; COMM-002 remains not started.
 
 This directory is the VEDA roadmap, status, and cold-start entrypoint. Do not use the historical P000/P013 roadmap files or the governance-audit P027 pathway to infer current scope.
