@@ -21,6 +21,7 @@ from .weighting import WeightProfile
 from .research import DocumentCaseIngestionRunner, ResearchEscalationDecision, decide_research_escalation
 from .validation import CombinationRecommendation, HistoricalPredictionHarness, audit_leakage, combination_recommendation, human_evaluation_rubric, make_prospective
 from .cases import CaseRecord, CaseRegistry, assess_quality, normalize_case
+from .case_intake import CaseIntakeService
 
 __all__ = [
     "AgentOrchestrator",
@@ -60,4 +61,5 @@ __all__ = [
     "CaseRegistry",
     "assess_quality",
     "normalize_case",
+    "CaseIntakeService",
 ]

@@ -10,6 +10,6 @@ The implemented baseline is frozen through P026 plus STD-001, STD-002, and PRED-
 - RM-001 tag: `veda-rm-001-roadmap-rebaseline`
 - Predictive maturity: `PRED-M3_OPERATIONAL_PLUS`
 - Empirical status: `VEDA-EMP-001` remains longitudinal; real eligible cases and verified outcomes remain `0`; `PRED-M4` is `INSUFFICIENT_SAMPLE`.
-- Recommended next candidate: `VEDA-ADM-EMP-001`, still deferred and not authorized.
+- `VEDA-ADM-EMP-001` is implemented/frozen by its own acceptance record; the next operational step is to supply legitimate governed case data.
 
 This directory is the VEDA roadmap, status, and cold-start entrypoint. Do not use the historical P000/P013 roadmap files or the governance-audit P027 pathway to infer current scope.

@@ -12,7 +12,7 @@ This is the single authoritative future registry.
 | VEDA-COMM-002 | Adaptive Conversational Response Engine | E | PLANNED | STD-003, COMM-001, LANG-001 | Response benchmark gate |
 | VEDA-GROUP-001 | Multi-Speaker / Group Conversation Intelligence | E | PLANNED | STD-003, COMM-001 | Speaker/turn provenance required |
 | VEDA-LANG-002+ | Additional language packs | E | PLANNED | LANG-001, quality gates | Language-specific authorization |
-| VEDA-ADM-EMP-001 | Empirical Case Intake & Bulk Import Console | F/D | DEFERRED / CAPTURED / NOT_IMPLEMENTED | EMP-001, shared case registry | Preview → validate → accept → ingest |
+| VEDA-ADM-EMP-001 | Empirical Case Intake & Bulk Import Console | F/D | IMPLEMENTED / FROZEN | EMP-001, shared case registry | Preview → validate → accept → ingest; see `docs/current-state/adm-emp-001/` |
 
 Statuses are controlled vocabulary: IMPLEMENTED, ACTIVE, PLANNED, DEFERRED, RESERVED, BLOCKED, SUPERSEDED, RETIRED.
 

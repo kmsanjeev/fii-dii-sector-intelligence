@@ -4,4 +4,4 @@ RM-001 establishes the authoritative roadmap after reconciling historical phase 
 
 Decision: retain sequential Jyotisha continuity for compatibility, but reserve P027 without assigning an arbitrary domain. Future standards, empirical operations, and conversational work use explicit track IDs. No capability was implemented in RM-001.
 
-Recommended next candidate: `VEDA-ADM-EMP-001`, because empirical case input is the current bottleneck. It remains deferred and must be separately authorized.
+`VEDA-ADM-EMP-001` is now implemented/frozen because empirical case input is the current bottleneck. The next operational step is to populate it with legitimate governed data; no new phase is started by that activity.

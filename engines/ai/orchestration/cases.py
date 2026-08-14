@@ -31,9 +31,14 @@ class CaseRecord:
     case_id: str
     subject_id: str
     source_id: str
+    subject_label: str = ""
+    source_type: str = ""
     source_title: str = ""
     author: str = ""
     publication: str = ""
+    source_page: str = ""
+    original_case_source: str = ""
+    independent_verification: str = ""
     passage_reference: str = "REFERENCE_NOT_VERIFIED"
     domain: str = "GENERAL"
     case_class: str = "UNVERIFIED"
@@ -51,6 +56,7 @@ class CaseRecord:
     independent_source_family: str | None = None
     quality: str = "UNVERIFIED"
     leakage_status: str = "UNREVIEWED"
+    notes: str = ""
     ingested_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"))
 
     def to_dict(self) -> dict[str, Any]:
@@ -77,9 +83,14 @@ def normalize_case(payload: dict[str, Any], *, source_path: str | Path | None = 
         case_id=str(payload.get("case_id") or case_id_for(subject_id=subject_id, source_id=source_id, event=event)),
         subject_id=subject_id,
         source_id=source_id,
+        subject_label=str(payload.get("subject_label") or payload.get("subject_name") or ""),
+        source_type=str(payload.get("source_type") or ""),
         source_title=str(payload.get("source_title") or payload.get("title") or ""),
         author=str(payload.get("author") or payload.get("author_attributed") or ""),
         publication=str(payload.get("publication") or payload.get("publisher") or ""),
+        source_page=str(payload.get("source_page") or ""),
+        original_case_source=str(payload.get("original_case_source") or source_id),
+        independent_verification=str(payload.get("independent_verification") or ""),
         passage_reference=str(payload.get("passage_reference") or payload.get("citation_label") or "REFERENCE_NOT_VERIFIED"),
         domain=str(payload.get("domain") or "GENERAL").upper(),
         case_class=case_class,
@@ -97,6 +108,7 @@ def normalize_case(payload: dict[str, Any], *, source_path: str | Path | None = 
         independent_source_family=payload.get("independent_source_family") or source_id,
         quality=str(payload.get("quality") or "UNVERIFIED"),
         leakage_status=str(payload.get("leakage_status") or "UNREVIEWED"),
+        notes=str(payload.get("notes") or ""),
     )
 
 
