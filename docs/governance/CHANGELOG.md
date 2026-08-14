@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## 2026-08-14 | VEDA-RM-001 roadmap rebaseline and future programme registry
+
+### Context
+RM-001 established the authoritative VEDA roadmap after reconciling the
+implemented baseline through P026, STD-001/002, and PRED-001/002/003 with
+historical roadmap references. P027 remains reserved and unassigned.
+
+### Governance Updates
+- Added the authoritative roadmap and future registry under `docs/roadmap/veda/`.
+- Classified historical P000/P013 roadmap material and the governance-audit P027 pathway without deleting archival evidence.
+- Captured STD-003, ADM-EMP-001, and EMP-001 as future/longitudinal work without implementing them.
+- Synchronized the project-state pointer and VEDA cold-start entrypoint.
+
+### Commit & Tag
+- Commit: `1fa05f35` — `docs(veda): rebaseline roadmap and future programme registry`
+- Tag: `veda-rm-001-roadmap-rebaseline`
+
 ## 2026-08-14 | VEDA-P023 education / learning intelligence synthesis foundation
 
 ### Context

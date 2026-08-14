@@ -210,7 +210,15 @@ tracker (wake word from non-chat pages, drawer/page state sync, orb animation).
 
 ---
 
-# VEDA WORKSTREAM STATUS (PHASE 8 IMPLEMENTATION COMPLETE)
+# VEDA WORKSTREAM STATUS (HISTORICAL PHASE 8 RECORD)
+
+> This section preserves the historical 2026-08-04 Veda platform rollout record.
+> It is not the current VEDA roadmap. The authoritative current roadmap and
+> future phase registry are maintained at:
+> `docs/roadmap/veda/README.md` and
+> `docs/roadmap/veda/VEDA-RM-001-05_FUTURE_PHASE_REGISTRY.md`.
+> RM-001 freezes the implemented Veda baseline through P026 plus STD-001,
+> STD-002, and PRED-001 through PRED-003; P027 is reserved and unassigned.
 
 As of 2026-08-04, the approved Veda upgrade path is complete through Phase 8
 for implementation, automated verification, and rollout documentation:
