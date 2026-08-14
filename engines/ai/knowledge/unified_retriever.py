@@ -7,6 +7,7 @@ reviewed-memory, MIT capability, and platform RAG blocks inside chat.
 from __future__ import annotations
 
 from typing import Any, Optional
+from enum import Enum
 
 from engines.common.logger import get_logger
 
@@ -65,11 +66,33 @@ _REPO_TERMS = {"repo", "mit", "capability", "skill", "workflow", "prompt", "arti
 _FRESHNESS_TERMS = {"today", "current", "latest", "now", "recent", "fresh"}
 
 
+class RetrievalMode(str, Enum):
+    PRODUCTION_SAFE = "PRODUCTION_SAFE"
+    RESEARCH = "RESEARCH"
+    SHADOW = "SHADOW"
+    BACKTEST = "BACKTEST"
+    ADMIN_AUDIT = "ADMIN_AUDIT"
+
+
+_RESEARCH_ZONES = {"RESEARCH_CANDIDATE", "EXPERIMENTAL", "RESEARCH_ARCHIVE", "ML_EVIDENCE"}
+_ALL_TRUST_ZONES = {
+    "APPROVED_CORE", "VALIDATED_KNOWLEDGE", "RESEARCH_CANDIDATE",
+    "EXPERIMENTAL", "RESEARCH_ARCHIVE", "ML_EVIDENCE", "PLATFORM_EVIDENCE",
+}
+
+
 class UnifiedHybridRetriever:
     def __init__(self, top_k: int = DEFAULT_TOP_K):
         self.top_k = top_k
 
-    def retrieve(self, query: str, domain: Optional[str] = None) -> list[dict[str, Any]]:
+    def retrieve(
+        self,
+        query: str,
+        domain: Optional[str] = None,
+        *,
+        mode: RetrievalMode | str | None = None,
+    ) -> list[dict[str, Any]]:
+        mode = _mode_for_query(query) if mode is None else RetrievalMode(mode)
         if domain is None:
             domain = _detect_domain(query)
 
@@ -79,7 +102,7 @@ class UnifiedHybridRetriever:
         approved_core_results = _approved_core_query(query, top_k=self.top_k * 3)
         fused = _rrf_fuse(bm25_results, faiss_results, k=RRF_K)
         fused = _merge_ranked_results(fused, approved_core_results, rank_field="approved_core_rank", k=RRF_K)
-        rescored = _apply_post_rank(fused, query=query, requested_domain=domain)
+        rescored = _apply_post_rank(fused, query=query, requested_domain=domain, mode=mode)
         filtered = [
             doc
             for doc in rescored
@@ -88,19 +111,33 @@ class UnifiedHybridRetriever:
                 and str(doc.get("version_state") or "").upper() in {"SUPERSEDED", "DEPRECATED", "WITHDRAWN"}
             )
         ]
-        return [_decorate_doc(doc) for doc in filtered[: self.top_k]]
+        return [_decorate_doc(doc) for doc in _filter_by_mode(filtered, mode)[: self.top_k]]
 
-    def build_context_bundle(self, query: str, *, top_k: int = 4) -> dict[str, Any]:
-        results = self.retrieve(query)[:top_k]
+    def build_context_bundle(
+        self,
+        query: str,
+        *,
+        top_k: int = 4,
+        mode: RetrievalMode | str | None = None,
+    ) -> dict[str, Any]:
+        mode = RetrievalMode(mode) if mode else _mode_for_query(query)
+        results = self.retrieve(query, mode=mode)[:top_k]
         summary = _summarize_results(results)
         return {
             "context": _render_context(results, summary=summary),
             "summary": summary,
             "results": results,
+            "retrieval_mode": mode.value,
+            "knowledge_usage_trace": {
+                "available_knowledge": "unified corpus inputs",
+                "retrieved_knowledge_count": len(results),
+                "filtered_knowledge": "trust zones excluded by retrieval mode",
+                "selected_trust_zones": sorted({str(item.get("trust_zone") or "") for item in results}),
+            },
         }
 
-    def build_context(self, query: str, *, top_k: int = 4) -> str:
-        return str(self.build_context_bundle(query, top_k=top_k).get("context") or "")
+    def build_context(self, query: str, *, top_k: int = 4, mode: RetrievalMode | str | None = None) -> str:
+        return str(self.build_context_bundle(query, top_k=top_k, mode=mode).get("context") or "")
 
 
 def _rrf_fuse(list_a: list[dict[str, Any]], list_b: list[dict[str, Any]], k: int = RRF_K) -> list[dict[str, Any]]:
@@ -194,7 +231,7 @@ def _merge_ranked_results(
     return ordered
 
 
-def _apply_post_rank(results: list[dict[str, Any]], *, query: str, requested_domain: str) -> list[dict[str, Any]]:
+def _apply_post_rank(results: list[dict[str, Any]], *, query: str, requested_domain: str, mode: RetrievalMode) -> list[dict[str, Any]]:
     q = (query or "").lower()
     wants_memory = any(term in q for term in _FILE_MEMORY_TERMS)
     wants_repo = any(term in q for term in _REPO_TERMS)
@@ -206,6 +243,7 @@ def _apply_post_rank(results: list[dict[str, Any]], *, query: str, requested_dom
         domain = str(doc.get("domain") or "")
         source_type = str(doc.get("source_type") or "")
         knowledge_class = str(doc.get("knowledge_class") or "")
+        trust_zone = _trust_zone(doc)
         if requested_domain != "ALL" and domain == requested_domain:
             score += 0.010
         if wants_memory and source_type in {"user_reviewed", "attachment_chunk"}:
@@ -222,6 +260,13 @@ def _apply_post_rank(results: list[dict[str, Any]], *, query: str, requested_dom
             score += min(float((doc.get("authority") or {}).get("domain_confidence") or 0.0), 1.0) * 0.012
         if source_type == "approved_core" and str(doc.get("version_state") or "").upper() != "CURRENT":
             score -= 0.25
+        if requested_domain == "ASTROLOGY" and trust_zone == "PLATFORM_EVIDENCE":
+            score -= 0.015
+        if trust_zone == "RESEARCH_ARCHIVE":
+            score -= 0.006
+        if mode in {RetrievalMode.RESEARCH, RetrievalMode.SHADOW, RetrievalMode.BACKTEST, RetrievalMode.ADMIN_AUDIT}:
+            if trust_zone in {"RESEARCH_CANDIDATE", "EXPERIMENTAL", "VALIDATED_KNOWLEDGE"}:
+                score += 0.006
         enriched = dict(doc)
         enriched["combined_score"] = round(score, 6)
         rescored.append(enriched)
@@ -237,6 +282,37 @@ def _apply_post_rank(results: list[dict[str, Any]], *, query: str, requested_dom
     for rank, doc in enumerate(rescored, start=1):
         doc["rank"] = rank
     return rescored
+
+
+def _trust_zone(doc: dict[str, Any]) -> str:
+    explicit = str(doc.get("trust_zone") or doc.get("knowledge_zone") or "").strip().upper()
+    if explicit in _ALL_TRUST_ZONES:
+        return explicit
+    return {
+        "APPROVED_CORE": "APPROVED_CORE",
+        "ML_PREDICTION": "ML_EVIDENCE",
+        "LOCAL_PLATFORM_EVIDENCE": "PLATFORM_EVIDENCE",
+        "REVIEWED_INTERNAL": "VALIDATED_KNOWLEDGE",
+    }.get(str(doc.get("knowledge_class") or "").upper(), "PLATFORM_EVIDENCE")
+
+
+def _filter_by_mode(results: list[dict[str, Any]], mode: RetrievalMode) -> list[dict[str, Any]]:
+    if mode == RetrievalMode.PRODUCTION_SAFE:
+        allowed = {"APPROVED_CORE", "VALIDATED_KNOWLEDGE", "PLATFORM_EVIDENCE", "ML_EVIDENCE"}
+    elif mode == RetrievalMode.ADMIN_AUDIT:
+        allowed = _ALL_TRUST_ZONES
+    else:
+        allowed = {"APPROVED_CORE", "VALIDATED_KNOWLEDGE", *_RESEARCH_ZONES, "PLATFORM_EVIDENCE"}
+    return [doc for doc in results if _trust_zone(doc) in allowed]
+
+
+def _mode_for_query(query: str) -> RetrievalMode:
+    lowered = (query or "").lower()
+    if any(term in lowered for term in ("research", "experimental", "shadow", "backtest", "candidate", "archive", "method variant")):
+        return RetrievalMode.RESEARCH
+    if any(term in lowered for term in ("admin audit", "governance audit", "all trust zones")):
+        return RetrievalMode.ADMIN_AUDIT
+    return RetrievalMode.PRODUCTION_SAFE
 
 
 def _detect_domain(query: str) -> str:
@@ -315,6 +391,7 @@ def _decorate_doc(doc: dict[str, Any]) -> dict[str, Any]:
     source_type = str(enriched.get("source_type") or "")
     evidence_kind = str(enriched.get("evidence_kind") or _fallback_evidence_kind(source_type))
     enriched["evidence_kind"] = evidence_kind
+    enriched["trust_zone"] = _trust_zone(enriched)
     if not str(enriched.get("knowledge_class") or "").strip():
         if source_type == "approved_core":
             enriched["knowledge_class"] = "APPROVED_CORE"
@@ -529,6 +606,10 @@ def _render_context(results: list[dict[str, Any]], *, summary: dict[str, Any] | 
 
     sections = [
         ("APPROVED CORE KNOWLEDGE", [item for item in results if str(_decorate_doc(item).get("knowledge_class") or "") == "APPROVED_CORE"]),
+        ("VALIDATED KNOWLEDGE", [item for item in results if _decorate_doc(item).get("trust_zone") == "VALIDATED_KNOWLEDGE"]),
+        ("RESEARCH CANDIDATES", [item for item in results if _decorate_doc(item).get("trust_zone") == "RESEARCH_CANDIDATE"]),
+        ("EXPERIMENTAL KNOWLEDGE", [item for item in results if _decorate_doc(item).get("trust_zone") == "EXPERIMENTAL"]),
+        ("RESEARCH ARCHIVE", [item for item in results if _decorate_doc(item).get("trust_zone") == "RESEARCH_ARCHIVE"]),
         ("KNOWN CONFLICTS", []),
         ("LOCAL PLATFORM EVIDENCE", [item for item in results if str(_decorate_doc(item).get("source_type") or "") == "platform_intelligence" and str(_decorate_doc(item).get("evidence_kind") or "") != "predictive_ml_signal"]),
         ("ML / PREDICTIVE SIGNALS", [item for item in results if str(_decorate_doc(item).get("evidence_kind") or "") == "predictive_ml_signal"]),
@@ -609,6 +690,7 @@ def _summarize_results(results: list[dict[str, Any]]) -> dict[str, Any]:
         "evidence_kinds": [],
         "knowledge_classes": [],
         "approved_core_count": 0,
+        "trust_zone_counts": {},
         "reviewed_internal_count": 0,
         "local_platform_count": 0,
         "legacy_unsourced_count": 0,
@@ -635,6 +717,8 @@ def _summarize_results(results: list[dict[str, Any]]) -> dict[str, Any]:
         if evidence_kind not in kinds:
             kinds.append(evidence_kind)
         knowledge_class = str(doc.get("knowledge_class") or "").strip()
+        trust_zone = _trust_zone(doc)
+        summary["trust_zone_counts"][trust_zone] = summary["trust_zone_counts"].get(trust_zone, 0) + 1
         if knowledge_class and knowledge_class not in knowledge_classes:
             knowledge_classes.append(knowledge_class)
         if knowledge_class == "APPROVED_CORE":

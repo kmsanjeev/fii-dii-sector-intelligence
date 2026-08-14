@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import hashlib
 from typing import Any
 
 from engines.common import config as cfg
@@ -145,6 +146,7 @@ class KnowledgeEvidenceRecord:
     entity_keys: KnowledgeEntityKeys = field(default_factory=KnowledgeEntityKeys)
     tags: list[str] = field(default_factory=list)
     knowledge_class: str = "LOCAL_PLATFORM_EVIDENCE"
+    trust_zone: str = "PLATFORM_EVIDENCE"
     confidence: float | None = None
     approval_state: str = "unknown"
     evidence_kind: str = "descriptive_knowledge"
@@ -193,6 +195,7 @@ class KnowledgeEvidenceRecord:
             "summary": self.summary,
             "tags": list(self.tags),
             "knowledge_class": self.knowledge_class,
+            "trust_zone": self.trust_zone,
             "saved_at": self.saved_at,
             "effective_date": self.effective_date,
             "freshness_class": self.freshness_class,
@@ -291,7 +294,86 @@ def normalize_knowledge_record(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
         return from_repo_capability(doc)
     if memory_type == "reviewed_note" or domain == "USER_KNOWLEDGE":
         return from_reviewed_memory(doc)
+    if str(doc.get("trust_zone") or doc.get("knowledge_zone") or "").strip():
+        return from_research_tier(doc)
     return from_platform_doc(doc)
+
+
+def _trust_zone_for_knowledge_class(knowledge_class: str) -> str:
+    return {
+        "APPROVED_CORE": "APPROVED_CORE",
+        "VALIDATED_KNOWLEDGE": "VALIDATED_KNOWLEDGE",
+        "RESEARCH_CANDIDATE": "RESEARCH_CANDIDATE",
+        "EXPERIMENTAL": "EXPERIMENTAL",
+        "RESEARCH_ARCHIVE": "RESEARCH_ARCHIVE",
+        "ML_EVIDENCE": "ML_EVIDENCE",
+        "ML_PREDICTION": "ML_EVIDENCE",
+        "PLATFORM_EVIDENCE": "PLATFORM_EVIDENCE",
+        "LOCAL_PLATFORM_EVIDENCE": "PLATFORM_EVIDENCE",
+        "REVIEWED_INTERNAL": "VALIDATED_KNOWLEDGE",
+    }.get(knowledge_class, knowledge_class or "PLATFORM_EVIDENCE")
+
+
+def from_research_tier(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
+    meta = _coerce_meta(doc)
+    zone = str(doc.get("trust_zone") or doc.get("knowledge_zone") or "RESEARCH_CANDIDATE").upper()
+    zone = zone if zone in {
+        "APPROVED_CORE", "VALIDATED_KNOWLEDGE", "RESEARCH_CANDIDATE",
+        "EXPERIMENTAL", "RESEARCH_ARCHIVE", "ML_EVIDENCE", "PLATFORM_EVIDENCE",
+    } else "RESEARCH_CANDIDATE"
+    domain = str(doc.get("domain") or meta.get("domain") or "RESEARCH").upper()
+    title = str(doc.get("entity") or doc.get("title") or meta.get("title") or "Research knowledge")
+    text = str(doc.get("text") or doc.get("claim") or meta.get("claim_text") or "").strip()
+    summary = _compact_text(doc.get("summary") or text, cfg.VEDA_KNOWLEDGE_MAX_SUMMARY_CHARS)
+    source_ids = list(doc.get("source_ids") or meta.get("source_ids") or ([meta["source_id"]] if meta.get("source_id") else []))
+    claim_ids = list(doc.get("claim_ids") or meta.get("claim_ids") or ([meta["claim_id"]] if meta.get("claim_id") else []))
+    passage_ids = list(doc.get("passage_ids") or meta.get("passage_ids") or ([meta["passage_id"]] if meta.get("passage_id") else []))
+    conflict_ids = list(doc.get("conflict_ids") or meta.get("conflict_ids") or [])
+    source_class = str(doc.get("source_class") or meta.get("source_class") or "RESEARCH_RECORD")
+    validation_state = str(doc.get("validation_state") or doc.get("validation_status") or meta.get("validation_status") or "RESEARCH_REQUIRED")
+    provenance = KnowledgeProvenance(
+        source_kind="research_platform",
+        source_label=f"{zone.lower()}:{source_class.lower()}",
+        storage_key=str(doc.get("doc_id") or doc.get("candidate_id") or ""),
+        source_title=title,
+        repo_label="VEDA research platform",
+        details={
+            "trust_zone": zone,
+            "source_class": source_class,
+            "validation_state": validation_state,
+            "method_variant": doc.get("method_variant") or meta.get("method_variant"),
+            "supersession_state": doc.get("supersession_state") or "CURRENT",
+        },
+    )
+    return KnowledgeEvidenceRecord(
+        doc_id=str(doc.get("doc_id") or doc.get("candidate_id") or f"research_{hashlib.sha256(text.encode('utf-8')).hexdigest()[:16]}"),
+        source_type="research_tier",
+        domain=domain,
+        entity=title,
+        text=text,
+        summary=summary,
+        tags=_unique_tags(doc.get("tags"), domain, zone, source_class, meta.get("topic_key")),
+        knowledge_class=zone,
+        trust_zone=zone,
+        confidence=_as_float(doc.get("confidence") if not isinstance(doc.get("confidence"), dict) else (doc.get("confidence") or {}).get("domain_confidence")),
+        approval_state=str(doc.get("approval_status") or "RESEARCH_ONLY"),
+        evidence_kind="experimental_knowledge" if zone == "EXPERIMENTAL" else "research_knowledge",
+        claim_ids=claim_ids,
+        passage_ids=passage_ids,
+        source_ids=source_ids,
+        conflict_ids=conflict_ids,
+        citations=list(doc.get("citations") or []),
+        authority={"source_class": source_class, "validation_state": validation_state},
+        version=str(doc.get("version") or "1.0.0"),
+        version_state=str(doc.get("version_state") or "CURRENT"),
+        high_stakes=bool(doc.get("high_stakes") or str(doc.get("safety_class") or "").upper() in {"HIGH", "HIGH_STAKES", "CRITICAL"}),
+        provenance=provenance,
+        freshness=KnowledgeFreshness(
+            classification="research_tier",
+            saved_at=str(doc.get("updated_at") or doc.get("created_at") or "") or None,
+        ),
+        reliability_note=f"{zone} knowledge; validation={validation_state}; not Approved Core.",
+    )
 
 
 def from_platform_doc(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
@@ -343,6 +425,7 @@ def from_platform_doc(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
         summary=summary,
         tags=tags,
         knowledge_class="ML_PREDICTION" if predictive else "LOCAL_PLATFORM_EVIDENCE",
+        trust_zone="ML_EVIDENCE" if predictive else "PLATFORM_EVIDENCE",
         approval_state="system_generated",
         evidence_kind=evidence_kind,
         provenance=provenance,
@@ -419,6 +502,7 @@ def from_reviewed_memory(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
         summary=summary,
         tags=_unique_tags(meta.get("tags"), intent, "reviewed_memory"),
         knowledge_class="REVIEWED_INTERNAL",
+        trust_zone="VALIDATED_KNOWLEDGE",
         approval_state="user_approved",
         evidence_kind="approved_memory",
         provenance=provenance,
@@ -509,6 +593,7 @@ def from_approved_core(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
         summary=summary,
         tags=_unique_tags(meta.get("tags"), intent, "approved_core"),
         knowledge_class="APPROVED_CORE",
+        trust_zone="APPROVED_CORE",
         approval_state="admin_promoted_core",
         evidence_kind="approved_core_knowledge",
         claim_ids=claim_ids,
@@ -572,6 +657,7 @@ def from_attachment_chunk(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
         summary=summary,
         tags=_unique_tags(meta.get("tags"), intent, attachment_name, "attachment_memory"),
         knowledge_class="REVIEWED_INTERNAL",
+        trust_zone="VALIDATED_KNOWLEDGE",
         approval_state="user_approved",
         evidence_kind="attachment_memory",
         provenance=provenance,
@@ -619,6 +705,7 @@ def from_repo_capability(doc: dict[str, Any]) -> KnowledgeEvidenceRecord:
         summary=summary,
         tags=_unique_tags(meta.get("tags"), repo_label, "mit_repo_capability"),
         knowledge_class="REVIEWED_INTERNAL",
+        trust_zone="VALIDATED_KNOWLEDGE",
         approval_state="user_approved",
         evidence_kind="mit_repo_capability",
         provenance=provenance,

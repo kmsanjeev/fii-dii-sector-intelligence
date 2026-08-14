@@ -1,20 +1,28 @@
 {
   "approved_core_count": 17,
   "artifact_version": "VEDA-RAG-GEN-001-R",
-  "authoritative_input_hash": "e15c5130a086ac1c2ad9dc896e51fd67828d3f587806660009b40b4ba7a606b7",
+  "authoritative_input_hash": "9c8f022ba097aac312971cbf757d5239f2cd31fafdc79d3e318f20323958c037",
   "contract_version": "2026-08-04",
-  "corpus_content_hash": "9754fc5e948405c4510f2340170e47bf4c433f1ac3b83020fe9aa3b02b0a882c",
-  "document_count": 1048,
+  "corpus_content_hash": "8f19860f151ea2d644d526f6ade1a3cf581263e23785c25cc35ab3907c9ea065",
+  "document_count": 1142,
   "domain_counts": {
     "ASTROLOGY": 15,
+    "CAREER": 2,
     "CORPORATE": 200,
+    "DASHA": 5,
     "DEAL": 298,
+    "EDUCATION": 2,
+    "HEALTH": 29,
     "MARKET": 1,
+    "MARRIAGE": 25,
     "MIT_REPO_CAPABILITY": 1,
+    "PROGENY": 26,
     "RESEARCH": 1,
     "SECTOR": 30,
     "STOCK": 500,
-    "VEDA-DOMAIN-SYNTHETIC": 2
+    "VEDA-DOMAIN-SYNTHETIC": 2,
+    "WEALTH": 4,
+    "YOGA": 1
   },
   "duplicate_group_count": 0,
   "duplicate_record_count": 0,
@@ -23,6 +31,7 @@
     "approved_core_docs": 17,
     "mit_capability_docs": 1,
     "platform_docs": 1028,
+    "research_tier_docs": 94,
     "reviewed_memory_docs": 2
   },
   "missing_critical_field_count": 0,
@@ -31,7 +40,17 @@
     "approved_core": 17,
     "mit_repo_capability": 1,
     "platform_intelligence": 1028,
+    "research_tier": 94,
     "user_reviewed": 2
   },
-  "total_records": 1048
+  "total_records": 1142,
+  "trust_zone_counts": {
+    "APPROVED_CORE": 17,
+    "EXPERIMENTAL": 7,
+    "ML_EVIDENCE": 500,
+    "PLATFORM_EVIDENCE": 528,
+    "RESEARCH_ARCHIVE": 1,
+    "RESEARCH_CANDIDATE": 86,
+    "VALIDATED_KNOWLEDGE": 3
+  }
 }

@@ -29,6 +29,7 @@ from engines.common.logger import get_logger
 from engines.ai.chatbot.intent_router import detect_intent, get_system_prompt
 from engines.ai.chatbot.tools.tool_registry import TOOLS, TOOL_FUNCTIONS
 from engines.ai.chatbot.safety import sanitize_reply
+from engines.ai.knowledge.response_quality import deduplicate_safety_messages
 from engines.ai.knowledge.retrieval_rollout import (
     append_shadow_audit,
     build_legacy_bundle as build_legacy_retrieval_bundle,
@@ -759,7 +760,8 @@ class ChatEngine:
                 max_tokens=effective_max_tokens,
                 messages=final_messages,
             )
-            return {"status": "ok", "reply": final.choices[0].message.content or ""}
+            reply = deduplicate_safety_messages(final.choices[0].message.content or "")
+            return {"status": "ok", "reply": reply}
         except Exception as e:
             if _is_rate_limit(e):
                 return {"status": "rate_limited"}

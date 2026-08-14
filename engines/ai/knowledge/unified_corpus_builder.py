@@ -27,6 +27,10 @@ class UnifiedCorpusBuilder:
         manifest_path: Path | None = None,
         metadata_path: Path | None = None,
     ):
+        self._enable_research_tier = all(
+            value is None
+            for value in (platform_docs_path, core_docs_path, reviewed_docs_path, capability_docs_path)
+        )
         self._platform_docs_path = Path(platform_docs_path or (cfg.INTELLIGENCE_DIR / "rag_knowledge" / "documents.jsonl"))
         self._core_docs_path = Path(core_docs_path or cfg.VEDA_APPROVED_CORE_KNOWLEDGE_DOCS)
         self._reviewed_docs_path = Path(reviewed_docs_path or cfg.VEDA_APPROVED_KNOWLEDGE_DOCS)
@@ -59,6 +63,11 @@ class UnifiedCorpusBuilder:
             for doc in raw_docs:
                 records.append(normalize_knowledge_record(doc))
 
+        research_docs = self._load_research_tier_docs() if self._enable_research_tier else []
+        input_counts["research_tier_docs"] = len(research_docs)
+        for doc in research_docs:
+            records.append(normalize_knowledge_record(doc))
+
         records.sort(key=lambda record: (record.doc_id, record.source_type))
 
         source_counts = self._count_by(records, "source_type")
@@ -84,7 +93,8 @@ class UnifiedCorpusBuilder:
             "contract_version": CONTRACT_VERSION,
             "total_records": len(records),
             "document_count": len(records),
-            "approved_core_count": sum(record.source_type == "approved_core" for record in records),
+            "approved_core_count": sum(record.trust_zone == "APPROVED_CORE" for record in records),
+            "trust_zone_counts": self._count_by(records, "trust_zone"),
             "authoritative_input_hash": authoritative_input_hash,
             "corpus_content_hash": corpus_content_hash,
             "input_counts": input_counts,
@@ -106,14 +116,24 @@ class UnifiedCorpusBuilder:
             "manifest": manifest_written,
         }
         logger.info(
-            "[UnifiedCorpus] Built %s records from platform=%s core=%s reviewed=%s capability=%s",
+            "[UnifiedCorpus] Built %s records from platform=%s core=%s reviewed=%s capability=%s research=%s",
             len(records),
             input_counts["platform_docs"],
             input_counts["approved_core_docs"],
             input_counts["reviewed_memory_docs"],
             input_counts["mit_capability_docs"],
+            input_counts["research_tier_docs"],
         )
         return summary
+
+    def _load_research_tier_docs(self) -> list[dict[str, Any]]:
+        try:
+            from engines.ai.knowledge.research_tier_corpus import load_research_tier_documents
+
+            return load_research_tier_documents(Path(__file__).resolve().parents[3])
+        except Exception as exc:
+            logger.warning("[UnifiedCorpus] Research-tier adapter unavailable: %s", exc)
+            return []
 
     def _load_jsonl(self, path: Path) -> list[dict[str, Any]]:
         if not path.exists():
