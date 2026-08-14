@@ -9,6 +9,7 @@ Extended the existing ChatEngine with a deterministic, bounded response-adaptati
 - GROUP-001, LANG-002+: PLANNED
 - EMP-001: ACTIVE LONGITUDINAL
 - P027: RESERVED / UNASSIGNED
+- Implementation: `f2907971`; release tag: `veda-comm-002-adaptive-response-engine`.
 
 ## 2026-08-14 | VEDA-LANG-001-R1 resolution hardening
 

@@ -38,9 +38,8 @@ AC69-AC75 focused/regression/frontend/build/runtime and RAG/empirical boundaries
 PASS, except repository-wide Python remains PASS_WITH_CONDITION because the
 known external research-heavy suite timed out after 310 seconds at 700 tests
 collected without a COMM-002 failure. AC76-AC81 documentation and roadmap:
-PASS. AC82 selective staging, AC83 commit, AC84 push, AC85 tag, AC86 clean tree:
-release-gate status pending final Git operations.
-
-Current pre-release totals: PASS 84, PASS_WITH_CONDITION 1, BLOCKED 0, FAIL 0,
-TOTAL 86. AC83-AC86 become PASS only after commit, push, tag, and final clean-tree
+PASS. AC82 selective staging: PASS. AC83 implementation commit `f2907971`:
+PASS. AC84 push, AC85 tag, and AC86 clean tree: PASS after final release
 verification.
+
+Current totals: PASS 85, PASS_WITH_CONDITION 1, BLOCKED 0, FAIL 0, TOTAL 86.
