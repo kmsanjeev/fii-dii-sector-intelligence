@@ -10,6 +10,7 @@ import argparse
 import json
 import random
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -56,13 +57,19 @@ def choose_provider() -> str:
     return providers[0]["name"]
 
 
-def capture(message: str, mode: str, provider: str, *, group_context: dict | None = None) -> dict:
-    engine = ChatEngine()
-    response = engine.chat(message, group_context=group_context, evaluation_mode=mode, evaluation_provider=provider)
-    metadata = dict(engine.last_generation)
-    if not response.strip() or "temporarily unavailable" in response.lower() or "rate-limited" in response.lower():
-        raise RuntimeError(f"invalid captured response for {mode}: {response[:120]!r}")
-    return {"mode": mode, "captured_at": now(), "response": response, "generation": metadata, "group_context_used": bool(group_context)}
+def capture(message: str, mode: str, provider: str, *, group_context: dict | None = None, engine: ChatEngine | None = None, attempts: int = 4) -> dict:
+    last_error = "unknown capture failure"
+    for attempt in range(attempts):
+        engine = engine or ChatEngine()
+        engine.history = []
+        response = engine.chat(message, group_context=group_context, evaluation_mode=mode, evaluation_provider=provider)
+        metadata = dict(engine.last_generation)
+        if response.strip() and "temporarily unavailable" not in response.lower() and "rate-limited" not in response.lower():
+            return {"mode": mode, "captured_at": now(), "response": response, "generation": metadata, "group_context_used": bool(group_context)}
+        last_error = response[:120]
+        if attempt + 1 < attempts:
+            time.sleep(5 * (attempt + 1))
+    raise RuntimeError(f"invalid captured response for {mode}: {last_error!r}")
 
 
 def write_json(path: Path, data: object) -> None:
@@ -72,26 +79,29 @@ def write_json(path: Path, data: object) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--provider", default=None)
     args = parser.parse_args()
     seed = args.seed if args.seed is not None else random.SystemRandom().randrange(1, 2**63)
     rng = random.Random(seed)
-    provider = choose_provider()
+    provider = args.provider or choose_provider()
+    engine = ChatEngine()
 
     captured: dict[str, dict] = {}
     for case_id, prompt in COMM_CASES:
         captured[case_id] = {
             "case_id": case_id,
             "prompt": prompt,
-            "baseline": capture(prompt, "BASELINE_EVAL", provider),
-            "adaptive": capture(prompt, "ADAPTIVE_EVAL", provider),
+            "baseline": capture(prompt, "BASELINE_EVAL", provider, engine=engine),
+            "adaptive": capture(prompt, "ADAPTIVE_EVAL", provider, engine=engine),
         }
+        time.sleep(2)
 
     group_captured: dict[str, dict] = {}
     for scenario_id, transcript, context in GROUP_CASES:
         group_captured[scenario_id] = {
             "scenario_id": scenario_id,
             "transcript": transcript,
-            "response": capture(transcript, "ADAPTIVE_EVAL", provider, group_context=context),
+            "response": capture(transcript, "ADAPTIVE_EVAL", provider, group_context=context, engine=engine),
         }
 
     mapping = {}

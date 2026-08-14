@@ -22,12 +22,26 @@ human validation before the Founder submits ratings.
 
 ## Current Runtime Finding
 
-The repository has no baseline/adaptive runtime switch and no suitable existing
-evaluation UI or result store. The current ChatEngine applies its adaptive
-guidance through the normal response path. Therefore this package is ready for
-Founder evaluation, but response pairs must first be captured by a controlled
-evaluation runner that can produce both configurations without changing
-production architecture. Blank response slots below are intentional.
+The evaluation-only capture harness uses the existing ChatEngine for both
+controlled configurations without exposing a public runtime switch. The
+completed pair capture is in `capture.json`; the private A/B assignment is in
+`hidden-mapping.json`. The Founder-facing document contains only unlabeled
+responses.
+
+The selected capture provider/model and reproducibility metadata are recorded
+in `manifest.json`. Provider generation is nondeterministic; exact prose
+equality is not expected.
+
+## Founder Instructions
+
+1. Open `FOUNDER_EVALUATION.md`.
+2. Read each of the 10 COMM-002 comparisons.
+3. Rate responses A and B using the fields provided.
+4. Complete all 7 GROUP-001 scenario ratings.
+5. Save the completed document and return it for scoring and unblinding.
+
+The Founder does not need to run code, edit JSON, calculate scores, or inspect
+the private capture and mapping artifacts.
 
 ## COMM-002: 10 Blind A/B Cases
 
