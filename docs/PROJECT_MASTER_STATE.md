@@ -210,6 +210,13 @@ tracker (wake word from non-chat pages, drawer/page state sync, orb animation).
 
 ---
 
+# VEDA CURRENT CONVERSATIONAL STATUS (2026-08-15)
+
+- EMO-001 is implemented/frozen in `docs/current-state/emo-001/`.
+- COMM-002 and GROUP-001 remain technically validated with human validation pending.
+- LANG-002+ remains planned; P027 remains reserved/unassigned.
+- EMP-001 remains active longitudinal; predictive and empirical systems are unchanged.
+
 # VEDA WORKSTREAM STATUS (HISTORICAL PHASE 8 RECORD)
 
 > This section preserves the historical 2026-08-04 Veda platform rollout record.

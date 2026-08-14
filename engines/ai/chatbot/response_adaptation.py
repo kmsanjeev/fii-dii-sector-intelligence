@@ -59,6 +59,9 @@ class ResponseAdaptationProfile:
     high_stakes_state: str = "NONE"
     repetition_avoidance: str = "STANDARD"
     continuity_state: str = "NEW_TURN"
+    interaction_need: str = "UNKNOWN"
+    advice_readiness: str = "UNKNOWN"
+    response_sensitivity: str = "NORMAL"
     explicit_overrides: tuple[str, ...] = ()
     repeated_openings: tuple[str, ...] = ()
     repeated_closings: tuple[str, ...] = ()
@@ -194,6 +197,7 @@ def build_adaptation_profile(context: Any, *, user_message: str = "", history: l
         clarification = "ASK_IF_MATERIAL" if str(getattr(context, "ambiguity_state", "CLEAR")) in {"AMBIGUOUS", "HIGHLY_AMBIGUOUS"} else "NONE"
     repeated_openings, repeated_closings = _openings(history)
     continuity = "FOLLOW_UP" if _history_items(history, "user") else "NEW_TURN"
+    emotional = getattr(context, "emotional_context", {}) or {}
     return ResponseAdaptationProfile(
         conversation_type=kind, primary_intent=intent,
         secondary_intents=tuple(getattr(context, "secondary_intents", ()) or ()),
@@ -213,6 +217,9 @@ def build_adaptation_profile(context: Any, *, user_message: str = "", history: l
         repetition_avoidance="STRICT" if repeated_openings or repeated_closings else "STANDARD",
         continuity_state=continuity, explicit_overrides=tuple(sorted(explicit)),
         repeated_openings=repeated_openings, repeated_closings=repeated_closings,
+        interaction_need=str(emotional.get("interaction_need", "UNKNOWN")),
+        advice_readiness=str(emotional.get("advice_readiness", "UNKNOWN")),
+        response_sensitivity=str(emotional.get("response_sensitivity", "NORMAL")),
     )
 
 
@@ -231,6 +238,10 @@ def adaptation_guidance(profile: ResponseAdaptationProfile) -> str:
         rules.append("Vary the response entry and close; do not repeat recent phrasing or offer-to-continue boilerplate.")
     if profile.clarification_need != "NONE":
         rules.append("Ask one concise clarification only if the ambiguity materially changes the answer.")
+    if profile.interaction_need == "JUST_LISTEN":
+        rules.append("Listening need detected: acknowledge briefly and invite continuation; do not dump an unsolicited solution plan.")
+    if profile.response_sensitivity in {"SENSITIVE", "HIGHLY_SENSITIVE"}:
+        rules.append("Sensitive emotional context: stay warm and tentative; do not claim personal feelings or amplify distress.")
     return "\n\nRESPONSE ADAPTATION PROFILE (internal guidance):\n" + str(hidden) + "\n" + "\n".join(f"- {rule}" for rule in rules)
 
 

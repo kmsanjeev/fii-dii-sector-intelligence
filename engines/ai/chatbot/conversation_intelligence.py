@@ -11,6 +11,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Iterable
 
 from engines.ai.chatbot.language_intelligence import resolve_expressions
+from engines.ai.chatbot.emotional_intelligence import EmotionalContext, analyze_emotion
 from engines.ai.chatbot.response_adaptation import adaptation_guidance, build_adaptation_profile
 
 
@@ -66,6 +67,7 @@ class ConversationContext:
     secondary_intent: str | None = None
     secondary_intents: list[str] = field(default_factory=list)
     emotion: str = "NEUTRAL"
+    emotional_context: dict[str, Any] = field(default_factory=dict)
     tone: str = "NEUTRAL"
     formality: str = "NEUTRAL"
     directness: str = "BALANCED"
@@ -262,7 +264,8 @@ def analyze_conversation(text: str, history: list[dict[str, Any]] | None = None)
         sarcasm = "POSSIBLE"
     humour = "LIKELY" if kind_for_intent == "TRASH_TALK" else "POSSIBLE" if _has_any(value, ("lol", "haha", "joke", "funny")) else "NONE"
     tone = "PLAYFUL" if kind_for_intent == "TRASH_TALK" else "WARM" if kind_for_intent in {"HEART_TO_HEART", "PEP_TALK", "PILLOW_TALK"} else "SERIOUS" if kind_for_intent in {"REAL_TALK", "STRAIGHT_TALK"} else "PROFESSIONAL" if kind_for_intent == "SHOP_TALK" else "NEUTRAL"
-    emotion = "VULNERABLE" if _has_any(value, ("sad", "lonely", "grief", "worried", "scared")) else "FRUSTRATED" if _has_any(value, ("angry", "annoyed", "fed up", "bakwaas", "panga", "crash")) else "EXCITED" if _has_any(value, ("happy", "excited", "love", "great")) else "NEUTRAL"
+    emotional_context = analyze_emotion(text, history=history, relationship_context="UNKNOWN")
+    emotion = emotional_context.primary_emotion
     formality = "VERY_INFORMAL" if language == "HINGLISH" or _has_any(value, ("yaar", "dude", "bro")) else "NEUTRAL"
     directness = "VERY_DIRECT" if kind_for_intent in {"REAL_TALK", "STRAIGHT_TALK"} else "SOFT" if kind_for_intent in {"SWEET_TALK", "PILLOW_TALK"} else "BALANCED"
     conflict = "RISING" if _has_any(value, ("angry", "fed up", "shut up", "idiot")) else "LOW" if kind_for_intent == "TRASH_TALK" else "NONE"
@@ -276,7 +279,7 @@ def analyze_conversation(text: str, history: list[dict[str, Any]] | None = None)
         language=language, script=script, code_switching=switching, conversation_type=primary,
         conversation_type_confidence=confidence, secondary_types=secondary, primary_intent=primary_intent,
         secondary_intent=secondary_intents[0] if secondary_intents else None, secondary_intents=secondary_intents,
-        emotion=emotion, tone=tone, formality=formality, directness=directness,
+        emotion=emotion, emotional_context=emotional_context.to_dict(), tone=tone, formality=formality, directness=directness,
         relationship_context="close_or_familiar" if kind_for_intent in {"PILLOW_TALK", "SWEET_TALK"} else "UNKNOWN",
         humour=humour, sarcasm=sarcasm, persuasion="POSSIBLE" if primary_intent == "PERSUADE" else "NONE_DETECTED",
         conflict_level=conflict, domain=domain, user_proficiency=proficiency, idioms=idioms, slang=slang,
@@ -298,6 +301,7 @@ def prompt_guidance(context: ConversationContext, *, user_message: str = "", his
         f"formality={context.formality}; directness={context.directness}; strategy={context.response_strategy}; "
         f"domain={context.domain or 'unknown'}; proficiency={context.user_proficiency}; ambiguity={context.ambiguity_state}.\n"
         f"expression_evidence={[item['record']['canonical_expression'] for item in context.expression_evidence[:4]]}; "
+        f"emotional_context={context.emotional_context}; "
         f"Use a {context.response_strategy.lower().replace('_', ' ')} response. {slang_rule} Preserve safety, factual boundaries, and uncertainty."
     )
     return guidance + (adaptation_guidance(profile) if include_adaptation else "")

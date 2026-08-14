@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-08-15 | VEDA-EMO-001 emotional and relational intelligence
+
+Added a deterministic emotional-context layer over the existing COMM-001,
+LANG-001, GROUP-001, COMM-002, and ChatEngine path. It distinguishes bounded
+emotion signals, mixed states, interaction need, advice readiness, vulnerability,
+relational tension, and per-speaker group emotion without diagnosis, fabricated
+assistant feelings, a parallel chatbot, or routine provider calls.
+
+- EMO-001: IMPLEMENTED / FROZEN
+- COMM-002 human validation: PENDING
+- GROUP-001 human validation: PENDING
+- LANG-002+: PLANNED
+- EMP-001: ACTIVE LONGITUDINAL
+- P027: RESERVED / UNASSIGNED
+
 ## 2026-08-15 | VEDA-GROUP-001 multi-speaker group conversation intelligence
 
 Added a deterministic, metadata-first group understanding layer over the existing ChatEngine. It preserves speaker, addressee, reply-to, topic, claim, agreement, conflict, consensus, language, and Jyotisha chart-subject distinctions without creating a parallel chatbot or group store. The optional API contract remains backward-compatible; human group evaluation is pending.

@@ -10,6 +10,8 @@ import re
 from dataclasses import asdict, dataclass, field
 from typing import Any, Iterable
 
+from engines.ai.chatbot.emotional_intelligence import analyze_emotion
+
 
 PARTICIPANT_KINDS = ("USER", "VEDA", "HUMAN_PARTICIPANT", "UNKNOWN_PARTICIPANT")
 CONFIDENCE = ("EXPLICIT", "HIGH", "MODERATE", "LOW", "UNKNOWN")
@@ -78,6 +80,7 @@ class GroupAnalysis:
     intent: str = "UNKNOWN"
     confidence: str = "LOW"
     evidence: tuple[str, ...] = ()
+    emotional_context: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -258,6 +261,7 @@ def analyze_group_turn(
         mentions=mentions, quoted_turn_id=quoted_turn_id, chart_subject_id=chart_subject_id,
         subject_label=subject_label,
     )
+    emotional_context = analyze_emotion(text, history=list(history or ()))
     return GroupAnalysis(
         conversation_id=conversation_id, turn=turn,
         speaker_confidence="EXPLICIT" if speaker_id else address_confidence,
@@ -274,6 +278,7 @@ def analyze_group_turn(
         quoted_speech=quoted, pronoun_ambiguity=pronoun_ambiguity, language=language,
         confidence="HIGH" if speaker_id and (reply_to_turn_id or addresses) else "MODERATE",
         evidence=tuple(conflict_evidence) + (("explicit_reply_metadata",) if reply_to_turn_id else ()) + (("explicit_addressee",) if addressed_to else ()),
+        emotional_context=emotional_context.to_dict(),
     )
 
 
