@@ -14,6 +14,8 @@ neutral ChatEngine failure fallback. The deterministic initial benchmark is
 - LANG-001, COMM-002, GROUP-001: PLANNED
 - EMP-001: ACTIVE LONGITUDINAL
 - P027: RESERVED / UNASSIGNED
+- Commit: `676f0aca`
+- Tag: `veda-comm-001-pragmatic-understanding-engine`
 
 ## 2026-08-14 | VEDA-STD-003 conversational intelligence standard
 

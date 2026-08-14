@@ -11,3 +11,6 @@ timeout recurs; focused COMM-001 and legacy compatibility tests are passing.
 
 Successor status remains: LANG-001 planned, COMM-002 planned, GROUP-001
 planned, EMP-001 active longitudinal, and P027 reserved/unassigned.
+
+Implementation commit: `676f0aca`.
+Tag: `veda-comm-001-pragmatic-understanding-engine`.
