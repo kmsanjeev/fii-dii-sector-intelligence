@@ -226,6 +226,9 @@ frontend/.vite/
 .kiro/
 .vscode/
 
+# Local Claude permissions and machine-specific settings
+.claude/settings.local.json
+
 # Runtime / ephemeral (not committed)
 data/NSE/bhavcopy/
 data/NSE/adjusted_equity/
