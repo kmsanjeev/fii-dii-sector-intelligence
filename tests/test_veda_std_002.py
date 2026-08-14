@@ -14,6 +14,7 @@ from engines.ai.orchestration import (
 )
 from engines.ai.orchestration.contracts import EvidenceType, ReasoningEvidence, ReasoningLayer
 from engines.ai.orchestration.reasoning import CounterHypothesis
+from engines.ai.orchestration.persistence import DurablePredictionRegistry, score_prediction
 
 
 def test_structured_evidence_separates_classical_and_empirical_layers() -> None:
@@ -105,3 +106,10 @@ def test_agent_failure_is_logged_without_fabricating_evidence() -> None:
     assert result.retrieval["results"] == []
     assert result.audit_ledger["failure_fallback"] is True
     assert result.request.evidence_ids == []
+
+
+def test_stage_a_shadow_trace_classifies_prediction_intent() -> None:
+    trace = AgentOrchestrator().shadow_trace("When is career timing likely?", domain="CAREER")
+    assert trace["intent_type"] == "TIMING"
+    assert trace["prediction_intent"] is True
+    assert trace["response_path_unchanged"] is True

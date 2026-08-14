@@ -353,6 +353,7 @@ class ChatEngine:
         self.last_retrieval_audit: dict = _empty_retrieval_audit(
             "unified" if cfg.VEDA_UNIFIED_RETRIEVAL_ENABLED else "legacy"
         )
+        self.last_orchestration: dict = {}
         self._research_service = None
         self._knowledge_review_service = None
         self._repo_capability_service = None
@@ -495,6 +496,18 @@ class ChatEngine:
         self.last_retrieval_audit = _empty_retrieval_audit(configured_primary_mode)
         intent       = detect_intent(user_message)
         is_greeting  = intent.intent_type == "GREETING"
+        try:
+            from engines.ai.orchestration import AgentOrchestrator
+            self.last_orchestration = AgentOrchestrator().shadow_trace(
+                user_message,
+                domain=intent.intent_type,
+            )
+        except Exception as exc:
+            self.last_orchestration = {
+                "mode": "SHADOW",
+                "response_path_unchanged": True,
+                "error": type(exc).__name__,
+            }
         system_prompt = get_system_prompt(intent)
 
         # ── Voice-mode fast path: instant reply for common greetings ──────

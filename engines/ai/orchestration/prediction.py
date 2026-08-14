@@ -62,6 +62,18 @@ class PredictionRecord:
     direction_correct: bool | None = None
     confidence_calibration_result: str | None = None
     _outcome_locked: bool = field(default=False, repr=False)
+    lock_state: str = "DRAFT"
+    prediction_version: int = 1
+    supersedes_prediction_id: str | None = None
+    window_granularity: str = "BROAD_WINDOW"
+    method_supported_precision: str = "QUALITATIVE"
+    created_by: str = "VEDA_PREDICTION_AGENT"
+    chart_id: str | None = None
+    weight_profile_id: str | None = None
+    knowledge_cutoff: str | None = None
+    prediction_cutoff: str | None = None
+    data_cutoff: str | None = None
+    case_class: str = "PROSPECTIVE_CASE"
 
     def snapshot(self) -> dict[str, Any]:
         value = asdict(self)
@@ -77,7 +89,13 @@ class PredictionRecord:
         self.comparison_state = result["comparison_state"]
         self.timing_error = result.get("timing_error")
         self.direction_correct = result.get("direction_correct")
+        self.prediction_state = "RESOLVED"
         self._outcome_locked = True
+
+    def lock(self) -> None:
+        if self.lock_state == "SUPERSEDED":
+            raise RuntimeError("superseded prediction cannot be locked")
+        self.lock_state = "LOCKED"
 
     def to_dict(self) -> dict[str, Any]:
         value = self.snapshot()

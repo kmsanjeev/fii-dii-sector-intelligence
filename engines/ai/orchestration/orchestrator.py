@@ -9,6 +9,7 @@ from typing import Any
 from engines.ai.knowledge.unified_retriever import RetrievalMode, UnifiedHybridRetriever
 
 from .contracts import AgentRole, RequestContext
+from .research import decide_research_escalation
 
 
 @dataclass(slots=True)
@@ -32,9 +33,35 @@ class AgentOrchestrator:
         text = query.lower()
         prediction = any(term in text for term in ("when", "predict", "timing", "likely", "window", "forecast"))
         research = any(term in text for term in ("research", "classical", "source", "book", "what does veda know"))
+        outcome = any(term in text for term in ("was the prediction correct", "prediction from", "outcome", "actual event", "evaluate prediction"))
+        backtest = any(term in text for term in ("backtest", "historical cases", "historical prediction"))
+        document = any(term in text for term in ("uploaded document", "learn this document", "ingest document"))
+        if outcome:
+            intent_type = "OUTCOME_UPDATE"
+        elif backtest:
+            intent_type = "BACKTEST"
+        elif document:
+            intent_type = "DOCUMENT_LEARNING"
+        elif research:
+            intent_type = "RESEARCH"
+        elif prediction:
+            intent_type = "TIMING" if any(term in text for term in ("when", "timing", "window")) else "PREDICTIVE"
+        elif any(term in text for term in ("what is", "which", "where", "nakshatra", "ascendant")):
+            intent_type = "FACTUAL"
+        elif domain or any(term in text for term in ("strength", "indicator", "analysis", "career", "wealth", "marriage", "health")):
+            intent_type = "INTERPRETIVE"
+        else:
+            intent_type = "GENERAL"
         resolved_mode = mode or ("RESEARCH" if research else "SHADOW" if prediction else "PRODUCTION_SAFE")
         request_id = "REQ-" + hashlib.sha256(query.encode("utf-8")).hexdigest()[:16]
-        return RequestContext(request_id=request_id, subject_id=subject_id, domain=domain, query=query, mode=resolved_mode)
+        capabilities = ["CHART_FACTS", "RETRIEVAL"]
+        if prediction:
+            capabilities.extend(["CLASSICAL_REASONING", "PATTERN_REASONING", "PREDICTION_REGISTRY"])
+        if research:
+            capabilities.extend(["RESEARCH_PLATFORM", "KNOWLEDGE_VALIDATION"])
+        if outcome:
+            capabilities.extend(["OUTCOME_REGISTRY", "PREDICTION_EVALUATION"])
+        return RequestContext(request_id=request_id, subject_id=subject_id, domain=domain, query=query, mode=resolved_mode, intent_type=intent_type, required_capabilities=capabilities)
 
     def run(self, query: str, *, domain: str | None = None, subject_id: str | None = None, mode: str | None = None) -> WorkflowResult:
         request = self.route(query, domain=domain, subject_id=subject_id, mode=mode)
@@ -65,7 +92,25 @@ class AgentOrchestrator:
             },
         }
         request.evidence_ids = [str(item.get("entity") or item.get("doc_id") or "") for item in results]
+        escalation = decide_research_escalation(explicit_request=request.intent_type == "RESEARCH", retrieved_count=len(results))
+        if escalation.required and request.intent_type == "RESEARCH":
+            request.warnings.append("RESEARCH_REQUIRED:" + escalation.reason)
         return WorkflowResult(request=request, route=route, retrieval=retrieval, warnings=warnings, audit_ledger={"workflow_id": request.request_id, "request_id": request.request_id, "agents_invoked": route, "knowledge_retrieved": request.evidence_ids, "facts_used": [], "rules_used": [], "patterns_used": [], "prediction_created": request.mode in {"SHADOW", "BACKTEST"}, "failure_fallback": bool(warnings), "workflow_version": self.workflow_version})
+
+    def shadow_trace(self, query: str, *, domain: str | None = None) -> dict[str, Any]:
+        """Cheap Stage-A trace for normal chat; it never changes the reply."""
+        request = self.route(query, domain=domain)
+        return {
+            "mode": "SHADOW",
+            "request_id": request.request_id,
+            "intent_type": request.intent_type,
+            "domain": request.domain,
+            "retrieval_mode": request.mode,
+            "required_capabilities": request.required_capabilities,
+            "prediction_intent": request.intent_type in {"PREDICTIVE", "TIMING"},
+            "response_path_unchanged": True,
+            "workflow_version": self.workflow_version,
+        }
 
 
 __all__ = ["AgentOrchestrator", "WorkflowResult"]

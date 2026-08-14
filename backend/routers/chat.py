@@ -190,6 +190,7 @@ class ChatResponse(BaseModel):
     research: ChatResearchMeta = Field(default_factory=ChatResearchMeta)
     local_evidence: ChatLocalEvidenceMeta = Field(default_factory=ChatLocalEvidenceMeta)
     retrieval_audit: ChatRetrievalAudit = Field(default_factory=ChatRetrievalAudit)
+    orchestration: dict[str, Any] = Field(default_factory=dict)
 
 
 class ChatKnowledgeSource(BaseModel):
@@ -406,6 +407,7 @@ async def chat(req: ChatRequest):
     last_research = getattr(engine, "last_research", {})
     last_local_evidence = getattr(engine, "last_local_evidence", {})
     last_retrieval_audit = getattr(engine, "last_retrieval_audit", {})
+    last_orchestration = getattr(engine, "last_orchestration", {})
     return ChatResponse(
         reply=reply,
         session_id=session_id,
@@ -416,6 +418,7 @@ async def chat(req: ChatRequest):
         research=ChatResearchMeta(**last_research),
         local_evidence=ChatLocalEvidenceMeta(**last_local_evidence),
         retrieval_audit=ChatRetrievalAudit(**last_retrieval_audit),
+        orchestration=last_orchestration,
     )
 
 

@@ -16,6 +16,9 @@ from .prediction import (
 )
 from .orchestrator import AgentOrchestrator, WorkflowResult
 from .reasoning import CounterHypothesis, SelfCritique, convergence_summary
+from .persistence import CONFIDENCE_BANDS, EVENT_TYPES, VERIFICATION_STATES, DurablePredictionRegistry, false_negative_status, score_prediction
+from .weighting import WeightProfile
+from .research import DocumentCaseIngestionRunner, ResearchEscalationDecision, decide_research_escalation
 
 __all__ = [
     "AgentOrchestrator",
@@ -34,5 +37,15 @@ __all__ = [
     "CounterHypothesis",
     "SelfCritique",
     "convergence_summary",
+    "CONFIDENCE_BANDS",
+    "EVENT_TYPES",
+    "VERIFICATION_STATES",
+    "DurablePredictionRegistry",
+    "score_prediction",
+    "false_negative_status",
+    "WeightProfile",
+    "DocumentCaseIngestionRunner",
+    "ResearchEscalationDecision",
+    "decide_research_escalation",
     "compare_prediction_outcome",
 ]

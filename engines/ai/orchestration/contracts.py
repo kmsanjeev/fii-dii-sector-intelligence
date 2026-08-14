@@ -79,6 +79,8 @@ class RequestContext:
     prediction_ids: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     dependency_states: dict[str, str] = field(default_factory=dict)
+    intent_type: str = "GENERAL"
+    required_capabilities: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
