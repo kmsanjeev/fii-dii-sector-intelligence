@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-08-14 | VEDA-COMM-001 pragmatic understanding engine
+
+COMM-001 operationalizes the existing STD-003 conversational analyzer without
+creating a second chatbot. It adds canonical confidence, primary/secondary
+conversation types, intent separation, literal/pragmatic ambiguity, multi-turn
+transition metadata, domain/proficiency coverage, benchmark fixtures, and a
+neutral ChatEngine failure fallback. The deterministic initial benchmark is
+50/50 with zero provider calls added.
+
+- COMM-001: IMPLEMENTED / FROZEN
+- STD-003: IMPLEMENTED / FROZEN
+- LANG-001, COMM-002, GROUP-001: PLANNED
+- EMP-001: ACTIVE LONGITUDINAL
+- P027: RESERVED / UNASSIGNED
+
 ## 2026-08-14 | VEDA-STD-003 conversational intelligence standard
 
 ### Context

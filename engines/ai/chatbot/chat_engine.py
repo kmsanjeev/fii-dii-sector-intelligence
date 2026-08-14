@@ -27,7 +27,7 @@ from typing import Any
 from engines.common import config as cfg
 from engines.common.logger import get_logger
 from engines.ai.chatbot.intent_router import detect_intent, get_system_prompt
-from engines.ai.chatbot.conversation_intelligence import analyze_conversation, prompt_guidance
+from engines.ai.chatbot.conversation_intelligence import ConversationContext, analyze_conversation, prompt_guidance
 from engines.ai.chatbot.tools.tool_registry import TOOLS, TOOL_FUNCTIONS
 from engines.ai.chatbot.safety import sanitize_reply
 from engines.ai.knowledge.response_quality import deduplicate_safety_messages
@@ -497,7 +497,19 @@ class ChatEngine:
         configured_primary_mode = "unified" if cfg.VEDA_UNIFIED_RETRIEVAL_ENABLED else "legacy"
         self.last_retrieval_audit = _empty_retrieval_audit(configured_primary_mode)
         intent       = detect_intent(user_message)
-        conversational_context = analyze_conversation(user_message, history=self.history)
+        try:
+            conversational_context = analyze_conversation(user_message, history=self.history)
+        except Exception as exc:
+            # Conversational understanding is advisory; chat remains available
+            # with a neutral context if analysis fails.
+            conversational_context = ConversationContext(
+                conversation_type="UNKNOWN",
+                conversation_type_confidence="VERY_LOW",
+                confidence="VERY_LOW",
+                response_strategy="NEUTRAL_ADAPTIVE",
+                ambiguity_state="HIGHLY_AMBIGUOUS",
+                evidence=[f"analyzer_failure:{type(exc).__name__}"],
+            )
         self.last_conversational_context = conversational_context.to_dict()
         is_greeting  = intent.intent_type == "GREETING"
         is_small_talk = conversational_context.conversation_type == "SMALL_TALK"
