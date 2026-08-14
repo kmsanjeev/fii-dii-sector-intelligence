@@ -360,6 +360,7 @@ class ChatEngine:
         self.last_conversational_context: dict = {}
         self.last_response_adaptation: dict = {}
         self.last_group_context: dict = {}
+        self.last_generation: dict = {}
         self._research_service = None
         self._knowledge_review_service = None
         self._repo_capability_service = None
@@ -479,11 +480,15 @@ class ChatEngine:
         research_mode: bool = False,
         attachment_context: str = "",
         group_context: dict[str, Any] | None = None,
+        evaluation_mode: str | None = None,
+        evaluation_provider: str | None = None,
     ) -> str:
         """
         Process one user turn and return the assistant's reply.
         Automatically rotates to the next provider if rate-limited.
         """
+        if evaluation_mode not in {None, "BASELINE_EVAL", "ADAPTIVE_EVAL"}:
+            raise ValueError("evaluation_mode must be BASELINE_EVAL or ADAPTIVE_EVAL")
         user_message = _clip_text(user_message, cfg.VEDA_CHAT_MAX_MESSAGE_CHARS)
         self.history = self._bounded_history()
         self.last_symbols = []
@@ -520,6 +525,13 @@ class ChatEngine:
             conversational_context, user_message=user_message, history=self.history,
         ).to_dict()
         self.last_group_context = {}
+        self.last_generation = {
+            "evaluation_mode": evaluation_mode or "PRODUCTION_DEFAULT",
+            "provider": None,
+            "model": None,
+            "max_tokens": None,
+            "error": None,
+        }
         if group_context:
             try:
                 group = analyze_group_turn(
@@ -564,6 +576,7 @@ class ChatEngine:
         system_prompt = get_system_prompt(intent)
         system_prompt += prompt_guidance(
             conversational_context, user_message=user_message, history=self.history,
+            include_adaptation=evaluation_mode != "BASELINE_EVAL",
         )
         if self.last_group_context:
             system_prompt += (
@@ -670,7 +683,10 @@ class ChatEngine:
         self.history = self._bounded_history()
 
         providers = self._active_providers()
+        if evaluation_provider:
+            providers = [p for p in providers if p["name"] == evaluation_provider]
         if not providers:
+            self.last_generation["error"] = "evaluation_provider_unavailable" if evaluation_provider else "provider_unavailable"
             reply = (
                 "All AI providers are temporarily rate-limited. "
                 "Please try again in a few minutes."
@@ -682,6 +698,11 @@ class ChatEngine:
         for provider in providers:
             client = self._get_client(provider)
             model  = provider["model"]
+            self.last_generation.update({
+                "provider": provider["name"],
+                "model": model,
+                "max_tokens": VOICE_MAX_TOKENS if voice_mode else MAX_TOKENS,
+            })
             logger.debug("[ChatEngine] Using provider: %s (%s)", provider["name"], model)
 
             result = self._run_turn(client, model, system_prompt, user_message,

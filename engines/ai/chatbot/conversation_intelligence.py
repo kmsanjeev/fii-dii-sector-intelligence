@@ -289,18 +289,18 @@ def analyze_conversation(text: str, history: list[dict[str, Any]] | None = None)
     )
 
 
-def prompt_guidance(context: ConversationContext, *, user_message: str = "", history: list[dict[str, Any]] | None = None) -> str:
+def prompt_guidance(context: ConversationContext, *, user_message: str = "", history: list[dict[str, Any]] | None = None, include_adaptation: bool = True) -> str:
     slang_rule = "Understand slang semantically; do not mirror hostile/offensive wording." if context.understood_not_mirrored else "Use natural language; do not force idioms or slang."
     profile = build_adaptation_profile(context, user_message=user_message, history=history)
-    return (
+    guidance = (
         "\n\nCONVERSATIONAL CONTEXT (inferred, not fact):\n"
         f"language={context.language}; type={context.conversation_type}; intent={context.primary_intent}; tone={context.tone}; "
         f"formality={context.formality}; directness={context.directness}; strategy={context.response_strategy}; "
         f"domain={context.domain or 'unknown'}; proficiency={context.user_proficiency}; ambiguity={context.ambiguity_state}.\n"
         f"expression_evidence={[item['record']['canonical_expression'] for item in context.expression_evidence[:4]]}; "
         f"Use a {context.response_strategy.lower().replace('_', ' ')} response. {slang_rule} Preserve safety, factual boundaries, and uncertainty."
-        + adaptation_guidance(profile)
     )
+    return guidance + (adaptation_guidance(profile) if include_adaptation else "")
 
 
 __all__ = ["CONVERSATION_TYPES", "SUPPORTED_CONVERSATION_TYPES", "INTENTS", "ConversationContext", "analyze_conversation", "detect_language", "detect_script", "prompt_guidance"]
