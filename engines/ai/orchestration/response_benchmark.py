@@ -34,6 +34,29 @@ class ResponseMetrics:
     retrieval_diversity: int
 
 
+@dataclass(frozen=True, slots=True)
+class ProviderBenchmarkRecord:
+    benchmark_id: str
+    provider: str
+    model: str
+    prompt_version: str
+    retrieval_mode: str
+    chart_fixture: str
+    question: str
+    answer: str
+    evidence_ids: tuple[str, ...] = ()
+    configuration: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+def capture_provider_response(case: ResponseBenchmarkCase, *, provider: str, model: str, prompt_version: str, retrieval_mode: str, responder: Any, configuration: dict[str, Any] | None = None, evidence_ids: list[str] | None = None) -> ProviderBenchmarkRecord:
+    """Capture actual provider output; callers must not substitute a stub as proof."""
+    answer = str(responder(case.question))
+    return ProviderBenchmarkRecord(case.case_id, provider, model, prompt_version, retrieval_mode, case.chart_fixture, case.question, answer, tuple(evidence_ids or ()), dict(configuration or {}))
+
+
 def default_cases() -> list[ResponseBenchmarkCase]:
     return [ResponseBenchmarkCase(f"STD002-{domain}", domain, f"What should VEDA analyze for {domain.lower()}?", "FIXTURE-STD002-1") for domain in BENCHMARK_DOMAINS]
 
@@ -60,4 +83,4 @@ def compare_metrics(before: list[ResponseMetrics], after: list[ResponseMetrics])
     return {"case_count": len(results), "results": results, "human_validated": False, "model_level_improvement": False}
 
 
-__all__ = ["BENCHMARK_DOMAINS", "ResponseBenchmarkCase", "ResponseMetrics", "compare_metrics", "default_cases", "evaluate_response"]
+__all__ = ["BENCHMARK_DOMAINS", "ResponseBenchmarkCase", "ResponseMetrics", "ProviderBenchmarkRecord", "capture_provider_response", "compare_metrics", "default_cases", "evaluate_response"]

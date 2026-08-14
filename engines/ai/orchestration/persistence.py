@@ -124,6 +124,9 @@ class DurablePredictionRegistry:
             CREATE TABLE IF NOT EXISTS pred_audit_ledger (
                 event_id TEXT PRIMARY KEY, event_type TEXT NOT NULL, created_at TEXT NOT NULL, payload TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS pred_human_evaluations (
+                evaluation_id TEXT PRIMARY KEY, benchmark_id TEXT NOT NULL, created_at TEXT NOT NULL, payload TEXT NOT NULL
+            );
             """)
 
     def create(self, record: PredictionRecord, *, lock: bool = True) -> PredictionRecord:
@@ -238,6 +241,14 @@ class DurablePredictionRegistry:
         with self._connect() as con:
             con.execute("INSERT OR IGNORE INTO pred_audit_ledger VALUES (?,?,?,?)", (identifier, event_type, utc_now(), _json(payload)))
         return identifier
+
+    def record_human_evaluation(self, benchmark_id: str, ratings: dict[str, int], *, insight: str | None = None, evaluator_id: str = "FOUNDER") -> str:
+        """Persist voluntary human feedback without altering predictions or answers."""
+        evaluation_id = hashlib.sha256((benchmark_id + _json(ratings) + evaluator_id).encode("utf-8")).hexdigest()[:20]
+        payload = {"benchmark_id": benchmark_id, "ratings": ratings, "insight": insight, "evaluator_id": evaluator_id}
+        with self._connect() as con:
+            con.execute("INSERT OR IGNORE INTO pred_human_evaluations VALUES (?,?,?,?)", (evaluation_id, benchmark_id, utc_now(), _json(payload)))
+        return evaluation_id
 
 
 __all__ = ["CONFIDENCE_BANDS", "EVENT_TYPES", "VERIFICATION_STATES", "DurablePredictionRegistry", "false_negative_status", "score_prediction"]

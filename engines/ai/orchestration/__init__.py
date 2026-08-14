@@ -20,6 +20,7 @@ from .persistence import CONFIDENCE_BANDS, EVENT_TYPES, VERIFICATION_STATES, Dur
 from .weighting import WeightProfile
 from .research import DocumentCaseIngestionRunner, ResearchEscalationDecision, decide_research_escalation
 from .validation import CombinationRecommendation, HistoricalPredictionHarness, audit_leakage, combination_recommendation, human_evaluation_rubric, make_prospective
+from .cases import CaseRecord, CaseRegistry, assess_quality, normalize_case
 
 __all__ = [
     "AgentOrchestrator",
@@ -55,4 +56,8 @@ __all__ = [
     "CombinationRecommendation",
     "combination_recommendation",
     "human_evaluation_rubric",
+    "CaseRecord",
+    "CaseRegistry",
+    "assess_quality",
+    "normalize_case",
 ]
