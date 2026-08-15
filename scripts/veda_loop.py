@@ -93,15 +93,22 @@ def append_log(record: dict) -> None:
 
 
 def run_codex(prompt: str, timeout: int, output_path: Path) -> tuple[int, str, str]:
-    command = ["codex", "exec", "--json", "--dangerously-bypass-approvals-and-sandbox", "-C", str(ROOT), "-"]
+    command = ["codex", "exec", "--json", "--ephemeral", "--dangerously-bypass-approvals-and-sandbox", "-C", str(ROOT), "-"]
+    error_path = output_path.with_suffix(".stderr.log")
+    creationflags = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
     try:
-        result = subprocess.run(command, input=prompt, text=True, capture_output=True, encoding="utf-8", errors="replace", timeout=timeout)
-        output_path.write_text(result.stdout, encoding="utf-8")
-        return result.returncode, result.stdout, result.stderr
-    except subprocess.TimeoutExpired as exc:
-        stdout = exc.stdout or ""
-        output_path.write_text(stdout, encoding="utf-8")
-        return 124, stdout, str(exc)
+        with output_path.open("w", encoding="utf-8") as stdout_handle, error_path.open("w", encoding="utf-8") as stderr_handle:
+            process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=stdout_handle, stderr=stderr_handle, text=True, encoding="utf-8", errors="replace", creationflags=creationflags)
+            try:
+                process.communicate(prompt, timeout=timeout)
+            except subprocess.TimeoutExpired:
+                if os.name == "nt":
+                    subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], capture_output=True, check=False)
+                else:
+                    process.kill()
+                process.wait(timeout=15)
+                return 124, output_path.read_text(encoding="utf-8", errors="replace"), error_path.read_text(encoding="utf-8", errors="replace")
+        return process.returncode, output_path.read_text(encoding="utf-8", errors="replace"), error_path.read_text(encoding="utf-8", errors="replace")
 
 
 def run(max_loops: int, retries: int, timeout: int, sleep_seconds: float, dry_run: bool) -> int:
