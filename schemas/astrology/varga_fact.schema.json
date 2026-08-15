@@ -25,6 +25,9 @@
     "calculation_rule_id": {"type": "string", "pattern": "^VEDA-RUL-VARGA-[0-9]{3}$"},
     "runtime_version": {"type": "string"},
     "validation_status": {"type": "string"},
-    "interpretation_status": {"type": "string"}
+    "interpretation_status": {"type": "string"},
+    "method_id": {"type": "string"},
+    "method_version": {"type": "string"},
+    "source_ref": {"type": "string"}
   }
 }

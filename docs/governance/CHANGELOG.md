@@ -3498,6 +3498,12 @@ Phase V3.4 -- Veda field fixes: activation, barge-in, greetings, read-vs-present
 
 Date: 2026-07-12
 
+## 2026-08-15 — VEDA-P015-RX
+
+Remediated D4/Chaturthamsha routing in the existing Varga engine. D4 now uses the versioned four-quarter 1st/4th/7th/10th sign mapping, with boundary, wraparound, planetary and Ascendant validation. Calculation status is validated; interpretation remains not validated and P029's D1-first trust gate is unchanged. No property rules, RAG content, provider calls or P029-R1 work were added.
+
+Date: 2026-07-12
+
 ## 2026-08-15 — VEDA-KNOW-PROP-001
 
 Completed the classical property, residence and D4 source-validation audit. Existing P029 behavior remains unchanged. D4 is calculation-available with conditions but not method-validated for production interpretation; the current generic branch differs from the inspected 1/4/7/10 reference mapping. Property rules, karaka claims, timing heuristics and subtype claims remain component-level research candidates. `P015-RX_REQUIRED` is recorded; no P029-R1/P030 work, RAG rebuild, or Approved Core promotion occurred.

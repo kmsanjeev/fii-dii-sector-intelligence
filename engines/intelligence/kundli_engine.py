@@ -357,6 +357,15 @@ class KundliEngine:
                 },
                 'planets':            enriched,
                 'divisional_charts':  div_charts,
+                'varga_metadata': {
+                    'D4': {
+                        'method_id': 'D4_CHATURTHAMSHA_1_4_7_10_V1',
+                        'method_version': '1.0',
+                        'calculation_status': 'VALIDATED',
+                        'interpretation_status': 'NOT_VALIDATED',
+                        'source_ref': 'KNOW-PROP-001 / P015-RX',
+                    },
+                },
                 'current_dasha':      dasha,
                 'financial_houses':   fin_houses,
                 'yogas':              yogas,
@@ -542,7 +551,7 @@ class KundliEngine:
         charts = {}
         for d_num, method in [
             (1,  'identity'), (2,  'hora'),    (3,  'drekkana'),
-            (4,  'general'),  (7,  'saptamsa'), (9,  'navamsa'),
+            (4,  'chaturthamsa_14710'), (7,  'saptamsa'), (9,  'navamsa'),
             (10, 'dasamsa'),  (11, 'general'),  (12, 'dwadasamsa'),
             (16, 'general'),  (20, 'general'),  (30, 'trimshamsa'),
             (60, 'general'),
@@ -558,6 +567,10 @@ class KundliEngine:
         s_num  = int(lon / 30)           # 0-11 natal sign
         d_in_s = lon % 30                # 0-30 degree within sign
         amsa   = int(d_in_s / (30 / divisor))  # 0..(divisor-1)
+
+        if method == 'chaturthamsa_14710':
+            # Source-selected D4: four 7°30' quarters map to 1st/4th/7th/10th.
+            return SIGNS[(s_num + (0, 3, 6, 9)[min(amsa, 3)]) % 12]
 
         if method == 'identity':
             return SIGNS[s_num]

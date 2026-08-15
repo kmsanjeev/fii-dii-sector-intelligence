@@ -35,6 +35,8 @@ class PropertySynthesis:
     domestic_comfort: str = "INSUFFICIENT_DATA"
     timing: str = "INSUFFICIENT_DATA"
     d4_status: str = "D4_NOT_VALIDATED"
+    d4_calculation_status: str = "NOT_AVAILABLE"
+    d4_interpretation_status: str = "NOT_VALIDATED"
     confidence: str = "VERY_LOW"
     conditions: list[str] = field(default_factory=list)
     alternatives: list[str] = field(default_factory=list)
@@ -71,6 +73,9 @@ class PropertySynthesisEngine:
         wealth_context = wealth_context or {}
         result = PropertySynthesis()
         result.d4_status = self._d4_status(chart)
+        d4_metadata = (chart.get("varga_metadata") or {}).get("D4", {})
+        result.d4_calculation_status = d4_metadata.get("calculation_status", "NOT_AVAILABLE")
+        result.d4_interpretation_status = d4_metadata.get("interpretation_status", "NOT_VALIDATED")
         result.missing_data.append("D4_NOT_VALIDATED")
 
         scores = chart.get("property_scores") or {}

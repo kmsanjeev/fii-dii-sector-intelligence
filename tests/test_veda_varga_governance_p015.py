@@ -18,8 +18,8 @@ def test_p015_registry_covers_current_p004_surface():
         "D1", "D2", "D3", "D4", "D7", "D9", "D10", "D11", "D12", "D16", "D20", "D30", "D60"
     ]
     assert bundle["summary"]["vargas_inventoried"] == 13
-    assert bundle["summary"]["vargas_calculation_validated"] == 3
-    assert bundle["summary"]["vargas_with_conditions"] == 10
+    assert bundle["summary"]["vargas_calculation_validated"] == 4
+    assert bundle["summary"]["vargas_with_conditions"] == 9
 
 
 def test_p015_boundary_formulas_are_deterministic():
@@ -36,6 +36,14 @@ def test_p015_emits_canonical_varga_fact_with_runtime_boundary():
     assert fact["runtime_version"] == "P012_CANONICAL_RUNTIME"
     assert fact["calculation_rule_id"] == "VEDA-RUL-VARGA-009"
     assert fact["interpretation_status"] == "RESEARCHING"
+
+
+def test_d4_method_metadata_separates_calculation_from_interpretation():
+    fact = canonical_varga_fact("VEDA-GRAHA-SUN", 0.0, "D4")
+    assert fact["method_id"] == "D4_CHATURTHAMSHA_1_4_7_10_V1"
+    assert fact["method_version"] == "1.0"
+    assert fact["validation_status"] == "VALIDATED"
+    assert fact["interpretation_status"] == "NOT_VALIDATED"
 
 
 def test_p015_shadow_matches_current_runtime_formula():

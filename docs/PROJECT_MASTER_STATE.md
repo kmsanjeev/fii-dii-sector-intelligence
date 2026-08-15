@@ -25,6 +25,7 @@ This project is NOT a screener. It IS a decision intelligence platform.
 - P028-R1 Traditional Compatibility Methods is implemented/frozen as a research-candidate, versioned Ashtakoota foundation; VEDA-KNOW-COMPAT-001 completed source validation with partial framework validation only. Executable Kuta tables remain research candidates, Manglik cancellation remains deferred, and no Approved Core compatibility promotion occurred.
 - P029 Property, Residence & Real-Estate Synthesis is implemented/frozen as a governed domain layer over existing D1/property facts, P022 wealth context, P027 synthesis, Dasha and Transit. D4 is explicitly not validated; P030 remains not started.
 - VEDA-KNOW-PROP-001 completed the property/D4 source audit with `PASS_WITH_CONDITION`; D4 calculation is available with conditions but its current generic method does not match the inspected source-referenced 1/4/7/10 method. `P015-RX_REQUIRED` is recorded; P029-R1 and P030 remain not started.
+- P015-RX remediated D4 calculation to `D4_CHATURTHAMSHA_1_4_7_10_V1` with calculation status validated and interpretation status not validated. P029 remains D1-first and does not use D4 interpretively; P029-R1 and P030 remain not started.
 - COMM-002 and GROUP-001 human validation remain pending. EMO-001 is implemented/frozen.
 - EMP-001 remains active longitudinal with insufficient sample; LANG-002+ remains planned.
 - Historical P027 reservation is preserved; current assignment is governed by `docs/current-state/p027/`.

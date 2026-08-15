@@ -27,7 +27,7 @@ VARGA_METHODS: dict[str, dict[str, Any]] = {
     "D1": {"name": "Rashi", "division": 1, "method": "identity", "status": "IMPLEMENTED_VALIDATED", "p004": "VALIDATED"},
     "D2": {"name": "Hora", "division": 2, "method": "hora", "status": "IMPLEMENTED_WITH_CONDITIONS", "p004": "VALIDATED_WITH_CONDITIONS"},
     "D3": {"name": "Drekkana", "division": 3, "method": "drekkana", "status": "IMPLEMENTED_WITH_CONDITIONS", "p004": "VALIDATED_WITH_CONDITIONS"},
-    "D4": {"name": "Chaturthamsha", "division": 4, "method": "general", "status": "IMPLEMENTED_WITH_CONDITIONS", "p004": "VALIDATED_WITH_CONDITIONS"},
+    "D4": {"name": "Chaturthamsha", "division": 4, "method": "chaturthamsa_14710", "method_id": "D4_CHATURTHAMSHA_1_4_7_10_V1", "method_version": "1.0", "source_ref": "KNOW-PROP-001 / P015-RX", "status": "IMPLEMENTED_VALIDATED", "p004": "VALIDATED", "interpretation_status": "NOT_VALIDATED"},
     "D7": {"name": "Saptamsha", "division": 7, "method": "saptamsa", "status": "IMPLEMENTED_WITH_CONDITIONS", "p004": "VALIDATED_WITH_CONDITIONS", "safety": "HIGH_STAKES_REVIEW_REQUIRED"},
     "D9": {"name": "Navamsha", "division": 9, "method": "navamsa", "status": "IMPLEMENTED_VALIDATED", "p004": "VALIDATED", "priority": "P1"},
     "D10": {"name": "Dashamsha", "division": 10, "method": "dasamsa", "status": "IMPLEMENTED_VALIDATED", "p004": "VALIDATED", "priority": "P1"},
@@ -75,6 +75,8 @@ def varga_sign(longitude: float, division: int, method: str) -> str:
     if method == "navamsa":
         start = sign if sign in MOVABLE_SIGNS else (sign + 8) % 12 if sign in FIXED_SIGNS else (sign + 4) % 12
         return SIGNS[(start + amsa) % 12]
+    if method == "chaturthamsa_14710":
+        return SIGNS[(sign + (0, 3, 6, 9)[min(amsa, 3)]) % 12]
     if method == "dasamsa":
         start = sign if sign % 2 == 0 else (sign + 8) % 12
         return SIGNS[(start + amsa) % 12]
@@ -110,9 +112,12 @@ def canonical_varga_fact(planet_id: str, longitude: float, varga_id: str) -> dic
         "varga_sign": _sign_id(sign),
         "varga_degree": round((degree * method_record["division"]) % 30.0, 8),
         "calculation_rule_id": f"VEDA-RUL-VARGA-{method_record['division']:03d}",
+        "method_id": method_record.get("method_id", method_record["method"]),
+        "method_version": method_record.get("method_version", "legacy"),
+        "source_ref": method_record.get("source_ref", "P004_VALIDATED_RUNTIME_REPRODUCTION"),
         "runtime_version": "P012_CANONICAL_RUNTIME",
         "validation_status": method_record["p004"],
-        "interpretation_status": _PURPOSE_READINESS.get(varga_id, {}).get("status", "REFERENCE_ONLY"),
+        "interpretation_status": method_record.get("interpretation_status", _PURPOSE_READINESS.get(varga_id, {}).get("status", "REFERENCE_ONLY")),
     }
 
 
@@ -204,7 +209,7 @@ def varga_claims() -> list[dict[str, Any]]:
 
 def varga_rules() -> list[dict[str, Any]]:
     return [
-        {"rule_id": f"VEDA-RUL-VARGA-{record['division']:03d}", "varga": varga, "rule_type": "CALCULATION_METHOD", "method": record["method"], "source": "P004_VALIDATED_RUNTIME_REPRODUCTION", "status": "CALCULATION_VALIDATED" if record["p004"] == "VALIDATED" else "CALCULATION_VALIDATED_WITH_CONDITIONS", "production_activation": "NOT_EXECUTED"}
+        {"rule_id": f"VEDA-RUL-VARGA-{record['division']:03d}", "varga": varga, "rule_type": "CALCULATION_METHOD", "method": record["method"], "source": record.get("source_ref", "P004_VALIDATED_RUNTIME_REPRODUCTION"), "status": "CALCULATION_VALIDATED" if record["p004"] == "VALIDATED" else "CALCULATION_VALIDATED_WITH_CONDITIONS", "production_activation": "NOT_EXECUTED"}
         for varga, record in VARGA_METHODS.items()
     ]
 
