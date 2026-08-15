@@ -2,7 +2,7 @@
 
 Read this directory before starting any future VEDA work. `VEDA-RM-001-05_FUTURE_PHASE_REGISTRY.md` is the single authoritative future registry; historical roadmaps remain preserved and are classified in `VEDA-RM-001-02_ROADMAP_CONFLICT_AUDIT.md` and `VEDA-RM-001-03_SUPERSESSION_REGISTER.md`.
 
-The implemented baseline is frozen through P028 plus STD-001, STD-002, STD-003, and PRED-001 through PRED-003. P027 Advanced Synthesis & Multi-Chart Reasoning and P028 Compatibility & Relationship Synthesis are implemented/frozen. ADM-EMP-001 is implemented/frozen; EMP-001 remains longitudinal.
+The implemented baseline is frozen through P028-R1 plus STD-001, STD-002, STD-003, and PRED-001 through PRED-003. P027 Advanced Synthesis & Multi-Chart Reasoning, P028 Compatibility & Relationship Synthesis, and P028-R1 Traditional Compatibility Methods are implemented/frozen. ADM-EMP-001 is implemented/frozen; EMP-001 remains longitudinal.
 
 ## Current Status
 

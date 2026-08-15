@@ -73,10 +73,15 @@ class P028CompatibilityEngine:
     supported_relationships = {item.value for item in RelationshipType}
     dimensions = ("EMOTIONAL_ALIGNMENT", "COMMUNICATION_ALIGNMENT", "ATTRACTION_BONDING", "VALUES_ALIGNMENT", "DOMESTIC_ALIGNMENT", "MUTUAL_SUPPORT", "CONFLICT_RESILIENCE", "LONG_TERM_STABILITY", "TIMING_ALIGNMENT")
 
-    def analyze(self, *, relationship_id: str, subject_a: RelationshipSubject, subject_b: RelationshipSubject, relationship_type: str, evidence: Iterable[SynthesisEvidence | dict[str, Any]], traditional_matching: dict[str, Any] | None = None, timing: dict[str, Any] | None = None, analysis_domain: str = "RELATIONSHIP") -> CompatibilityResult:
+    def analyze(self, *, relationship_id: str, subject_a: RelationshipSubject, subject_b: RelationshipSubject, relationship_type: str, evidence: Iterable[SynthesisEvidence | dict[str, Any]], traditional_matching: dict[str, Any] | Any | None = None, timing: dict[str, Any] | None = None, analysis_domain: str = "RELATIONSHIP") -> CompatibilityResult:
         if relationship_type not in self.supported_relationships:
             raise ValueError(f"Unsupported relationship type: {relationship_type}")
         rows = [row if isinstance(row, SynthesisEvidence) else SynthesisEvidence.from_dict(row) for row in evidence]
+        if traditional_matching is not None and hasattr(traditional_matching, "to_dict"):
+            traditional_matching = traditional_matching.to_dict()
+        if traditional_matching:
+            traditional_rows = traditional_matching.get("components", {})
+            rows.extend(SynthesisEvidence(evidence_id=f"P028R1-{name}", claim=f"{name} score {item.get('score')}/{item.get('maximum')}", evidence_type="TRADITIONAL_MATCHING", direction="SUPPORTS" if (item.get("score") or 0) >= (item.get("maximum") or 1) / 2 else "OPPOSES", authority_class=traditional_matching.get("authority", "RESEARCH_CANDIDATE"), knowledge_zone=traditional_matching.get("authority", "RESEARCH_CANDIDATE"), lineage_id=item.get("lineage_id", "TRADITIONAL_MATCHING"), method_variant=traditional_matching.get("method_id")) for name, item in traditional_rows.items())
         if any(row.chart_id not in {subject_a.chart_id, subject_b.chart_id} for row in rows if row.chart_id):
             raise ValueError("Evidence chart_id is outside the declared subject pair")
         if any(row.chart_id == subject_a.chart_id and row.subject_id not in {None, subject_a.subject_id} for row in rows):

@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-15 | VEDA-P028-R1 traditional compatibility methods
+
+Added a versioned deterministic eight-Kuta Ashtakoota foundation under P028. Component scores, exact 36-point totals, cyclic boundaries, provenance, research authority, missing-data states, and P027/P028 evidence integration are preserved. Manglik cancellation and alternate school tables remain deferred; no fatalistic or fertility/health claims are generated.
+
+- P028-R1: IMPLEMENTED / FROZEN
+- Method: `ASHTAKOOTA_NORTH_INDIAN_RESEARCH_CANDIDATE` v1.0
+- Source: `REFERENCE_NOT_VERIFIED`; authority `RESEARCH_CANDIDATE`
+- P029: NOT STARTED
+- EMP-001: ACTIVE LONGITUDINAL / INSUFFICIENT_SAMPLE
+
 ## 2026-08-15 | VEDA-P028 compatibility and relationship synthesis
 
 Added multidimensional relationship synthesis over P024/P027 contracts. P028 preserves Chart A/B and subject identity, directional asymmetry, individual promise inputs, timing/missing-data states, and non-fatalistic explanation. Ashtakoota/Guna Milan was audited and remains explicitly unavailable; no score or parallel compatibility store was created.
