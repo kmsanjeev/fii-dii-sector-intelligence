@@ -15,7 +15,7 @@ TIMING_STATES = {"NOT_ACTIVE", "SUPPORTIVE", "STRONGLY_SUPPORTIVE", "MIXED", "DE
 DIMENSIONS = (
     "dharma_orientation", "spiritual_inclination", "philosophical_orientation", "religious_orientation",
     "inner_development", "practice_orientation", "contemplation", "meditation_orientation", "higher_knowledge",
-    "guru_orientation", "seva_service", "pilgrimage", "detachment", "renunciatory_tendency",
+    "guru_orientation", "seva_service", "devotional_orientation", "occult_inquiry", "pilgrimage", "detachment", "renunciatory_tendency",
     "householder_spirituality", "solitude_retreat", "transformation", "spiritual_crisis", "material_spiritual_balance",
 )
 
@@ -23,6 +23,14 @@ DIMENSIONS = (
 @dataclass(slots=True)
 class SpiritualityDharmaSynthesis:
     domain: str = "SPIRITUALITY_DHARMA"
+    subject_id: str | None = None
+    source_state: str = "RESEARCH_CANDIDATE"
+    birth_time_quality: str = "UNKNOWN"
+    spiritual_interest: str = "INSUFFICIENT_DATA"
+    belief_orientation: str = "INSUFFICIENT_DATA"
+    study_orientation: str = "INSUFFICIENT_DATA"
+    practice_discipline: str = "INSUFFICIENT_DATA"
+    spiritual_experience: str = "INSUFFICIENT_DATA"
     dharma_orientation: str = "INSUFFICIENT_DATA"
     spiritual_inclination: str = "INSUFFICIENT_DATA"
     philosophical_orientation: str = "INSUFFICIENT_DATA"
@@ -34,6 +42,8 @@ class SpiritualityDharmaSynthesis:
     higher_knowledge: str = "INSUFFICIENT_DATA"
     guru_orientation: str = "INSUFFICIENT_DATA"
     seva_service: str = "INSUFFICIENT_DATA"
+    devotional_orientation: str = "INSUFFICIENT_DATA"
+    occult_inquiry: str = "INSUFFICIENT_DATA"
     pilgrimage: str = "INSUFFICIENT_DATA"
     detachment: str = "INSUFFICIENT_DATA"
     renunciatory_tendency: str = "INSUFFICIENT_DATA"
@@ -42,7 +52,11 @@ class SpiritualityDharmaSynthesis:
     transformation: str = "INSUFFICIENT_DATA"
     spiritual_crisis: str = "INSUFFICIENT_DATA"
     material_spiritual_balance: str = "INSUFFICIENT_DATA"
+    spiritual_modes: list[str] = field(default_factory=lambda: ["UNDETERMINED"])
+    dominant_spiritual_scenario: str = "UNDETERMINED"
+    alternative_scenarios: list[str] = field(default_factory=list)
     timing: str = "INSUFFICIENT_DATA"
+    timing_window: str = "UNRESOLVED"
     conditions: list[str] = field(default_factory=list)
     alternatives: list[str] = field(default_factory=list)
     contradictions: list[str] = field(default_factory=list)
@@ -80,7 +94,10 @@ class SpiritualityDharmaSynthesisEngine:
     def synthesize(self, chart: dict[str, Any] | None = None, *, subject_id: str | None = None) -> SpiritualityDharmaSynthesis:
         chart = chart or {}
         scores = chart.get("spiritual_scores") or {}
-        result = SpiritualityDharmaSynthesis()
+        result = SpiritualityDharmaSynthesis(subject_id=subject_id or chart.get("subject_id"), source_state=str(chart.get("source_state", "RESEARCH_CANDIDATE")))
+        result.birth_time_quality = str(chart.get("birth_time_quality", "UNKNOWN")).upper()
+        for name in ("spiritual_interest", "belief_orientation", "study_orientation", "practice_discipline", "spiritual_experience"):
+            setattr(result, name, _score(scores, name))
         for name in DIMENSIONS:
             setattr(result, name, _score(scores, name))
 
@@ -88,6 +105,10 @@ class SpiritualityDharmaSynthesisEngine:
         if not chart.get("house_facts"):
             result.missing_data.append("HOUSE_EVIDENCE_NOT_SUPPLIED")
         result.missing_data.extend(self._varga_gaps(chart))
+        if result.birth_time_quality == "UNKNOWN":
+            result.missing_data.append("BIRTH_TIME_QUALITY_UNKNOWN")
+        elif result.birth_time_quality in {"APPROXIMATE", "RANGE"}:
+            result.missing_data.append("VARGA_BIRTH_TIME_SENSITIVITY")
 
         # Core distinctions are platform governance, not classical guarantees.
         interest = _score(scores, "spiritual_interest")
@@ -102,6 +123,8 @@ class SpiritualityDharmaSynthesisEngine:
             result.conditions.append("Religious or ritual orientation is distinct from inner development.")
         if result.philosophical_orientation in {"STRONG", "MODERATE"} and result.practice_orientation in {"WEAK", "MIXED", "INSUFFICIENT_DATA"}:
             result.conditions.append("Philosophical interest is distinct from lived practice.")
+        if result.occult_inquiry in {"STRONG", "MODERATE"}:
+            result.conditions.append("Occult or hidden-subject interest is not equated with spiritual development or maturity.")
         if result.detachment in {"STRONG", "MODERATE"}:
             result.conditions.append("Detachment is not interpreted as depression, social failure, or relationship dysfunction.")
         if result.solitude_retreat in {"STRONG", "MODERATE"}:
@@ -120,6 +143,24 @@ class SpiritualityDharmaSynthesisEngine:
             result.contradictions.append("Spiritual inclination is stronger than demonstrated inner-development evidence.")
         if result.material_spiritual_balance == "STRONG":
             result.conditions.append("Material emphasis remains distinct from spiritual orientation; neither is treated as moral failure.")
+        if (chart.get("pilgrimage_context") or {}).get("signal"):
+            result.conditions.append("P030 pilgrimage context may describe travel or sacred movement; it does not establish spiritual maturity or renunciation.")
+            result.alternatives.append("PILGRIMAGE_AS_TRAVEL_CONTEXT")
+        if (chart.get("education_context") or {}).get("signal"):
+            result.conditions.append("P023 education context may support study or higher-knowledge interpretation; it does not establish realization.")
+            result.alternatives.append("EDUCATION_AS_HIGHER_KNOWLEDGE_CONTEXT")
+        if result.spiritual_inclination in {"STRONG", "MODERATE"} and result.practice_discipline in {"STRONG", "MODERATE"}:
+            result.dominant_spiritual_scenario = "PRACTICE_ORIENTED_DEVELOPMENT"
+        elif result.study_orientation in {"STRONG", "MODERATE"}:
+            result.dominant_spiritual_scenario = "STUDY_AND_HIGHER_KNOWLEDGE"
+        elif result.devotional_orientation in {"STRONG", "MODERATE"}:
+            result.dominant_spiritual_scenario = "DEVOTIONAL_ORIENTATION"
+        elif result.householder_spirituality in {"STRONG", "MODERATE"}:
+            result.dominant_spiritual_scenario = "HOUSEHOLDER_SPIRITUALITY"
+        elif result.spiritual_inclination != "INSUFFICIENT_DATA":
+            result.dominant_spiritual_scenario = "SPIRITUAL_INCLINATION"
+        result.spiritual_modes = self._modes(result)
+        result.alternative_scenarios = list(dict.fromkeys(result.alternatives))
 
         dasha = chart.get("dasha_activation")
         transit = chart.get("transit_trigger")
@@ -128,14 +169,19 @@ class SpiritualityDharmaSynthesisEngine:
             result.timing = "INSUFFICIENT_DATA"
         elif dasha == "SUPPORTIVE" and transit == "SUPPORTIVE":
             result.timing = "CRISIS_WINDOW" if result.spiritual_crisis in {"STRONG", "MODERATE"} else "STRONGLY_SUPPORTIVE"
+            result.timing_window = "DASHA_TRANSIT_CONVERGENCE"
         elif dasha == "SUPPORTIVE":
             result.timing = "SUPPORTIVE"
+            result.timing_window = "DASHA_SUPPORT"
         elif transit == "DELAYED":
             result.timing = "DELAYED"
+            result.timing_window = "TRANSIT_DELAY"
         elif transit == "STRESS" or result.spiritual_crisis in {"STRONG", "MODERATE"}:
             result.timing = "MIXED"
+            result.timing_window = "QUESTIONING_OR_STRESS_WINDOW"
         else:
             result.timing = "NOT_ACTIVE"
+            result.timing_window = "NO_GOVERNED_WINDOW"
             result.conditions.append("Spiritual potential is not treated as a timed event without governed Dasha/Transit support.")
 
         if result.timing in {"SUPPORTIVE", "STRONGLY_SUPPORTIVE", "CRISIS_WINDOW"}:
@@ -157,6 +203,27 @@ class SpiritualityDharmaSynthesisEngine:
         return result
 
     @staticmethod
+    def _modes(result: SpiritualityDharmaSynthesis) -> list[str]:
+        modes: list[str] = []
+        if result.devotional_orientation in {"STRONG", "MODERATE"}:
+            modes.append("DEVOTIONAL")
+        if result.philosophical_orientation in {"STRONG", "MODERATE"} or result.study_orientation in {"STRONG", "MODERATE"}:
+            modes.append("PHILOSOPHICAL")
+        if result.contemplation in {"STRONG", "MODERATE"} or result.meditation_orientation in {"STRONG", "MODERATE"}:
+            modes.append("CONTEMPLATIVE")
+        if result.religious_orientation in {"STRONG", "MODERATE"}:
+            modes.append("RITUAL")
+        if result.seva_service in {"STRONG", "MODERATE"}:
+            modes.append("SERVICE")
+        if result.renunciatory_tendency in {"STRONG", "MODERATE"}:
+            modes.append("ASCETIC")
+        if result.transformation in {"STRONG", "MODERATE"}:
+            modes.append("MYSTICAL")
+        if result.occult_inquiry in {"STRONG", "MODERATE"}:
+            modes.append("OCCULT_INQUIRY")
+        return modes or ["UNDETERMINED"]
+
+    @staticmethod
     def _varga_gaps(chart: dict[str, Any]) -> list[str]:
         metadata = chart.get("varga_metadata") or {}
         d20 = metadata.get("D20") or {}
@@ -171,13 +238,4 @@ class SpiritualityDharmaSynthesisEngine:
         return {"source_engine": source, "claim": claim, "role": role, "evidence_type": "DOMAIN_SYNTHESIS", "lineage_id": lineage, "authority_class": "RESEARCH_CANDIDATE"}
 
 
-def build_spirituality_benchmark() -> list[dict[str, Any]]:
-    labels = ("dharma_orientation", "spiritual_inclination", "higher_knowledge", "practice_orientation", "contemplation", "pilgrimage", "detachment", "householder_spirituality", "transformation", "spiritual_crisis")
-    return [{"case_id": f"SPIRITUAL-{i + 1:03d}", "chart": {"spiritual_scores": {labels[i % len(labels)]: ((i % 4) + 1) / 4}}, "expected": "DISTINCTION_PRESERVED"} for i in range(160)]
-
-
-def build_spirituality_holdout() -> list[dict[str, Any]]:
-    return [{"case_id": f"SPIRITUAL-HOLDOUT-{i + 1:03d}", "chart": {"spiritual_scores": {"spiritual_inclination": ((i % 3) + 1) / 3, "renunciatory_tendency": (i % 2) / 2}}, "expected": "NO_ENLIGHTENMENT_OR_RENUNCIATION_CERTAINTY"} for i in range(50)]
-
-
-__all__ = ["SpiritualityDharmaSynthesis", "SpiritualityDharmaSynthesisEngine", "build_spirituality_benchmark", "build_spirituality_holdout"]
+__all__ = ["SpiritualityDharmaSynthesis", "SpiritualityDharmaSynthesisEngine"]

@@ -9,6 +9,16 @@
 | Lagna/Lagna lord | Existing foundation | Identity/temperament context only; no new personality engine |
 | Jupiter/Guru | Research candidate | Wisdom/teacher/scripture context does not establish maturity |
 | Ketu | Research candidate | No automatic spirituality, past-life spirituality, moksha or renunciation rule |
-| Saturn/Moon/Sun | Reference/research context | May inform supplied evidence; no universal spiritual claim enabled |
+| Saturn | Research candidate | Discipline, austerity, delay, solitude and detachment remain separate; suffering is not glorified |
+| Moon | Reference/research context | Mind, receptivity, devotion and contemplation may be supplied; distress is not awakening |
+| Sun | Reference/research context | Selfhood, authority, dharma and purpose context only; not liberation evidence |
+| Rahu | Research candidate | Unconventional beliefs, foreign traditions or occult preoccupation do not establish maturity |
+| Venus/Mercury/Mars | Research candidate | No generic spiritual classification is enabled; claims require governed evidence |
+
+## Claim-layer separation
+
+Classical claims are `NOT_VALIDATED_FOR_P031` unless a governed passage is available; traditional commentary remains `RESEARCH_CANDIDATE`; practitioner and modern claims are discovery-only. Platform distinctions such as interest versus maturity, pilgrimage versus renunciation, and occult inquiry versus inner development are governance logic, not classical assertions.
+
+P017 is reused only through governed Yoga/Dosha records. Internet lists are not imported. Spiritual-yoga and sannyasa rules are not activated, and moksha can only be represented as non-deterministic orientation evidence if separately source-validated.
 
 All claims remain conditional and source-scoped. No single house or planet determines spiritual outcome.
