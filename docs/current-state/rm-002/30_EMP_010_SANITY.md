@@ -15,6 +15,8 @@ The shared CaseRegistry contains 10 `HISTORICAL_VERIFIED` cases with
 - Event classes: `DEATH=10`
 - Identity confidence: `7 HIGH`, `3 MODERATE`
 - Chart-based selection: `FALSE`
+- Chart snapshots: `10 / 10` generated after governed city-coordinate resolution
+- BAV/SAV activation: `FALSE`
 - Predictive accuracy claim: `FALSE`
 
 ## Conditions
@@ -22,8 +24,8 @@ The shared CaseRegistry contains 10 `HISTORICAL_VERIFIED` cases with
 Nine event records are currently referenced-Wikidata-only and therefore remain
 lower-confidence until independently corroborated. The corpus has only one
 event class, so it is a pipeline sanity corpus rather than a method-comparison
-corpus. Governed chart facts are not generated from guessed coordinates;
-latitude/longitude resolution remains a data dependency.
+corpus. City-level coordinates are governed inputs with historical and spatial
+caveats; BAV/SAV remain disabled.
 
 ## Decision
 

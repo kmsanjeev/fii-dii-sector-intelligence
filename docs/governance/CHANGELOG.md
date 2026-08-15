@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-EMP-025 CORPUS READINESS
+
+Established the EMP-025 pre-pilot gate at 10 eligible historical cases with
+10 governed D1 chart snapshots. The corpus remains conditional: one event
+class, nine Wikidata-only event records, and insufficient case diversity for
+method evaluation. Subject-level splits and negative/control designs are
+frozen; BAV/SAV remain research-only and inactive.
+
 ## 2026-08-16 | VEDA-EMP-010 FIRST-TEN-SANITY
 
 Reached 10 shared CaseRegistry empirical cases and ran the deterministic first-
