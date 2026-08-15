@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-08-15 | VEDA-KNOW-MUH-001
+
+Completed the classical Muhurta event-rule and personal-Bala source audit. Bṛhat Saṃhitā Chapters 97–99 support scoped nakshatra, tithi and karana action families, including marriage-specific conditions. Tarabala and Chandrabala remain `RESEARCH_CANDIDATE` / `REFERENCE_NOT_VERIFIED` because the accessible Muhurta Chintamani scan has materially corrupted OCR in the relevant material. No recommendation, scoring, Prashna, P032, RAG or Approved Core promotion occurred.
+
 ## 2026-08-15 | VEDA-MUH-R1
 
 Implemented and froze the governed Muhurta foundation. Added a deterministic date/location/timezone contract, approximate local sunrise/sunset facts with explicit missing-event states, event taxonomy labels, and inactive dependency gates. Tarabala, Chandrabala, event-specific rules, electional scoring, recommendations and Prashna remain unimplemented. No P032, RAG rebuild or provider calls were added.

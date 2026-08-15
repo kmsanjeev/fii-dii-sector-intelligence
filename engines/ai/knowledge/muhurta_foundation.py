@@ -160,6 +160,6 @@ def build_muhurta_foundation(request: MuhurtaRequest) -> dict:
             "method_id": METHOD_ID,
             "method_version": METHOD_VERSION,
             "calculation_scope": "SOLAR_DAY_FACTS_ONLY",
-            "source_status": "ENGINEERING_FOUNDATION_REQUIRES_REFERENCE_VALIDATION",
+            "source_status": "CLASSICAL_EVENT_RULES_SCOPED; PERSONAL_BALA_UNVERIFIED",
         },
     }
