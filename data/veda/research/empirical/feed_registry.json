@@ -25,9 +25,9 @@
       "birth_time_available": false,
       "event_data_available": true,
       "source_quality": "ITEM_AND_REFERENCE_DEPENDENT",
-      "ingestion_status": "CONSERVATIVE_IDENTITY_ADAPTER_READY",
+      "ingestion_status": "EVENT_ENRICHMENT_PILOT_CASE_001",
       "last_checked": "2026-08-16",
-      "notes": "A bounded WDQS query timed out; the replayable adapter accepts only externally retrieved claims with exact birth-date/place/occupation agreement and preserves references."
+      "notes": "The event adapter preserves claim identifiers, qualifiers, references and precision. One public case entered the shared CaseRegistry; one event-enriched subject remains excluded for unresolved timezone."
     }
   ]
 }

@@ -1,0 +1,108 @@
+{
+  "feed_id": "VEDA-EMP-OGDB-001",
+  "activity_id": "VEDA-EMP-EVENT-001",
+  "retrieval_timestamp": "2026-08-16T03:28:00Z",
+  "selection_policy": "public identity and objective event evidence only; no chart inspection",
+  "records": [
+    {
+      "ogid": "alioto-joseph-1916-02-12",
+      "subject_label": "Joseph Alioto",
+      "occupation": "politician",
+      "birth_date": "1916-02-12",
+      "birth_time": "08:00",
+      "birth_time_precision": "MINUTE",
+      "birth_place": "San Francisco",
+      "country_code": "US",
+      "timezone_offset": "-08:00",
+      "timezone_status": "RESOLVED",
+      "identity_status": "VERIFIED",
+      "identity_confidence": "HIGH",
+      "identity_evidence": [
+        "OGDB date, place, label and occupation agree with Wikidata Q6280974 identity claims.",
+        "San Francisco official mayoral-history statement corroborates birth date, public office and death year."
+      ],
+      "identity_sources": [
+        "https://www.wikidata.org/wiki/Q6280974",
+        "https://www.sfgov.org/mayoredlee/article/mayor-lees-statement-commemorating-mayor-aliotos-100th-birthday"
+      ],
+      "events": [
+        {
+          "event_id": "Q6280974$A052DF98-2362-4781-948F-9B7BBD440CE3",
+          "event_class": "DEATH",
+          "event_date_start": "1998-01-29",
+          "date_precision": "EXACT",
+          "verification_status": "VERIFIED_EXACT",
+          "discovery_source": "Wikidata Q6280974 P570",
+          "verification_source": "Wikidata references plus San Francisco official mayoral-history statement",
+          "source_quality": "REFERENCED_WIKIDATA_PLUS_OFFICIAL_CORROBORATION",
+          "public_private_status": "PUBLIC",
+          "claim_id": "Q6280974$A052DF98-2362-4781-948F-9B7BBD440CE3",
+          "notes": "Official source corroborates 1998 death year; exact day is retained from the referenced Wikidata claim."
+        },
+        {
+          "event_id": "ALIOTO-MAYOR-START-1968",
+          "event_class": "POSITION_START",
+          "event_date_start": "1968-01-01",
+          "date_precision": "YEAR",
+          "verification_status": "PROBABLE",
+          "discovery_source": "San Francisco official mayoral-history statement",
+          "verification_source": "San Francisco official mayoral-history statement",
+          "source_quality": "OFFICIAL_YEAR_ONLY",
+          "public_private_status": "PUBLIC",
+          "claim_id": "OFFICIAL-SF-ALIOTO-1968",
+          "notes": "Retained for enrichment context only; year precision is not used as the first case event."
+        },
+        {
+          "event_id": "ALIOTO-MAYOR-END-1976",
+          "event_class": "POSITION_END",
+          "event_date_start": "1976-01-01",
+          "date_precision": "YEAR",
+          "verification_status": "PROBABLE",
+          "discovery_source": "San Francisco official mayoral-history statement",
+          "verification_source": "San Francisco official mayoral-history statement",
+          "source_quality": "OFFICIAL_YEAR_ONLY",
+          "public_private_status": "PUBLIC",
+          "claim_id": "OFFICIAL-SF-ALIOTO-1976",
+          "notes": "Retained for enrichment context only; year precision is not used as the first case event."
+        }
+      ]
+    },
+    {
+      "ogid": "abbe-ernst-1840-01-23",
+      "subject_label": "Ernst Abbe",
+      "occupation": "scientist",
+      "birth_date": "1840-01-23",
+      "birth_time": "21:30",
+      "birth_time_precision": "MINUTE",
+      "birth_place": "Eisenach",
+      "country_code": "DE",
+      "timezone_offset": null,
+      "timezone_status": "UNKNOWN",
+      "identity_status": "VERIFIED",
+      "identity_confidence": "HIGH",
+      "identity_evidence": [
+        "OGDB date, place and scientist label agree with Wikidata Q76359 identity claims.",
+        "Institutional Abbe Center of Photonics biography corroborates birth date and identity."
+      ],
+      "identity_sources": [
+        "https://www.wikidata.org/wiki/Q76359",
+        "https://www.acp.uni-jena.de/1771/about-ernst-abbe"
+      ],
+      "events": [
+        {
+          "event_id": "Q76359$950BF0A6-0DD3-4690-89C4-2CA789E757E1",
+          "event_class": "DEATH",
+          "event_date_start": "1905-01-14",
+          "date_precision": "EXACT",
+          "verification_status": "VERIFIED_EXACT",
+          "discovery_source": "Wikidata Q76359 P570",
+          "verification_source": "Wikidata references plus Abbe Center of Photonics institutional biography",
+          "source_quality": "REFERENCED_WIKIDATA_PLUS_INSTITUTIONAL_CORROBORATION",
+          "public_private_status": "PUBLIC",
+          "claim_id": "Q76359$950BF0A6-0DD3-4690-89C4-2CA789E757E1",
+          "notes": "Event is enriched, but the subject is excluded from eligibility until historical timezone is resolved or bounded."
+        }
+      ]
+    }
+  ]
+}

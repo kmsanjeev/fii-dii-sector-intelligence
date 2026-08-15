@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-EMP-EVENT-001 EVENT_ACQUISITION
+
+Expanded the official OGDB research cohort to 250 records, resolved two
+public identities, enriched two subjects with source-traceable objective
+events, and ingested `VEDA-EMP-CASE-001` into the shared CaseRegistry. One
+additional subject remains excluded for unresolved timezone. No chart-based
+selection, predictive result, or BAV/SAV activation was performed.
+
 ## 2026-08-16 | VEDA-RM-002 ASHTAKAVARGA DEFECT CLOSURE
 
 Corrected the BAV target-sign distribution defect and added a deterministic
