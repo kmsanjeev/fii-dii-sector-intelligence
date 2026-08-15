@@ -1,0 +1,19 @@
+"""P030 trust and scope registry."""
+
+TRAVEL_RELOCATION_DOMAIN = {
+    "domain_id": "TRAVEL_RELOCATION",
+    "capability_id": "VEDA-CAP-DOMAIN-P030",
+    "status": "IMPLEMENTED_FROZEN",
+    "trust_state": "RESEARCH_CANDIDATE",
+    "house_evidence": {"3": "RESEARCH_CANDIDATE", "4": "REFERENCE_LEVEL", "7": "RESEARCH_CANDIDATE", "9": "RESEARCH_CANDIDATE", "12": "RESEARCH_CANDIDATE"},
+    "planet_evidence": {"Rahu": "RESEARCH_CANDIDATE", "Saturn": "RESEARCH_CANDIDATE", "Moon": "REFERENCE_LEVEL", "Jupiter": "RESEARCH_CANDIDATE", "Mars": "RESEARCH_CANDIDATE", "Mercury": "RESEARCH_CANDIDATE", "Venus": "RESEARCH_CANDIDATE"},
+    "varga_policy": {"D4": "CALCULATION_VALIDATED_INTERPRETATION_NOT_VALIDATED", "D9": "NOT_VALIDATED_FOR_TRAVEL", "D10": "NOT_VALIDATED_FOR_TRAVEL", "D12": "NOT_VALIDATED_FOR_TRAVEL"},
+    "blocked_outputs": ["IMMIGRATION_ADVICE", "LEGAL_ADVICE", "CITIZENSHIP_CERTAINTY", "CAREER_DECISION_ADVICE", "FINANCIAL_RELOCATION_ADVICE", "FATALISTIC_SETTLEMENT"],
+}
+
+
+def registry() -> dict:
+    return {"domains": [TRAVEL_RELOCATION_DOMAIN.copy()], "p027_owner": True, "p029_context_only": True}
+
+
+__all__ = ["TRAVEL_RELOCATION_DOMAIN", "registry"]

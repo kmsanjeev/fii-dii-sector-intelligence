@@ -3600,3 +3600,6 @@ Two distinct failure modes found:
 
 Versions before 4.43.0 have been moved to keep this file fast to read.
 See `docs/governance/CHANGELOG_ARCHIVE.md` for the full history (4.1.0 through 4.42.0).
+## 2026-08-15 — VEDA-P030
+
+Implemented and froze the Travel, Relocation & Foreign Residence synthesis domain. The deterministic layer separates short/long/repeated travel, domestic/foreign relocation, foreign residence, settlement, return, timing and cross-domain associations; reuses existing domain outputs; preserves the D4 calculation/interpretation gate; and blocks immigration, legal, financial and career-decision advice. P031 remains not started.

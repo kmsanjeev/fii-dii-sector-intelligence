@@ -12,6 +12,8 @@ This is the single authoritative future registry.
 | VEDA-KNOW-PROP-001 | Classical Property, Residence & D4 Source Validation | Governance | PASS_WITH_CONDITION | STD-001, P015, P029 | Source and method audit; D4 remains not production-validated and `P015-RX_REQUIRED` is recorded; evidence in `docs/current-state/know-prop-001/` |
 | P029-R1 | Property/D4 engineering remediation | A | NOT STARTED | KNOW-PROP-001 decision, P015-RX | Not authorized or started; requires source-selected D4 method and separate acceptance |
 | P015-RX | D4 / Chaturthamsha Calculation Remediation | A | IMPLEMENTED / FROZEN | P015, KNOW-PROP-001 | Versioned 1/4/7/10 D4 calculation with boundary validation; interpretation remains not validated; evidence in `docs/current-state/p015-rx/` |
+| P030 | Travel, Relocation & Foreign Residence Synthesis Engine | A | IMPLEMENTED / FROZEN | P019, P021, P023, P024, P027, P029 | Separate travel, relocation, foreign residence, settlement, return and movement timing; evidence in `docs/current-state/p030/` |
+| P031 | Next Jyotisha capability | A | NOT STARTED | P030 acceptance | Not authorized or started |
 | VEDA-EMP-001 | Empirical case acquisition and learning | D/C | ACTIVE_LONGITUDINAL | PRED-001–003 | Requires legitimate cases; no new store |
 | VEDA-STD-003 | Universal Conversational Intelligence, Pragmatics & Multilingual Expression Standard | B/E | IMPLEMENTED / FROZEN | STD-001, STD-002, RM-001 | Shared context foundations; see `docs/current-state/std-003/` |
 | VEDA-COMM-001 | Conversation-Type & Pragmatic Understanding Engine | E | IMPLEMENTED / FROZEN | STD-003 | Deterministic context, pragmatic intent, multi-turn stability, and ChatEngine fallback; see `docs/current-state/comm-001/` |
