@@ -67,7 +67,7 @@
     "timeouts": 3,
     "consecutive_zero_progress": 0
   },
-  "updated_at": "2026-08-15T20:09:15Z",
+  "updated_at": "2026-08-15T20:09:43Z",
   "iteration_started_at": "2026-08-15T20:02:37Z",
   "activity_identity": {
     "activity_id": "MUHURTA_SOURCE_EXPANSION",
@@ -434,7 +434,10 @@
     "why_selected": "Which missing Muhurta source family resolves a documented dependency?"
   },
   "reconciliation": {
-    "authoritative_uncommitted": [
+    "authoritative_uncommitted": [],
+    "temporary_remaining": [],
+    "unexpected": [],
+    "committed": [
       "docs/current-state/rm-002/05_SOURCE_COVERAGE.md",
       "docs/governance/CHANGELOG.md",
       "data/veda/research/astrology/sources/VEDA-SRC-000011.json",
@@ -442,13 +445,6 @@
       "docs/current-state/rm-002/21_SHADBALA_VALIDATION.md",
       "docs/current-state/rm-002/22_MUHURTA_SOURCE_EXPANSION.md"
     ],
-    "temporary_remaining": [],
-    "unexpected": [
-      "scripts/veda_loop.py",
-      "tests/test_veda_astrology_governance.py",
-      "tests/test_veda_autoloop_001.py"
-    ],
-    "committed": [],
     "error": null
   },
   "run_summary": {
@@ -456,10 +452,10 @@
     "loops_completed": 4,
     "activities_completed": 4,
     "repository_changes": true,
-    "commits_created": 0,
-    "authoritative_uncommitted_files": 6,
+    "commits_created": 1,
+    "authoritative_uncommitted_files": 0,
     "temporary_files_remaining": 0,
-    "unexpected_files": 3,
+    "unexpected_files": 0,
     "material_progress": "MEDIUM_INFORMATION_GAIN",
     "validation_only_progress": false,
     "stop_reason": null,
