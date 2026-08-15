@@ -1,6 +1,6 @@
 # VEDA-EMP-010 First-Ten Sanity Gate
 
-Status: `PASS_WITH_CONDITION`  
+Status: `PASS_WITH_CONDITION`
 Date: 2026-08-16
 
 ## Result
