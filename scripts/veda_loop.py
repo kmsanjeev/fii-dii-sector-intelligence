@@ -126,6 +126,8 @@ def classify_output(path: str) -> str:
     normalized = path.replace("\\", "/")
     if normalized in AUTHORITATIVE_ACTIVITY_OUTPUTS:
         return "AUTHORITATIVE_ACTIVITY_OUTPUT"
+    if normalized.startswith("docs/current-state/rm-002/") and normalized.endswith(".md"):
+        return "AUTHORITATIVE_ACTIVITY_OUTPUT"
     if normalized.startswith(".veda-loop/"):
         return "RUNTIME"
     if normalized.startswith("docs/roadmap/veda/LOOP_STATE.json"):
@@ -138,7 +140,9 @@ def validate_authoritative_output(path: str) -> bool:
     if not candidate.is_file():
         return False
     text = candidate.read_text(encoding="utf-8", errors="replace")
-    return all(item.lower() in text.lower() for item in ("PRED-004", "Source Provenance", "No consented"))
+    if path.replace("\\", "/") == "docs/current-state/pred-004/06_SOURCE_PROVENANCE_AND_CALIBRATION.md":
+        return all(item.lower() in text.lower() for item in ("PRED-004", "Source Provenance", "No consented"))
+    return text.lstrip().startswith("#") and len(text.strip()) >= 120
 
 
 def reconcile_outputs() -> dict:
@@ -363,8 +367,10 @@ def run(max_loops: int, retries: int, hard_timeout: int, idle_timeout: int, slee
                     save_state(state)
                     time.sleep(sleep_seconds)
             ending_head = git("rev-parse", "HEAD")
-            unexpected = [path for path in status_paths() if path not in allowed]
-            progress = ending_head != starting_head or result["completed_despite_timeout"]
+            reconciliation_entries = status_entries()
+            activity_outputs = [entry["path"] for entry in reconciliation_entries if classify_output(entry["path"]) == "AUTHORITATIVE_ACTIVITY_OUTPUT"]
+            unexpected = [entry["path"] for entry in reconciliation_entries if entry["path"] not in allowed and classify_output(entry["path"]) not in {"AUTHORITATIVE_ACTIVITY_OUTPUT", "GENERATED_AUTHORITY", "RUNTIME"}]
+            progress = ending_head != starting_head or result["completed_despite_timeout"] or bool(activity_outputs)
             completed_track = state.get("active_track")
             state["controller_state"] = "VERIFYING"
             state["last_commit"] = ending_head

@@ -1,9 +1,9 @@
 {
   "enabled": true,
-  "loop_number": 14,
+  "loop_number": 15,
   "active_activity": null,
   "last_completed_activity": "VEDA-RM-002_REBASELINE",
-  "last_commit": "52b3f0ee6ddc6038930cd33589d124210f2491c5",
+  "last_commit": "71199d14d81dc7118e7d81e59660088cf0bfdce0",
   "last_tag": "veda-pred-004-shadow-pilot",
   "programme_status": "ACTIVE",
   "verified_empirical_cases": 0,
@@ -11,10 +11,8 @@
   "prospective_predictions": 0,
   "resolved_predictions": 0,
   "predictive_maturity": "PRED-M3_OPERATIONAL_PLUS",
-  "next_priority": "CLASSICAL_SOURCE_EXPANSION",
+  "next_priority": "TIMING_VALIDATION",
   "blockers": [
-    "LEGITIMATE_INPUT_REQUIRED: consented or publicly observable subject and governed event data required",
-    "CODEX_RUNTIME_LIMITATION: PowerShell shell snapshot and skills traversal warnings observed; bounded timeouts are recorded",
     "ROADMAP_REBASELINE_COMPLETED: new governed tracks are available",
     "LEGITIMATE_INPUT_REQUIRED: empirical and prospective tracks still require legitimate governed inputs"
   ],
@@ -31,33 +29,49 @@
     "RAG",
     "MUHURTA",
     "PRASHNA",
-    "GOVERNANCE"
+    "GOVERNANCE",
+    "CLASSICAL_SOURCE_EXPANSION"
   ],
-  "available_tracks": ["CLASSICAL_SOURCE_EXPANSION", "TIMING_VALIDATION", "METHOD_COMPARISON", "TAJIKA_FOUNDATION", "ASHTAKAVARGA_VALIDATION", "SHADBALA_VALIDATION", "MUHURTA_SOURCE_EXPANSION"],
-  "human_input_helpful_tracks": ["EMPIRICAL_INPUT_PREPARATION", "PROSPECTIVE_SUBJECT_DISCOVERY"],
-  "dependency_blocked_tracks": ["PRASHNA"],
-  "deferred_tracks": ["ML"],
-  "last_codex_event_at": "2026-08-15T18:20:01Z",
+  "available_tracks": [
+    "TIMING_VALIDATION",
+    "METHOD_COMPARISON",
+    "TAJIKA_FOUNDATION",
+    "ASHTAKAVARGA_VALIDATION",
+    "SHADBALA_VALIDATION",
+    "MUHURTA_SOURCE_EXPANSION"
+  ],
+  "human_input_helpful_tracks": [
+    "EMPIRICAL_INPUT_PREPARATION",
+    "PROSPECTIVE_SUBJECT_DISCOVERY"
+  ],
+  "dependency_blocked_tracks": [
+    "PRASHNA"
+  ],
+  "deferred_tracks": [
+    "ML"
+  ],
+  "completed_tracks": ["CLASSICAL_SOURCE_EXPANSION"],
+  "last_codex_event_at": "2026-08-15T18:52:44Z",
   "last_event_type": "turn.completed",
-  "event_count": 348,
-  "elapsed_seconds": 123.2,
+  "event_count": 748,
+  "elapsed_seconds": 288.3,
   "activity_status": "READY",
   "metrics": {
     "loops_started": 5,
-    "loops_completed": 6,
+    "loops_completed": 7,
     "loops_failed": 5,
     "repairs_run": 0,
-    "track_switches": 8,
+    "track_switches": 9,
     "timeouts": 3,
-    "consecutive_zero_progress": 8
+    "consecutive_zero_progress": 9
   },
-  "updated_at": "2026-08-15T18:20:02Z",
-  "iteration_started_at": "2026-08-15T18:17:58Z",
+  "updated_at": "2026-08-15T18:52:45Z",
+  "iteration_started_at": "2026-08-15T18:47:56Z",
   "activity_identity": {
-    "activity_id": "GOVERNANCE_RECONCILIATION",
-    "track": "GOVERNANCE",
-    "activity_type": "GOVERNANCE",
-    "title": "Governance reconciliation"
+    "activity_id": "CLASSICAL_SOURCE_EXPANSION",
+    "track": "CLASSICAL_SOURCE_EXPANSION",
+    "activity_type": "SOURCE_RESEARCH",
+    "title": "Classical source expansion"
   },
   "completion_state": "ACTIVITY_COMPLETED_NO_REPO_CHANGE",
   "material_progress": "VALIDATION_GAIN",
@@ -83,6 +97,6 @@
     "material_progress": "ROADMAP_REBASELINE",
     "validation_only_progress": false,
     "stop_reason": null,
-    "next_priority": "CLASSICAL_SOURCE_EXPANSION"
+    "next_priority": "TIMING_VALIDATION"
   }
 }
