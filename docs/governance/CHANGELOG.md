@@ -3498,6 +3498,12 @@ Phase V3.4 -- Veda field fixes: activation, barge-in, greetings, read-vs-present
 
 Date: 2026-07-12
 
+## 2026-08-15 — VEDA-P029
+
+Implemented and froze the Property, Residence & Real-Estate synthesis domain. The deterministic layer separates ownership, acquisition, residence stability/change, domestic comfort, inheritance, sale, construction, renovation, debt and dispute context; reuses P022 as financial context and P027 evidence structure; reports D4 as not validated; and blocks property-price, financial-advice and legal-advice outputs. P030 remains not started.
+
+Date: 2026-07-12
+
 ## 2026-08-15 — VEDA-KNOW-COMPAT-001
 
 Completed the classical compatibility source-validation audit for P028-R1. Directly inspected Saravali's Asta Koota reference and the Future Samachar horoscope-matching reference, recorded source/variant/provenance limits, compared all eight current Kuta components, and retained executable tables as `RESEARCH_CANDIDATE`. No Approved Core promotion, RAG rebuild, production code change, Manglik implementation, or predictive-status change was made. Evidence: `docs/current-state/know-compat-001/`.

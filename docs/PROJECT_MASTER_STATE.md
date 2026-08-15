@@ -23,6 +23,7 @@ This project is NOT a screener. It IS a decision intelligence platform.
 - P027 Advanced Synthesis & Multi-Chart Reasoning is implemented/frozen; it reuses the existing Jyotisha runtime and preserves chart/evidence authority.
 - P028 Compatibility & Relationship Synthesis is implemented/frozen; it reuses P024/P027 contracts, preserves chart identity, and does not fabricate traditional match scores.
 - P028-R1 Traditional Compatibility Methods is implemented/frozen as a research-candidate, versioned Ashtakoota foundation; VEDA-KNOW-COMPAT-001 completed source validation with partial framework validation only. Executable Kuta tables remain research candidates, Manglik cancellation remains deferred, and no Approved Core compatibility promotion occurred.
+- P029 Property, Residence & Real-Estate Synthesis is implemented/frozen as a governed domain layer over existing D1/property facts, P022 wealth context, P027 synthesis, Dasha and Transit. D4 is explicitly not validated; P030 remains not started.
 - COMM-002 and GROUP-001 human validation remain pending. EMO-001 is implemented/frozen.
 - EMP-001 remains active longitudinal with insufficient sample; LANG-002+ remains planned.
 - Historical P027 reservation is preserved; current assignment is governed by `docs/current-state/p027/`.

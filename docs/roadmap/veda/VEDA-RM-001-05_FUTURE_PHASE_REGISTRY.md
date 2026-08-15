@@ -8,6 +8,7 @@ This is the single authoritative future registry.
 | P028 | Compatibility & Relationship Synthesis Engine | A | IMPLEMENTED / FROZEN | P024, P027, P014–P019 | Multidimensional, asymmetric relationship synthesis with traditional-method boundaries; implementation evidence in `docs/current-state/p028/` |
 | P028-R1 | Traditional Compatibility Methods Foundation | A | IMPLEMENTED / FROZEN | P028, P015, P017 | Versioned Ashtakoota foundation, Kuta breakdown, governed provenance, and P027/P028 evidence integration; implementation evidence in `docs/current-state/p028-r1/` |
 | VEDA-KNOW-COMPAT-001 | Classical Compatibility Source Validation & Promotion | Governance | IMPLEMENTED / FROZEN | STD-001, P028-R1 | Source registry, rule matrix, variant comparison and component-level promotion decisions; evidence in `docs/current-state/know-compat-001/`; executable Kuta tables remain research candidates |
+| P029 | Property, Residence & Real-Estate Synthesis Engine | A | IMPLEMENTED / FROZEN | P020, P022, P027, P015, P016, P019 | Property ownership, residence, acquisition, timing and domestic-context synthesis; D4 remains explicit not validated; evidence in `docs/current-state/p029/` |
 | VEDA-EMP-001 | Empirical case acquisition and learning | D/C | ACTIVE_LONGITUDINAL | PRED-001–003 | Requires legitimate cases; no new store |
 | VEDA-STD-003 | Universal Conversational Intelligence, Pragmatics & Multilingual Expression Standard | B/E | IMPLEMENTED / FROZEN | STD-001, STD-002, RM-001 | Shared context foundations; see `docs/current-state/std-003/` |
 | VEDA-COMM-001 | Conversation-Type & Pragmatic Understanding Engine | E | IMPLEMENTED / FROZEN | STD-003 | Deterministic context, pragmatic intent, multi-turn stability, and ChatEngine fallback; see `docs/current-state/comm-001/` |
@@ -16,6 +17,7 @@ This is the single authoritative future registry.
 | VEDA-GROUP-001 | Multi-Speaker / Group Conversation Intelligence | E | IMPLEMENTED / FROZEN | STD-003, COMM-001, COMM-002 | Deterministic participant/turn, reply/addressee, topic, position, conflict, and subject attribution layer; see `docs/current-state/group-001/` |
 | VEDA-EMO-001 | Emotional & Relational Intelligence Engine | E | IMPLEMENTED / FROZEN | COMM-001, LANG-001, GROUP-001, COMM-002 | Human-sensitive emotional context, interaction need, relational signals, and per-speaker emotion; implementation evidence in `docs/current-state/emo-001/` |
 | VEDA-LANG-002+ | Additional language packs | E | PLANNED | LANG-001, quality gates | Language-specific authorization |
+| P030 | Next Jyotisha capability | A | NOT STARTED | P029 acceptance and separate authorization | No phase assigned or started |
 | VEDA-ADM-EMP-001 | Empirical Case Intake & Bulk Import Console | F/D | IMPLEMENTED / FROZEN | EMP-001, shared case registry | Preview → validate → accept → ingest; see `docs/current-state/adm-emp-001/` |
 
 Statuses are controlled vocabulary: IMPLEMENTED, ACTIVE, PLANNED, DEFERRED, RESERVED, BLOCKED, SUPERSEDED, RETIRED.
