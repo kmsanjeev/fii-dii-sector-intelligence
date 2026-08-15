@@ -3655,3 +3655,6 @@ Started classical spirituality, dharma and D20 source validation. BPHS passages 
 ## 2026-08-15 — VEDA-P015-RX2
 
 Remediated governed D20 routing with `D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1`. The existing Varga engine now uses BPHS category starts for movable, fixed and dual signs; legacy generic routing remains available only for explicit comparison. Independent 12×20 grid, boundary, modality, Ascendant, planet and node tests pass. Destination-sign mapping remains evidence-qualified, D20 interpretation remains not validated, and P031 remains D1-first.
+## 2026-08-15 | VEDA-AUTOLOOP-R1
+
+Started controller hardening: safe Codex execution is being made the default, with streaming event supervision, separate hard/idle timeout states, partial-completion recovery, blocker tracking, track switching and zero-progress metrics. Jyotisha capability and empirical statuses are unchanged.

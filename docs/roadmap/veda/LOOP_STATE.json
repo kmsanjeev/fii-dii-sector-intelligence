@@ -14,5 +14,22 @@
   "next_priority": "EMPIRICAL_OR_PROSPECTIVE_EVIDENCE",
   "blockers": ["LEGITIMATE_INPUT_REQUIRED: consented or publicly observable subject and governed event data required"],
   "stop_reason": null,
+  "controller_state": "READY",
+  "active_track": null,
+  "blocked_tracks": ["EMPIRICAL", "PROSPECTIVE"],
+  "last_codex_event_at": null,
+  "last_event_type": null,
+  "event_count": 0,
+  "elapsed_seconds": 0,
+  "activity_status": "READY",
+  "metrics": {
+    "loops_started": 0,
+    "loops_completed": 0,
+    "loops_failed": 0,
+    "repairs_run": 0,
+    "track_switches": 0,
+    "timeouts": 0,
+    "consecutive_zero_progress": 0
+  },
   "updated_at": "2026-08-15T17:01:30Z"
 }
