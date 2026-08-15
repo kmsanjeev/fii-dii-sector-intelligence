@@ -2,7 +2,7 @@
 
 Read this directory before starting any future VEDA work. `VEDA-RM-001-05_FUTURE_PHASE_REGISTRY.md` is the single authoritative future registry; historical roadmaps remain preserved and are classified in `VEDA-RM-001-02_ROADMAP_CONFLICT_AUDIT.md` and `VEDA-RM-001-03_SUPERSESSION_REGISTER.md`.
 
-The implemented baseline is frozen through P026 plus STD-001, STD-002, STD-003, and PRED-001 through PRED-003. P027 is reserved but unassigned. ADM-EMP-001 is implemented/frozen; EMP-001 remains longitudinal.
+The implemented baseline is frozen through P027 plus STD-001, STD-002, STD-003, and PRED-001 through PRED-003. P027 Advanced Synthesis & Multi-Chart Reasoning is implemented/frozen. ADM-EMP-001 is implemented/frozen; EMP-001 remains longitudinal.
 
 ## Current Status
 
@@ -12,7 +12,7 @@ The implemented baseline is frozen through P026 plus STD-001, STD-002, STD-003, 
 - Empirical status: `VEDA-EMP-001` remains longitudinal; real eligible cases and verified outcomes remain `0`; `PRED-M4` is `INSUFFICIENT_SAMPLE`.
 - `VEDA-ADM-EMP-001` is implemented/frozen by its own acceptance record; the next operational step is to supply legitimate governed case data.
 - ADM-EMP-001 implementation: `38bd7a03`, tag `veda-adm-emp-001-case-intake-console`.
-- STD-003 is implemented/frozen by its current-state acceptance record; COMM-001 is implemented/frozen by `docs/current-state/comm-001/`; LANG-001 and LANG-001-R1 are implemented/frozen by their current-state records; COMM-002 is implemented/frozen by `docs/current-state/comm-002/`; GROUP-001 is implemented/frozen by `docs/current-state/group-001/`; EMO-001 is authorized/in implementation in `docs/current-state/emo-001/`; LANG-002+ remains planned.
+- STD-003 is implemented/frozen by its current-state acceptance record; COMM-001 is implemented/frozen by `docs/current-state/comm-001/`; LANG-001 and LANG-001-R1 are implemented/frozen by their current-state records; COMM-002 is implemented/frozen by `docs/current-state/comm-002/`; GROUP-001 is implemented/frozen by `docs/current-state/group-001/`; EMO-001 is implemented/frozen in `docs/current-state/emo-001/`; P027 is implemented/frozen in `docs/current-state/p027/`; LANG-002+ remains planned.
 - STD-003 implementation: `c73261e1`, tag `veda-std-003-conversational-intelligence-standard`.
 - COMM-001 implementation: `676f0aca`, tag `veda-comm-001-pragmatic-understanding-engine`.
 - LANG-001 implementation: `9d15dcb8` with tag `veda-lang-001-wave1-language-intelligence`.

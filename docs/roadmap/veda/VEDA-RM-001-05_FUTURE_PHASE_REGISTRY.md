@@ -4,7 +4,7 @@ This is the single authoritative future registry.
 
 | ID | Title | Track | Status | Dependencies | Gate / notes |
 |---|---|---|---|---|---|
-| P027 | RESERVED — capability not assigned | A | RESERVED | Explicit capability decision | No arbitrary domain assignment |
+| P027 | Advanced Synthesis & Multi-Chart Reasoning | A | IMPLEMENTED / FROZEN | P014–P026, PRED-001–003, STD-001–003 | Evidence convergence, contradiction resolution, timing hierarchy, and governed multi-chart context; implementation evidence in `docs/current-state/p027/` |
 | VEDA-EMP-001 | Empirical case acquisition and learning | D/C | ACTIVE_LONGITUDINAL | PRED-001–003 | Requires legitimate cases; no new store |
 | VEDA-STD-003 | Universal Conversational Intelligence, Pragmatics & Multilingual Expression Standard | B/E | IMPLEMENTED / FROZEN | STD-001, STD-002, RM-001 | Shared context foundations; see `docs/current-state/std-003/` |
 | VEDA-COMM-001 | Conversation-Type & Pragmatic Understanding Engine | E | IMPLEMENTED / FROZEN | STD-003 | Deterministic context, pragmatic intent, multi-turn stability, and ChatEngine fallback; see `docs/current-state/comm-001/` |
@@ -17,4 +17,4 @@ This is the single authoritative future registry.
 
 Statuses are controlled vocabulary: IMPLEMENTED, ACTIVE, PLANNED, DEFERRED, RESERVED, BLOCKED, SUPERSEDED, RETIRED.
 
-P027 policy: Option A, retain sequential compatibility but reserve P027 until an explicit Jyotisha capability is authorized.
+P027 policy: the historical reservation is preserved in prior roadmap records; the current scope is Advanced Synthesis & Multi-Chart Reasoning. P027 is `IMPLEMENTED / FROZEN`; the full-repository timeout condition remains documented separately from P027-specific acceptance.
