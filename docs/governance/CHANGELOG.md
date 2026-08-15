@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-AUTOLOOP-R4
+
+Froze transient-stop recovery hardening. `LOW_VALUE_REPETITION` and related
+bounded-run stops no longer permanently latch the programme; startup validates
+and resumes an eligible novel priority, preserves the historical stop, and
+leaves human/programme stops stopped. No Jyotisha, empirical, predictive, RAG,
+or provider state changed.
+
 ## 2026-08-16 | VEDA-AUTOLOOP-R3
 
 Froze information-gain scheduling hardening. The autonomous controller now

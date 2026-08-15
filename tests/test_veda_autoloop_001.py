@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from scripts.veda_loop import NoAvailableTrackError, activity_identity, candidate_decisions, classify_activity_result, classify_failure, classify_material_progress, classify_output, completion_state, compose_prompt, partial_completion, relevant_input_fingerprint, select_next_priority, select_track
+from scripts.veda_loop import NoAvailableTrackError, activity_identity, candidate_decisions, classify_activity_result, classify_failure, classify_material_progress, classify_output, classify_stop_reason, completion_state, compose_prompt, partial_completion, relevant_input_fingerprint, resume_from_transient_stop, select_next_priority, select_track
 
 
 def test_priority_escalates_empirical_and_prospective_evidence():
@@ -91,3 +91,32 @@ def test_document_only_output_is_not_material_progress():
 def test_output_fingerprint_inputs_are_stable():
     state = _r3_state()
     assert relevant_input_fingerprint(state, "METHOD_COMPARISON") == relevant_input_fingerprint(state, "METHOD_COMPARISON")
+
+
+def test_low_value_stop_with_novel_next_priority_resumes():
+    state = _r3_state(next_priority="TAJIKA_FOUNDATION", stop_reason="LOW_VALUE_REPETITION: prior activity repeated")
+    result = resume_from_transient_stop(state, dry_run=True)
+    assert result == {"classification": "TRANSIENT_RUN_STOP", "resumed": True, "selected": "TAJIKA_FOUNDATION", "reason": None}
+
+
+def test_human_and_programme_stops_remain_stopped():
+    assert classify_stop_reason("FOUNDER_APPROVAL_REQUIRED") == "HUMAN_BLOCK"
+    assert classify_stop_reason("USER_REQUESTED_STOP") == "PROGRAMME_STOP"
+    assert not resume_from_transient_stop(_r3_state(next_priority="TAJIKA_FOUNDATION", stop_reason="FOUNDER_APPROVAL_REQUIRED"), dry_run=True)["resumed"]
+    assert not resume_from_transient_stop(_r3_state(next_priority="TAJIKA_FOUNDATION", stop_reason="NO_MEANINGFUL_NEXT_ACTIVITY"), dry_run=True)["resumed"]
+
+
+def test_transient_resume_clears_stop_and_preserves_history(monkeypatch):
+    state = _r3_state(next_priority="TAJIKA_FOUNDATION", stop_reason="MAX_LOOPS_REACHED")
+    monkeypatch.setattr("scripts.veda_loop.save_state", lambda value: None)
+    result = resume_from_transient_stop(state)
+    assert result["resumed"]
+    assert state["stop_reason"] is None
+    assert state["controller_state"] == "READY"
+    assert state["programme_status"] == "ACTIVE"
+    assert state["stop_history"][0]["classification"] == "TRANSIENT_RUN_STOP"
+
+
+def test_cooldown_on_one_track_does_not_block_unrelated_priority():
+    state = _r3_state(next_priority="TAJIKA_FOUNDATION", cooldowns={"METHOD_COMPARISON": {"input_fingerprint": relevant_input_fingerprint(_r3_state(), "METHOD_COMPARISON")}})
+    assert resume_from_transient_stop({**state, "stop_reason": "LOW_VALUE_REPETITION"}, dry_run=True)["selected"] == "TAJIKA_FOUNDATION"

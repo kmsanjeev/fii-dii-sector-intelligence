@@ -61,6 +61,9 @@ AUTHORITATIVE_ACTIVITY_OUTPUTS = {
     "docs/PROJECT_MASTER_STATE.md",
     "docs/governance/CHANGELOG.md",
 }
+TRANSIENT_RUN_STOPS = {"LOW_VALUE_REPETITION", "MAX_LOOPS_REACHED", "COOLDOWN_EXHAUSTED_FOR_CURRENT_RUN"}
+HUMAN_BLOCK_STOPS = {"FOUNDER_APPROVAL_REQUIRED", "DESTRUCTIVE_MIGRATION_APPROVAL_REQUIRED", "CREDENTIAL_REQUIRED"}
+PROGRAMME_STOPS = {"NO_MEANINGFUL_NEXT_ACTIVITY", "LONGITUDINAL_ONLY_REMAINS", "CRITICAL_REPOSITORY_FAILURE", "USER_REQUESTED_STOP"}
 
 
 class NoAvailableTrackError(RuntimeError):
@@ -104,6 +107,62 @@ def _stable_json(value: object) -> str:
 
 def activity_contract(track: str) -> dict:
     return dict(ACTIVITY_CONTRACTS[track])
+
+
+def stop_reason_code(stop_reason: str | None) -> str | None:
+    if not stop_reason:
+        return None
+    return stop_reason.split(":", 1)[0].strip()
+
+
+def classify_stop_reason(stop_reason: str | None) -> str:
+    code = stop_reason_code(stop_reason)
+    if code in TRANSIENT_RUN_STOPS:
+        return "TRANSIENT_RUN_STOP"
+    if code in HUMAN_BLOCK_STOPS:
+        return "HUMAN_BLOCK"
+    if code == "ROADMAP_REBASELINE_REQUIRED":
+        return "RECOVERABLE_FAILURE"
+    if code in PROGRAMME_STOPS:
+        return "PROGRAMME_STOP"
+    if code in {"LEGITIMATE_INPUT_REQUIRED", "ALL_TRACKS_BLOCKED"}:
+        return "TRACK_BLOCKER"
+    return "PROGRAMME_STOP" if code else "NONE"
+
+
+def _stored_priority_decision(state: dict) -> dict | None:
+    priority = state.get("next_priority")
+    if not priority:
+        return None
+    return next((item for item in candidate_decisions(state) if item["track"] == priority or item["activity_id"] == priority), None)
+
+
+def resume_from_transient_stop(state: dict, *, dry_run: bool = False) -> dict:
+    classification = classify_stop_reason(state.get("stop_reason"))
+    result = {"classification": classification, "resumed": False, "selected": None, "reason": state.get("stop_reason")}
+    if classification != "TRANSIENT_RUN_STOP":
+        return result
+    decision = _stored_priority_decision(state)
+    if not decision or not decision["selected"]:
+        candidates = [item for item in candidate_decisions(state) if item["selected"]]
+        decision = max(candidates, key=lambda item: (item["score"], -TRACKS.index(item["track"]))) if candidates else None
+    if not decision:
+        result["reason"] = "NO_ELIGIBLE_RESUME_PRIORITY"
+        return result
+    result["resumed"] = True
+    result["selected"] = decision["track"]
+    result["reason"] = None
+    if not dry_run:
+        state.setdefault("stop_history", []).append({"reason": state.get("stop_reason"), "classification": classification, "recorded_at": now(), "resumed_as": decision["track"]})
+        state["stop_history"] = state["stop_history"][-25:]
+        state["stop_reason"] = None
+        state["controller_state"] = "READY"
+        state["activity_status"] = "READY"
+        state["next_priority"] = decision["track"]
+        state["programme_status"] = state.get("programme_status", "ACTIVE") or "ACTIVE"
+        state["resume_event"] = {"from": classification, "selected": decision["track"], "recorded_at": now()}
+        save_state(state)
+    return result
 
 
 def relevant_input_fingerprint(state: dict, track: str) -> str:
@@ -452,6 +511,7 @@ def run(max_loops: int, retries: int, hard_timeout: int, idle_timeout: int, slee
         if unsafe_changes:
             print(f"refusing to run with unrelated tracked changes: {unsafe_changes}", file=sys.stderr)
             return 2
+        resume_preview = resume_from_transient_stop(state, dry_run=dry_run)
         if dry_run:
             try:
                 selected_track = select_track(state)
@@ -463,12 +523,17 @@ def run(max_loops: int, retries: int, hard_timeout: int, idle_timeout: int, slee
                 selected_priority = None
                 decisions = candidate_decisions(state)
                 selected = None
-            print(json.dumps({"selected_track": selected_track, "selected_priority": selected_priority, "question_to_resolve": selected["question"] if selected else None, "expected_information_gain": selected["expected_information_gain"] if selected else None, "novelty": selected["novelty"] if selected else None, "relevant_input_changed": selected["relevant_input_changed"] if selected else None, "suppressed": [{"track": item["track"], "reason": item["rejected"]} for item in decisions if not item["selected"]], "cooldowns": state.get("cooldowns", {}), "next_alternative": next((item["track"] for item in decisions if item["selected"] and item["track"] != selected_track), None), "blocked_tracks": state.get("blocked_tracks", []), "safe_execution": not unsafe, "unsafe_opt_in": unsafe, "hard_timeout_seconds": hard_timeout, "idle_timeout_seconds": idle_timeout, "retry_limit": retries, "max_loops": max_loops}, indent=2))
+            print(json.dumps({"resume_classification": resume_preview["classification"], "would_resume": resume_preview["resumed"], "resume_selected": resume_preview["selected"], "selected_track": selected_track, "selected_priority": selected_priority, "question_to_resolve": selected["question"] if selected else None, "expected_information_gain": selected["expected_information_gain"] if selected else None, "novelty": selected["novelty"] if selected else None, "relevant_input_changed": selected["relevant_input_changed"] if selected else None, "suppressed": [{"track": item["track"], "reason": item["rejected"]} for item in decisions if not item["selected"]], "cooldowns": state.get("cooldowns", {}), "next_alternative": next((item["track"] for item in decisions if item["selected"] and item["track"] != selected_track), None), "blocked_tracks": state.get("blocked_tracks", []), "safe_execution": not unsafe, "unsafe_opt_in": unsafe, "hard_timeout_seconds": hard_timeout, "idle_timeout_seconds": idle_timeout, "retry_limit": retries, "max_loops": max_loops}, indent=2))
             return 0
         for _ in range(max_loops):
             state = load_state()
-            if not state.get("enabled", True) or state.get("stop_reason"):
+            if not state.get("enabled", True):
                 return 0
+            if state.get("stop_reason"):
+                resume_from_transient_stop(state)
+                state = load_state()
+                if state.get("stop_reason"):
+                    return 0
             try:
                 identity = activity_identity(state)
             except NoAvailableTrackError:
