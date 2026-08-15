@@ -3603,3 +3603,7 @@ See `docs/governance/CHANGELOG_ARCHIVE.md` for the full history (4.1.0 through 4
 ## 2026-08-15 — VEDA-P030
 
 Implemented and froze the Travel, Relocation & Foreign Residence synthesis domain. The deterministic layer separates short/long/repeated travel, domestic/foreign relocation, foreign residence, settlement, return, timing and cross-domain associations; reuses existing domain outputs; preserves the D4 calculation/interpretation gate; and blocks immigration, legal, financial and career-decision advice. P031 remains not started.
+
+## 2026-08-15 — VEDA-KNOW-TRAVEL-001
+
+Started the classical travel, relocation and foreign-residence source validation. Existing P030 knowledge was audited first. Hāyanaratna annual/Tājika journey material, Brihat Saṃhitā transit movement/return material, Brihat Jataka house nomenclature and pravāsa lexical evidence were recorded with method and historical-geography limits. Universal 12th-house permanent-settlement and Rahu-settlement claims were rejected; P030 remains frozen, D4 interpretation remains gated, no RAG or Approved Core change occurred, and P030-R1/P031 remain not started.
