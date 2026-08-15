@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-08-15 | VEDA-MUH-R1
+
+Implemented and froze the governed Muhurta foundation. Added a deterministic date/location/timezone contract, approximate local sunrise/sunset facts with explicit missing-event states, event taxonomy labels, and inactive dependency gates. Tarabala, Chandrabala, event-specific rules, electional scoring, recommendations and Prashna remain unimplemented. No P032, RAG rebuild or provider calls were added.
+
 ## 2026-08-15 | VEDA-MUH-FND-001
 
 Completed the Panchanga and electional-astrology foundation audit. The existing runtime provides birth-time Tithi, Vara, Nakshatra, Yoga and Karana plus natal chart context. Classical Bṛhat Saṃhitā Chapters 97–99 and 102 were inspected for scoped nakshatra, tithi, karana and marriage-context rule families. Sunrise/sunset, electional date/location handling, event taxonomy, Tarabala, Chandrabala, local solar-day windows and electional selection remain incomplete. Muhurta is therefore `PARTIAL`; Prashna remains `MISSING_FOUNDATION`. No Muhurta, Prashna, P032, RAG or production-rule implementation was started.
