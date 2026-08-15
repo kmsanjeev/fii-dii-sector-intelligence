@@ -16,10 +16,11 @@ def _source_d20_sign(longitude: float) -> str:
 
 def test_activity_is_registered_without_autonomous_promotion():
     audit = SPIRITUALITY_DOMAIN["know_spirit_001"]
-    assert audit["status"] == "IN_IMPLEMENTATION"
-    assert audit["d20_calculation_decision"] == "D20_METHOD_VARIANTS_REQUIRE_SPLIT"
+    assert audit["status"] == "PASS_WITH_CONDITION"
+    assert audit["d20_calculation_decision"] == "D20_CALCULATION_PARTIALLY_VALIDATED"
     assert audit["d20_interpretation_decision"] == "D20_INTERPRETATION_RESEARCH_CANDIDATE"
     assert audit["approved_core_promoted"] == 0
+    assert audit["p015_rx2_required"] == "RESOLVED_BY_P015_RX2"
 
 
 def test_d20_current_runtime_metadata_is_source_selected_but_qualified():

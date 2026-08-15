@@ -25,4 +25,4 @@ Total: 107 criteria; 75 PASS, 32 PASS_WITH_CONDITION, 0 BLOCKED, 0 FAIL.
 
 ## Evidence and conditions
 
-The detailed evidence is in the numbered audit files in this directory. The material D20 condition is an engineering finding, not a reason to repair P015 inside this activity. The audit is committed and tagged, while the activity remains `IN IMPLEMENTATION` pending the project’s later freeze decision.
+The detailed evidence is in the numbered audit files in this directory. The material D20 condition was assigned to P015-RX2, which is now implemented/frozen with an evidence-qualified calculation state. KNOW-SPIRIT-001 remains `PASS_WITH_CONDITION`; D20 interpretation remains research-only.

@@ -11,7 +11,7 @@ SPIRITUALITY_DOMAIN = {
     "d20_audit": {"method": "d20_vimshamsha_bphs_category_start_v1", "method_id": "D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1", "method_version": "1.0", "calculation_status": "PARTIALLY_VALIDATED", "source_status": "BPHS_CH6_17_20; BPHS_CH7_4; destination-sign mapping remains source-incomplete", "interpretation_status": "NOT_VALIDATED", "fallback": "legacy generic method retained only for historical comparison; P031 never interprets D20", "p015_remediation_required": "NO_FOR_P031"},
     "yoga_dosha_policy": {"spiritual_yogas": "NOT_IMPORTED", "sannyasa": "NOT_ACTIVATED", "moksha": "ORIENTATION_ONLY_IF_SOURCE_VALIDATED", "p017_reuse": "GOVERNED_RULES_ONLY"},
     "claim_layers": {"classical": "NOT_VALIDATED_FOR_P031", "traditional_commentary": "RESEARCH_CANDIDATE", "practitioner": "DISCOVERY_ONLY", "modern": "DISCOVERY_ONLY", "platform_synthesis": "GOVERNANCE_ONLY"},
-    "know_spirit_001": {"status": "IN_IMPLEMENTATION", "d20_calculation_decision": "D20_METHOD_VARIANTS_REQUIRE_SPLIT", "d20_interpretation_decision": "D20_INTERPRETATION_RESEARCH_CANDIDATE", "p015_rx2_required": "YES_FUTURE_NO_REPAIR_HERE", "approved_core_promoted": 0},
+    "know_spirit_001": {"status": "PASS_WITH_CONDITION", "d20_calculation_decision": "D20_CALCULATION_PARTIALLY_VALIDATED", "d20_interpretation_decision": "D20_INTERPRETATION_RESEARCH_CANDIDATE", "p015_rx2_required": "RESOLVED_BY_P015_RX2", "approved_core_promoted": 0},
     "blocked_outputs": [
         "ENLIGHTENMENT_CERTAINTY", "MOKSHA_CERTAINTY", "SAINTHOOD_CERTAINTY", "FORMAL_RENUNCIATION_CERTAINTY",
         "CLINICAL_DIAGNOSIS", "MENTAL_HEALTH_DIAGNOSIS", "RELIGIOUS_AUTHORITY_CLAIM", "GURU_SELECTION_ADVICE",
