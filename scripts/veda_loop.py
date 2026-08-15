@@ -21,6 +21,21 @@ DEFAULT_HARD_TIMEOUT = 1800
 DEFAULT_IDLE_TIMEOUT = 300
 DEFAULT_RETRIES = 2
 TRACKS = ("CLASSICAL_KNOWLEDGE", "CALCULATION_VALIDATION", "TIMING", "EMPIRICAL", "PROSPECTIVE", "CALIBRATION_ML", "RAG", "MUHURTA", "PRASHNA", "GOVERNANCE")
+ACTIVITIES = {
+    "CLASSICAL_KNOWLEDGE": ("CLASSICAL_KNOWLEDGE_VALIDATION", "VALIDATION", "Classical knowledge source validation"),
+    "CALCULATION_VALIDATION": ("CALCULATION_VALIDATION", "VALIDATION", "Calculation validation"),
+    "TIMING": ("TIMING_METHOD_VALIDATION", "VALIDATION", "Timing method validation"),
+    "EMPIRICAL": ("EMPIRICAL_EVIDENCE", "EVIDENCE_RECONCILIATION", "Empirical evidence reconciliation"),
+    "PROSPECTIVE": ("PROSPECTIVE_SHADOW_PREDICTION", "SHADOW_PREDICTION", "Prospective shadow prediction"),
+    "CALIBRATION_ML": ("SOURCE_PROVENANCE_CALIBRATION", "VALIDATION", "Source provenance and calibration"),
+    "RAG": ("RAG_VALIDATION", "VALIDATION", "RAG validation"),
+    "MUHURTA": ("MUHURTA_READINESS", "ROADMAP_READINESS", "Muhurta readiness"),
+    "PRASHNA": ("PRASHNA_READINESS", "ROADMAP_READINESS", "Prashna readiness"),
+    "GOVERNANCE": ("GOVERNANCE_RECONCILIATION", "GOVERNANCE", "Governance reconciliation"),
+}
+AUTHORITATIVE_ACTIVITY_OUTPUTS = {
+    "docs/current-state/pred-004/06_SOURCE_PROVENANCE_AND_CALIBRATION.md",
+}
 
 
 def now() -> str:
@@ -45,6 +60,15 @@ def status_paths() -> list[str]:
     return [line[3:] for line in output.splitlines() if line.strip() and not line.startswith("??")]
 
 
+def status_entries() -> list[dict[str, str]]:
+    output = subprocess.check_output(["git", "status", "--short"], cwd=ROOT, text=True, encoding="utf-8", errors="replace")
+    entries = []
+    for line in output.splitlines():
+        if line.strip():
+            entries.append({"code": line[:2], "path": line[3:]})
+    return entries
+
+
 def select_track(state: dict) -> str:
     blocked = set(state.get("blocked_tracks", []))
     if state.get("verified_empirical_cases", 0) < 25 and state.get("prospective_predictions", 0) == 0:
@@ -59,7 +83,81 @@ def select_track(state: dict) -> str:
 
 def select_next_priority(state: dict) -> str:
     track = select_track(state)
-    return {"EMPIRICAL": "EMPIRICAL_OR_PROSPECTIVE_EVIDENCE", "PROSPECTIVE": "PROSPECTIVE_SHADOW_PREDICTIONS", "TIMING": "TIMING_METHOD_VALIDATION_OR_OUTCOME_RESOLUTION", "CALIBRATION_ML": "SOURCE_PROVENANCE_AND_CALIBRATION"}.get(track, f"{track}_VALIDATION")
+    return {"EMPIRICAL": "EMPIRICAL_EVIDENCE", "PROSPECTIVE": "PROSPECTIVE_SHADOW_PREDICTION", "TIMING": "TIMING_METHOD_VALIDATION", "CALIBRATION_ML": "SOURCE_PROVENANCE_CALIBRATION"}.get(track, ACTIVITIES[track][0])
+
+
+def activity_identity(state: dict) -> dict[str, str]:
+    track = select_track(state)
+    activity_id, activity_type, title = ACTIVITIES[track]
+    return {"activity_id": activity_id, "track": track, "activity_type": activity_type, "title": title}
+
+
+def classify_material_progress(*, activity: dict, starting_head: str, ending_head: str, validation_gain: bool = False, defect_closed: bool = False, evidence_gain: bool = False, blocker_refined: bool = False) -> str:
+    if starting_head != ending_head:
+        return "REPOSITORY_CHANGE"
+    if defect_closed:
+        return "DEFECT_CLOSED"
+    if evidence_gain:
+        return "EVIDENCE_GAIN"
+    if blocker_refined:
+        return "BLOCKER_REFINED"
+    if validation_gain:
+        return "VALIDATION_GAIN"
+    return "NO_MATERIAL_PROGRESS"
+
+
+def classify_output(path: str) -> str:
+    normalized = path.replace("\\", "/")
+    if normalized in AUTHORITATIVE_ACTIVITY_OUTPUTS:
+        return "AUTHORITATIVE_ACTIVITY_OUTPUT"
+    if normalized.startswith(".veda-loop/"):
+        return "RUNTIME"
+    if normalized.startswith("docs/roadmap/veda/LOOP_STATE.json"):
+        return "GENERATED_AUTHORITY"
+    return "UNRELATED"
+
+
+def validate_authoritative_output(path: str) -> bool:
+    candidate = ROOT / path
+    if not candidate.is_file():
+        return False
+    text = candidate.read_text(encoding="utf-8", errors="replace")
+    return all(item.lower() in text.lower() for item in ("PRED-004", "Source Provenance", "No consented"))
+
+
+def reconcile_outputs() -> dict:
+    entries = status_entries()
+    classified = [{"path": entry["path"], "classification": classify_output(entry["path"]), "code": entry["code"]} for entry in entries]
+    authoritative = [item["path"] for item in classified if item["classification"] == "AUTHORITATIVE_ACTIVITY_OUTPUT"]
+    return {
+        "entries": classified,
+        "authoritative_uncommitted": authoritative,
+        "invalid_authoritative": [path for path in authoritative if not validate_authoritative_output(path)],
+        "temporary_remaining": [item["path"] for item in classified if item["classification"] == "RUNTIME"],
+        "unexpected": [item["path"] for item in classified if item["classification"] == "UNRELATED"],
+    }
+
+
+def commit_authoritative_outputs(paths: list[str]) -> dict:
+    if not paths:
+        return {"committed": [], "error": None}
+    if any(not validate_authoritative_output(path) for path in paths):
+        return {"committed": [], "error": "INVALID_AUTHORITATIVE_OUTPUT"}
+    subprocess.check_call(["git", "add", "--", *paths], cwd=ROOT)
+    staged = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT, capture_output=True, check=False)
+    if staged.returncode != 0:
+        return {"committed": [], "error": None}
+    subprocess.check_call(["git", "commit", "-m", "docs(veda): reconcile autonomous activity output"], cwd=ROOT)
+    subprocess.check_call(["git", "push", "origin", "main"], cwd=ROOT)
+    return {"committed": paths, "error": None}
+
+
+def completion_state(*, exit_code: int, reconciliation: dict, stop_reason: str | None = None) -> str:
+    if stop_reason:
+        return "STOPPED"
+    if reconciliation["invalid_authoritative"] or reconciliation["unexpected"]:
+        return "REPAIR_REQUIRED"
+    return "ACTIVITY_COMPLETED_NO_REPO_CHANGE" if exit_code == 0 and not reconciliation["authoritative_uncommitted"] else "ACTIVITY_COMPLETED"
 
 
 def classify_failure(*, exit_code: int, hard_timeout: bool = False, idle_timeout: bool = False, interrupted: bool = False, protocol_error: bool = False) -> str | None:
@@ -213,8 +311,10 @@ def run(max_loops: int, retries: int, hard_timeout: int, idle_timeout: int, slee
             state = load_state()
             if not state.get("enabled", True) or state.get("stop_reason"):
                 return 0
-            state["active_activity"] = select_next_priority(state)
-            state["active_track"] = select_track(state)
+            identity = activity_identity(state)
+            state["active_activity"] = identity["activity_id"]
+            state["active_track"] = identity["track"]
+            state["activity_identity"] = identity
             state["controller_state"] = "RUNNING"
             state["iteration_started_at"] = now()
             save_state(state)
@@ -239,6 +339,7 @@ def run(max_loops: int, retries: int, hard_timeout: int, idle_timeout: int, slee
             state["active_track"] = None
             state["activity_status"] = "COMPLETED" if result["exit_code"] == 0 or result["completed_despite_timeout"] else "FAILED"
             state["next_priority"] = select_next_priority(state)
+            state["completion_state"] = "ACTIVITY_COMPLETED_NO_REPO_CHANGE" if result["exit_code"] == 0 and ending_head == starting_head else ("REPOSITORY_CHANGE" if ending_head != starting_head else "ACTIVITY_INCOMPLETE")
             metrics = state.setdefault("metrics", {})
             metrics["loops_completed"] = metrics.get("loops_completed", 0) + (1 if result["exit_code"] == 0 else 0)
             metrics["loops_failed"] = metrics.get("loops_failed", 0) + (1 if result["exit_code"] else 0)
@@ -255,14 +356,27 @@ def run(max_loops: int, retries: int, hard_timeout: int, idle_timeout: int, slee
             if unexpected:
                 state["blockers"] = ["UNEXPECTED_TRACKED_CHANGES"]
                 state["stop_reason"] = "CRITICAL_REPOSITORY_FAILURE"
-            append_log({"iteration": state["loop_number"], "start_time": state.get("iteration_started_at"), "end_time": now(), "activity": state.get("next_priority"), "exit_code": result["exit_code"], "failure": result["failure"], "event_count": result["event_count"], "last_event_type": result["last_event_type"], "elapsed_seconds": result["elapsed_seconds"], "starting_head": starting_head, "ending_head": ending_head, "dirty_paths": unexpected, "completed_despite_timeout": result["completed_despite_timeout"], "next_priority": state["next_priority"]})
+            state["material_progress"] = classify_material_progress(activity=identity, starting_head=starting_head, ending_head=ending_head, validation_gain=result["exit_code"] == 0)
+            append_log({"iteration": state["loop_number"], "start_time": state.get("iteration_started_at"), "end_time": now(), "activity": identity["activity_id"], "track": identity["track"], "activity_type": identity["activity_type"], "title": identity["title"], "exit_code": result["exit_code"], "failure": result["failure"], "event_count": result["event_count"], "last_event_type": result["last_event_type"], "elapsed_seconds": result["elapsed_seconds"], "starting_head": starting_head, "ending_head": ending_head, "dirty_paths": unexpected, "completed_despite_timeout": result["completed_despite_timeout"], "material_progress": state["material_progress"], "completion_state": state["completion_state"], "next_priority": state["next_priority"]})
             state["loop_number"] += 1
             save_state(state)
             if unexpected:
                 return 1
             if sleep_seconds:
                 time.sleep(sleep_seconds)
-        return 0
+        reconciliation = reconcile_outputs()
+        state = load_state()
+        commit_result = {"committed": [], "error": None}
+        if not reconciliation["invalid_authoritative"] and not reconciliation["unexpected"]:
+            try:
+                commit_result = commit_authoritative_outputs(reconciliation["authoritative_uncommitted"])
+            except (OSError, subprocess.CalledProcessError) as exc:
+                commit_result = {"committed": [], "error": f"RECONCILIATION_COMMIT_FAILED: {exc}"}
+        state["controller_state"] = "REPAIR_REQUIRED" if reconciliation["invalid_authoritative"] or reconciliation["unexpected"] or commit_result["error"] else "READY"
+        state["reconciliation"] = {"authoritative_uncommitted": reconciliation["authoritative_uncommitted"], "temporary_remaining": reconciliation["temporary_remaining"], "unexpected": reconciliation["unexpected"], "committed": commit_result["committed"], "error": commit_result["error"]}
+        state["run_summary"] = {"loops_requested": max_loops, "loops_completed": state.get("metrics", {}).get("loops_completed", 0), "activities_completed": max_loops, "repository_changes": bool(commit_result["committed"]), "commits_created": len(commit_result["committed"]), "authoritative_uncommitted_files": len(reconciliation["authoritative_uncommitted"]) - len(commit_result["committed"]), "temporary_files_remaining": len(reconciliation["temporary_remaining"]), "unexpected_files": len(reconciliation["unexpected"]), "material_progress": state.get("material_progress"), "validation_only_progress": state.get("material_progress") == "VALIDATION_GAIN", "stop_reason": state.get("stop_reason"), "next_priority": state.get("next_priority")}
+        save_state(state)
+        return 1 if reconciliation["invalid_authoritative"] or reconciliation["unexpected"] or commit_result["error"] else 0
     except KeyboardInterrupt:
         return 130
     finally:
