@@ -12,10 +12,10 @@
   "prospective_predictions": 0,
   "resolved_predictions": 0,
   "predictive_maturity": "PRED-M3_OPERATIONAL_PLUS",
-  "next_priority": null,
+  "next_priority": "EMPIRICAL_INPUT_PREPARATION",
   "blockers": [],
-  "stop_reason": "ALL_TRACKS_BLOCKED",
-  "controller_state": "STOPPED",
+  "stop_reason": null,
+  "controller_state": "READY",
   "active_track": null,
   "blocked_tracks": [
     "EMPIRICAL",
@@ -37,7 +37,8 @@
     "TAJIKA_FOUNDATION",
     "ASHTAKAVARGA_VALIDATION",
     "SHADBALA_VALIDATION",
-    "MUHURTA_SOURCE_EXPANSION"
+    "MUHURTA_SOURCE_EXPANSION",
+    "EMPIRICAL_INPUT_PREPARATION"
   ],
   "human_input_helpful_tracks": [
     "EMPIRICAL_INPUT_PREPARATION",
@@ -57,7 +58,7 @@
   "last_event_type": "turn.completed",
   "event_count": 629,
   "elapsed_seconds": 243.9,
-  "activity_status": "BLOCKED",
+  "activity_status": "COMPLETED",
   "metrics": {
     "loops_started": 5,
     "loops_completed": 21,
@@ -67,7 +68,7 @@
     "timeouts": 3,
     "consecutive_zero_progress": 0
   },
-  "updated_at": "2026-08-15T21:25:22Z",
+  "updated_at": "2026-08-15T21:32:11Z",
   "iteration_started_at": "2026-08-15T21:21:16Z",
   "activity_identity": {
     "activity_id": "MUHURTA_SOURCE_EXPANSION",
@@ -606,17 +607,17 @@
   },
   "run_summary": {
     "loops_requested": 5,
-    "loops_completed": 0,
-    "activities_completed": 0,
-    "repository_changes": false,
+    "loops_completed": 1,
+    "activities_completed": 1,
+    "repository_changes": true,
     "commits_created": 0,
     "authoritative_uncommitted_files": 0,
     "temporary_files_remaining": 0,
     "unexpected_files": 0,
-    "material_progress": "NO_MATERIAL_PROGRESS",
+    "material_progress": "HIGH_INFORMATION_GAIN",
     "validation_only_progress": false,
-    "stop_reason": "ALL_TRACKS_BLOCKED",
-    "next_priority": null
+    "stop_reason": null,
+    "next_priority": "EMPIRICAL_INPUT_PREPARATION"
   },
   "selected_decision": {
     "question": "Which missing Muhurta source family resolves a documented dependency?",

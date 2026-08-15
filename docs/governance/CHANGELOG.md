@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-COMPLETE-001 EMPIRICAL FEED PILOTS
+
+Profiled 25 timed Open Gauquelin Database records under the published
+CC-BY-SA-4.0 terms and preserved them as research-only birth records. A
+bounded Wikidata Query Service test timed out; no identity join, event,
+outcome, empirical case, or calibration count was created. The shared case
+registry remains the only ingestion path.
+
 ## 2026-08-16 | VEDA-RM-002 ASHTAKAVARGA_VALIDATION
 
 Added a governed Ashtakavarga source-contract boundary and a non-promotional

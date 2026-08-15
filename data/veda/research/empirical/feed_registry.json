@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0",
+  "feeds": [
+    {
+      "feed_id": "VEDA-EMP-OGDB-001",
+      "name": "Open Gauquelin Database timed data",
+      "url": "https://opengauquelin.org/download/ogdb-time.csv.zip",
+      "access_type": "OPEN_DOWNLOAD",
+      "license": "CC-BY-SA-4.0",
+      "automation_allowed": true,
+      "birth_time_available": true,
+      "event_data_available": false,
+      "source_quality": "MIXED_SOURCE_RECORDS",
+      "ingestion_status": "PILOT_PROFILED",
+      "last_checked": "2026-08-16",
+      "notes": "Timed birth-record pilot only; no empirical case is eligible without dated event/outcome and leakage review."
+    },
+    {
+      "feed_id": "VEDA-EMP-WD-001",
+      "name": "Wikidata Query Service event enrichment",
+      "url": "https://query.wikidata.org/",
+      "access_type": "SPARQL",
+      "license": "Per-item Wikidata licensing and attribution terms",
+      "automation_allowed": true,
+      "birth_time_available": false,
+      "event_data_available": true,
+      "source_quality": "ITEM_AND_REFERENCE_DEPENDENT",
+      "ingestion_status": "WDQS_TIMEOUT_API_FALLBACK_REQUIRED",
+      "last_checked": "2026-08-16",
+      "notes": "A bounded WDQS query timed out; MediaWiki search API responds, but no automatic joins are accepted until exact birth-date/place verification is implemented."
+    }
+  ]
+}
