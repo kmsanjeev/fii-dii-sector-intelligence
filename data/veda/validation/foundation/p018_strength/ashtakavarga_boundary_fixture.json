@@ -1,0 +1,37 @@
+{
+  "fixture_id": "P018-ASHTAKAVARGA-BOUNDARY-001",
+  "system": "ASHTAKAVARGA",
+  "mode": "BOUNDARY_VALIDATION",
+  "status": "VALIDATION_REQUIRED",
+  "purpose": "Detect repeated BAV columns without asserting a classical contributor formula.",
+  "input": {
+    "Sun": 1,
+    "Moon": 4,
+    "Mars": 7,
+    "Mercury": 10,
+    "Jupiter": 1,
+    "Venus": 4,
+    "Saturn": 7
+  },
+  "invariants": [
+    {
+      "id": "BAV-TARGET-SIGN-SENSITIVITY",
+      "assertion": "BAV columns must not all be identical when occupied signs have different relative positions.",
+      "expected": "MUST_HOLD"
+    },
+    {
+      "id": "SAV-COLUMN-AGGREGATION",
+      "assertion": "Each SAV sign column must equal the sum of the corresponding BAV columns returned for the same input.",
+      "expected": "MUST_HOLD"
+    }
+  ],
+  "source_claim_ids": [
+    "VEDA-R2-CLM-000008",
+    "VEDA-R2-CLM-000009"
+  ],
+  "source_authority": "METADATA_ONLY_NOT_FORMULA_AUTHORITY",
+  "independent_review": "PENDING",
+  "approved_core": false,
+  "predictive_use": "NOT_AUTHORIZED",
+  "notes": "No expected bindu table, total, interpretation, empirical case, or prospective outcome is encoded."
+}

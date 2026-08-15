@@ -7,12 +7,15 @@ Sahama or annual-lord runtime was identified in the current implementation
 audit. Travel research contains method-scoped annual/Tajika material, but that
 does not establish a general annual forecasting engine.
 
-`TAJIKA_FOUNDATION` is a high-impact research/calculation candidate. It must
-begin with source and method identification, not production prediction.
+`TAJIKA_FOUNDATION` is a high-impact research/calculation candidate. A
+scholarly Hāyanaratna edition is now registered at metadata and chapter-locator
+level, but passage verification and calculation reconciliation are still
+required before any production prediction.
 
 The bounded foundation activity is recorded in
 `docs/current-state/rm-002/19_TAJIKA_FOUNDATION.md`. Hāyanaratna provides
 method-scoped annual/Tājika evidence, but the repository still lacks a
 source-resolved annual-chart construction contract and verified definitions for
-Muntha, annual lord, Tajika aspects and Sahamas. No runtime or Approved Core
-activation follows from this status.
+Muntha, annual lord, Tajika aspects and Sahamas. The source-method register is
+in `docs/current-state/rm-002/24_TAJIKA_SOURCE_METHOD_REGISTER.md`; no runtime
+or Approved Core activation follows from this status.

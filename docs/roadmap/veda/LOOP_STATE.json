@@ -1,9 +1,9 @@
 {
   "enabled": true,
-  "loop_number": 23,
+  "loop_number": 26,
   "active_activity": null,
-  "last_completed_activity": "MUHURTA_SOURCE_EXPANSION",
-  "last_commit": "3a68f320f8327ab19a314fdb90ffda7b2c47bccc",
+  "last_completed_activity": "ASHTAKAVARGA_VALIDATION",
+  "last_commit": "c2d361b17da07f143e51bf09238aa9a596d2e194",
   "input_revision": "rm-002-governed-inputs",
   "last_tag": "veda-pred-004-shadow-pilot",
   "programme_status": "ACTIVE",
@@ -12,7 +12,7 @@
   "prospective_predictions": 0,
   "resolved_predictions": 0,
   "predictive_maturity": "PRED-M3_OPERATIONAL_PLUS",
-  "next_priority": "METHOD_COMPARISON",
+  "next_priority": "SHADBALA_VALIDATION",
   "blockers": [],
   "stop_reason": null,
   "controller_state": "READY",
@@ -53,27 +53,27 @@
     "CLASSICAL_SOURCE_EXPANSION",
     "TIMING_VALIDATION"
   ],
-  "last_codex_event_at": "2026-08-15T20:07:09Z",
+  "last_codex_event_at": "2026-08-15T20:34:04Z",
   "last_event_type": "turn.completed",
-  "event_count": 426,
-  "elapsed_seconds": 271.6,
+  "event_count": 133,
+  "elapsed_seconds": 261.3,
   "activity_status": "COMPLETED",
   "metrics": {
     "loops_started": 5,
-    "loops_completed": 15,
+    "loops_completed": 18,
     "loops_failed": 5,
     "repairs_run": 0,
-    "track_switches": 11,
+    "track_switches": 12,
     "timeouts": 3,
     "consecutive_zero_progress": 0
   },
-  "updated_at": "2026-08-15T20:09:43Z",
-  "iteration_started_at": "2026-08-15T20:02:37Z",
+  "updated_at": "2026-08-15T20:36:22Z",
+  "iteration_started_at": "2026-08-15T20:29:43Z",
   "activity_identity": {
-    "activity_id": "MUHURTA_SOURCE_EXPANSION",
-    "track": "MUHURTA_SOURCE_EXPANSION",
-    "activity_type": "SOURCE_RESEARCH",
-    "title": "Muhurta source expansion"
+    "activity_id": "ASHTAKAVARGA_VALIDATION",
+    "track": "ASHTAKAVARGA_VALIDATION",
+    "activity_type": "CALCULATION_RESEARCH",
+    "title": "Ashtakavarga predictive validation"
   },
   "completion_state": "ACTIVITY_COMPLETED_NO_REPO_CHANGE",
   "material_progress": "MEDIUM_INFORMATION_GAIN",
@@ -116,6 +116,19 @@
         "justified cooldown expiry"
       ],
       "set_at": "2026-08-15T20:02:36Z"
+    },
+    "METHOD_COMPARISON": {
+      "input_fingerprint": "5d8a501b82c3321f",
+      "reason": "NO_NEW_INFORMATION",
+      "release_conditions": [
+        "relevant inputs changed",
+        "new source arrived",
+        "dependency changed",
+        "method changed",
+        "manual override",
+        "justified cooldown expiry"
+      ],
+      "set_at": "2026-08-15T20:23:52Z"
     }
   },
   "activity_history": [
@@ -290,6 +303,72 @@
       "question_to_resolve": "Which missing Muhurta source family resolves a documented dependency?",
       "expected_information_gain": "MEDIUM",
       "novelty": "HIGH"
+    },
+    {
+      "activity_id": "METHOD_COMPARISON",
+      "activity_type": "VARIANT_RESEARCH",
+      "track": "METHOD_COMPARISON",
+      "started_at": "2026-08-15T20:20:08Z",
+      "completed_at": "2026-08-15T20:23:52Z",
+      "starting_head": "c2d361b17da07f143e51bf09238aa9a596d2e194",
+      "ending_head": "c2d361b17da07f143e51bf09238aa9a596d2e194",
+      "repository_delta": false,
+      "knowledge_delta": {},
+      "evidence_delta": {},
+      "blocker_delta": {},
+      "validation_delta": {},
+      "material_progress": "NO_NEW_INFORMATION",
+      "input_fingerprint": "5d8a501b82c3321f",
+      "output_fingerprint": "a7394c8e7c337cd4",
+      "result": "ACTIVITY_COMPLETED",
+      "stop_reason": null,
+      "question_to_resolve": "Which two legitimate methods produce the better-governed result for a shared comparison input?",
+      "expected_information_gain": "HIGH",
+      "novelty": "HIGH"
+    },
+    {
+      "activity_id": "TAJIKA_FOUNDATION",
+      "activity_type": "CALCULATION_RESEARCH",
+      "track": "TAJIKA_FOUNDATION",
+      "started_at": "2026-08-15T20:23:53Z",
+      "completed_at": "2026-08-15T20:29:42Z",
+      "starting_head": "c2d361b17da07f143e51bf09238aa9a596d2e194",
+      "ending_head": "c2d361b17da07f143e51bf09238aa9a596d2e194",
+      "repository_delta": false,
+      "knowledge_delta": {},
+      "evidence_delta": {},
+      "blocker_delta": {},
+      "validation_delta": {},
+      "material_progress": "MEDIUM_INFORMATION_GAIN",
+      "input_fingerprint": "1544c2e67ab7f52c",
+      "output_fingerprint": "2518e2145651a663",
+      "result": "ACTIVITY_COMPLETED",
+      "stop_reason": null,
+      "question_to_resolve": "Which Tajika foundation dependency is currently unresolved?",
+      "expected_information_gain": "HIGH",
+      "novelty": "HIGH"
+    },
+    {
+      "activity_id": "ASHTAKAVARGA_VALIDATION",
+      "activity_type": "CALCULATION_RESEARCH",
+      "track": "ASHTAKAVARGA_VALIDATION",
+      "started_at": "2026-08-15T20:29:43Z",
+      "completed_at": "2026-08-15T20:34:06Z",
+      "starting_head": "c2d361b17da07f143e51bf09238aa9a596d2e194",
+      "ending_head": "c2d361b17da07f143e51bf09238aa9a596d2e194",
+      "repository_delta": false,
+      "knowledge_delta": {},
+      "evidence_delta": {},
+      "blocker_delta": {},
+      "validation_delta": {},
+      "material_progress": "MEDIUM_INFORMATION_GAIN",
+      "input_fingerprint": "2907930eb6902752",
+      "output_fingerprint": "e592d9fe376e1453",
+      "result": "ACTIVITY_COMPLETED",
+      "stop_reason": null,
+      "question_to_resolve": "Which Ashtakavarga validation claim remains unresolved?",
+      "expected_information_gain": "HIGH",
+      "novelty": "HIGH"
     }
   ],
   "selection_trace": {
@@ -314,7 +393,7 @@
       "EMPIRICAL_INPUT_PREPARATION",
       "PROSPECTIVE_SUBJECT_DISCOVERY"
     ],
-    "selected": "MUHURTA_SOURCE_EXPANSION",
+    "selected": "ASHTAKAVARGA_VALIDATION",
     "rejected": {
       "CLASSICAL_KNOWLEDGE": [
         "NOT_AVAILABLE",
@@ -358,27 +437,17 @@
       ],
       "CLASSICAL_SOURCE_EXPANSION": [
         "NOT_AVAILABLE",
-        "BLOCKED",
-        "SAME_INPUT_REPEAT"
+        "BLOCKED"
       ],
       "TIMING_VALIDATION": [
-        "BLOCKED",
-        "COOLDOWN",
-        "SAME_INPUT_NO_PROGRESS"
+        "BLOCKED"
       ],
       "METHOD_COMPARISON": [
-        "SAME_INPUT_REPEAT"
-      ],
-      "TAJIKA_FOUNDATION": [
-        "SAME_INPUT_REPEAT"
-      ],
-      "ASHTAKAVARGA_VALIDATION": [
         "COOLDOWN",
         "SAME_INPUT_NO_PROGRESS"
       ],
-      "SHADBALA_VALIDATION": [
-        "COOLDOWN",
-        "SAME_INPUT_NO_PROGRESS",
+      "TAJIKA_FOUNDATION": [
+        "SAME_INPUT_REPEAT",
         "CONSECUTIVE_REPEAT"
       ],
       "EMPIRICAL_INPUT_PREPARATION": [
@@ -427,45 +496,60 @@
           "justified cooldown expiry"
         ],
         "set_at": "2026-08-15T20:02:36Z"
+      },
+      "METHOD_COMPARISON": {
+        "input_fingerprint": "5d8a501b82c3321f",
+        "reason": "NO_NEW_INFORMATION",
+        "release_conditions": [
+          "relevant inputs changed",
+          "new source arrived",
+          "dependency changed",
+          "method changed",
+          "manual override",
+          "justified cooldown expiry"
+        ],
+        "set_at": "2026-08-15T20:23:52Z"
       }
     },
     "novelty": "HIGH",
-    "expected_information_gain": "MEDIUM",
-    "why_selected": "Which missing Muhurta source family resolves a documented dependency?"
+    "expected_information_gain": "HIGH",
+    "why_selected": "Which Ashtakavarga validation claim remains unresolved?"
   },
   "reconciliation": {
     "authoritative_uncommitted": [],
     "temporary_remaining": [],
     "unexpected": [],
     "committed": [
-      "docs/current-state/rm-002/05_SOURCE_COVERAGE.md",
+      "docs/current-state/rm-002/11_TAJIKA_READINESS.md",
+      "docs/current-state/rm-002/19_TAJIKA_FOUNDATION.md",
       "docs/governance/CHANGELOG.md",
-      "data/veda/research/astrology/sources/VEDA-SRC-000011.json",
-      "docs/current-state/rm-002/20_ASHTAKAVARGA_VALIDATION.md",
-      "docs/current-state/rm-002/21_SHADBALA_VALIDATION.md",
-      "docs/current-state/rm-002/22_MUHURTA_SOURCE_EXPANSION.md"
+      "data/veda/research/astrology/sources/VEDA-SRC-000012.json",
+      "data/veda/validation/foundation/p018_strength/ashtakavarga_boundary_fixture.json",
+      "docs/current-state/rm-002/23_METHOD_COMPARISON.md",
+      "docs/current-state/rm-002/24_TAJIKA_SOURCE_METHOD_REGISTER.md",
+      "docs/current-state/rm-002/25_ASHTAKAVARGA_SOURCE_CONTRACT.md"
     ],
     "error": null
   },
   "run_summary": {
     "loops_requested": 5,
-    "loops_completed": 4,
-    "activities_completed": 4,
+    "loops_completed": 3,
+    "activities_completed": 3,
     "repository_changes": true,
-    "commits_created": 1,
-    "authoritative_uncommitted_files": 0,
+    "commits_created": 0,
+    "authoritative_uncommitted_files": 8,
     "temporary_files_remaining": 0,
     "unexpected_files": 0,
     "material_progress": "MEDIUM_INFORMATION_GAIN",
     "validation_only_progress": false,
     "stop_reason": null,
-    "next_priority": "METHOD_COMPARISON"
+    "next_priority": "SHADBALA_VALIDATION"
   },
   "selected_decision": {
-    "question": "Which missing Muhurta source family resolves a documented dependency?",
-    "expected_information_gain": "MEDIUM",
+    "question": "Which Ashtakavarga validation claim remains unresolved?",
+    "expected_information_gain": "HIGH",
     "novelty": "HIGH",
-    "input_fingerprint": "e9a74cc41c8c1a69",
+    "input_fingerprint": "34e654f9e75cd60c",
     "candidates": [
       {
         "track": "CLASSICAL_KNOWLEDGE",
@@ -473,7 +557,7 @@
         "question": "What unresolved classical_knowledge question can current inputs answer?",
         "expected_information_gain": "MEDIUM",
         "novelty": "MEDIUM",
-        "input_fingerprint": "6adbf6841a90338d",
+        "input_fingerprint": "2237d9ef15a6fa04",
         "relevant_input_changed": false,
         "selected": false,
         "rejected": [
@@ -488,7 +572,7 @@
         "question": "What unresolved calculation_validation question can current inputs answer?",
         "expected_information_gain": "MEDIUM",
         "novelty": "MEDIUM",
-        "input_fingerprint": "8c4a3df57d380ca8",
+        "input_fingerprint": "bf4514533bb5917d",
         "relevant_input_changed": false,
         "selected": false,
         "rejected": [
@@ -503,7 +587,7 @@
         "question": "What unresolved timing question can current inputs answer?",
         "expected_information_gain": "MEDIUM",
         "novelty": "MEDIUM",
-        "input_fingerprint": "bc49ce04e99292c8",
+        "input_fingerprint": "ebd5095b06a2c183",
         "relevant_input_changed": false,
         "selected": false,
         "rejected": [
@@ -518,7 +602,7 @@
         "question": "What unresolved empirical question can current inputs answer?",
         "expected_information_gain": "MEDIUM",
         "novelty": "MEDIUM",
-        "input_fingerprint": "a0c9d368e9acc199",
+        "input_fingerprint": "2b2d9ec2540951ff",
         "relevant_input_changed": false,
         "selected": false,
         "rejected": [
@@ -533,7 +617,7 @@
         "question": "What unresolved prospective question can current inputs answer?",
         "expected_information_gain": "MEDIUM",
         "novelty": "MEDIUM",
-        "input_fingerprint": "2049c7c832dbdcb4",
+        "input_fingerprint": "274e82e9937d9b5a",
         "relevant_input_changed": false,
         "selected": false,
         "rejected": [
@@ -548,7 +632,7 @@
         "question": "What unresolved calibration_ml question can current inputs answer?",
         "expected_information_gain": "MEDIUM",
         "novelty": "MEDIUM",
-        "input_fingerprint": "268ec4dcade5487d",
+        "input_fingerprint": "54018b2d08337cda",
         "relevant_input_changed": false,
         "selected": false,
         "rejected": [
@@ -563,7 +647,7 @@
         "question": "What unresolved rag question can current inputs answer?",
         "expected_information_gain": "MEDIUM",
         "novelty": "MEDIUM",
-        "input_fingerprint": "a8a5d7b2035de234",
+        "input_fingerprint": "a8592e1db3cf63f9",
         "relevant_input_changed": false,
         "selected": false,
         "rejected": [
@@ -578,7 +662,7 @@
         "question": "What unresolved muhurta question can current inputs answer?",
         "expected_information_gain": "MEDIUM",
         "novelty": "MEDIUM",
-        "input_fingerprint": "f32897dd14030010",
+        "input_fingerprint": "43ac748a51c51ddb",
         "relevant_input_changed": false,
         "selected": false,
         "rejected": [
@@ -593,7 +677,7 @@
         "question": "What unresolved prashna question can current inputs answer?",
         "expected_information_gain": "MEDIUM",
         "novelty": "MEDIUM",
-        "input_fingerprint": "98cc0d2ffe021b56",
+        "input_fingerprint": "228fef929a4e80f9",
         "relevant_input_changed": false,
         "selected": false,
         "rejected": [
@@ -608,7 +692,7 @@
         "question": "What unresolved governance question can current inputs answer?",
         "expected_information_gain": "MEDIUM",
         "novelty": "MEDIUM",
-        "input_fingerprint": "8fe91d66ac5ab182",
+        "input_fingerprint": "8fdd32a5f8eed6ad",
         "relevant_input_changed": false,
         "selected": false,
         "rejected": [
@@ -623,13 +707,12 @@
         "question": "Which unresolved rule family has a new source family or passage?",
         "expected_information_gain": "HIGH",
         "novelty": "HIGH",
-        "input_fingerprint": "da7900193e598b9b",
+        "input_fingerprint": "9b31339119c4e4c0",
         "relevant_input_changed": true,
         "selected": false,
         "rejected": [
           "NOT_AVAILABLE",
-          "BLOCKED",
-          "SAME_INPUT_REPEAT"
+          "BLOCKED"
         ],
         "score": 4
       },
@@ -639,15 +722,13 @@
         "question": "Which unresolved timing claim can be validated against a changed input or new source?",
         "expected_information_gain": "MEDIUM",
         "novelty": "LOW",
-        "input_fingerprint": "443dc34772e1110f",
-        "relevant_input_changed": false,
+        "input_fingerprint": "69fcc3daee6e3974",
+        "relevant_input_changed": true,
         "selected": false,
         "rejected": [
-          "BLOCKED",
-          "COOLDOWN",
-          "SAME_INPUT_NO_PROGRESS"
+          "BLOCKED"
         ],
-        "score": 2
+        "score": 3
       },
       {
         "track": "METHOD_COMPARISON",
@@ -655,35 +736,7 @@
         "question": "Which two legitimate methods produce the better-governed result for a shared comparison input?",
         "expected_information_gain": "HIGH",
         "novelty": "HIGH",
-        "input_fingerprint": "2bd6d9086160cc7d",
-        "relevant_input_changed": true,
-        "selected": false,
-        "rejected": [
-          "SAME_INPUT_REPEAT"
-        ],
-        "score": 4
-      },
-      {
-        "track": "TAJIKA_FOUNDATION",
-        "activity_id": "TAJIKA_FOUNDATION",
-        "question": "Which Tajika foundation dependency is currently unresolved?",
-        "expected_information_gain": "HIGH",
-        "novelty": "HIGH",
-        "input_fingerprint": "28b7f541053ac584",
-        "relevant_input_changed": true,
-        "selected": false,
-        "rejected": [
-          "SAME_INPUT_REPEAT"
-        ],
-        "score": 4
-      },
-      {
-        "track": "ASHTAKAVARGA_VALIDATION",
-        "activity_id": "ASHTAKAVARGA_VALIDATION",
-        "question": "Which Ashtakavarga validation claim remains unresolved?",
-        "expected_information_gain": "HIGH",
-        "novelty": "HIGH",
-        "input_fingerprint": "a41d6e24025023d4",
+        "input_fingerprint": "5d8a501b82c3321f",
         "relevant_input_changed": false,
         "selected": false,
         "rejected": [
@@ -693,20 +746,43 @@
         "score": 3
       },
       {
+        "track": "TAJIKA_FOUNDATION",
+        "activity_id": "TAJIKA_FOUNDATION",
+        "question": "Which Tajika foundation dependency is currently unresolved?",
+        "expected_information_gain": "HIGH",
+        "novelty": "HIGH",
+        "input_fingerprint": "1544c2e67ab7f52c",
+        "relevant_input_changed": true,
+        "selected": false,
+        "rejected": [
+          "SAME_INPUT_REPEAT",
+          "CONSECUTIVE_REPEAT"
+        ],
+        "score": 3
+      },
+      {
+        "track": "ASHTAKAVARGA_VALIDATION",
+        "activity_id": "ASHTAKAVARGA_VALIDATION",
+        "question": "Which Ashtakavarga validation claim remains unresolved?",
+        "expected_information_gain": "HIGH",
+        "novelty": "HIGH",
+        "input_fingerprint": "34e654f9e75cd60c",
+        "relevant_input_changed": true,
+        "selected": true,
+        "rejected": [],
+        "score": 4
+      },
+      {
         "track": "SHADBALA_VALIDATION",
         "activity_id": "SHADBALA_VALIDATION",
         "question": "Which Shadbala method or source discrepancy remains unresolved?",
         "expected_information_gain": "HIGH",
         "novelty": "HIGH",
-        "input_fingerprint": "f20fd3fec1cc1e96",
-        "relevant_input_changed": false,
-        "selected": false,
-        "rejected": [
-          "COOLDOWN",
-          "SAME_INPUT_NO_PROGRESS",
-          "CONSECUTIVE_REPEAT"
-        ],
-        "score": 2
+        "input_fingerprint": "b1017038d91fc410",
+        "relevant_input_changed": true,
+        "selected": true,
+        "rejected": [],
+        "score": 4
       },
       {
         "track": "MUHURTA_SOURCE_EXPANSION",
@@ -714,11 +790,11 @@
         "question": "Which missing Muhurta source family resolves a documented dependency?",
         "expected_information_gain": "MEDIUM",
         "novelty": "HIGH",
-        "input_fingerprint": "e9a74cc41c8c1a69",
-        "relevant_input_changed": false,
+        "input_fingerprint": "72d9c348342ee629",
+        "relevant_input_changed": true,
         "selected": true,
         "rejected": [],
-        "score": 2
+        "score": 3
       },
       {
         "track": "EMPIRICAL_INPUT_PREPARATION",
@@ -726,7 +802,7 @@
         "question": "What new legitimate input route can close the empirical blocker?",
         "expected_information_gain": "HIGH",
         "novelty": "MEDIUM",
-        "input_fingerprint": "f041f39415718824",
+        "input_fingerprint": "1d5e48d241d2120e",
         "relevant_input_changed": false,
         "selected": false,
         "rejected": [
@@ -740,7 +816,7 @@
         "question": "What new consented subject or event avenue can close the prospective blocker?",
         "expected_information_gain": "HIGH",
         "novelty": "MEDIUM",
-        "input_fingerprint": "22e5da1319a34c21",
+        "input_fingerprint": "50e8ee3a7c5dbd68",
         "relevant_input_changed": false,
         "selected": false,
         "rejected": [

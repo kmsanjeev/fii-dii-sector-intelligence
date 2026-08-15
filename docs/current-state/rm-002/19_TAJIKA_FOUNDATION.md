@@ -43,9 +43,12 @@ foundation, not a missing interpretation table:
 code, production prediction behavior, empirical case, prospective subject,
 Approved Core rule or RAG promotion is authorized by this activity.
 
-The next Tajika activity should obtain or verify a citable annual-method
-edition and build a source-to-contract matrix. Only after that matrix is
-complete should a narrow deterministic annual-chart fixture be proposed.
+The source-method register is now recorded in
+`docs/current-state/rm-002/24_TAJIKA_SOURCE_METHOD_REGISTER.md`, with
+`VEDA-SRC-000012` identifying a citable scholarly Hāyanaratna edition and
+chapter-level locators. Passage verification and formula reconciliation remain
+outstanding; only after those are complete should a narrow deterministic
+annual-chart fixture be proposed.
 
 ## Validation
 
@@ -59,6 +62,7 @@ complete should a narrow deterministic annual-chart fixture be proposed.
 
 ## Resumable next step
 
-`TAJIKA_SOURCE_METHOD_REGISTER`: verify a specific annual-method edition and
-passages for chart construction, Muntha, annual lord, Tajika aspects and
-Sahamas; retain unresolved items as blocked rather than inferring formulas.
+`TAJIKA_PASSAGE_AUDIT`: inspect the registered chapter witnesses and create
+passage-level records for chart construction, Muntha, annual lord, Tajika
+aspects and Sahamas; retain unresolved items as blocked rather than inferring
+formulas.

@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-RM-002 ASHTAKAVARGA_VALIDATION
+
+Added a governed Ashtakavarga source-contract boundary and a non-promotional
+BAV/SAV sign-sensitivity fixture. The fixture records implementation invariants
+only; metadata-only R2 claims remain insufficient for formula activation,
+production use, Approved Core promotion, empirical evidence, or prospective
+prediction. No runtime calculation or trust-zone behavior changed.
+
 ## 2026-08-16 | VEDA-RM-002 MUHURTA_SOURCE_EXPANSION
 
 Registered a metadata-verified 1928 Sanskrit *Muhurta Chintamani* edition with
@@ -3723,3 +3731,12 @@ the historical generic fallback on 220/240 fixtures and remains the better-
 governed explicit default. The comparison is calculation-only: no empirical or
 prospective evidence, interpretation activation, Approved Core promotion or
 production behavior change occurred.
+
+## 2026-08-16 | VEDA-RM-002 TAJIKA_FOUNDATION
+
+Registered `VEDA-SRC-000012`, a scholarly Hāyanaratna annual-astrology edition,
+and created a chapter-level source-to-contract register for annual-return
+construction, Tajika aspects, configurations, Sahamas and annual-lord work.
+Passage verification and formula reconciliation remain blocked; no runtime,
+prediction, empirical/prospective evidence, Approved Core rule or RAG promotion
+was changed.
