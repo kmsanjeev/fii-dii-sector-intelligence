@@ -2,7 +2,7 @@
   "enabled": true,
   "loop_number": 14,
   "active_activity": null,
-  "last_completed_activity": "EMPIRICAL_OR_PROSPECTIVE_EVIDENCE_RECONCILIATION",
+  "last_completed_activity": "VEDA-RM-002_REBASELINE",
   "last_commit": "52b3f0ee6ddc6038930cd33589d124210f2491c5",
   "last_tag": "veda-pred-004-shadow-pilot",
   "programme_status": "ACTIVE",
@@ -11,14 +11,15 @@
   "prospective_predictions": 0,
   "resolved_predictions": 0,
   "predictive_maturity": "PRED-M3_OPERATIONAL_PLUS",
-  "next_priority": null,
+  "next_priority": "CLASSICAL_SOURCE_EXPANSION",
   "blockers": [
     "LEGITIMATE_INPUT_REQUIRED: consented or publicly observable subject and governed event data required",
     "CODEX_RUNTIME_LIMITATION: PowerShell shell snapshot and skills traversal warnings observed; bounded timeouts are recorded",
-    "ALL_TRACKS_BLOCKED: no unblocked autonomous activity remains"
+    "ROADMAP_REBASELINE_COMPLETED: new governed tracks are available",
+    "LEGITIMATE_INPUT_REQUIRED: empirical and prospective tracks still require legitimate governed inputs"
   ],
-  "stop_reason": "ALL_TRACKS_BLOCKED",
-  "controller_state": "STOPPED",
+  "stop_reason": null,
+  "controller_state": "READY",
   "active_track": null,
   "blocked_tracks": [
     "EMPIRICAL",
@@ -32,11 +33,15 @@
     "PRASHNA",
     "GOVERNANCE"
   ],
+  "available_tracks": ["CLASSICAL_SOURCE_EXPANSION", "TIMING_VALIDATION", "METHOD_COMPARISON", "TAJIKA_FOUNDATION", "ASHTAKAVARGA_VALIDATION", "SHADBALA_VALIDATION", "MUHURTA_SOURCE_EXPANSION"],
+  "human_input_helpful_tracks": ["EMPIRICAL_INPUT_PREPARATION", "PROSPECTIVE_SUBJECT_DISCOVERY"],
+  "dependency_blocked_tracks": ["PRASHNA"],
+  "deferred_tracks": ["ML"],
   "last_codex_event_at": "2026-08-15T18:20:01Z",
   "last_event_type": "turn.completed",
   "event_count": 348,
   "elapsed_seconds": 123.2,
-  "activity_status": "BLOCKED",
+  "activity_status": "READY",
   "metrics": {
     "loops_started": 5,
     "loops_completed": 6,
@@ -66,17 +71,18 @@
     "error": null
   },
   "run_summary": {
-    "loops_requested": 5,
-    "loops_completed": 2,
-    "activities_completed": 2,
+    "activity": "VEDA-RM-002",
+    "loops_requested": 0,
+    "loops_completed": 0,
+    "activities_completed": 1,
     "repository_changes": true,
-    "commits_created": 1,
+    "commits_created": 0,
     "authoritative_uncommitted_files": 0,
     "temporary_files_remaining": 0,
     "unexpected_files": 0,
-    "material_progress": "VALIDATION_GAIN",
-    "validation_only_progress": true,
-    "stop_reason": "ALL_TRACKS_BLOCKED",
-    "next_priority": null
+    "material_progress": "ROADMAP_REBASELINE",
+    "validation_only_progress": false,
+    "stop_reason": null,
+    "next_priority": "CLASSICAL_SOURCE_EXPANSION"
   }
 }

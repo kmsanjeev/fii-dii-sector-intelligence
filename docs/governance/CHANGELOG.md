@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-RM-002
+
+Rebaselined the autonomous VEDA roadmap toward prediction maturity after all
+previous scheduler tracks became exhausted. Added controlled source, timing,
+method-variant, Tajika, Ashtakavarga, Shadbala, Muhurta-source and legitimate
+input-preparation tracks. Prashna remains dependency-blocked and ML remains
+deferred; no domain rules, cases, predictions or Approved Core knowledge were
+created.
+
 ## 2026-08-15 | VEDA-AUTOLOOP-R2
 
 Reconciled autonomous-loop final state and activity identity. Healthy bounded

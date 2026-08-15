@@ -10,3 +10,8 @@
 | F - Admin/Operations | Governed intake, import, validation, audit consoles | ADM-EMP-001 implemented/frozen |
 
 All tracks share the same VEDA knowledge, case, prediction, outcome, and RAG infrastructure.
+
+RM-002 rebaseline: prediction-maturity work continues through controlled
+source, timing, method, Tajika, strength and input-preparation tracks. A
+temporarily exhausted track is not evidence that useful programme work is
+finished.

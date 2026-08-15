@@ -46,6 +46,6 @@ def test_output_classification_preserves_runtime_and_authority_boundaries():
 
 
 def test_all_blocked_tracks_are_a_controlled_stop_condition():
-    state = {"verified_empirical_cases": 0, "prospective_predictions": 0, "blocked_tracks": ["EMPIRICAL", "PROSPECTIVE", "TIMING", "CLASSICAL_KNOWLEDGE", "CALCULATION_VALIDATION", "CALIBRATION_ML", "RAG", "MUHURTA", "PRASHNA", "GOVERNANCE"]}
+    state = {"verified_empirical_cases": 0, "prospective_predictions": 0, "blocked_tracks": ["EMPIRICAL", "PROSPECTIVE", "TIMING", "CLASSICAL_KNOWLEDGE", "CALCULATION_VALIDATION", "CALIBRATION_ML", "RAG", "MUHURTA", "PRASHNA", "GOVERNANCE", "CLASSICAL_SOURCE_EXPANSION", "TIMING_VALIDATION", "METHOD_COMPARISON", "TAJIKA_FOUNDATION", "ASHTAKAVARGA_VALIDATION", "SHADBALA_VALIDATION", "MUHURTA_SOURCE_EXPANSION", "EMPIRICAL_INPUT_PREPARATION", "PROSPECTIVE_SUBJECT_DISCOVERY"]}
     with pytest.raises(NoAvailableTrackError):
         select_track(state)
