@@ -34,6 +34,7 @@ This project is NOT a screener. It IS a decision intelligence platform.
 - VEDA-MUH-R1 is implemented/frozen as a foundation-only layer: deterministic date/location/timezone validation and approximate solar-day sunrise/sunset facts are available, while activation remains `INACTIVE` and event rules, Bala systems, scoring and recommendations remain `NOT_IMPLEMENTED`. P032 and Prashna remain not started.
 - VEDA-KNOW-MUH-001 is `PASS_WITH_CONDITION`: Bṛhat Saṃhitā event-rule families are validated at scoped knowledge level, while Tarabala/Chandrabala remain research candidates and Muhurta recommendations remain inactive. No Approved Core promotion occurred.
 - VEDA-KNOW-MUH-002 is `PASS_WITH_CONDITION`: BPHS Chapter 89.02 supports only a narrow combined candra-tārā-bala context in a śānti procedure; individual Tarabala and Chandrabala algorithms remain research candidates. No recommendation activation or Approved Core promotion occurred.
+- VEDA-EMP-002 is `PASS_WITH_CONDITION`: the shared empirical and prospective contracts are ready for legitimate intake, but verified historical cases, usable cases and resolved prospective outcomes remain `0`; no cases were fabricated and predictive maturity remains `PRED-M3_OPERATIONAL_PLUS`.
 - COMM-002 and GROUP-001 human validation remain pending. EMO-001 is implemented/frozen.
 - EMP-001 remains active longitudinal with insufficient sample; LANG-002+ remains planned.
 - Historical P027 reservation is preserved; current assignment is governed by `docs/current-state/p027/`.
