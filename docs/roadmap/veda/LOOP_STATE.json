@@ -1,9 +1,9 @@
 {
   "enabled": true,
-  "loop_number": 4,
+  "loop_number": 5,
   "active_activity": null,
   "last_completed_activity": "EMPIRICAL_OR_PROSPECTIVE_EVIDENCE_RECONCILIATION",
-  "last_commit": "7dd7eca7566ed1a9a3bc47cc59acb6d3d57e8878",
+  "last_commit": "a2bcfa798109a4ce72cea1a1cb87fe3359512dc1",
   "last_tag": "veda-pred-004-shadow-pilot",
   "programme_status": "ACTIVE",
   "verified_empirical_cases": 0,
@@ -18,9 +18,10 @@
   "active_track": null,
   "blocked_tracks": [
     "EMPIRICAL",
-    "PROSPECTIVE"
+    "PROSPECTIVE",
+    "TIMING"
   ],
-  "last_codex_event_at": "2026-08-15T17:12:27Z",
+  "last_codex_event_at": "2026-08-15T17:13:22Z",
   "last_event_type": null,
   "event_count": 0,
   "elapsed_seconds": 0,
@@ -28,12 +29,12 @@
   "metrics": {
     "loops_started": 0,
     "loops_completed": 0,
-    "loops_failed": 1,
+    "loops_failed": 2,
     "repairs_run": 0,
-    "track_switches": 0,
+    "track_switches": 1,
     "timeouts": 0,
-    "consecutive_zero_progress": 1
+    "consecutive_zero_progress": 2
   },
-  "updated_at": "2026-08-15T17:12:27Z",
-  "iteration_started_at": "2026-08-15T17:12:27Z"
+  "updated_at": "2026-08-15T17:13:22Z",
+  "iteration_started_at": "2026-08-15T17:13:22Z"
 }

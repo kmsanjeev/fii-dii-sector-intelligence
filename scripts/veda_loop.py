@@ -129,7 +129,7 @@ def run_codex(prompt: str, hard_timeout: int, idle_timeout: int, output_path: Pa
     command = ["codex", "exec", "--json", "--ephemeral", "-C", str(ROOT)]
     command.append("--dangerously-bypass-approvals-and-sandbox" if unsafe else "--sandbox")
     if not unsafe:
-        command.extend(["workspace-write", "--approve-for-me"])
+        command.append("workspace-write")
     command.append("-")
     error_path = output_path.with_suffix(".stderr.log")
     events: queue.Queue = queue.Queue()
