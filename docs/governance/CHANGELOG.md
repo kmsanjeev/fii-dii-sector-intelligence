@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-TIMING-SIGNAL-001
+
+Audited existing VEDA timing/career knowledge and targeted classical
+profession, authority, government-favor, loss-of-position and Dasha/Antardasha
+passages. The evidence is partial and translation-dependent; no reproducible
+modern public-role signal was established for position starts, position ends,
+appointments or election wins. The decision is
+`NO_SOURCE_GOVERNABLE_PUBLIC_ROLE_SIGNAL`; EMP-025 remains unscored and sealed,
+while EMP-050 acquisition continues.
+
 ## 2026-08-16 | VEDA-EMP-025 METHOD PILOT GATE AUDIT
 
 Verified the frozen 25-case corpus and identified 15 public-role events for

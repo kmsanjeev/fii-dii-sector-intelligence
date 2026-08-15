@@ -1,0 +1,137 @@
+{
+  "activity_id": "VEDA-TIMING-SIGNAL-001",
+  "status": "COMPLETED_WITH_NO_GOVERNABLE_SIGNAL",
+  "research_question": "What source-backed Jyotisha conditions can define a Vimshottari public-role activation signal?",
+  "corpus_hash": "3b3ac3b7cacfbe9b3d1935fbe0263568db49a37a95ed8e308c355bbb6a61f76f",
+  "holdout_accessed": false,
+  "sources_reviewed": [
+    "Brihat Parashara Hora Shastra, translated PDF edition",
+    "Brihat Parashara Hora Shastra, translated PDF edition",
+    "Phaladeepika, Chapter 5, Profession and Livelihood",
+    "VEDA P016 canonical timing governance",
+    "Modern generic career heuristics and unsourced legacy interpretations"
+  ],
+  "rules": [
+    {
+      "rule_id": "TS-001",
+      "source": "Brihat Parashara Hora Shastra, translated PDF edition",
+      "passage_reference": "PDF pp. 106-107; Antardasha results in Dasha of Mars",
+      "source_class": "CLASSICAL_PRIMARY_TRANSLATION",
+      "translation_status": "TRANSLATION_REVIEW_REQUIRED",
+      "rule_statement": "Specific conditional Antardasha passages describe conferment of authority by government/king under named planetary and positional conditions.",
+      "event_relevance": [
+        "POSITION_START",
+        "PUBLIC_APPOINTMENT"
+      ],
+      "method_relevance": "Dasha/Antardasha results, but not a general public-role event label.",
+      "contradictions": [
+        "historical king/government language is not identical to modern appointment or election labels"
+      ],
+      "authority_status": "SOURCE_PARTIAL",
+      "implementation_status": "NOT_IMPLEMENTED"
+    },
+    {
+      "rule_id": "TS-002",
+      "source": "Brihat Parashara Hora Shastra, translated PDF edition",
+      "passage_reference": "PDF p. 106; Saturn Antardasha results from the Dasha lord",
+      "source_class": "CLASSICAL_PRIMARY_TRANSLATION",
+      "translation_status": "TRANSLATION_REVIEW_REQUIRED",
+      "rule_statement": "A conditional passage includes loss of reputation and loss of position among adverse results.",
+      "event_relevance": [
+        "POSITION_END"
+      ],
+      "method_relevance": "Potentially relevant to a loss-of-position theme, not a validated termination-event detector.",
+      "contradictions": [
+        "the passage is conditional and does not define event dates, modern employment, or a reverse of appointment"
+      ],
+      "authority_status": "SOURCE_PARTIAL",
+      "implementation_status": "NOT_IMPLEMENTED"
+    },
+    {
+      "rule_id": "TS-003",
+      "source": "Phaladeepika, Chapter 5, Profession and Livelihood",
+      "passage_reference": "Chapter 5, verses 1-8; Wisdomlib translation page",
+      "source_class": "CLASSICAL_PRIMARY_TRANSLATION",
+      "translation_status": "TRANSLATION_REVIEW_REQUIRED",
+      "rule_statement": "Profession/livelihood is related to the tenth lord and its navamsha context, with occupational examples.",
+      "event_relevance": [
+        "POSITION_START",
+        "PUBLIC_APPOINTMENT"
+      ],
+      "method_relevance": "Structural profession context; no Vimshottari event-timing contract.",
+      "contradictions": [
+        "occupation is not equivalent to appointment, election victory, or a dated transition"
+      ],
+      "authority_status": "SOURCE_PARTIAL",
+      "implementation_status": "NOT_IMPLEMENTED"
+    },
+    {
+      "rule_id": "TS-004",
+      "source": "VEDA P016 canonical timing governance",
+      "passage_reference": "docs/current-state/p016 and dasha_governance.py",
+      "source_class": "VEDA_GOVERNED_FOUNDATION",
+      "translation_status": "NOT_APPLICABLE",
+      "rule_statement": "Vimshottari sequence, Moon Janma Nakshatra remainder, Mahadasha and Antardasha facts are deterministic calculation foundations.",
+      "event_relevance": [],
+      "method_relevance": "Calculation-safe timing facts only; event interpretation remains research-required.",
+      "contradictions": [],
+      "authority_status": "SOURCE_VALIDATED",
+      "implementation_status": "IMPLEMENTED_CALCULATION_ONLY"
+    },
+    {
+      "rule_id": "TS-005",
+      "source": "Modern generic career heuristics and unsourced legacy interpretations",
+      "passage_reference": "REFERENCE_NOT_VERIFIED",
+      "source_class": "MODERN_UNSOURCED",
+      "translation_status": "NOT_VERIFIED",
+      "rule_statement": "Generic 10th-lord, Sun, Saturn, Jupiter or 'career Dasha' combinations predict a public-role transition.",
+      "event_relevance": [
+        "POSITION_START",
+        "POSITION_END",
+        "PUBLIC_APPOINTMENT",
+        "ELECTION_WIN"
+      ],
+      "method_relevance": "Not admissible without explicit source and method provenance.",
+      "contradictions": [
+        "existing P020/P005 governance labels career interpretation as shadow/research-only"
+      ],
+      "authority_status": "REJECTED",
+      "implementation_status": "PROHIBITED"
+    }
+  ],
+  "event_support": {
+    "POSITION_START": "NOT_GOVERNABLE",
+    "POSITION_END": "NOT_GOVERNABLE",
+    "PUBLIC_APPOINTMENT": "NOT_GOVERNABLE",
+    "ELECTION_WIN": "NOT_GOVERNABLE"
+  },
+  "signal_id": null,
+  "signal_version": null,
+  "signal_hash": "cf9fd8d22b3a378082625e8bc02b442bbe3b40b5e652a2c8ee9500da3c95307d",
+  "signal_governance": "FAIL",
+  "decision": "NO_SOURCE_GOVERNABLE_PUBLIC_ROLE_SIGNAL",
+  "primary_pilot_rerun": "NOT_READY",
+  "inputs": [
+    "D1 chart",
+    "Mahadasha lord",
+    "Antardasha lord",
+    "governed house/lord facts only if later sourced"
+  ],
+  "outputs": [
+    "SIGNAL_PRESENT",
+    "SIGNAL_ABSENT",
+    "SIGNAL_INDETERMINATE"
+  ],
+  "indeterminate_state": "DEFINED_FOR_FUTURE_CONTRACT_ONLY",
+  "date_precision": {
+    "EXACT": 2,
+    "MONTH": 0,
+    "YEAR": 13
+  },
+  "next_activity": "CHOOSE_NEXT_SOURCE_GOVERNABLE_EVENT_METHOD_PAIR",
+  "emp_050": "CONTINUE_IN_PARALLEL",
+  "prospective_candidates": 0,
+  "rag_changed": false,
+  "approved_core_changes": 0,
+  "predictive_validation_changed": false
+}
