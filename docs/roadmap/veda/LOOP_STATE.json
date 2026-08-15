@@ -1,9 +1,9 @@
 {
   "enabled": true,
-  "loop_number": 20,
+  "loop_number": 23,
   "active_activity": null,
-  "last_completed_activity": "TAJIKA_FOUNDATION",
-  "last_commit": "1e76b028f009386692c7bdf49d67eeeee36c27a6",
+  "last_completed_activity": "MUHURTA_SOURCE_EXPANSION",
+  "last_commit": "3a68f320f8327ab19a314fdb90ffda7b2c47bccc",
   "input_revision": "rm-002-governed-inputs",
   "last_tag": "veda-pred-004-shadow-pilot",
   "programme_status": "ACTIVE",
@@ -12,11 +12,8 @@
   "prospective_predictions": 0,
   "resolved_predictions": 0,
   "predictive_maturity": "PRED-M3_OPERATIONAL_PLUS",
-  "next_priority": "ASHTAKAVARGA_VALIDATION",
-  "blockers": [
-    "ROADMAP_REBASELINE_COMPLETED: new governed tracks are available",
-    "LEGITIMATE_INPUT_REQUIRED: empirical and prospective tracks still require legitimate governed inputs"
-  ],
+  "next_priority": "METHOD_COMPARISON",
+  "blockers": [],
   "stop_reason": null,
   "controller_state": "READY",
   "active_track": null,
@@ -56,27 +53,27 @@
     "CLASSICAL_SOURCE_EXPANSION",
     "TIMING_VALIDATION"
   ],
-  "last_codex_event_at": "2026-08-15T19:52:02Z",
+  "last_codex_event_at": "2026-08-15T20:07:09Z",
   "last_event_type": "turn.completed",
-  "event_count": 209,
-  "elapsed_seconds": 273.4,
+  "event_count": 426,
+  "elapsed_seconds": 271.6,
   "activity_status": "COMPLETED",
   "metrics": {
     "loops_started": 5,
-    "loops_completed": 12,
+    "loops_completed": 15,
     "loops_failed": 5,
     "repairs_run": 0,
-    "track_switches": 9,
+    "track_switches": 11,
     "timeouts": 3,
     "consecutive_zero_progress": 0
   },
-  "updated_at": "2026-08-15T19:52:04Z",
-  "iteration_started_at": "2026-08-15T19:47:28Z",
+  "updated_at": "2026-08-15T20:09:15Z",
+  "iteration_started_at": "2026-08-15T20:02:37Z",
   "activity_identity": {
-    "activity_id": "TAJIKA_FOUNDATION",
-    "track": "TAJIKA_FOUNDATION",
-    "activity_type": "CALCULATION_RESEARCH",
-    "title": "Tajika and annual forecasting foundation"
+    "activity_id": "MUHURTA_SOURCE_EXPANSION",
+    "track": "MUHURTA_SOURCE_EXPANSION",
+    "activity_type": "SOURCE_RESEARCH",
+    "title": "Muhurta source expansion"
   },
   "completion_state": "ACTIVITY_COMPLETED_NO_REPO_CHANGE",
   "material_progress": "MEDIUM_INFORMATION_GAIN",
@@ -93,6 +90,32 @@
         "justified cooldown expiry"
       ],
       "set_at": "2026-08-15T19:03:55Z"
+    },
+    "ASHTAKAVARGA_VALIDATION": {
+      "input_fingerprint": "a41d6e24025023d4",
+      "reason": "NO_NEW_INFORMATION",
+      "release_conditions": [
+        "relevant inputs changed",
+        "new source arrived",
+        "dependency changed",
+        "method changed",
+        "manual override",
+        "justified cooldown expiry"
+      ],
+      "set_at": "2026-08-15T19:58:23Z"
+    },
+    "SHADBALA_VALIDATION": {
+      "input_fingerprint": "f20fd3fec1cc1e96",
+      "reason": "NO_NEW_INFORMATION",
+      "release_conditions": [
+        "relevant inputs changed",
+        "new source arrived",
+        "dependency changed",
+        "method changed",
+        "manual override",
+        "justified cooldown expiry"
+      ],
+      "set_at": "2026-08-15T20:02:36Z"
     }
   },
   "activity_history": [
@@ -201,6 +224,72 @@
       "question_to_resolve": "Which Tajika foundation dependency is currently unresolved?",
       "expected_information_gain": "HIGH",
       "novelty": "HIGH"
+    },
+    {
+      "activity_id": "ASHTAKAVARGA_VALIDATION",
+      "activity_type": "CALCULATION_RESEARCH",
+      "track": "ASHTAKAVARGA_VALIDATION",
+      "started_at": "2026-08-15T19:54:30Z",
+      "completed_at": "2026-08-15T19:58:23Z",
+      "starting_head": "3a68f320f8327ab19a314fdb90ffda7b2c47bccc",
+      "ending_head": "3a68f320f8327ab19a314fdb90ffda7b2c47bccc",
+      "repository_delta": false,
+      "knowledge_delta": {},
+      "evidence_delta": {},
+      "blocker_delta": {},
+      "validation_delta": {},
+      "material_progress": "NO_NEW_INFORMATION",
+      "input_fingerprint": "a41d6e24025023d4",
+      "output_fingerprint": "b2a51604fa44f3d9",
+      "result": "ACTIVITY_COMPLETED",
+      "stop_reason": null,
+      "question_to_resolve": "Which Ashtakavarga validation claim remains unresolved?",
+      "expected_information_gain": "HIGH",
+      "novelty": "HIGH"
+    },
+    {
+      "activity_id": "SHADBALA_VALIDATION",
+      "activity_type": "CALCULATION_RESEARCH",
+      "track": "SHADBALA_VALIDATION",
+      "started_at": "2026-08-15T19:58:24Z",
+      "completed_at": "2026-08-15T20:02:36Z",
+      "starting_head": "3a68f320f8327ab19a314fdb90ffda7b2c47bccc",
+      "ending_head": "3a68f320f8327ab19a314fdb90ffda7b2c47bccc",
+      "repository_delta": false,
+      "knowledge_delta": {},
+      "evidence_delta": {},
+      "blocker_delta": {},
+      "validation_delta": {},
+      "material_progress": "NO_NEW_INFORMATION",
+      "input_fingerprint": "f20fd3fec1cc1e96",
+      "output_fingerprint": "9026e8f59ee2453c",
+      "result": "ACTIVITY_COMPLETED",
+      "stop_reason": null,
+      "question_to_resolve": "Which Shadbala method or source discrepancy remains unresolved?",
+      "expected_information_gain": "HIGH",
+      "novelty": "HIGH"
+    },
+    {
+      "activity_id": "MUHURTA_SOURCE_EXPANSION",
+      "activity_type": "SOURCE_RESEARCH",
+      "track": "MUHURTA_SOURCE_EXPANSION",
+      "started_at": "2026-08-15T20:02:37Z",
+      "completed_at": "2026-08-15T20:07:11Z",
+      "starting_head": "3a68f320f8327ab19a314fdb90ffda7b2c47bccc",
+      "ending_head": "3a68f320f8327ab19a314fdb90ffda7b2c47bccc",
+      "repository_delta": false,
+      "knowledge_delta": {},
+      "evidence_delta": {},
+      "blocker_delta": {},
+      "validation_delta": {},
+      "material_progress": "MEDIUM_INFORMATION_GAIN",
+      "input_fingerprint": "9042daf73164c875",
+      "output_fingerprint": "0a4e6678f9a4bee2",
+      "result": "ACTIVITY_COMPLETED",
+      "stop_reason": null,
+      "question_to_resolve": "Which missing Muhurta source family resolves a documented dependency?",
+      "expected_information_gain": "MEDIUM",
+      "novelty": "HIGH"
     }
   ],
   "selection_trace": {
@@ -225,7 +314,7 @@
       "EMPIRICAL_INPUT_PREPARATION",
       "PROSPECTIVE_SUBJECT_DISCOVERY"
     ],
-    "selected": "TAJIKA_FOUNDATION",
+    "selected": "MUHURTA_SOURCE_EXPANSION",
     "rejected": {
       "CLASSICAL_KNOWLEDGE": [
         "NOT_AVAILABLE",
@@ -278,7 +367,18 @@
         "SAME_INPUT_NO_PROGRESS"
       ],
       "METHOD_COMPARISON": [
-        "SAME_INPUT_REPEAT",
+        "SAME_INPUT_REPEAT"
+      ],
+      "TAJIKA_FOUNDATION": [
+        "SAME_INPUT_REPEAT"
+      ],
+      "ASHTAKAVARGA_VALIDATION": [
+        "COOLDOWN",
+        "SAME_INPUT_NO_PROGRESS"
+      ],
+      "SHADBALA_VALIDATION": [
+        "COOLDOWN",
+        "SAME_INPUT_NO_PROGRESS",
         "CONSECUTIVE_REPEAT"
       ],
       "EMPIRICAL_INPUT_PREPARATION": [
@@ -301,41 +401,75 @@
           "justified cooldown expiry"
         ],
         "set_at": "2026-08-15T19:03:55Z"
+      },
+      "ASHTAKAVARGA_VALIDATION": {
+        "input_fingerprint": "a41d6e24025023d4",
+        "reason": "NO_NEW_INFORMATION",
+        "release_conditions": [
+          "relevant inputs changed",
+          "new source arrived",
+          "dependency changed",
+          "method changed",
+          "manual override",
+          "justified cooldown expiry"
+        ],
+        "set_at": "2026-08-15T19:58:23Z"
+      },
+      "SHADBALA_VALIDATION": {
+        "input_fingerprint": "f20fd3fec1cc1e96",
+        "reason": "NO_NEW_INFORMATION",
+        "release_conditions": [
+          "relevant inputs changed",
+          "new source arrived",
+          "dependency changed",
+          "method changed",
+          "manual override",
+          "justified cooldown expiry"
+        ],
+        "set_at": "2026-08-15T20:02:36Z"
       }
     },
     "novelty": "HIGH",
-    "expected_information_gain": "HIGH",
-    "why_selected": "Which Tajika foundation dependency is currently unresolved?"
+    "expected_information_gain": "MEDIUM",
+    "why_selected": "Which missing Muhurta source family resolves a documented dependency?"
   },
   "reconciliation": {
     "authoritative_uncommitted": [
-      "docs/current-state/rm-002/11_TAJIKA_READINESS.md",
-      "docs/current-state/rm-002/19_TAJIKA_FOUNDATION.md"
+      "docs/current-state/rm-002/05_SOURCE_COVERAGE.md",
+      "docs/governance/CHANGELOG.md",
+      "data/veda/research/astrology/sources/VEDA-SRC-000011.json",
+      "docs/current-state/rm-002/20_ASHTAKAVARGA_VALIDATION.md",
+      "docs/current-state/rm-002/21_SHADBALA_VALIDATION.md",
+      "docs/current-state/rm-002/22_MUHURTA_SOURCE_EXPANSION.md"
     ],
     "temporary_remaining": [],
-    "unexpected": [],
+    "unexpected": [
+      "scripts/veda_loop.py",
+      "tests/test_veda_astrology_governance.py",
+      "tests/test_veda_autoloop_001.py"
+    ],
     "committed": [],
     "error": null
   },
   "run_summary": {
-    "loops_requested": 1,
-    "loops_completed": 12,
-    "activities_completed": 1,
-    "repository_changes": false,
+    "loops_requested": 5,
+    "loops_completed": 4,
+    "activities_completed": 4,
+    "repository_changes": true,
     "commits_created": 0,
-    "authoritative_uncommitted_files": 2,
+    "authoritative_uncommitted_files": 6,
     "temporary_files_remaining": 0,
-    "unexpected_files": 0,
+    "unexpected_files": 3,
     "material_progress": "MEDIUM_INFORMATION_GAIN",
     "validation_only_progress": false,
     "stop_reason": null,
-    "next_priority": "ASHTAKAVARGA_VALIDATION"
+    "next_priority": "METHOD_COMPARISON"
   },
   "selected_decision": {
-    "question": "Which Tajika foundation dependency is currently unresolved?",
-    "expected_information_gain": "HIGH",
+    "question": "Which missing Muhurta source family resolves a documented dependency?",
+    "expected_information_gain": "MEDIUM",
     "novelty": "HIGH",
-    "input_fingerprint": "28b7f541053ac584",
+    "input_fingerprint": "e9a74cc41c8c1a69",
     "candidates": [
       {
         "track": "CLASSICAL_KNOWLEDGE",
@@ -529,10 +663,9 @@
         "relevant_input_changed": true,
         "selected": false,
         "rejected": [
-          "SAME_INPUT_REPEAT",
-          "CONSECUTIVE_REPEAT"
+          "SAME_INPUT_REPEAT"
         ],
-        "score": 3
+        "score": 4
       },
       {
         "track": "TAJIKA_FOUNDATION",
@@ -541,10 +674,12 @@
         "expected_information_gain": "HIGH",
         "novelty": "HIGH",
         "input_fingerprint": "28b7f541053ac584",
-        "relevant_input_changed": false,
-        "selected": true,
-        "rejected": [],
-        "score": 3
+        "relevant_input_changed": true,
+        "selected": false,
+        "rejected": [
+          "SAME_INPUT_REPEAT"
+        ],
+        "score": 4
       },
       {
         "track": "ASHTAKAVARGA_VALIDATION",
@@ -554,8 +689,11 @@
         "novelty": "HIGH",
         "input_fingerprint": "a41d6e24025023d4",
         "relevant_input_changed": false,
-        "selected": true,
-        "rejected": [],
+        "selected": false,
+        "rejected": [
+          "COOLDOWN",
+          "SAME_INPUT_NO_PROGRESS"
+        ],
         "score": 3
       },
       {
@@ -566,9 +704,13 @@
         "novelty": "HIGH",
         "input_fingerprint": "f20fd3fec1cc1e96",
         "relevant_input_changed": false,
-        "selected": true,
-        "rejected": [],
-        "score": 3
+        "selected": false,
+        "rejected": [
+          "COOLDOWN",
+          "SAME_INPUT_NO_PROGRESS",
+          "CONSECUTIVE_REPEAT"
+        ],
+        "score": 2
       },
       {
         "track": "MUHURTA_SOURCE_EXPANSION",

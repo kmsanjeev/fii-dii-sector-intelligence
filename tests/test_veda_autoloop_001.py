@@ -41,6 +41,7 @@ def test_validation_only_completion_is_distinct_from_commit_failure():
 
 def test_output_classification_preserves_runtime_and_authority_boundaries():
     assert classify_output("docs/current-state/pred-004/06_SOURCE_PROVENANCE_AND_CALIBRATION.md") == "AUTHORITATIVE_ACTIVITY_OUTPUT"
+    assert classify_output("data/veda/research/astrology/sources/VEDA-SRC-000011.json") == "AUTHORITATIVE_ACTIVITY_OUTPUT"
     assert classify_output(".veda-loop/iterations.jsonl") == "RUNTIME"
     assert classify_output("notes/user-work.md") == "UNRELATED"
 

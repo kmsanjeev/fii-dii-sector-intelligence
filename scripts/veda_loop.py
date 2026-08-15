@@ -313,6 +313,8 @@ def classify_output(path: str) -> str:
         return "AUTHORITATIVE_ACTIVITY_OUTPUT"
     if normalized.startswith("docs/current-state/rm-002/") and normalized.endswith(".md"):
         return "AUTHORITATIVE_ACTIVITY_OUTPUT"
+    if normalized.startswith("data/veda/research/astrology/sources/") and normalized.endswith(".json"):
+        return "AUTHORITATIVE_ACTIVITY_OUTPUT"
     if normalized in {"docs/PROJECT_MASTER_STATE.md", "docs/governance/CHANGELOG.md"}:
         return "AUTHORITATIVE_ACTIVITY_OUTPUT"
     if normalized.startswith(".veda-loop/"):
@@ -326,6 +328,12 @@ def validate_authoritative_output(path: str) -> bool:
     candidate = ROOT / path
     if not candidate.is_file():
         return False
+    if path.replace("\\", "/").startswith("data/veda/research/astrology/sources/"):
+        try:
+            payload = json.loads(candidate.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return False
+        return isinstance(payload, dict) and payload.get("source_id", "").startswith("VEDA-SRC-") and bool(payload.get("title_normalized"))
     text = candidate.read_text(encoding="utf-8", errors="replace")
     if path.replace("\\", "/") == "docs/current-state/pred-004/06_SOURCE_PROVENANCE_AND_CALIBRATION.md":
         return all(item.lower() in text.lower() for item in ("PRED-004", "Source Provenance", "No consented"))

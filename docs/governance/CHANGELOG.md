@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-RM-002 MUHURTA_SOURCE_EXPANSION
+
+Registered a metadata-verified 1928 Sanskrit *Muhurta Chintamani* edition with
+Pramitakshara commentary and recorded an independent British Library witness
+catalogue lead. Neither record exposes inspectable operative passages, so
+Tarabala/Chandrabala remain reference-not-verified and no Muhurta rule,
+recommendation, RAG, empirical, prospective or Approved Core state changed.
+
 ## 2026-08-16 | VEDA-AUTOLOOP-R4
 
 Froze transient-stop recovery hardening. `LOW_VALUE_REPETITION` and related

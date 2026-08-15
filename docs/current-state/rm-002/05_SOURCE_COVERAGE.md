@@ -10,7 +10,7 @@
 | Hora Sara | Candidate family | 2 passages | TIER_A / passage-verified | Dasha/timing research | Translation and cross-source limits retained |
 | Uttara Kalamrita | Candidate family | Incomplete | Candidate | None identified | Passage indexing |
 | Brihat Samhita | Directly inspected for Muhurta families | Scoped chapters | Recorded | Knowledge governance | Selection method incomplete |
-| Muhurta Chintamani | Scan/OCR inspected | Materially unreliable for formula extraction | Reference-not-verified | None | Better edition/scan |
+| Muhurta Chintamani | Existing scan/OCR unreliable; 1928 Pramitakshara edition now metadata-registered | No operative passage inspected | Metadata-only / reference-not-verified | None | Legally inspectable edition and passage audit |
 | Tajika/annual texts | No sufficient governed corpus identified | Thin | Thin | None | New source research |
 | Prashna texts | No authoritative current corpus linked | Missing | Missing | None | Foundation research |
 
