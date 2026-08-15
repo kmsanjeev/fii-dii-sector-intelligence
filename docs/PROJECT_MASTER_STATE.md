@@ -36,6 +36,7 @@ This project is NOT a screener. It IS a decision intelligence platform.
 - VEDA-KNOW-MUH-002 is `PASS_WITH_CONDITION`: BPHS Chapter 89.02 supports only a narrow combined candra-tārā-bala context in a śānti procedure; individual Tarabala and Chandrabala algorithms remain research candidates. No recommendation activation or Approved Core promotion occurred.
 - VEDA-EMP-002 is `PASS_WITH_CONDITION`: the shared empirical and prospective contracts are ready for legitimate intake, but verified historical cases, usable cases and resolved prospective outcomes remain `0`; no cases were fabricated and predictive maturity remains `PRED-M3_OPERATIONAL_PLUS`.
 - VEDA-KNOW-MUH-003 is `PASS_WITH_CONDITION`: existing Bṛhat Saṃhitā event families are represented as scoped inactive knowledge; universal auspiciousness scoring and recommendations remain deferred.
+- VEDA-EMP-003 is `PASS_WITH_CONDITION`: public-source case acquisition and lineage gates were executed, but no eligible historical case was added; empirical counts remain zero.
 - COMM-002 and GROUP-001 human validation remain pending. EMO-001 is implemented/frozen.
 - EMP-001 remains active longitudinal with insufficient sample; LANG-002+ remains planned.
 - Historical P027 reservation is preserved; current assignment is governed by `docs/current-state/p027/`.

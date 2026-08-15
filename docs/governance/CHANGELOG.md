@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-08-15 | VEDA-EMP-003
+
+Executed the first evidence-escalation historical-case acquisition pass. Public-source lineage and birth-quality gates rejected insufficient records; no eligible case was fabricated or promoted, and empirical counts remain zero.
+
 ## 2026-08-15 | VEDA-KNOW-MUH-003
 
 Recorded scoped Bṛhat Saṃhitā nakshatra, tithi/karana and marriage-karana event families as inactive governed knowledge. Universal auspiciousness scoring and recommendations remain deferred; no personal-Bala algorithms or production selection were added.
