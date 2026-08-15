@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-EMP-025 METHOD PILOT GATE AUDIT
+
+Verified the frozen 25-case corpus and identified 15 public-role events for
+the primary study. The pilot recorded the P016 Vimshottari facts contract but
+stopped before scoring because no source-governed event-specific public-role
+signal exists. Design, validation and holdout scoring were not run; the
+holdout remains sealed. Next priority is targeted timing-signal source
+validation. No production, RAG, Approved Core or predictive-maturity change.
+
 ## 2026-08-16 | VEDA-EMP-025-R3 FINAL GATE AND METHOD PILOT HANDOFF
 
 Added four officially sourced year-precision public-office transition cases

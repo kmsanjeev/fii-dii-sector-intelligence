@@ -1,0 +1,236 @@
+{
+  "activity_id": "VEDA-EMP-025-METHOD-PILOT",
+  "status": "COMPLETED_WITH_PRIMARY_SCORING_STOP",
+  "audit_id": "2656d1f073e2f8f4c121d27ed57918112ad5b8567eab2e13d754ed60c53f3d80",
+  "corpus_hash": "3b3ac3b7cacfbe9b3d1935fbe0263568db49a37a95ed8e308c355bbb6a61f76f",
+  "hash_verified": true,
+  "primary_question": "Does governed Vimshottari Dasha timing discriminate verified public-role transitions from matched time-window controls?",
+  "primary_method": {
+    "method_id": "VEDA-DASHA-VIMSHOTTARI",
+    "method_version": "P016_CANONICAL_TIMING",
+    "hierarchy": [
+      "MAHADASHA",
+      "ANTARDASHA"
+    ],
+    "pratyantardasha": "NOT_USED",
+    "starting_point": "MOON_JANMA_NAKSHATRA_REMAINDER",
+    "ayanamsha": "LAHIRI",
+    "ephemeris": "Swiss Ephemeris via existing D1 chart runtime",
+    "timezone": "Frozen case timezone and existing chart-input normalization",
+    "window_rule": "NOT_ACTIVATED_PENDING_SIGNAL_GOVERNANCE"
+  },
+  "signal_governance": {
+    "status": "FAIL",
+    "result_state": "INSUFFICIENT_SIGNAL_GOVERNANCE",
+    "reason": "P016 governs deterministic timing facts, but no source-governed event-specific public-role Dasha signal definition exists.",
+    "primary_scoring": "STOPPED",
+    "rule_invented": false
+  },
+  "primary_sample": {
+    "subjects": 4,
+    "events": 15,
+    "event_classes": {
+      "ELECTION_WIN": 1,
+      "POSITION_END": 7,
+      "POSITION_START": 6,
+      "PUBLIC_APPOINTMENT": 1
+    },
+    "date_precision": {
+      "EXACT": 2,
+      "YEAR": 13
+    },
+    "source_quality": {
+      "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL": 11,
+      "OFFICIAL_YEAR_ONLY": 2,
+      "PRIMARY_OFFICIAL_RECORD": 2
+    },
+    "split_counts": {
+      "DESIGN": 5,
+      "HOLDOUT": 4,
+      "VALIDATION": 6
+    },
+    "records": [
+      {
+        "case_id": "VEDA-EMP-CASE-012",
+        "subject_id": "annenberg-walter-1908-03-13",
+        "split": "HOLDOUT",
+        "event_id": "ANNENBERG-AMBASSADOR-START-1969",
+        "event_class": "PUBLIC_APPOINTMENT",
+        "date_precision": "EXACT",
+        "source_quality": "PRIMARY_OFFICIAL_RECORD",
+        "event_date_start": "1969-03-14"
+      },
+      {
+        "case_id": "VEDA-EMP-CASE-013",
+        "subject_id": "annenberg-walter-1908-03-13",
+        "split": "HOLDOUT",
+        "event_id": "ANNENBERG-AMBASSADOR-END-1974",
+        "event_class": "POSITION_END",
+        "date_precision": "EXACT",
+        "source_quality": "PRIMARY_OFFICIAL_RECORD",
+        "event_date_start": "1974-10-30"
+      },
+      {
+        "case_id": "VEDA-EMP-CASE-033",
+        "subject_id": "alioto-joseph-1916-02-12",
+        "split": "HOLDOUT",
+        "event_id": "ALIOTO-MAYOR-START-1968",
+        "event_class": "POSITION_START",
+        "date_precision": "YEAR",
+        "source_quality": "OFFICIAL_YEAR_ONLY",
+        "event_date_start": "1968-01-01"
+      },
+      {
+        "case_id": "VEDA-EMP-CASE-034",
+        "subject_id": "alioto-joseph-1916-02-12",
+        "split": "HOLDOUT",
+        "event_id": "ALIOTO-MAYOR-END-1976",
+        "event_class": "POSITION_END",
+        "date_precision": "YEAR",
+        "source_quality": "OFFICIAL_YEAR_ONLY",
+        "event_date_start": "1976-01-01"
+      },
+      {
+        "case_id": "VEDA-EMP-CASE-036",
+        "subject_id": "ariyoshi-george-1926-03-12",
+        "split": "DESIGN",
+        "event_id": "ARIYOSHI-GOVERNOR-START-1973",
+        "event_class": "POSITION_START",
+        "date_precision": "YEAR",
+        "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL",
+        "event_date_start": "1973-10-17"
+      },
+      {
+        "case_id": "VEDA-EMP-CASE-037",
+        "subject_id": "ariyoshi-george-1926-03-12",
+        "split": "DESIGN",
+        "event_id": "ARIYOSHI-GOVERNOR-END-1986",
+        "event_class": "POSITION_END",
+        "date_precision": "YEAR",
+        "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL",
+        "event_date_start": "1986-12-01"
+      },
+      {
+        "case_id": "VEDA-EMP-CASE-038",
+        "subject_id": "ariyoshi-george-1926-03-12",
+        "split": "DESIGN",
+        "event_id": "ARIYOSHI-ELECTION-WIN-1974",
+        "event_class": "ELECTION_WIN",
+        "date_precision": "YEAR",
+        "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL",
+        "event_date_start": "1974-01-01"
+      },
+      {
+        "case_id": "VEDA-EMP-CASE-039",
+        "subject_id": "ariyoshi-george-1926-03-12",
+        "split": "DESIGN",
+        "event_id": "ARIYOSHI-LTGOV-START-1970",
+        "event_class": "POSITION_START",
+        "date_precision": "YEAR",
+        "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL",
+        "event_date_start": "1970-01-01"
+      },
+      {
+        "case_id": "VEDA-EMP-CASE-040",
+        "subject_id": "ariyoshi-george-1926-03-12",
+        "split": "DESIGN",
+        "event_id": "ARIYOSHI-LTGOV-END-1974",
+        "event_class": "POSITION_END",
+        "date_precision": "YEAR",
+        "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL",
+        "event_date_start": "1974-01-01"
+      },
+      {
+        "case_id": "VEDA-EMP-CASE-041",
+        "subject_id": "andrus-cecil-1931-08-25",
+        "split": "VALIDATION",
+        "event_id": "ANDRUS-GOVERNOR-START-1971",
+        "event_class": "POSITION_START",
+        "date_precision": "YEAR",
+        "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL",
+        "event_date_start": "1971-01-04"
+      },
+      {
+        "case_id": "VEDA-EMP-CASE-042",
+        "subject_id": "andrus-cecil-1931-08-25",
+        "split": "VALIDATION",
+        "event_id": "ANDRUS-GOVERNOR-END-1977",
+        "event_class": "POSITION_END",
+        "date_precision": "YEAR",
+        "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL",
+        "event_date_start": "1977-01-24"
+      },
+      {
+        "case_id": "VEDA-EMP-CASE-043",
+        "subject_id": "andrus-cecil-1931-08-25",
+        "split": "VALIDATION",
+        "event_id": "ANDRUS-GOVERNOR-START-1987",
+        "event_class": "POSITION_START",
+        "date_precision": "YEAR",
+        "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL",
+        "event_date_start": "1987-01-05"
+      },
+      {
+        "case_id": "VEDA-EMP-CASE-044",
+        "subject_id": "andrus-cecil-1931-08-25",
+        "split": "VALIDATION",
+        "event_id": "ANDRUS-GOVERNOR-END-1995",
+        "event_class": "POSITION_END",
+        "date_precision": "YEAR",
+        "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL",
+        "event_date_start": "1995-01-01"
+      },
+      {
+        "case_id": "VEDA-EMP-CASE-045",
+        "subject_id": "andrus-cecil-1931-08-25",
+        "split": "VALIDATION",
+        "event_id": "ANDRUS-INTERIOR-START-1977",
+        "event_class": "POSITION_START",
+        "date_precision": "YEAR",
+        "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL",
+        "event_date_start": "1977-01-01"
+      },
+      {
+        "case_id": "VEDA-EMP-CASE-046",
+        "subject_id": "andrus-cecil-1931-08-25",
+        "split": "VALIDATION",
+        "event_id": "ANDRUS-INTERIOR-END-1981",
+        "event_class": "POSITION_END",
+        "date_precision": "YEAR",
+        "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL",
+        "event_date_start": "1981-01-01"
+      }
+    ]
+  },
+  "controls": {
+    "matched_time_window": "SPECIFICATION_FROZEN_NOT_GENERATED",
+    "event_shuffled": "SPECIFICATION_FROZEN_NOT_GENERATED",
+    "subject_event_permutation": "SPECIFICATION_FROZEN_NOT_GENERATED",
+    "time_perturbed": "SPECIFICATION_FROZEN_NOT_GENERATED",
+    "random_baseline": "SPECIFICATION_FROZEN_NOT_GENERATED",
+    "dasha_output_used_for_control_generation": false
+  },
+  "runs": {
+    "design": "NOT_RUN",
+    "validation": "NOT_RUN",
+    "holdout": "SEALED_NOT_RUN"
+  },
+  "holdout_audit": {
+    "protected_before_unseal": true,
+    "outcomes_accessed": false,
+    "unseal_event": null
+  },
+  "results": {
+    "validation": null,
+    "holdout": null,
+    "combined": null,
+    "method_result_state": "INSUFFICIENT_SIGNAL_GOVERNANCE",
+    "interpretation": "No empirical separation claim is possible until a source-governed event-specific signal is validated."
+  },
+  "next_activity": "TIMING_VALIDATION_SOURCE_SIGNAL",
+  "production_changes": false,
+  "approved_core_changes": false,
+  "rag_changes": false,
+  "predictive_maturity": "PRED-M3_OPERATIONAL_PLUS",
+  "next_empirical_target": "VEDA-EMP-050"
+}
