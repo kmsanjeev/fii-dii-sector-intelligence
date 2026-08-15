@@ -37,6 +37,7 @@ This project is NOT a screener. It IS a decision intelligence platform.
 - VEDA-EMP-002 is `PASS_WITH_CONDITION`: the shared empirical and prospective contracts are ready for legitimate intake, but verified historical cases, usable cases and resolved prospective outcomes remain `0`; no cases were fabricated and predictive maturity remains `PRED-M3_OPERATIONAL_PLUS`.
 - VEDA-KNOW-MUH-003 is `PASS_WITH_CONDITION`: existing Bṛhat Saṃhitā event families are represented as scoped inactive knowledge; universal auspiciousness scoring and recommendations remain deferred.
 - VEDA-EMP-003 is `PASS_WITH_CONDITION`: public-source case acquisition and lineage gates were executed, but no eligible historical case was added; empirical counts remain zero.
+- VEDA-PRED-004 is `PASS_WITH_CONDITION`: the shared prospective prediction contract is pilot-ready with lock, leakage and outcome-state controls, but no subject, prediction or outcome was created without legitimate input.
 - COMM-002 and GROUP-001 human validation remain pending. EMO-001 is implemented/frozen.
 - EMP-001 remains active longitudinal with insufficient sample; LANG-002+ remains planned.
 - Historical P027 reservation is preserved; current assignment is governed by `docs/current-state/p027/`.
