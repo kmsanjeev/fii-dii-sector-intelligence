@@ -69,6 +69,14 @@ def test_changed_input_allows_previously_suppressed_activity():
     assert next(item for item in candidate_decisions(state) if item["track"] == "TIMING_VALIDATION")["selected"]
 
 
+def test_same_input_repeat_is_suppressed_even_after_zero_commit_gain():
+    base = _r3_state()
+    state = _r3_state(activity_history=[{"activity_id": "METHOD_COMPARISON", "track": "METHOD_COMPARISON", "input_fingerprint": relevant_input_fingerprint(base, "METHOD_COMPARISON"), "material_progress": "MEDIUM_INFORMATION_GAIN"}])
+    method = next(item for item in candidate_decisions(state) if item["track"] == "METHOD_COMPARISON")
+    assert not method["selected"]
+    assert "SAME_INPUT_REPEAT" in method["rejected"]
+
+
 def test_method_comparison_has_concrete_high_information_question():
     item = next(item for item in candidate_decisions(_r3_state()) if item["track"] == "METHOD_COMPARISON")
     assert item["expected_information_gain"] == "HIGH"

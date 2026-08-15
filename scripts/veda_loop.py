@@ -139,6 +139,11 @@ def _same_input_no_progress(state: dict, track: str) -> bool:
     return any(item.get("input_fingerprint") == fingerprint and item.get("material_progress") in {"NO_NEW_INFORMATION", "LOW_INFORMATION_GAIN", "DOCUMENTATION_ONLY"} for item in _history_for(state, track))
 
 
+def _same_input_repeat(state: dict, track: str) -> bool:
+    fingerprint = relevant_input_fingerprint(state, track)
+    return any(item.get("input_fingerprint") == fingerprint for item in _history_for(state, track))
+
+
 def candidate_decisions(state: dict) -> list[dict]:
     blocked = set(state.get("blocked_tracks", []))
     previous = state.get("last_completed_activity") or (state.get("activity_identity") or {}).get("activity_id")
@@ -148,6 +153,7 @@ def candidate_decisions(state: dict) -> list[dict]:
         fingerprint = relevant_input_fingerprint(state, track)
         history = _history_for(state, track)
         same_input = _same_input_no_progress(state, track)
+        same_input_repeat = _same_input_repeat(state, track)
         cooldowns = state.get("cooldowns", {})
         cooldown = cooldowns.get(ACTIVITIES[track][0])
         reasons = []
@@ -159,7 +165,9 @@ def candidate_decisions(state: dict) -> list[dict]:
             reasons.append("COOLDOWN")
         if same_input:
             reasons.append("SAME_INPUT_NO_PROGRESS")
-        if previous == ACTIVITIES[track][0] and same_input:
+        if same_input_repeat and "SAME_INPUT_NO_PROGRESS" not in reasons:
+            reasons.append("SAME_INPUT_REPEAT")
+        if previous == ACTIVITIES[track][0] and same_input_repeat:
             reasons.append("CONSECUTIVE_REPEAT")
         selected = not reasons
         score = {"HIGH": 3, "MEDIUM": 2, "LOW": 1, "NONE": 0}[contract["gain"]]
