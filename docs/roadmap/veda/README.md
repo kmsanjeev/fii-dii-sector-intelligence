@@ -2,7 +2,7 @@
 
 Read this directory before starting any future VEDA work. `VEDA-RM-001-05_FUTURE_PHASE_REGISTRY.md` is the single authoritative future registry; historical roadmaps remain preserved and are classified in `VEDA-RM-001-02_ROADMAP_CONFLICT_AUDIT.md` and `VEDA-RM-001-03_SUPERSESSION_REGISTER.md`.
 
-The implemented baseline is frozen through P029 plus STD-001, STD-002, STD-003, and PRED-001 through PRED-003. P027 Advanced Synthesis & Multi-Chart Reasoning, P028 Compatibility & Relationship Synthesis, P028-R1 Traditional Compatibility Methods, and P029 Property, Residence & Real-Estate Synthesis are implemented/frozen. VEDA-KNOW-COMPAT-001 remains `PASS_WITH_CONDITION` as a source-validation governance activity; it does not promote the executable Kuta tables to Approved Core. P030 is not started. ADM-EMP-001 is implemented/frozen; EMP-001 remains longitudinal.
+The implemented baseline is frozen through P029 plus STD-001, STD-002, STD-003, and PRED-001 through PRED-003. P027 Advanced Synthesis & Multi-Chart Reasoning, P028 Compatibility & Relationship Synthesis, P028-R1 Traditional Compatibility Methods, and P029 Property, Residence & Real-Estate Synthesis are implemented/frozen. VEDA-KNOW-COMPAT-001 remains `PASS_WITH_CONDITION` as a source-validation governance activity; VEDA-KNOW-PROP-001 is `PASS_WITH_CONDITION` and records `P015-RX_REQUIRED` for D4 method remediation. Neither activity promotes unverified rules to Approved Core. P029-R1 and P030 are not started. ADM-EMP-001 is implemented/frozen; EMP-001 remains longitudinal.
 
 ## Current Status
 

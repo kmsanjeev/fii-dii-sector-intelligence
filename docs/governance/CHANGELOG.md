@@ -3498,6 +3498,12 @@ Phase V3.4 -- Veda field fixes: activation, barge-in, greetings, read-vs-present
 
 Date: 2026-07-12
 
+## 2026-08-15 — VEDA-KNOW-PROP-001
+
+Completed the classical property, residence and D4 source-validation audit. Existing P029 behavior remains unchanged. D4 is calculation-available with conditions but not method-validated for production interpretation; the current generic branch differs from the inspected 1/4/7/10 reference mapping. Property rules, karaka claims, timing heuristics and subtype claims remain component-level research candidates. `P015-RX_REQUIRED` is recorded; no P029-R1/P030 work, RAG rebuild, or Approved Core promotion occurred.
+
+Date: 2026-07-12
+
 ## 2026-08-15 — VEDA-P029
 
 Implemented and froze the Property, Residence & Real-Estate synthesis domain. The deterministic layer separates ownership, acquisition, residence stability/change, domestic comfort, inheritance, sale, construction, renovation, debt and dispute context; reuses P022 as financial context and P027 evidence structure; reports D4 as not validated; and blocks property-price, financial-advice and legal-advice outputs. P030 remains not started.
