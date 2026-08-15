@@ -21,6 +21,13 @@ def test_activity_is_registered_without_autonomous_promotion():
     assert audit["d20_interpretation_decision"] == "D20_INTERPRETATION_RESEARCH_CANDIDATE"
     assert audit["approved_core_promoted"] == 0
     assert audit["p015_rx2_required"] == "RESOLVED_BY_P015_RX2"
+    d20 = SPIRITUALITY_DOMAIN["know_d20_001"]
+    assert d20["status"] == "PASS_WITH_CONDITION"
+    assert d20["narrow_scope"] == "D20 -> upasana/worship"
+    assert d20["narrow_scope_zone"] == "VALIDATED_KNOWLEDGE"
+    assert d20["full_interpretation"] == "RESEARCH_CANDIDATE"
+    assert d20["production_interpretation"] == "DISABLED"
+    assert d20["approved_core_promoted"] == 0
 
 
 def test_d20_current_runtime_metadata_is_source_selected_but_qualified():
@@ -41,5 +48,7 @@ def test_independent_bphs_category_starts_are_routed_for_all_modalities():
 
 def test_d20_is_not_interpretively_enabled_by_source_scope_alone():
     assert SPIRITUALITY_DOMAIN["d20_audit"]["interpretation_status"] == "NOT_VALIDATED"
+    assert SPIRITUALITY_DOMAIN["d20_audit"]["interpretive_scope_status"] == "VALIDATED_KNOWLEDGE"
+    assert SPIRITUALITY_DOMAIN["d20_audit"]["production_interpretation"] == "DISABLED"
     assert SPIRITUALITY_DOMAIN["varga_policy"]["D20"] == "CALCULATION_AVAILABLE_INTERPRETATION_NOT_VALIDATED"
     assert "ENLIGHTENMENT_CERTAINTY" in SPIRITUALITY_DOMAIN["blocked_outputs"]

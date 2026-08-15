@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-08-15 | VEDA-KNOW-D20-001
+
+Completed the dedicated D20/Vimshamsha interpretive source audit. BPHS Chapter 7 verse 4 supports the narrow association of Vimshamsha with upasana/worship, while Chapter 6 verses 17-20 supports the division structure, category starts and deity lists. No complete passage-level D20 house/planet interpretation, deity resolver, spiritual-maturity, moksha or renunciation method was established. The narrow claim is recorded as `VALIDATED_KNOWLEDGE`; full D20 interpretation remains gated and research-candidate. No P031-R1, P032, Muhurta, Prashna, RAG rebuild or Approved Core promotion occurred.
+
 ## 2026-08-15 | VEDA-P028-R1 traditional compatibility methods
 
 Added a versioned deterministic eight-Kuta Ashtakoota foundation under P028. Component scores, exact 36-point totals, cyclic boundaries, provenance, research authority, missing-data states, and P027/P028 evidence integration are preserved. Manglik cancellation and alternate school tables remain deferred; no fatalistic or fertility/health claims are generated.
