@@ -1,9 +1,9 @@
 {
   "enabled": true,
-  "loop_number": 29,
-  "active_activity": "EMPIRICAL_INPUT_PREPARATION",
-  "last_completed_activity": "MUHURTA_SOURCE_EXPANSION",
-  "last_commit": "01c5ad39b5bf1a8284c35cbb1dd28b70ba67d5aa",
+  "loop_number": 30,
+  "active_activity": null,
+  "last_completed_activity": "EMPIRICAL_INPUT_PREPARATION",
+  "last_commit": "352926a639282ef71b57c3f0594e3dac339199d1",
   "input_revision": "rm-002-governed-inputs",
   "last_tag": "veda-pred-004-shadow-pilot",
   "programme_status": "ACTIVE",
@@ -15,8 +15,8 @@
   "next_priority": "EMPIRICAL_INPUT_PREPARATION",
   "blockers": [],
   "stop_reason": null,
-  "controller_state": "RUNNING",
-  "active_track": "EMPIRICAL_INPUT_PREPARATION",
+  "controller_state": "READY",
+  "active_track": null,
   "blocked_tracks": [
     "EMPIRICAL",
     "PROSPECTIVE",
@@ -54,21 +54,21 @@
     "CLASSICAL_SOURCE_EXPANSION",
     "TIMING_VALIDATION"
   ],
-  "last_codex_event_at": "2026-08-15T21:36:45Z",
-  "last_event_type": "item.started",
-  "event_count": 549,
-  "elapsed_seconds": 253.8,
-  "activity_status": "RUNNING",
+  "last_codex_event_at": "2026-08-15T21:37:25Z",
+  "last_event_type": "turn.completed",
+  "event_count": 571,
+  "elapsed_seconds": 293.8,
+  "activity_status": "COMPLETED",
   "metrics": {
     "loops_started": 5,
-    "loops_completed": 21,
+    "loops_completed": 22,
     "loops_failed": 5,
     "repairs_run": 0,
     "track_switches": 13,
     "timeouts": 3,
     "consecutive_zero_progress": 0
   },
-  "updated_at": "2026-08-15T21:36:45Z",
+  "updated_at": "2026-08-15T21:39:52Z",
   "iteration_started_at": "2026-08-15T21:32:31Z",
   "activity_identity": {
     "activity_id": "EMPIRICAL_INPUT_PREPARATION",
@@ -76,8 +76,8 @@
     "activity_type": "INPUT_GOVERNANCE",
     "title": "Empirical input preparation"
   },
-  "completion_state": "ACTIVITY_COMPLETED_NO_REPO_CHANGE",
-  "material_progress": "MEDIUM_INFORMATION_GAIN",
+  "completion_state": "REPOSITORY_CHANGE",
+  "material_progress": "HIGH_INFORMATION_GAIN",
   "cooldowns": {
     "TIMING_VALIDATION": {
       "input_fingerprint": "443dc34772e1110f",
@@ -436,6 +436,28 @@
       "question_to_resolve": "Which missing Muhurta source family resolves a documented dependency?",
       "expected_information_gain": "MEDIUM",
       "novelty": "HIGH"
+    },
+    {
+      "activity_id": "EMPIRICAL_INPUT_PREPARATION",
+      "activity_type": "INPUT_GOVERNANCE",
+      "track": "EMPIRICAL_INPUT_PREPARATION",
+      "started_at": "2026-08-15T21:32:31Z",
+      "completed_at": "2026-08-15T21:37:26Z",
+      "starting_head": "13ee9eede02ac839d238a028374c9bc7bd879864",
+      "ending_head": "352926a639282ef71b57c3f0594e3dac339199d1",
+      "repository_delta": true,
+      "knowledge_delta": {},
+      "evidence_delta": {},
+      "blocker_delta": {},
+      "validation_delta": {},
+      "material_progress": "HIGH_INFORMATION_GAIN",
+      "input_fingerprint": "1d5e48d241d2120e",
+      "output_fingerprint": "6c03e68828b7a925",
+      "result": "ACTIVITY_COMPLETED",
+      "stop_reason": null,
+      "question_to_resolve": "What new legitimate input route can close the empirical blocker?",
+      "expected_information_gain": "HIGH",
+      "novelty": "MEDIUM"
     }
   ],
   "selection_trace": {
@@ -460,7 +482,7 @@
       "EMPIRICAL_INPUT_PREPARATION",
       "PROSPECTIVE_SUBJECT_DISCOVERY"
     ],
-    "selected": "MUHURTA_SOURCE_EXPANSION",
+    "selected": "EMPIRICAL_INPUT_PREPARATION",
     "rejected": {
       "CLASSICAL_KNOWLEDGE": [
         "NOT_AVAILABLE",
@@ -517,15 +539,15 @@
         "SAME_INPUT_REPEAT"
       ],
       "ASHTAKAVARGA_VALIDATION": [
-        "SAME_INPUT_REPEAT",
-        "CONSECUTIVE_REPEAT"
+        "SAME_INPUT_REPEAT"
       ],
       "SHADBALA_VALIDATION": [
         "COOLDOWN",
         "SAME_INPUT_NO_PROGRESS"
       ],
-      "EMPIRICAL_INPUT_PREPARATION": [
-        "NOT_AVAILABLE"
+      "MUHURTA_SOURCE_EXPANSION": [
+        "SAME_INPUT_REPEAT",
+        "CONSECUTIVE_REPEAT"
       ],
       "PROSPECTIVE_SUBJECT_DISCOVERY": [
         "NOT_AVAILABLE"
@@ -585,31 +607,22 @@
         "set_at": "2026-08-15T20:23:52Z"
       }
     },
-    "novelty": "HIGH",
-    "expected_information_gain": "MEDIUM",
-    "why_selected": "Which missing Muhurta source family resolves a documented dependency?"
+    "novelty": "MEDIUM",
+    "expected_information_gain": "HIGH",
+    "why_selected": "What new legitimate input route can close the empirical blocker?"
   },
   "reconciliation": {
     "authoritative_uncommitted": [],
     "temporary_remaining": [],
     "unexpected": [],
-    "committed": [
-      "docs/current-state/rm-002/11_TAJIKA_READINESS.md",
-      "docs/current-state/rm-002/19_TAJIKA_FOUNDATION.md",
-      "docs/governance/CHANGELOG.md",
-      "data/veda/research/astrology/sources/VEDA-SRC-000012.json",
-      "data/veda/validation/foundation/p018_strength/ashtakavarga_boundary_fixture.json",
-      "docs/current-state/rm-002/23_METHOD_COMPARISON.md",
-      "docs/current-state/rm-002/24_TAJIKA_SOURCE_METHOD_REGISTER.md",
-      "docs/current-state/rm-002/25_ASHTAKAVARGA_SOURCE_CONTRACT.md"
-    ],
+    "committed": [],
     "error": null
   },
   "run_summary": {
-    "loops_requested": 5,
+    "loops_requested": 1,
     "loops_completed": 1,
     "activities_completed": 1,
-    "repository_changes": true,
+    "repository_changes": false,
     "commits_created": 0,
     "authoritative_uncommitted_files": 0,
     "temporary_files_remaining": 0,
