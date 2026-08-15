@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from scripts.veda_loop import NoAvailableTrackError, activity_identity, classify_failure, classify_material_progress, classify_output, completion_state, compose_prompt, partial_completion, select_next_priority, select_track
+from scripts.veda_loop import NoAvailableTrackError, activity_identity, candidate_decisions, classify_activity_result, classify_failure, classify_material_progress, classify_output, completion_state, compose_prompt, partial_completion, relevant_input_fingerprint, select_next_priority, select_track
 
 
 def test_priority_escalates_empirical_and_prospective_evidence():
@@ -49,3 +49,37 @@ def test_all_blocked_tracks_are_a_controlled_stop_condition():
     state = {"verified_empirical_cases": 0, "prospective_predictions": 0, "blocked_tracks": ["EMPIRICAL", "PROSPECTIVE", "TIMING", "CLASSICAL_KNOWLEDGE", "CALCULATION_VALIDATION", "CALIBRATION_ML", "RAG", "MUHURTA", "PRASHNA", "GOVERNANCE", "CLASSICAL_SOURCE_EXPANSION", "TIMING_VALIDATION", "METHOD_COMPARISON", "TAJIKA_FOUNDATION", "ASHTAKAVARGA_VALIDATION", "SHADBALA_VALIDATION", "MUHURTA_SOURCE_EXPANSION", "EMPIRICAL_INPUT_PREPARATION", "PROSPECTIVE_SUBJECT_DISCOVERY"]}
     with pytest.raises(NoAvailableTrackError):
         select_track(state)
+
+
+def _r3_state(**overrides):
+    state = {"verified_empirical_cases": 25, "prospective_predictions": 1, "resolved_predictions": 10, "blocked_tracks": ["EMPIRICAL", "PROSPECTIVE", "TIMING", "CLASSICAL_KNOWLEDGE", "CALCULATION_VALIDATION", "CALIBRATION_ML", "RAG", "MUHURTA", "PRASHNA", "GOVERNANCE"], "available_tracks": ["TIMING_VALIDATION", "METHOD_COMPARISON", "TAJIKA_FOUNDATION"], "last_commit": "abc", "activity_history": [], "cooldowns": {}}
+    state.update(overrides)
+    return state
+
+
+def test_same_activity_same_input_no_delta_is_suppressed():
+    state = _r3_state(activity_history=[{"activity_id": "TIMING_VALIDATION", "track": "TIMING_VALIDATION", "input_fingerprint": relevant_input_fingerprint(_r3_state(), "TIMING_VALIDATION"), "material_progress": "NO_NEW_INFORMATION"}])
+    assert select_track(state) == "METHOD_COMPARISON"
+    timing = next(item for item in candidate_decisions(state) if item["track"] == "TIMING_VALIDATION")
+    assert "SAME_INPUT_NO_PROGRESS" in timing["rejected"]
+
+
+def test_changed_input_allows_previously_suppressed_activity():
+    state = _r3_state(activity_history=[{"activity_id": "TIMING_VALIDATION", "track": "TIMING_VALIDATION", "input_fingerprint": "old", "material_progress": "NO_NEW_INFORMATION"}])
+    assert next(item for item in candidate_decisions(state) if item["track"] == "TIMING_VALIDATION")["selected"]
+
+
+def test_method_comparison_has_concrete_high_information_question():
+    item = next(item for item in candidate_decisions(_r3_state()) if item["track"] == "METHOD_COMPARISON")
+    assert item["expected_information_gain"] == "HIGH"
+    assert "two legitimate methods" in item["question"]
+
+
+def test_document_only_output_is_not_material_progress():
+    assert classify_activity_result(starting_head="a", ending_head="a", output="# report", activity_outputs=["docs/current-state/rm-002/report.md"], exit_code=0) == "DOCUMENTATION_ONLY"
+    assert classify_activity_result(starting_head="a", ending_head="a", output="new validated timing rule", activity_outputs=[], exit_code=0) == "MEDIUM_INFORMATION_GAIN"
+
+
+def test_output_fingerprint_inputs_are_stable():
+    state = _r3_state()
+    assert relevant_input_fingerprint(state, "METHOD_COMPARISON") == relevant_input_fingerprint(state, "METHOD_COMPARISON")

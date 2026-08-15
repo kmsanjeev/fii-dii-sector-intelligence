@@ -38,7 +38,7 @@ This project is NOT a screener. It IS a decision intelligence platform.
 - VEDA-KNOW-MUH-003 is `PASS_WITH_CONDITION`: existing Bṛhat Saṃhitā event families are represented as scoped inactive knowledge; universal auspiciousness scoring and recommendations remain deferred.
 - VEDA-EMP-003 is `PASS_WITH_CONDITION`: public-source case acquisition and lineage gates were executed, but no eligible historical case was added; empirical counts remain zero.
 - VEDA-PRED-004 is `PASS_WITH_CONDITION`: the shared prospective prediction contract is pilot-ready with lock, leakage and outcome-state controls, but no subject, prediction or outcome was created without legitimate input.
-- VEDA-RM-002 rebaselined the autonomous prediction roadmap after `ALL_TRACKS_BLOCKED`. The controller is `READY` with source, timing, method, Tajika, Ashtakavarga, Shadbala, Muhurta-source and input-preparation tracks available; no domain feature was started.
+- VEDA-RM-002 rebaselined the autonomous prediction roadmap after `ALL_TRACKS_BLOCKED`. VEDA-AUTOLOOP-R3 is now implemented/frozen: the controller is `READY`, suppresses unchanged low-information repeats through fingerprints and cooldowns, and retains `METHOD_COMPARISON` as next priority with source, timing, Tajika, Ashtakavarga, Shadbala, Muhurta-source and input-preparation tracks available; no domain feature was started.
 - COMM-002 and GROUP-001 human validation remain pending. EMO-001 is implemented/frozen.
 - EMP-001 remains active longitudinal with insufficient sample; LANG-002+ remains planned.
 - Historical P027 reservation is preserved; current assignment is governed by `docs/current-state/p027/`.

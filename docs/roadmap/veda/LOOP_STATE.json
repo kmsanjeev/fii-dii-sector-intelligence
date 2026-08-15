@@ -4,6 +4,7 @@
   "active_activity": null,
   "last_completed_activity": "VEDA-RM-002_REBASELINE",
   "last_commit": "15bd24bd28faa99dd63a855e19f63a239d8756f1",
+  "input_revision": "rm-002-governed-inputs",
   "last_tag": "veda-pred-004-shadow-pilot",
   "programme_status": "ACTIVE",
   "verified_empirical_cases": 0,
@@ -16,8 +17,8 @@
     "ROADMAP_REBASELINE_COMPLETED: new governed tracks are available",
     "LEGITIMATE_INPUT_REQUIRED: empirical and prospective tracks still require legitimate governed inputs"
   ],
-  "stop_reason": "LOW_VALUE_REPETITION: TIMING_VALIDATION produced no new repository or evidence change across repeated bounded activities",
-  "controller_state": "STOPPED",
+  "stop_reason": null,
+  "controller_state": "READY",
   "active_track": null,
   "blocked_tracks": [
     "EMPIRICAL",
@@ -59,7 +60,7 @@
   "last_event_type": "item.completed",
   "event_count": 546,
   "elapsed_seconds": 74.5,
-  "activity_status": "STOPPED",
+  "activity_status": "READY",
   "metrics": {
     "loops_started": 5,
     "loops_completed": 9,
@@ -77,8 +78,65 @@
     "activity_type": "TIMING_RESEARCH",
     "title": "Timing validation"
   },
-  "completion_state": "ACTIVITY_COMPLETED_NO_REPO_CHANGE",
-  "material_progress": "VALIDATION_GAIN",
+  "completion_state": "CONTROLLER_READY",
+  "material_progress": "NO_NEW_INFORMATION",
+  "cooldowns": {
+    "TIMING_VALIDATION": {
+      "input_fingerprint": "443dc34772e1110f",
+      "reason": "NO_NEW_INFORMATION",
+      "release_conditions": ["relevant inputs changed", "new source arrived", "dependency changed", "method changed", "manual override", "justified cooldown expiry"],
+      "set_at": "2026-08-15T19:03:55Z"
+    }
+  },
+  "activity_history": [
+    {
+      "activity_id": "CLASSICAL_SOURCE_EXPANSION",
+      "activity_type": "SOURCE_RESEARCH",
+      "track": "CLASSICAL_SOURCE_EXPANSION",
+      "started_at": "2026-08-15T18:58:00Z",
+      "completed_at": "2026-08-15T18:59:00Z",
+      "starting_head": "135917ee67f42b46090e05470abf787f91b746b4",
+      "ending_head": "135917ee67f42b46090e05470abf787f91b746b4",
+      "repository_delta": false,
+      "knowledge_delta": {},
+      "evidence_delta": {"source_report": true},
+      "blocker_delta": {},
+      "validation_delta": {},
+      "material_progress": "MEDIUM_INFORMATION_GAIN",
+      "input_fingerprint": "da7900193e598b9b",
+      "output_fingerprint": "legacy-source-expansion",
+      "result": "ACTIVITY_COMPLETED",
+      "stop_reason": null
+    },
+    {
+      "activity_id": "TIMING_VALIDATION",
+      "activity_type": "TIMING_RESEARCH",
+      "track": "TIMING_VALIDATION",
+      "started_at": "2026-08-15T19:00:00Z",
+      "completed_at": "2026-08-15T19:03:55Z",
+      "starting_head": "135917ee67f42b46090e05470abf787f91b746b4",
+      "ending_head": "135917ee67f42b46090e05470abf787f91b746b4",
+      "repository_delta": false,
+      "knowledge_delta": {},
+      "evidence_delta": {},
+      "blocker_delta": {},
+      "validation_delta": {},
+      "material_progress": "NO_NEW_INFORMATION",
+      "input_fingerprint": "443dc34772e1110f",
+      "output_fingerprint": "legacy-timing-validation",
+      "result": "ACTIVITY_COMPLETED_NO_REPO_CHANGE",
+      "stop_reason": "LOW_VALUE_REPETITION"
+    }
+  ],
+  "selection_trace": {
+    "candidates_considered": ["METHOD_COMPARISON", "TAJIKA_FOUNDATION", "ASHTAKAVARGA_VALIDATION", "SHADBALA_VALIDATION", "MUHURTA_SOURCE_EXPANSION"],
+    "selected": "METHOD_COMPARISON",
+    "rejected": {"TIMING_VALIDATION": ["COOLDOWN", "SAME_INPUT_NO_PROGRESS", "CONSECUTIVE_REPEAT"]},
+    "cooldown": {"TIMING_VALIDATION": "NO_NEW_INFORMATION"},
+    "novelty": "HIGH",
+    "expected_information_gain": "HIGH",
+    "why_selected": "Which two legitimate methods produce the better-governed result for a shared comparison input?"
+  },
   "reconciliation": {
     "authoritative_uncommitted": [],
     "temporary_remaining": [],
@@ -100,7 +158,7 @@
     "unexpected_files": 0,
     "material_progress": "ROADMAP_REBASELINE",
     "validation_only_progress": false,
-    "stop_reason": "LOW_VALUE_REPETITION: TIMING_VALIDATION produced no new repository or evidence change across repeated bounded activities",
+    "stop_reason": null,
     "next_priority": "METHOD_COMPARISON"
   }
 }

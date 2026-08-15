@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-AUTOLOOP-R3
+
+Froze information-gain scheduling hardening. The autonomous controller now
+persists bounded activity history, stable input/output fingerprints, concrete
+questions, novelty and expected-information-gain scores, cooldowns, selection
+traces, and validation-exhaustion decisions. Unchanged low-value repeats are
+suppressed and track diversity is preferred when value is comparable;
+`METHOD_COMPARISON` remains the next priority. No Jyotisha, empirical,
+prospective, predictive, RAG or provider state changed.
+
 ## 2026-08-16 | VEDA-RM-002
 
 Rebaselined the autonomous VEDA roadmap toward prediction maturity after all

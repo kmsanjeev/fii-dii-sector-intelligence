@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import queue
@@ -42,6 +43,19 @@ ACTIVITIES = {
     "EMPIRICAL_INPUT_PREPARATION": ("EMPIRICAL_INPUT_PREPARATION", "INPUT_GOVERNANCE", "Empirical input preparation"),
     "PROSPECTIVE_SUBJECT_DISCOVERY": ("PROSPECTIVE_SUBJECT_DISCOVERY", "INPUT_GOVERNANCE", "Prospective subject discovery"),
 }
+ACTIVITY_CONTRACTS = {
+    "CLASSICAL_SOURCE_EXPANSION": {"question": "Which unresolved rule family has a new source family or passage?", "expected": "new source passage or lineage conclusion", "novelty": "HIGH", "gain": "HIGH"},
+    "TIMING_VALIDATION": {"question": "Which unresolved timing claim can be validated against a changed input or new source?", "expected": "new validated timing rule or explicit negative finding", "novelty": "LOW", "gain": "MEDIUM"},
+    "METHOD_COMPARISON": {"question": "Which two legitimate methods produce the better-governed result for a shared comparison input?", "expected": "independent method comparison outcome", "novelty": "HIGH", "gain": "HIGH"},
+    "TAJIKA_FOUNDATION": {"question": "Which Tajika foundation dependency is currently unresolved?", "expected": "new source-backed calculation or dependency finding", "novelty": "HIGH", "gain": "HIGH"},
+    "ASHTAKAVARGA_VALIDATION": {"question": "Which Ashtakavarga validation claim remains unresolved?", "expected": "independent fixture or validation conclusion", "novelty": "HIGH", "gain": "HIGH"},
+    "SHADBALA_VALIDATION": {"question": "Which Shadbala method or source discrepancy remains unresolved?", "expected": "method comparison or defect finding", "novelty": "HIGH", "gain": "HIGH"},
+    "MUHURTA_SOURCE_EXPANSION": {"question": "Which missing Muhurta source family resolves a documented dependency?", "expected": "new source passage or dependency conclusion", "novelty": "HIGH", "gain": "MEDIUM"},
+    "EMPIRICAL_INPUT_PREPARATION": {"question": "What new legitimate input route can close the empirical blocker?", "expected": "new admissible input avenue", "novelty": "MEDIUM", "gain": "HIGH"},
+    "PROSPECTIVE_SUBJECT_DISCOVERY": {"question": "What new consented subject or event avenue can close the prospective blocker?", "expected": "new admissible subject avenue", "novelty": "MEDIUM", "gain": "HIGH"},
+}
+for _track, (_activity_id, _activity_type, _title) in ACTIVITIES.items():
+    ACTIVITY_CONTRACTS.setdefault(_track, {"question": f"What unresolved {_track.lower()} question can current inputs answer?", "expected": "new authoritative conclusion", "novelty": "MEDIUM", "gain": "MEDIUM"})
 AUTHORITATIVE_ACTIVITY_OUTPUTS = {
     "docs/current-state/pred-004/06_SOURCE_PROVENANCE_AND_CALIBRATION.md",
 }
@@ -82,18 +96,104 @@ def status_entries() -> list[dict[str, str]]:
     return entries
 
 
+def _stable_json(value: object) -> str:
+    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+
+
+def activity_contract(track: str) -> dict:
+    return dict(ACTIVITY_CONTRACTS[track])
+
+
+def relevant_input_fingerprint(state: dict, track: str) -> str:
+    payload = {
+        "head": state.get("input_revision") or state.get("last_commit") or "",
+        "knowledge_counts": state.get("knowledge_counts", {}),
+        "empirical_cases": state.get("verified_empirical_cases", 0),
+        "prospective_predictions": state.get("prospective_predictions", 0),
+        "resolved_predictions": state.get("resolved_predictions", 0),
+        "blockers": sorted(state.get("blockers", [])),
+        "blocked_tracks": sorted(state.get("blocked_tracks", [])),
+        "dependency_state": state.get("dependency_state", {}),
+        "method_versions": state.get("method_versions", {}),
+        "roadmap_state": state.get("roadmap_state", {}),
+        "track": track,
+        "question": activity_contract(track)["question"],
+    }
+    return hashlib.sha256(_stable_json(payload).encode("utf-8")).hexdigest()[:16]
+
+
+def output_fingerprint(*, starting_head: str, ending_head: str, paths: list[str] | None = None, deltas: dict | None = None) -> str:
+    payload = {"starting_head": starting_head, "ending_head": ending_head, "paths": sorted(paths or []), "deltas": deltas or {}}
+    return hashlib.sha256(_stable_json(payload).encode("utf-8")).hexdigest()[:16]
+
+
+def _history_for(state: dict, track: str) -> list[dict]:
+    activity_id = ACTIVITIES[track][0]
+    return [item for item in state.get("activity_history", []) if item.get("activity_id") == activity_id or item.get("track") == track]
+
+
+def _same_input_no_progress(state: dict, track: str) -> bool:
+    fingerprint = relevant_input_fingerprint(state, track)
+    return any(item.get("input_fingerprint") == fingerprint and item.get("material_progress") in {"NO_NEW_INFORMATION", "LOW_INFORMATION_GAIN", "DOCUMENTATION_ONLY"} for item in _history_for(state, track))
+
+
+def candidate_decisions(state: dict) -> list[dict]:
+    blocked = set(state.get("blocked_tracks", []))
+    previous = state.get("last_completed_activity") or (state.get("activity_identity") or {}).get("activity_id")
+    decisions = []
+    for track in TRACKS:
+        contract = activity_contract(track)
+        fingerprint = relevant_input_fingerprint(state, track)
+        history = _history_for(state, track)
+        same_input = _same_input_no_progress(state, track)
+        cooldowns = state.get("cooldowns", {})
+        cooldown = cooldowns.get(ACTIVITIES[track][0])
+        reasons = []
+        if state.get("available_tracks") and track not in state["available_tracks"]:
+            reasons.append("NOT_AVAILABLE")
+        if track in blocked:
+            reasons.append("BLOCKED")
+        if cooldown and cooldown.get("input_fingerprint") == fingerprint and not state.get("manual_override"):
+            reasons.append("COOLDOWN")
+        if same_input:
+            reasons.append("SAME_INPUT_NO_PROGRESS")
+        if previous == ACTIVITIES[track][0] and same_input:
+            reasons.append("CONSECUTIVE_REPEAT")
+        selected = not reasons
+        score = {"HIGH": 3, "MEDIUM": 2, "LOW": 1, "NONE": 0}[contract["gain"]]
+        if previous == ACTIVITIES[track][0]:
+            score -= 1
+        if history and not same_input:
+            score += 1
+        decisions.append({"track": track, "activity_id": ACTIVITIES[track][0], "question": contract["question"], "expected_information_gain": contract["gain"], "novelty": contract["novelty"], "input_fingerprint": fingerprint, "relevant_input_changed": bool(history and not same_input), "selected": selected, "rejected": reasons, "score": score})
+    return decisions
+
+
 def select_track(state: dict) -> str:
     blocked = set(state.get("blocked_tracks", []))
-    if state.get("verified_empirical_cases", 0) < 25 and state.get("prospective_predictions", 0) == 0:
-        if "EMPIRICAL" not in blocked:
-            return "EMPIRICAL"
-        if "PROSPECTIVE" not in blocked:
-            return "PROSPECTIVE"
-    if state.get("resolved_predictions", 0) < 10 and "TIMING" not in blocked:
-        return "TIMING"
-    for track in TRACKS:
-        if track not in blocked:
-            return track
+    # Preserve the compact pre-R3 helper contract for callers that provide only
+    # the legacy counters. Persisted controller state always carries the R3
+    # scheduler fields and uses candidate_decisions below.
+    if not any(key in state for key in ("activity_history", "cooldowns", "selection_trace", "available_tracks")):
+        if state.get("verified_empirical_cases", 0) < 25 and state.get("prospective_predictions", 0) == 0:
+            if "EMPIRICAL" not in blocked:
+                return "EMPIRICAL"
+            if "PROSPECTIVE" not in blocked:
+                return "PROSPECTIVE"
+        if state.get("resolved_predictions", 0) < 10 and "TIMING" not in blocked:
+            return "TIMING"
+        for track in TRACKS:
+            if track not in blocked:
+                return track
+        raise NoAvailableTrackError("ALL_TRACKS_BLOCKED")
+    candidates = [item for item in candidate_decisions(state) if item["selected"]]
+    if candidates:
+        # Keep roadmap urgency, then information gain, then track diversity, then stable order.
+        if state.get("resolved_predictions", 0) < 10 and "TIMING" not in blocked:
+            timing = next((item for item in candidates if item["track"] == "TIMING"), None)
+            if timing:
+                return "TIMING"
+        return max(candidates, key=lambda item: (item["score"], -TRACKS.index(item["track"])))["track"]
     raise NoAvailableTrackError("ALL_TRACKS_BLOCKED")
 
 
@@ -120,6 +220,22 @@ def classify_material_progress(*, activity: dict, starting_head: str, ending_hea
     if validation_gain:
         return "VALIDATION_GAIN"
     return "NO_MATERIAL_PROGRESS"
+
+
+def classify_activity_result(*, starting_head: str, ending_head: str, output: str, activity_outputs: list[str], exit_code: int) -> str:
+    if ending_head != starting_head:
+        return "HIGH_INFORMATION_GAIN"
+    if exit_code != 0:
+        return "NO_NEW_INFORMATION"
+    lowered = output.lower()
+    evidence_markers = ("new source passage", "new verified claim", "new validated", "new defect", "defect closed", "comparison outcome", "new independent fixture", "blocker closed", "blocker refined", "material contradiction")
+    if any(marker in lowered for marker in evidence_markers):
+        return "MEDIUM_INFORMATION_GAIN"
+    if any(marker in lowered for marker in ("validated_no_change", "no new information", "no material progress", "unchanged inputs")):
+        return "NO_NEW_INFORMATION"
+    if activity_outputs:
+        return "DOCUMENTATION_ONLY"
+    return "NO_NEW_INFORMATION"
 
 
 def classify_output(path: str) -> str:
@@ -328,10 +444,14 @@ def run(max_loops: int, retries: int, hard_timeout: int, idle_timeout: int, slee
             try:
                 selected_track = select_track(state)
                 selected_priority = select_next_priority(state)
+                decisions = candidate_decisions(state)
+                selected = next(item for item in decisions if item["track"] == selected_track)
             except NoAvailableTrackError:
                 selected_track = None
                 selected_priority = None
-            print(json.dumps({"selected_track": selected_track, "selected_priority": selected_priority, "blocked_tracks": state.get("blocked_tracks", []), "safe_execution": not unsafe, "unsafe_opt_in": unsafe, "hard_timeout_seconds": hard_timeout, "idle_timeout_seconds": idle_timeout, "retry_limit": retries, "max_loops": max_loops}, indent=2))
+                decisions = candidate_decisions(state)
+                selected = None
+            print(json.dumps({"selected_track": selected_track, "selected_priority": selected_priority, "question_to_resolve": selected["question"] if selected else None, "expected_information_gain": selected["expected_information_gain"] if selected else None, "novelty": selected["novelty"] if selected else None, "relevant_input_changed": selected["relevant_input_changed"] if selected else None, "suppressed": [{"track": item["track"], "reason": item["rejected"]} for item in decisions if not item["selected"]], "cooldowns": state.get("cooldowns", {}), "next_alternative": next((item["track"] for item in decisions if item["selected"] and item["track"] != selected_track), None), "blocked_tracks": state.get("blocked_tracks", []), "safe_execution": not unsafe, "unsafe_opt_in": unsafe, "hard_timeout_seconds": hard_timeout, "idle_timeout_seconds": idle_timeout, "retry_limit": retries, "max_loops": max_loops}, indent=2))
             return 0
         for _ in range(max_loops):
             state = load_state()
@@ -352,6 +472,8 @@ def run(max_loops: int, retries: int, hard_timeout: int, idle_timeout: int, slee
             state["active_activity"] = identity["activity_id"]
             state["active_track"] = identity["track"]
             state["activity_identity"] = identity
+            contract = activity_contract(identity["track"])
+            state["selected_decision"] = {"question": contract["question"], "expected_information_gain": contract["gain"], "novelty": contract["novelty"], "input_fingerprint": relevant_input_fingerprint(state, identity["track"]), "candidates": candidate_decisions(state)}
             state["controller_state"] = "RUNNING"
             state["iteration_started_at"] = now()
             save_state(state)
@@ -370,7 +492,8 @@ def run(max_loops: int, retries: int, hard_timeout: int, idle_timeout: int, slee
             reconciliation_entries = status_entries()
             activity_outputs = [entry["path"] for entry in reconciliation_entries if classify_output(entry["path"]) == "AUTHORITATIVE_ACTIVITY_OUTPUT"]
             unexpected = [entry["path"] for entry in reconciliation_entries if entry["path"] not in allowed and classify_output(entry["path"]) not in {"AUTHORITATIVE_ACTIVITY_OUTPUT", "GENERATED_AUTHORITY", "RUNTIME"}]
-            progress = ending_head != starting_head or result["completed_despite_timeout"] or bool(activity_outputs)
+            material_progress = classify_activity_result(starting_head=starting_head, ending_head=ending_head, output=result["stdout"], activity_outputs=activity_outputs, exit_code=result["exit_code"])
+            progress = material_progress not in {"NO_NEW_INFORMATION", "DOCUMENTATION_ONLY"} or result["completed_despite_timeout"]
             completed_track = state.get("active_track")
             state["controller_state"] = "VERIFYING"
             state["last_commit"] = ending_head
@@ -384,10 +507,8 @@ def run(max_loops: int, retries: int, hard_timeout: int, idle_timeout: int, slee
             metrics["loops_failed"] = metrics.get("loops_failed", 0) + (1 if result["exit_code"] else 0)
             metrics["timeouts"] = metrics.get("timeouts", 0) + (1 if result["failure"] in {"CODEX_HARD_TIMEOUT", "CODEX_IDLE_TIMEOUT"} else 0)
             metrics["consecutive_zero_progress"] = 0 if progress else metrics.get("consecutive_zero_progress", 0) + 1
-            if metrics["consecutive_zero_progress"] >= 2:
-                state.setdefault("blocked_tracks", [])
-                if completed_track not in state["blocked_tracks"]:
-                    state["blocked_tracks"].append(completed_track or "EMPIRICAL")
+            if not progress:
+                state.setdefault("cooldowns", {})[identity["activity_id"]] = {"input_fingerprint": relevant_input_fingerprint(state, completed_track), "reason": material_progress, "release_conditions": ["relevant inputs changed", "new source arrived", "dependency changed", "method changed", "manual override", "justified cooldown expiry"], "set_at": now()}
                 metrics["track_switches"] = metrics.get("track_switches", 0) + 1
             if result["failure"]:
                 state["blockers"] = [result["failure"]]
@@ -395,8 +516,12 @@ def run(max_loops: int, retries: int, hard_timeout: int, idle_timeout: int, slee
             if unexpected:
                 state["blockers"] = ["UNEXPECTED_TRACKED_CHANGES"]
                 state["stop_reason"] = "CRITICAL_REPOSITORY_FAILURE"
-            state["material_progress"] = classify_material_progress(activity=identity, starting_head=starting_head, ending_head=ending_head, validation_gain=result["exit_code"] == 0)
-            append_log({"iteration": state["loop_number"], "start_time": state.get("iteration_started_at"), "end_time": now(), "activity": identity["activity_id"], "track": identity["track"], "activity_type": identity["activity_type"], "title": identity["title"], "exit_code": result["exit_code"], "failure": result["failure"], "event_count": result["event_count"], "last_event_type": result["last_event_type"], "elapsed_seconds": result["elapsed_seconds"], "starting_head": starting_head, "ending_head": ending_head, "dirty_paths": unexpected, "completed_despite_timeout": result["completed_despite_timeout"], "material_progress": state["material_progress"], "completion_state": state["completion_state"], "next_priority": state["next_priority"]})
+            state["material_progress"] = material_progress
+            history_record = {"activity_id": identity["activity_id"], "activity_type": identity["activity_type"], "track": identity["track"], "started_at": state.get("iteration_started_at"), "completed_at": now(), "starting_head": starting_head, "ending_head": ending_head, "repository_delta": ending_head != starting_head, "knowledge_delta": {}, "evidence_delta": {}, "blocker_delta": {}, "validation_delta": {}, "material_progress": material_progress, "input_fingerprint": relevant_input_fingerprint(state, completed_track), "output_fingerprint": output_fingerprint(starting_head=starting_head, ending_head=ending_head, paths=activity_outputs), "result": result["completion"], "stop_reason": result["failure"], "question_to_resolve": contract["question"], "expected_information_gain": contract["gain"], "novelty": contract["novelty"]}
+            state.setdefault("activity_history", []).append(history_record)
+            state["activity_history"] = state["activity_history"][-50:]
+            state["selection_trace"] = {"candidates_considered": [item["track"] for item in state.get("selected_decision", {}).get("candidates", [])], "selected": identity["activity_id"], "rejected": {item["track"]: item["rejected"] for item in state.get("selected_decision", {}).get("candidates", []) if item["rejected"]}, "cooldown": state.get("cooldowns", {}), "novelty": contract["novelty"], "expected_information_gain": contract["gain"], "why_selected": contract["question"]}
+            append_log({"iteration": state["loop_number"], "start_time": state.get("iteration_started_at"), "end_time": now(), "activity": identity["activity_id"], "track": identity["track"], "activity_type": identity["activity_type"], "title": identity["title"], "exit_code": result["exit_code"], "failure": result["failure"], "event_count": result["event_count"], "last_event_type": result["last_event_type"], "elapsed_seconds": result["elapsed_seconds"], "starting_head": starting_head, "ending_head": ending_head, "dirty_paths": unexpected, "completed_despite_timeout": result["completed_despite_timeout"], "material_progress": material_progress, "completion_state": state["completion_state"], "next_priority": state["next_priority"], "input_fingerprint": history_record["input_fingerprint"], "output_fingerprint": history_record["output_fingerprint"]})
             state["loop_number"] += 1
             save_state(state)
             if unexpected:

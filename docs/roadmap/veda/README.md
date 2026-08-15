@@ -11,6 +11,7 @@ The implemented baseline is frozen through P031 plus P015-RX, P015-RX2, STD-001,
 - Predictive maturity: `PRED-M3_OPERATIONAL_PLUS`
 - Empirical status: `VEDA-EMP-001` remains longitudinal; real eligible cases and verified outcomes remain `0`; `PRED-M4` is `INSUFFICIENT_SAMPLE`.
 - VEDA-RM-002 active tracks: `CLASSICAL_SOURCE_EXPANSION`, `TIMING_VALIDATION`, `METHOD_COMPARISON`, `TAJIKA_FOUNDATION`, `ASHTAKAVARGA_VALIDATION`, `SHADBALA_VALIDATION`, and `MUHURTA_SOURCE_EXPANSION`.
+- VEDA-AUTOLOOP-R3 is implemented/frozen; the controller uses information-gain, input fingerprints, cooldowns and track diversity, with `METHOD_COMPARISON` as next priority.
 - `VEDA-ADM-EMP-001` is implemented/frozen by its own acceptance record; the next operational step is to supply legitimate governed case data.
 - ADM-EMP-001 implementation: `38bd7a03`, tag `veda-adm-emp-001-case-intake-console`.
 - STD-003 is implemented/frozen by its current-state acceptance record; COMM-001 is implemented/frozen by `docs/current-state/comm-001/`; LANG-001 and LANG-001-R1 are implemented/frozen by their current-state records; COMM-002 is implemented/frozen by `docs/current-state/comm-002/`; GROUP-001 is implemented/frozen by `docs/current-state/group-001/`; EMO-001 is implemented/frozen in `docs/current-state/emo-001/`; P027 is implemented/frozen in `docs/current-state/p027/`; LANG-002+ remains planned.
