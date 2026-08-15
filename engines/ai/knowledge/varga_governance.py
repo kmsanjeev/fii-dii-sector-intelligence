@@ -7,6 +7,7 @@ does not add a second astronomy implementation or activate interpretation.
 from __future__ import annotations
 
 import json
+from decimal import Decimal, ROUND_FLOOR
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +23,9 @@ from engines.intelligence.kundli_engine import (
 ROOT = Path(__file__).resolve().parents[3]
 _TS = "2026-08-11T00:00:00Z"
 _VERSION = "1.0.0"
+D20_METHOD_ID = "D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1"
+D20_METHOD_VERSION = "1.0"
+D20_METHOD = "d20_vimshamsha_bphs_category_start_v1"
 
 VARGA_METHODS: dict[str, dict[str, Any]] = {
     "D1": {"name": "Rashi", "division": 1, "method": "identity", "status": "IMPLEMENTED_VALIDATED", "p004": "VALIDATED"},
@@ -34,7 +38,7 @@ VARGA_METHODS: dict[str, dict[str, Any]] = {
     "D11": {"name": "Ekadashamsha", "division": 11, "method": "general", "status": "IMPLEMENTED_WITH_CONDITIONS", "p004": "VALIDATED_WITH_CONDITIONS"},
     "D12": {"name": "Dwadashamsha", "division": 12, "method": "dwadasamsa", "status": "IMPLEMENTED_WITH_CONDITIONS", "p004": "VALIDATED_WITH_CONDITIONS", "priority": "P1"},
     "D16": {"name": "Shodashamsha", "division": 16, "method": "general", "status": "IMPLEMENTED_WITH_CONDITIONS", "p004": "VALIDATED_WITH_CONDITIONS"},
-    "D20": {"name": "Vimshamsha", "division": 20, "method": "general", "status": "IMPLEMENTED_WITH_CONDITIONS", "p004": "VALIDATED_WITH_CONDITIONS"},
+    "D20": {"name": "Vimshamsha", "division": 20, "method": D20_METHOD, "method_id": D20_METHOD_ID, "method_version": D20_METHOD_VERSION, "source_ref": "BPHS_CH6_17_20; BPHS_CH7_4", "authority": "CLASSICAL_PRIMARY", "status": "IMPLEMENTED_WITH_CONDITIONS", "p004": "VALIDATED_WITH_CONDITIONS", "calculation_status": "PARTIALLY_VALIDATED", "interpretation_status": "NOT_VALIDATED", "mapping_status": "SOURCE_MAPPING_INCOMPLETE", "progression_status": "SEQUENTIAL_INFERENCE_FROM_CATEGORY_START", "legacy_method": "D20_LEGACY_GENERIC_VARGA_V0"},
     "D30": {"name": "Trimshamsha", "division": 30, "method": "trimshamsa", "status": "IMPLEMENTED_WITH_CONDITIONS", "p004": "VALIDATED_WITH_CONDITIONS", "safety": "HIGH_STAKES_REVIEW_REQUIRED"},
     "D60": {"name": "Shashtyamsha", "division": 60, "method": "general", "status": "IMPLEMENTED_WITH_CONDITIONS", "p004": "VALIDATED_WITH_CONDITIONS", "safety": "HIGH_SENSITIVITY"},
 }
@@ -77,6 +81,19 @@ def varga_sign(longitude: float, division: int, method: str) -> str:
         return SIGNS[(start + amsa) % 12]
     if method == "chaturthamsa_14710":
         return SIGNS[(sign + (0, 3, 6, 9)[min(amsa, 3)]) % 12]
+    if method == D20_METHOD:
+        # BPHS Ch. 6.17 supplies category starts. The inspected passage does
+        # not fully settle a modern destination-sign mapping, so sequential
+        # progression is retained as an explicit evidence-qualified method.
+        exact_degree = Decimal(str(degree))
+        exact_amsa = min(int((exact_degree * Decimal(division) / Decimal(30)).to_integral_value(rounding=ROUND_FLOOR)), division - 1)
+        if sign in MOVABLE_SIGNS:
+            start = 0  # Aries
+        elif sign in FIXED_SIGNS:
+            start = 8  # Sagittarius
+        else:
+            start = 4  # Leo; dual/common signs
+        return SIGNS[(start + exact_amsa) % 12]
     if method == "dasamsa":
         start = sign if sign % 2 == 0 else (sign + 8) % 12
         return SIGNS[(start + amsa) % 12]
@@ -115,6 +132,9 @@ def canonical_varga_fact(planet_id: str, longitude: float, varga_id: str) -> dic
         "method_id": method_record.get("method_id", method_record["method"]),
         "method_version": method_record.get("method_version", "legacy"),
         "source_ref": method_record.get("source_ref", "P004_VALIDATED_RUNTIME_REPRODUCTION"),
+        "authority": method_record.get("authority", "RUNTIME_REPRODUCTION"),
+        "calculation_status": method_record.get("calculation_status", method_record["p004"]),
+        "mapping_status": method_record.get("mapping_status"),
         "runtime_version": "P012_CANONICAL_RUNTIME",
         "validation_status": method_record["p004"],
         "interpretation_status": method_record.get("interpretation_status", _PURPOSE_READINESS.get(varga_id, {}).get("status", "REFERENCE_ONLY")),

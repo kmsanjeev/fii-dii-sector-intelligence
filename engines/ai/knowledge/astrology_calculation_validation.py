@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from decimal import Decimal, ROUND_FLOOR
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -28,7 +29,7 @@ ACTIVE_REST_VARGAS: dict[str, str] = {
     "D11": "general",
     "D12": "dwadasamsa",
     "D16": "general",
-    "D20": "general",
+    "D20": "d20_vimshamsha_bphs_category_start_v1",
     "D30": "trimshamsa",
     "D60": "general",
 }
@@ -373,6 +374,15 @@ def _varga_sign_reference(longitude: float, divisor: int, method: str) -> str:
         else:
             start = (sign_index + 4) % 12
         return SIGNS[(start + amsa) % 12]
+    if method == "d20_vimshamsha_bphs_category_start_v1":
+        exact_amsa = min(int((Decimal(str(degree_in_sign)) * Decimal(20) / Decimal(30)).to_integral_value(rounding=ROUND_FLOOR)), 19)
+        if sign_index in MOVABLE_SIGNS:
+            start = 0
+        elif sign_index in FIXED_SIGNS:
+            start = 8
+        else:
+            start = 4
+        return SIGNS[(start + exact_amsa) % 12]
     if method == "dasamsa":
         start = sign_index if sign_index % 2 == 0 else (sign_index + 8) % 12
         return SIGNS[(start + amsa) % 12]

@@ -15,3 +15,5 @@ The source also provides deity sequences for the Vimshamsha parts. VEDA currentl
 ## Decision
 
 `D20_METHOD_VARIANTS_REQUIRE_SPLIT` and `D20_ENGINEERING_REMEDIATION_REQUIRED` are recommended for future P015-RX2. No repair is made here. P031 remains D1-first and interpretive D20 use remains disabled.
+
+Remediation outcome: P015-RX2 subsequently implemented the versioned category-start route. This historical comparison remains unchanged; the current result is documented in `docs/current-state/p015-rx2/`.

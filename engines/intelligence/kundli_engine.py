@@ -553,7 +553,7 @@ class KundliEngine:
             (1,  'identity'), (2,  'hora'),    (3,  'drekkana'),
             (4,  'chaturthamsa_14710'), (7,  'saptamsa'), (9,  'navamsa'),
             (10, 'dasamsa'),  (11, 'general'),  (12, 'dwadasamsa'),
-            (16, 'general'),  (20, 'general'),  (30, 'trimshamsa'),
+            (16, 'general'),  (20, 'd20_vimshamsha_bphs_category_start_v1'),  (30, 'trimshamsa'),
             (60, 'general'),
         ]:
             chart_signs = {}
@@ -571,6 +571,13 @@ class KundliEngine:
         if method == 'chaturthamsa_14710':
             # Source-selected D4: four 7°30' quarters map to 1st/4th/7th/10th.
             return SIGNS[(s_num + (0, 3, 6, 9)[min(amsa, 3)]) % 12]
+
+        if method == 'd20_vimshamsha_bphs_category_start_v1':
+            # Keep the canonical D20 implementation in the governed Varga
+            # module. The source fixes category starts; destination-sign
+            # progression remains explicitly evidence-qualified there.
+            from engines.ai.knowledge.varga_governance import varga_sign
+            return varga_sign(lon, 20, method)
 
         if method == 'identity':
             return SIGNS[s_num]

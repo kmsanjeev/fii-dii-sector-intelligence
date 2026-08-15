@@ -3615,3 +3615,7 @@ Started the classical travel, relocation and foreign-residence source validation
 ## 2026-08-15 — VEDA-KNOW-SPIRIT-001
 
 Started classical spirituality, dharma and D20 source validation. BPHS passages were verified for D20 upasana scope and category-based Vimshamsha starts; VEDA's current generic D20 fallback is recorded as a material source-method mismatch. No D20 repair, P031-R1, P032, Muhurta or Prashna work was started.
+
+## 2026-08-15 — VEDA-P015-RX2
+
+Remediated governed D20 routing with `D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1`. The existing Varga engine now uses BPHS category starts for movable, fixed and dual signs; legacy generic routing remains available only for explicit comparison. Independent 12×20 grid, boundary, modality, Ascendant, planet and node tests pass. Destination-sign mapping remains evidence-qualified, D20 interpretation remains not validated, and P031 remains D1-first.

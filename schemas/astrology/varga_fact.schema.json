@@ -28,6 +28,9 @@
     "interpretation_status": {"type": "string"},
     "method_id": {"type": "string"},
     "method_version": {"type": "string"},
-    "source_ref": {"type": "string"}
+    "source_ref": {"type": "string"},
+    "authority": {"type": "string"},
+    "calculation_status": {"type": "string"},
+    "mapping_status": {"type": ["string", "null"]}
   }
 }

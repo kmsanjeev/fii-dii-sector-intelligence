@@ -12,3 +12,7 @@ Conditions:
 4. No Approved Core promotion occurred.
 
 P031 remains frozen. P031-R1, P015-RX2, P032, Muhurta, Prashna and LANG-002+ remain not started. EMP-001 and COMM-002/GROUP-001 statuses are preserved.
+
+## Remediation outcome pointer
+
+The historical discrepancy above was remediated by `P015-RX2`. The current D20 implementation is versioned and category-start routed, with destination-sign mapping explicitly evidence-qualified and interpretation still not validated. See `docs/current-state/p015-rx2/`.
