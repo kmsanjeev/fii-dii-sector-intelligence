@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-08-15 | VEDA-KNOW-MUH-003
+
+Recorded scoped Bṛhat Saṃhitā nakshatra, tithi/karana and marriage-karana event families as inactive governed knowledge. Universal auspiciousness scoring and recommendations remain deferred; no personal-Bala algorithms or production selection were added.
+
 ## 2026-08-15 | VEDA-EMP-002
 
 Audited historical-case acquisition and leakage readiness. Existing EMP/PRED infrastructure is reusable, but the verified historical, usable empirical and resolved prospective counts remain zero. Synthetic and fixture data remain excluded; no case, outcome, calibration claim or predictive-maturity upgrade was fabricated.
