@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-08-15 | VEDA-MUH-FND-001
+
+Completed the Panchanga and electional-astrology foundation audit. The existing runtime provides birth-time Tithi, Vara, Nakshatra, Yoga and Karana plus natal chart context. Classical Bṛhat Saṃhitā Chapters 97–99 and 102 were inspected for scoped nakshatra, tithi, karana and marriage-context rule families. Sunrise/sunset, electional date/location handling, event taxonomy, Tarabala, Chandrabala, local solar-day windows and electional selection remain incomplete. Muhurta is therefore `PARTIAL`; Prashna remains `MISSING_FOUNDATION`. No Muhurta, Prashna, P032, RAG or production-rule implementation was started.
+
 ## 2026-08-15 | VEDA-KNOW-D20-001
 
 Completed the dedicated D20/Vimshamsha interpretive source audit. BPHS Chapter 7 verse 4 supports the narrow association of Vimshamsha with upasana/worship, while Chapter 6 verses 17-20 supports the division structure, category starts and deity lists. No complete passage-level D20 house/planet interpretation, deity resolver, spiritual-maturity, moksha or renunciation method was established. The narrow claim is recorded as `VALIDATED_KNOWLEDGE`; full D20 interpretation remains gated and research-candidate. No P031-R1, P032, Muhurta, Prashna, RAG rebuild or Approved Core promotion occurred.
