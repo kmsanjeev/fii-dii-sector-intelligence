@@ -42,6 +42,7 @@ This project is NOT a screener. It IS a decision intelligence platform.
 - VEDA-RM-002 `METHOD_COMPARISON` completed a deterministic D20 variant comparison: the source-selected BPHS category-start route diverged from the historical generic fallback on 220/240 shared fixtures and remains the explicit governed default. This does not validate interpretation or prediction and does not change production behavior.
 - COMM-002 and GROUP-001 human validation remain pending. EMO-001 is implemented/frozen.
 - EMP-001 remains active longitudinal with insufficient sample; LANG-002+ remains planned.
+- EMP-025-R3 closes the historical acquisition gate at 25 eligible/chart-ready cases across five event classes and launches a narrow, holdout-protected method-pilot handoff; no pilot result or predictive-maturity upgrade is claimed.
 - Historical P027 reservation is preserved; current assignment is governed by `docs/current-state/p027/`.
 
 **ALL 25 CORE PHASES + A/B/C/D/FPI/KU/AF/CH/TI/SH/UI-S COMPLETE. Full investment operating system is live.**

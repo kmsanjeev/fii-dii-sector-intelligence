@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-EMP-025-R3 FINAL GATE AND METHOD PILOT HANDOFF
+
+Added four officially sourced year-precision public-office transition cases
+for George Ariyoshi and Cecil Andrus. EMP-025 now has 25 eligible and
+chart-ready cases across five event classes, 16/25 official or strongly
+corroborated events, frozen 5/4/4 subject splits, and a deterministic corpus
+hash. The narrow method-pilot handoff is launched with holdout protection;
+no pilot result or predictive-maturity upgrade is claimed.
+
 ## 2026-08-16 | VEDA-EMP-025-R2 CORPUS COMPLETION CHECKPOINT
 
 Converted three high-priority public-office candidates into multi-event cases.
