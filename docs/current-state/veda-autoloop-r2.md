@@ -1,6 +1,6 @@
 # VEDA-AUTOLOOP-R2
 
-Status: `IN IMPLEMENTATION`.
+Status: `IMPLEMENTED / FROZEN` with `PASS_WITH_CONDITION`.
 
 R2 reconciles the persistent controller lifecycle and autonomous activity
 identity. Stable activity records now carry `activity_id`, `track`,
@@ -12,4 +12,6 @@ The reconciliation pass classifies tracked and untracked outputs. The known
 PRED-004 source-provenance report is validated as authoritative activity
 output and is selectively staged and pushed; runtime logs remain ignored.
 Unrelated files remain preserved and cause `REPAIR_REQUIRED` rather than
-blind mutation.
+blind mutation. The controlled one-loop probe ended in `READY`; the PRED-004
+provenance report was classified as `AUTHORITATIVE_ACTIVITY_OUTPUT`,
+selectively committed, and pushed.

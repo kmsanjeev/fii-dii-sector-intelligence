@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-08-15 | VEDA-AUTOLOOP-R2
+
+Reconciled autonomous-loop final state and activity identity. Healthy bounded
+runs now persist `READY` after transient verification, validation-only work is
+distinguished from failed commits, activity records use stable identities, and
+authoritative autonomous outputs receive selective reconciliation. The
+PRED-004 provenance report was validated and committed; no Jyotisha, empirical,
+prospective, predictive, or RAG capability state was created or upgraded.
+
 ## 2026-08-15 | VEDA-AUTOLOOP-R1
 
 Froze persistent-controller hardening: safe Codex execution is the default,

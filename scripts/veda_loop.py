@@ -144,8 +144,8 @@ def commit_authoritative_outputs(paths: list[str]) -> dict:
     if any(not validate_authoritative_output(path) for path in paths):
         return {"committed": [], "error": "INVALID_AUTHORITATIVE_OUTPUT"}
     subprocess.check_call(["git", "add", "--", *paths], cwd=ROOT)
-    staged = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT, capture_output=True, check=False)
-    if staged.returncode != 0:
+    staged_paths = set(git("diff", "--cached", "--name-only").splitlines())
+    if any(path in staged_paths for path in paths):
         return {"committed": [], "error": None}
     subprocess.check_call(["git", "commit", "-m", "docs(veda): reconcile autonomous activity output"], cwd=ROOT)
     subprocess.check_call(["git", "push", "origin", "main"], cwd=ROOT)

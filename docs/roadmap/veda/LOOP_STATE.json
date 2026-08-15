@@ -1,9 +1,9 @@
 {
   "enabled": true,
-  "loop_number": 8,
+  "loop_number": 12,
   "active_activity": null,
   "last_completed_activity": "EMPIRICAL_OR_PROSPECTIVE_EVIDENCE_RECONCILIATION",
-  "last_commit": "01346ebc6d457b5757f9d60ca715f6e6ddd1c117",
+  "last_commit": "9635fa05307b771aa3216a49325dd2767bdc73fa",
   "last_tag": "veda-pred-004-shadow-pilot",
   "programme_status": "ACTIVE",
   "verified_empirical_cases": 0,
@@ -11,7 +11,7 @@
   "prospective_predictions": 0,
   "resolved_predictions": 0,
   "predictive_maturity": "PRED-M3_OPERATIONAL_PLUS",
-  "next_priority": "CLASSICAL_KNOWLEDGE_VALIDATION",
+  "next_priority": "MUHURTA_READINESS",
   "blockers": [
     "LEGITIMATE_INPUT_REQUIRED: consented or publicly observable subject and governed event data required",
     "CODEX_RUNTIME_LIMITATION: PowerShell shell snapshot and skills traversal warnings observed; bounded timeouts are recorded"
@@ -23,22 +23,57 @@
     "EMPIRICAL",
     "PROSPECTIVE",
     "TIMING",
-    "CLASSICAL_KNOWLEDGE"
+    "CLASSICAL_KNOWLEDGE",
+    "CALCULATION_VALIDATION",
+    "CALIBRATION_ML",
+    "RAG",
+    "MUHURTA"
   ],
-  "last_codex_event_at": "2026-08-15T17:15:36Z",
-  "last_event_type": "item.started",
-  "event_count": 8,
-  "elapsed_seconds": 18.8,
-  "activity_status": "READY",
+  "last_codex_event_at": "2026-08-15T18:05:09Z",
+  "last_event_type": "turn.completed",
+  "event_count": 311,
+  "elapsed_seconds": 171.2,
+  "activity_status": "COMPLETED",
   "metrics": {
     "loops_started": 5,
-    "loops_completed": 0,
+    "loops_completed": 4,
     "loops_failed": 5,
     "repairs_run": 0,
-    "track_switches": 2,
+    "track_switches": 6,
     "timeouts": 3,
-    "consecutive_zero_progress": 2
+    "consecutive_zero_progress": 6
   },
-  "updated_at": "2026-08-15T17:15:38Z",
-  "iteration_started_at": "2026-08-15T17:15:17Z"
+  "updated_at": "2026-08-15T18:05:11Z",
+  "iteration_started_at": "2026-08-15T18:02:18Z",
+  "activity_identity": {
+    "activity_id": "MUHURTA_READINESS",
+    "track": "MUHURTA",
+    "activity_type": "ROADMAP_READINESS",
+    "title": "Muhurta readiness"
+  },
+  "completion_state": "ACTIVITY_COMPLETED_NO_REPO_CHANGE",
+  "material_progress": "VALIDATION_GAIN",
+  "reconciliation": {
+    "authoritative_uncommitted": [],
+    "temporary_remaining": [],
+    "unexpected": [],
+    "committed": [
+      "docs/current-state/pred-004/06_SOURCE_PROVENANCE_AND_CALIBRATION.md"
+    ],
+    "error": null
+  },
+  "run_summary": {
+    "loops_requested": 1,
+    "loops_completed": 1,
+    "activities_completed": 1,
+    "repository_changes": true,
+    "commits_created": 1,
+    "authoritative_uncommitted_files": 0,
+    "temporary_files_remaining": 0,
+    "unexpected_files": 0,
+    "material_progress": "VALIDATION_GAIN",
+    "validation_only_progress": true,
+    "stop_reason": null,
+    "next_priority": "MUHURTA_READINESS"
+  }
 }
