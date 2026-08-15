@@ -10,7 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -41,10 +41,17 @@ def _event_is_usable(event: dict[str, Any]) -> bool:
     )
 
 
+def _retrospective_cutoff(event_date: str) -> str:
+    parsed = date.fromisoformat(event_date[:10])
+    return f"{parsed.year - 1:04d}-12-31"
+
+
 def enrich_candidates(payload: dict[str, Any], *, chart_revision: str, ingest: bool = False, db_path: str | None = None) -> dict[str, Any]:
     accepted: list[dict[str, Any]] = []
     excluded: list[dict[str, Any]] = []
     service = CaseIntakeService(db_path) if ingest else None
+    used_case_ids = {case.case_id for case in service._existing_cases()} if service else set()
+    next_case_number = 1
     for record in payload.get("records", []):
         reasons: list[str] = []
         if record.get("identity_status") not in GOOD_IDENTITY:
@@ -61,7 +68,14 @@ def enrich_candidates(payload: dict[str, Any], *, chart_revision: str, ingest: b
             continue
 
         event = events[0]
-        case_id = f"VEDA-EMP-CASE-{len(accepted) + 1:03d}"
+        if record.get("case_id"):
+            case_id = str(record["case_id"])
+        else:
+            while f"VEDA-EMP-CASE-{next_case_number:03d}" in used_case_ids:
+                next_case_number += 1
+            case_id = f"VEDA-EMP-CASE-{next_case_number:03d}"
+            next_case_number += 1
+        used_case_ids.add(case_id)
         case_payload = {
             "case_external_id": case_id,
             "case_class": "HISTORICAL_VERIFIED",
@@ -88,14 +102,20 @@ def enrich_candidates(payload: dict[str, Any], *, chart_revision: str, ingest: b
             "source_passage_reference": event.get("claim_id", "REFERENCE_NOT_VERIFIED"),
             "original_case_source": record.get("ogid"),
             "independent_verification": event["verification_source"],
-            "prediction_cutoff": "1997-12-31",
-            "knowledge_cutoff": "1997-12-31",
+            "prediction_cutoff": _retrospective_cutoff(event["event_date_start"]),
+            "knowledge_cutoff": _retrospective_cutoff(event["event_date_start"]),
             "outcome_cutoff": event["event_date_start"],
             "notes": f"Acquisition-only case; chart revision lock {chart_revision}. No chart/event agreement was used for selection.",
         }
         item = {"case_id": case_id, "subject_id": record.get("ogid"), "identity": record, "events": events, "case_payload": case_payload, "eligibility_status": "EMPIRICAL_ELIGIBLE"}
         if service:
-            item["ingest_result"] = service.create_case(case_payload, actor="VEDA-EMP-EVENT-001")
+            try:
+                item["ingest_result"] = service.create_case(case_payload, actor="VEDA-EMP-EVENT-001")
+            except ValueError as exc:
+                if "DUPLICATE" in str(exc):
+                    item["ingest_result"] = {"status": "DUPLICATE", "reason": "Existing CaseRegistry family retained."}
+                else:
+                    raise
         accepted.append(item)
     result = {
         "activity_id": "VEDA-EMP-EVENT-001",

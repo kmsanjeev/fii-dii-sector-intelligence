@@ -40,7 +40,7 @@ ACTIVITIES = {
     "ASHTAKAVARGA_VALIDATION": ("ASHTAKAVARGA_VALIDATION", "CALCULATION_RESEARCH", "Ashtakavarga predictive validation"),
     "SHADBALA_VALIDATION": ("SHADBALA_VALIDATION", "CALCULATION_RESEARCH", "Shadbala source validation"),
     "MUHURTA_SOURCE_EXPANSION": ("MUHURTA_SOURCE_EXPANSION", "SOURCE_RESEARCH", "Muhurta source expansion"),
-    "EMPIRICAL_INPUT_PREPARATION": ("EMPIRICAL_INPUT_PREPARATION", "INPUT_GOVERNANCE", "Empirical input preparation"),
+    "EMPIRICAL_INPUT_PREPARATION": ("EMPIRICAL_CASE_ACQUISITION", "INPUT_GOVERNANCE", "Empirical case acquisition"),
     "PROSPECTIVE_SUBJECT_DISCOVERY": ("PROSPECTIVE_SUBJECT_DISCOVERY", "INPUT_GOVERNANCE", "Prospective subject discovery"),
 }
 ACTIVITY_CONTRACTS = {
@@ -51,7 +51,7 @@ ACTIVITY_CONTRACTS = {
     "ASHTAKAVARGA_VALIDATION": {"question": "Which Ashtakavarga validation claim remains unresolved?", "expected": "independent fixture or validation conclusion", "novelty": "HIGH", "gain": "HIGH"},
     "SHADBALA_VALIDATION": {"question": "Which Shadbala method or source discrepancy remains unresolved?", "expected": "method comparison or defect finding", "novelty": "HIGH", "gain": "HIGH"},
     "MUHURTA_SOURCE_EXPANSION": {"question": "Which missing Muhurta source family resolves a documented dependency?", "expected": "new source passage or dependency conclusion", "novelty": "HIGH", "gain": "MEDIUM"},
-    "EMPIRICAL_INPUT_PREPARATION": {"question": "What new legitimate input route can close the empirical blocker?", "expected": "new admissible input avenue", "novelty": "MEDIUM", "gain": "HIGH"},
+    "EMPIRICAL_INPUT_PREPARATION": {"question": "Which measurable acquisition step increases verified usable empirical cases?", "expected": "new identity, event, timezone resolution, exclusion, or eligible case", "novelty": "HIGH", "gain": "HIGH"},
     "PROSPECTIVE_SUBJECT_DISCOVERY": {"question": "What new consented subject or event avenue can close the prospective blocker?", "expected": "new admissible subject avenue", "novelty": "MEDIUM", "gain": "HIGH"},
 }
 for _track, (_activity_id, _activity_type, _title) in ACTIVITIES.items():

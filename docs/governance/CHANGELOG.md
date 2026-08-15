@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-EMP-010 FIRST-TEN-SANITY
+
+Reached 10 shared CaseRegistry empirical cases and ran the deterministic first-
+ten sanity gate. The gate passes with conditions: all events are currently
+death events, nine use referenced Wikidata-only event evidence, and chart-fact
+generation remains pending governed coordinate resolution. No accuracy claim or
+rule tuning was performed.
+
 ## 2026-08-16 | VEDA-EMP-EVENT-001 EVENT_ACQUISITION
 
 Expanded the official OGDB research cohort to 250 records, resolved two
