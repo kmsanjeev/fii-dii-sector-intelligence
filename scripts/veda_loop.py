@@ -109,6 +109,8 @@ def run_codex(prompt: str, timeout: int, output_path: Path) -> tuple[int, str, s
                 process.wait(timeout=15)
                 return 124, output_path.read_text(encoding="utf-8", errors="replace"), error_path.read_text(encoding="utf-8", errors="replace")
         return process.returncode, output_path.read_text(encoding="utf-8", errors="replace"), error_path.read_text(encoding="utf-8", errors="replace")
+    except OSError as exc:
+        return 1, "", str(exc)
 
 
 def run(max_loops: int, retries: int, timeout: int, sleep_seconds: float, dry_run: bool) -> int:
