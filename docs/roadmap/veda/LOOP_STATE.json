@@ -1,9 +1,9 @@
 {
   "enabled": true,
-  "loop_number": 19,
+  "loop_number": 20,
   "active_activity": null,
-  "last_completed_activity": "METHOD_COMPARISON",
-  "last_commit": "b5b12dc7645a6838e3e6a3ce82094dd626c8ea13",
+  "last_completed_activity": "TAJIKA_FOUNDATION",
+  "last_commit": "1e76b028f009386692c7bdf49d67eeeee36c27a6",
   "input_revision": "rm-002-governed-inputs",
   "last_tag": "veda-pred-004-shadow-pilot",
   "programme_status": "ACTIVE",
@@ -12,13 +12,13 @@
   "prospective_predictions": 0,
   "resolved_predictions": 0,
   "predictive_maturity": "PRED-M3_OPERATIONAL_PLUS",
-  "next_priority": "TAJIKA_FOUNDATION",
+  "next_priority": "ASHTAKAVARGA_VALIDATION",
   "blockers": [
     "ROADMAP_REBASELINE_COMPLETED: new governed tracks are available",
     "LEGITIMATE_INPUT_REQUIRED: empirical and prospective tracks still require legitimate governed inputs"
   ],
-  "stop_reason": "LOW_VALUE_REPETITION: METHOD_COMPARISON repeated with unchanged inputs after the comparison was already completed",
-  "controller_state": "STOPPED",
+  "stop_reason": null,
+  "controller_state": "READY",
   "active_track": null,
   "blocked_tracks": [
     "EMPIRICAL",
@@ -56,27 +56,27 @@
     "CLASSICAL_SOURCE_EXPANSION",
     "TIMING_VALIDATION"
   ],
-  "last_codex_event_at": "2026-08-15T19:34:41Z",
-  "last_event_type": "item.completed",
-  "event_count": 119,
-  "elapsed_seconds": 39.1,
-  "activity_status": "STOPPED",
+  "last_codex_event_at": "2026-08-15T19:52:02Z",
+  "last_event_type": "turn.completed",
+  "event_count": 209,
+  "elapsed_seconds": 273.4,
+  "activity_status": "COMPLETED",
   "metrics": {
     "loops_started": 5,
-    "loops_completed": 11,
+    "loops_completed": 12,
     "loops_failed": 5,
     "repairs_run": 0,
     "track_switches": 9,
     "timeouts": 3,
     "consecutive_zero_progress": 0
   },
-  "updated_at": "2026-08-15T19:34:41Z",
-  "iteration_started_at": "2026-08-15T19:34:02Z",
+  "updated_at": "2026-08-15T19:52:04Z",
+  "iteration_started_at": "2026-08-15T19:47:28Z",
   "activity_identity": {
-    "activity_id": "METHOD_COMPARISON",
-    "track": "METHOD_COMPARISON",
-    "activity_type": "VARIANT_RESEARCH",
-    "title": "Method variant comparison"
+    "activity_id": "TAJIKA_FOUNDATION",
+    "track": "TAJIKA_FOUNDATION",
+    "activity_type": "CALCULATION_RESEARCH",
+    "title": "Tajika and annual forecasting foundation"
   },
   "completion_state": "ACTIVITY_COMPLETED_NO_REPO_CHANGE",
   "material_progress": "MEDIUM_INFORMATION_GAIN",
@@ -179,6 +179,28 @@
       "question_to_resolve": "Which two legitimate methods produce the better-governed result for a shared comparison input?",
       "expected_information_gain": "HIGH",
       "novelty": "HIGH"
+    },
+    {
+      "activity_id": "TAJIKA_FOUNDATION",
+      "activity_type": "CALCULATION_RESEARCH",
+      "track": "TAJIKA_FOUNDATION",
+      "started_at": "2026-08-15T19:47:28Z",
+      "completed_at": "2026-08-15T19:52:03Z",
+      "starting_head": "1e76b028f009386692c7bdf49d67eeeee36c27a6",
+      "ending_head": "1e76b028f009386692c7bdf49d67eeeee36c27a6",
+      "repository_delta": false,
+      "knowledge_delta": {},
+      "evidence_delta": {},
+      "blocker_delta": {},
+      "validation_delta": {},
+      "material_progress": "MEDIUM_INFORMATION_GAIN",
+      "input_fingerprint": "28b7f541053ac584",
+      "output_fingerprint": "b34e29f40c810477",
+      "result": "ACTIVITY_COMPLETED",
+      "stop_reason": null,
+      "question_to_resolve": "Which Tajika foundation dependency is currently unresolved?",
+      "expected_information_gain": "HIGH",
+      "novelty": "HIGH"
     }
   ],
   "selection_trace": {
@@ -203,7 +225,7 @@
       "EMPIRICAL_INPUT_PREPARATION",
       "PROSPECTIVE_SUBJECT_DISCOVERY"
     ],
-    "selected": "METHOD_COMPARISON",
+    "selected": "TAJIKA_FOUNDATION",
     "rejected": {
       "CLASSICAL_KNOWLEDGE": [
         "NOT_AVAILABLE",
@@ -247,12 +269,17 @@
       ],
       "CLASSICAL_SOURCE_EXPANSION": [
         "NOT_AVAILABLE",
-        "BLOCKED"
+        "BLOCKED",
+        "SAME_INPUT_REPEAT"
       ],
       "TIMING_VALIDATION": [
         "BLOCKED",
         "COOLDOWN",
         "SAME_INPUT_NO_PROGRESS"
+      ],
+      "METHOD_COMPARISON": [
+        "SAME_INPUT_REPEAT",
+        "CONSECUTIVE_REPEAT"
       ],
       "EMPIRICAL_INPUT_PREPARATION": [
         "NOT_AVAILABLE"
@@ -278,37 +305,37 @@
     },
     "novelty": "HIGH",
     "expected_information_gain": "HIGH",
-    "why_selected": "Which two legitimate methods produce the better-governed result for a shared comparison input?"
+    "why_selected": "Which Tajika foundation dependency is currently unresolved?"
   },
   "reconciliation": {
-    "authoritative_uncommitted": [],
+    "authoritative_uncommitted": [
+      "docs/current-state/rm-002/11_TAJIKA_READINESS.md",
+      "docs/current-state/rm-002/19_TAJIKA_FOUNDATION.md"
+    ],
     "temporary_remaining": [],
     "unexpected": [],
-    "committed": [
-      "docs/current-state/pred-004/06_SOURCE_PROVENANCE_AND_CALIBRATION.md"
-    ],
+    "committed": [],
     "error": null
   },
   "run_summary": {
-    "activity": "VEDA-RM-002",
-    "loops_requested": 5,
-    "loops_completed": 3,
-    "activities_completed": 3,
-    "repository_changes": true,
+    "loops_requested": 1,
+    "loops_completed": 12,
+    "activities_completed": 1,
+    "repository_changes": false,
     "commits_created": 0,
-    "authoritative_uncommitted_files": 0,
+    "authoritative_uncommitted_files": 2,
     "temporary_files_remaining": 0,
     "unexpected_files": 0,
-    "material_progress": "ROADMAP_REBASELINE",
+    "material_progress": "MEDIUM_INFORMATION_GAIN",
     "validation_only_progress": false,
     "stop_reason": null,
-    "next_priority": "TAJIKA_FOUNDATION"
+    "next_priority": "ASHTAKAVARGA_VALIDATION"
   },
   "selected_decision": {
-    "question": "Which two legitimate methods produce the better-governed result for a shared comparison input?",
+    "question": "Which Tajika foundation dependency is currently unresolved?",
     "expected_information_gain": "HIGH",
     "novelty": "HIGH",
-    "input_fingerprint": "2bd6d9086160cc7d",
+    "input_fingerprint": "28b7f541053ac584",
     "candidates": [
       {
         "track": "CLASSICAL_KNOWLEDGE",
@@ -471,7 +498,8 @@
         "selected": false,
         "rejected": [
           "NOT_AVAILABLE",
-          "BLOCKED"
+          "BLOCKED",
+          "SAME_INPUT_REPEAT"
         ],
         "score": 4
       },
@@ -499,8 +527,11 @@
         "novelty": "HIGH",
         "input_fingerprint": "2bd6d9086160cc7d",
         "relevant_input_changed": true,
-        "selected": true,
-        "rejected": [],
+        "selected": false,
+        "rejected": [
+          "SAME_INPUT_REPEAT",
+          "CONSECUTIVE_REPEAT"
+        ],
         "score": 3
       },
       {
@@ -580,5 +611,18 @@
         "score": 3
       }
     ]
+  },
+  "stop_history": [
+    {
+      "reason": "LOW_VALUE_REPETITION: METHOD_COMPARISON repeated with unchanged inputs after the comparison was already completed",
+      "classification": "TRANSIENT_RUN_STOP",
+      "recorded_at": "2026-08-15T19:47:28Z",
+      "resumed_as": "TAJIKA_FOUNDATION"
+    }
+  ],
+  "resume_event": {
+    "from": "TRANSIENT_RUN_STOP",
+    "selected": "TAJIKA_FOUNDATION",
+    "recorded_at": "2026-08-15T19:47:28Z"
   }
 }
