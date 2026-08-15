@@ -1,9 +1,9 @@
 {
   "enabled": true,
-  "loop_number": 17,
+  "loop_number": 18,
   "active_activity": null,
-  "last_completed_activity": "VEDA-RM-002_REBASELINE",
-  "last_commit": "15bd24bd28faa99dd63a855e19f63a239d8756f1",
+  "last_completed_activity": "METHOD_COMPARISON",
+  "last_commit": "fbe04641cffd89cd0c46e42b0061a2d0aa5d0cdd",
   "input_revision": "rm-002-governed-inputs",
   "last_tag": "veda-pred-004-shadow-pilot",
   "programme_status": "ACTIVE",
@@ -12,7 +12,7 @@
   "prospective_predictions": 0,
   "resolved_predictions": 0,
   "predictive_maturity": "PRED-M3_OPERATIONAL_PLUS",
-  "next_priority": "METHOD_COMPARISON",
+  "next_priority": "TAJIKA_FOUNDATION",
   "blockers": [
     "ROADMAP_REBASELINE_COMPLETED: new governed tracks are available",
     "LEGITIMATE_INPUT_REQUIRED: empirical and prospective tracks still require legitimate governed inputs"
@@ -56,35 +56,42 @@
     "CLASSICAL_SOURCE_EXPANSION",
     "TIMING_VALIDATION"
   ],
-  "last_codex_event_at": "2026-08-15T19:03:55Z",
-  "last_event_type": "item.completed",
-  "event_count": 546,
-  "elapsed_seconds": 74.5,
+  "last_codex_event_at": "2026-08-15T19:29:27Z",
+  "last_event_type": "turn.completed",
+  "event_count": 766,
+  "elapsed_seconds": 298.7,
   "activity_status": "READY",
   "metrics": {
     "loops_started": 5,
-    "loops_completed": 9,
+    "loops_completed": 10,
     "loops_failed": 5,
     "repairs_run": 0,
     "track_switches": 9,
     "timeouts": 3,
     "consecutive_zero_progress": 0
   },
-  "updated_at": "2026-08-15T19:03:55Z",
-  "iteration_started_at": "2026-08-15T19:02:41Z",
+  "updated_at": "2026-08-15T19:29:29Z",
+  "iteration_started_at": "2026-08-15T19:24:28Z",
   "activity_identity": {
-    "activity_id": "TIMING_VALIDATION",
-    "track": "TIMING_VALIDATION",
-    "activity_type": "TIMING_RESEARCH",
-    "title": "Timing validation"
+    "activity_id": "METHOD_COMPARISON",
+    "track": "METHOD_COMPARISON",
+    "activity_type": "VARIANT_RESEARCH",
+    "title": "Method variant comparison"
   },
-  "completion_state": "CONTROLLER_READY",
-  "material_progress": "NO_NEW_INFORMATION",
+  "completion_state": "ACTIVITY_COMPLETED_NO_REPO_CHANGE",
+  "material_progress": "MEDIUM_INFORMATION_GAIN",
   "cooldowns": {
     "TIMING_VALIDATION": {
       "input_fingerprint": "443dc34772e1110f",
       "reason": "NO_NEW_INFORMATION",
-      "release_conditions": ["relevant inputs changed", "new source arrived", "dependency changed", "method changed", "manual override", "justified cooldown expiry"],
+      "release_conditions": [
+        "relevant inputs changed",
+        "new source arrived",
+        "dependency changed",
+        "method changed",
+        "manual override",
+        "justified cooldown expiry"
+      ],
       "set_at": "2026-08-15T19:03:55Z"
     }
   },
@@ -99,7 +106,9 @@
       "ending_head": "135917ee67f42b46090e05470abf787f91b746b4",
       "repository_delta": false,
       "knowledge_delta": {},
-      "evidence_delta": {"source_report": true},
+      "evidence_delta": {
+        "source_report": true
+      },
       "blocker_delta": {},
       "validation_delta": {},
       "material_progress": "MEDIUM_INFORMATION_GAIN",
@@ -126,13 +135,125 @@
       "output_fingerprint": "legacy-timing-validation",
       "result": "ACTIVITY_COMPLETED_NO_REPO_CHANGE",
       "stop_reason": "LOW_VALUE_REPETITION"
+    },
+    {
+      "activity_id": "METHOD_COMPARISON",
+      "activity_type": "VARIANT_RESEARCH",
+      "track": "METHOD_COMPARISON",
+      "started_at": "2026-08-15T19:24:28Z",
+      "completed_at": "2026-08-15T19:29:29Z",
+      "starting_head": "fbe04641cffd89cd0c46e42b0061a2d0aa5d0cdd",
+      "ending_head": "fbe04641cffd89cd0c46e42b0061a2d0aa5d0cdd",
+      "repository_delta": false,
+      "knowledge_delta": {},
+      "evidence_delta": {},
+      "blocker_delta": {},
+      "validation_delta": {},
+      "material_progress": "MEDIUM_INFORMATION_GAIN",
+      "input_fingerprint": "1fc77b5d40844d1c",
+      "output_fingerprint": "d700b75ce1bf34ca",
+      "result": "ACTIVITY_COMPLETED",
+      "stop_reason": null,
+      "question_to_resolve": "Which two legitimate methods produce the better-governed result for a shared comparison input?",
+      "expected_information_gain": "HIGH",
+      "novelty": "HIGH"
     }
   ],
   "selection_trace": {
-    "candidates_considered": ["METHOD_COMPARISON", "TAJIKA_FOUNDATION", "ASHTAKAVARGA_VALIDATION", "SHADBALA_VALIDATION", "MUHURTA_SOURCE_EXPANSION"],
+    "candidates_considered": [
+      "CLASSICAL_KNOWLEDGE",
+      "CALCULATION_VALIDATION",
+      "TIMING",
+      "EMPIRICAL",
+      "PROSPECTIVE",
+      "CALIBRATION_ML",
+      "RAG",
+      "MUHURTA",
+      "PRASHNA",
+      "GOVERNANCE",
+      "CLASSICAL_SOURCE_EXPANSION",
+      "TIMING_VALIDATION",
+      "METHOD_COMPARISON",
+      "TAJIKA_FOUNDATION",
+      "ASHTAKAVARGA_VALIDATION",
+      "SHADBALA_VALIDATION",
+      "MUHURTA_SOURCE_EXPANSION",
+      "EMPIRICAL_INPUT_PREPARATION",
+      "PROSPECTIVE_SUBJECT_DISCOVERY"
+    ],
     "selected": "METHOD_COMPARISON",
-    "rejected": {"TIMING_VALIDATION": ["COOLDOWN", "SAME_INPUT_NO_PROGRESS", "CONSECUTIVE_REPEAT"]},
-    "cooldown": {"TIMING_VALIDATION": "NO_NEW_INFORMATION"},
+    "rejected": {
+      "CLASSICAL_KNOWLEDGE": [
+        "NOT_AVAILABLE",
+        "BLOCKED"
+      ],
+      "CALCULATION_VALIDATION": [
+        "NOT_AVAILABLE",
+        "BLOCKED"
+      ],
+      "TIMING": [
+        "NOT_AVAILABLE",
+        "BLOCKED"
+      ],
+      "EMPIRICAL": [
+        "NOT_AVAILABLE",
+        "BLOCKED"
+      ],
+      "PROSPECTIVE": [
+        "NOT_AVAILABLE",
+        "BLOCKED"
+      ],
+      "CALIBRATION_ML": [
+        "NOT_AVAILABLE",
+        "BLOCKED"
+      ],
+      "RAG": [
+        "NOT_AVAILABLE",
+        "BLOCKED"
+      ],
+      "MUHURTA": [
+        "NOT_AVAILABLE",
+        "BLOCKED"
+      ],
+      "PRASHNA": [
+        "NOT_AVAILABLE",
+        "BLOCKED"
+      ],
+      "GOVERNANCE": [
+        "NOT_AVAILABLE",
+        "BLOCKED"
+      ],
+      "CLASSICAL_SOURCE_EXPANSION": [
+        "NOT_AVAILABLE",
+        "BLOCKED"
+      ],
+      "TIMING_VALIDATION": [
+        "BLOCKED",
+        "COOLDOWN",
+        "SAME_INPUT_NO_PROGRESS"
+      ],
+      "EMPIRICAL_INPUT_PREPARATION": [
+        "NOT_AVAILABLE"
+      ],
+      "PROSPECTIVE_SUBJECT_DISCOVERY": [
+        "NOT_AVAILABLE"
+      ]
+    },
+    "cooldown": {
+      "TIMING_VALIDATION": {
+        "input_fingerprint": "443dc34772e1110f",
+        "reason": "NO_NEW_INFORMATION",
+        "release_conditions": [
+          "relevant inputs changed",
+          "new source arrived",
+          "dependency changed",
+          "method changed",
+          "manual override",
+          "justified cooldown expiry"
+        ],
+        "set_at": "2026-08-15T19:03:55Z"
+      }
+    },
     "novelty": "HIGH",
     "expected_information_gain": "HIGH",
     "why_selected": "Which two legitimate methods produce the better-governed result for a shared comparison input?"
@@ -159,6 +280,283 @@
     "material_progress": "ROADMAP_REBASELINE",
     "validation_only_progress": false,
     "stop_reason": null,
-    "next_priority": "METHOD_COMPARISON"
+    "next_priority": "TAJIKA_FOUNDATION"
+  },
+  "selected_decision": {
+    "question": "Which two legitimate methods produce the better-governed result for a shared comparison input?",
+    "expected_information_gain": "HIGH",
+    "novelty": "HIGH",
+    "input_fingerprint": "2bd6d9086160cc7d",
+    "candidates": [
+      {
+        "track": "CLASSICAL_KNOWLEDGE",
+        "activity_id": "CLASSICAL_KNOWLEDGE_VALIDATION",
+        "question": "What unresolved classical_knowledge question can current inputs answer?",
+        "expected_information_gain": "MEDIUM",
+        "novelty": "MEDIUM",
+        "input_fingerprint": "6adbf6841a90338d",
+        "relevant_input_changed": false,
+        "selected": false,
+        "rejected": [
+          "NOT_AVAILABLE",
+          "BLOCKED"
+        ],
+        "score": 2
+      },
+      {
+        "track": "CALCULATION_VALIDATION",
+        "activity_id": "CALCULATION_VALIDATION",
+        "question": "What unresolved calculation_validation question can current inputs answer?",
+        "expected_information_gain": "MEDIUM",
+        "novelty": "MEDIUM",
+        "input_fingerprint": "8c4a3df57d380ca8",
+        "relevant_input_changed": false,
+        "selected": false,
+        "rejected": [
+          "NOT_AVAILABLE",
+          "BLOCKED"
+        ],
+        "score": 2
+      },
+      {
+        "track": "TIMING",
+        "activity_id": "TIMING_METHOD_VALIDATION",
+        "question": "What unresolved timing question can current inputs answer?",
+        "expected_information_gain": "MEDIUM",
+        "novelty": "MEDIUM",
+        "input_fingerprint": "bc49ce04e99292c8",
+        "relevant_input_changed": false,
+        "selected": false,
+        "rejected": [
+          "NOT_AVAILABLE",
+          "BLOCKED"
+        ],
+        "score": 2
+      },
+      {
+        "track": "EMPIRICAL",
+        "activity_id": "EMPIRICAL_EVIDENCE",
+        "question": "What unresolved empirical question can current inputs answer?",
+        "expected_information_gain": "MEDIUM",
+        "novelty": "MEDIUM",
+        "input_fingerprint": "a0c9d368e9acc199",
+        "relevant_input_changed": false,
+        "selected": false,
+        "rejected": [
+          "NOT_AVAILABLE",
+          "BLOCKED"
+        ],
+        "score": 2
+      },
+      {
+        "track": "PROSPECTIVE",
+        "activity_id": "PROSPECTIVE_SHADOW_PREDICTION",
+        "question": "What unresolved prospective question can current inputs answer?",
+        "expected_information_gain": "MEDIUM",
+        "novelty": "MEDIUM",
+        "input_fingerprint": "2049c7c832dbdcb4",
+        "relevant_input_changed": false,
+        "selected": false,
+        "rejected": [
+          "NOT_AVAILABLE",
+          "BLOCKED"
+        ],
+        "score": 2
+      },
+      {
+        "track": "CALIBRATION_ML",
+        "activity_id": "SOURCE_PROVENANCE_CALIBRATION",
+        "question": "What unresolved calibration_ml question can current inputs answer?",
+        "expected_information_gain": "MEDIUM",
+        "novelty": "MEDIUM",
+        "input_fingerprint": "268ec4dcade5487d",
+        "relevant_input_changed": false,
+        "selected": false,
+        "rejected": [
+          "NOT_AVAILABLE",
+          "BLOCKED"
+        ],
+        "score": 2
+      },
+      {
+        "track": "RAG",
+        "activity_id": "RAG_VALIDATION",
+        "question": "What unresolved rag question can current inputs answer?",
+        "expected_information_gain": "MEDIUM",
+        "novelty": "MEDIUM",
+        "input_fingerprint": "a8a5d7b2035de234",
+        "relevant_input_changed": false,
+        "selected": false,
+        "rejected": [
+          "NOT_AVAILABLE",
+          "BLOCKED"
+        ],
+        "score": 2
+      },
+      {
+        "track": "MUHURTA",
+        "activity_id": "MUHURTA_READINESS",
+        "question": "What unresolved muhurta question can current inputs answer?",
+        "expected_information_gain": "MEDIUM",
+        "novelty": "MEDIUM",
+        "input_fingerprint": "f32897dd14030010",
+        "relevant_input_changed": false,
+        "selected": false,
+        "rejected": [
+          "NOT_AVAILABLE",
+          "BLOCKED"
+        ],
+        "score": 2
+      },
+      {
+        "track": "PRASHNA",
+        "activity_id": "PRASHNA_READINESS",
+        "question": "What unresolved prashna question can current inputs answer?",
+        "expected_information_gain": "MEDIUM",
+        "novelty": "MEDIUM",
+        "input_fingerprint": "98cc0d2ffe021b56",
+        "relevant_input_changed": false,
+        "selected": false,
+        "rejected": [
+          "NOT_AVAILABLE",
+          "BLOCKED"
+        ],
+        "score": 2
+      },
+      {
+        "track": "GOVERNANCE",
+        "activity_id": "GOVERNANCE_RECONCILIATION",
+        "question": "What unresolved governance question can current inputs answer?",
+        "expected_information_gain": "MEDIUM",
+        "novelty": "MEDIUM",
+        "input_fingerprint": "8fe91d66ac5ab182",
+        "relevant_input_changed": false,
+        "selected": false,
+        "rejected": [
+          "NOT_AVAILABLE",
+          "BLOCKED"
+        ],
+        "score": 2
+      },
+      {
+        "track": "CLASSICAL_SOURCE_EXPANSION",
+        "activity_id": "CLASSICAL_SOURCE_EXPANSION",
+        "question": "Which unresolved rule family has a new source family or passage?",
+        "expected_information_gain": "HIGH",
+        "novelty": "HIGH",
+        "input_fingerprint": "da7900193e598b9b",
+        "relevant_input_changed": true,
+        "selected": false,
+        "rejected": [
+          "NOT_AVAILABLE",
+          "BLOCKED"
+        ],
+        "score": 4
+      },
+      {
+        "track": "TIMING_VALIDATION",
+        "activity_id": "TIMING_VALIDATION",
+        "question": "Which unresolved timing claim can be validated against a changed input or new source?",
+        "expected_information_gain": "MEDIUM",
+        "novelty": "LOW",
+        "input_fingerprint": "443dc34772e1110f",
+        "relevant_input_changed": false,
+        "selected": false,
+        "rejected": [
+          "BLOCKED",
+          "COOLDOWN",
+          "SAME_INPUT_NO_PROGRESS"
+        ],
+        "score": 2
+      },
+      {
+        "track": "METHOD_COMPARISON",
+        "activity_id": "METHOD_COMPARISON",
+        "question": "Which two legitimate methods produce the better-governed result for a shared comparison input?",
+        "expected_information_gain": "HIGH",
+        "novelty": "HIGH",
+        "input_fingerprint": "2bd6d9086160cc7d",
+        "relevant_input_changed": false,
+        "selected": true,
+        "rejected": [],
+        "score": 3
+      },
+      {
+        "track": "TAJIKA_FOUNDATION",
+        "activity_id": "TAJIKA_FOUNDATION",
+        "question": "Which Tajika foundation dependency is currently unresolved?",
+        "expected_information_gain": "HIGH",
+        "novelty": "HIGH",
+        "input_fingerprint": "28b7f541053ac584",
+        "relevant_input_changed": false,
+        "selected": true,
+        "rejected": [],
+        "score": 3
+      },
+      {
+        "track": "ASHTAKAVARGA_VALIDATION",
+        "activity_id": "ASHTAKAVARGA_VALIDATION",
+        "question": "Which Ashtakavarga validation claim remains unresolved?",
+        "expected_information_gain": "HIGH",
+        "novelty": "HIGH",
+        "input_fingerprint": "a41d6e24025023d4",
+        "relevant_input_changed": false,
+        "selected": true,
+        "rejected": [],
+        "score": 3
+      },
+      {
+        "track": "SHADBALA_VALIDATION",
+        "activity_id": "SHADBALA_VALIDATION",
+        "question": "Which Shadbala method or source discrepancy remains unresolved?",
+        "expected_information_gain": "HIGH",
+        "novelty": "HIGH",
+        "input_fingerprint": "f20fd3fec1cc1e96",
+        "relevant_input_changed": false,
+        "selected": true,
+        "rejected": [],
+        "score": 3
+      },
+      {
+        "track": "MUHURTA_SOURCE_EXPANSION",
+        "activity_id": "MUHURTA_SOURCE_EXPANSION",
+        "question": "Which missing Muhurta source family resolves a documented dependency?",
+        "expected_information_gain": "MEDIUM",
+        "novelty": "HIGH",
+        "input_fingerprint": "e9a74cc41c8c1a69",
+        "relevant_input_changed": false,
+        "selected": true,
+        "rejected": [],
+        "score": 2
+      },
+      {
+        "track": "EMPIRICAL_INPUT_PREPARATION",
+        "activity_id": "EMPIRICAL_INPUT_PREPARATION",
+        "question": "What new legitimate input route can close the empirical blocker?",
+        "expected_information_gain": "HIGH",
+        "novelty": "MEDIUM",
+        "input_fingerprint": "f041f39415718824",
+        "relevant_input_changed": false,
+        "selected": false,
+        "rejected": [
+          "NOT_AVAILABLE"
+        ],
+        "score": 3
+      },
+      {
+        "track": "PROSPECTIVE_SUBJECT_DISCOVERY",
+        "activity_id": "PROSPECTIVE_SUBJECT_DISCOVERY",
+        "question": "What new consented subject or event avenue can close the prospective blocker?",
+        "expected_information_gain": "HIGH",
+        "novelty": "MEDIUM",
+        "input_fingerprint": "22e5da1319a34c21",
+        "relevant_input_changed": false,
+        "selected": false,
+        "rejected": [
+          "NOT_AVAILABLE"
+        ],
+        "score": 3
+      }
+    ]
   }
 }

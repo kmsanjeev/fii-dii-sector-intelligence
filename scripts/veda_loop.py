@@ -58,6 +58,8 @@ for _track, (_activity_id, _activity_type, _title) in ACTIVITIES.items():
     ACTIVITY_CONTRACTS.setdefault(_track, {"question": f"What unresolved {_track.lower()} question can current inputs answer?", "expected": "new authoritative conclusion", "novelty": "MEDIUM", "gain": "MEDIUM"})
 AUTHORITATIVE_ACTIVITY_OUTPUTS = {
     "docs/current-state/pred-004/06_SOURCE_PROVENANCE_AND_CALIBRATION.md",
+    "docs/PROJECT_MASTER_STATE.md",
+    "docs/governance/CHANGELOG.md",
 }
 
 
@@ -243,6 +245,8 @@ def classify_output(path: str) -> str:
     if normalized in AUTHORITATIVE_ACTIVITY_OUTPUTS:
         return "AUTHORITATIVE_ACTIVITY_OUTPUT"
     if normalized.startswith("docs/current-state/rm-002/") and normalized.endswith(".md"):
+        return "AUTHORITATIVE_ACTIVITY_OUTPUT"
+    if normalized in {"docs/PROJECT_MASTER_STATE.md", "docs/governance/CHANGELOG.md"}:
         return "AUTHORITATIVE_ACTIVITY_OUTPUT"
     if normalized.startswith(".veda-loop/"):
         return "RUNTIME"
@@ -495,6 +499,7 @@ def run(max_loops: int, retries: int, hard_timeout: int, idle_timeout: int, slee
             material_progress = classify_activity_result(starting_head=starting_head, ending_head=ending_head, output=result["stdout"], activity_outputs=activity_outputs, exit_code=result["exit_code"])
             progress = material_progress not in {"NO_NEW_INFORMATION", "DOCUMENTATION_ONLY"} or result["completed_despite_timeout"]
             completed_track = state.get("active_track")
+            state["last_completed_activity"] = identity["activity_id"] if result["exit_code"] == 0 or result["completed_despite_timeout"] else state.get("last_completed_activity")
             state["controller_state"] = "VERIFYING"
             state["last_commit"] = ending_head
             state["active_activity"] = None
@@ -516,6 +521,8 @@ def run(max_loops: int, retries: int, hard_timeout: int, idle_timeout: int, slee
             if unexpected:
                 state["blockers"] = ["UNEXPECTED_TRACKED_CHANGES"]
                 state["stop_reason"] = "CRITICAL_REPOSITORY_FAILURE"
+            elif not result["failure"]:
+                state["stop_reason"] = None
             state["material_progress"] = material_progress
             history_record = {"activity_id": identity["activity_id"], "activity_type": identity["activity_type"], "track": identity["track"], "started_at": state.get("iteration_started_at"), "completed_at": now(), "starting_head": starting_head, "ending_head": ending_head, "repository_delta": ending_head != starting_head, "knowledge_delta": {}, "evidence_delta": {}, "blocker_delta": {}, "validation_delta": {}, "material_progress": material_progress, "input_fingerprint": relevant_input_fingerprint(state, completed_track), "output_fingerprint": output_fingerprint(starting_head=starting_head, ending_head=ending_head, paths=activity_outputs), "result": result["completion"], "stop_reason": result["failure"], "question_to_resolve": contract["question"], "expected_information_gain": contract["gain"], "novelty": contract["novelty"]}
             state.setdefault("activity_history", []).append(history_record)

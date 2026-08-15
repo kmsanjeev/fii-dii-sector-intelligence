@@ -3699,3 +3699,11 @@ Remediated governed D20 routing with `D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1`. Th
 ## 2026-08-15 | VEDA-AUTOLOOP-R1
 
 Started controller hardening: safe Codex execution is being made the default, with streaming event supervision, separate hard/idle timeout states, partial-completion recovery, blocker tracking, track switching and zero-progress metrics. Jyotisha capability and empirical statuses are unchanged.
+## 2026-08-16 | VEDA-RM-002 METHOD_COMPARISON
+
+Completed the bounded D20 method-variant comparison on 240 shared deterministic
+longitude fixtures. The source-selected BPHS category-start route diverged from
+the historical generic fallback on 220/240 fixtures and remains the better-
+governed explicit default. The comparison is calculation-only: no empirical or
+prospective evidence, interpretation activation, Approved Core promotion or
+production behavior change occurred.
