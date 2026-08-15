@@ -27,23 +27,26 @@ interpretation, transit window, or predictive conclusion.
 
 ## Observed result
 
-The current `calculate_bav()` repeats one contributor count for every target
-sign, so the fixture's sign-sensitivity invariant fails. `calculate_sav()`
-inherits the repeated columns. This confirms an implementation defect, not a
+The current `calculate_bav()` previously repeated one contributor count for
+every target sign, so the fixture's sign-sensitivity invariant failed.
+`calculate_sav()` inherited the repeated columns. The defect is now corrected:
+qualifying bindus are assigned to the contributor's occupied sign and the
+boundary test passes. This confirms an implementation invariant, not a
 validated astrological method.
 
 ## Governance decision
 
-Keep BAV and SAV `RESEARCH_REQUIRED`; keep production activation, Approved
-Core promotion, predictive interpretation, empirical records, and prospective
-records at zero. Do not repair the calculator from metadata-only claims.
+Keep BAV and SAV `RESEARCH_REQUIRED` and `IMPLEMENTED_UNVALIDATED`; keep
+production activation, Approved Core promotion, predictive interpretation,
+empirical records, and prospective records at zero. The narrow defect repair
+does not promote metadata-only claims or resolve source provenance.
 
 The next admissible step is passage-level source reconciliation for contributor
-semantics and an independently reviewed numerical fixture. Only then may a
-separate code-repair activity be considered.
+semantics and an independently reviewed numerical fixture. Any further method
+change remains a separately governed activity.
 
 ## Resumable next step
 
 `ASHTAKAVARGA_PASSAGE_AUDIT`: obtain inspectable witnesses for the contributor
-contract, register exact locators and school variance, then review the boundary
-fixture before changing calculation code.
+contract, register exact locators and school variance, then review the repaired
+boundary fixture before any additional method or production decision.

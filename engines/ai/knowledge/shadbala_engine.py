@@ -593,20 +593,20 @@ def calculate_bav(planet: str, planet_rashis: dict[str, int]) -> dict[str, Any]:
     bav_rashis = []
     total_bindus = 0
 
-    for target_sign in range(1, 13):
-        # Count bindus: how many other planets in this sign get a bindu
-        bindu_count = 0
-        for other_planet, other_rashi in planet_rashis.items():
-            if other_planet == planet:
-                continue
-            relative = _relative_position(planet_rashis[planet], other_rashi)
-            if 1 <= relative <= 12 and contributions[relative - 1] == 1:
-                bindu_count += 1
+    bindus_by_sign = {sign: 0 for sign in range(1, 13)}
+    for other_planet, other_rashi in planet_rashis.items():
+        if other_planet == planet or not 1 <= other_rashi <= 12:
+            continue
+        relative = _relative_position(planet_rashis[planet], other_rashi)
+        if 1 <= relative <= 12 and contributions[relative - 1] == 1:
+            # The bindu belongs to the contributor's occupied sign. The
+            # previous implementation calculated this relative position but
+            # copied the resulting count into every target sign.
+            bindus_by_sign[other_rashi] += 1
 
-        bav_rashis.append({
-            "sign": target_sign,
-            "bindus": bindu_count,
-        })
+    for target_sign in range(1, 13):
+        bindu_count = bindus_by_sign[target_sign]
+        bav_rashis.append({"sign": target_sign, "bindus": bindu_count})
         total_bindus += bindu_count
 
     return {

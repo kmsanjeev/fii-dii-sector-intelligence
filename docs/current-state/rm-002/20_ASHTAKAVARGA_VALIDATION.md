@@ -1,6 +1,6 @@
 # VEDA-RM-002 Ashtakavarga Validation Decision
 
-Status: `VALIDATION_BLOCKED` / predictive use `NOT_AUTHORIZED`
+Status: `CALCULATION_DEFECT_CLOSED` / method validation and predictive use `NOT_AUTHORIZED`
 Activity: `ASHTAKAVARGA_VALIDATION`
 Date: 2026-08-16
 
@@ -10,25 +10,33 @@ Which Ashtakavarga validation claim remains unresolved?
 
 ## Finding
 
-The existing BAV/SAV paths are not valid calculation fixtures despite passing
-their current structural tests. `calculate_bav()` iterates over each target
-sign but does not use that target sign when counting contributors. It counts
-the chart's qualifying planets once and repeats that count in every sign.
-`calculate_sav()` then aggregates those repeated BAV columns.
+The existing BAV/SAV paths contained a calculation defect despite passing
+their current structural tests. `calculate_bav()` iterated over each target
+sign but did not use that target sign when counting contributors. It counted
+the chart's qualifying planets once and repeated that count in every sign.
+`calculate_sav()` then aggregated those repeated BAV columns.
+
+The narrow engineering correction now assigns each qualifying bindu to the
+contributor's occupied sign before producing the twelve BAV columns. The
+correction is covered by a deterministic target-sign sensitivity test. This
+closes the identified implementation defect only; it does not validate the
+classical contributor table or authorize interpretation.
 
 Using the existing test chart
 `Sun=1, Moon=4, Mars=7, Mercury=10, Jupiter=1, Venus=4, Saturn=7`:
 
 | Output | Observed result | Validation consequence |
 |---|---:|---|
-| Sun BAV each sign | 6 bindus for all 12 signs | Target-sign distribution is not represented |
-| Sun BAV total | 72 | Inflated/repeated column result |
-| SAV each sign | 38 bindus for all 12 signs | Aggregated BAV defect propagates to SAV |
-| SAV total | 456 | Not suitable for transit-window or interpretation claims |
+| Sun BAV non-zero columns | signs 1, 4, 7, 10 = 1, 2, 2, 1 | Target-sign distribution is represented after repair |
+| Sun BAV total | 6 | Structural invariant only; contributor method remains unvalidated |
+| SAV non-zero columns | signs 1, 4, 7, 10 = 12, 10, 10, 6 | Aggregation follows repaired BAV columns |
+| SAV total | 38 | Not suitable for transit-window or interpretation claims |
 
-The existing suite passes `53/53` because it checks schema, non-negative
-counts, total aggregation, table length, and source-claim presence; it does
+The prior suite passed `53/53` because it checked schema, non-negative
+counts, total aggregation, table length, and source-claim presence; it did
 not assert target-sign sensitivity or an independently reviewed fixture.
+The repaired focused suite now passes `63/63` across the Ashtakavarga,
+strength-governance, OGDB, and Wikidata adapter tests.
 
 ## Evidence boundary
 
@@ -42,12 +50,13 @@ not assert target-sign sensitivity or an independently reviewed fixture.
 
 ## Decision
 
-`ASHTAKAVARGA_VALIDATION` remains blocked for predictive use. The next narrow
-step is to establish a source-to-contract register for contributor semantics,
-including whether the method is contributor-relative and how each occupied
-planet contributes to each target sign. Then add independently reviewed
-deterministic fixtures that require sign-sensitive BAV columns and reconcile
-SAV totals. Only after those fixtures pass should a code repair be considered.
+`ASHTAKAVARGA_VALIDATION` remains blocked for method validation and predictive
+use. The target-sign calculation defect is closed, but BAV/SAV remain
+`IMPLEMENTED_UNVALIDATED` and `RESEARCH_REQUIRED` because the repository still
+lacks passage-level contributor provenance and an independently reviewed
+classical numerical witness. No interpretation, transit timing, production
+activation, Approved Core promotion, empirical use, or prospective use is
+authorized.
 
 ## Validation performed
 
@@ -57,17 +66,18 @@ SAV totals. Only after those fixtures pass should a code repair be considered.
   `python -m pytest -q tests/test_veda_shadbala_engine_p018_r2.py
   tests/test_veda_strength_governance_p018_r1.py
   tests/test_veda_strength_governance_p018.py`: `64 passed`.
-- Direct execution of the existing fixture reproduced constant BAV/SAV
-  columns as documented above.
-- Boundary probe result: `BAV-TARGET-SIGN-SENSITIVITY` is `FAIL` while
-  `SAV-COLUMN-AGGREGATION` is `PASS`; this confirms a calculator defect, not
-  a validated contributor method.
-- No external source, empirical case, prospective subject, prediction
-  outcome, or production code change was created.
+- Direct execution of the boundary fixture now produces sign-sensitive BAV
+  columns and corresponding SAV columns as documented above.
+- Boundary probe result after repair: `BAV-TARGET-SIGN-SENSITIVITY` is `PASS`
+  and `SAV-COLUMN-AGGREGATION` remains structurally covered; this confirms the
+  implementation invariant only, not a validated contributor method.
+- No external source, empirical case, prospective subject, prediction outcome,
+  or predictive activation was created. The narrow calculation defect repair
+  is the only production-code change in this closure.
 
 ## Resumable next step
 
-`ASHTAKAVARGA_SOURCE_CONTRACT`: verify a citable contributor-method edition,
-define target-sign and occupancy semantics, and prepare boundary fixtures;
-retain BAV/SAV as `RESEARCH_REQUIRED` until that work is independently
-reviewed.
+`ASHTAKAVARGA_PASSAGE_AUDIT`: verify a citable contributor-method edition,
+register exact locators and school variance, and add an independently reviewed
+numerical witness; retain BAV/SAV as `RESEARCH_REQUIRED` until that work is
+independently reviewed.

@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-RM-002 ASHTAKAVARGA DEFECT CLOSURE
+
+Corrected the BAV target-sign distribution defect and added a deterministic
+target-sign sensitivity regression. BAV/SAV remain unvalidated and inactive
+for interpretation, prediction, empirical evidence, and Approved Core use;
+source provenance and method validation remain pending.
+
 ## 2026-08-16 | VEDA-RM-002 EMPIRICAL_INPUT_PREPARATION
 
 Added a replayable Wikidata identity-enrichment adapter for the OGDB research

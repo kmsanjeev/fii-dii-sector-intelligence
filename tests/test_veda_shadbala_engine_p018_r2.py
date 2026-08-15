@@ -320,6 +320,14 @@ class TestBAV:
         result = calculate_bav("Sun", planet_rashis)
         assert "VEDA-R2-CLM-000008" in result["source_claim_ids"]
 
+    def test_bav_is_target_sign_sensitive(self):
+        result = calculate_bav("Sun", {"Sun": 1, "Moon": 4, "Mars": 7})
+        by_sign = {item["sign"]: item["bindus"] for item in result["rashis"]}
+        assert by_sign[4] == 1
+        assert by_sign[7] == 1
+        assert by_sign[1] == 0
+        assert len({item["bindus"] for item in result["rashis"]}) > 1
+
     def test_bav_result_matches_schema(self):
         planet_rashis = {
             "Sun": 1, "Moon": 4, "Mars": 7, "Mercury": 10,
