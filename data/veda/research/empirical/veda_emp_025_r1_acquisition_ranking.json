@@ -1,0 +1,1487 @@
+{
+  "activity_id": "VEDA-EMP-025-R1-ACQUISITION-RANKING",
+  "source_feed": "VEDA-EMP-OGDB-001",
+  "screened": 1000,
+  "ranking_policy": "identity, event-richness proxy, source-likelihood proxy, birth completeness, timezone and coordinate solvability; no chart features",
+  "lanes": {
+    "LEADERSHIP": {
+      "screened": 91,
+      "high_priority": 51
+    },
+    "SCIENCE_AWARDS": {
+      "screened": 20,
+      "high_priority": 14
+    },
+    "OTHER": {
+      "screened": 889,
+      "high_priority": 0
+    }
+  },
+  "records": [
+    {
+      "subject_id": "abel-jean-baptiste-1863-01-12",
+      "subject_label": "Jean-Baptiste Abel",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "abelin-pierre-1909-05-16",
+      "subject_label": "Pierre Abelin",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "achard-franz-carl-1753-04-28",
+      "subject_label": "Franz Carl Achard",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "achille-fould-aymar-1925-07-17",
+      "subject_label": "Aymar Achille-Fould",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "adams-robert-1926-07-23",
+      "subject_label": "Robert Adams",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "aigrain-pierre-1924-09-28",
+      "subject_label": "Pierre Aigrain",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "ajam-maurice-pierre-1861-06-11",
+      "subject_label": "Maurice Pierre Ajam",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "akins-james-1926-10-15",
+      "subject_label": "James Akins",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "alard-pierre-1937-09-17",
+      "subject_label": "Pierre Alard",
+      "occupation": "athletics-competitor",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "alavoine-jean-1888-04-01",
+      "subject_label": "Jean Alavoine",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "albert-francois-1877-04-04",
+      "subject_label": "François Albert",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "albertin-fabien-1879-11-30",
+      "subject_label": "Fabien Albertin",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "alberty-robert-1921-06-21",
+      "subject_label": "Robert Alberty",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "alioto-joseph-1916-02-12",
+      "subject_label": "Joseph Alioto",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "aller-lawrence-1913-09-24",
+      "subject_label": "Lawrence Aller",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "alvarez-luis-1911-06-13",
+      "subject_label": "Luis Alvarez",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "amagat-emile-1841-01-02",
+      "subject_label": "Emile Amagat",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "anderson-john-1922-02-15",
+      "subject_label": "John Anderson",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "anderson-wendell-1933-02-01",
+      "subject_label": "Wendell Anderson",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "andraud-henry-1895-04-09",
+      "subject_label": "Henry Andraud",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "andre-georges-1889-02-08",
+      "subject_label": "Georges Andre",
+      "occupation": "athletics-competitor",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "andrus-cecil-1931-08-25",
+      "subject_label": "Cecil Andrus",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "anglade-henri-1933-07-06",
+      "subject_label": "Henri Anglade",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "annenberg-walter-1908-03-13",
+      "subject_label": "Walter Annenberg",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "anquetil-jacques-1934-01-08",
+      "subject_label": "Jacques Anquetil",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "anteriou-louis-1887-06-15",
+      "subject_label": "Louis Anteriou",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "anthonioz-marcel-1911-04-26",
+      "subject_label": "Marcel Anthonioz",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "antier-paul-1905-05-20",
+      "subject_label": "Paul Antier",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "appell-paul-1855-09-27",
+      "subject_label": "Paul Appell",
+      "occupation": "mathematician",
+      "lane": "SCIENCE_AWARDS",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "appell-pierre-1887-07-03",
+      "subject_label": "Pierre Appell",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "archambaud-maurice-1908-08-30",
+      "subject_label": "Maurice Archambaud",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "arendt-hannah-1906-10-14",
+      "subject_label": "Hannah Arendt",
+      "occupation": "social-scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "arifon-jean-1926-11-16",
+      "subject_label": "Jean Arifon",
+      "occupation": "athletics-competitor",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "ariyoshi-george-1926-03-12",
+      "subject_label": "George Ariyoshi",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "arnal-frank-1898-10-30",
+      "subject_label": "Frank Arnal",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "arnold-james-1923-05-05",
+      "subject_label": "James Arnold",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "astier-de-la-vigerie-emm-1900-01-06",
+      "subject_label": "Emm. Astier De La Vigerie",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "aubaud-raoul-1881-11-03",
+      "subject_label": "Raoul Aubaud",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "auclair-noel-1869-12-22",
+      "subject_label": "Noël Auclair",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "auriol-vincent-1884-08-27",
+      "subject_label": "Vincent Auriol",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "austin-tracy-1962-12-12",
+      "subject_label": "Tracy Austin",
+      "occupation": "athletics-competitor",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "auvergne-gilbert-1905-12-17",
+      "subject_label": "Gilbert Auvergne",
+      "occupation": "athletics-competitor",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "backus-george-1930-05-24",
+      "subject_label": "George Backus",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "badie-vincent-1902-07-16",
+      "subject_label": "Vincent Badie",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "bailar-benjamin-1934-04-21",
+      "subject_label": "Benjamin Bailar",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "baillaud-edouard-1848-02-14",
+      "subject_label": "Edouard Baillaud",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "baker-howard-1925-11-15",
+      "subject_label": "Howard Baker",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "baker-thane-1931-10-04",
+      "subject_label": "Thane Baker",
+      "occupation": "athletics-competitor",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "balard-antoine-1802-09-30",
+      "subject_label": "Antoine Balard",
+      "occupation": "scientist+physician",
+      "lane": "SCIENCE_AWARDS",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "balastre-bernard-1937-08-29",
+      "subject_label": "Bernard Balastre",
+      "occupation": "athletics-competitor",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "baldassari-jean-1925-12-18",
+      "subject_label": "Jean Baldassari",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "bally-etienne-1923-04-17",
+      "subject_label": "Etienne Bally",
+      "occupation": "athletics-competitor",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "baragnon-numa-1835-11-24",
+      "subject_label": "Numa Baragnon",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "barange-charles-1897-12-21",
+      "subject_label": "Charles Barange",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "baratin-pierre-1920-09-07",
+      "subject_label": "Pierre Baratin",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "baraton-georges-1904-04-12",
+      "subject_label": "Georges Baraton",
+      "occupation": "athletics-competitor",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "barbe-francois-paul-1836-02-04",
+      "subject_label": "François Paul Barbé",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "barbey-edouard-1831-09-02",
+      "subject_label": "Edouard Barbey",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "bardon-andre-1901-01-10",
+      "subject_label": "André Bardon",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "bardoux-benjamin-1829-01-15",
+      "subject_label": "Benjamin Bardoux",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "bardoux-jacques-1874-05-27",
+      "subject_label": "Jacques Bardoux",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "barel-virgile-1889-12-17",
+      "subject_label": "Virgile Barel",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "barety-leon-1883-10-18",
+      "subject_label": "Léon Barety",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "barillon-emile-1879-04-01",
+      "subject_label": "Emile Barillon",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "barnes-lee-1906-07-16",
+      "subject_label": "Lee Barnes",
+      "occupation": "athletics-competitor",
+      "lane": "LEADERSHIP",
+      "score": 9,
+      "priority": "HIGH",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present",
+        "timezone_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "abbe-ernst-1840-01-23",
+      "subject_label": "Ernst Abbe",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "adam-pierre-1924-04-24",
+      "subject_label": "Pierre ADAM",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "adenauer-conrad-1876-01-05",
+      "subject_label": "Conrad Adenauer",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "adriaenssens-jan-1932-06-06",
+      "subject_label": "Jan Adriaenssens",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "aerts-jan-1907-09-08",
+      "subject_label": "Jan Aerts",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "aimar-lucien-1941-04-28",
+      "subject_label": "Lucien Aimar",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "aitelli-colette-1932-03-03",
+      "subject_label": "Colette Aitelli",
+      "occupation": "athletics-competitor",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "albani-giorgio-1929-06-15",
+      "subject_label": "Giorgio Albani",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "albert-favre-ernest-1868-07-12",
+      "subject_label": "Ernest Albert-Favre",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "albert-paul-1876-02-16",
+      "subject_label": "Paul Albert",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "alkema-henri-1912-01-06",
+      "subject_label": "Henri Alkema",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "andre-adrien-1884-05-29",
+      "subject_label": "Adrien Andre",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "andre-pierre-1903-10-27",
+      "subject_label": "Pierre Andre",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "ansquer-vincent-1925-01-11",
+      "subject_label": "Vincent Ansquer",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "apery-roger-1916-11-14",
+      "subject_label": "Roger Apery",
+      "occupation": "mathematician",
+      "lane": "SCIENCE_AWARDS",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "arbeltier-rene-1897-01-23",
+      "subject_label": "René Arbeltier",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "archimbaud-leon-1880-09-23",
+      "subject_label": "Léon Archimbaud",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "aschoff-ludwig-1866-01-10",
+      "subject_label": "Ludwig Aschoff",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "astrua-giancarlo-1927-08-11",
+      "subject_label": "Giancarlo Astrua",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "auban-achille-1912-04-14",
+      "subject_label": "Achille Auban",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "aubin-jean-1901-08-15",
+      "subject_label": "Jean Aubin",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "aubry-paul-1902-02-14",
+      "subject_label": "Paul Aubry",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "audeguil-fernand-1887-01-16",
+      "subject_label": "Fernand Audeguil",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "augagneur-victor-1855-05-16",
+      "subject_label": "Victor Augagneur",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "aureggi-franco-1928-03-09",
+      "subject_label": "Franco Aureggi",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "ausset-charles-1932-09-28",
+      "subject_label": "Charles Ausset",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "bachelier-louis-1870-03-11",
+      "subject_label": "Louis Bachelier",
+      "occupation": "mathematician",
+      "lane": "SCIENCE_AWARDS",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "baens-roger-1933-08-18",
+      "subject_label": "Roger Baens",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "baeyer-adolf-1835-10-31",
+      "subject_label": "Adolf Baeyer",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "baffi-pierino-1930-09-15",
+      "subject_label": "Pierino Baffi",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "bailland-edouard-1848-02-14",
+      "subject_label": "Edouard Bailland",
+      "occupation": "scientist",
+      "lane": "SCIENCE_AWARDS",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "baldini-ercole-1933-01-26",
+      "subject_label": "Ercole Baldini",
+      "occupation": "cyclist",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "ballanger-robert-1912-11-02",
+      "subject_label": "Robert Ballanger",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "bapst-philippe-1892-12-28",
+      "subject_label": "Philippe Bapst",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    },
+    {
+      "subject_id": "barbier-andre-1885-03-03",
+      "subject_label": "André Barbier",
+      "occupation": "politician",
+      "lane": "LEADERSHIP",
+      "score": 7,
+      "priority": "MEDIUM",
+      "reasons": [
+        "target_lane_occupation",
+        "timed_birth_record",
+        "birth_place_present"
+      ],
+      "astrology_used_for_selection": false
+    }
+  ]
+}

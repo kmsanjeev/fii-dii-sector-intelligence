@@ -9,7 +9,7 @@ The implemented baseline is frozen through P031 plus P015-RX, P015-RX2, STD-001,
 - RM-001 baseline commit: `1fa05f354a0175637c2b771ab80d3d5763320733`
 - RM-001 tag: `veda-rm-001-roadmap-rebaseline`
 - Predictive maturity: `PRED-M3_OPERATIONAL_PLUS`
-- Empirical status: `VEDA-EMP-001` remains longitudinal; EMP-025 has 10 eligible historical cases and 10 D1 chart snapshots, but remains below the multi-class corpus gate; `PRED-M4` is `INSUFFICIENT_SAMPLE`.
+- Empirical status: `VEDA-EMP-001` remains longitudinal; EMP-025-R1 has 12 eligible historical cases and 12 D1 chart snapshots across three event classes, but remains below the multi-class corpus gate; `PRED-M4` is `INSUFFICIENT_SAMPLE`.
 - VEDA-RM-002 active tracks: `CLASSICAL_SOURCE_EXPANSION`, `TIMING_VALIDATION`, `METHOD_COMPARISON`, `TAJIKA_FOUNDATION`, `ASHTAKAVARGA_VALIDATION`, `SHADBALA_VALIDATION`, and `MUHURTA_SOURCE_EXPANSION`.
 - VEDA-AUTOLOOP-R3 is implemented/frozen; the controller uses information-gain, input fingerprints, cooldowns and track diversity, with `METHOD_COMPARISON` as next priority.
 - `VEDA-ADM-EMP-001` is implemented/frozen by its own acceptance record; the next operational step is to supply legitimate governed case data.

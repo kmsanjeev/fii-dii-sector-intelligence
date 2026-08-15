@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-EMP-025-R1 DIVERSITY RECOVERY CHECKPOINT
+
+Changed empirical acquisition to preserve multiple independently documented
+events per subject. The shared registry increased from 10 to 12 eligible
+cases, adding `POSITION_START` and `POSITION_END`; all 12 are chart-ready.
+The diversity gate remains open because death is still 10/12 and no Indian
+documentary case has been established. Added non-astrological acquisition
+ranking and continued to block method comparison.
+
 ## 2026-08-16 | VEDA-EMP-025 CORPUS READINESS
 
 Established the EMP-025 pre-pilot gate at 10 eligible historical cases with
