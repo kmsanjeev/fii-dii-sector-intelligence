@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-08-15 | VEDA-KNOW-MUH-002
+
+Completed the Tarabala and Chandrabala source-validation activity. BPHS Chapter 89.02 supports only a narrow combined candra-tārā-bala context in a śānti procedure; individual algorithms remain `RESEARCH_CANDIDATE` / `REFERENCE_NOT_VERIFIED` because the inspected later-source scan did not provide reliable passage-level formulas. No recommendation, scoring, Prashna, P032, RAG or Approved Core promotion occurred.
+
 ## 2026-08-15 | VEDA-KNOW-MUH-001
 
 Completed the classical Muhurta event-rule and personal-Bala source audit. Bṛhat Saṃhitā Chapters 97–99 support scoped nakshatra, tithi and karana action families, including marriage-specific conditions. Tarabala and Chandrabala remain `RESEARCH_CANDIDATE` / `REFERENCE_NOT_VERIFIED` because the accessible Muhurta Chintamani scan has materially corrupted OCR in the relevant material. No recommendation, scoring, Prashna, P032, RAG or Approved Core promotion occurred.
