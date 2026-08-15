@@ -1,9 +1,9 @@
 {
   "enabled": true,
-  "loop_number": 12,
+  "loop_number": 14,
   "active_activity": null,
   "last_completed_activity": "EMPIRICAL_OR_PROSPECTIVE_EVIDENCE_RECONCILIATION",
-  "last_commit": "9635fa05307b771aa3216a49325dd2767bdc73fa",
+  "last_commit": "52b3f0ee6ddc6038930cd33589d124210f2491c5",
   "last_tag": "veda-pred-004-shadow-pilot",
   "programme_status": "ACTIVE",
   "verified_empirical_cases": 0,
@@ -11,13 +11,14 @@
   "prospective_predictions": 0,
   "resolved_predictions": 0,
   "predictive_maturity": "PRED-M3_OPERATIONAL_PLUS",
-  "next_priority": "MUHURTA_READINESS",
+  "next_priority": null,
   "blockers": [
     "LEGITIMATE_INPUT_REQUIRED: consented or publicly observable subject and governed event data required",
-    "CODEX_RUNTIME_LIMITATION: PowerShell shell snapshot and skills traversal warnings observed; bounded timeouts are recorded"
+    "CODEX_RUNTIME_LIMITATION: PowerShell shell snapshot and skills traversal warnings observed; bounded timeouts are recorded",
+    "ALL_TRACKS_BLOCKED: no unblocked autonomous activity remains"
   ],
-  "stop_reason": null,
-  "controller_state": "READY",
+  "stop_reason": "ALL_TRACKS_BLOCKED",
+  "controller_state": "STOPPED",
   "active_track": null,
   "blocked_tracks": [
     "EMPIRICAL",
@@ -27,29 +28,31 @@
     "CALCULATION_VALIDATION",
     "CALIBRATION_ML",
     "RAG",
-    "MUHURTA"
+    "MUHURTA",
+    "PRASHNA",
+    "GOVERNANCE"
   ],
-  "last_codex_event_at": "2026-08-15T18:05:09Z",
+  "last_codex_event_at": "2026-08-15T18:20:01Z",
   "last_event_type": "turn.completed",
-  "event_count": 311,
-  "elapsed_seconds": 171.2,
-  "activity_status": "COMPLETED",
+  "event_count": 348,
+  "elapsed_seconds": 123.2,
+  "activity_status": "BLOCKED",
   "metrics": {
     "loops_started": 5,
-    "loops_completed": 4,
+    "loops_completed": 6,
     "loops_failed": 5,
     "repairs_run": 0,
-    "track_switches": 6,
+    "track_switches": 8,
     "timeouts": 3,
-    "consecutive_zero_progress": 6
+    "consecutive_zero_progress": 8
   },
-  "updated_at": "2026-08-15T18:05:11Z",
-  "iteration_started_at": "2026-08-15T18:02:18Z",
+  "updated_at": "2026-08-15T18:20:02Z",
+  "iteration_started_at": "2026-08-15T18:17:58Z",
   "activity_identity": {
-    "activity_id": "MUHURTA_READINESS",
-    "track": "MUHURTA",
-    "activity_type": "ROADMAP_READINESS",
-    "title": "Muhurta readiness"
+    "activity_id": "GOVERNANCE_RECONCILIATION",
+    "track": "GOVERNANCE",
+    "activity_type": "GOVERNANCE",
+    "title": "Governance reconciliation"
   },
   "completion_state": "ACTIVITY_COMPLETED_NO_REPO_CHANGE",
   "material_progress": "VALIDATION_GAIN",
@@ -63,9 +66,9 @@
     "error": null
   },
   "run_summary": {
-    "loops_requested": 1,
-    "loops_completed": 1,
-    "activities_completed": 1,
+    "loops_requested": 5,
+    "loops_completed": 2,
+    "activities_completed": 2,
     "repository_changes": true,
     "commits_created": 1,
     "authoritative_uncommitted_files": 0,
@@ -73,7 +76,7 @@
     "unexpected_files": 0,
     "material_progress": "VALIDATION_GAIN",
     "validation_only_progress": true,
-    "stop_reason": null,
-    "next_priority": "MUHURTA_READINESS"
+    "stop_reason": "ALL_TRACKS_BLOCKED",
+    "next_priority": null
   }
 }

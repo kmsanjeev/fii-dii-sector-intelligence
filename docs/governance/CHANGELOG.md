@@ -8,6 +8,8 @@ distinguished from failed commits, activity records use stable identities, and
 authoritative autonomous outputs receive selective reconciliation. The
 PRED-004 provenance report was validated and committed; no Jyotisha, empirical,
 prospective, predictive, or RAG capability state was created or upgraded.
+The later five-loop run also hardened the all-tracks-blocked path to persist a
+controlled `STOPPED` state rather than crash.
 
 ## 2026-08-15 | VEDA-AUTOLOOP-R1
 

@@ -38,6 +38,10 @@ AUTHORITATIVE_ACTIVITY_OUTPUTS = {
 }
 
 
+class NoAvailableTrackError(RuntimeError):
+    """Raised when every configured track is explicitly blocked."""
+
+
 def now() -> str:
     return datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
@@ -78,7 +82,10 @@ def select_track(state: dict) -> str:
             return "PROSPECTIVE"
     if state.get("resolved_predictions", 0) < 10 and "TIMING" not in blocked:
         return "TIMING"
-    return next(track for track in TRACKS if track not in blocked)
+    for track in TRACKS:
+        if track not in blocked:
+            return track
+    raise NoAvailableTrackError("ALL_TRACKS_BLOCKED")
 
 
 def select_next_priority(state: dict) -> str:
@@ -305,13 +312,30 @@ def run(max_loops: int, retries: int, hard_timeout: int, idle_timeout: int, slee
             print(f"refusing to run with unrelated tracked changes: {unsafe_changes}", file=sys.stderr)
             return 2
         if dry_run:
-            print(json.dumps({"selected_track": select_track(state), "selected_priority": select_next_priority(state), "blocked_tracks": state.get("blocked_tracks", []), "safe_execution": not unsafe, "unsafe_opt_in": unsafe, "hard_timeout_seconds": hard_timeout, "idle_timeout_seconds": idle_timeout, "retry_limit": retries, "max_loops": max_loops}, indent=2))
+            try:
+                selected_track = select_track(state)
+                selected_priority = select_next_priority(state)
+            except NoAvailableTrackError:
+                selected_track = None
+                selected_priority = None
+            print(json.dumps({"selected_track": selected_track, "selected_priority": selected_priority, "blocked_tracks": state.get("blocked_tracks", []), "safe_execution": not unsafe, "unsafe_opt_in": unsafe, "hard_timeout_seconds": hard_timeout, "idle_timeout_seconds": idle_timeout, "retry_limit": retries, "max_loops": max_loops}, indent=2))
             return 0
         for _ in range(max_loops):
             state = load_state()
             if not state.get("enabled", True) or state.get("stop_reason"):
                 return 0
-            identity = activity_identity(state)
+            try:
+                identity = activity_identity(state)
+            except NoAvailableTrackError:
+                state["active_activity"] = None
+                state["active_track"] = None
+                state["controller_state"] = "STOPPED"
+                state["activity_status"] = "BLOCKED"
+                state["stop_reason"] = "ALL_TRACKS_BLOCKED"
+                state["next_priority"] = None
+                state["run_summary"] = {"loops_requested": max_loops, "loops_completed": 0, "activities_completed": 0, "repository_changes": False, "commits_created": 0, "authoritative_uncommitted_files": 0, "temporary_files_remaining": 0, "unexpected_files": 0, "material_progress": "NO_MATERIAL_PROGRESS", "validation_only_progress": False, "stop_reason": "ALL_TRACKS_BLOCKED", "next_priority": None}
+                save_state(state)
+                return 0
             state["active_activity"] = identity["activity_id"]
             state["active_track"] = identity["track"]
             state["activity_identity"] = identity

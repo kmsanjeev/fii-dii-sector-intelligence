@@ -15,3 +15,7 @@ Unrelated files remain preserved and cause `REPAIR_REQUIRED` rather than
 blind mutation. The controlled one-loop probe ended in `READY`; the PRED-004
 provenance report was classified as `AUTHORITATIVE_ACTIVITY_OUTPUT`,
 selectively committed, and pushed.
+
+The subsequent requested five-loop run completed two additional bounded
+activities, then reached the explicit `ALL_TRACKS_BLOCKED` condition. R2 now
+persists `STOPPED` and a resumable blocker instead of raising `StopIteration`.

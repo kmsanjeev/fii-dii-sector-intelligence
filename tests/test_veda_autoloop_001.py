@@ -1,6 +1,8 @@
 import json
 
-from scripts.veda_loop import activity_identity, classify_failure, classify_material_progress, classify_output, completion_state, compose_prompt, partial_completion, select_next_priority, select_track
+import pytest
+
+from scripts.veda_loop import NoAvailableTrackError, activity_identity, classify_failure, classify_material_progress, classify_output, completion_state, compose_prompt, partial_completion, select_next_priority, select_track
 
 
 def test_priority_escalates_empirical_and_prospective_evidence():
@@ -41,3 +43,9 @@ def test_output_classification_preserves_runtime_and_authority_boundaries():
     assert classify_output("docs/current-state/pred-004/06_SOURCE_PROVENANCE_AND_CALIBRATION.md") == "AUTHORITATIVE_ACTIVITY_OUTPUT"
     assert classify_output(".veda-loop/iterations.jsonl") == "RUNTIME"
     assert classify_output("notes/user-work.md") == "UNRELATED"
+
+
+def test_all_blocked_tracks_are_a_controlled_stop_condition():
+    state = {"verified_empirical_cases": 0, "prospective_predictions": 0, "blocked_tracks": ["EMPIRICAL", "PROSPECTIVE", "TIMING", "CLASSICAL_KNOWLEDGE", "CALCULATION_VALIDATION", "CALIBRATION_ML", "RAG", "MUHURTA", "PRASHNA", "GOVERNANCE"]}
+    with pytest.raises(NoAvailableTrackError):
+        select_track(state)
