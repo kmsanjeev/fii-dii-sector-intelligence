@@ -1,7 +1,7 @@
 {
   "enabled": true,
   "loop_number": 29,
-  "active_activity": null,
+  "active_activity": "EMPIRICAL_INPUT_PREPARATION",
   "last_completed_activity": "MUHURTA_SOURCE_EXPANSION",
   "last_commit": "01c5ad39b5bf1a8284c35cbb1dd28b70ba67d5aa",
   "input_revision": "rm-002-governed-inputs",
@@ -15,8 +15,8 @@
   "next_priority": "EMPIRICAL_INPUT_PREPARATION",
   "blockers": [],
   "stop_reason": null,
-  "controller_state": "READY",
-  "active_track": null,
+  "controller_state": "RUNNING",
+  "active_track": "EMPIRICAL_INPUT_PREPARATION",
   "blocked_tracks": [
     "EMPIRICAL",
     "PROSPECTIVE",
@@ -54,11 +54,11 @@
     "CLASSICAL_SOURCE_EXPANSION",
     "TIMING_VALIDATION"
   ],
-  "last_codex_event_at": "2026-08-15T21:25:20Z",
-  "last_event_type": "turn.completed",
-  "event_count": 629,
-  "elapsed_seconds": 243.9,
-  "activity_status": "COMPLETED",
+  "last_codex_event_at": "2026-08-15T21:36:45Z",
+  "last_event_type": "item.started",
+  "event_count": 549,
+  "elapsed_seconds": 253.8,
+  "activity_status": "RUNNING",
   "metrics": {
     "loops_started": 5,
     "loops_completed": 21,
@@ -68,13 +68,13 @@
     "timeouts": 3,
     "consecutive_zero_progress": 0
   },
-  "updated_at": "2026-08-15T21:32:11Z",
-  "iteration_started_at": "2026-08-15T21:21:16Z",
+  "updated_at": "2026-08-15T21:36:45Z",
+  "iteration_started_at": "2026-08-15T21:32:31Z",
   "activity_identity": {
-    "activity_id": "MUHURTA_SOURCE_EXPANSION",
-    "track": "MUHURTA_SOURCE_EXPANSION",
-    "activity_type": "SOURCE_RESEARCH",
-    "title": "Muhurta source expansion"
+    "activity_id": "EMPIRICAL_INPUT_PREPARATION",
+    "track": "EMPIRICAL_INPUT_PREPARATION",
+    "activity_type": "INPUT_GOVERNANCE",
+    "title": "Empirical input preparation"
   },
   "completion_state": "ACTIVITY_COMPLETED_NO_REPO_CHANGE",
   "material_progress": "MEDIUM_INFORMATION_GAIN",
@@ -620,10 +620,10 @@
     "next_priority": "EMPIRICAL_INPUT_PREPARATION"
   },
   "selected_decision": {
-    "question": "Which missing Muhurta source family resolves a documented dependency?",
-    "expected_information_gain": "MEDIUM",
-    "novelty": "HIGH",
-    "input_fingerprint": "72d9c348342ee629",
+    "question": "What new legitimate input route can close the empirical blocker?",
+    "expected_information_gain": "HIGH",
+    "novelty": "MEDIUM",
+    "input_fingerprint": "1d5e48d241d2120e",
     "candidates": [
       {
         "track": "CLASSICAL_KNOWLEDGE",
@@ -843,10 +843,9 @@
         "relevant_input_changed": true,
         "selected": false,
         "rejected": [
-          "SAME_INPUT_REPEAT",
-          "CONSECUTIVE_REPEAT"
+          "SAME_INPUT_REPEAT"
         ],
-        "score": 3
+        "score": 4
       },
       {
         "track": "SHADBALA_VALIDATION",
@@ -871,9 +870,12 @@
         "novelty": "HIGH",
         "input_fingerprint": "72d9c348342ee629",
         "relevant_input_changed": true,
-        "selected": true,
-        "rejected": [],
-        "score": 3
+        "selected": false,
+        "rejected": [
+          "SAME_INPUT_REPEAT",
+          "CONSECUTIVE_REPEAT"
+        ],
+        "score": 2
       },
       {
         "track": "EMPIRICAL_INPUT_PREPARATION",
@@ -883,10 +885,8 @@
         "novelty": "MEDIUM",
         "input_fingerprint": "1d5e48d241d2120e",
         "relevant_input_changed": false,
-        "selected": false,
-        "rejected": [
-          "NOT_AVAILABLE"
-        ],
+        "selected": true,
+        "rejected": [],
         "score": 3
       },
       {

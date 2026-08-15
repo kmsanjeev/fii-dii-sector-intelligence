@@ -11,14 +11,17 @@ out at the public endpoint. The Wikidata MediaWiki search API responded for a
 sample OGDB name, but name search alone is ambiguous and is not an accepted
 identity join.
 
-No WDID was assigned, no event was imported, and no empirical case count
-changed. The feed registry records the bounded timeout and the safe fallback
-requirement.
+No WDID was assigned during the live timeout test, no event was imported, and
+no empirical case count changed. A replayable conservative adapter is now
+available at `scripts/veda_wikidata_enrichment.py`. It accepts externally
+retrieved candidate claims and accepts an identity only when birth date, place,
+and occupation all agree exactly; it preserves both OGDB and Wikidata
+references.
 
 ## Governance decision
 
-The next implementation must retrieve candidate entity claims and require an
-exact birth-date plus place/occupation match before accepting an identity.
-Original Wikidata references must be preserved. Until that check is complete,
-the OGDB pilot remains source-preserving birth-record research only and its
-usable empirical case count remains `0`.
+The adapter is input preparation only. It does not perform name-only joins,
+does not submit records to `CaseRegistry`, and does not create dated outcomes.
+The OGDB pilot therefore remains source-preserving birth-record research and
+its usable empirical case count remains `0` until event verification and
+leakage review are separately completed.

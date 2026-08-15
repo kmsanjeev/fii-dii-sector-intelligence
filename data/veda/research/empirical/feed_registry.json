@@ -25,9 +25,9 @@
       "birth_time_available": false,
       "event_data_available": true,
       "source_quality": "ITEM_AND_REFERENCE_DEPENDENT",
-      "ingestion_status": "WDQS_TIMEOUT_API_FALLBACK_REQUIRED",
+      "ingestion_status": "CONSERVATIVE_IDENTITY_ADAPTER_READY",
       "last_checked": "2026-08-16",
-      "notes": "A bounded WDQS query timed out; MediaWiki search API responds, but no automatic joins are accepted until exact birth-date/place verification is implemented."
+      "notes": "A bounded WDQS query timed out; the replayable adapter accepts only externally retrieved claims with exact birth-date/place/occupation agreement and preserves references."
     }
   ]
 }

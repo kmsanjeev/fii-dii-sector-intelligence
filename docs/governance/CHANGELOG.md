@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-RM-002 EMPIRICAL_INPUT_PREPARATION
+
+Added a replayable Wikidata identity-enrichment adapter for the OGDB research
+feed. It requires exact birth-date, place, and occupation agreement, preserves
+original references, rejects ambiguous joins, and leaves the shared empirical
+case count at zero because no dated outcome or leakage review was added.
+
 ## 2026-08-16 | VEDA-COMPLETE-001 EMPIRICAL FEED PILOTS
 
 Profiled 25 timed Open Gauquelin Database records under the published
