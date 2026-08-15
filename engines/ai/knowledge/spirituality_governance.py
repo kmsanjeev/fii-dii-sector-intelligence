@@ -11,6 +11,7 @@ SPIRITUALITY_DOMAIN = {
     "d20_audit": {"method": "general", "method_version": None, "calculation_status": "IMPLEMENTED_WITH_CONDITIONS", "source_status": "P004_VALIDATED_WITH_CONDITIONS; broader provenance unresolved", "interpretation_status": "NOT_VALIDATED", "fallback": "existing general Varga path; P031 never interprets D20", "p015_remediation_required": "NO_FOR_P031"},
     "yoga_dosha_policy": {"spiritual_yogas": "NOT_IMPORTED", "sannyasa": "NOT_ACTIVATED", "moksha": "ORIENTATION_ONLY_IF_SOURCE_VALIDATED", "p017_reuse": "GOVERNED_RULES_ONLY"},
     "claim_layers": {"classical": "NOT_VALIDATED_FOR_P031", "traditional_commentary": "RESEARCH_CANDIDATE", "practitioner": "DISCOVERY_ONLY", "modern": "DISCOVERY_ONLY", "platform_synthesis": "GOVERNANCE_ONLY"},
+    "know_spirit_001": {"status": "IN_IMPLEMENTATION", "d20_calculation_decision": "D20_METHOD_VARIANTS_REQUIRE_SPLIT", "d20_interpretation_decision": "D20_INTERPRETATION_RESEARCH_CANDIDATE", "p015_rx2_required": "YES_FUTURE_NO_REPAIR_HERE", "approved_core_promoted": 0},
     "blocked_outputs": [
         "ENLIGHTENMENT_CERTAINTY", "MOKSHA_CERTAINTY", "SAINTHOOD_CERTAINTY", "FORMAL_RENUNCIATION_CERTAINTY",
         "CLINICAL_DIAGNOSIS", "MENTAL_HEALTH_DIAGNOSIS", "RELIGIOUS_AUTHORITY_CLAIM", "GURU_SELECTION_ADVICE",

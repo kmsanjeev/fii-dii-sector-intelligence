@@ -16,6 +16,7 @@ This is the single authoritative future registry.
 | VEDA-KNOW-TRAVEL-001 | Classical Travel, Relocation & Foreign-Residence Source Validation | Governance | PASS_WITH_CONDITION | STD-001, STD-002, P015-RX, P029, P030 | Passage and terminology audit; method-scoped annual/transit evidence; no universal settlement/Rahu promotion; evidence in `docs/current-state/know-travel-001/` |
 | P030-R1 | Travel/relocation engineering remediation | A | NOT STARTED | KNOW-TRAVEL-001 decision | Not required by current comparison; no remediation authorized or started |
 | P031 | Spirituality, Dharma & Inner Development Synthesis Engine | A | IMPLEMENTED / FROZEN | P030, P016, P019, P027, P015 | Deterministic domain scaffold with D20 interpretation gated; evidence in `docs/current-state/p031/` |
+| VEDA-KNOW-SPIRIT-001 | Classical Spirituality, Dharma & D20 Source Validation | Governance | IN IMPLEMENTATION | STD-001, P015, P017, P031 | D20 category-start mismatch recorded; no P015-RX2 repair or P031 runtime change in this activity; evidence in `docs/current-state/know-spirit-001/` |
 | P032 | Next Jyotisha capability | A | NOT STARTED | P031 acceptance | Not authorized or started |
 | VEDA-EMP-001 | Empirical case acquisition and learning | D/C | ACTIVE_LONGITUDINAL | PRED-001–003 | Requires legitimate cases; no new store |
 | VEDA-STD-003 | Universal Conversational Intelligence, Pragmatics & Multilingual Expression Standard | B/E | IMPLEMENTED / FROZEN | STD-001, STD-002, RM-001 | Shared context foundations; see `docs/current-state/std-003/` |

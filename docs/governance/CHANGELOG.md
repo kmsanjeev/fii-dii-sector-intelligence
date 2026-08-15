@@ -3611,3 +3611,7 @@ Authorized and implemented/froze the Spirituality, Dharma & Inner Development sy
 ## 2026-08-15 — VEDA-KNOW-TRAVEL-001
 
 Started the classical travel, relocation and foreign-residence source validation. Existing P030 knowledge was audited first. Hāyanaratna annual/Tājika journey material, Brihat Saṃhitā transit movement/return material, Brihat Jataka house nomenclature and pravāsa lexical evidence were recorded with method and historical-geography limits. Universal 12th-house permanent-settlement and Rahu-settlement claims were rejected; P030 remains frozen, D4 interpretation remains gated, no RAG or Approved Core change occurred, and P030-R1/P031 remain not started.
+
+## 2026-08-15 — VEDA-KNOW-SPIRIT-001
+
+Started classical spirituality, dharma and D20 source validation. BPHS passages were verified for D20 upasana scope and category-based Vimshamsha starts; VEDA's current generic D20 fallback is recorded as a material source-method mismatch. No D20 repair, P031-R1, P032, Muhurta or Prashna work was started.
