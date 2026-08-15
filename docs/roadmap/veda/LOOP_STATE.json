@@ -1,9 +1,9 @@
 {
   "enabled": true,
-  "loop_number": 26,
-  "active_activity": null,
-  "last_completed_activity": "ASHTAKAVARGA_VALIDATION",
-  "last_commit": "c2d361b17da07f143e51bf09238aa9a596d2e194",
+  "loop_number": 27,
+  "active_activity": "ASHTAKAVARGA_VALIDATION",
+  "last_completed_activity": "SHADBALA_VALIDATION",
+  "last_commit": "0031ddc68d55023b9f028bb1a6e2b582c2fc5428",
   "input_revision": "rm-002-governed-inputs",
   "last_tag": "veda-pred-004-shadow-pilot",
   "programme_status": "ACTIVE",
@@ -12,11 +12,11 @@
   "prospective_predictions": 0,
   "resolved_predictions": 0,
   "predictive_maturity": "PRED-M3_OPERATIONAL_PLUS",
-  "next_priority": "SHADBALA_VALIDATION",
+  "next_priority": "ASHTAKAVARGA_VALIDATION",
   "blockers": [],
   "stop_reason": null,
-  "controller_state": "READY",
-  "active_track": null,
+  "controller_state": "RUNNING",
+  "active_track": "ASHTAKAVARGA_VALIDATION",
   "blocked_tracks": [
     "EMPIRICAL",
     "PROSPECTIVE",
@@ -53,22 +53,22 @@
     "CLASSICAL_SOURCE_EXPANSION",
     "TIMING_VALIDATION"
   ],
-  "last_codex_event_at": "2026-08-15T20:34:04Z",
-  "last_event_type": "turn.completed",
-  "event_count": 133,
-  "elapsed_seconds": 261.3,
-  "activity_status": "COMPLETED",
+  "last_codex_event_at": "2026-08-15T21:19:44Z",
+  "last_event_type": "item.started",
+  "event_count": 38,
+  "elapsed_seconds": 163.5,
+  "activity_status": "RUNNING",
   "metrics": {
     "loops_started": 5,
-    "loops_completed": 18,
+    "loops_completed": 19,
     "loops_failed": 5,
     "repairs_run": 0,
-    "track_switches": 12,
+    "track_switches": 13,
     "timeouts": 3,
-    "consecutive_zero_progress": 0
+    "consecutive_zero_progress": 1
   },
-  "updated_at": "2026-08-15T20:36:45Z",
-  "iteration_started_at": "2026-08-15T20:29:43Z",
+  "updated_at": "2026-08-15T21:19:44Z",
+  "iteration_started_at": "2026-08-15T21:17:01Z",
   "activity_identity": {
     "activity_id": "ASHTAKAVARGA_VALIDATION",
     "track": "ASHTAKAVARGA_VALIDATION",
@@ -76,7 +76,7 @@
     "title": "Ashtakavarga predictive validation"
   },
   "completion_state": "ACTIVITY_COMPLETED_NO_REPO_CHANGE",
-  "material_progress": "MEDIUM_INFORMATION_GAIN",
+  "material_progress": "NO_NEW_INFORMATION",
   "cooldowns": {
     "TIMING_VALIDATION": {
       "input_fingerprint": "443dc34772e1110f",
@@ -105,7 +105,7 @@
       "set_at": "2026-08-15T19:58:23Z"
     },
     "SHADBALA_VALIDATION": {
-      "input_fingerprint": "f20fd3fec1cc1e96",
+      "input_fingerprint": "b1017038d91fc410",
       "reason": "NO_NEW_INFORMATION",
       "release_conditions": [
         "relevant inputs changed",
@@ -115,7 +115,7 @@
         "manual override",
         "justified cooldown expiry"
       ],
-      "set_at": "2026-08-15T20:02:36Z"
+      "set_at": "2026-08-15T21:17:00Z"
     },
     "METHOD_COMPARISON": {
       "input_fingerprint": "5d8a501b82c3321f",
@@ -369,6 +369,28 @@
       "question_to_resolve": "Which Ashtakavarga validation claim remains unresolved?",
       "expected_information_gain": "HIGH",
       "novelty": "HIGH"
+    },
+    {
+      "activity_id": "SHADBALA_VALIDATION",
+      "activity_type": "CALCULATION_RESEARCH",
+      "track": "SHADBALA_VALIDATION",
+      "started_at": "2026-08-15T21:13:24Z",
+      "completed_at": "2026-08-15T21:17:00Z",
+      "starting_head": "0031ddc68d55023b9f028bb1a6e2b582c2fc5428",
+      "ending_head": "0031ddc68d55023b9f028bb1a6e2b582c2fc5428",
+      "repository_delta": false,
+      "knowledge_delta": {},
+      "evidence_delta": {},
+      "blocker_delta": {},
+      "validation_delta": {},
+      "material_progress": "NO_NEW_INFORMATION",
+      "input_fingerprint": "b1017038d91fc410",
+      "output_fingerprint": "558b078d687814ec",
+      "result": "ACTIVITY_COMPLETED",
+      "stop_reason": null,
+      "question_to_resolve": "Which Shadbala method or source discrepancy remains unresolved?",
+      "expected_information_gain": "HIGH",
+      "novelty": "HIGH"
     }
   ],
   "selection_trace": {
@@ -393,7 +415,7 @@
       "EMPIRICAL_INPUT_PREPARATION",
       "PROSPECTIVE_SUBJECT_DISCOVERY"
     ],
-    "selected": "ASHTAKAVARGA_VALIDATION",
+    "selected": "SHADBALA_VALIDATION",
     "rejected": {
       "CLASSICAL_KNOWLEDGE": [
         "NOT_AVAILABLE",
@@ -447,8 +469,7 @@
         "SAME_INPUT_NO_PROGRESS"
       ],
       "TAJIKA_FOUNDATION": [
-        "SAME_INPUT_REPEAT",
-        "CONSECUTIVE_REPEAT"
+        "SAME_INPUT_REPEAT"
       ],
       "EMPIRICAL_INPUT_PREPARATION": [
         "NOT_AVAILABLE"
@@ -485,7 +506,7 @@
         "set_at": "2026-08-15T19:58:23Z"
       },
       "SHADBALA_VALIDATION": {
-        "input_fingerprint": "f20fd3fec1cc1e96",
+        "input_fingerprint": "b1017038d91fc410",
         "reason": "NO_NEW_INFORMATION",
         "release_conditions": [
           "relevant inputs changed",
@@ -495,7 +516,7 @@
           "manual override",
           "justified cooldown expiry"
         ],
-        "set_at": "2026-08-15T20:02:36Z"
+        "set_at": "2026-08-15T21:17:00Z"
       },
       "METHOD_COMPARISON": {
         "input_fingerprint": "5d8a501b82c3321f",
@@ -513,7 +534,7 @@
     },
     "novelty": "HIGH",
     "expected_information_gain": "HIGH",
-    "why_selected": "Which Ashtakavarga validation claim remains unresolved?"
+    "why_selected": "Which Shadbala method or source discrepancy remains unresolved?"
   },
   "reconciliation": {
     "authoritative_uncommitted": [],
@@ -755,10 +776,9 @@
         "relevant_input_changed": true,
         "selected": false,
         "rejected": [
-          "SAME_INPUT_REPEAT",
-          "CONSECUTIVE_REPEAT"
+          "SAME_INPUT_REPEAT"
         ],
-        "score": 3
+        "score": 4
       },
       {
         "track": "ASHTAKAVARGA_VALIDATION",
@@ -779,10 +799,14 @@
         "expected_information_gain": "HIGH",
         "novelty": "HIGH",
         "input_fingerprint": "b1017038d91fc410",
-        "relevant_input_changed": true,
-        "selected": true,
-        "rejected": [],
-        "score": 4
+        "relevant_input_changed": false,
+        "selected": false,
+        "rejected": [
+          "COOLDOWN",
+          "SAME_INPUT_NO_PROGRESS",
+          "CONSECUTIVE_REPEAT"
+        ],
+        "score": 2
       },
       {
         "track": "MUHURTA_SOURCE_EXPANSION",

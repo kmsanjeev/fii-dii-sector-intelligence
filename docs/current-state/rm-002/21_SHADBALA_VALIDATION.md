@@ -26,11 +26,17 @@ Kala sub-components are explicitly not independently validated.
 
 ## Validation
 
-- `PYTHONPATH=. pytest -q tests/test_veda_shadbala_engine_p018_r2.py`:
-  `53 passed`.
+- Focused Shadbala and P018 governance regression:
+  `python -m pytest -q tests/test_veda_shadbala_engine_p018_r2.py
+  tests/test_veda_strength_governance_p018_r1.py
+  tests/test_veda_strength_governance_p018.py`: `64 passed`.
 - The tests verify schema, source-claim presence, blocked states and broad
   component behavior; they do not establish passage-level provenance,
   independent numerical fixtures, or complete method correctness.
+- No new passage-level source record, independent review, or numerical
+  boundary fixture was added in this activity. R2 source entries remain
+  `METADATA_VERIFIED`, and R2 claims remain research-only despite their
+  `PROMOTION_READY` metadata.
 - `data/veda/validation/foundation/p018_strength/p018_summary.json` remains at
   `sources_accepted: 0`, `approved_strength_claims: 0`, and
   `unresolved_methodology: 9`.

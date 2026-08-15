@@ -53,10 +53,15 @@ SAV totals. Only after those fixtures pass should a code repair be considered.
 
 - Repository authority, readiness, prior P018 research, and current Git state
   were inspected.
-- `PYTHONPATH=. pytest -q tests/test_veda_shadbala_engine_p018_r2.py`:
-  `53 passed`.
+- Focused Shadbala and P018 governance regression:
+  `python -m pytest -q tests/test_veda_shadbala_engine_p018_r2.py
+  tests/test_veda_strength_governance_p018_r1.py
+  tests/test_veda_strength_governance_p018.py`: `64 passed`.
 - Direct execution of the existing fixture reproduced constant BAV/SAV
   columns as documented above.
+- Boundary probe result: `BAV-TARGET-SIGN-SENSITIVITY` is `FAIL` while
+  `SAV-COLUMN-AGGREGATION` is `PASS`; this confirms a calculator defect, not
+  a validated contributor method.
 - No external source, empirical case, prospective subject, prediction
   outcome, or production code change was created.
 
