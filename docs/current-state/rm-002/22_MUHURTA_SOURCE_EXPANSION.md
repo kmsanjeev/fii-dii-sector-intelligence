@@ -20,14 +20,15 @@ These records provide acquisition and edition-lineage leads. They do not make
 Tarabala or Chandrabala formulas passage-verified: no operative Sanskrit page,
 critical apparatus, translation, or reproducible locator was inspected in this
 activity. The existing OCR scan therefore remains unusable for formula
-extraction, and the new source record is `METADATA_VERIFIED` only.
+extraction. The CiNii edition and British Library witness records are
+`METADATA_VERIFIED` only.
 
 ## Source register delta
 
 | Source | Evidence inspected | Status | Permitted use |
 |---|---|---|---|
 | *Muhurta Chintamani* with *Pramitakshara* commentary, 1928 | CiNii bibliographic record, identifier BA46170738 | `METADATA_VERIFIED` | Edition acquisition target; no rule extraction |
-| *Muhurta Chintamani* with *Piyush Dhara* commentary | British Library catalogue record EAP886/1/26 | Discovery metadata | Witness-lineage lead; no rule extraction |
+| *Muhurta Chintamani* with *Piyush Dhara* commentary | British Library catalogue record EAP886/1/26; 531 TIFF-image extent and digitised-content lead | `METADATA_VERIFIED` | Witness-lineage and acquisition lead; no rule extraction |
 
 URLs: [CiNii record](https://ci.nii.ac.jp/ncid/BA46170738); [British Library
 catalogue record](https://searcharchives.bl.uk/catalog/040-003690161).
@@ -38,6 +39,8 @@ catalogue record](https://searcharchives.bl.uk/catalog/040-003690161).
   `REFERENCE_NOT_VERIFIED`.
 - No Sanskrit quotation, translation, algorithm, scoring, recommendation or
   event suitability rule was added.
+- The British Library witness is registered as `VEDA-SRC-000013`; its access
+  status remains limited and image-level passage verification is pending.
 - No runtime, RAG, empirical, prospective, Approved Core or predictive state
   changed.
 - The new source record is metadata-only and does not authorize promotion.
