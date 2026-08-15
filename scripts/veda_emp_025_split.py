@@ -11,8 +11,8 @@ from typing import Any
 def build_split(subject_ids: list[str]) -> dict[str, Any]:
     ordered = sorted(set(subject_ids), key=lambda value: hashlib.sha256(value.encode("utf-8")).hexdigest())
     total = len(ordered)
-    design_n = min(max(1, round(total * 0.6)), max(1, total - 2)) if total else 0
-    validation_n = max(1, round(total * 0.2)) if total >= 3 else 0
+    design_n = min(max(1, round(total * 0.4)), max(1, total - 2)) if total else 0
+    validation_n = max(1, round(total * 0.3)) if total >= 3 else 0
     if design_n + validation_n >= total and total >= 3:
         validation_n = max(1, total - design_n - 1)
     records = []
@@ -23,7 +23,7 @@ def build_split(subject_ids: list[str]) -> dict[str, Any]:
     return {
         "activity_id": "VEDA-EMP-025-SPLIT-FREEZE",
         "status": "PRE_PILOT_FROZEN",
-        "algorithm": "Sort stable subject IDs by SHA256 digest; assign approximately 60% DESIGN, 20% VALIDATION, remainder HOLDOUT with non-empty validation/holdout when n >= 3",
+        "algorithm": "Sort stable subject IDs by SHA256 digest; assign approximately 40% DESIGN, 30% VALIDATION, remainder HOLDOUT with non-empty validation/holdout when n >= 3",
         "subject_level": True,
         "method_tuning_allowed": False,
         "records": records,

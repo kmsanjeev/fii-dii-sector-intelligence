@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-EMP-025-R2 CORPUS COMPLETION CHECKPOINT
+
+Converted three high-priority public-office candidates into multi-event cases.
+The corpus reached 21 eligible and chart-ready cases, five event classes, and
+12/21 official or primary-source-backed events (57.1%). Subject-level splits
+were rebalanced to 5/4/4. The method pilot remains blocked only by the
+25-case count gate.
+
 ## 2026-08-16 | VEDA-EMP-025-R1 DIVERSITY RECOVERY CHECKPOINT
 
 Changed empirical acquisition to preserve multiple independently documented

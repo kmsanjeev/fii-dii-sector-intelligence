@@ -5,6 +5,30 @@
   "selection_policy": "public identity and objective event evidence only; no chart inspection",
   "records": [
     {
+      "ogid": "annenberg-walter-1908-03-13",
+      "subject_label": "Walter Annenberg",
+      "occupation": "politician",
+      "birth_date": "1908-03-13",
+      "birth_time": "13:30",
+      "birth_time_precision": "MINUTE",
+      "birth_place": "Milwaukee",
+      "country_code": "US",
+      "timezone_offset": "-06:00",
+      "timezone_status": "BOUNDED",
+      "timezone_method": "IANA_HISTORICAL_ZONE",
+      "timezone_source": "America/Chicago",
+      "timezone_version": "SYSTEM_TZDATA",
+      "timezone_confidence": "MEDIUM",
+      "identity_status": "VERIFIED",
+      "identity_confidence": "HIGH",
+      "identity_evidence": ["OGDB date/place/occupation agree with Wikidata Q1750541; U.S. Department of State Office of the Historian confirms ambassadorial appointment and mission dates."],
+      "identity_sources": ["https://www.wikidata.org/wiki/Q1750541", "https://history.state.gov/departmenthistory/people/annenberg-walter-h"],
+      "events": [
+        {"event_id": "ANNENBERG-AMBASSADOR-START-1969", "event_class": "PUBLIC_APPOINTMENT", "event_date_start": "1969-03-14", "date_precision": "EXACT", "verification_status": "VERIFIED_EXACT", "discovery_source": "Wikidata Q1750541 P39", "verification_source": "U.S. Department of State Office of the Historian", "source_quality": "PRIMARY_OFFICIAL_RECORD", "public_private_status": "PUBLIC", "claim_id": "DOS-ANNENBERG-APPOINTMENT-1969", "notes": "Department of State records appointment on 14 March 1969."},
+        {"event_id": "ANNENBERG-AMBASSADOR-END-1974", "event_class": "POSITION_END", "event_date_start": "1974-10-30", "date_precision": "EXACT", "verification_status": "VERIFIED_EXACT", "discovery_source": "U.S. Department of State Office of the Historian", "verification_source": "U.S. Department of State Office of the Historian", "source_quality": "PRIMARY_OFFICIAL_RECORD", "public_private_status": "PUBLIC", "claim_id": "DOS-ANNENBERG-MISSION-1969-1974", "notes": "Department of State records departure from post on 30 October 1974."}
+      ]
+    },
+    {
       "ogid": "ashe-arthur-1943-07-10",
       "subject_label": "Arthur Ashe",
       "occupation": "tennis-player",
@@ -391,6 +415,57 @@
         "public_private_status": "PUBLIC",
         "claim_id": "q57078$CAAD6E9D-4278-4972-BEFB-8F46DE0F9035"
       }]
+    },
+    {
+      "ogid": "ariyoshi-george-1926-03-12",
+      "subject_label": "George Ariyoshi",
+      "occupation": "politician",
+      "birth_date": "1926-03-12",
+      "birth_time": "05:00",
+      "birth_time_precision": "MINUTE",
+      "birth_place": "Honolulu",
+      "country_code": "US",
+      "timezone_offset": "-10:30",
+      "timezone_status": "BOUNDED",
+      "timezone_method": "IANA_HISTORICAL_ZONE",
+      "timezone_source": "Pacific/Honolulu",
+      "timezone_version": "SYSTEM_TZDATA",
+      "timezone_confidence": "MEDIUM",
+      "identity_status": "VERIFIED",
+      "identity_confidence": "HIGH",
+      "identity_evidence": ["OGDB date/place/occupation agree with Wikidata Q887563; National Governors Association biography corroborates birth data and governor terms."],
+      "identity_sources": ["https://www.wikidata.org/wiki/Q887563", "https://www.nga.org/governor/george-ryoichi-ariyoshi/"],
+      "events": [
+        {"event_id": "ARIYOSHI-GOVERNOR-START-1973", "event_class": "POSITION_START", "event_date_start": "1973-10-17", "date_precision": "YEAR", "verification_status": "VERIFIED_YEAR", "discovery_source": "Wikidata Q887563 P39 plus NGA biography", "verification_source": "National Governors Association biography", "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL", "public_private_status": "PUBLIC", "claim_id": "NGA-ARIYOSHI-TERMS-1973-1986", "notes": "NGA lists term beginning 17 October 1973; modeled at year precision for historical office transition."},
+        {"event_id": "ARIYOSHI-GOVERNOR-END-1986", "event_class": "POSITION_END", "event_date_start": "1986-12-01", "date_precision": "YEAR", "verification_status": "VERIFIED_YEAR", "discovery_source": "Wikidata Q887563 P39 plus NGA biography", "verification_source": "National Governors Association biography", "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL", "public_private_status": "PUBLIC", "claim_id": "NGA-ARIYOSHI-TERMS-1973-1986", "notes": "NGA lists term ending 1 December 1986."},
+        {"event_id": "ARIYOSHI-ELECTION-WIN-1974", "event_class": "ELECTION_WIN", "event_date_start": "1974-01-01", "date_precision": "YEAR", "verification_status": "VERIFIED_YEAR", "discovery_source": "NGA biography for George Ariyoshi", "verification_source": "National Governors Association biography", "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL", "public_private_status": "PUBLIC", "claim_id": "NGA-ARIYOSHI-ELECTIONS-1974-1982", "notes": "NGA states Ariyoshi was elected governor in 1974; year precision retained."}
+      ]
+    },
+    {
+      "ogid": "andrus-cecil-1931-08-25",
+      "subject_label": "Cecil Andrus",
+      "occupation": "politician",
+      "birth_date": "1931-08-25",
+      "birth_time": "08:20",
+      "birth_time_precision": "MINUTE",
+      "birth_place": "Hood River",
+      "country_code": "US",
+      "timezone_offset": "-08:00",
+      "timezone_status": "BOUNDED",
+      "timezone_method": "IANA_HISTORICAL_ZONE",
+      "timezone_source": "America/Los_Angeles",
+      "timezone_version": "SYSTEM_TZDATA",
+      "timezone_confidence": "MEDIUM",
+      "identity_status": "VERIFIED",
+      "identity_confidence": "HIGH",
+      "identity_evidence": ["OGDB date/place/occupation agree with Wikidata Q372022; National Governors Association biography corroborates birth data and multiple public terms."],
+      "identity_sources": ["https://www.wikidata.org/wiki/Q372022", "https://www.nga.org/governor/cecil-dale-andrus/"],
+      "events": [
+        {"event_id": "ANDRUS-GOVERNOR-START-1971", "event_class": "POSITION_START", "event_date_start": "1971-01-04", "date_precision": "YEAR", "verification_status": "VERIFIED_YEAR", "discovery_source": "Wikidata Q372022 P39 plus NGA biography", "verification_source": "National Governors Association biography", "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL", "public_private_status": "PUBLIC", "claim_id": "NGA-ANDRUS-TERMS-1971-1995", "notes": "NGA lists first Idaho governor term beginning January 4, 1971."},
+        {"event_id": "ANDRUS-GOVERNOR-END-1977", "event_class": "POSITION_END", "event_date_start": "1977-01-24", "date_precision": "YEAR", "verification_status": "VERIFIED_YEAR", "discovery_source": "Wikidata Q372022 P39 plus NGA biography", "verification_source": "National Governors Association biography", "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL", "public_private_status": "PUBLIC", "claim_id": "NGA-ANDRUS-TERMS-1971-1995", "notes": "NGA lists first Idaho governor term ending January 24, 1977."},
+        {"event_id": "ANDRUS-GOVERNOR-START-1987", "event_class": "POSITION_START", "event_date_start": "1987-01-05", "date_precision": "YEAR", "verification_status": "VERIFIED_YEAR", "discovery_source": "Wikidata Q372022 P39 plus NGA biography", "verification_source": "National Governors Association biography", "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL", "public_private_status": "PUBLIC", "claim_id": "NGA-ANDRUS-TERMS-1971-1995", "notes": "NGA lists second Idaho governor term beginning January 5, 1987."},
+        {"event_id": "ANDRUS-GOVERNOR-END-1995", "event_class": "POSITION_END", "event_date_start": "1995-01-01", "date_precision": "YEAR", "verification_status": "VERIFIED_YEAR", "discovery_source": "Wikidata Q372022 P39 plus NGA biography", "verification_source": "National Governors Association biography", "source_quality": "OFFICIAL_INSTITUTIONAL_YEAR_LEVEL", "public_private_status": "PUBLIC", "claim_id": "NGA-ANDRUS-TERMS-1971-1995", "notes": "NGA lists second Idaho governor term ending in 1995."}
+      ]
     }
   ]
 }
