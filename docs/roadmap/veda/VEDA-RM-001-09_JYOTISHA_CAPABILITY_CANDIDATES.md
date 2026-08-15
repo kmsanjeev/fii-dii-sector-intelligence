@@ -7,7 +7,7 @@ These are candidates, not authorized phases:
 | Advanced synthesis / multi-chart reasoning | EXISTING_PARTIAL / FUTURE_CANDIDATE | Historical P013 roadmap; existing synthesis/prediction infrastructure |
 | Property | FUTURE_CANDIDATE | No current authoritative scope |
 | Travel / relocation | FUTURE_CANDIDATE | No current authoritative scope |
-| Spirituality | FUTURE_CANDIDATE | No current authoritative scope |
+| Spirituality | IMPLEMENTED / FROZEN | VEDA-P031; evidence in `docs/current-state/p031/` |
 | Longevity | RESEARCH_ACTIVE / PRODUCTION_RESTRICTED | High-stakes boundary |
 | Muhurta | FUTURE_CANDIDATE | Research and safety review required |
 | Remedies | RESEARCH_ACTIVE / PRODUCTION_RESTRICTED | Safety and provenance required |
