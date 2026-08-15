@@ -3498,6 +3498,12 @@ Phase V3.4 -- Veda field fixes: activation, barge-in, greetings, read-vs-present
 
 Date: 2026-07-12
 
+## 2026-08-15 — VEDA-KNOW-COMPAT-001
+
+Completed the classical compatibility source-validation audit for P028-R1. Directly inspected Saravali's Asta Koota reference and the Future Samachar horoscope-matching reference, recorded source/variant/provenance limits, compared all eight current Kuta components, and retained executable tables as `RESEARCH_CANDIDATE`. No Approved Core promotion, RAG rebuild, production code change, Manglik implementation, or predictive-status change was made. Evidence: `docs/current-state/know-compat-001/`.
+
+Date: 2026-07-12
+
 Status: Completed
 
 ---
