@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-15 | VEDA-P028 compatibility and relationship synthesis
+
+Added multidimensional relationship synthesis over P024/P027 contracts. P028 preserves Chart A/B and subject identity, directional asymmetry, individual promise inputs, timing/missing-data states, and non-fatalistic explanation. Ashtakoota/Guna Milan was audited and remains explicitly unavailable; no score or parallel compatibility store was created.
+
+- P028: IMPLEMENTED / FROZEN
+- P029: NOT STARTED
+- COMM-002 human validation: PENDING
+- GROUP-001 human validation: PENDING
+- EMP-001: ACTIVE LONGITUDINAL / INSUFFICIENT_SAMPLE
+
 ## 2026-08-15 | VEDA-P027 advanced synthesis and multi-chart reasoning
 
 Authorized the formerly reserved P027 capability and implemented a deterministic cross-engine synthesis layer. P027 preserves evidence provenance, authority, lineage, convergence, contradictions, promise/timing separation, bounded multi-chart identity, and existing health/progeny/prediction limits. No parallel Jyotisha engine, RAG corpus, or routine provider path was added.

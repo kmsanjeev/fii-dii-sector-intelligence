@@ -5,6 +5,7 @@ This is the single authoritative future registry.
 | ID | Title | Track | Status | Dependencies | Gate / notes |
 |---|---|---|---|---|---|
 | P027 | Advanced Synthesis & Multi-Chart Reasoning | A | IMPLEMENTED / FROZEN | P014–P026, PRED-001–003, STD-001–003 | Evidence convergence, contradiction resolution, timing hierarchy, and governed multi-chart context; implementation evidence in `docs/current-state/p027/` |
+| P028 | Compatibility & Relationship Synthesis Engine | A | IMPLEMENTED / FROZEN | P024, P027, P014–P019 | Multidimensional, asymmetric relationship synthesis with traditional-method boundaries; implementation evidence in `docs/current-state/p028/` |
 | VEDA-EMP-001 | Empirical case acquisition and learning | D/C | ACTIVE_LONGITUDINAL | PRED-001–003 | Requires legitimate cases; no new store |
 | VEDA-STD-003 | Universal Conversational Intelligence, Pragmatics & Multilingual Expression Standard | B/E | IMPLEMENTED / FROZEN | STD-001, STD-002, RM-001 | Shared context foundations; see `docs/current-state/std-003/` |
 | VEDA-COMM-001 | Conversation-Type & Pragmatic Understanding Engine | E | IMPLEMENTED / FROZEN | STD-003 | Deterministic context, pragmatic intent, multi-turn stability, and ChatEngine fallback; see `docs/current-state/comm-001/` |

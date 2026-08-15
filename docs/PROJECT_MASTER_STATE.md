@@ -21,6 +21,7 @@ This project is NOT a screener. It IS a decision intelligence platform.
 ## VEDA CURRENT JYOTISHA STATE (2026-08-15)
 
 - P027 Advanced Synthesis & Multi-Chart Reasoning is implemented/frozen; it reuses the existing Jyotisha runtime and preserves chart/evidence authority.
+- P028 Compatibility & Relationship Synthesis is implemented/frozen; it reuses P024/P027 contracts, preserves chart identity, and does not fabricate traditional match scores.
 - COMM-002 and GROUP-001 human validation remain pending. EMO-001 is implemented/frozen.
 - EMP-001 remains active longitudinal with insufficient sample; LANG-002+ remains planned.
 - Historical P027 reservation is preserved; current assignment is governed by `docs/current-state/p027/`.
