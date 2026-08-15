@@ -1,9 +1,9 @@
 {
   "enabled": true,
-  "loop_number": 5,
+  "loop_number": 8,
   "active_activity": null,
   "last_completed_activity": "EMPIRICAL_OR_PROSPECTIVE_EVIDENCE_RECONCILIATION",
-  "last_commit": "a2bcfa798109a4ce72cea1a1cb87fe3359512dc1",
+  "last_commit": "01346ebc6d457b5757f9d60ca715f6e6ddd1c117",
   "last_tag": "veda-pred-004-shadow-pilot",
   "programme_status": "ACTIVE",
   "verified_empirical_cases": 0,
@@ -11,30 +11,34 @@
   "prospective_predictions": 0,
   "resolved_predictions": 0,
   "predictive_maturity": "PRED-M3_OPERATIONAL_PLUS",
-  "next_priority": "TIMING_METHOD_VALIDATION_OR_OUTCOME_RESOLUTION",
-  "blockers": ["LEGITIMATE_INPUT_REQUIRED: consented or publicly observable subject and governed event data required"],
+  "next_priority": "CLASSICAL_KNOWLEDGE_VALIDATION",
+  "blockers": [
+    "LEGITIMATE_INPUT_REQUIRED: consented or publicly observable subject and governed event data required",
+    "CODEX_RUNTIME_LIMITATION: PowerShell shell snapshot and skills traversal warnings observed; bounded timeouts are recorded"
+  ],
   "stop_reason": null,
   "controller_state": "READY",
   "active_track": null,
   "blocked_tracks": [
     "EMPIRICAL",
     "PROSPECTIVE",
-    "TIMING"
+    "TIMING",
+    "CLASSICAL_KNOWLEDGE"
   ],
-  "last_codex_event_at": "2026-08-15T17:13:22Z",
-  "last_event_type": null,
-  "event_count": 0,
-  "elapsed_seconds": 0,
+  "last_codex_event_at": "2026-08-15T17:15:36Z",
+  "last_event_type": "item.started",
+  "event_count": 8,
+  "elapsed_seconds": 18.8,
   "activity_status": "READY",
   "metrics": {
-    "loops_started": 0,
+    "loops_started": 5,
     "loops_completed": 0,
-    "loops_failed": 2,
+    "loops_failed": 5,
     "repairs_run": 0,
-    "track_switches": 1,
-    "timeouts": 0,
+    "track_switches": 2,
+    "timeouts": 3,
     "consecutive_zero_progress": 2
   },
-  "updated_at": "2026-08-15T17:13:22Z",
-  "iteration_started_at": "2026-08-15T17:13:22Z"
+  "updated_at": "2026-08-15T17:15:38Z",
+  "iteration_started_at": "2026-08-15T17:15:17Z"
 }

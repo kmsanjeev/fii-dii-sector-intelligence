@@ -16,3 +16,14 @@ py -3.11 scripts/veda_loop.py --dry-run
 Recommended bounded run: `--max-loops 3` with explicit hard/idle timeouts.
 Do not launch an unattended long run until a safe-mode live validation is
 reviewed.
+
+## Acceptance
+
+Status: `IMPLEMENTED / FROZEN` with `PASS_WITH_CONDITION`.
+
+Focused controller and affected regression checks passed. Bounded safe-mode
+live probes launched Codex, streamed events, maintained heartbeats, enforced
+hard timeouts, and recorded partial completion honestly. PowerShell
+shell-snapshot and skills-traversal warnings are external runtime conditions
+recorded by the controller; no permission bypass was enabled. No Jyotisha,
+empirical, prospective, prediction, or RAG content was created.

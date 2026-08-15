@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2026-08-15 | VEDA-AUTOLOOP-R1
+
+Froze persistent-controller hardening: safe Codex execution is the default,
+streamed events update heartbeats, hard and idle timeouts are classified,
+partial completion is detected, retries use bounded repair context, and
+repeatedly blocked tracks switch without fabricating evidence. Bounded live
+safe-mode runs produced honest timeout/partial-completion records. Codex's
+PowerShell shell-snapshot and skills-traversal warnings remain an external
+condition recorded by the controller; no Jyotisha, empirical, prospective,
+prediction or RAG state was changed.
+
 ## 2026-08-15 | VEDA-PRED-004
 
 Established the prospective shadow-prediction pilot over the existing PRED registry. Lock-before-outcome, falsifiability, outcome-state and leakage controls are explicit; no subject, prediction, outcome or calibration claim was fabricated.
