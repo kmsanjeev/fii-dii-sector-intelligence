@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-SIGNAL-003 THIRD-SIGNAL VIABILITY GATE
+
+Completed the education-first third-signal search and its ordered fallbacks:
+career commencement, relocation/foreign residence, and property acquisition.
+Existing source audits and targeted classical review left all four families
+`SOURCE_PARTIAL`; generic educational/profession material did not establish a
+deterministic event-specific timing method. Success path B was recorded:
+`COMPLETED_NO_VIABLE_THIRD_SIGNAL`. No signal implementation, outcome-blind
+prevalence run, signal-specific case acquisition, production change, PRED-M4
+upgrade, RAG rebuild, or Approved Core promotion occurred.
+
 ## 2026-08-16 | VEDA-SIGNAL-002 SECOND SOURCE-GOVERNABLE SIGNAL
 
 Completed deeper source expansion after the EMP-050 marriage replication.
