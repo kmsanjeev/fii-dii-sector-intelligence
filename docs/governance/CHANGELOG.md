@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-EMP-POSEND-ACQ-001 INDEPENDENT COHORT ACQUISITION
+
+Acquired and froze 20 new birth-first, chart-ready `POSITION_END` subjects for
+the immutable EMP-FEATURE-003 family. The family hash was verified before
+acquisition; 14/6 validation and holdout subjects, protected holdout metadata,
+source/event hashes and unscored controls were frozen. No feature values,
+event-level inference, composition, ML, production, RAG, Approved Core or
+PRED-M4 change occurred. The next authorized activity is
+`VEDA-EMP-FEATURE-003-R1`.
+
+Independent review also corrected the stale EMP-FEATURE-003 outcome-free
+prevalence artifact by regenerating it from the frozen contracts; no outcome
+data or production behavior was involved.
+
 ## 2026-08-16 | VEDA-EMP-FEATURE-003 NEW EVENT-FAMILY FREEZE
 
 Selected `POSITION_END` as the highest-scoring new event family before any

@@ -1,0 +1,654 @@
+{
+  "approved_core_changed": false,
+  "astrology_inspected_during_acquisition": false,
+  "cohort": {
+    "event_definition_hash": "e53c366072b5323c8d0938725ac2c667d5e45c711eef5f8c875218c16342ae1b",
+    "event_list_hash": "041d75312b19d5ef56a45594f6a93e2419a8ca4f2c1c75ed4d70f10b99503a56",
+    "frozen": true,
+    "holdout_protected": true,
+    "holdout_subjects": [
+      "ameche-alan-1933-06-01",
+      "andre-georges-1889-02-08",
+      "anquetil-jacques-1934-01-08",
+      "arcari-bruno-1915-09-15",
+      "aristouy-pierre-1920-10-18",
+      "armstrong-warren-1946-08-29"
+    ],
+    "id": "VEDA-EMP-POSEND-ACQ-001-COHORT-001",
+    "source_manifest_hash": "5bff8c30eda9c96c8ee7541070b1d138b7a65f4090066af0f1c213a0d1b9b3dd",
+    "subject_list_hash": "1851965a9fc9fafd8c970ad51012ac3633b795de0cdd000e11f794bcf1568015",
+    "subjects": [
+      {
+        "birth_date": "1934-02-05",
+        "birth_place": "Mobile",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "20:25",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "US",
+        "date_precision": "YEAR",
+        "event_date": "1976",
+        "event_label": "Hank Aaron professional baseball career end",
+        "event_source": "https://baseballhall.org/hall-of-famers/aaron-hank",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "baseball-player",
+        "source_quality": "PRIMARY_OFFICIAL",
+        "subject_id": "aaron-henry-1934-02-05"
+      },
+      {
+        "birth_date": "1927-05-24",
+        "birth_place": "Faug\u00e8res",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "10:00",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "FR",
+        "date_precision": "YEAR",
+        "event_date": "1962",
+        "event_label": "Claude Abbes professional football career end",
+        "event_source": "https://www.fff.fr/equipe-nationale/joueur/8477-abbes-claude/fiche.html",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "football-player",
+        "source_quality": "PRIMARY_OFFICIAL",
+        "subject_id": "abbes-claude-1927-05-24"
+      },
+      {
+        "birth_date": "1945-07-13",
+        "birth_place": "Steubenville",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "09:16",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "US",
+        "date_precision": "YEAR",
+        "event_date": "1973",
+        "event_label": "Daniel Abramowicz professional football career end",
+        "event_source": "https://en.wikipedia.org/wiki/Dan_Abramowicz",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "american-football-player",
+        "source_quality": "SINGLE_REFERENCED_STRUCTURED",
+        "subject_id": "abramowicz-daniel-1945-07-13"
+      },
+      {
+        "birth_date": "1925-04-20",
+        "birth_place": "CASTELVECCHIO",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "02:30",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "IT",
+        "date_precision": "YEAR",
+        "event_date": "1958",
+        "event_label": "Italo Acconcia professional football career end",
+        "event_source": "https://en.wikipedia.org/wiki/Italo_Acconcia",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "football-player",
+        "source_quality": "SINGLE_REFERENCED_STRUCTURED",
+        "subject_id": "acconcia-italo-1925-04-20"
+      },
+      {
+        "birth_date": "1924-04-24",
+        "birth_place": "PARIS",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "20:00",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "FR",
+        "date_precision": "YEAR",
+        "event_date": "1954",
+        "event_label": "Pierre Adam professional cycling career end",
+        "event_source": "https://fr.wikipedia.org/wiki/Pierre_Adam_(cyclisme)",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "cyclist",
+        "source_quality": "STRONG_REFERENCED_STRUCTURED",
+        "subject_id": "adam-pierre-1924-04-24"
+      },
+      {
+        "birth_date": "1926-08-28",
+        "birth_place": "Chamonix",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "13:00",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "FR",
+        "date_precision": "YEAR",
+        "event_date": "1952",
+        "event_label": "Marisette Agnel professional skiing career end",
+        "event_source": "https://en.wikipedia.org/wiki/Marisette_Agnel",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "skier",
+        "source_quality": "SINGLE_REFERENCED_STRUCTURED",
+        "subject_id": "agnel-marisette-1926-08-28"
+      },
+      {
+        "birth_date": "1941-04-28",
+        "birth_place": "Hy\u00e8res",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "18:00",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "FR",
+        "date_precision": "YEAR",
+        "event_date": "1966",
+        "event_label": "Lucien Aimar professional cycling career end",
+        "event_source": "https://en.wikipedia.org/wiki/Lucien_Aimar",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "cyclist",
+        "source_quality": "STRONG_REFERENCED_STRUCTURED",
+        "subject_id": "aimar-lucien-1941-04-28"
+      },
+      {
+        "birth_date": "1932-03-03",
+        "birth_place": "TOULON",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "19:00",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "FR",
+        "date_precision": "YEAR",
+        "event_date": "1956",
+        "event_label": "Colette Aitelli athletics career end",
+        "event_source": "https://en.wikipedia.org/wiki/Colette_Aitelli",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "athletics-competitor",
+        "source_quality": "SINGLE_REFERENCED_STRUCTURED",
+        "subject_id": "aitelli-colette-1932-03-03"
+      },
+      {
+        "birth_date": "1928-03-10",
+        "birth_place": "St Louis",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "18:45",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "US",
+        "date_precision": "YEAR",
+        "event_date": "1962",
+        "event_label": "Virgil Akins professional boxing career end",
+        "event_source": "https://en.wikipedia.org/wiki/Virgil_Akins",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "boxer",
+        "source_quality": "SINGLE_REFERENCED_STRUCTURED",
+        "subject_id": "akins-virgil-1928-03-10"
+      },
+      {
+        "birth_date": "1937-09-17",
+        "birth_place": "Bordeaux",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "18:00",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "FR",
+        "date_precision": "YEAR",
+        "event_date": "1960",
+        "event_label": "Pierre Alard athletics career end",
+        "event_source": "https://en.wikipedia.org/wiki/Pierre_Alard",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "athletics-competitor",
+        "source_quality": "SINGLE_REFERENCED_STRUCTURED",
+        "subject_id": "alard-pierre-1937-09-17"
+      },
+      {
+        "birth_date": "1933-12-14",
+        "birth_place": "Dax",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "06:30",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "FR",
+        "date_precision": "YEAR",
+        "event_date": "1975",
+        "event_label": "Pierre Albaladejo professional rugby career end",
+        "event_source": "https://en.wikipedia.org/wiki/Pierre_Albaladejo",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "rugby-union-player",
+        "source_quality": "STRONG_REFERENCED_STRUCTURED",
+        "subject_id": "albaladejo-pierre-1933-12-14"
+      },
+      {
+        "birth_date": "1912-02-25",
+        "birth_place": "Meg\u00e8ve",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "11:00",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "FR",
+        "date_precision": "YEAR",
+        "event_date": "1939",
+        "event_label": "Emile Allais professional skiing career end",
+        "event_source": "https://en.wikipedia.org/wiki/Emile_Allais",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "skier",
+        "source_quality": "STRONG_REFERENCED_STRUCTURED",
+        "subject_id": "allais-emile-1912-02-25"
+      },
+      {
+        "birth_date": "1948-09-22",
+        "birth_place": "PARAZA",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "19:00",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "FR",
+        "date_precision": "YEAR",
+        "event_date": "1973",
+        "event_label": "Richard Alonso professional rugby career end",
+        "event_source": "https://en.wikipedia.org/wiki/Richard_Alonso",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "rugby-league-player",
+        "source_quality": "SINGLE_REFERENCED_STRUCTURED",
+        "subject_id": "alonso-richard-1948-09-22"
+      },
+      {
+        "birth_date": "1921-07-26",
+        "birth_place": "Frascati",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "22:00",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "IT",
+        "date_precision": "YEAR",
+        "event_date": "1956",
+        "event_label": "Amadeo Amadei professional football career end",
+        "event_source": "https://en.wikipedia.org/wiki/Amadeo_Amadei",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "football-player",
+        "source_quality": "STRONG_REFERENCED_STRUCTURED",
+        "subject_id": "amadei-amadeo-1921-07-26"
+      },
+      {
+        "birth_date": "1933-06-01",
+        "birth_place": "Kenosha",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "20:00",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "US",
+        "date_precision": "YEAR",
+        "event_date": "1955",
+        "event_label": "Alan Ameche professional football career end",
+        "event_source": "https://en.wikipedia.org/wiki/Alan_Ameche",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "american-football-player",
+        "source_quality": "STRONG_REFERENCED_STRUCTURED",
+        "subject_id": "ameche-alan-1933-06-01"
+      },
+      {
+        "birth_date": "1889-02-08",
+        "birth_place": "Paris",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "03:00",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "FR",
+        "date_precision": "YEAR",
+        "event_date": "1924",
+        "event_label": "Georges Andre athletics career end",
+        "event_source": "https://en.wikipedia.org/wiki/Georges_Andre",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "athletics-competitor",
+        "source_quality": "SINGLE_REFERENCED_STRUCTURED",
+        "subject_id": "andre-georges-1889-02-08"
+      },
+      {
+        "birth_date": "1934-01-08",
+        "birth_place": "Mont-Saint-Aignan",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "10:30",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "FR",
+        "date_precision": "YEAR",
+        "event_date": "1969",
+        "event_label": "Jacques Anquetil professional cycling career end",
+        "event_source": "https://en.wikipedia.org/wiki/Jacques_Anquetil",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "cyclist",
+        "source_quality": "STRONG_REFERENCED_STRUCTURED",
+        "subject_id": "anquetil-jacques-1934-01-08"
+      },
+      {
+        "birth_date": "1915-09-15",
+        "birth_place": "CASALPUSTERLENG",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "02:00",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "IT",
+        "date_precision": "YEAR",
+        "event_date": "1950",
+        "event_label": "Bruno Arcari professional football career end",
+        "event_source": "https://en.wikipedia.org/wiki/Bruno_Arcari",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "football-player",
+        "source_quality": "SINGLE_REFERENCED_STRUCTURED",
+        "subject_id": "arcari-bruno-1915-09-15"
+      },
+      {
+        "birth_date": "1920-10-18",
+        "birth_place": "ARETTE",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "14:00",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "FR",
+        "date_precision": "YEAR",
+        "event_date": "1953",
+        "event_label": "Pierre Aristouy professional rugby career end",
+        "event_source": "https://en.wikipedia.org/wiki/Pierre_Aristouy",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "rugby-union-player",
+        "source_quality": "SINGLE_REFERENCED_STRUCTURED",
+        "subject_id": "aristouy-pierre-1920-10-18"
+      },
+      {
+        "birth_date": "1946-08-29",
+        "birth_place": "Kansas City",
+        "birth_provenance": "OGDB_TIMED_RECORD_SOURCE_REVIEWED",
+        "birth_time": "14:08",
+        "chart_ready": true,
+        "corroboration": "public career chronology; year precision retained",
+        "country_code": "US",
+        "date_precision": "YEAR",
+        "event_date": "1969",
+        "event_label": "Warren Armstrong professional football career end",
+        "event_source": "https://en.wikipedia.org/wiki/Warren_Armstrong_(American_football)",
+        "event_subtype": "RETIREMENT",
+        "lane": "BIRTH_FIRST",
+        "organization": "documented professional field",
+        "role": "american-football-player",
+        "source_quality": "SINGLE_REFERENCED_STRUCTURED",
+        "subject_id": "armstrong-warren-1946-08-29"
+      }
+    ],
+    "validation_subjects": [
+      "aaron-henry-1934-02-05",
+      "abbes-claude-1927-05-24",
+      "abramowicz-daniel-1945-07-13",
+      "acconcia-italo-1925-04-20",
+      "adam-pierre-1924-04-24",
+      "agnel-marisette-1926-08-28",
+      "aimar-lucien-1941-04-28",
+      "aitelli-colette-1932-03-03",
+      "akins-virgil-1928-03-10",
+      "alard-pierre-1937-09-17",
+      "albaladejo-pierre-1933-12-14",
+      "allais-emile-1912-02-25",
+      "alonso-richard-1948-09-22",
+      "amadei-amadeo-1921-07-26"
+    ],
+    "version": "1.0.0"
+  },
+  "composition_used": false,
+  "controls": {
+    "event_shuffled_prepared": true,
+    "matched_controls_prepared": [
+      {
+        "event_date": "1976",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "aaron-henry-1934-02-05"
+      },
+      {
+        "event_date": "1962",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "abbes-claude-1927-05-24"
+      },
+      {
+        "event_date": "1973",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "abramowicz-daniel-1945-07-13"
+      },
+      {
+        "event_date": "1958",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "acconcia-italo-1925-04-20"
+      },
+      {
+        "event_date": "1954",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "adam-pierre-1924-04-24"
+      },
+      {
+        "event_date": "1952",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "agnel-marisette-1926-08-28"
+      },
+      {
+        "event_date": "1966",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "aimar-lucien-1941-04-28"
+      },
+      {
+        "event_date": "1956",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "aitelli-colette-1932-03-03"
+      },
+      {
+        "event_date": "1962",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "akins-virgil-1928-03-10"
+      },
+      {
+        "event_date": "1960",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "alard-pierre-1937-09-17"
+      },
+      {
+        "event_date": "1975",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "albaladejo-pierre-1933-12-14"
+      },
+      {
+        "event_date": "1939",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "allais-emile-1912-02-25"
+      },
+      {
+        "event_date": "1973",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "alonso-richard-1948-09-22"
+      },
+      {
+        "event_date": "1956",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "amadei-amadeo-1921-07-26"
+      },
+      {
+        "event_date": "1955",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "ameche-alan-1933-06-01"
+      },
+      {
+        "event_date": "1924",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "andre-georges-1889-02-08"
+      },
+      {
+        "event_date": "1969",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "anquetil-jacques-1934-01-08"
+      },
+      {
+        "event_date": "1950",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "arcari-bruno-1915-09-15"
+      },
+      {
+        "event_date": "1953",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "aristouy-pierre-1920-10-18"
+      },
+      {
+        "event_date": "1969",
+        "prepared_offsets_days": [
+          -365,
+          -730
+        ],
+        "scored": false,
+        "subject_id": "armstrong-warren-1946-08-29"
+      }
+    ],
+    "method_frozen": true,
+    "population_baseline_linked": true,
+    "scored": false,
+    "subject_event_permutation_prepared": true
+  },
+  "event_definition": "Documented date on which a subject ceased to hold a distinct professional or public position; term completion, resignation, retirement, removal and death-in-office are not conflated.",
+  "event_family": "POSITION_END",
+  "event_subtypes": {
+    "REMOVAL": 0,
+    "RESIGNATION": 0,
+    "RETIREMENT": 20,
+    "ROLE_CHANGE": 0,
+    "TERM_COMPLETION": 0
+  },
+  "feature_based_selection": false,
+  "feature_contracts_changed": false,
+  "feature_family_hash": "da810777ea18ff74ebcdb9b3003dd8a0b4a5b88f68cd79b0c27b569c18340297",
+  "funnel": {
+    "birth_first_candidates": 20,
+    "birth_provenance_accepted": 20,
+    "candidates_discovered": 20,
+    "chart_ready": 20,
+    "event_first_candidates": 7,
+    "event_provenance_accepted": 20,
+    "exclusions": [],
+    "identity_verified": 20,
+    "independent_eligible": 20,
+    "legacy_subjects": 4,
+    "qualifying_position_end": 20,
+    "timed_birth_available": 20
+  },
+  "ml_used": false,
+  "next_priority": "VEDA-EMP-FEATURE-003-R1",
+  "position_start_preserved": true,
+  "precision_counts": {
+    "DAY": 0,
+    "MONTH": 0,
+    "YEAR": 20
+  },
+  "pred_m4": "INSUFFICIENT_SAMPLE",
+  "production_changed": false,
+  "programme": "VEDA-EMP-POSEND-ACQ-001",
+  "rag_changed": false,
+  "source_quality_counts": {
+    "PRIMARY_OFFICIAL": 2,
+    "SINGLE_REFERENCED_STRUCTURED": 11,
+    "STRONG_REFERENCED_STRUCTURED": 7
+  },
+  "status": "COMPLETE_WITH_CONDITION"
+}
