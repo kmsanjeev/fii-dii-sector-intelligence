@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-EMP-FEATURE-002 INDEPENDENT POSITION-START REPLICATION
+
+Completed the independent replication of the five frozen EMP-FEATURE-001
+Mahadasha/D1 feature contracts. A birth-first cohort of 20 distinct
+`POSITION_START` subjects was frozen with 14 validation and 6 holdout subjects,
+fixed matched controls, event-shuffled permutations and subject-event
+permutations. Every feature replicated `NO_ASSOCIATION`; no feature became
+promising and no composition, ML, production, RAG, Approved Core or PRED-M4
+change occurred. Evidence is in `docs/current-state/emp-feature-002/`.
+
 ## 2026-08-16 | VEDA-PRIM-011-RX FINAL SOURCE-SCOPE AUDIT
 
 The final targeted source audit could not define PRIM-011’s natal target,
