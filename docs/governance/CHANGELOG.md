@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-KNOW-TIMING-002 TIMING PRIMITIVE FRAMEWORK
+
+Established the single `VEDA_TIMING_PRIMITIVE_REGISTRY` with 17 research-only
+entries covering Dasha, Antardasha, natal linkage, transit, dignity, aspect,
+obstruction and termination categories. Vimshottari period mechanics are
+source-validated at calculation level; event-related components remain narrow
+or partial. No outcome-free prevalence audit was run because the available OGDB
+export lacks complete chart inputs. No composite signal, production change,
+RAG rebuild, PRED-M4 upgrade or Approved Core promotion occurred.
+
 ## 2026-08-16 | VEDA-KNOW-TIMING-001 CLASSICAL EVENT-TIMING EXPANSION
 
 Completed a deep source expansion across BPHS, Phaladeepika and accessible
