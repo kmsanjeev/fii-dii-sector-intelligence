@@ -1,0 +1,56 @@
+{
+  "birth_time_precision": {
+    "EXACT_MINUTE": 14
+  },
+  "birth_yield": {
+    "conflicted": 0,
+    "tier_a": 0,
+    "tier_a_b": 0,
+    "tier_a_b_yield": 0.0,
+    "tier_b": 0,
+    "tier_c": 13,
+    "tier_d": 0,
+    "timed_birth_yield": 1.0,
+    "timed_births": 13
+  },
+  "exact_day_event_subjects": 14,
+  "frame_counts": {
+    "DEATH": 12,
+    "POSITION_END": 1,
+    "PUBLIC_APPOINTMENT": 1
+  },
+  "governance": {
+    "approved_core_changed": false,
+    "astrology_inspected": false,
+    "death_use": "RETROSPECTIVE_DATA_SOURCE_FEASIBILITY_ONLY",
+    "feature_scoring": false,
+    "ml": false,
+    "pred_m4": "UNCHANGED",
+    "production_changed": false,
+    "rag_changed": false
+  },
+  "manifest_hash": "d5ed1a68b959d4a01259185a1fc4334d8308532196e794e3aa9b20d9c41cb3e3",
+  "mode": "DOCUMENTARY_SOURCE_YIELD_METADATA_PILOT_NO_ASTROLOGY",
+  "precision_qualifier_status": "UNRESOLVED_FOR_ALL_CURRENT_RECORDS",
+  "programme": "VEDA-EVIDENCE-BIRTH-001",
+  "scale_estimates": {
+    "100": {
+      "candidates_required": null,
+      "reason": "Observed Tier A/B yield is zero; no finite estimate is justified."
+    },
+    "200": {
+      "candidates_required": null,
+      "reason": "Observed Tier A/B yield is zero; no finite estimate is justified."
+    },
+    "50": {
+      "candidates_required": null,
+      "reason": "Observed Tier A/B yield is zero; no finite estimate is justified."
+    },
+    "500": {
+      "candidates_required": null,
+      "reason": "Observed Tier A/B yield is zero; no finite estimate is justified."
+    }
+  },
+  "status": "PASS_WITH_CONDITION",
+  "subjects_screened": 13
+}

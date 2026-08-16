@@ -4055,3 +4055,12 @@ Completed the first governed source-ranked feature-level empirical study. A sing
   zero Tier A/B birth records.
 - Blocked confirmatory scale acquisition and preserved POSEND as legacy
   feasibility evidence.
+
+# 2026-08-17 — VEDA-EVIDENCE-BIRTH-001
+
+- Completed a feature-blind documentary timed-birth source-yield pilot on 13
+  unique exact-day subjects and 14 event rows.
+- Preserved all OGDB birth records as Tier C; Tier A/B yield was zero and no
+  finite scale estimate was fabricated.
+- Recommended a hybrid strategy combining documentary archival verification
+  with a separately designed consented/India lane.
