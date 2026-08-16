@@ -3840,3 +3840,12 @@ construction, Tajika aspects, configurations, Sahamas and annual-lord work.
 Passage verification and formula reconciliation remain blocked; no runtime,
 prediction, empirical/prospective evidence, Approved Core rule or RAG promotion
 was changed.
+## 2026-08-16 | VEDA-SIGNAL-BREAKTHROUGH-001
+
+Established the first narrow source-governable EMP-050 event signal:
+`VEDA-SIGNAL-MARRIAGE-OCCURRENCE-001`. The contract is based on the
+Phaladeepika marriage passage describing a relevant Vimshottari Dasha lord
+occupying, aspecting or owning the seventh house. The independently eligible
+marriage sample is zero, so no pilot or production activation occurred.
+EMP-025 remains sealed, PRED-M4 remains insufficient, and no RAG or Approved
+Core change was made.

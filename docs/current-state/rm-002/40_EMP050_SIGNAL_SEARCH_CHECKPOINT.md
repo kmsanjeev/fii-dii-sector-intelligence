@@ -15,7 +15,7 @@ Parent: `VEDA-TIMING-SIGNAL-001`
 | month events | 0 |
 | year events | 13 |
 | strong corroboration | 16 / 25 (64%) |
-| source-governable signals | 0 |
+| source-governable signals | 1 (marriage occurrence; pilot not ready) |
 | empirically tested signals | 0 |
 | prospective candidates | 0 |
 | frozen predictions | 0 |
@@ -28,7 +28,7 @@ were inspected for rule selection.
 
 | Family | Status | Current basis | Blocking condition |
 |---|---|---|---|
-| MARRIAGE | SOURCE_PARTIAL | P024 classical source inventory and Dasha context | No frozen event-date signal contract; event sample absent |
+| MARRIAGE | SOURCE_GOVERNABLE | Phaladeepika marriage verses 13-14; D1 seventh-house relationship and Vimshottari Mahadasha contract | Independently documented marriage event sample absent; bounded pilot not ready |
 | PROGENY | SOURCE_PARTIAL | P025 D1/D7 and Dasha context | D7 interpretation and dated birth-event signal remain research-only |
 | EDUCATION | SOURCE_PARTIAL | P023 houses, D24 boundary and Dasha context | Completion-event timing is not source-governed |
 | CAREER_START | SOURCE_PARTIAL | P020/P021 career context | Existing public-role audit found no event-specific signal |
@@ -39,9 +39,13 @@ were inspected for rule selection.
 | HEALTH_EVENT | SOURCE_PARTIAL | P026 research framework | Clinical boundary and no event signal; not activated |
 | DEATH | SOURCE_PARTIAL | P026 longevity research boundary | High-stakes interpretation and no approved event signal |
 
-No family reached `SOURCE_GOVERNABLE`, `IMPLEMENTATION_REQUIRED` or
-`READY_FOR_PILOT`. The negative public-role result remains frozen as
-`PUBLIC_ROLE_SIGNAL_UNGOVERNABLE`; unchanged sources must not be re-audited.
+Marriage is the first family to reach `SOURCE_GOVERNABLE` through the narrow
+contract `VEDA-SIGNAL-MARRIAGE-OCCURRENCE-001` (version `1.0.0`, hash
+`b09f7ed42632c900c1ccc65899e7e7a065c6d24b78f6b0627701f0007518d080`). The
+contract remains research/pilot governance, not production activation. Its
+independently eligible sample is currently zero, so it is not ready for a
+bounded pilot. The negative public-role result remains frozen as
+`PUBLIC_ROLE_SIGNAL_UNGOVERNABLE`; unchanged families must not be re-audited.
 
 ## Acquisition lanes
 
@@ -59,13 +63,13 @@ predictions are created.
 
 ## Next five actions
 
-1. Acquire high-quality exact/month events from the existing leadership,
+1. Acquire independently documented marriage events with valid birth data for
+   the source-governable marriage contract.
+2. Acquire high-quality exact/month events from the existing leadership,
    science/awards, sports and business pools.
-2. Use the event-first lane for objectively dated public records, then validate
+3. Use the event-first lane for objectively dated public records, then validate
    timed birth data independently.
-3. Continue Indian documentary discovery without lowering provenance standards.
-4. Reassess event families only when a new source, translation, lineage or
-   materially different event definition arrives.
+4. Continue Indian documentary discovery without lowering provenance standards.
 5. Recompute the EMP-050 sanity gate at 50 cases; keep PRED-M4 insufficient.
 
 EMP-025 remains sealed. No RAG, Approved Core, production rule, ML weight or

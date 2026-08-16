@@ -1,0 +1,75 @@
+{
+  "activity_id": "VEDA-SIGNAL-BREAKTHROUGH-001",
+  "status": "COMPLETED_WITH_SOURCE_GOVERNABLE_SIGNAL",
+  "signal_governance": "SOURCE_GOVERNABLE",
+  "signal_id": "VEDA-SIGNAL-MARRIAGE-OCCURRENCE-001",
+  "signal_version": "1.0.0",
+  "signal_hash": "b09f7ed42632c900c1ccc65899e7e7a065c6d24b78f6b0627701f0007518d080",
+  "method_id": "VEDA-DASHA-VIMSHOTTARI-MARRIAGE-PHALADEEPIKA-V1",
+  "event_class": "MARRIAGE",
+  "eligible_marriage_cases": 0,
+  "pilot_ready": false,
+  "pilot_state": "NOT_READY_SAMPLE_INSUFFICIENT",
+  "corpus_hash_preserved": "3b3ac3b7cacfbe9b3d1935fbe0263568db49a37a95ed8e308c355bbb6a61f76f",
+  "holdout_accessed": false,
+  "production_activation": false,
+  "approved_core_changes": 0,
+  "rag_changed": false,
+  "predictive_validation_changed": false,
+  "contract": {
+    "signal_id": "VEDA-SIGNAL-MARRIAGE-OCCURRENCE-001",
+    "version": "1.0.0",
+    "event_class": "MARRIAGE",
+    "method": {
+      "id": "VEDA-DASHA-VIMSHOTTARI-MARRIAGE-PHALADEEPIKA-V1",
+      "timing": "Vimshottari Mahadasha lord",
+      "structural_chart": "D1"
+    },
+    "positive_conditions": [
+      "Mahadasha lord occupies the 7th house",
+      "Mahadasha lord aspects the 7th house under the governed aspect model",
+      "Mahadasha lord owns the 7th house"
+    ],
+    "negative_conditions": [
+      "Do not infer an event from a generic planet label alone",
+      "Do not use chart fit, outcome labels, or holdout cases for rule selection",
+      "Do not infer spouse quality, permanence, or certainty of marriage"
+    ],
+    "states": [
+      "SIGNAL_PRESENT",
+      "SIGNAL_ABSENT",
+      "SIGNAL_INDETERMINATE"
+    ],
+    "date_precision": {
+      "EXACT": "Evaluate only against the documented event date; no day-level claim is made by this contract.",
+      "MONTH": "Evaluate only as a month-level overlap/window; never manufacture a day.",
+      "YEAR": "Evaluate only as a year-level association; never manufacture a month or day."
+    },
+    "optional_refinements": [
+      "Phaladeepika Jupiter transit to a trine from the 7th lord's natal Rasi is a deferred window refinement.",
+      "Navamsa refinement is deferred because D9 interpretation is not activated for this signal.",
+      "Antardasha may be reported as context but is not required by this v1 contract."
+    ],
+    "limitations": [
+      "Historical source language and marriage customs are not a universal modern outcome rule.",
+      "The source passage is a conditional indication, not a guaranteed event detector.",
+      "No pilot is ready until independently documented marriage events with valid birth data exist."
+    ],
+    "source_references": [
+      {
+        "source": "Phaladeepika, Chapter 11, marriage verses 13-14 (translation page)",
+        "passage": "Dasha of a planet occupying, aspecting, or owning the 7th; stronger 7th/Venus/Moon-related Dasha with Jupiter transit refinement.",
+        "authority": "CLASSICAL_PRIMARY_TRANSLATION",
+        "status": "SOURCE_GOVERNABLE_NARROW_CLAIM",
+        "url": "https://www.wisdomlib.org/hinduism/book/phaladeepika-by-mantreswara-text-and-translation/ocr/1621570/144"
+      },
+      {
+        "source": "Brihat Parashara Hora Shastra, translated edition",
+        "passage": "Dasha and Antardasha mechanics and conditional marriage indications; used as corroborating timing context.",
+        "authority": "CLASSICAL_PRIMARY_TRANSLATION",
+        "status": "CORROBORATING_REFERENCE",
+        "url": "https://www.iswaryajyotisha.com/pages/library.php?book=Brihat+parspara+hora+sastra"
+      }
+    ]
+  }
+}
