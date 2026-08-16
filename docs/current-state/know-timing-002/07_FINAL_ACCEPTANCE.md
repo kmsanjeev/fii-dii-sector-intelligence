@@ -24,3 +24,7 @@ The programme established a research-only primitive registry with 17 entries,
 including two source-validated calculation primitives and several narrow or
 partial doctrine primitives. No empirically useful primitive can be claimed
 until an independent outcome-free timed-chart population is prepared.
+
+That population was prepared by the dependent `VEDA-POP-001` activity; its two
+calculation primitives were audited as `TOO_COMMON`, with no event signal or
+composition authorized.

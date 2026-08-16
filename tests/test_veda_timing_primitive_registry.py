@@ -15,7 +15,7 @@ def test_timing_primitive_registry_is_deterministic_and_non_composite(tmp_path: 
     assert payload["registry_id"] == "VEDA_TIMING_PRIMITIVE_REGISTRY"
     assert payload["primitive_count"] >= 10
     assert payload["status"] == "RESEARCH_ONLY_NO_COMPOSITE_SIGNAL"
-    assert payload["prevalence_audited"] == []
+    assert payload["prevalence_audited"] == ["VEDA-TIMING-PRIM-001", "VEDA-TIMING-PRIM-002"]
     assert payload["production_changes"] == "NONE"
     assert json.loads(first.stdout)["primitive_count"] == json.loads(second.stdout)["primitive_count"]
     assert all(item["primitive_id"] for item in payload["primitives"])

@@ -25,8 +25,8 @@ PRIMITIVES = [
         "negative_condition": "The evaluation time is outside the interval.",
         "indeterminate_condition": "Birth time, Moon longitude or timezone is unavailable.",
         "implementation_status": "IMPLEMENTABLE",
-        "prevalence_status": "NOT_RUN_INPUT_GAP",
-        "empirical_status": "NOT_TESTED",
+        "prevalence_status": "AUDITED_TOO_COMMON",
+        "empirical_status": "FEASIBILITY_TOO_COMMON_NOT_PREDICTIVE",
         "production_status": "CALCULATION_ONLY",
         "notes": "Period mechanics are not an event claim and cannot create an event by themselves.",
     },
@@ -43,8 +43,8 @@ PRIMITIVES = [
         "negative_condition": "No period contains the evaluation time.",
         "indeterminate_condition": "Dasha method or birth balance is unavailable.",
         "implementation_status": "IMPLEMENTABLE",
-        "prevalence_status": "NOT_RUN_INPUT_GAP",
-        "empirical_status": "NOT_TESTED",
+        "prevalence_status": "AUDITED_TOO_COMMON",
+        "empirical_status": "FEASIBILITY_TOO_COMMON_NOT_PREDICTIVE",
         "production_status": "CALCULATION_ONLY",
         "notes": "This is a timing-coordinate primitive, not a universal event rule.",
     },
@@ -329,7 +329,7 @@ REGISTRY = {
     "primitive_count": len(PRIMITIVES),
     "primitives": PRIMITIVES,
     "prevalence_policy": "SOURCE -> DETERMINISM -> REACHABILITY -> PREVALENCE -> EVENT SAMPLE -> PILOT -> REPLICATION",
-    "prevalence_audited": [],
+    "prevalence_audited": ["VEDA-TIMING-PRIM-001", "VEDA-TIMING-PRIM-002"],
     "production_changes": "NONE",
     "rag": "UNCHANGED",
     "approved_core": "UNCHANGED",
@@ -343,7 +343,7 @@ def main() -> int:
     args = parser.parse_args()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(REGISTRY, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"registry_id": REGISTRY["registry_id"], "primitive_count": REGISTRY["primitive_count"], "prevalence_audited": 0}))
+    print(json.dumps({"registry_id": REGISTRY["registry_id"], "primitive_count": REGISTRY["primitive_count"], "prevalence_audited": len(REGISTRY["prevalence_audited"])}))
     return 0
 
 

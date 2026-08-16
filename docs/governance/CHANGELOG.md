@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-POP-001 OUTCOME-FREE TIMED-CHART POPULATION
+
+Built `VEDA-POP-OGDB-001` v1.0.0 from official OGDB source-order records. The
+population contains 1,000 usable timed charts with source coordinates,
+source-derived historical offsets, D1 facts, P016 Vimshottari timing facts,
+canonical chart hashes and an explicit no-outcome invariant. The two
+implementable timing primitives were audited at 100% activation and 100%
+time-weighted prevalence, classified `TOO_COMMON` for study design. No
+composite signal, outcome join, production change, RAG rebuild, PRED-M4
+upgrade or Approved Core promotion occurred.
+
 ## 2026-08-16 | VEDA-KNOW-TIMING-002 TIMING PRIMITIVE FRAMEWORK
 
 Established the single `VEDA_TIMING_PRIMITIVE_REGISTRY` with 17 research-only

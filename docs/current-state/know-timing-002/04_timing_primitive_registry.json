@@ -28,8 +28,8 @@
       "negative_condition": "The evaluation time is outside the interval.",
       "indeterminate_condition": "Birth time, Moon longitude or timezone is unavailable.",
       "implementation_status": "IMPLEMENTABLE",
-      "prevalence_status": "NOT_RUN_INPUT_GAP",
-      "empirical_status": "NOT_TESTED",
+      "prevalence_status": "AUDITED_TOO_COMMON",
+      "empirical_status": "FEASIBILITY_TOO_COMMON_NOT_PREDICTIVE",
       "production_status": "CALCULATION_ONLY",
       "notes": "Period mechanics are not an event claim and cannot create an event by themselves."
     },
@@ -56,8 +56,8 @@
       "negative_condition": "No period contains the evaluation time.",
       "indeterminate_condition": "Dasha method or birth balance is unavailable.",
       "implementation_status": "IMPLEMENTABLE",
-      "prevalence_status": "NOT_RUN_INPUT_GAP",
-      "empirical_status": "NOT_TESTED",
+      "prevalence_status": "AUDITED_TOO_COMMON",
+      "empirical_status": "FEASIBILITY_TOO_COMMON_NOT_PREDICTIVE",
       "production_status": "CALCULATION_ONLY",
       "notes": "This is a timing-coordinate primitive, not a universal event rule."
     },
@@ -489,7 +489,10 @@
     }
   ],
   "prevalence_policy": "SOURCE -> DETERMINISM -> REACHABILITY -> PREVALENCE -> EVENT SAMPLE -> PILOT -> REPLICATION",
-  "prevalence_audited": [],
+  "prevalence_audited": [
+    "VEDA-TIMING-PRIM-001",
+    "VEDA-TIMING-PRIM-002"
+  ],
   "production_changes": "NONE",
   "rag": "UNCHANGED",
   "approved_core": "UNCHANGED",

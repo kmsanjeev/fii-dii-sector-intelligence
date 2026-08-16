@@ -14,7 +14,11 @@ binary `PRESENT`, `ABSENT` and `INDETERMINATE` states without LLM judgment.
 
 ## Prevalence
 
-Audited primitives: `0`.
+At the time of KNOW-TIMING-002 completion, audited primitives: `0`.
+
+VEDA-POP-001 subsequently audited the two `IMPLEMENTABLE` calculation
+primitives; both are `TOO_COMMON` and are now recorded in the registry as
+`AUDITED_TOO_COMMON`.
 
 The available OGDB data is not a complete timed-chart population for house/lord
 and transit computation: birth records lack resolved coordinate/timezone/chart
