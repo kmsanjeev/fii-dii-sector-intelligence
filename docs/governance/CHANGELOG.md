@@ -3997,3 +3997,6 @@ was only 0.0967%, yielding `INSUFFICIENT_PREVALENCE` and the precise empirical
 classification `SIGNAL_TOO_SPARSE_TO_TEST_AT_EMP010`. The signal, source status,
 PRED-M4, production, RAG and Approved Core remain unchanged; EMP-PROGENY-025
 is not blindly advanced for this signal.
+## 2026-08-16 | VEDA-TIMING-RESEARCH-REBASELINE-001
+
+Completed the strategic predictive-research rebaseline after the PRIM-011 source-scope closure. Eight research lanes were evaluated with transparent ordinal ROI scoring and a negative-evidence register. Feature-level empirical analysis is the primary next lane; prospective observational research is secondary after a frozen feature contract; practitioner and hybrid work remain source inputs; RAG remains an enabler only. No useful timing primitive, composition, ML model, production rule, RAG change, Approved Core promotion or PRED-M4 upgrade occurred. `VEDA-EMP-FEATURE-001` is recommended but not started, general EMP-050 was not automatically resumed, and human validation statuses remain unchanged.

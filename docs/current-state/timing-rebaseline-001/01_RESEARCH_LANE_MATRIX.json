@@ -1,0 +1,15 @@
+{
+  "scoring_scale": "1-5; higher is better; no astrology outcomes used",
+  "criteria": ["information_gain", "cost_efficiency", "source_quality", "data_availability", "leakage_control", "falsifiability", "prospective_suitability", "engineering_readiness"],
+  "lanes": [
+    {"lane": "PRACTITIONER_METHOD_RECONSTRUCTION", "scores": [4, 3, 4, 3, 3, 3, 2, 4], "total": 26, "recommendation": "SECONDARY_SOURCE_INPUT"},
+    {"lane": "CASEBOOK_METHOD_RECONSTRUCTION", "scores": [4, 2, 3, 2, 2, 3, 2, 3], "total": 21, "recommendation": "PAUSED_UNTIL_TRACEABLE_CASES"},
+    {"lane": "FEATURE_LEVEL_EMPIRICAL_ANALYSIS", "scores": [5, 4, 3, 4, 4, 5, 4, 5], "total": 34, "recommendation": "PRIMARY"},
+    {"lane": "PROSPECTIVE_OBSERVATIONAL_RESEARCH", "scores": [5, 2, 4, 2, 5, 4, 5, 4], "total": 31, "recommendation": "SECONDARY_AFTER_FEATURE_CONTRACT"},
+    {"lane": "SOURCE_RANKED_STATISTICAL_MODELING", "scores": [4, 2, 3, 3, 3, 3, 3, 2], "total": 23, "recommendation": "PAUSED_NO_ML"},
+    {"lane": "RAG_ASSISTED_METHOD_DISCOVERY", "scores": [4, 5, 4, 5, 4, 4, 3, 5], "total": 34, "recommendation": "ENABLER_ONLY_NOT_PREDICTIVE_LANE"},
+    {"lane": "HYBRID_CLASSICAL_PRACTITIONER_RESEARCH", "scores": [5, 3, 4, 3, 3, 4, 3, 3], "total": 28, "recommendation": "SECONDARY_HYPOTHESIS_INPUT"},
+    {"lane": "CONTINUE_CLASSICAL_RULE_EXTRACTION", "scores": [1, 2, 5, 1, 2, 2, 1, 3], "total": 17, "recommendation": "PAUSED_SPECIFIC_SOURCE_ONLY"}
+  ],
+  "tie_break": "Feature-level empirical analysis is the primary lane because it is falsifiable using existing governed infrastructure; RAG is an assistant and cannot compete as a scoring engine."
+}
