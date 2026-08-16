@@ -58,3 +58,34 @@ def test_derived_artifacts_are_deterministic():
     assert first == second
     write_artifacts()
     assert json.loads((DEFAULT_XML.parents[5] / "docs/current-state/evidence-adb-sample-001/09_TIER_QUALIFICATION_FUNNEL.json").read_text(encoding="utf-8"))["combined_tier_a_b_exact_day"] == 0
+
+
+def test_corrective_structured_provenance_is_separate_from_ctimetype():
+    result = build()
+    provenance = result["provenance"]
+    assert provenance["ctimetype_role"] == "TIME_SYSTEM_TIMEZONE_HANDLING_NOT_BIRTH_TIME_PRECISION"
+    assert provenance["explicit_time_accuracy"] == 511
+    assert provenance["time_unknown_1"] == 341
+    assert provenance["bdata_alt_records"] == 31
+    assert result["mapping_state"] == "TIER_MAPPING_UNRESOLVED"
+    assert result["corrective_mapping_state"] == "STRUCTURED_CANDIDATES_REQUIRE_SOURCE_ADJUDICATION"
+
+
+def test_corrective_source_codes_and_time_unknown_guard():
+    result = build()
+    provenance = result["provenance"]
+    assert provenance["dsc_counts"]["1"] == 1978
+    assert provenance["dsc_counts"]["56"] == 130
+    assert provenance["dsc_counts"]["55"] == 5
+    assert provenance["deterministic_tier_a"] == 114
+    assert provenance["deterministic_tier_b"] == 6
+    assert provenance["time_unknown_1"] > 0
+    assert result["astrology_executed"] is False
+    assert result["feature_scoring"] is False
+    assert result["ai_training"] is False
+
+
+def test_corrective_outputs_are_deterministic():
+    first = json.dumps(build()["provenance"], sort_keys=True)
+    second = json.dumps(build()["provenance"], sort_keys=True)
+    assert first == second

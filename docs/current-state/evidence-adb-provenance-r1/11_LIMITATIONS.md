@@ -1,0 +1,3 @@
+# Limitations
+
+The structured candidate mapping is not a substitute for source adjudication. `dsc` values summarize provider source classes but do not prove that every source note supports the current time. Keyword checks are secondary diagnostics only. No record-level source text is committed. The observed C-sample counts differ from the official readme counts and may reflect export revision or provider-side inconsistency. The free sample cannot estimate full-database yield. The 30-row queue is an automated pre-adjudication sample and requires authorized human review before any VEDA birth tier is frozen.

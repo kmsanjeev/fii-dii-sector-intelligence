@@ -4114,3 +4114,9 @@ Completed the first governed source-ranked feature-level empirical study. A sing
 - Raw provider data was excluded from Git. No astrology, feature scoring,
   AI/ML training, RAG, prediction, recruitment, production or PRED-M4 change
   occurred; formal access remains unsent.
+# 2026-08-17 — VEDA-EVIDENCE-ADB-PROVENANCE-R1
+
+- Corrected the parent ADB sample’s provisional birth-precision interpretation.
+- Preserved `VEDA-EVIDENCE-ADB-SAMPLE-001` history and added a superseding aggregate audit for `ctimetype`, `itimeacc`, `stimeacc`, `time_unknown`, `bdata_alt`, `datatype/@dsc`, source-note support, cross-tabs, and bounded pre-adjudication.
+- Observed 511 explicit accuracy records, 341 `time_unknown` records, 31 alternative birth-data records, and 114 potential-A plus 6 potential-B deterministic pre-adjudication candidates.
+- Decision: `ADB_BIRTH_PROVENANCE_ADJUDICATION`; astrology, feature scoring, ML, RAG, production, PRED-M4, Approved Core, recruitment, and new event corroboration remain locked.
