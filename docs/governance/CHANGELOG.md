@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2026-08-17 | VEDA-EVIDENCE-ADB-SOURCE-DIVERSITY-001
+
+Completed the bounded unknown-source resolution and source-diversity stop/go
+audit. The 1,358-record UNKNOWN frame was frozen and resolved with separate
+provider, collector, publication and original-document provenance levels. A
+non-overlapping capped sample of 240 produced zero new Tier A/B records; the
+verified pool remains 114 and the outcome-blind source-diverse bound remains
+27. Free-sample use is limited to method development and formal ADB access is
+required for scale. No event corroboration, astrology, ML, PRED, production,
+recruitment, raw-data commit or RAG ingestion occurred.
+
 ## 2026-08-16 | VEDA-EMP-POSEND-ACQ-001 INDEPENDENT COHORT ACQUISITION
 
 Acquired and froze 20 new birth-first, chart-ready `POSITION_END` subjects for

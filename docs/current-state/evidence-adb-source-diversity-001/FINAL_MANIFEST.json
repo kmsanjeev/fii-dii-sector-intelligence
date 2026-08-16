@@ -1,0 +1,284 @@
+{
+  "adjudication": {
+    "by_resolution": {
+      "RESOLVED_NEW_CLUSTER": {
+        "n": 223,
+        "verified": 0,
+        "yield": 0.0
+      },
+      "UNRESOLVED_SOURCE": {
+        "n": 17,
+        "verified": 0,
+        "yield": 0.0
+      }
+    },
+    "record_count": 240,
+    "rejected": 240,
+    "source_diverse_yield_state": "SOURCE_DIVERSE_YIELD_NEGLIGIBLE",
+    "state_counts": {
+      "REJECTED_PRECISION": 217,
+      "REJECTED_UNTIMED": 23
+    },
+    "total_verified_a_b": 0,
+    "uncertainty_95": [
+      0.0,
+      0.015753919941558815
+    ],
+    "unresolved": 0,
+    "verified_tier_a": 0,
+    "verified_tier_b": 0,
+    "yield": 0.0
+  },
+  "baseline": {
+    "parent_scale_commit": "1b4fddc051496ad58d645e9ead6edd7ce227e9d7",
+    "parent_verified": 114,
+    "previous_adjudicated_ids": 120,
+    "previous_scale_ids": 400,
+    "unknown_overlap_with_parent": 8,
+    "unknown_overlap_with_scale": 130
+  },
+  "cluster_denominators": {
+    "full_candidate_universe": 4623,
+    "hhi": 0.22869312645455211,
+    "hhi_denominator": "full_candidate_universe",
+    "identified_cluster_counts_exclude": "UNKNOWN",
+    "identified_cluster_records": 3265,
+    "largest_share_full": 0.31797534068786504,
+    "largest_share_identified": 0.450229709035222,
+    "top5_share_full": 0.6738048886004758,
+    "top5_share_identified": 0.9540581929555896
+  },
+  "day_event_overlap": {
+    "event_status": "ADB_EVENT_DISCOVERY_ONLY",
+    "family_event_counts": {
+      "AWARD": 6,
+      "DEATH": 72,
+      "DIVORCE": 3,
+      "MARRIAGE": 9,
+      "OFFICE_END": 3,
+      "OTHER_OBJECTIVE": 25,
+      "PUBLIC_APPOINTMENT": 12
+    },
+    "family_subject_counts": {
+      "AWARD": 5,
+      "DEATH": 60,
+      "DIVORCE": 3,
+      "MARRIAGE": 6,
+      "OFFICE_END": 3,
+      "OTHER_OBJECTIVE": 9,
+      "PUBLIC_APPOINTMENT": 8
+    },
+    "non_mortality_objective_subjects": 16,
+    "total_day_events": 130,
+    "verified_subjects_with_day": 66
+  },
+  "event_corroboration": {
+    "day_events": 130,
+    "highest_value_event_family": "PUBLIC_APPOINTMENT",
+    "readiness": "EVENT_CORROBORATION_READY_LIMITED",
+    "source_diverse_eligible_subjects": 32
+  },
+  "formal_access": {
+    "current": "FORMAL_ACCESS_HIGH_VALUE",
+    "human_action": true,
+    "package_updated": true,
+    "previous": "FORMAL_ACCESS_HIGH_VALUE",
+    "request_scope": "broader source diversity, structured provenance, source notes, accuracy metadata, and records beyond the C-selected sample; not AI/ML training",
+    "submission_sent": false,
+    "submission_state": "SUBMISSION_READY_AND_HIGH_VALUE"
+  },
+  "governance": {
+    "approved_core_changed": false,
+    "astrology_executed": false,
+    "consent_corpus": "NOT_READY_EXTERNAL_REVIEW_REQUIRED",
+    "death_status": "RETROSPECTIVE_RESEARCH_ONLY",
+    "features_scored": false,
+    "ml_locked": true,
+    "pred_m4_changed": false,
+    "production_changed": false,
+    "rag_changed": false,
+    "raw_data_committed": false,
+    "recruitment": "NOT_AUTHORIZED"
+  },
+  "india": {
+    "day_event_overlap": 0,
+    "new_adjudicated": 18,
+    "source_clusters_resolved": 2,
+    "source_diverse_bound": 11,
+    "unknown_source_records": 22,
+    "verified_a": 0,
+    "verified_b": 0
+  },
+  "information_bound": {
+    "balanced_cluster_bound": 32,
+    "method": "Outcome-blind cap of 10 verified subjects per provenance cluster; no ICC estimated and no predictive outcome used",
+    "minimum_source_diverse_bound": 32,
+    "raw_n": 114,
+    "raw_n_interpretable_as_independent_n": false,
+    "singleton_plus_capped_cluster_bound": 32
+  },
+  "power": {
+    "non_mortality_objective_source_diverse_n": 16,
+    "plus_10pp": 982,
+    "plus_15pp": 490,
+    "plus_20pp": 302,
+    "plus_5pp": 3390,
+    "predictive_study_ready": false,
+    "raw_verified_plus_day": 66,
+    "source_diverse_bound": 32
+  },
+  "provider": "Astro-Databank",
+  "raw_source_hash": "A88B12D1EDC47651319D33E5A1C47C002DB44E6DBF99374E5943FF9C10AE9B17",
+  "resolution": {
+    "confirmed_original_document_clusters": 307,
+    "counts": {
+      "RESOLVED_NEW_CLUSTER": 1221,
+      "UNRESOLVED_SOURCE": 137
+    },
+    "existing_cluster_matches": 0,
+    "largest_new_cluster": "COLLECTOR_RODDEN",
+    "largest_new_cluster_n": 205,
+    "likely_singletons": 0,
+    "new_clusters_identified": 82,
+    "original_document_cluster_count": 57,
+    "probable_original_document_clusters": 0,
+    "resolved_records": 1221,
+    "top_five_new_clusters": [
+      [
+        "COLLECTOR_RODDEN",
+        205
+      ],
+      [
+        "COLLECTOR_VIKTOR",
+        151
+      ],
+      [
+        "COLLECTOR_CASTELLANOS",
+        122
+      ],
+      [
+        "COLLECTOR_MANDL",
+        115
+      ],
+      [
+        "COLLECTOR_MCEVOY",
+        54
+      ]
+    ],
+    "unresolved_records": 137,
+    "unsupported_records": 0
+  },
+  "sample": {
+    "adjudication_rubric_hash": "99A55034F16BC8CA36A2BB80CA35155F133441EB056F6B30D2EEF52C1AAD0811",
+    "cluster_counts": {
+      "COLLECTOR_AA_GB": 1,
+      "COLLECTOR_ACKERMAN": 1,
+      "COLLECTOR_ASTRODIENST": 8,
+      "COLLECTOR_ASTROLOGIE_HEUTE": 1,
+      "COLLECTOR_BESSIERE": 2,
+      "COLLECTOR_BEST": 6,
+      "COLLECTOR_BLACKWELL": 1,
+      "COLLECTOR_BORGES": 7,
+      "COLLECTOR_BRENNAN": 1,
+      "COLLECTOR_BROWN": 1,
+      "COLLECTOR_BRUN": 5,
+      "COLLECTOR_CAH": 11,
+      "COLLECTOR_CAMPBELL": 2,
+      "COLLECTOR_CASTELLANOS": 8,
+      "COLLECTOR_CLIFFORD": 4,
+      "COLLECTOR_CRAFT": 5,
+      "COLLECTOR_DEKOSTER": 12,
+      "COLLECTOR_DE_JABRUN": 3,
+      "COLLECTOR_DE_MARRE": 2,
+      "COLLECTOR_ESTADELLA": 1,
+      "COLLECTOR_FARMER": 1,
+      "COLLECTOR_FERREIRA": 1,
+      "COLLECTOR_GARY_BRAND": 6,
+      "COLLECTOR_GERARD": 7,
+      "COLLECTOR_GREGOR": 1,
+      "COLLECTOR_HEWITT_AND_TAGLILATELO": 1,
+      "COLLECTOR_HOLLIDAY": 2,
+      "COLLECTOR_KOPPEJAN": 1,
+      "COLLECTOR_LEPOIVRE": 4,
+      "COLLECTOR_LIEFELD": 1,
+      "COLLECTOR_MANDI": 1,
+      "COLLECTOR_MANDL": 3,
+      "COLLECTOR_MARCH": 4,
+      "COLLECTOR_MCEVOY": 6,
+      "COLLECTOR_MICHIELS": 2,
+      "COLLECTOR_NASCIMENTO": 4,
+      "COLLECTOR_O_BRIEN": 1,
+      "COLLECTOR_PALMER": 1,
+      "COLLECTOR_PETITALLOT": 3,
+      "COLLECTOR_PRZYBYLOWSKI": 5,
+      "COLLECTOR_PTA": 5,
+      "COLLECTOR_RODDEN": 20,
+      "COLLECTOR_SCHEPEL": 1,
+      "COLLECTOR_SCHOLFIELD": 1,
+      "COLLECTOR_SETH": 1,
+      "COLLECTOR_SHAW_DONA": 1,
+      "COLLECTOR_SHAW_VICTORIA": 1,
+      "COLLECTOR_TAEGER": 3,
+      "COLLECTOR_TAGLILATELO": 14,
+      "COLLECTOR_VAN_SANDEN": 8,
+      "COLLECTOR_VIKTOR": 17,
+      "COLLECTOR_WILSONS": 14,
+      "UNRESOLVED": 17
+    },
+    "india_subjects": 18,
+    "potential_tier_a": 191,
+    "potential_tier_b": 26,
+    "previous_overlap": 0,
+    "raw_source_hash": "A88B12D1EDC47651319D33E5A1C47C002DB44E6DBF99374E5943FF9C10AE9B17",
+    "sample_id": "ADB-SOURCE-DIVERSITY-001-BOUNDED-240",
+    "single_cluster_maximum": 20,
+    "source_cluster_hash": "3A8898F123202E840E7D84B65EC881D52EF7DE2685C6603C37BDCE68773B2E02",
+    "stratification_policy_hash": "79DD45FDC736097681398E210ED544EABE423CF22CE26F734AB9F2E5B5F2C090",
+    "subject_count": 240,
+    "subject_hash": "2D279F6AF1FA62200B2B0B5CCAF02D74CED61DBDE741633A0660504859A82C08"
+  },
+  "source_graph": {
+    "edges": "record -> source-note hash -> collector/publication/original-document levels; collector is not treated as original-document independence",
+    "nodes": {
+      "adb_provider_clusters": 1,
+      "collector_clusters": 82,
+      "original_document_clusters": 57,
+      "secondary_publication_clusters": 40
+    }
+  },
+  "status": "PASS_WITH_CONDITION",
+  "stop_go": {
+    "decision": "FREE_SAMPLE_USEFUL_BUT_FORMAL_ACCESS_REQUIRED_FOR_SCALE",
+    "external_human_action": "Submit prepared formal ADB access request after human review",
+    "further_generic_free_sample_adjudication_authorized": false,
+    "next_programme": "VEDA-EVIDENCE-ADB-FORMAL-ACCESS-001",
+    "reason": "The unknown-source frame can be deterministically stratified and yields bounded provenance signals, but collector/publication levels do not establish enough independent original-document provenance for a scalable historical backbone."
+  },
+  "unknown_universe": {
+    "cluster_policy_hash": "5F93B0A8473AC64AC622E14D0F224F80CBCCD6FD3C7DC3B412026AD86C71F868",
+    "raw_source_hash": "A88B12D1EDC47651319D33E5A1C47C002DB44E6DBF99374E5943FF9C10AE9B17",
+    "selection_policy_hash": "03246673BBFE353BFEC7AF9EF56AF13283219FCD83297B85E785D651904604EC",
+    "subject_count": 1358,
+    "subject_hash": "344CB0BD862864380E96A9CD5C02A8C20E8B947E076D984A1577E4A09263F30F",
+    "universe_id": "ADB-UNKNOWN-SOURCE-UNIVERSE-001",
+    "version": "VEDA-EVIDENCE-ADB-SOURCE-DIVERSITY-001/R1"
+  },
+  "verified_pool": {
+    "collector_clusters": 6,
+    "combined_verified": 114,
+    "largest_original_source_share": 0.8596491228070176,
+    "likely_singletons": 1,
+    "new_verified": 0,
+    "original_source_clusters": 57,
+    "pool_id": "ADB-VERIFIED-BIRTH-POOL-SOURCE-DIVERSITY-001",
+    "previous_verified": 114,
+    "provider_clusters": 10,
+    "publication_clusters": 3,
+    "source_cluster_hash": "622B990479B75955234E03BF51B35CA5D1134DF1E13E067B0DD83CC0C3EADA8C",
+    "subject_hash": "00A440AC49A2C9DEA623C5665334F33729B72ECA88FAA6E9BCEE27077AA84D66",
+    "tier_a": 37,
+    "tier_b": 77,
+    "version": "VEDA-EVIDENCE-ADB-SOURCE-DIVERSITY-001/R1"
+  },
+  "version": "VEDA-EVIDENCE-ADB-SOURCE-DIVERSITY-001/R1"
+}
