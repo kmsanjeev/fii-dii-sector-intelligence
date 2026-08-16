@@ -4098,3 +4098,19 @@ Completed the first governed source-ranked feature-level empirical study. A sing
   external submission, astrology, predictions, ML, production, RAG, Approved
   Core or PRED-M4 change occurred. Final recruitment state remains
   `NOT_READY_EXTERNAL_REVIEW_REQUIRED`.
+
+# 2026-08-17 — VEDA-EVIDENCE-ADB-SAMPLE-001
+
+- Qualified the official Astro-Databank free C sample through its documented
+  route without scraping or bypassing access controls. The immutable local
+  artifact contained 6,036 observed records versus 5,866 documented, 4,975
+  A/AA records, 6,023 complete chart-input records, 8,121 events and 4,777
+  DAY events; the discrepancy was preserved.
+- A/AA was not promoted to VEDA Tier A/B. Birth precision remained UNKNOWN
+  where source metadata did not establish it, event rows remained
+  `ADB_EVENT_DISCOVERY_ONLY`, and the bounded corroboration pilot found five
+  exact matches plus one source conflict. Decision:
+  `EXPAND_EVENT_CORROBORATION_BEFORE_SCALE`.
+- Raw provider data was excluded from Git. No astrology, feature scoring,
+  AI/ML training, RAG, prediction, recruitment, production or PRED-M4 change
+  occurred; formal access remains unsent.
