@@ -1,0 +1,24 @@
+{
+  "encryption": [
+    "IN_TRANSIT",
+    "AT_REST",
+    "DOCUMENTS",
+    "BACKUPS"
+  ],
+  "identity_vault_separate": true,
+  "open_risks": [
+    "legal_review",
+    "privacy_review",
+    "ethics_review",
+    "incident_response",
+    "key_management"
+  ],
+  "roles": [
+    "PARTICIPANT",
+    "RESEARCH_REVIEWER",
+    "EVIDENCE_ADJUDICATOR",
+    "RESEARCH_ADMIN",
+    "SYSTEM_ADMIN"
+  ],
+  "threat_review": "CONDITIONAL_EXTERNAL_REVIEW_REQUIRED"
+}

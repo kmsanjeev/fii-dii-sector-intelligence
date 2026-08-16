@@ -1,0 +1,64 @@
+{
+  "eligible_ids": [
+    "SYNTH-P-0001",
+    "SYNTH-P-0004",
+    "SYNTH-P-0007",
+    "SYNTH-P-0010",
+    "SYNTH-P-0013",
+    "SYNTH-P-0016"
+  ],
+  "formal_access": {
+    "astro_databank": "FORMAL_PERMISSION_REQUIRED",
+    "human_action_artifact": "READY",
+    "submission_performed": false
+  },
+  "governance": {
+    "approved_core_changed": false,
+    "astrology_inspected": false,
+    "ml": false,
+    "predictions_executed": false,
+    "production_changed": false,
+    "provider_calls_added": 0,
+    "rag_changed": false
+  },
+  "manifest_hash": "bacb54638c086241366098d29f7fdaf23551c79d7271e5628636839eed5680b3",
+  "programme": "VEDA-EVIDENCE-CONSENT-001",
+  "real_participants": 0,
+  "real_personal_data": false,
+  "recruitment": "NOT_AUTHORIZED",
+  "recruitment_gate": "NOT_READY_EXTERNAL_REVIEW_REQUIRED",
+  "security": {
+    "encryption": [
+      "IN_TRANSIT",
+      "AT_REST",
+      "DOCUMENTS",
+      "BACKUPS"
+    ],
+    "identity_vault_separate": true,
+    "open_risks": [
+      "legal_review",
+      "privacy_review",
+      "ethics_review",
+      "incident_response",
+      "key_management"
+    ],
+    "roles": [
+      "PARTICIPANT",
+      "RESEARCH_REVIEWER",
+      "EVIDENCE_ADJUDICATOR",
+      "RESEARCH_ADMIN",
+      "SYSTEM_ADMIN"
+    ],
+    "threat_review": "CONDITIONAL_EXTERNAL_REVIEW_REQUIRED"
+  },
+  "snapshot": {
+    "consent_policy_hash": "59f4ec58bb916f29fbafa40f26d5b69c5d9a81078f7baa9471e29a3a69548ed9",
+    "eligibility_policy_hash": "8562e926fac75ef1b0e923f783248c1f9a2a1ec8ea2c82a696c6123d464231b3",
+    "event_hash": "dd16263e3ec47532a15a07bdd3f5b168ed347581b56e7e07e44cdf0a911f58f4",
+    "snapshot_id": "SYNTH-SNAPSHOT-001",
+    "source_manifest_hash": "7461bc9ae72679d8351d754b08a5c05ff99d265eae3a59b47c6594e1b3deea5f",
+    "subject_hash": "9e74f577b3ae7109c27e4662cb8b84ca3db875c6f9c2163cc429913f226c89c3"
+  },
+  "status": "PASS_WITH_CONDITION",
+  "synthetic_only": true
+}

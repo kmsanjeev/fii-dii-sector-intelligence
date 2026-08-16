@@ -4073,3 +4073,15 @@ Completed the first governed source-ranked feature-level empirical study. A sing
   evidence foundation without submitting applications or collecting data.
 - Recorded external provider approval as a human-action blocker; predictive and
   production work remain locked.
+
+# 2026-08-17 — VEDA-EVIDENCE-CONSENT-001
+
+- Completed the synthetic-only consented longitudinal research-corpus
+  foundation: 25 synthetic participants, 50 synthetic events, India coverage,
+  granular versioned consent, pseudonymous exports, birth/event provenance,
+  withdrawal/deletion design, access roles, security requirements and
+  deterministic snapshots.
+- Recruitment and real participant collection remain unauthorized. External
+  legal, privacy, ethics and security review is required before activation;
+  no contact, submission, production collection, astrology, prediction, ML,
+  RAG, Approved Core or PRED change occurred.
