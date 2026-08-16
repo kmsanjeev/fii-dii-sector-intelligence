@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-PRIM-RX-001 TARGETED SOURCE RESOLUTION
+
+Attempted bounded source resolution for all six source-blocked conditional
+timing primitives, beginning with PRIM-003 and falling back through the
+remaining candidates. No exact source-complete deterministic contract was
+found; no prevalence, empirical study, composition or production change was
+authorized.
+
 ## 2026-08-16 | VEDA-POP-002 CONDITIONAL PRIMITIVE AUDIT
 
 Condition-audited the seven `IMPLEMENTABLE_WITH_CONDITION` timing primitives
