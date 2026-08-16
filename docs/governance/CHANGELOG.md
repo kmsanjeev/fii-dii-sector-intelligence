@@ -3912,3 +3912,14 @@ progeny signal was evaluated only after case, split, controls and scoring rules
 were frozen. The ten-case sanity pilot produced primary `NO_SEPARATION` with
 zero event, matched-control and base-time rates. No D7, production, PRED-M4,
 RAG or Approved Core change occurred; prospective progeny remains restricted.
+## 2026-08-16 | VEDA-SIGNAL-PROGENY-001-RX OUTCOME-BLIND VIABILITY AUDIT
+
+Independently verified reachability of the frozen D1 plus Jupiter
+Mahadasha/Sun Antardasha progeny signal and audited 999 outcome-blind OGDB
+timed births over the fixed ages-18-through-70 interval. A positive fixture
+returned `SIGNAL_PRESENT`; negative and missing-input fixtures preserved their
+contract states. Subject activation was 6.4064%, but time-weighted activation
+was only 0.0967%, yielding `INSUFFICIENT_PREVALENCE` and the precise empirical
+classification `SIGNAL_TOO_SPARSE_TO_TEST_AT_EMP010`. The signal, source status,
+PRED-M4, production, RAG and Approved Core remain unchanged; EMP-PROGENY-025
+is not blindly advanced for this signal.
