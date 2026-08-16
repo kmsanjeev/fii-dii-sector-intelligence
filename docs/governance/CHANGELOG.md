@@ -4064,3 +4064,12 @@ Completed the first governed source-ranked feature-level empirical study. A sing
   finite scale estimate was fabricated.
 - Recommended a hybrid strategy combining documentary archival verification
   with a separately designed consented/India lane.
+
+# 2026-08-17 — VEDA-EVIDENCE-HYBRID-001
+
+- Confirmed the hybrid birth-evidence strategy after a fresh 40-candidate
+  source-only screen yielded zero documentary Tier A/B upgrades.
+- Prepared a formal provider access package, consent/privacy design and India
+  evidence foundation without submitting applications or collecting data.
+- Recorded external provider approval as a human-action blocker; predictive and
+  production work remain locked.

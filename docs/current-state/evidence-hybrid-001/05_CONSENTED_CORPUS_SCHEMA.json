@@ -1,0 +1,31 @@
+{
+  "architecture_designed": true,
+  "consent_model": "PARTIAL_DESIGN",
+  "documentary_birth_verification": "SUPPORTED",
+  "fields": [
+    "subject_id",
+    "consent_version",
+    "consent_date",
+    "withdrawal_status",
+    "birth_date",
+    "birth_time",
+    "birth_time_precision",
+    "birth_document_type",
+    "document_verification_status",
+    "birthplace",
+    "coordinates",
+    "timezone",
+    "event_categories_consented",
+    "followup_status",
+    "event_date",
+    "event_precision",
+    "event_source",
+    "self_reported_event",
+    "documented_event",
+    "privacy_class",
+    "retention_policy"
+  ],
+  "implementation_authorized": false,
+  "longitudinal_follow_up": "SUPPORTED",
+  "privacy_model": "PARTIAL_DESIGN"
+}

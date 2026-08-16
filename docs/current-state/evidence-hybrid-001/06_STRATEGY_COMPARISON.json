@@ -1,0 +1,42 @@
+{
+  "consented": {
+    "cost": "HIGH",
+    "india": "HIGH",
+    "legal": "STRONG_WITH_CONSENT",
+    "prospective": "HIGH",
+    "quality": "HIGH_AT_ENTRY",
+    "scale": "SLOW",
+    "speed": "SLOW",
+    "sustainability": "CONDITIONAL"
+  },
+  "formal_licensed_access": {
+    "cost": "HIGH",
+    "india": "LOW",
+    "legal": "FORMAL_GATE",
+    "prospective": "LOW",
+    "quality": "HIGH_IF_LINEAGE_PRESENT",
+    "scale": "CONDITIONAL",
+    "speed": "SLOW",
+    "sustainability": "CONDITIONAL"
+  },
+  "india_archival": {
+    "cost": "HIGH_MANUAL",
+    "india": "HIGH",
+    "legal": "SOURCE_SPECIFIC",
+    "prospective": "LOW",
+    "quality": "UNKNOWN",
+    "scale": "UNKNOWN",
+    "speed": "SLOW",
+    "sustainability": "CONDITIONAL"
+  },
+  "public_documentary": {
+    "cost": "HIGH_MANUAL",
+    "india": "CONDITIONAL",
+    "legal": "HIGH_IF_LAWFUL",
+    "prospective": "LOW",
+    "quality": "HIGH_CASE_BY_CASE",
+    "scale": "LOW",
+    "speed": "SLOW",
+    "sustainability": "LIMITED"
+  }
+}

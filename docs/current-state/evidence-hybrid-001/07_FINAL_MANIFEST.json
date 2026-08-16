@@ -1,0 +1,142 @@
+{
+  "consented_corpus": {
+    "architecture_designed": true,
+    "consent_model": "PARTIAL_DESIGN",
+    "documentary_birth_verification": "SUPPORTED",
+    "fields": [
+      "subject_id",
+      "consent_version",
+      "consent_date",
+      "withdrawal_status",
+      "birth_date",
+      "birth_time",
+      "birth_time_precision",
+      "birth_document_type",
+      "document_verification_status",
+      "birthplace",
+      "coordinates",
+      "timezone",
+      "event_categories_consented",
+      "followup_status",
+      "event_date",
+      "event_precision",
+      "event_source",
+      "self_reported_event",
+      "documented_event",
+      "privacy_class",
+      "retention_policy"
+    ],
+    "implementation_authorized": false,
+    "longitudinal_follow_up": "SUPPORTED",
+    "privacy_model": "PARTIAL_DESIGN"
+  },
+  "documentary_pilot": {
+    "conflicted": 0,
+    "decision": "DOCUMENTARY_LIMITED_SCALE",
+    "frame_counts": {
+      "HISTORICAL_PUBLIC_FIGURES": 40
+    },
+    "new_subjects_screened": 40,
+    "not_found": 0,
+    "source_lineage_located": 0,
+    "tier_a": 0,
+    "tier_a_b": 0,
+    "tier_a_b_yield": 0.0,
+    "tier_b": 0,
+    "tier_c": 40,
+    "tier_d": 0,
+    "timed_birth_recorded": 40,
+    "uncertainty": "95% upper bound on yield is reported; expected yield is not estimable."
+  },
+  "formal_access": {
+    "astro_databank": {
+      "access_route": "FORMAL_PERMISSION_REQUIRED",
+      "application_package_prepared": true,
+      "expected_value": "CONDITIONAL_VALUE",
+      "external_human_action_required": true,
+      "scraping": "PROHIBITED",
+      "source_metadata_sufficient": "UNKNOWN_UNTIL_ACCESS"
+    },
+    "other_providers": "NO_OTHER_PROVIDER_INDEPENDENTLY_VERIFIED_IN_THIS_ACTIVITY"
+  },
+  "governance": {
+    "approved_core_changed": false,
+    "astrology_inspected": false,
+    "composite": false,
+    "external_human_action": "HUMAN_EXTERNAL_ACCESS_BLOCKER",
+    "feature_scoring": false,
+    "ml": false,
+    "pred_m4": "UNCHANGED",
+    "production_changed": false,
+    "provider_calls_added": 0,
+    "rag_changed": false
+  },
+  "india": {
+    "candidates_screened": 0,
+    "decision": "INDIA_CONSENTED_ROUTE_REQUIRED",
+    "foundation": "MISSING",
+    "reason": "Existing source population has no India records and no documentary India lane was accessed.",
+    "recorded_times": 0,
+    "tier_a": 0,
+    "tier_b": 0,
+    "tier_c": 0
+  },
+  "manifest_hash": "3d4b6682eaee5971ea5bc34e624d66ed94cd5b76f57ede58daedbd43a005d287",
+  "mode": "STRATEGY_FEASIBILITY_NO_ASTROLOGY",
+  "programme": "VEDA-EVIDENCE-HYBRID-001",
+  "recommended_strategy": {
+    "overall": "HYBRID_DATA_STRATEGY_CONFIRMED",
+    "primary": "FORMAL_DATABASE_ACCESS_REQUIRED",
+    "secondary": "CONSENTED_CORPUS_REQUIRED",
+    "stop_condition": "Stop repeated public screening after materially broader source classes still yield near-zero Tier A/B and projected acquisition remains impractical.",
+    "tertiary": "PUBLIC_DOCUMENTARY_LIMITED_SCALE"
+  },
+  "status": "PASS_WITH_CONDITION",
+  "workload": {
+    "100": {
+      "note": "Upper-bound scenario only; not an expected workload estimate.",
+      "observed_yield": 0.0,
+      "optimistic_screen_count_at_upper_bound": 1386,
+      "screened": 40,
+      "status": "NOT_ESTIMABLE_WITH_USEFUL_PRECISION",
+      "target_tier_a_b": 100,
+      "upper_confidence_yield": 0.072158
+    },
+    "200": {
+      "note": "Upper-bound scenario only; not an expected workload estimate.",
+      "observed_yield": 0.0,
+      "optimistic_screen_count_at_upper_bound": 2772,
+      "screened": 40,
+      "status": "NOT_ESTIMABLE_WITH_USEFUL_PRECISION",
+      "target_tier_a_b": 200,
+      "upper_confidence_yield": 0.072158
+    },
+    "250": {
+      "note": "Upper-bound scenario only; not an expected workload estimate.",
+      "observed_yield": 0.0,
+      "optimistic_screen_count_at_upper_bound": 3465,
+      "screened": 40,
+      "status": "NOT_ESTIMABLE_WITH_USEFUL_PRECISION",
+      "target_tier_a_b": 250,
+      "upper_confidence_yield": 0.072158
+    },
+    "50": {
+      "note": "Upper-bound scenario only; not an expected workload estimate.",
+      "observed_yield": 0.0,
+      "optimistic_screen_count_at_upper_bound": 693,
+      "screened": 40,
+      "status": "NOT_ESTIMABLE_WITH_USEFUL_PRECISION",
+      "target_tier_a_b": 50,
+      "upper_confidence_yield": 0.072158
+    },
+    "500": {
+      "note": "Upper-bound scenario only; not an expected workload estimate.",
+      "observed_yield": 0.0,
+      "optimistic_screen_count_at_upper_bound": 6930,
+      "screened": 40,
+      "status": "NOT_ESTIMABLE_WITH_USEFUL_PRECISION",
+      "target_tier_a_b": 500,
+      "upper_confidence_yield": 0.072158
+    }
+  }
+}
