@@ -65,8 +65,9 @@ required positive condition in v1.
 | Health event | `SOURCE_PARTIAL / RESTRICTED` | clinical boundary remains active |
 | Death | `SOURCE_PARTIAL / HIGH_STAKES` | no activated signal |
 
-The next acquisition priority is independently documented marriage events with
-valid birth data. No case is fabricated and no holdout is opened.
+The first ten-case marriage acquisition is frozen separately under
+`VEDA-EMP-MARRIAGE-010`. Ten chart-ready cases exist, but the bounded pilot is
+blocked pending independent control scoring; no holdout is unsealed.
 
 ## Governance outcome
 

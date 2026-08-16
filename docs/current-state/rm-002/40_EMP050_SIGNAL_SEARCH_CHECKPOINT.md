@@ -15,7 +15,7 @@ Parent: `VEDA-TIMING-SIGNAL-001`
 | month events | 0 |
 | year events | 13 |
 | strong corroboration | 16 / 25 (64%) |
-| source-governable signals | 1 (marriage occurrence; pilot not ready) |
+| source-governable signals | 1 (marriage occurrence; pilot blocked pending controls) |
 | empirically tested signals | 0 |
 | prospective candidates | 0 |
 | frozen predictions | 0 |
@@ -28,7 +28,7 @@ were inspected for rule selection.
 
 | Family | Status | Current basis | Blocking condition |
 |---|---|---|---|
-| MARRIAGE | SOURCE_GOVERNABLE | Phaladeepika marriage verses 13-14; D1 seventh-house relationship and Vimshottari Mahadasha contract | Independently documented marriage event sample absent; bounded pilot not ready |
+| MARRIAGE | SOURCE_GOVERNABLE | Phaladeepika marriage verses 13-14; D1 seventh-house relationship and Vimshottari Mahadasha contract | Ten cases frozen; control scoring/review pending before pilot result |
 | PROGENY | SOURCE_PARTIAL | P025 D1/D7 and Dasha context | D7 interpretation and dated birth-event signal remain research-only |
 | EDUCATION | SOURCE_PARTIAL | P023 houses, D24 boundary and Dasha context | Completion-event timing is not source-governed |
 | CAREER_START | SOURCE_PARTIAL | P020/P021 career context | Existing public-role audit found no event-specific signal |
@@ -43,8 +43,8 @@ Marriage is the first family to reach `SOURCE_GOVERNABLE` through the narrow
 contract `VEDA-SIGNAL-MARRIAGE-OCCURRENCE-001` (version `1.0.0`, hash
 `b09f7ed42632c900c1ccc65899e7e7a065c6d24b78f6b0627701f0007518d080`). The
 contract remains research/pilot governance, not production activation. Its
-independently eligible sample is currently zero, so it is not ready for a
-bounded pilot. The negative public-role result remains frozen as
+independently eligible sample has reached ten, but the bounded pilot is
+blocked pending independent control scoring/review. The negative public-role result remains frozen as
 `PUBLIC_ROLE_SIGNAL_UNGOVERNABLE`; unchanged families must not be re-audited.
 
 ## Acquisition lanes
@@ -63,8 +63,8 @@ predictions are created.
 
 ## Next five actions
 
-1. Acquire independently documented marriage events with valid birth data for
-   the source-governable marriage contract.
+1. Finalize independent matched-control scoring/review for the frozen marriage
+   ten-case sanity pilot.
 2. Acquire high-quality exact/month events from the existing leadership,
    science/awards, sports and business pools.
 3. Use the event-first lane for objectively dated public records, then validate

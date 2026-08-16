@@ -10,7 +10,7 @@ The implemented baseline is frozen through P031 plus P015-RX, P015-RX2, STD-001,
 - RM-001 tag: `veda-rm-001-roadmap-rebaseline`
 - Predictive maturity: `PRED-M3_OPERATIONAL_PLUS`
 - Empirical status: `VEDA-EMP-001` remains longitudinal; EMP-025-R3 has 25 eligible and chart-ready historical cases across five event classes. `VEDA-TIMING-SIGNAL-001` found no source-governable public-role signal, so that pilot remains not ready and the holdout sealed; `PRED-M4` remains `INSUFFICIENT_SAMPLE`. EMP-050 acquisition continues in parallel.
-- `VEDA-SIGNAL-BREAKTHROUGH-001` established the first narrow `SOURCE_GOVERNABLE` family: `VEDA-SIGNAL-MARRIAGE-OCCURRENCE-001` (Phaladeepika D1 seventh-house/Vimshottari Mahadasha contract). It is not pilot-ready because the independently eligible marriage sample is zero. EMP-050 remains at 25/50; no production, RAG, Approved Core or holdout change occurred.
+- `VEDA-EMP-MARRIAGE-010` froze ten chart-ready marriage cases for the first sanity pilot. The pilot is blocked pending independent control scoring; the holdout remains masked. EMP-050 remains at 25/50; no production, RAG, Approved Core or doctrine change occurred.
 - VEDA-RM-002 active tracks: `CLASSICAL_SOURCE_EXPANSION`, `TIMING_VALIDATION`, `METHOD_COMPARISON`, `TAJIKA_FOUNDATION`, `ASHTAKAVARGA_VALIDATION`, `SHADBALA_VALIDATION`, and `MUHURTA_SOURCE_EXPANSION`.
 - VEDA-AUTOLOOP-R3 is implemented/frozen; the controller uses information-gain, input fingerprints, cooldowns and track diversity, with `METHOD_COMPARISON` as next priority.
 - `VEDA-ADM-EMP-001` is implemented/frozen by its own acceptance record; the next operational step is to supply legitimate governed case data.

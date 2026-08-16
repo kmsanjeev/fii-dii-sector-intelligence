@@ -3849,3 +3849,10 @@ occupying, aspecting or owning the seventh house. The independently eligible
 marriage sample is zero, so no pilot or production activation occurred.
 EMP-025 remains sealed, PRED-M4 remains insufficient, and no RAG or Approved
 Core change was made.
+## 2026-08-16 | VEDA-EMP-MARRIAGE-010
+
+Frozen ten distinct timed OGDB subjects with independently documented first
+marriage events, deterministic chart snapshots, a 4/3/3 design/validation/
+holdout split and pre-specified matched controls. The sanity pilot is blocked
+pending independent control scoring; holdout outcomes remain masked. No signal,
+production, RAG, Approved Core or predictive-maturity change occurred.
