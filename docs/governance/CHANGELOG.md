@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-TRANSIT-FND-001 HISTORICAL TRANSIT FOUNDATION
+
+Extended the existing Swiss Ephemeris/Lahiri transit layer with a factual
+Jupiter/Saturn historical position API and deterministic daily artifact across
+the POP-001-derived observation range. Independent reference validation passed.
+PRIM-011 is calculation-ready but source scope remains pending; no prevalence,
+interpretation, production, RAG or Approved Core change occurred.
+
 ## 2026-08-16 | VEDA-PRIM-RX-001 TARGETED SOURCE RESOLUTION
 
 Attempted bounded source resolution for all six source-blocked conditional

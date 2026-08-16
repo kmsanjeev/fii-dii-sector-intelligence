@@ -33,7 +33,9 @@ from engines.intelligence.kundli_engine import KundliEngine, NAKSHATRAS, SIGNS
 TRANSIT_OUTPUT_DIR = cfg.DATA_DIR / "gochar"
 TRANSIT_FOUNDATION_PATH = TRANSIT_OUTPUT_DIR / "transit_foundation.parquet"
 TRANSIT_RUNTIME_VERSION = "P019"
+HISTORICAL_TRANSIT_METHOD_ID = "VEDA-TRANSIT-FND-001-HISTORICAL-V1"
 DEFAULT_TIMEZONE = "Asia/Kolkata"
+SUPPORTED_HISTORICAL_PLANETS = ("Jupiter", "Saturn")
 
 
 class TransitReferenceType(str, Enum):
@@ -121,6 +123,27 @@ class TransitSnapshot(BaseModel):
     source_ephemeris_version: str = "Swiss Ephemeris (Lahiri, True Node)"
 
 
+class HistoricalTransitPosition(BaseModel):
+    """Factual historical transit position; interpretation remains separate."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    transit_time_utc: str
+    julian_day: float
+    planet: str
+    tropical_longitude: float
+    ayanamsha: float
+    sidereal_longitude: float
+    sign_num: int
+    sign: str
+    retrograde: bool
+    speed_deg_per_day: float
+    method_id: str = HISTORICAL_TRANSIT_METHOD_ID
+    method_version: str = "1.0"
+    ephemeris: str = "Swiss Ephemeris"
+    ayanamsha_method: str = "LAHIRI"
+
+
 def _sign_num_to_name(sign_num: int) -> str:
     return SIGNS[sign_num % 12]
 
@@ -181,6 +204,7 @@ class TransitGocharEngine:
 
     def __init__(self) -> None:
         self._kundli = KundliEngine()
+        self._historical_cache: dict[tuple[str, str, str], HistoricalTransitPosition] = {}
 
     def _jd(self, dt_utc: datetime) -> float:
         return self._kundli._swe.julday(  # noqa: SLF001 - reuse canonical astronomy core
@@ -193,6 +217,48 @@ class TransitGocharEngine:
     def _planet_positions(self, dt_utc: datetime) -> dict[str, dict[str, Any]]:
         jd = self._jd(dt_utc)
         return self._kundli._planet_positions_extended(jd)  # noqa: SLF001 - read-only runtime reuse
+
+    def calculate_transit(
+        self,
+        timestamp: datetime,
+        planet: str,
+        configuration: dict[str, Any] | None = None,
+    ) -> HistoricalTransitPosition:
+        """Calculate one deterministic historical Jupiter/Saturn position.
+
+        This is a factual research API. It intentionally does not select a
+        natal target, infer an event, or apply a predictive transit rule.
+        """
+        if planet not in SUPPORTED_HISTORICAL_PLANETS:
+            raise ValueError(f"historical foundation supports only {SUPPORTED_HISTORICAL_PLANETS}")
+        dt_utc, _, _ = _coerce_datetime(timestamp, "UTC")
+        config = configuration or {}
+        config_key = json.dumps(config, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
+        key = (dt_utc.isoformat(), planet, config_key)
+        cached = self._historical_cache.get(key)
+        if cached is not None:
+            return cached
+        jd = self._jd(dt_utc)
+        pid = self._kundli._PLANET_IDS[planet]  # noqa: SLF001 - canonical engine IDs
+        sidereal_flags = self._kundli._swe.FLG_SIDEREAL | self._kundli._swe.FLG_SPEED  # noqa: SLF001
+        sidereal, _ = self._kundli._swe.calc_ut(jd, pid, sidereal_flags)  # noqa: SLF001
+        flags = self._kundli._swe.FLG_SPEED  # noqa: SLF001 - tropical reference only
+        tropical, _ = self._kundli._swe.calc_ut(jd, pid, flags)  # noqa: SLF001
+        ayanamsha = float(self._kundli._swe.get_ayanamsa_ut(jd))  # noqa: SLF001
+        position = HistoricalTransitPosition(
+            transit_time_utc=dt_utc.isoformat().replace("+00:00", "Z"),
+            julian_day=round(jd, 8),
+            planet=planet,
+            tropical_longitude=round(float(tropical[0]) % 360.0, 8),
+            ayanamsha=round(ayanamsha, 8),
+            sidereal_longitude=round(float(sidereal[0]) % 360.0, 8),
+            sign_num=int(float(sidereal[0]) // 30) % 12,
+            sign=_sign_num_to_name(int(float(sidereal[0]) // 30)),
+            retrograde=bool(sidereal[3] < 0),
+            speed_deg_per_day=round(float(sidereal[3]), 8),
+        )
+        self._historical_cache[key] = position
+        return position
 
     def _chart_entity_id(self, natal_chart: dict[str, Any]) -> str:
         entity = natal_chart.get("entity") or {}
