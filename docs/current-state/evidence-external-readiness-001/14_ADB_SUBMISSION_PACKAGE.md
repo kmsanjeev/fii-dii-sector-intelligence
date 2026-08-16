@@ -13,3 +13,13 @@ force because Wikidata P4782 is not an Astro-Databank identifier.
 
 Status: submission artifact prepared; `FORMAL_PERMISSION_REQUIRED`; no email,
 application or external submission sent.
+
+Scale update (2026-08-17): the official free sample has 6,036 observed records,
+4,623 structured-documentary candidates, and a source-cluster-stratified 400-
+record follow-up sample. The follow-up verified 5 additional Tier A/B records;
+the combined verified pool is 114 subjects but only 27 under the pre-registered
+10-subject-per-known-cluster source-diversity bound. The parent 90.83% yield did
+not generalize across the new sample. Formal access remains high-value for
+lawful scale and provenance review, but submission remains a separate human
+action and has not been sent. No scraping, AI/ML training, or redistribution is
+authorized.

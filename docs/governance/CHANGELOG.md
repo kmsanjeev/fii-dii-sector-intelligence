@@ -4127,3 +4127,10 @@ Completed the first governed source-ranked feature-level empirical study. A sing
 - Existing events remain `ADB_EVENT_DISCOVERY_ONLY`; no new external event corroboration was performed.
 - Decision: `SCALE_ADJUDICATION_TO_BROADER_ADB_POOL`; formal access is high-value for scale, but no request was submitted.
 - Raw ADB data, RAG, production, PRED-M4, Approved Core, recruitment, and consent-corpus states remain unchanged.
+# 2026-08-17 — VEDA-EVIDENCE-ADB-SCALE-001
+
+- Recomputed and froze the 4,623-record structured-documentary universe.
+- Adjudicated a capped, source-cluster-stratified 400-record follow-up sample.
+- Verified 5 new Tier A records and no new Tier B records; combined raw verified pool is 114, with source-diverse bound 27.
+- The parent 90.83% yield is classified `IS_CLUSTER_SPECIFIC`; decision is `CONTINUE_STAGED_ADJUDICATION`.
+- Existing DAY events remain discovery-only; no event corroboration expansion, astrology, features, ML, RAG, production, PRED-M4, Approved Core, or recruitment changes.
