@@ -1,0 +1,47 @@
+{
+  "candidate_set": {
+    "candidate_set_id": "ADB-PROVENANCE-R1-REQUIRES-SOURCE-ADJUDICATION",
+    "candidate_set_version": "VEDA-EVIDENCE-ADB-ADJUDICATION-001/R1",
+    "selection_policy": "reason=REQUIRES_SOURCE_ADJUDICATION from frozen parent provenance rubric; no chart/event/outcome inputs",
+    "selection_policy_hash": "060007515C034C00EC7B06E4277231F5DB7D0E9EA391C0900645180EC1E55881",
+    "source_artifact_hash": "A88B12D1EDC47651319D33E5A1C47C002DB44E6DBF99374E5943FF9C10AE9B17",
+    "subject_count": 120,
+    "subject_hash": "DCD81A167773B56E0C159249AA22BA3719BCC2F9BF12F9DEBECF6272EDB1FAA2"
+  },
+  "consistency": {
+    "exceptions": [],
+    "second_pass": "PASS"
+  },
+  "decision": "SCALE_ADJUDICATION_TO_BROADER_ADB_POOL",
+  "event_readiness": "READY_LIMITED",
+  "formal_access": "FORMAL_ACCESS_HIGH_VALUE",
+  "governance": {
+    "approved_core_changed": false,
+    "astrology_executed": false,
+    "consent_corpus": "NOT_READY_EXTERNAL_REVIEW_REQUIRED",
+    "feature_scoring": false,
+    "ml_locked": true,
+    "pred_m4_changed": false,
+    "production_changed": false,
+    "raw_data_committed": false,
+    "recruitment_changed": false
+  },
+  "results": {
+    "rejected_conflict": 0,
+    "rejected_precision": 0,
+    "rejected_rectified": 0,
+    "rejected_source_lineage": 0,
+    "rejected_untimed": 0,
+    "retained_tier_c": 0,
+    "total_verified_a_b": 109,
+    "uncertainty_95": [
+      0.843291530273291,
+      0.9480428171514347
+    ],
+    "unresolved": 11,
+    "verification_yield": 0.9083333333333333,
+    "verified_tier_a": 32,
+    "verified_tier_b": 77
+  },
+  "status": "PASS_WITH_CONDITION"
+}

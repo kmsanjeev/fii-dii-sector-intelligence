@@ -4120,3 +4120,10 @@ Completed the first governed source-ranked feature-level empirical study. A sing
 - Preserved `VEDA-EVIDENCE-ADB-SAMPLE-001` history and added a superseding aggregate audit for `ctimetype`, `itimeacc`, `stimeacc`, `time_unknown`, `bdata_alt`, `datatype/@dsc`, source-note support, cross-tabs, and bounded pre-adjudication.
 - Observed 511 explicit accuracy records, 341 `time_unknown` records, 31 alternative birth-data records, and 114 potential-A plus 6 potential-B deterministic pre-adjudication candidates.
 - Decision: `ADB_BIRTH_PROVENANCE_ADJUDICATION`; astrology, feature scoring, ML, RAG, production, PRED-M4, Approved Core, recruitment, and new event corroboration remain locked.
+# 2026-08-17 — VEDA-EVIDENCE-ADB-ADJUDICATION-001
+
+- Adjudicated the exact frozen 120-record ADB source-note population without astrology, feature selection, ML, or event-outcome selection.
+- Result: 32 verified Tier A, 77 verified Tier B, 11 unresolved; 65 verified subjects with 129 existing DAY events.
+- Existing events remain `ADB_EVENT_DISCOVERY_ONLY`; no new external event corroboration was performed.
+- Decision: `SCALE_ADJUDICATION_TO_BROADER_ADB_POOL`; formal access is high-value for scale, but no request was submitted.
+- Raw ADB data, RAG, production, PRED-M4, Approved Core, recruitment, and consent-corpus states remain unchanged.
