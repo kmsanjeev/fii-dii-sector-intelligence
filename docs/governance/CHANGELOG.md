@@ -3902,3 +3902,13 @@ Independent rerun review found presentation-order nondeterminism in serialized
 yoga metadata. The acquisition artifact now canonicalizes that metadata before
 case hashing. Two-run artifact stability passes; no chart fact, signal doctrine,
 holdout, production behavior or predictive status changed.
+## 2026-08-16 | VEDA-EMP-PROGENY-010 FIRST TEN CASE PILOT
+
+Acquired and froze ten public childbirth-event cases using public OGDB timed
+birth records and documented family/event sources. Nine cases have explicit
+first-child sequence evidence; one sequence-uncertain case is retained outside
+the first-child subset. The immutable D1 plus Jupiter Mahadasha/Sun Antardasha
+progeny signal was evaluated only after case, split, controls and scoring rules
+were frozen. The ten-case sanity pilot produced primary `NO_SEPARATION` with
+zero event, matched-control and base-time rates. No D7, production, PRED-M4,
+RAG or Approved Core change occurred; prospective progeny remains restricted.
