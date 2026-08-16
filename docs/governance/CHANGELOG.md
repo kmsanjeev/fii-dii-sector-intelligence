@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-EMP-FEATURE-003 NEW EVENT-FAMILY FREEZE
+
+Selected `POSITION_END` as the highest-scoring new event family before any
+feature evaluation. Five atomic event-specific contracts were frozen and
+outcome-free POP-001 prevalence was completed. The available source feed has
+only four previously exposed subjects and seven end events, so those records
+remain `LEGACY_SECONDARY`; the independent primary cohort, holdout, controls
+and permutations are blocked rather than fabricated. No POSITION_START
+reopening, composition, ML, production, RAG, Approved Core or PRED-M4 change
+occurred. Evidence is in `docs/current-state/emp-feature-003/`.
+
 ## 2026-08-16 | VEDA-EMP-FEATURE-002 INDEPENDENT POSITION-START REPLICATION
 
 Completed the independent replication of the five frozen EMP-FEATURE-001
