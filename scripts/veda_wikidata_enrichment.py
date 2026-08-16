@@ -17,6 +17,25 @@ from pathlib import Path
 from typing import Any
 
 
+# P4782 is Movieplayer person ID.  It is deliberately blocked from any
+# Astro-Databank mapping because an external identifier's numeric shape is not
+# evidence of source identity.  Keep this guard in the enrichment boundary so
+# future adapters cannot silently reintroduce the historical mapping error.
+FORBIDDEN_ASTRO_DATABANK_PROPERTY_IDS = frozenset({"P4782"})
+
+
+def validate_external_id_mapping(property_id: str, target_system: str) -> None:
+    """Reject known Wikidata-property/source-identity conflations."""
+    if (
+        str(property_id).strip().upper() in FORBIDDEN_ASTRO_DATABANK_PROPERTY_IDS
+        and "ASTRO" in str(target_system).upper()
+    ):
+        raise ValueError(
+            "Wikidata P4782 is Movieplayer person ID and cannot be mapped to "
+            "Astro-Databank. Use an explicitly verified property/source route."
+        )
+
+
 def _normalise(value: Any) -> str:
     text = unicodedata.normalize("NFKD", str(value or ""))
     text = "".join(char for char in text if not unicodedata.combining(char))
@@ -43,6 +62,10 @@ def enrich_records(
     constructs or submits a ``CaseRecord`` and therefore cannot increase the
     empirical-case count.
     """
+    for candidate_list in candidates_by_ogid.values():
+        for candidate in candidate_list:
+            for claim in candidate.get("external_id_claims", []):
+                validate_external_id_mapping(claim.get("property_id", ""), claim.get("target_system", ""))
 
     enriched: list[dict[str, Any]] = []
     matched = 0

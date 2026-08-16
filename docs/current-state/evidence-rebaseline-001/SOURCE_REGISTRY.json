@@ -1,0 +1,13 @@
+{
+  "activity_id": "VEDA-EVIDENCE-REBASELINE-001",
+  "sources": [
+    {"id": "SRC-OGDB-2026", "title": "Open Gauquelin Database", "url": "https://opengauquelin.org/", "authority": "PUBLIC_DATASET", "status": "MECHANICS_PREVALENCE_ONLY"},
+    {"id": "SRC-RODDEN-HELP", "title": "Astro-Databank Rodden rating guidance", "url": "https://www.astro.com/astro-databank/Help%3ARR?lang=e&nho2=432410&nhor=4748112", "authority": "INSTITUTIONAL_METHOD_GUIDANCE", "status": "ACCEPTED_FOR_RATING_GUIDANCE"},
+    {"id": "SRC-WD-P4782", "title": "Wikidata P4782", "url": "https://www.wikidata.org/wiki/Property:P4782", "authority": "PRIMARY_PROPERTY_REGISTRY", "status": "REJECTED_FOR_ASTRO_DATABANK_MAPPING", "reason": "Movieplayer person ID"},
+    {"id": "SRC-MENDELEY-ASTRO", "title": "Astrological Research dataset", "url": "https://data.mendeley.com/datasets/mnnkhhbp9w/1", "authority": "RESEARCH_DATA_REPOSITORY", "status": "DISCOVERY_ONLY_NOT_LONGITUDINAL"},
+    {"id": "SRC-ZENODO", "title": "Zenodo", "url": "https://zenodo.org/", "authority": "RESEARCH_REPOSITORY", "status": "ACCESS_LIMITED_NO_DATASET_ACCEPTED"},
+    {"id": "SRC-OSF", "title": "OSF", "url": "https://osf.io/", "authority": "RESEARCH_REPOSITORY", "status": "ACCESS_LIMITED_NO_DATASET_ACCEPTED"}
+  ],
+  "no_fake_passages": true,
+  "source_count_is_not_lineage_independence": true
+}

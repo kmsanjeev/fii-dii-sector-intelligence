@@ -4038,3 +4038,11 @@ Completed the strategic predictive-research rebaseline after the PRIM-011 source
 ## 2026-08-16 | VEDA-EMP-FEATURE-001
 
 Completed the first governed source-ranked feature-level empirical study. A single `VEDA_EMPIRICAL_FEATURE_REGISTRY` now records five atomic Mahadasha/D1 relationship contracts with deterministic hashes and reachability fixtures. Outcome-blind prevalence was run on the 1,000-chart POP-001 population before outcome comparison. The selected public `POSITION_START` family contained six events from three subjects; matched event/control comparisons for all prespecified features therefore remain `INSUFFICIENT_SAMPLE`. No feature was declared promising or replicated; no source status, production behavior, RAG, Approved Core or PRED-M4 state changed. The next recommendation is feature replication or a new preregistered feature family after legitimate case acquisition.
+# 2026-08-16 — VEDA-EVIDENCE-REBASELINE-001
+
+- Added research-only evidence rebaseline for statistical power, source tiers,
+  date precision, longitudinal provenance and case-crossover planning.
+- Corrected Wikidata P4782 governance: it is Movieplayer person ID and cannot
+  be used as an Astro-Databank identifier.
+- Preserved historical negative findings with bounded current-N language and
+  blocked premature POSITION_END scoring.
