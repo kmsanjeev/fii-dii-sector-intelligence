@@ -1,0 +1,80 @@
+{
+  "contract": {
+    "signal_id": "VEDA-SIGNAL-PROGENY-OCCURRENCE-001",
+    "version": "1.0.0",
+    "event_family": "CHILD_BIRTH",
+    "eligible_events": [
+      "objectively dated live birth of a child"
+    ],
+    "inputs": [
+      "D1 fifth-lord house and dignity facts",
+      "D1 Jupiter conjunction/aspect to the fifth lord",
+      "Vimshottari Mahadasha and Antardasha interval",
+      "D1 Sun house, sign dignity and strength facts"
+    ],
+    "timing_method": "VIMSHOTTARI_JUPITER_MAHADASHA_SUN_ANTARDASHA",
+    "positive_conditions": {
+      "structural_gate": [
+        "fifth lord exalted",
+        "fifth lord in house 2, 5 or 9",
+        "fifth lord conjunct Jupiter",
+        "fifth lord aspected by Jupiter"
+      ],
+      "timing_gate": [
+        "Mahadasha lord is Jupiter",
+        "Antardasha lord is Sun",
+        "Sun is exalted, in own sign, in house 2, 3, 5, 9 or 11, and marked strong"
+      ]
+    },
+    "negative_conditions": [
+      "Sun is in house 6, 8 or 12 from Lagna",
+      "Sun is in house 6, 8 or 12 from the Mahadasha lord"
+    ],
+    "indeterminate_conditions": [
+      "missing D1 fifth-lord/Jupiter facts",
+      "missing Vimshottari interval facts",
+      "missing Sun dignity/strength facts",
+      "birth event is not objectively dated",
+      "D7 interpretation is requested"
+    ],
+    "precision_rules": {
+      "event": [
+        "EXACT_DAY",
+        "MONTH",
+        "YEAR"
+      ],
+      "timing": "Dasha interval only; no exact birth day is inferred",
+      "fallback": "INDETERMINATE"
+    },
+    "source_lineage": [
+      {
+        "source": "Brihat Parashara Hora Shastra",
+        "edition": "Rishi Parashara translation PDF, pp. 18-19",
+        "passage": "Chapter 16, verses 1-3 and 16",
+        "claim": "D1 fifth-house/lord conditions are associated with obtaining children.",
+        "authority": "PRIMARY_CLASSICAL",
+        "url": "https://vedic-astro.s3.amazonaws.com/books/bhrihat_parasara_hora_shastra.pdf"
+      },
+      {
+        "source": "Brihat Parashara Hora Shastra",
+        "edition": "Rishi Parashara translation PDF, pp. 109-110",
+        "passage": "Chapter 56, verses 51-60",
+        "claim": "Birth/increase of children is described in Jupiter Mahadasha Antardasha lanes with specified planetary conditions; this contract selects the explicit Sun Antardasha birth-of-children lane.",
+        "authority": "PRIMARY_CLASSICAL",
+        "url": "https://vedic-astro.s3.amazonaws.com/books/bhrihat_parasara_hora_shastra.pdf"
+      }
+    ],
+    "method_limits": [
+      "research-only; not production activated",
+      "D1-first; D7 calculation/interpretation is not consumed",
+      "not a fertility, infertility, conception, miscarriage, number, sex, or medical diagnosis signal",
+      "historical source language is retained without modern gender generalization",
+      "no empirical weights or thresholds"
+    ]
+  },
+  "hash": "564bec942c8361ad1f3292093c9b067d72ebf17aea07fc7f69bd6740e1c4a8db",
+  "status": "FROZEN_RESEARCH_ONLY",
+  "d7_used": false,
+  "production_activation": "NONE",
+  "empirical_outcomes_inspected_before_freeze": false
+}

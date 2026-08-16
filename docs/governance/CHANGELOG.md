@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-SIGNAL-002 SECOND SOURCE-GOVERNABLE SIGNAL
+
+Completed deeper source expansion after the EMP-050 marriage replication.
+Marriage v1 remains frozen and retired from active primary testing. A narrow,
+research-only progeny occurrence signal was frozen before outcome inspection:
+`VEDA-SIGNAL-PROGENY-OCCURRENCE-001` v1.0.0, using BPHS D1 fifth-lord/Jupiter
+structural conditions plus the explicit Jupiter Mahadasha/Sun Antardasha
+child-birth timing lane. D7 remains excluded, no medical or fertility claim is
+made, and signal-specific cases remain 0, so no pilot has started. Education,
+career commencement, relocation and property remain SOURCE_PARTIAL. No
+production, PRED-M4, RAG or Approved Core change occurred.
+
 ## 2026-08-16 | VEDA-EMP-050 REPLICATION SIGNAL 002
 
 Completed the authorized marriage 50-case replication and second-signal

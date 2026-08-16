@@ -1,14 +1,22 @@
 {
   "activity_id": "VEDA-EMP-050-REPLICATION-SIGNAL-002",
-  "second_signal_found": false,
-  "decision": "NO_SECOND_SOURCE_GOVERNABLE_SIGNAL",
+  "second_signal_found": true,
+  "decision": "SECOND_SIGNAL_FROZEN",
+  "second_signal": {
+    "signal_id": "VEDA-SIGNAL-PROGENY-OCCURRENCE-001",
+    "version": "1.0.0",
+    "hash": "564bec942c8361ad1f3292093c9b067d72ebf17aea07fc7f69bd6740e1c4a8db",
+    "event_family": "CHILD_BIRTH",
+    "pilot_ready": false,
+    "pilot_blocker": "No eligible signal-specific historical cases currently registered; acquire before scoring."
+  },
   "candidates": [
     {
       "domain": "PROGENY",
-      "status": "SOURCE_PARTIAL",
+      "status": "SOURCE_GOVERNABLE",
       "blockers": [
-        "D7 interpretation and dated event timing are not validated",
-        "historical and gendered rules require contextual governance"
+        "D7 interpretation remains excluded",
+        "signal is research-only and requires signal-specific cases before a pilot"
       ]
     },
     {
