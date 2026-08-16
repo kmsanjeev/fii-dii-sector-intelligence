@@ -1,7 +1,7 @@
 # VEDA-EMP-MARRIAGE-010 — First ten marriage cases
 
-Status: `PILOT_BLOCKED_CONTROLS_PENDING`  
-Date: 2026-08-16  
+Status: `PILOT_BLOCKED_CONTROLS_PENDING`
+Date: 2026-08-16
 Parent: `VEDA-SIGNAL-BREAKTHROUGH-001`
 
 ## Frozen signal
