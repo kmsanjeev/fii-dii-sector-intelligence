@@ -4085,3 +4085,16 @@ Completed the first governed source-ranked feature-level empirical study. A sing
   legal, privacy, ethics and security review is required before activation;
   no contact, submission, production collection, astrology, prediction, ML,
   RAG, Approved Core or PRED change occurred.
+
+# 2026-08-17 — VEDA-EVIDENCE-EXTERNAL-READINESS-001
+
+- Prepared the external-review pack for the synthetic consent-corpus
+  foundation: dated India requirements research, protocol and participant
+  information/consent drafts, lifecycle and retention design, threat model,
+  security readiness, incident response, export review, recruitment protocol,
+  ethics package, India counsel checklist and exact activation gates.
+- Refreshed the Astro-Databank prepare-only package against current provider
+  instructions. No recruitment, real-data collection, public registration,
+  external submission, astrology, predictions, ML, production, RAG, Approved
+  Core or PRED-M4 change occurred. Final recruitment state remains
+  `NOT_READY_EXTERNAL_REVIEW_REQUIRED`.
