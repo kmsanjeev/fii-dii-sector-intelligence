@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-PRIM-011-RX FINAL SOURCE-SCOPE AUDIT
+
+The final targeted source audit could not define PRIM-011’s natal target,
+relationship, strength rule, event scope or timing granularity. Calculation
+readiness is preserved, but the primitive remains
+`SOURCE_SCOPE_UNRESOLVED_AFTER_CALCULATION_READY`. No evaluator, prevalence,
+composition, production or RAG change occurred; timing rebaseline is next.
+
 ## 2026-08-16 | VEDA-TRANSIT-FND-001 HISTORICAL TRANSIT FOUNDATION
 
 Extended the existing Swiss Ephemeris/Lahiri transit layer with a factual

@@ -53,6 +53,7 @@ This project is NOT a screener. It IS a decision intelligence platform.
 - VEDA-POP-002 audited all seven `IMPLEMENTABLE_WITH_CONDITION` timing primitives against the immutable POP-001 baseline. Six remain `BLOCKED_BY_SOURCE` and one has a historical-transit input gap; no conditional primitive entered prevalence testing, no empirically useful primitive was found, and composition remains unauthorized.
 - VEDA-PRIM-RX-001 attempted targeted resolution for all six source-blocked candidates, selecting PRIM-003 first and falling back through PRIM-004/006/012/014/015. None reached a source-complete deterministic contract; no prevalence, empirical study, composition or production change was created.
 - VEDA-TRANSIT-FND-001 extended the existing Swiss Ephemeris/Lahiri transit layer with a deterministic Jupiter/Saturn historical-position API and 77,040-record daily research artifact. PRIM-011 is calculation-ready but its source scope remains pending; no prevalence or interpretation was activated.
+- VEDA-PRIM-011-RX completed the final targeted source-scope audit. PRIM-011 remains unresolved after calculation readiness; no evaluator or prevalence was created, and `VEDA-TIMING-RESEARCH-REBASELINE-001` is now the next authorized timing priority.
 - Historical P027 reservation is preserved; current assignment is governed by `docs/current-state/p027/`.
 
 **ALL 25 CORE PHASES + A/B/C/D/FPI/KU/AF/CH/TI/SH/UI-S COMPLETE. Full investment operating system is live.**

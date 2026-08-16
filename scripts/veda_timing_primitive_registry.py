@@ -205,10 +205,10 @@ PRIMITIVES = [
         "negative_condition": "No conjunction or strength condition.",
         "indeterminate_condition": "Transit time, lordship or strength is unavailable.",
         "implementation_status": "IMPLEMENTABLE_WITH_CONDITION",
-        "prevalence_status": "CALCULATION_READY_SOURCE_SCOPE_PENDING",
-        "empirical_status": "NOT_TESTED_SOURCE_CONDITION",
+        "prevalence_status": "SOURCE_SCOPE_UNRESOLVED_AFTER_CALCULATION_READY",
+        "empirical_status": "REBASELINE_REQUIRED",
         "production_status": "RESEARCH_ONLY",
-        "notes": "Source-backed narrow primitive; not a universal event signal.",
+        "notes": "Calculation-ready narrow source candidate; target, relationship, strength and timing scope remain unresolved after targeted audit.",
     },
     {
         "primitive_id": "VEDA-TIMING-PRIM-012",

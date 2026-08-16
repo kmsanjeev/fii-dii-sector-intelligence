@@ -1,0 +1,52 @@
+{
+  "before": "CALCULATION_READY_SOURCE_SCOPE_PENDING",
+  "composition_authorized": false,
+  "contract_frozen": false,
+  "empirically_useful": false,
+  "evaluator_created": false,
+  "final_state": "PRIM_011_SOURCE_SCOPE_UNRESOLVED_AFTER_CALCULATION_READY",
+  "indeterminate_reachable": true,
+  "negative_reachable": false,
+  "next_priority": "VEDA-TIMING-RESEARCH-REBASELINE-001",
+  "population_hash": "10e8debb06afa0280aa1523a7fba0c868788871d4a7736e9358584582b400863",
+  "positive_reachable": false,
+  "prevalence_entered": false,
+  "primitive_id": "VEDA-TIMING-PRIM-011",
+  "production_changed": false,
+  "programme": "VEDA-PRIM-011-RX",
+  "rag_changed": false,
+  "rebaseline_triggered": true,
+  "required_elements": {
+    "event_scope": "UNRESOLVED / OTHER",
+    "natal_target": "UNRESOLVED",
+    "relationship": "UNRESOLVED",
+    "strength_rule": "UNRESOLVED",
+    "timing_domain": "UNRESOLVED",
+    "transit_planet": "Jupiter or Saturn available; source does not select one for this generic row"
+  },
+  "source_question": "Does a specified transit planet acting on a specified natal target through an explicitly defined relationship produce a specified result within a defined timing domain?",
+  "source_records": [
+    {
+      "ambiguity": "The accessible source record does not freeze which event-specific house is relevant, a deterministic strength rule, or timing granularity. The exact passage-level contract remains unverified at the required precision.",
+      "edition": "G.S. Kapoor English translation/commentary PDF",
+      "location": "Chapter 16 / transit-related governed record; existing record cites §35",
+      "result": "SOURCE_SCOPE_UNRESOLVED",
+      "source": "Phaladeepika",
+      "source_class": "PRIMARY_CLASSICAL_TRANSLATION",
+      "source_id": "KT-PHD-001",
+      "translation": "Existing governed paraphrase describes a narrow transit conjunction involving Lagna lord and a relevant house lord with a strength qualification."
+    },
+    {
+      "ambiguity": "No exact PRIM-011 target/relationship/event contract was established; generic transit doctrine cannot fill the registry placeholders.",
+      "edition": "Accessible English translation PDF",
+      "location": "Transit chapters and Ashtakavarga transit material",
+      "result": "SOURCE_SCOPE_UNRESOLVED",
+      "source": "Brihat Parashara Hora Shastra",
+      "source_class": "PRIMARY_CLASSICAL_TRANSLATION",
+      "source_id": "KT-BPHS-TRANSIT-CATALOGUE",
+      "translation": "Transit effects are discussed through specific frameworks and conditions."
+    }
+  ],
+  "source_resolution": "UNRESOLVED",
+  "transit_artifact_hash": "0bd8cb9a4dba25794eeec5724e8ddafc9ad63cd90962be7c0fa70e3a55b66446"
+}
