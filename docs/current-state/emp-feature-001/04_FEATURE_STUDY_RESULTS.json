@@ -1,0 +1,358 @@
+{
+  "all_prespecified_features_reported": true,
+  "control_rule": "MATCHED_TIME_WINDOW: event date minus 365 days",
+  "controls": {
+    "event_shuffled": "NOT_RUN_INSUFFICIENT_SUBJECTS",
+    "matched_time_window": "PASS",
+    "random_baseline": "NOT_RUN",
+    "subject_event_permutation": "NOT_RUN_INSUFFICIENT_SUBJECTS"
+  },
+  "event_count": 6,
+  "event_definition": "CaseRegistry POSITION_START events using source-recorded event_start dates",
+  "event_family": "POSITION_START",
+  "features": [
+    {
+      "base_prevalence": 0.1111111111111111,
+      "control_count": 6,
+      "control_rate": 0.0,
+      "event_control_difference": 0.0,
+      "event_count": 6,
+      "event_rate": 0.0,
+      "feature_id": "F001_MD_LORD_IS_10TH_LORD",
+      "replication_status": "NOT_RUN",
+      "result": "INSUFFICIENT_SAMPLE",
+      "rows": [
+        {
+          "case_id": "VEDA-EMP-CASE-020",
+          "control_date": "1967-01-01",
+          "control_value": false,
+          "event_date": "1968-01-01",
+          "event_value": false,
+          "feature_id": "F001_MD_LORD_IS_10TH_LORD",
+          "subject_id": "alioto-joseph-1916-02-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-025",
+          "control_date": "1972-10-17",
+          "control_value": false,
+          "event_date": "1973-10-17",
+          "event_value": false,
+          "feature_id": "F001_MD_LORD_IS_10TH_LORD",
+          "subject_id": "ariyoshi-george-1926-03-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-028",
+          "control_date": "1970-01-04",
+          "control_value": false,
+          "event_date": "1971-01-04",
+          "event_value": false,
+          "feature_id": "F001_MD_LORD_IS_10TH_LORD",
+          "subject_id": "andrus-cecil-1931-08-25"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-030",
+          "control_date": "1986-01-05",
+          "control_value": false,
+          "event_date": "1987-01-05",
+          "event_value": false,
+          "feature_id": "F001_MD_LORD_IS_10TH_LORD",
+          "subject_id": "andrus-cecil-1931-08-25"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-039",
+          "control_date": "1969-01-01",
+          "control_value": false,
+          "event_date": "1970-01-01",
+          "event_value": false,
+          "feature_id": "F001_MD_LORD_IS_10TH_LORD",
+          "subject_id": "ariyoshi-george-1926-03-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-045",
+          "control_date": "1976-01-02",
+          "control_value": false,
+          "event_date": "1977-01-01",
+          "event_value": false,
+          "feature_id": "F001_MD_LORD_IS_10TH_LORD",
+          "subject_id": "andrus-cecil-1931-08-25"
+        }
+      ],
+      "subject_count": 3
+    },
+    {
+      "base_prevalence": 0.08355555555555555,
+      "control_count": 6,
+      "control_rate": 0.3333333333333333,
+      "event_control_difference": 0.0,
+      "event_count": 6,
+      "event_rate": 0.3333333333333333,
+      "feature_id": "F002_MD_LORD_OCCUPIES_10TH",
+      "replication_status": "NOT_RUN",
+      "result": "INSUFFICIENT_SAMPLE",
+      "rows": [
+        {
+          "case_id": "VEDA-EMP-CASE-020",
+          "control_date": "1967-01-01",
+          "control_value": false,
+          "event_date": "1968-01-01",
+          "event_value": false,
+          "feature_id": "F002_MD_LORD_OCCUPIES_10TH",
+          "subject_id": "alioto-joseph-1916-02-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-025",
+          "control_date": "1972-10-17",
+          "control_value": true,
+          "event_date": "1973-10-17",
+          "event_value": true,
+          "feature_id": "F002_MD_LORD_OCCUPIES_10TH",
+          "subject_id": "ariyoshi-george-1926-03-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-028",
+          "control_date": "1970-01-04",
+          "control_value": false,
+          "event_date": "1971-01-04",
+          "event_value": false,
+          "feature_id": "F002_MD_LORD_OCCUPIES_10TH",
+          "subject_id": "andrus-cecil-1931-08-25"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-030",
+          "control_date": "1986-01-05",
+          "control_value": false,
+          "event_date": "1987-01-05",
+          "event_value": false,
+          "feature_id": "F002_MD_LORD_OCCUPIES_10TH",
+          "subject_id": "andrus-cecil-1931-08-25"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-039",
+          "control_date": "1969-01-01",
+          "control_value": true,
+          "event_date": "1970-01-01",
+          "event_value": true,
+          "feature_id": "F002_MD_LORD_OCCUPIES_10TH",
+          "subject_id": "ariyoshi-george-1926-03-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-045",
+          "control_date": "1976-01-02",
+          "control_value": false,
+          "event_date": "1977-01-01",
+          "event_value": false,
+          "feature_id": "F002_MD_LORD_OCCUPIES_10TH",
+          "subject_id": "andrus-cecil-1931-08-25"
+        }
+      ],
+      "subject_count": 3
+    },
+    {
+      "base_prevalence": 0.1111111111111111,
+      "control_count": 6,
+      "control_rate": 0.0,
+      "event_control_difference": 0.0,
+      "event_count": 6,
+      "event_rate": 0.0,
+      "feature_id": "F003_MD_LORD_IS_9TH_LORD",
+      "replication_status": "NOT_RUN",
+      "result": "INSUFFICIENT_SAMPLE",
+      "rows": [
+        {
+          "case_id": "VEDA-EMP-CASE-020",
+          "control_date": "1967-01-01",
+          "control_value": false,
+          "event_date": "1968-01-01",
+          "event_value": false,
+          "feature_id": "F003_MD_LORD_IS_9TH_LORD",
+          "subject_id": "alioto-joseph-1916-02-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-025",
+          "control_date": "1972-10-17",
+          "control_value": false,
+          "event_date": "1973-10-17",
+          "event_value": false,
+          "feature_id": "F003_MD_LORD_IS_9TH_LORD",
+          "subject_id": "ariyoshi-george-1926-03-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-028",
+          "control_date": "1970-01-04",
+          "control_value": false,
+          "event_date": "1971-01-04",
+          "event_value": false,
+          "feature_id": "F003_MD_LORD_IS_9TH_LORD",
+          "subject_id": "andrus-cecil-1931-08-25"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-030",
+          "control_date": "1986-01-05",
+          "control_value": false,
+          "event_date": "1987-01-05",
+          "event_value": false,
+          "feature_id": "F003_MD_LORD_IS_9TH_LORD",
+          "subject_id": "andrus-cecil-1931-08-25"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-039",
+          "control_date": "1969-01-01",
+          "control_value": false,
+          "event_date": "1970-01-01",
+          "event_value": false,
+          "feature_id": "F003_MD_LORD_IS_9TH_LORD",
+          "subject_id": "ariyoshi-george-1926-03-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-045",
+          "control_date": "1976-01-02",
+          "control_value": false,
+          "event_date": "1977-01-01",
+          "event_value": false,
+          "feature_id": "F003_MD_LORD_IS_9TH_LORD",
+          "subject_id": "andrus-cecil-1931-08-25"
+        }
+      ],
+      "subject_count": 3
+    },
+    {
+      "base_prevalence": 0.077,
+      "control_count": 6,
+      "control_rate": 0.0,
+      "event_control_difference": 0.0,
+      "event_count": 6,
+      "event_rate": 0.0,
+      "feature_id": "F004_MD_LORD_OCCUPIES_9TH",
+      "replication_status": "NOT_RUN",
+      "result": "INSUFFICIENT_SAMPLE",
+      "rows": [
+        {
+          "case_id": "VEDA-EMP-CASE-020",
+          "control_date": "1967-01-01",
+          "control_value": false,
+          "event_date": "1968-01-01",
+          "event_value": false,
+          "feature_id": "F004_MD_LORD_OCCUPIES_9TH",
+          "subject_id": "alioto-joseph-1916-02-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-025",
+          "control_date": "1972-10-17",
+          "control_value": false,
+          "event_date": "1973-10-17",
+          "event_value": false,
+          "feature_id": "F004_MD_LORD_OCCUPIES_9TH",
+          "subject_id": "ariyoshi-george-1926-03-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-028",
+          "control_date": "1970-01-04",
+          "control_value": false,
+          "event_date": "1971-01-04",
+          "event_value": false,
+          "feature_id": "F004_MD_LORD_OCCUPIES_9TH",
+          "subject_id": "andrus-cecil-1931-08-25"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-030",
+          "control_date": "1986-01-05",
+          "control_value": false,
+          "event_date": "1987-01-05",
+          "event_value": false,
+          "feature_id": "F004_MD_LORD_OCCUPIES_9TH",
+          "subject_id": "andrus-cecil-1931-08-25"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-039",
+          "control_date": "1969-01-01",
+          "control_value": false,
+          "event_date": "1970-01-01",
+          "event_value": false,
+          "feature_id": "F004_MD_LORD_OCCUPIES_9TH",
+          "subject_id": "ariyoshi-george-1926-03-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-045",
+          "control_date": "1976-01-02",
+          "control_value": false,
+          "event_date": "1977-01-01",
+          "event_value": false,
+          "feature_id": "F004_MD_LORD_OCCUPIES_9TH",
+          "subject_id": "andrus-cecil-1931-08-25"
+        }
+      ],
+      "subject_count": 3
+    },
+    {
+      "base_prevalence": 0.1111111111111111,
+      "control_count": 6,
+      "control_rate": 0.5,
+      "event_control_difference": 0.0,
+      "event_count": 6,
+      "event_rate": 0.5,
+      "feature_id": "F005_MD_LORD_IS_LAGNA_LORD",
+      "replication_status": "NOT_RUN",
+      "result": "INSUFFICIENT_SAMPLE",
+      "rows": [
+        {
+          "case_id": "VEDA-EMP-CASE-020",
+          "control_date": "1967-01-01",
+          "control_value": true,
+          "event_date": "1968-01-01",
+          "event_value": true,
+          "feature_id": "F005_MD_LORD_IS_LAGNA_LORD",
+          "subject_id": "alioto-joseph-1916-02-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-025",
+          "control_date": "1972-10-17",
+          "control_value": true,
+          "event_date": "1973-10-17",
+          "event_value": true,
+          "feature_id": "F005_MD_LORD_IS_LAGNA_LORD",
+          "subject_id": "ariyoshi-george-1926-03-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-028",
+          "control_date": "1970-01-04",
+          "control_value": false,
+          "event_date": "1971-01-04",
+          "event_value": false,
+          "feature_id": "F005_MD_LORD_IS_LAGNA_LORD",
+          "subject_id": "andrus-cecil-1931-08-25"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-030",
+          "control_date": "1986-01-05",
+          "control_value": false,
+          "event_date": "1987-01-05",
+          "event_value": false,
+          "feature_id": "F005_MD_LORD_IS_LAGNA_LORD",
+          "subject_id": "andrus-cecil-1931-08-25"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-039",
+          "control_date": "1969-01-01",
+          "control_value": true,
+          "event_date": "1970-01-01",
+          "event_value": true,
+          "feature_id": "F005_MD_LORD_IS_LAGNA_LORD",
+          "subject_id": "ariyoshi-george-1926-03-12"
+        },
+        {
+          "case_id": "VEDA-EMP-CASE-045",
+          "control_date": "1976-01-02",
+          "control_value": false,
+          "event_date": "1977-01-01",
+          "event_value": false,
+          "feature_id": "F005_MD_LORD_IS_LAGNA_LORD",
+          "subject_id": "andrus-cecil-1931-08-25"
+        }
+      ],
+      "subject_count": 3
+    }
+  ],
+  "holdout_status": "NO_NEW_HOLDOUT; existing cases are PREVIOUSLY_EXPOSED",
+  "outcome_selection_after_feature_freeze": false,
+  "subject_count": 3
+}
