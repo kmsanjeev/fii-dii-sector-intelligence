@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-POP-002 CONDITIONAL PRIMITIVE AUDIT
+
+Condition-audited the seven `IMPLEMENTABLE_WITH_CONDITION` timing primitives
+against immutable POP-001. Six remain blocked by unresolved source precision or
+method validation and one requires historical transit inputs. No conditional
+primitive entered prevalence testing, no useful primitive or composition was
+authorized, and production, RAG, Approved Core and PRED-M4 remain unchanged.
+
 ## 2026-08-16 | VEDA-POP-001 OUTCOME-FREE TIMED-CHART POPULATION
 
 Built `VEDA-POP-OGDB-001` v1.0.0 from official OGDB source-order records. The

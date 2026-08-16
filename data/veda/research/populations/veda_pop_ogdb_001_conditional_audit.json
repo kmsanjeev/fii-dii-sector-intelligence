@@ -1,0 +1,320 @@
+{
+  "audited": 0,
+  "composition_authorized": false,
+  "composition_reason": "No conditional primitive reached prevalence testing; no composition is authorized.",
+  "conditional_candidates": 7,
+  "outcome_free": true,
+  "population_hash_verified": true,
+  "population_id": "VEDA-POP-OGDB-001",
+  "programme": "VEDA-POP-002",
+  "rows": [
+    {
+      "activation_interval_count": 0,
+      "active_time": null,
+      "classification": "BLOCKED_BY_SOURCE",
+      "component_decomposition": {
+        "calculation": "NOT_ENTERED",
+        "population": "NOT_ENTERED",
+        "source_condition": "BLOCKED"
+      },
+      "condition": "House system, lordship, strength or source-scoped family is missing.",
+      "condition_class": "SOURCE_PRECISION_REQUIRED",
+      "empirically_useful_for_study_design": false,
+      "implementation_status": "IMPLEMENTABLE_WITH_CONDITION",
+      "indeterminate_fixture": {
+        "condition": "House system, lordship, strength or source-scoped family is missing.",
+        "status": "REACHABLE"
+      },
+      "indeterminate_rate": 1.0,
+      "mean_subject_prevalence": null,
+      "median_interval_duration": null,
+      "median_subject_prevalence": null,
+      "name": "House-lord Dasha result scope",
+      "negative_fixture": {
+        "condition": "The active lord is not the specified house lord.",
+        "status": "NOT_EXECUTED_BLOCKED"
+      },
+      "observation_domain": "NOT_ENTERED_BLOCKED_BEFORE_POPULATION_EXECUTION",
+      "positive_fixture": {
+        "condition": "The active Dasha lord is the lord of a specified house in a source-scoped family row.",
+        "status": "NOT_EXECUTED_BLOCKED"
+      },
+      "primitive_id": "VEDA-TIMING-PRIM-003",
+      "resolution_required": "source-scoped house-lord result family is not resolved",
+      "resolution_status": "BLOCKED_BY_SOURCE",
+      "source_status": "SOURCE_PARTIAL",
+      "subject_activation_rate": null,
+      "subjects_analyzed": 0,
+      "subjects_with_any_activation": 0,
+      "time_weighted_prevalence": null,
+      "total_observation_time": null,
+      "zero_activation_rate": null
+    },
+    {
+      "activation_interval_count": 0,
+      "active_time": null,
+      "classification": "BLOCKED_BY_SOURCE",
+      "component_decomposition": {
+        "calculation": "NOT_ENTERED",
+        "population": "NOT_ENTERED",
+        "source_condition": "BLOCKED"
+      },
+      "condition": "Planet house or result scope is unavailable.",
+      "condition_class": "SOURCE_PRECISION_REQUIRED",
+      "empirically_useful_for_study_design": false,
+      "implementation_status": "IMPLEMENTABLE_WITH_CONDITION",
+      "indeterminate_fixture": {
+        "condition": "Planet house or result scope is unavailable.",
+        "status": "REACHABLE"
+      },
+      "indeterminate_rate": 1.0,
+      "mean_subject_prevalence": null,
+      "median_interval_duration": null,
+      "median_subject_prevalence": null,
+      "name": "Planet-in-house Dasha result scope",
+      "negative_fixture": {
+        "condition": "It does not occupy the retained house.",
+        "status": "NOT_EXECUTED_BLOCKED"
+      },
+      "observation_domain": "NOT_ENTERED_BLOCKED_BEFORE_POPULATION_EXECUTION",
+      "positive_fixture": {
+        "condition": "The active Dasha planet occupies a house explicitly relevant to the retained result.",
+        "status": "NOT_EXECUTED_BLOCKED"
+      },
+      "primitive_id": "VEDA-TIMING-PRIM-004",
+      "resolution_required": "source-scoped planet-in-house result is not resolved",
+      "resolution_status": "BLOCKED_BY_SOURCE",
+      "source_status": "SOURCE_PARTIAL",
+      "subject_activation_rate": null,
+      "subjects_analyzed": 0,
+      "subjects_with_any_activation": 0,
+      "time_weighted_prevalence": null,
+      "total_observation_time": null,
+      "zero_activation_rate": null
+    },
+    {
+      "activation_interval_count": 0,
+      "active_time": null,
+      "classification": "BLOCKED_BY_SOURCE",
+      "component_decomposition": {
+        "calculation": "NOT_ENTERED",
+        "population": "NOT_ENTERED",
+        "source_condition": "BLOCKED"
+      },
+      "condition": "Sub-period or house-lord facts are unavailable.",
+      "condition_class": "SOURCE_PRECISION_REQUIRED",
+      "empirically_useful_for_study_design": false,
+      "implementation_status": "IMPLEMENTABLE_WITH_CONDITION",
+      "indeterminate_fixture": {
+        "condition": "Sub-period or house-lord facts are unavailable.",
+        "status": "REACHABLE"
+      },
+      "indeterminate_rate": 1.0,
+      "mean_subject_prevalence": null,
+      "median_interval_duration": null,
+      "median_subject_prevalence": null,
+      "name": "Antardasha house-lord activation",
+      "negative_fixture": {
+        "condition": "The Antardasha lord does not satisfy it.",
+        "status": "NOT_EXECUTED_BLOCKED"
+      },
+      "observation_domain": "NOT_ENTERED_BLOCKED_BEFORE_POPULATION_EXECUTION",
+      "positive_fixture": {
+        "condition": "The Antardasha lord satisfies a source-scoped house-lord condition.",
+        "status": "NOT_EXECUTED_BLOCKED"
+      },
+      "primitive_id": "VEDA-TIMING-PRIM-006",
+      "resolution_required": "source-scoped Antardasha house-lord result is not resolved",
+      "resolution_status": "BLOCKED_BY_SOURCE",
+      "source_status": "SOURCE_PARTIAL",
+      "subject_activation_rate": null,
+      "subjects_analyzed": 0,
+      "subjects_with_any_activation": 0,
+      "time_weighted_prevalence": null,
+      "total_observation_time": null,
+      "zero_activation_rate": null
+    },
+    {
+      "activation_interval_count": 0,
+      "active_time": null,
+      "classification": "CALCULATION_BLOCKED",
+      "component_decomposition": {
+        "calculation": "NOT_ENTERED",
+        "population": "NOT_ENTERED",
+        "source_condition": "BLOCKED"
+      },
+      "condition": "Transit time, lordship or strength is unavailable.",
+      "condition_class": "DATA_INPUT_REQUIRED",
+      "empirically_useful_for_study_design": false,
+      "implementation_status": "IMPLEMENTABLE_WITH_CONDITION",
+      "indeterminate_fixture": {
+        "condition": "Transit time, lordship or strength is unavailable.",
+        "status": "REACHABLE"
+      },
+      "indeterminate_rate": 1.0,
+      "mean_subject_prevalence": null,
+      "median_interval_duration": null,
+      "median_subject_prevalence": null,
+      "name": "Lagna lord and relevant house lord transit conjunction",
+      "negative_fixture": {
+        "condition": "No conjunction or strength condition.",
+        "status": "NOT_EXECUTED_BLOCKED"
+      },
+      "observation_domain": "NOT_ENTERED_BLOCKED_BEFORE_POPULATION_EXECUTION",
+      "positive_fixture": {
+        "condition": "The two lords conjoin in transit and the relevant house lord is strong, within the text's narrow scope.",
+        "status": "NOT_EXECUTED_BLOCKED"
+      },
+      "primitive_id": "VEDA-TIMING-PRIM-011",
+      "resolution_required": "historical transit positions are absent from the population",
+      "resolution_status": "NOT_RUN_INPUT_GAP",
+      "source_status": "SOURCE_VALIDATED",
+      "subject_activation_rate": null,
+      "subjects_analyzed": 0,
+      "subjects_with_any_activation": 0,
+      "time_weighted_prevalence": null,
+      "total_observation_time": null,
+      "zero_activation_rate": null
+    },
+    {
+      "activation_interval_count": 0,
+      "active_time": null,
+      "classification": "BLOCKED_BY_SOURCE",
+      "component_decomposition": {
+        "calculation": "NOT_ENTERED",
+        "population": "NOT_ENTERED",
+        "source_condition": "BLOCKED"
+      },
+      "condition": "Relationship type or chart method is unresolved.",
+      "condition_class": "METHOD_VALIDATION_REQUIRED",
+      "empirically_useful_for_study_design": false,
+      "implementation_status": "IMPLEMENTABLE_WITH_CONDITION",
+      "indeterminate_fixture": {
+        "condition": "Relationship type or chart method is unresolved.",
+        "status": "REACHABLE"
+      },
+      "indeterminate_rate": 1.0,
+      "mean_subject_prevalence": null,
+      "median_interval_duration": null,
+      "median_subject_prevalence": null,
+      "name": "Natal house-lord linkage",
+      "negative_fixture": {
+        "condition": "The specified relationship is absent.",
+        "status": "NOT_EXECUTED_BLOCKED"
+      },
+      "observation_domain": "NOT_ENTERED_BLOCKED_BEFORE_POPULATION_EXECUTION",
+      "positive_fixture": {
+        "condition": "A specified relationship type exists.",
+        "status": "NOT_EXECUTED_BLOCKED"
+      },
+      "primitive_id": "VEDA-TIMING-PRIM-012",
+      "resolution_required": "relationship type is not fixed between placement, aspect, exchange and conjunction",
+      "resolution_status": "BLOCKED_BY_SOURCE",
+      "source_status": "SOURCE_PARTIAL",
+      "subject_activation_rate": null,
+      "subjects_analyzed": 0,
+      "subjects_with_any_activation": 0,
+      "time_weighted_prevalence": null,
+      "total_observation_time": null,
+      "zero_activation_rate": null
+    },
+    {
+      "activation_interval_count": 0,
+      "active_time": null,
+      "classification": "BLOCKED_BY_SOURCE",
+      "component_decomposition": {
+        "calculation": "NOT_ENTERED",
+        "population": "NOT_ENTERED",
+        "source_condition": "BLOCKED"
+      },
+      "condition": "Dignity method or source context is unresolved.",
+      "condition_class": "METHOD_VALIDATION_REQUIRED",
+      "empirically_useful_for_study_design": false,
+      "implementation_status": "IMPLEMENTABLE_WITH_CONDITION",
+      "indeterminate_fixture": {
+        "condition": "Dignity method or source context is unresolved.",
+        "status": "REACHABLE"
+      },
+      "indeterminate_rate": 1.0,
+      "mean_subject_prevalence": null,
+      "median_interval_duration": null,
+      "median_subject_prevalence": null,
+      "name": "Dasha lord dignity modifier",
+      "negative_fixture": {
+        "condition": "It does not apply.",
+        "status": "NOT_EXECUTED_BLOCKED"
+      },
+      "observation_domain": "NOT_ENTERED_BLOCKED_BEFORE_POPULATION_EXECUTION",
+      "positive_fixture": {
+        "condition": "Source-defined dignity/context modifier applies.",
+        "status": "NOT_EXECUTED_BLOCKED"
+      },
+      "primitive_id": "VEDA-TIMING-PRIM-014",
+      "resolution_required": "source-specific dignity method and thresholds are unresolved",
+      "resolution_status": "BLOCKED_BY_SOURCE",
+      "source_status": "SOURCE_PARTIAL",
+      "subject_activation_rate": null,
+      "subjects_analyzed": 0,
+      "subjects_with_any_activation": 0,
+      "time_weighted_prevalence": null,
+      "total_observation_time": null,
+      "zero_activation_rate": null
+    },
+    {
+      "activation_interval_count": 0,
+      "active_time": null,
+      "classification": "BLOCKED_BY_SOURCE",
+      "component_decomposition": {
+        "calculation": "NOT_ENTERED",
+        "population": "NOT_ENTERED",
+        "source_condition": "BLOCKED"
+      },
+      "condition": "Aspect school or target is unresolved.",
+      "condition_class": "METHOD_VALIDATION_REQUIRED",
+      "empirically_useful_for_study_design": false,
+      "implementation_status": "IMPLEMENTABLE_WITH_CONDITION",
+      "indeterminate_fixture": {
+        "condition": "Aspect school or target is unresolved.",
+        "status": "REACHABLE"
+      },
+      "indeterminate_rate": 1.0,
+      "mean_subject_prevalence": null,
+      "median_interval_duration": null,
+      "median_subject_prevalence": null,
+      "name": "Dasha lord aspect modifier",
+      "negative_fixture": {
+        "condition": "It does not apply.",
+        "status": "NOT_EXECUTED_BLOCKED"
+      },
+      "observation_domain": "NOT_ENTERED_BLOCKED_BEFORE_POPULATION_EXECUTION",
+      "positive_fixture": {
+        "condition": "The retained aspect condition applies.",
+        "status": "NOT_EXECUTED_BLOCKED"
+      },
+      "primitive_id": "VEDA-TIMING-PRIM-015",
+      "resolution_required": "aspect school, target and orb are unresolved",
+      "resolution_status": "BLOCKED_BY_SOURCE",
+      "source_status": "SOURCE_PARTIAL",
+      "subject_activation_rate": null,
+      "subjects_analyzed": 0,
+      "subjects_with_any_activation": 0,
+      "time_weighted_prevalence": null,
+      "total_observation_time": null,
+      "zero_activation_rate": null
+    }
+  ],
+  "summary": {
+    "BLOCKED_BY_SOURCE": 6,
+    "CALCULATION_BLOCKED": 1,
+    "EMPIRICALLY_USEFUL_RANGE": 0,
+    "HIGH_PREVALENCE": 0,
+    "LOW_PREVALENCE": 0,
+    "NEAR_ZERO": 0,
+    "NOT_DETERMINISTIC": 0,
+    "STRUCTURALLY_UNIVERSAL": 0,
+    "TOO_COMMON": 0,
+    "VERY_LOW_PREVALENCE": 0,
+    "ZERO": 0,
+    "empirically_useful_count": 0
+  }
+}
