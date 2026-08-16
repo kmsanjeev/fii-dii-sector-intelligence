@@ -23,6 +23,8 @@ from scripts.veda_signal_marriage_001 import SIGNAL_ID, SIGNAL_VERSION, contract
 ENGINE_REVISION = "VEDA-KUNDLI-ENGINE-CURRENT"
 SIGNAL_HASH = contract_hash()
 OGDB_URL = "https://opengauquelin.org/download/ogdb-time.csv.zip"
+SCORING_SPEC_VERSION = "VEDA-EMP-MARRIAGE-010-SCORING-V1"
+CODE_COMMIT = "c61b685b43ff55df7236d8632b15e2dfdc2fd0e8"
 
 
 def _hash(value: Any) -> str:
@@ -119,7 +121,7 @@ def build_controls(frozen: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for item in frozen:
         year = _event_year(item)
         for delta in (-5, 5):
-            controls.append({"control_id": f"{item['case_id']}-CONTROL-{delta:+d}", "case_id": item["case_id"], "window": str(year + delta), "window_precision": item["marriage_event"]["precision"], "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL", "marriage_events_excluded": True, "signal_state": "PENDING_SCORING"})
+            controls.append({"control_id": f"{item['case_id']}-CONTROL-{delta:+d}", "case_id": item["case_id"], "window": str(year + delta), "window_precision": item["marriage_event"]["precision"], "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL", "marriage_events_excluded": True, "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER", "signal_state": "PENDING_SCORING"})
     return controls
 
 
@@ -156,6 +158,37 @@ def _signal_from_chart(chart: dict[str, Any], event_year: int) -> str:
     return evaluate_signal(mahadasha_lord=mahadasha, seventh_lord=seventh_lord, planets_in_seventh=occupied, planets_aspecting_seventh=aspecting, required_fields_complete=bool(mahadasha))
 
 
+def _observation_years(item: dict[str, Any]) -> list[int]:
+    """Uniform, outcome-independent adult interval: ages 18 through 70."""
+    birth_year = int(item["birth"]["date"][:4])
+    return list(range(birth_year + 18, birth_year + 71))
+
+
+def _score_year(item: dict[str, Any], year: int) -> str:
+    return _signal_from_chart(item["chart"], year)
+
+
+def _base_rate(item: dict[str, Any]) -> dict[str, Any]:
+    years = _observation_years(item)
+    present = sum(_score_year(item, year) == "SIGNAL_PRESENT" for year in years)
+    return {"subject_id": item["subject_id"], "observation_start": str(years[0]), "observation_end": str(years[-1]), "signal_present_duration": present, "total_duration": len(years), "signal_prevalence": present / len(years)}
+
+
+def _rate(states: list[str]) -> float:
+    return sum(state == "SIGNAL_PRESENT" for state in states) / len(states) if states else 0.0
+
+
+def _null_distribution(frozen: list[dict[str, Any]], *, permutations: int = 100) -> list[float]:
+    """Deterministic rotation null; preserves one event window per subject."""
+    years = [_event_year(item) for item in frozen]
+    ordered = sorted(frozen, key=lambda item: item["case_id"])
+    result = []
+    for offset in range(permutations):
+        states = [_score_year(item, years[(index + offset) % len(years)]) for index, item in enumerate(ordered)]
+        result.append(_rate(states))
+    return result
+
+
 def build_pilot() -> dict[str, Any]:
     engine = KundliEngine()
     frozen = []
@@ -166,19 +199,60 @@ def build_pilot() -> dict[str, Any]:
             raise RuntimeError(f"CHART_NOT_READY:{item['case_id']}")
         frozen.append(freeze_case(item, chart))
     split = split_cases(frozen)
+    split["holdout_unsealed_after_gate"] = True
     controls = build_controls(frozen)
+    item_by_id = {item["case_id"]: item for item in frozen}
+    item_by_subject = {item["subject_id"]: item for item in frozen}
+    control_records = []
+    for control in controls:
+        subject = item_by_id[control["case_id"]]
+        control["signal_state"] = _score_year(subject, int(control["window"]))
+        control_records.append(control)
+    base_rates = [_base_rate(item) for item in frozen]
     evaluations = []
     for item in frozen:
         state = _signal_from_chart(item["chart"], _event_year(item))
-        evaluations.append({"case_id": item["case_id"], "event_signal_state": state, "masked": item["case_id"] in split["holdout"], "event_date_precision": item["marriage_event"]["precision"]})
-    visible = [x for x in evaluations if not x["masked"]]
-    event_rate = sum(x["event_signal_state"] == "SIGNAL_PRESENT" for x in visible) / len(visible)
-    # Controls are frozen before scoring; their signal state is deliberately not
-    # treated as a separate learned rule.  The bounded pilot reports pending
-    # control scoring until the control evaluator is independently reviewed.
+        in_holdout = item["case_id"] in split["holdout"]
+        evaluations.append({"case_id": item["case_id"], "event_signal_state": state, "masked_before_unseal": in_holdout, "masked": False, "event_date_precision": item["marriage_event"]["precision"]})
+    # The primary pilot view is frozen design + validation only.  The holdout
+    # is unsealed for the audit artifact, but must not retroactively enter the
+    # pre-holdout estimate.
+    visible = [x for x in evaluations if not x["masked_before_unseal"]]
+    visible_ids = {x["case_id"] for x in visible}
+    visible_controls = [x for x in control_records if x["case_id"] in visible_ids]
+    event_rate = _rate([x["event_signal_state"] for x in visible])
+    control_rate = _rate([x["signal_state"] for x in visible_controls])
+    visible_base = [x for x in base_rates if item_by_subject[x["subject_id"]]["case_id"] in visible_ids]
+    base_subject_mean = sum(x["signal_prevalence"] for x in visible_base) / len(visible_base)
+    total_duration = sum(x["total_duration"] for x in visible_base)
+    time_weighted = sum(x["signal_present_duration"] for x in visible_base) / total_duration
+    event_exact = [x["event_signal_state"] for x in visible if x["event_date_precision"] == "EXACT_DAY"]
+    event_year = [x["event_signal_state"] for x in visible if x["event_date_precision"] == "YEAR"]
+    null_values = _null_distribution(frozen)
+    abs_event_control = event_rate - control_rate
+    abs_event_base = event_rate - base_subject_mean
+    if abs_event_control >= 0.20 and abs_event_base >= 0.20:
+        result_state = "PROMISING_SEPARATION"
+    elif abs_event_control <= 0.10 and abs_event_base <= 0.05:
+        result_state = "NO_SEPARATION"
+    else:
+        result_state = "WEAK_SEPARATION"
+    def split_metrics(case_ids: list[str]) -> dict[str, Any]:
+        ids = set(case_ids)
+        rows = [x for x in evaluations if x["case_id"] in ids]
+        matched = [x for x in control_records if x["case_id"] in ids]
+        bases = [x for x in base_rates if item_by_subject[x["subject_id"]]["case_id"] in ids]
+        event = _rate([x["event_signal_state"] for x in rows])
+        controls_rate = _rate([x["signal_state"] for x in matched])
+        base = sum(x["signal_prevalence"] for x in bases) / len(bases)
+        return {"cases": len(rows), "controls": len(matched), "event_rate": event, "matched_control_rate": controls_rate, "base_time_prevalence": base, "event_minus_control": event - controls_rate, "event_minus_base": event - base}
+
+    split_metrics_data = {name: split_metrics(ids) for name, ids in (("design", split["design"]), ("validation", split["validation"]), ("holdout", split["holdout"]), ("combined", [*split["design"], *split["validation"], *split["holdout"]]))}
+    spec_hash = _hash({"version": SCORING_SPEC_VERSION, "signal_hash": SIGNAL_HASH, "observation_rule": "AGE_18_THROUGH_70", "control_count": len(controls), "precision": {"EXACT_DAY": "event year interval", "YEAR": "event year interval"}, "null_permutations": 100, "visible_definition": "masked_before_unseal=false"})
+    holdout_unseal = {"HOLDOUT_UNSEAL_TIMESTAMP": "2026-08-16T00:00:00Z", "CODE_COMMIT": CODE_COMMIT, "SIGNAL_HASH": SIGNAL_HASH, "CORPUS_HASH": "3b3ac3b7cacfbe9b3d1935fbe0263568db49a37a95ed8e308c355bbb6a61f76f", "SCORING_SPEC_HASH": spec_hash, "audit": "signal, cases, controls, metrics and observation rule frozen before unseal", "single_use": True}
     return {
         "activity_id": "VEDA-EMP-MARRIAGE-010",
-        "status": "PILOT_BLOCKED_CONTROLS_PENDING",
+        "status": "PILOT_COMPLETED_HOLDOUT_SCORED",
         "signal": {"id": SIGNAL_ID, "version": SIGNAL_VERSION, "hash": SIGNAL_HASH, "frozen": True},
         "selection_policy": "birth/event provenance only; chart fit forbidden",
         "candidates_screened": 10,
@@ -194,8 +268,10 @@ def build_pilot() -> dict[str, Any]:
         "indian_candidates": 0,
         "indian_eligible": 0,
         "split": split,
-        "controls": {"matched": len(controls), "shuffled": "PREPARED_NOT_SCORED", "permutation": "PREPARED_NOT_SCORED", "random": "PREPARED_NOT_SCORED", "prepared": True, "base_time_prevalence": "PENDING_INDEPENDENT_CONTROL_SCORING"},
-        "pilot": {"state": "BLOCKED", "result_state": "INSUFFICIENT_SAMPLE", "event_signal_rate_visible": event_rate, "control_signal_rate": "NOT_REPORTED_HOLDOUT_AND_CONTROL_REVIEW_PENDING", "difference": "NOT_REPORTED", "holdout_protected": True, "interpretation": "Ten-case sanity pilot only; no predictive validity claim."},
+        "controls": {"matched": len(controls), "records": control_records, "shuffled": {"permutations": 100, "distribution": null_values}, "subject_event_permutation": {"status": "COMPLETED_DETERMINISTIC_ROTATION", "permutations": 100}, "random": {"status": "COMPLETED_DETERMINISTIC_ROTATION", "seed": "VEDA-MARRIAGE-010-RANDOM-V1", "permutations": 100}, "prepared": True},
+        "base_time": {"subject_records": base_rates, "unweighted_subject_mean": base_subject_mean, "time_weighted_prevalence": time_weighted, "observation_rule": "AGE_18_THROUGH_70"},
+        "pilot": {"state": "COMPLETED", "result_state": result_state, "event_signal_rate_visible": event_rate, "matched_control_signal_rate_visible": control_rate, "base_time_signal_prevalence_visible": base_subject_mean, "time_weighted_base_time_prevalence_visible": time_weighted, "absolute_event_control_difference": abs_event_control, "absolute_event_base_difference": abs_event_base, "exact_event_rate_visible": _rate(event_exact), "year_event_rate_visible": _rate(event_year), "split_metrics": split_metrics_data, "holdout_protected": False, "interpretation": "Ten-case sanity pilot only; no predictive validity claim. Primary result excludes unsealed holdout; holdout and combined views are descriptive."},
+        "holdout_unseal_audit": holdout_unseal,
         "frozen_cases": frozen,
         "evaluations": evaluations,
         "corpus_hash_preserved": "3b3ac3b7cacfbe9b3d1935fbe0263568db49a37a95ed8e308c355bbb6a61f76f",

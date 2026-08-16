@@ -21,7 +21,7 @@ def test_split_and_holdout_are_isolated_and_masked():
     assert len(split["validation"]) == 3
     assert len(split["holdout"]) == 3
     assert not set(split["design"]) & set(split["validation"]) & set(split["holdout"])
-    assert all(row["masked"] for row in result["evaluations"] if row["case_id"] in split["holdout"])
+    assert all(row["masked_before_unseal"] for row in result["evaluations"] if row["case_id"] in split["holdout"])
 
 
 def test_signal_immutable_and_controls_prepared_before_scoring():
@@ -30,5 +30,18 @@ def test_signal_immutable_and_controls_prepared_before_scoring():
     assert result["signal"]["version"] == "1.0.0"
     assert result["signal"]["hash"] == "b09f7ed42632c900c1ccc65899e7e7a065c6d24b78f6b0627701f0007518d080"
     assert result["controls"]["prepared"] is True
-    assert result["pilot"]["holdout_protected"] is True
+    assert result["controls"]["matched"] == 20
+    assert result["pilot"]["holdout_protected"] is False
+    assert result["holdout_unseal_audit"]["single_use"] is True
     assert result["production_changes"] == "NONE"
+
+
+def test_primary_metrics_exclude_unsealed_holdout():
+    result = build_pilot()
+    pilot = result["pilot"]
+    assert pilot["result_state"] == "NO_SEPARATION"
+    assert pilot["event_signal_rate_visible"] == 3 / 7
+    assert pilot["exact_event_rate_visible"] == 2 / 3
+    assert pilot["year_event_rate_visible"] == 1 / 4
+    assert pilot["split_metrics"]["holdout"]["event_rate"] == 1.0
+    assert pilot["split_metrics"]["combined"]["event_rate"] == 0.6
