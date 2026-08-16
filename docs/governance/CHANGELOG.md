@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-EMP-050 SIGNAL SEARCH CHECKPOINT
+
+Started the two-lane EMP-050 programme. Existing marriage, progeny, education,
+career, business, relocation, property, retirement, health and death families
+were audited against current governance; none is yet source-governable for a
+deterministic pilot signal. Added a provenance-only event-first acquisition
+helper that forbids chart-fit selection. EMP-025 remains sealed and EMP-050
+acquisition continues at 25/50.
+
 ## 2026-08-16 | VEDA-TIMING-SIGNAL-001
 
 Audited existing VEDA timing/career knowledge and targeted classical

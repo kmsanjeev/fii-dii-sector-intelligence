@@ -45,6 +45,7 @@ This project is NOT a screener. It IS a decision intelligence platform.
 - EMP-025-R3 closes the historical acquisition gate at 25 eligible/chart-ready cases across five event classes and launches a narrow, holdout-protected method-pilot handoff; no pilot result or predictive-maturity upgrade is claimed.
 - EMP-025 method-pilot gate audit verified the corpus but stopped primary scoring at `INSUFFICIENT_SIGNAL_GOVERNANCE`; holdout outcomes remain sealed and the next priority is targeted timing-signal source validation.
 - VEDA-TIMING-SIGNAL-001 completed with `NO_SOURCE_GOVERNABLE_PUBLIC_ROLE_SIGNAL`; partial classical profession/authority passages were retained as research evidence, no public-role signal was activated, and EMP-050 acquisition continues in parallel.
+- VEDA-EMP-050-SIGNAL-SEARCH-001 is active at 25/50 eligible cases; no alternate event family is yet source-governable, and subject-first plus provenance-only event-first acquisition continue without consuming the EMP-025 holdout.
 - Historical P027 reservation is preserved; current assignment is governed by `docs/current-state/p027/`.
 
 **ALL 25 CORE PHASES + A/B/C/D/FPI/KU/AF/CH/TI/SH/UI-S COMPLETE. Full investment operating system is live.**

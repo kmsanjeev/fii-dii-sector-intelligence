@@ -10,6 +10,7 @@ The implemented baseline is frozen through P031 plus P015-RX, P015-RX2, STD-001,
 - RM-001 tag: `veda-rm-001-roadmap-rebaseline`
 - Predictive maturity: `PRED-M3_OPERATIONAL_PLUS`
 - Empirical status: `VEDA-EMP-001` remains longitudinal; EMP-025-R3 has 25 eligible and chart-ready historical cases across five event classes. `VEDA-TIMING-SIGNAL-001` found no source-governable public-role signal, so the pilot remains not ready and the holdout sealed; `PRED-M4` remains `INSUFFICIENT_SAMPLE`. EMP-050 acquisition continues in parallel.
+- `VEDA-EMP-050-SIGNAL-SEARCH-001` is active: no candidate family has reached `SOURCE_GOVERNABLE`; EMP-050 remains at 25/50 and exact/month event acquisition plus event-first provenance capture continue without consuming the EMP-025 holdout.
 - VEDA-RM-002 active tracks: `CLASSICAL_SOURCE_EXPANSION`, `TIMING_VALIDATION`, `METHOD_COMPARISON`, `TAJIKA_FOUNDATION`, `ASHTAKAVARGA_VALIDATION`, `SHADBALA_VALIDATION`, and `MUHURTA_SOURCE_EXPANSION`.
 - VEDA-AUTOLOOP-R3 is implemented/frozen; the controller uses information-gain, input fingerprints, cooldowns and track diversity, with `METHOD_COMPARISON` as next priority.
 - `VEDA-ADM-EMP-001` is implemented/frozen by its own acceptance record; the next operational step is to supply legitimate governed case data.
