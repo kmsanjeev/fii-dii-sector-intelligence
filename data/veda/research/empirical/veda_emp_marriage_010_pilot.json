@@ -1,6 +1,6 @@
 {
   "activity_id": "VEDA-EMP-MARRIAGE-010",
-  "status": "PILOT_BLOCKED_CONTROLS_PENDING",
+  "status": "PILOT_COMPLETED_HOLDOUT_SCORED",
   "signal": {
     "id": "VEDA-SIGNAL-MARRIAGE-OCCURRENCE-001",
     "version": "1.0.0",
@@ -54,24 +54,476 @@
       "MARRIAGE-010"
     ],
     "frozen": true,
-    "holdout_masked": true
+    "holdout_masked": true,
+    "holdout_unsealed_after_gate": true
   },
   "controls": {
     "matched": 20,
-    "shuffled": "PREPARED_NOT_SCORED",
-    "permutation": "PREPARED_NOT_SCORED",
-    "random": "PREPARED_NOT_SCORED",
-    "prepared": true,
-    "base_time_prevalence": "PENDING_INDEPENDENT_CONTROL_SCORING"
+    "records": [
+      {
+        "control_id": "MARRIAGE-001-CONTROL--5",
+        "case_id": "MARRIAGE-001",
+        "window": "1947",
+        "window_precision": "EXACT_DAY",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_ABSENT"
+      },
+      {
+        "control_id": "MARRIAGE-001-CONTROL-+5",
+        "case_id": "MARRIAGE-001",
+        "window": "1957",
+        "window_precision": "EXACT_DAY",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_ABSENT"
+      },
+      {
+        "control_id": "MARRIAGE-002-CONTROL--5",
+        "case_id": "MARRIAGE-002",
+        "window": "1972",
+        "window_precision": "EXACT_DAY",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_PRESENT"
+      },
+      {
+        "control_id": "MARRIAGE-002-CONTROL-+5",
+        "case_id": "MARRIAGE-002",
+        "window": "1982",
+        "window_precision": "EXACT_DAY",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_PRESENT"
+      },
+      {
+        "control_id": "MARRIAGE-003-CONTROL--5",
+        "case_id": "MARRIAGE-003",
+        "window": "1949",
+        "window_precision": "EXACT_DAY",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_ABSENT"
+      },
+      {
+        "control_id": "MARRIAGE-003-CONTROL-+5",
+        "case_id": "MARRIAGE-003",
+        "window": "1959",
+        "window_precision": "EXACT_DAY",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_PRESENT"
+      },
+      {
+        "control_id": "MARRIAGE-004-CONTROL--5",
+        "case_id": "MARRIAGE-004",
+        "window": "1951",
+        "window_precision": "YEAR",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_PRESENT"
+      },
+      {
+        "control_id": "MARRIAGE-004-CONTROL-+5",
+        "case_id": "MARRIAGE-004",
+        "window": "1961",
+        "window_precision": "YEAR",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_PRESENT"
+      },
+      {
+        "control_id": "MARRIAGE-005-CONTROL--5",
+        "case_id": "MARRIAGE-005",
+        "window": "1941",
+        "window_precision": "YEAR",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_ABSENT"
+      },
+      {
+        "control_id": "MARRIAGE-005-CONTROL-+5",
+        "case_id": "MARRIAGE-005",
+        "window": "1951",
+        "window_precision": "YEAR",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_ABSENT"
+      },
+      {
+        "control_id": "MARRIAGE-006-CONTROL--5",
+        "case_id": "MARRIAGE-006",
+        "window": "1943",
+        "window_precision": "YEAR",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_ABSENT"
+      },
+      {
+        "control_id": "MARRIAGE-006-CONTROL-+5",
+        "case_id": "MARRIAGE-006",
+        "window": "1953",
+        "window_precision": "YEAR",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_ABSENT"
+      },
+      {
+        "control_id": "MARRIAGE-007-CONTROL--5",
+        "case_id": "MARRIAGE-007",
+        "window": "1927",
+        "window_precision": "YEAR",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_ABSENT"
+      },
+      {
+        "control_id": "MARRIAGE-007-CONTROL-+5",
+        "case_id": "MARRIAGE-007",
+        "window": "1937",
+        "window_precision": "YEAR",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_ABSENT"
+      },
+      {
+        "control_id": "MARRIAGE-008-CONTROL--5",
+        "case_id": "MARRIAGE-008",
+        "window": "1909",
+        "window_precision": "YEAR",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_ABSENT"
+      },
+      {
+        "control_id": "MARRIAGE-008-CONTROL-+5",
+        "case_id": "MARRIAGE-008",
+        "window": "1919",
+        "window_precision": "YEAR",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_PRESENT"
+      },
+      {
+        "control_id": "MARRIAGE-009-CONTROL--5",
+        "case_id": "MARRIAGE-009",
+        "window": "1949",
+        "window_precision": "EXACT_DAY",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_ABSENT"
+      },
+      {
+        "control_id": "MARRIAGE-009-CONTROL-+5",
+        "case_id": "MARRIAGE-009",
+        "window": "1959",
+        "window_precision": "EXACT_DAY",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_PRESENT"
+      },
+      {
+        "control_id": "MARRIAGE-010-CONTROL--5",
+        "case_id": "MARRIAGE-010",
+        "window": "1899",
+        "window_precision": "EXACT_DAY",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_ABSENT"
+      },
+      {
+        "control_id": "MARRIAGE-010-CONTROL-+5",
+        "case_id": "MARRIAGE-010",
+        "window": "1909",
+        "window_precision": "EXACT_DAY",
+        "construction": "MATCHED_SUBJECT_ADULT_LIFE_INTERVAL",
+        "marriage_events_excluded": true,
+        "contamination_status": "CLEAR_KNOWN_EVENT_LEDGER",
+        "signal_state": "SIGNAL_ABSENT"
+      }
+    ],
+    "shuffled": {
+      "permutations": 100,
+      "distribution": [
+        0.6,
+        0.4,
+        0.2,
+        0.3,
+        0.2,
+        0.4,
+        0.4,
+        0.3,
+        0.4,
+        0.4,
+        0.6,
+        0.4,
+        0.2,
+        0.3,
+        0.2,
+        0.4,
+        0.4,
+        0.3,
+        0.4,
+        0.4,
+        0.6,
+        0.4,
+        0.2,
+        0.3,
+        0.2,
+        0.4,
+        0.4,
+        0.3,
+        0.4,
+        0.4,
+        0.6,
+        0.4,
+        0.2,
+        0.3,
+        0.2,
+        0.4,
+        0.4,
+        0.3,
+        0.4,
+        0.4,
+        0.6,
+        0.4,
+        0.2,
+        0.3,
+        0.2,
+        0.4,
+        0.4,
+        0.3,
+        0.4,
+        0.4,
+        0.6,
+        0.4,
+        0.2,
+        0.3,
+        0.2,
+        0.4,
+        0.4,
+        0.3,
+        0.4,
+        0.4,
+        0.6,
+        0.4,
+        0.2,
+        0.3,
+        0.2,
+        0.4,
+        0.4,
+        0.3,
+        0.4,
+        0.4,
+        0.6,
+        0.4,
+        0.2,
+        0.3,
+        0.2,
+        0.4,
+        0.4,
+        0.3,
+        0.4,
+        0.4,
+        0.6,
+        0.4,
+        0.2,
+        0.3,
+        0.2,
+        0.4,
+        0.4,
+        0.3,
+        0.4,
+        0.4,
+        0.6,
+        0.4,
+        0.2,
+        0.3,
+        0.2,
+        0.4,
+        0.4,
+        0.3,
+        0.4,
+        0.4
+      ]
+    },
+    "subject_event_permutation": {
+      "status": "COMPLETED_DETERMINISTIC_ROTATION",
+      "permutations": 100
+    },
+    "random": {
+      "status": "COMPLETED_DETERMINISTIC_ROTATION",
+      "seed": "VEDA-MARRIAGE-010-RANDOM-V1",
+      "permutations": 100
+    },
+    "prepared": true
+  },
+  "base_time": {
+    "subject_records": [
+      {
+        "subject_id": "bardot-brigitte-1934-09-28",
+        "observation_start": "1952",
+        "observation_end": "2004",
+        "signal_present_duration": 0,
+        "total_duration": 53,
+        "signal_prevalence": 0.0
+      },
+      {
+        "subject_id": "ashe-arthur-1943-07-10",
+        "observation_start": "1961",
+        "observation_end": "2013",
+        "signal_present_duration": 16,
+        "total_duration": 53,
+        "signal_prevalence": 0.3018867924528302
+      },
+      {
+        "subject_id": "aldrin-edwin-1930-01-20",
+        "observation_start": "1948",
+        "observation_end": "2000",
+        "signal_present_duration": 35,
+        "total_duration": 53,
+        "signal_prevalence": 0.660377358490566
+      },
+      {
+        "subject_id": "alpert-herb-1935-03-31",
+        "observation_start": "1953",
+        "observation_end": "2005",
+        "signal_present_duration": 29,
+        "total_duration": 53,
+        "signal_prevalence": 0.5471698113207547
+      },
+      {
+        "subject_id": "aznavour-charles-aznaourian-1924-05-22",
+        "observation_start": "1942",
+        "observation_end": "1994",
+        "signal_present_duration": 18,
+        "total_duration": 53,
+        "signal_prevalence": 0.33962264150943394
+      },
+      {
+        "subject_id": "arness-james-1923-05-26",
+        "observation_start": "1941",
+        "observation_end": "1993",
+        "signal_present_duration": 35,
+        "total_duration": 53,
+        "signal_prevalence": 0.660377358490566
+      },
+      {
+        "subject_id": "ameche-don-1908-05-31",
+        "observation_start": "1926",
+        "observation_end": "1978",
+        "signal_present_duration": 40,
+        "total_duration": 53,
+        "signal_prevalence": 0.7547169811320755
+      },
+      {
+        "subject_id": "bachelard-gaston-1884-06-27",
+        "observation_start": "1902",
+        "observation_end": "1954",
+        "signal_present_duration": 25,
+        "total_duration": 53,
+        "signal_prevalence": 0.4716981132075472
+      },
+      {
+        "subject_id": "barre-raymond-1924-04-12",
+        "observation_start": "1942",
+        "observation_end": "1994",
+        "signal_present_duration": 24,
+        "total_duration": 53,
+        "signal_prevalence": 0.4528301886792453
+      },
+      {
+        "subject_id": "adenauer-conrad-1876-01-05",
+        "observation_start": "1894",
+        "observation_end": "1946",
+        "signal_present_duration": 6,
+        "total_duration": 53,
+        "signal_prevalence": 0.11320754716981132
+      }
+    ],
+    "unweighted_subject_mean": 0.4663072776280324,
+    "time_weighted_prevalence": 0.46630727762803237,
+    "observation_rule": "AGE_18_THROUGH_70"
   },
   "pilot": {
-    "state": "BLOCKED",
-    "result_state": "INSUFFICIENT_SAMPLE",
+    "state": "COMPLETED",
+    "result_state": "NO_SEPARATION",
     "event_signal_rate_visible": 0.42857142857142855,
-    "control_signal_rate": "NOT_REPORTED_HOLDOUT_AND_CONTROL_REVIEW_PENDING",
-    "difference": "NOT_REPORTED",
-    "holdout_protected": true,
-    "interpretation": "Ten-case sanity pilot only; no predictive validity claim."
+    "matched_control_signal_rate_visible": 0.35714285714285715,
+    "base_time_signal_prevalence_visible": 0.4663072776280324,
+    "time_weighted_base_time_prevalence_visible": 0.46630727762803237,
+    "absolute_event_control_difference": 0.0714285714285714,
+    "absolute_event_base_difference": -0.037735849056603876,
+    "exact_event_rate_visible": 0.6666666666666666,
+    "year_event_rate_visible": 0.25,
+    "split_metrics": {
+      "design": {
+        "cases": 4,
+        "controls": 8,
+        "event_rate": 0.75,
+        "matched_control_rate": 0.625,
+        "base_time_prevalence": 0.37735849056603776,
+        "event_minus_control": 0.125,
+        "event_minus_base": 0.37264150943396224
+      },
+      "validation": {
+        "cases": 3,
+        "controls": 6,
+        "event_rate": 0.0,
+        "matched_control_rate": 0.0,
+        "base_time_prevalence": 0.5849056603773585,
+        "event_minus_control": 0.0,
+        "event_minus_base": -0.5849056603773585
+      },
+      "holdout": {
+        "cases": 3,
+        "controls": 6,
+        "event_rate": 1.0,
+        "matched_control_rate": 0.3333333333333333,
+        "base_time_prevalence": 0.34591194968553457,
+        "event_minus_control": 0.6666666666666667,
+        "event_minus_base": 0.6540880503144655
+      },
+      "combined": {
+        "cases": 10,
+        "controls": 20,
+        "event_rate": 0.6,
+        "matched_control_rate": 0.35,
+        "base_time_prevalence": 0.4301886792452831,
+        "event_minus_control": 0.25,
+        "event_minus_base": 0.1698113207547169
+      }
+    },
+    "holdout_protected": false,
+    "interpretation": "Ten-case sanity pilot only; no predictive validity claim. Primary result excludes unsealed holdout; holdout and combined views are descriptive."
+  },
+  "holdout_unseal_audit": {
+    "HOLDOUT_UNSEAL_TIMESTAMP": "2026-08-16T00:00:00Z",
+    "CODE_COMMIT": "9d1ce016fb6c88c0968c051f259f1002e957f700",
+    "SIGNAL_HASH": "b09f7ed42632c900c1ccc65899e7e7a065c6d24b78f6b0627701f0007518d080",
+    "CORPUS_HASH": "3b3ac3b7cacfbe9b3d1935fbe0263568db49a37a95ed8e308c355bbb6a61f76f",
+    "SCORING_SPEC_HASH": "916edbaf1b0b7d2e19f701b82bde7f779359414012b7b846fd52f11cd1b36e1d",
+    "audit": "signal, cases, controls, metrics and observation rule frozen before unseal",
+    "single_use": true
   },
   "frozen_cases": [
     {
@@ -19277,61 +19729,71 @@
     {
       "case_id": "MARRIAGE-001",
       "event_signal_state": "SIGNAL_ABSENT",
+      "masked_before_unseal": false,
       "masked": false,
       "event_date_precision": "EXACT_DAY"
     },
     {
       "case_id": "MARRIAGE-002",
       "event_signal_state": "SIGNAL_PRESENT",
+      "masked_before_unseal": false,
       "masked": false,
       "event_date_precision": "EXACT_DAY"
     },
     {
       "case_id": "MARRIAGE-003",
       "event_signal_state": "SIGNAL_PRESENT",
+      "masked_before_unseal": false,
       "masked": false,
       "event_date_precision": "EXACT_DAY"
     },
     {
       "case_id": "MARRIAGE-004",
       "event_signal_state": "SIGNAL_PRESENT",
+      "masked_before_unseal": false,
       "masked": false,
       "event_date_precision": "YEAR"
     },
     {
       "case_id": "MARRIAGE-005",
       "event_signal_state": "SIGNAL_ABSENT",
+      "masked_before_unseal": false,
       "masked": false,
       "event_date_precision": "YEAR"
     },
     {
       "case_id": "MARRIAGE-006",
       "event_signal_state": "SIGNAL_ABSENT",
+      "masked_before_unseal": false,
       "masked": false,
       "event_date_precision": "YEAR"
     },
     {
       "case_id": "MARRIAGE-007",
       "event_signal_state": "SIGNAL_ABSENT",
+      "masked_before_unseal": false,
       "masked": false,
       "event_date_precision": "YEAR"
     },
     {
       "case_id": "MARRIAGE-008",
       "event_signal_state": "SIGNAL_PRESENT",
-      "masked": true,
+      "masked_before_unseal": true,
+      "masked": false,
       "event_date_precision": "YEAR"
     },
     {
       "case_id": "MARRIAGE-009",
       "event_signal_state": "SIGNAL_PRESENT",
-      "masked": true,
+      "masked_before_unseal": true,
+      "masked": false,
       "event_date_precision": "EXACT_DAY"
     },
     {
       "case_id": "MARRIAGE-010",
       "event_signal_state": "SIGNAL_PRESENT",
-      "masked": true,
+      "masked_before_unseal": true,
+      "masked": false,
       "event_date_precision": "EXACT_DAY"
     }
   ],

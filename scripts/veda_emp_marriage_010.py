@@ -24,7 +24,7 @@ ENGINE_REVISION = "VEDA-KUNDLI-ENGINE-CURRENT"
 SIGNAL_HASH = contract_hash()
 OGDB_URL = "https://opengauquelin.org/download/ogdb-time.csv.zip"
 SCORING_SPEC_VERSION = "VEDA-EMP-MARRIAGE-010-SCORING-V1"
-CODE_COMMIT = "c61b685b43ff55df7236d8632b15e2dfdc2fd0e8"
+CODE_COMMIT = "9d1ce016fb6c88c0968c051f259f1002e957f700"
 
 
 def _hash(value: Any) -> str:

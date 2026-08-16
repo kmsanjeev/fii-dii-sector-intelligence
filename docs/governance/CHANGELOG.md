@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-EMP-MARRIAGE-025 REPLICATION
+
+Completed the independent 25-case marriage-signal replication. Twenty-six
+birth/event candidates were screened from the expanded OGDB feed; 25 were
+eligible and chart-ready and one was excluded for missing birth time. The
+frozen signal hash and research-only boundary were preserved. Design and
+validation showed descriptive separation, but the 10-case holdout did not;
+the combined result is not a predictive-validity claim. PRED-M4, production,
+RAG, Approved Core and signal doctrine remain unchanged.
+
+## 2026-08-16 | VEDA-EMP-MARRIAGE-010 CONTROL SCORING REPAIR
+
+Completed independent matched-control and base-time scoring for the ten-case
+sanity pilot. Corrected a visible-rate boundary bug that had included the
+unsealed holdout, added split metrics and deterministic assertions, and
+classified the primary design-plus-validation view as `NO_SEPARATION`.
+
 ## 2026-08-16 | VEDA-EMP-050 SIGNAL SEARCH CHECKPOINT
 
 Started the two-lane EMP-050 programme. Existing marriage, progeny, education,
