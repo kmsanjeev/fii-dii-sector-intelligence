@@ -1,0 +1,533 @@
+{
+  "activity_id": "VEDA-EMP-050-REPLICATION-SIGNAL-002",
+  "status": "MARRIAGE_50_COMPLETED",
+  "signal": {
+    "id": "VEDA-SIGNAL-MARRIAGE-OCCURRENCE-001",
+    "version": "1.0.0",
+    "hash": "b09f7ed42632c900c1ccc65899e7e7a065c6d24b78f6b0627701f0007518d080",
+    "immutable": true
+  },
+  "initial_25": 25,
+  "new_25": 25,
+  "combined_50": 50,
+  "excluded": [
+    {
+      "case_id": "MARRIAGE-046",
+      "cohort": "REPLICATION_EXTENSION",
+      "reason": "MISSING_BIRTH_TIME"
+    }
+  ],
+  "metrics": {
+    "original_25": {
+      "cases": 25,
+      "controls": 50,
+      "event_rate": 0.48,
+      "matched_control_rate": 0.32,
+      "base_time_prevalence": 0.390188679245283,
+      "event_minus_control": 0.15999999999999998,
+      "event_minus_base": 0.08981132075471698
+    },
+    "new_25": {
+      "cases": 25,
+      "controls": 50,
+      "event_rate": 0.28,
+      "matched_control_rate": 0.26,
+      "base_time_prevalence": 0.36150943396226415,
+      "event_minus_control": 0.020000000000000018,
+      "event_minus_base": -0.08150943396226412
+    },
+    "new_25_design": {
+      "cases": 10,
+      "controls": 20,
+      "event_rate": 0.3,
+      "matched_control_rate": 0.3,
+      "base_time_prevalence": 0.3358490566037736,
+      "event_minus_control": 0.0,
+      "event_minus_base": -0.03584905660377363
+    },
+    "new_25_validation": {
+      "cases": 5,
+      "controls": 10,
+      "event_rate": 0.2,
+      "matched_control_rate": 0.2,
+      "base_time_prevalence": 0.4528301886792453,
+      "event_minus_control": 0.0,
+      "event_minus_base": -0.2528301886792453
+    },
+    "new_25_holdout": {
+      "cases": 10,
+      "controls": 20,
+      "event_rate": 0.3,
+      "matched_control_rate": 0.25,
+      "base_time_prevalence": 0.3415094339622641,
+      "event_minus_control": 0.04999999999999999,
+      "event_minus_base": -0.041509433962264086
+    },
+    "combined_50": {
+      "cases": 50,
+      "controls": 100,
+      "event_rate": 0.38,
+      "matched_control_rate": 0.29,
+      "base_time_prevalence": 0.37584905660377355,
+      "event_minus_control": 0.09000000000000002,
+      "event_minus_base": 0.004150943396226459
+    }
+  },
+  "cases": [
+    {
+      "case_id": "MARRIAGE-001",
+      "subject_id": "bardot-brigitte-1934-09-28",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1952-12-20",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "913604e78c31ce5a60a226e54b731d142c83139e456c82fd0cf80ef510aa6eb3"
+    },
+    {
+      "case_id": "MARRIAGE-002",
+      "subject_id": "ashe-arthur-1943-07-10",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1977-02-20",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "5645450e69588f357f893a3dd4cebec68096d746b7e3e29ed9bb9198bb119ef0"
+    },
+    {
+      "case_id": "MARRIAGE-003",
+      "subject_id": "aldrin-edwin-1930-01-20",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1954-12-29",
+      "precision": "EXACT_DAY",
+      "event_quality": "SINGLE_REFERENCED",
+      "case_hash": "91957dd30413ada2d32ac76510364e5898604eed9ceaf39949d04c242d61e34a"
+    },
+    {
+      "case_id": "MARRIAGE-004",
+      "subject_id": "alpert-herb-1935-03-31",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1956",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "34819e0b8ff8c85ff11026cc3f63edc7294f25d0b2d13b2156ea6ae746822293"
+    },
+    {
+      "case_id": "MARRIAGE-005",
+      "subject_id": "aznavour-charles-aznaourian-1924-05-22",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1946",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "ccf25bb3d8cc2ec7f364f1c1445b3008204101523b9a1391d274eb1e39ca0eff"
+    },
+    {
+      "case_id": "MARRIAGE-006",
+      "subject_id": "arness-james-1923-05-26",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1948",
+      "precision": "YEAR",
+      "event_quality": "SINGLE_REFERENCED",
+      "case_hash": "7113f624d94189d179d9dc98441b389f006aefbf4b2ab1983ec59a731ffd0791"
+    },
+    {
+      "case_id": "MARRIAGE-007",
+      "subject_id": "ameche-don-1908-05-31",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1932",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "a0442e953a3d37a9c117b6f7e2a0f610d125077e25d856309318d1a8bb675c2c"
+    },
+    {
+      "case_id": "MARRIAGE-008",
+      "subject_id": "bachelard-gaston-1884-06-27",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1914",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "3d38c0a75be8bbedefd720b111a65c4d5c142839f3c4369efde0b2b47b45c646"
+    },
+    {
+      "case_id": "MARRIAGE-009",
+      "subject_id": "barre-raymond-1924-04-12",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1954-11-19",
+      "precision": "EXACT_DAY",
+      "event_quality": "SINGLE_REFERENCED",
+      "case_hash": "768da2a37f7004d02c4195ccb6ac41fdff5d9260536b1386275a46ef156b6c71"
+    },
+    {
+      "case_id": "MARRIAGE-010",
+      "subject_id": "adenauer-conrad-1876-01-05",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1904-01-28",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "446b756c20dd4d2263ba4d2894ce852dd6a5f845dd71cf4fed10ceb6e3a2323a"
+    },
+    {
+      "case_id": "MARRIAGE-011",
+      "subject_id": "aaron-henry-1934-02-05",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1953-10-06",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "7e7363a485c04d97c23deceeb39ce5b42b51cd8271822bd11bdb7c933cdf0220"
+    },
+    {
+      "case_id": "MARRIAGE-012",
+      "subject_id": "hepburn-audrey-1929-05-04",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1954-09-25",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "4a36030ae5693c0e4a75c3e61a8100eaa57438d666cf815f4fb816cdb89d1daf"
+    },
+    {
+      "case_id": "MARRIAGE-013",
+      "subject_id": "kelly-grace-1929-11-12",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1956-04-18",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "b31858bf130f3170486d45dae1a20f4b2efbf57c37835627aca15dc76739cfaa"
+    },
+    {
+      "case_id": "MARRIAGE-014",
+      "subject_id": "monroe-marilyn-1926-06-01",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1942-06-19",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "33324056c08396e23eb77cf79e85a4e655ca87f7057e677cb6418822e818bcca"
+    },
+    {
+      "case_id": "MARRIAGE-015",
+      "subject_id": "eastwood-clint-1930-05-31",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1953-12-19",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "9ad0285857b54cacfbf1249c4bdce5494d5feb4965f28846919de19f8cc262ca"
+    },
+    {
+      "case_id": "MARRIAGE-016",
+      "subject_id": "presley-elvis-1935-01-08",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1967-05-01",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "0934114f081fbb701538b56b5b22e3799635e3e6b5057f73d7261e742d98a424"
+    },
+    {
+      "case_id": "MARRIAGE-017",
+      "subject_id": "cole-nat-king-1919-03-17",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1937",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "fa0c6c7ba013dcf6c5f0e16a28c545ecec7dfd8bf7e97f3a793cad5f9e2a394a"
+    },
+    {
+      "case_id": "MARRIAGE-018",
+      "subject_id": "redford-robert-1936-08-18",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1958-08-09",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "441b158ad664561d1ef810102edf42237f33374eb12a8d431954a3186e79c2f9"
+    },
+    {
+      "case_id": "MARRIAGE-019",
+      "subject_id": "taylor-james-1948-03-12",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1972-11-03",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "995374f6cfb3a9ecdd05613d072d4afe88b994a29a5a5e44218ca4be55de1c41"
+    },
+    {
+      "case_id": "MARRIAGE-020",
+      "subject_id": "turner-ted-1938-11-19",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1960",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "25b54a2e08b7cfc6d6d6d199916f679a50c1113ef3698816ff2ed22639956fe4"
+    },
+    {
+      "case_id": "MARRIAGE-021",
+      "subject_id": "miller-henry-1891-12-26",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1917",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "341247f56e1ee9b56b0b6affa15e5748f8c2704a4caf0174252103b672524d3d"
+    },
+    {
+      "case_id": "MARRIAGE-022",
+      "subject_id": "brando-marlon-1924-04-03",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1957-10-11",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "1a769bce13b96e3390a0400f26a5aaa6b44ec79eb3185aeafa154550bb831bdb"
+    },
+    {
+      "case_id": "MARRIAGE-023",
+      "subject_id": "newman-paul-1925-01-26",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1949",
+      "precision": "YEAR",
+      "event_quality": "SINGLE_REFERENCED",
+      "case_hash": "63ed0769bda6f2e7adcec99bbc0c99f741eb7a93af321eaaf7c44db123ce5620"
+    },
+    {
+      "case_id": "MARRIAGE-024",
+      "subject_id": "hickman-dwayne-1934-05-18",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1963-03",
+      "precision": "MONTH",
+      "event_quality": "SINGLE_REFERENCED",
+      "case_hash": "e1be0aa30fcf99de7747cdde7065184166a1cbc55f5ea6ac221743b261cd0a7e"
+    },
+    {
+      "case_id": "MARRIAGE-025",
+      "subject_id": "dillman-bradford-1930-04-14",
+      "cohort": "INITIAL_EMPIRICAL_COHORT",
+      "event_date": "1956-06-15",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "eabe36f1ea37291478ecef12f81d4396b7ffbf01dd981aa68614a3c48a093e87"
+    },
+    {
+      "case_id": "MARRIAGE-027",
+      "subject_id": "stewart-james-1921-04-02",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1949-08-09",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "bbdcca325f47d86225c92b1f09cad5352aa67cd2582fa5654eeadf37451d74c2"
+    },
+    {
+      "case_id": "MARRIAGE-028",
+      "subject_id": "russell-jane-1921-06-21",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1943-04-24",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "fdf9a671e73a472b611f85747a0b452b55cf9ff4d7a470e51d413674681974a6"
+    },
+    {
+      "case_id": "MARRIAGE-029",
+      "subject_id": "travolta-john-1954-02-18",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1991-09-05",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "35f0bae19cc6542abf267a69b091f00aabd122fe7e78d218f8009585c40104cb"
+    },
+    {
+      "case_id": "MARRIAGE-030",
+      "subject_id": "walker-clint-1927-05-30",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1948",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "708573a2f874dc18b2352a0d355557762c3ee4fd1b010de86ff7bf6231185b7a"
+    },
+    {
+      "case_id": "MARRIAGE-031",
+      "subject_id": "leigh-janet-1927-07-06",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1942-08-01",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "8013d5a7a2ed99bc7225242f7bf39517fbd2b42d4b3856c5cbf8903ece05fed6"
+    },
+    {
+      "case_id": "MARRIAGE-032",
+      "subject_id": "mason-marsha-1942-04-03",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1965",
+      "precision": "YEAR",
+      "event_quality": "SINGLE_REFERENCED",
+      "case_hash": "538b2e008f3cecdb904fb1d7e0510700f2535b51681c534bced6ac27149f5c4f"
+    },
+    {
+      "case_id": "MARRIAGE-033",
+      "subject_id": "williams-cindy-1947-08-22",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1982",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "50a1fad5de15348c9c86ec5a6497466425a450bb8034657325fa995fb0a69690"
+    },
+    {
+      "case_id": "MARRIAGE-034",
+      "subject_id": "annenberg-walter-1908-03-13",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1939",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "8dcf43b8cab2f603a41be3b08216ea8c3f40c0d17c6504e1ba7f5a39873b65bc"
+    },
+    {
+      "case_id": "MARRIAGE-035",
+      "subject_id": "baker-howard-1925-11-15",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1951",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "c6055518dc25eaa9a4777e7ac35be54dff1950e608c895a34f6691b29d4d9c61"
+    },
+    {
+      "case_id": "MARRIAGE-036",
+      "subject_id": "ariyoshi-george-1926-03-12",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1955",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "0088f1d22abd05d0913239a945a11cee70d8eb657e190c2d3637c87e79a105c1"
+    },
+    {
+      "case_id": "MARRIAGE-037",
+      "subject_id": "andrus-cecil-1931-08-25",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1949",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "15ccc8efd4de6951d0c24586eb6d7ec315d755ab3e52571740a0dd9f5739610f"
+    },
+    {
+      "case_id": "MARRIAGE-038",
+      "subject_id": "anouk-aimee-dreyfus-nic-1932-04-27",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1949",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "232922fa4e657a8c9c9c5aaeaed594578573f347b5a9c974e644563bc22986e9"
+    },
+    {
+      "case_id": "MARRIAGE-039",
+      "subject_id": "arendt-hannah-1906-10-14",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1929-09-26",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "93d7e9b983e2dec9c843e862242ea8033867f691ba1c2f27a6acaff3893ef6e0"
+    },
+    {
+      "case_id": "MARRIAGE-040",
+      "subject_id": "antonioni-michelangelo-1912-09-29",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1942",
+      "precision": "YEAR",
+      "event_quality": "SINGLE_REFERENCED",
+      "case_hash": "1fd34e75f3cbc323a7a33edfe6ef742436c4203f5d448ff8f3e962f4eada25e0"
+    },
+    {
+      "case_id": "MARRIAGE-041",
+      "subject_id": "baeyer-adolf-1835-10-31",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1868",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "6dbd136234d8183f3310ccde50a3535e53349ec709ca7d845a3df7b828eb0b4e"
+    },
+    {
+      "case_id": "MARRIAGE-042",
+      "subject_id": "anquetil-jacques-1934-01-08",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1958-12-22",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "8d0fafd7c33d4bf34ee626e97110b4c70c95537759f382f8722e8c8ecccaa3d1"
+    },
+    {
+      "case_id": "MARRIAGE-043",
+      "subject_id": "auriol-vincent-1884-08-27",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1911-06-01",
+      "precision": "EXACT_DAY",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "760ebc04fbc2ce17c2900f005ce83e64b1d4d3e8b1930196517892b628817b7f"
+    },
+    {
+      "case_id": "MARRIAGE-044",
+      "subject_id": "alvarez-luis-1911-06-13",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1936",
+      "precision": "YEAR",
+      "event_quality": "SINGLE_REFERENCED",
+      "case_hash": "b67b58a7df5731039ef1e6253260dc53d698578a4a424495bd3f2e6609aa1f3a"
+    },
+    {
+      "case_id": "MARRIAGE-045",
+      "subject_id": "morgan-michele-1920-02-29",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1942",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "e6b1bf62f0df2451ca954c90fd4f378d631730e8c7bb5fb4f51faf5b74550354"
+    },
+    {
+      "case_id": "MARRIAGE-047",
+      "subject_id": "austin-tracy-1962-12-12",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1993-04-17",
+      "precision": "EXACT_DAY",
+      "event_quality": "SINGLE_REFERENCED",
+      "case_hash": "66377d893b0c0e404845c68853cf5a6e9be5f7d124897f0915726928e24c4ba4"
+    },
+    {
+      "case_id": "MARRIAGE-048",
+      "subject_id": "langevin-paul-1872-01-23",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1898",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "11ec7f32899472792314154026fac3083cd5d30fc274246634a50a1005e2c370"
+    },
+    {
+      "case_id": "MARRIAGE-049",
+      "subject_id": "appell-paul-1855-09-27",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1881",
+      "precision": "YEAR",
+      "event_quality": "SINGLE_REFERENCED",
+      "case_hash": "27d1e0248106e04e2fcbd73cb92999fcd387c53925b9d5a68d7e1f6c9b32b588"
+    },
+    {
+      "case_id": "MARRIAGE-050",
+      "subject_id": "achille-fould-aymar-1925-07-17",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1947-04-12",
+      "precision": "EXACT_DAY",
+      "event_quality": "SINGLE_REFERENCED",
+      "case_hash": "48382a02591d51bd454260a408302e4d8187d2f4afae5500ad7fa6d3e95a6b4c"
+    },
+    {
+      "case_id": "MARRIAGE-051",
+      "subject_id": "abbe-ernst-1840-01-23",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1871",
+      "precision": "YEAR",
+      "event_quality": "STRONG_REFERENCED",
+      "case_hash": "83183e5ca5cc4f8d8b0a1302355bff88fec4bb1bfa0c97fd420dd188383a27b9"
+    },
+    {
+      "case_id": "MARRIAGE-052",
+      "subject_id": "bardoux-jacques-1874-05-27",
+      "cohort": "REPLICATION_EXTENSION",
+      "event_date": "1899-02-07",
+      "precision": "EXACT_DAY",
+      "event_quality": "SINGLE_REFERENCED",
+      "case_hash": "425a8fa3d611eb54c55f77f32b0d0f7437df283efd20edfbc53b02f9471f9167"
+    }
+  ],
+  "production_changes": "NONE",
+  "approved_core": "UNCHANGED",
+  "rag": "UNCHANGED",
+  "pred_m4": "INSUFFICIENT_SAMPLE",
+  "prospective_marriage": "RESEARCH_RESTRICTED"
+}

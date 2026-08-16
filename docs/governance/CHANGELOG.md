@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-EMP-050 REPLICATION SIGNAL 002
+
+Completed the authorized marriage 50-case replication and second-signal
+search. The original 25 and independent new 25 were scored separately and
+combined descriptively; the new cohort did not reproduce the original
+separation (`event-control +0.02`, `event-base -0.0815`). The bounded result is
+`NO_SEPARATION_AT_EMP025` / `NON_REPLICATING_PILOT_SIGNAL`, not disproof or
+validation. Progeny, education, career commencement, relocation and property
+remain `SOURCE_PARTIAL`, so no second signal was frozen. Production, PRED-M4,
+RAG, Approved Core and prospective status remain unchanged.
+
 ## 2026-08-16 | VEDA-EMP-MARRIAGE-025 REPLICATION
 
 Completed the independent 25-case marriage-signal replication. Twenty-six
