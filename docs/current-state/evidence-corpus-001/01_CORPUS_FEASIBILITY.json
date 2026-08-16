@@ -1,0 +1,1244 @@
+{
+  "acquisition_policy": {
+    "approved_core_changed": false,
+    "astrology_inspected": false,
+    "feature_scoring": false,
+    "ml": false,
+    "pred_m4": "UNCHANGED",
+    "production_changed": false,
+    "rag_changed": false,
+    "stages": [
+      "FEASIBILITY_SAMPLE",
+      "YIELD_ESTIMATE",
+      "POWER_TARGET",
+      "FULL_ACQUISITION"
+    ],
+    "synthetic_dates": false
+  },
+  "eligibility_policy_hash": "a98c9949d33434ed4c49353ac64a701cefd8c608d7bfba2c71843d99add5dd87",
+  "event_hash": "0b523c0ffa8296759f5491a0d3faa2048ce28dea8991edee5f09a6db0e810ced",
+  "feasibility": [
+    {
+      "automation_feasibility": "BOUNDED_EXISTING_RECORDS_ONLY",
+      "candidates": 12,
+      "day": 12,
+      "day_tier_a_b_birth_and_event": 0,
+      "decision": "INSUFFICIENT_TIMED_BIRTH_YIELD",
+      "event_family": "DEATH",
+      "month": 0,
+      "tier_a_b_birth": 0,
+      "tier_a_b_event": 2,
+      "tier_a_birth": 0,
+      "tier_b_birth": 0,
+      "year": 0
+    },
+    {
+      "automation_feasibility": "BOUNDED_EXISTING_RECORDS_ONLY",
+      "candidates": 1,
+      "day": 0,
+      "day_tier_a_b_birth_and_event": 0,
+      "decision": "INSUFFICIENT_TIMED_BIRTH_YIELD",
+      "event_family": "ELECTION_WIN",
+      "month": 0,
+      "tier_a_b_birth": 0,
+      "tier_a_b_event": 1,
+      "tier_a_birth": 0,
+      "tier_b_birth": 0,
+      "year": 1
+    },
+    {
+      "automation_feasibility": "BOUNDED_EXISTING_RECORDS_ONLY",
+      "candidates": 7,
+      "day": 1,
+      "day_tier_a_b_birth_and_event": 0,
+      "decision": "INSUFFICIENT_TIMED_BIRTH_YIELD",
+      "event_family": "POSITION_END",
+      "month": 0,
+      "tier_a_b_birth": 0,
+      "tier_a_b_event": 6,
+      "tier_a_birth": 0,
+      "tier_b_birth": 0,
+      "year": 6
+    },
+    {
+      "automation_feasibility": "BOUNDED_EXISTING_RECORDS_ONLY",
+      "candidates": 6,
+      "day": 0,
+      "day_tier_a_b_birth_and_event": 0,
+      "decision": "INSUFFICIENT_TIMED_BIRTH_YIELD",
+      "event_family": "POSITION_START",
+      "month": 0,
+      "tier_a_b_birth": 0,
+      "tier_a_b_event": 5,
+      "tier_a_birth": 0,
+      "tier_b_birth": 0,
+      "year": 6
+    },
+    {
+      "automation_feasibility": "BOUNDED_EXISTING_RECORDS_ONLY",
+      "candidates": 1,
+      "day": 1,
+      "day_tier_a_b_birth_and_event": 0,
+      "decision": "INSUFFICIENT_TIMED_BIRTH_YIELD",
+      "event_family": "PUBLIC_APPOINTMENT",
+      "month": 0,
+      "tier_a_b_birth": 0,
+      "tier_a_b_event": 1,
+      "tier_a_birth": 0,
+      "tier_b_birth": 0,
+      "year": 0
+    }
+  ],
+  "india_lane": {
+    "day": 0,
+    "reason": "No governed India longitudinal source was acquired in this bounded feasibility activity.",
+    "status": "FOUNDATION_MISSING",
+    "tier_a_b": 0
+  },
+  "mode": "FEASIBILITY_ONLY_NO_ASTROLOGY",
+  "posend_legacy": {
+    "classification": "EXPLORATORY_LEGACY_FEASIBILITY",
+    "confirmatory_eligible": false,
+    "day": 0,
+    "month": 0,
+    "source_manifest": "docs\\current-state\\emp-posend-acq-001\\04_FINAL_MANIFEST.json",
+    "subjects": 20,
+    "year": 20
+  },
+  "power": {
+    "alpha": 0.05,
+    "mesi": "Must be specified per event family after yield and estimand freeze.",
+    "planner": "scripts/veda_power_planner.py",
+    "power": 0.8,
+    "required_effects": [
+      0.05,
+      0.1,
+      0.15,
+      0.2
+    ]
+  },
+  "programme": "VEDA-EVIDENCE-CORPUS-001",
+  "schema_hash": "e4419977db46d8eec7827ddc7f4034b72740ff4f25d8045460903ce84b6a5afd",
+  "schema_version": "VEDA-LONGITUDINAL-EVIDENCE-SCHEMA-1.0",
+  "source_manifest": [
+    "National Governors Association biography",
+    "San Francisco official mayoral-history statement",
+    "U.S. Department of State Office of the Historian",
+    "Wikidata references only; lower event-source confidence",
+    "Wikidata references plus Abbe Center of Photonics institutional biography",
+    "Wikidata references plus San Francisco official mayoral-history statement"
+  ],
+  "source_manifest_hash": "bc844b2f0b8a908e57358a2a749e0ab648af15845bdd4527e4d76c351464f1eb",
+  "source_yield": {
+    "candidate_subjects": 15,
+    "day_events": 14,
+    "events": 27,
+    "month_events": 0,
+    "tier_a_b_birth": 0,
+    "tier_a_birth": 0,
+    "tier_b_birth": 0,
+    "tier_c_birth": 15,
+    "year_events": 13
+  },
+  "status": "PASS_WITH_CONDITION",
+  "subject_hash": "ea5a4e8bbcf332986964c3ee092185b08cf04ca3f51fa4a9e7c6a70bf891048e",
+  "subjects": [
+    {
+      "birth": {
+        "birth_date": "1840-01-23",
+        "birth_place": "Eisenach",
+        "birth_time": "21:30",
+        "birth_time_precision": "MINUTE",
+        "country_code": "DE",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q76359",
+          "https://www.acp.uni-jena.de/1771/about-ernst-abbe"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_EXACT",
+        "event_date_end": "1905-01-14",
+        "event_date_start": "1905-01-14",
+        "event_family": "DEATH",
+        "event_id": "Q76359$950BF0A6-0DD3-4690-89C4-2CA789E757E1",
+        "event_precision": "DAY",
+        "event_subtype": "DEATH",
+        "normalization_method": "ISO_EXACT_DAY",
+        "normalized_date": "1905-01-14",
+        "original_date_text": "1905-01-14",
+        "provenance": [
+          "Wikidata references plus Abbe Center of Photonics institutional biography"
+        ],
+        "source_cluster": "unknown",
+        "tier": "B"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "DE",
+        "label": "Ernst Abbe",
+        "profession": "scientist"
+      },
+      "subject_id": "abbe-ernst-1840-01-23"
+    },
+    {
+      "birth": {
+        "birth_date": "1925-07-17",
+        "birth_place": "Tarbes",
+        "birth_time": "12:00",
+        "birth_time_precision": "MINUTE",
+        "country_code": "FR",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q2874910"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_EXACT",
+        "event_date_end": "1986-04-11",
+        "event_date_start": "1986-04-11",
+        "event_family": "DEATH",
+        "event_id": "Q2874910$7df57719-4ac0-51b0-1101-bbf631f65a3c",
+        "event_precision": "DAY",
+        "event_subtype": "DEATH",
+        "normalization_method": "ISO_EXACT_DAY",
+        "normalized_date": "1986-04-11",
+        "original_date_text": "1986-04-11",
+        "provenance": [
+          "Wikidata references only; lower event-source confidence"
+        ],
+        "source_cluster": "unknown",
+        "tier": "C"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "FR",
+        "label": "Aymar Achille-Fould",
+        "profession": "politician"
+      },
+      "subject_id": "achille-fould-aymar-1925-07-17"
+    },
+    {
+      "birth": {
+        "birth_date": "1916-02-12",
+        "birth_place": "San Francisco",
+        "birth_time": "08:00",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q6280974",
+          "https://www.sfgov.org/mayoredlee/article/mayor-lees-statement-commemorating-mayor-aliotos-100th-birthday"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_YEAR",
+        "event_date_end": "1976-01-01",
+        "event_date_start": "1976-01-01",
+        "event_family": "POSITION_END",
+        "event_id": "ALIOTO-MAYOR-END-1976",
+        "event_precision": "YEAR",
+        "event_subtype": "POSITION_END",
+        "normalization_method": "INTERVAL_PRESERVED",
+        "normalized_date": null,
+        "original_date_text": "1976-01-01",
+        "provenance": [
+          "San Francisco official mayoral-history statement"
+        ],
+        "source_cluster": "unknown",
+        "tier": "C"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "Joseph Alioto",
+        "profession": "politician"
+      },
+      "subject_id": "alioto-joseph-1916-02-12"
+    },
+    {
+      "birth": {
+        "birth_date": "1916-02-12",
+        "birth_place": "San Francisco",
+        "birth_time": "08:00",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q6280974",
+          "https://www.sfgov.org/mayoredlee/article/mayor-lees-statement-commemorating-mayor-aliotos-100th-birthday"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_YEAR",
+        "event_date_end": "1968-01-01",
+        "event_date_start": "1968-01-01",
+        "event_family": "POSITION_START",
+        "event_id": "ALIOTO-MAYOR-START-1968",
+        "event_precision": "YEAR",
+        "event_subtype": "POSITION_START",
+        "normalization_method": "INTERVAL_PRESERVED",
+        "normalized_date": null,
+        "original_date_text": "1968-01-01",
+        "provenance": [
+          "San Francisco official mayoral-history statement"
+        ],
+        "source_cluster": "unknown",
+        "tier": "C"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "Joseph Alioto",
+        "profession": "politician"
+      },
+      "subject_id": "alioto-joseph-1916-02-12"
+    },
+    {
+      "birth": {
+        "birth_date": "1916-02-12",
+        "birth_place": "San Francisco",
+        "birth_time": "08:00",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q6280974",
+          "https://www.sfgov.org/mayoredlee/article/mayor-lees-statement-commemorating-mayor-aliotos-100th-birthday"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_EXACT",
+        "event_date_end": "1998-01-29",
+        "event_date_start": "1998-01-29",
+        "event_family": "DEATH",
+        "event_id": "Q6280974$A052DF98-2362-4781-948F-9B7BBD440CE3",
+        "event_precision": "DAY",
+        "event_subtype": "DEATH",
+        "normalization_method": "ISO_EXACT_DAY",
+        "normalized_date": "1998-01-29",
+        "original_date_text": "1998-01-29",
+        "provenance": [
+          "Wikidata references plus San Francisco official mayoral-history statement"
+        ],
+        "source_cluster": "unknown",
+        "tier": "B"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "Joseph Alioto",
+        "profession": "politician"
+      },
+      "subject_id": "alioto-joseph-1916-02-12"
+    },
+    {
+      "birth": {
+        "birth_date": "1911-06-13",
+        "birth_place": "San Fancisco",
+        "birth_time": "02:45",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q178344"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_EXACT",
+        "event_date_end": "1988-09-01",
+        "event_date_start": "1988-09-01",
+        "event_family": "DEATH",
+        "event_id": "q178344$B2D7ACF9-DA95-458B-A8E3-92D58FBAF9D9",
+        "event_precision": "DAY",
+        "event_subtype": "DEATH",
+        "normalization_method": "ISO_EXACT_DAY",
+        "normalized_date": "1988-09-01",
+        "original_date_text": "1988-09-01",
+        "provenance": [
+          "Wikidata references only; lower event-source confidence"
+        ],
+        "source_cluster": "unknown",
+        "tier": "C"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "Luis Alvarez",
+        "profession": "scientist"
+      },
+      "subject_id": "alvarez-luis-1911-06-13"
+    },
+    {
+      "birth": {
+        "birth_date": "1931-08-25",
+        "birth_place": "Hood River",
+        "birth_time": "08:20",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q372022",
+          "https://www.nga.org/governor/cecil-dale-andrus/"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_YEAR",
+        "event_date_end": "1977-01-24",
+        "event_date_start": "1977-01-24",
+        "event_family": "POSITION_END",
+        "event_id": "ANDRUS-GOVERNOR-END-1977",
+        "event_precision": "YEAR",
+        "event_subtype": "POSITION_END",
+        "normalization_method": "INTERVAL_PRESERVED",
+        "normalized_date": null,
+        "original_date_text": "1977-01-24",
+        "provenance": [
+          "National Governors Association biography"
+        ],
+        "source_cluster": "unknown",
+        "tier": "B"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "Cecil Andrus",
+        "profession": "politician"
+      },
+      "subject_id": "andrus-cecil-1931-08-25"
+    },
+    {
+      "birth": {
+        "birth_date": "1931-08-25",
+        "birth_place": "Hood River",
+        "birth_time": "08:20",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q372022",
+          "https://www.nga.org/governor/cecil-dale-andrus/"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_YEAR",
+        "event_date_end": "1995-01-01",
+        "event_date_start": "1995-01-01",
+        "event_family": "POSITION_END",
+        "event_id": "ANDRUS-GOVERNOR-END-1995",
+        "event_precision": "YEAR",
+        "event_subtype": "POSITION_END",
+        "normalization_method": "INTERVAL_PRESERVED",
+        "normalized_date": null,
+        "original_date_text": "1995-01-01",
+        "provenance": [
+          "National Governors Association biography"
+        ],
+        "source_cluster": "unknown",
+        "tier": "B"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "Cecil Andrus",
+        "profession": "politician"
+      },
+      "subject_id": "andrus-cecil-1931-08-25"
+    },
+    {
+      "birth": {
+        "birth_date": "1931-08-25",
+        "birth_place": "Hood River",
+        "birth_time": "08:20",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q372022",
+          "https://www.nga.org/governor/cecil-dale-andrus/"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_YEAR",
+        "event_date_end": "1971-01-04",
+        "event_date_start": "1971-01-04",
+        "event_family": "POSITION_START",
+        "event_id": "ANDRUS-GOVERNOR-START-1971",
+        "event_precision": "YEAR",
+        "event_subtype": "POSITION_START",
+        "normalization_method": "INTERVAL_PRESERVED",
+        "normalized_date": null,
+        "original_date_text": "1971-01-04",
+        "provenance": [
+          "National Governors Association biography"
+        ],
+        "source_cluster": "unknown",
+        "tier": "B"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "Cecil Andrus",
+        "profession": "politician"
+      },
+      "subject_id": "andrus-cecil-1931-08-25"
+    },
+    {
+      "birth": {
+        "birth_date": "1931-08-25",
+        "birth_place": "Hood River",
+        "birth_time": "08:20",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q372022",
+          "https://www.nga.org/governor/cecil-dale-andrus/"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_YEAR",
+        "event_date_end": "1987-01-05",
+        "event_date_start": "1987-01-05",
+        "event_family": "POSITION_START",
+        "event_id": "ANDRUS-GOVERNOR-START-1987",
+        "event_precision": "YEAR",
+        "event_subtype": "POSITION_START",
+        "normalization_method": "INTERVAL_PRESERVED",
+        "normalized_date": null,
+        "original_date_text": "1987-01-05",
+        "provenance": [
+          "National Governors Association biography"
+        ],
+        "source_cluster": "unknown",
+        "tier": "B"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "Cecil Andrus",
+        "profession": "politician"
+      },
+      "subject_id": "andrus-cecil-1931-08-25"
+    },
+    {
+      "birth": {
+        "birth_date": "1931-08-25",
+        "birth_place": "Hood River",
+        "birth_time": "08:20",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q372022",
+          "https://www.nga.org/governor/cecil-dale-andrus/"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_YEAR",
+        "event_date_end": "1981-01-01",
+        "event_date_start": "1981-01-01",
+        "event_family": "POSITION_END",
+        "event_id": "ANDRUS-INTERIOR-END-1981",
+        "event_precision": "YEAR",
+        "event_subtype": "POSITION_END",
+        "normalization_method": "INTERVAL_PRESERVED",
+        "normalized_date": null,
+        "original_date_text": "1981-01-01",
+        "provenance": [
+          "National Governors Association biography"
+        ],
+        "source_cluster": "unknown",
+        "tier": "B"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "Cecil Andrus",
+        "profession": "politician"
+      },
+      "subject_id": "andrus-cecil-1931-08-25"
+    },
+    {
+      "birth": {
+        "birth_date": "1931-08-25",
+        "birth_place": "Hood River",
+        "birth_time": "08:20",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q372022",
+          "https://www.nga.org/governor/cecil-dale-andrus/"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_YEAR",
+        "event_date_end": "1977-01-01",
+        "event_date_start": "1977-01-01",
+        "event_family": "POSITION_START",
+        "event_id": "ANDRUS-INTERIOR-START-1977",
+        "event_precision": "YEAR",
+        "event_subtype": "POSITION_START",
+        "normalization_method": "INTERVAL_PRESERVED",
+        "normalized_date": null,
+        "original_date_text": "1977-01-01",
+        "provenance": [
+          "National Governors Association biography"
+        ],
+        "source_cluster": "unknown",
+        "tier": "B"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "Cecil Andrus",
+        "profession": "politician"
+      },
+      "subject_id": "andrus-cecil-1931-08-25"
+    },
+    {
+      "birth": {
+        "birth_date": "1908-03-13",
+        "birth_place": "Milwaukee",
+        "birth_time": "13:30",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q1750541",
+          "https://history.state.gov/departmenthistory/people/annenberg-walter-h"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_EXACT",
+        "event_date_end": "1974-10-30",
+        "event_date_start": "1974-10-30",
+        "event_family": "POSITION_END",
+        "event_id": "ANNENBERG-AMBASSADOR-END-1974",
+        "event_precision": "DAY",
+        "event_subtype": "POSITION_END",
+        "normalization_method": "ISO_EXACT_DAY",
+        "normalized_date": "1974-10-30",
+        "original_date_text": "1974-10-30",
+        "provenance": [
+          "U.S. Department of State Office of the Historian"
+        ],
+        "source_cluster": "unknown",
+        "tier": "A"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "Walter Annenberg",
+        "profession": "politician"
+      },
+      "subject_id": "annenberg-walter-1908-03-13"
+    },
+    {
+      "birth": {
+        "birth_date": "1908-03-13",
+        "birth_place": "Milwaukee",
+        "birth_time": "13:30",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q1750541",
+          "https://history.state.gov/departmenthistory/people/annenberg-walter-h"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_EXACT",
+        "event_date_end": "1969-03-14",
+        "event_date_start": "1969-03-14",
+        "event_family": "PUBLIC_APPOINTMENT",
+        "event_id": "ANNENBERG-AMBASSADOR-START-1969",
+        "event_precision": "DAY",
+        "event_subtype": "PUBLIC_APPOINTMENT",
+        "normalization_method": "ISO_EXACT_DAY",
+        "normalized_date": "1969-03-14",
+        "original_date_text": "1969-03-14",
+        "provenance": [
+          "U.S. Department of State Office of the Historian"
+        ],
+        "source_cluster": "unknown",
+        "tier": "A"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "Walter Annenberg",
+        "profession": "politician"
+      },
+      "subject_id": "annenberg-walter-1908-03-13"
+    },
+    {
+      "birth": {
+        "birth_date": "1855-09-27",
+        "birth_place": "Strasbourg",
+        "birth_time": "07:00",
+        "birth_time_precision": "MINUTE",
+        "country_code": "FR",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q715906"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_EXACT",
+        "event_date_end": "1930-10-24",
+        "event_date_start": "1930-10-24",
+        "event_family": "DEATH",
+        "event_id": "Q715906$9FFC8A1D-AE2B-4083-B1BD-6249A46D778A",
+        "event_precision": "DAY",
+        "event_subtype": "DEATH",
+        "normalization_method": "ISO_EXACT_DAY",
+        "normalized_date": "1930-10-24",
+        "original_date_text": "1930-10-24",
+        "provenance": [
+          "Wikidata references only; lower event-source confidence"
+        ],
+        "source_cluster": "unknown",
+        "tier": "C"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "FR",
+        "label": "Paul Appell",
+        "profession": "mathematician"
+      },
+      "subject_id": "appell-paul-1855-09-27"
+    },
+    {
+      "birth": {
+        "birth_date": "1926-03-12",
+        "birth_place": "Honolulu",
+        "birth_time": "05:00",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q887563",
+          "https://www.nga.org/governor/george-ryoichi-ariyoshi/"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_YEAR",
+        "event_date_end": "1974-01-01",
+        "event_date_start": "1974-01-01",
+        "event_family": "ELECTION_WIN",
+        "event_id": "ARIYOSHI-ELECTION-WIN-1974",
+        "event_precision": "YEAR",
+        "event_subtype": "ELECTION_WIN",
+        "normalization_method": "INTERVAL_PRESERVED",
+        "normalized_date": null,
+        "original_date_text": "1974-01-01",
+        "provenance": [
+          "National Governors Association biography"
+        ],
+        "source_cluster": "unknown",
+        "tier": "B"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "George Ariyoshi",
+        "profession": "politician"
+      },
+      "subject_id": "ariyoshi-george-1926-03-12"
+    },
+    {
+      "birth": {
+        "birth_date": "1926-03-12",
+        "birth_place": "Honolulu",
+        "birth_time": "05:00",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q887563",
+          "https://www.nga.org/governor/george-ryoichi-ariyoshi/"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_YEAR",
+        "event_date_end": "1986-12-01",
+        "event_date_start": "1986-12-01",
+        "event_family": "POSITION_END",
+        "event_id": "ARIYOSHI-GOVERNOR-END-1986",
+        "event_precision": "YEAR",
+        "event_subtype": "POSITION_END",
+        "normalization_method": "INTERVAL_PRESERVED",
+        "normalized_date": null,
+        "original_date_text": "1986-12-01",
+        "provenance": [
+          "National Governors Association biography"
+        ],
+        "source_cluster": "unknown",
+        "tier": "B"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "George Ariyoshi",
+        "profession": "politician"
+      },
+      "subject_id": "ariyoshi-george-1926-03-12"
+    },
+    {
+      "birth": {
+        "birth_date": "1926-03-12",
+        "birth_place": "Honolulu",
+        "birth_time": "05:00",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q887563",
+          "https://www.nga.org/governor/george-ryoichi-ariyoshi/"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_YEAR",
+        "event_date_end": "1973-10-17",
+        "event_date_start": "1973-10-17",
+        "event_family": "POSITION_START",
+        "event_id": "ARIYOSHI-GOVERNOR-START-1973",
+        "event_precision": "YEAR",
+        "event_subtype": "POSITION_START",
+        "normalization_method": "INTERVAL_PRESERVED",
+        "normalized_date": null,
+        "original_date_text": "1973-10-17",
+        "provenance": [
+          "National Governors Association biography"
+        ],
+        "source_cluster": "unknown",
+        "tier": "B"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "George Ariyoshi",
+        "profession": "politician"
+      },
+      "subject_id": "ariyoshi-george-1926-03-12"
+    },
+    {
+      "birth": {
+        "birth_date": "1926-03-12",
+        "birth_place": "Honolulu",
+        "birth_time": "05:00",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q887563",
+          "https://www.nga.org/governor/george-ryoichi-ariyoshi/"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_YEAR",
+        "event_date_end": "1974-01-01",
+        "event_date_start": "1974-01-01",
+        "event_family": "POSITION_END",
+        "event_id": "ARIYOSHI-LTGOV-END-1974",
+        "event_precision": "YEAR",
+        "event_subtype": "POSITION_END",
+        "normalization_method": "INTERVAL_PRESERVED",
+        "normalized_date": null,
+        "original_date_text": "1974-01-01",
+        "provenance": [
+          "National Governors Association biography"
+        ],
+        "source_cluster": "unknown",
+        "tier": "B"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "George Ariyoshi",
+        "profession": "politician"
+      },
+      "subject_id": "ariyoshi-george-1926-03-12"
+    },
+    {
+      "birth": {
+        "birth_date": "1926-03-12",
+        "birth_place": "Honolulu",
+        "birth_time": "05:00",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q887563",
+          "https://www.nga.org/governor/george-ryoichi-ariyoshi/"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_YEAR",
+        "event_date_end": "1970-01-01",
+        "event_date_start": "1970-01-01",
+        "event_family": "POSITION_START",
+        "event_id": "ARIYOSHI-LTGOV-START-1970",
+        "event_precision": "YEAR",
+        "event_subtype": "POSITION_START",
+        "normalization_method": "INTERVAL_PRESERVED",
+        "normalized_date": null,
+        "original_date_text": "1970-01-01",
+        "provenance": [
+          "National Governors Association biography"
+        ],
+        "source_cluster": "unknown",
+        "tier": "B"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "George Ariyoshi",
+        "profession": "politician"
+      },
+      "subject_id": "ariyoshi-george-1926-03-12"
+    },
+    {
+      "birth": {
+        "birth_date": "1943-07-10",
+        "birth_place": "Richmond",
+        "birth_time": "12:55",
+        "birth_time_precision": "MINUTE",
+        "country_code": "US",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q53325"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_EXACT",
+        "event_date_end": "1993-02-06",
+        "event_date_start": "1993-02-06",
+        "event_family": "DEATH",
+        "event_id": "q53325$78f1ecdb-426a-3995-6bf3-2cffcc670cb8",
+        "event_precision": "DAY",
+        "event_subtype": "DEATH",
+        "normalization_method": "ISO_EXACT_DAY",
+        "normalized_date": "1993-02-06",
+        "original_date_text": "1993-02-06",
+        "provenance": [
+          "Wikidata references only; lower event-source confidence"
+        ],
+        "source_cluster": "unknown",
+        "tier": "C"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "US",
+        "label": "Arthur Ashe",
+        "profession": "tennis-player"
+      },
+      "subject_id": "ashe-arthur-1943-07-10"
+    },
+    {
+      "birth": {
+        "birth_date": "1884-08-27",
+        "birth_place": "Revel",
+        "birth_time": "18:00",
+        "birth_time_precision": "MINUTE",
+        "country_code": "FR",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q158772"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_EXACT",
+        "event_date_end": "1966-01-01",
+        "event_date_start": "1966-01-01",
+        "event_family": "DEATH",
+        "event_id": "q158772$3D992639-2C7A-495E-843F-348E5A9B02D6",
+        "event_precision": "DAY",
+        "event_subtype": "DEATH",
+        "normalization_method": "ISO_EXACT_DAY",
+        "normalized_date": "1966-01-01",
+        "original_date_text": "1966-01-01",
+        "provenance": [
+          "Wikidata references only; lower event-source confidence"
+        ],
+        "source_cluster": "unknown",
+        "tier": "C"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "FR",
+        "label": "Vincent Auriol",
+        "profession": "politician"
+      },
+      "subject_id": "auriol-vincent-1884-08-27"
+    },
+    {
+      "birth": {
+        "birth_date": "1857-11-17",
+        "birth_place": "Paris",
+        "birth_time": "05:00",
+        "birth_time_precision": "MINUTE",
+        "country_code": "FR",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q313062"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_EXACT",
+        "event_date_end": "1932-10-29",
+        "event_date_start": "1932-10-29",
+        "event_family": "DEATH",
+        "event_id": "q313062$EB7FE6B6-366E-4966-9B15-54C4E396BDA4",
+        "event_precision": "DAY",
+        "event_subtype": "DEATH",
+        "normalization_method": "ISO_EXACT_DAY",
+        "normalized_date": "1932-10-29",
+        "original_date_text": "1932-10-29",
+        "provenance": [
+          "Wikidata references only; lower event-source confidence"
+        ],
+        "source_cluster": "unknown",
+        "tier": "C"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "FR",
+        "label": "Joseph Babinski",
+        "profession": "physician"
+      },
+      "subject_id": "babinski-joseph-1857-11-17"
+    },
+    {
+      "birth": {
+        "birth_date": "1835-10-31",
+        "birth_place": "Berlin",
+        "birth_time": "22:30",
+        "birth_time_precision": "MINUTE",
+        "country_code": "DE",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q57078"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_EXACT",
+        "event_date_end": "1917-08-20",
+        "event_date_start": "1917-08-20",
+        "event_family": "DEATH",
+        "event_id": "q57078$CAAD6E9D-4278-4972-BEFB-8F46DE0F9035",
+        "event_precision": "DAY",
+        "event_subtype": "DEATH",
+        "normalization_method": "ISO_EXACT_DAY",
+        "normalized_date": "1917-08-20",
+        "original_date_text": "1917-08-20",
+        "provenance": [
+          "Wikidata references only; lower event-source confidence"
+        ],
+        "source_cluster": "unknown",
+        "tier": "C"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "DE",
+        "label": "Adolf von Baeyer",
+        "profession": "scientist"
+      },
+      "subject_id": "baeyer-adolf-1835-10-31"
+    },
+    {
+      "birth": {
+        "birth_date": "1914-05-18",
+        "birth_place": "Saint-Jean-de-Maurienne",
+        "birth_time": "08:15",
+        "birth_time_precision": "MINUTE",
+        "country_code": "FR",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q551674"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_EXACT",
+        "event_date_end": "1982-06-29",
+        "event_date_start": "1982-06-29",
+        "event_family": "DEATH",
+        "event_id": "Q551674$26ADF363-C073-4592-91A0-F9916476096B",
+        "event_precision": "DAY",
+        "event_subtype": "DEATH",
+        "normalization_method": "ISO_EXACT_DAY",
+        "normalized_date": "1982-06-29",
+        "original_date_text": "1982-06-29",
+        "provenance": [
+          "Wikidata references only; lower event-source confidence"
+        ],
+        "source_cluster": "unknown",
+        "tier": "C"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "FR",
+        "label": "Pierre Balmain",
+        "profession": "executive"
+      },
+      "subject_id": "balmain-pierre-1914-05-18"
+    },
+    {
+      "birth": {
+        "birth_date": "1924-04-12",
+        "birth_place": "saint Denis de la Réun",
+        "birth_time": "06:30",
+        "birth_time_precision": "MINUTE",
+        "country_code": "FR",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q12957"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_EXACT",
+        "event_date_end": "2007-08-25",
+        "event_date_start": "2007-08-25",
+        "event_family": "DEATH",
+        "event_id": "q12957$794697F3-88BE-4F65-898A-0C03F0D4493B",
+        "event_precision": "DAY",
+        "event_subtype": "DEATH",
+        "normalization_method": "ISO_EXACT_DAY",
+        "normalized_date": "2007-08-25",
+        "original_date_text": "2007-08-25",
+        "provenance": [
+          "Wikidata references only; lower event-source confidence"
+        ],
+        "source_cluster": "unknown",
+        "tier": "C"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "FR",
+        "label": "Raymond Barre",
+        "profession": "politician"
+      },
+      "subject_id": "barre-raymond-1924-04-12"
+    },
+    {
+      "birth": {
+        "birth_date": "1862-08-19",
+        "birth_place": "Charmes",
+        "birth_time": "15:00",
+        "birth_time_precision": "MINUTE",
+        "country_code": "FR",
+        "provenance": [
+          "https://www.wikidata.org/wiki/Q314957"
+        ],
+        "source_cluster": "opengauquelin.org",
+        "tier": "C"
+      },
+      "eligibility": "FEASIBILITY_ONLY",
+      "event": {
+        "conflicts": [],
+        "corroboration": "VERIFIED_EXACT",
+        "event_date_end": "1923-12-04",
+        "event_date_start": "1923-12-04",
+        "event_family": "DEATH",
+        "event_id": "q314957$309915A1-490E-45A3-9E17-C1F4967A0C5D",
+        "event_precision": "DAY",
+        "event_subtype": "DEATH",
+        "normalization_method": "ISO_EXACT_DAY",
+        "normalized_date": "1923-12-04",
+        "original_date_text": "1923-12-04",
+        "provenance": [
+          "Wikidata references only; lower event-source confidence"
+        ],
+        "source_cluster": "unknown",
+        "tier": "C"
+      },
+      "prior_veda_exposure": false,
+      "subject": {
+        "country_code": "FR",
+        "label": "Maurice Barrès",
+        "profession": "novelist+politician"
+      },
+      "subject_id": "barres-maurice-1862-08-17"
+    }
+  ]
+}

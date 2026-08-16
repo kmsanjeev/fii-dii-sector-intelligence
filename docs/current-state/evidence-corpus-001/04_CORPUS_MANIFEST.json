@@ -1,0 +1,52 @@
+{
+  "acquisition_policy": {
+    "approved_core_changed": false,
+    "astrology_inspected": false,
+    "feature_scoring": false,
+    "ml": false,
+    "pred_m4": "UNCHANGED",
+    "production_changed": false,
+    "rag_changed": false,
+    "stages": [
+      "FEASIBILITY_SAMPLE",
+      "YIELD_ESTIMATE",
+      "POWER_TARGET",
+      "FULL_ACQUISITION"
+    ],
+    "synthetic_dates": false
+  },
+  "eligibility_policy_hash": "a98c9949d33434ed4c49353ac64a701cefd8c608d7bfba2c71843d99add5dd87",
+  "event_hash": "0b523c0ffa8296759f5491a0d3faa2048ce28dea8991edee5f09a6db0e810ced",
+  "india_lane": {
+    "day": 0,
+    "reason": "No governed India longitudinal source was acquired in this bounded feasibility activity.",
+    "status": "FOUNDATION_MISSING",
+    "tier_a_b": 0
+  },
+  "mode": "FEASIBILITY_ONLY_NO_ASTROLOGY",
+  "posend_legacy": {
+    "classification": "EXPLORATORY_LEGACY_FEASIBILITY",
+    "confirmatory_eligible": false,
+    "day": 0,
+    "month": 0,
+    "source_manifest": "docs\\current-state\\emp-posend-acq-001\\04_FINAL_MANIFEST.json",
+    "subjects": 20,
+    "year": 20
+  },
+  "programme": "VEDA-EVIDENCE-CORPUS-001",
+  "schema_hash": "e4419977db46d8eec7827ddc7f4034b72740ff4f25d8045460903ce84b6a5afd",
+  "source_manifest_hash": "bc844b2f0b8a908e57358a2a749e0ab648af15845bdd4527e4d76c351464f1eb",
+  "source_yield": {
+    "candidate_subjects": 15,
+    "day_events": 14,
+    "events": 27,
+    "month_events": 0,
+    "tier_a_b_birth": 0,
+    "tier_a_birth": 0,
+    "tier_b_birth": 0,
+    "tier_c_birth": 15,
+    "year_events": 13
+  },
+  "status": "PASS_WITH_CONDITION",
+  "subject_hash": "ea5a4e8bbcf332986964c3ee092185b08cf04ca3f51fa4a9e7c6a70bf891048e"
+}

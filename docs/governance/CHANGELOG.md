@@ -4046,3 +4046,12 @@ Completed the first governed source-ranked feature-level empirical study. A sing
   be used as an Astro-Databank identifier.
 - Preserved historical negative findings with bounded current-N language and
   blocked premature POSITION_END scoring.
+
+# 2026-08-17 — VEDA-EVIDENCE-CORPUS-001
+
+- Added feature-blind longitudinal corpus schema and deterministic feasibility
+  manifest with separate birth/event provenance and source clusters.
+- Screened the existing event feed: 15 subjects, 27 events, 14 DAY and 13 YEAR;
+  zero Tier A/B birth records.
+- Blocked confirmatory scale acquisition and preserved POSEND as legacy
+  feasibility evidence.
