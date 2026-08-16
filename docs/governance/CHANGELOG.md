@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-16 | VEDA-KNOW-TIMING-001 CLASSICAL EVENT-TIMING EXPANSION
+
+Completed a deep source expansion across BPHS, Phaladeepika and accessible
+classical source families. BPHS passages support conditional Dasha results and
+Antardasha mechanics; Phaladeepika supports a narrow house-lord transit-success
+condition and separate high-stakes transit timing material. These components
+remain distinct from modern event definitions. No new source-governable event
+signal was established, and no empirical fitting, production change, RAG
+rebuild, PRED-M4 upgrade or Approved Core promotion occurred.
+
 ## 2026-08-16 | VEDA-SIGNAL-003 THIRD-SIGNAL VIABILITY GATE
 
 Completed the education-first third-signal search and its ordered fallbacks:
