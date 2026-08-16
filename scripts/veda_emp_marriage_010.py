@@ -76,6 +76,14 @@ def candidates() -> list[dict[str, Any]]:
 
 
 def freeze_case(item: dict[str, Any], chart: dict[str, Any]) -> dict[str, Any]:
+    # KundliEngine's yoga detector can iterate an internal set in different
+    # orders.  Canonicalize that presentation-only collection before hashing;
+    # dasha and planetary arrays retain their semantic order.
+    if isinstance(chart.get("yogas"), list):
+        chart["yogas"] = [
+            {**yoga, "planets": sorted(yoga.get("planets", []))}
+            for yoga in sorted(chart["yogas"], key=lambda item: json.dumps(item, sort_keys=True, ensure_ascii=False))
+        ]
     frozen = {
         "case_id": item["case_id"],
         "subject_id": item["subject_id"],

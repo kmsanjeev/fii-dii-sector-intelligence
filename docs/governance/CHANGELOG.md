@@ -3856,3 +3856,9 @@ marriage events, deterministic chart snapshots, a 4/3/3 design/validation/
 holdout split and pre-specified matched controls. The sanity pilot is blocked
 pending independent control scoring; holdout outcomes remain masked. No signal,
 production, RAG, Approved Core or predictive-maturity change occurred.
+## 2026-08-16 | VEDA-EMP-MARRIAGE-010 DETERMINISM REPAIR
+
+Independent rerun review found presentation-order nondeterminism in serialized
+yoga metadata. The acquisition artifact now canonicalizes that metadata before
+case hashing. Two-run artifact stability passes; no chart fact, signal doctrine,
+holdout, production behavior or predictive status changed.

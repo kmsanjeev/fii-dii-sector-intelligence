@@ -86,3 +86,10 @@ prediction or confidence calibration was performed.
 Next automatic action: finalize independent matched-control scoring/review,
 then continue toward `VEDA-EMP-MARRIAGE-025` while maintaining general EMP-050
 diversity.
+
+## Determinism review
+
+The first post-commit rerun exposed nondeterministic ordering in the engine's
+presentation-only yoga list. The acquisition artifact now canonicalizes that
+list before case hashing; a two-run artifact hash comparison passes. No chart
+facts, signal doctrine or scoring result changed.

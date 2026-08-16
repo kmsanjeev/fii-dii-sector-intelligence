@@ -602,16 +602,6 @@
         },
         "yogas": [
           {
-            "name": "Kemdrum",
-            "planets": [
-              "Moon"
-            ],
-            "strength": "present",
-            "effect": "Isolation, lack of support, erratic performance",
-            "score": -15,
-            "signal": "CAUTION"
-          },
-          {
             "name": "Neecha Bhanga",
             "planets": [
               "Mars",
@@ -621,6 +611,16 @@
             "effect": "Debilitation cancelled, eventual recovery",
             "score": 8,
             "signal": "HOLD"
+          },
+          {
+            "name": "Kemdrum",
+            "planets": [
+              "Moon"
+            ],
+            "strength": "present",
+            "effect": "Isolation, lack of support, erratic performance",
+            "score": -15,
+            "signal": "CAUTION"
           }
         ],
         "transits": {
@@ -1989,7 +1989,7 @@
       "evaluation_lock": "FROZEN_BEFORE_SIGNAL_EVALUATION",
       "leakage_status": "VALID_FOR_BLIND_EVALUATION",
       "chart_fit_used_for_selection": false,
-      "case_hash": "6d10a5c6dd0c5a1faadb4e020d9be95cce9cad851a6326ab88300ef1d6d98f0e"
+      "case_hash": "913604e78c31ce5a60a226e54b731d142c83139e456c82fd0cf80ef510aa6eb3"
     },
     {
       "case_id": "MARRIAGE-002",
@@ -10147,21 +10147,10 @@
         },
         "yogas": [
           {
-            "name": "Dhana Yoga",
-            "planets": [
-              "Jupiter",
-              "Jupiter"
-            ],
-            "strength": "strong",
-            "effect": "Wealth accumulation, strong revenue cycle",
-            "score": 20,
-            "signal": "BUY"
-          },
-          {
             "name": "Raja Yoga",
             "planets": [
-              "Sun",
-              "Mercury"
+              "Mercury",
+              "Sun"
             ],
             "strength": "strong",
             "effect": "Authority, market leadership, strong brand",
@@ -10171,14 +10160,25 @@
           {
             "name": "Viparita Raja",
             "planets": [
-              "Moon",
               "Mercury",
+              "Moon",
               "Saturn"
             ],
             "strength": "present",
             "effect": "Thrives in adverse conditions, counter-cyclical",
             "score": 12,
             "signal": "HOLD"
+          },
+          {
+            "name": "Dhana Yoga",
+            "planets": [
+              "Jupiter",
+              "Jupiter"
+            ],
+            "strength": "strong",
+            "effect": "Wealth accumulation, strong revenue cycle",
+            "score": 20,
+            "signal": "BUY"
           }
         ],
         "transits": {
@@ -11548,7 +11548,7 @@
       "evaluation_lock": "FROZEN_BEFORE_SIGNAL_EVALUATION",
       "leakage_status": "VALID_FOR_BLIND_EVALUATION",
       "chart_fit_used_for_selection": false,
-      "case_hash": "2ea3636fa301b2b5853422117a3d8b3d4141237c5281cba91cdf2affe6435434"
+      "case_hash": "7113f624d94189d179d9dc98441b389f006aefbf4b2ab1983ec59a731ffd0791"
     },
     {
       "case_id": "MARRIAGE-007",
@@ -12098,8 +12098,8 @@
           {
             "name": "Raja Yoga",
             "planets": [
-              "Venus",
-              "Moon"
+              "Mars",
+              "Venus"
             ],
             "strength": "strong",
             "effect": "Authority, market leadership, strong brand",
@@ -12109,8 +12109,8 @@
           {
             "name": "Raja Yoga",
             "planets": [
-              "Venus",
-              "Mars"
+              "Moon",
+              "Venus"
             ],
             "strength": "strong",
             "effect": "Authority, market leadership, strong brand",
@@ -13503,7 +13503,7 @@
       "evaluation_lock": "FROZEN_BEFORE_SIGNAL_EVALUATION",
       "leakage_status": "VALID_FOR_BLIND_EVALUATION",
       "chart_fit_used_for_selection": false,
-      "case_hash": "a5cb0ef08ea1a2b5bfbc7aa5bb834791a8af0b3d64f88177abe93d5f5a78a1df"
+      "case_hash": "a0442e953a3d37a9c117b6f7e2a0f610d125077e25d856309318d1a8bb675c2c"
     },
     {
       "case_id": "MARRIAGE-008",
@@ -17876,8 +17876,8 @@
           {
             "name": "Raja Yoga",
             "planets": [
-              "Sun",
-              "Mercury"
+              "Mars",
+              "Saturn"
             ],
             "strength": "strong",
             "effect": "Authority, market leadership, strong brand",
@@ -17887,8 +17887,8 @@
           {
             "name": "Raja Yoga",
             "planets": [
-              "Mars",
-              "Saturn"
+              "Mercury",
+              "Sun"
             ],
             "strength": "strong",
             "effect": "Authority, market leadership, strong brand",
@@ -19270,7 +19270,7 @@
       "evaluation_lock": "FROZEN_BEFORE_SIGNAL_EVALUATION",
       "leakage_status": "VALID_FOR_BLIND_EVALUATION",
       "chart_fit_used_for_selection": false,
-      "case_hash": "3ed6102cbb535a061d47c386581dd6d70bc53dcb229f9ccdfb3fe69be963598c"
+      "case_hash": "446b756c20dd4d2263ba4d2894ce852dd6a5f845dd71cf4fed10ceb6e3a2323a"
     }
   ],
   "evaluations": [
