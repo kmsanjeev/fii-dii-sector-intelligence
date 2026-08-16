@@ -38,7 +38,7 @@ def frame(occupation: str) -> str:
         return "INSTITUTIONAL_LEADERS"
     if any(term in text for term in ("actor", "singer", "artist", "writer", "film", "musician")):
         return "ENTERTAINMENT_PUBLIC_FIGURES"
-    return "HISTORICAL_PUBLIC_FIGURES"
+    return "FRAME_NOT_AVAILABLE_FROM_CURRENT_METADATA"
 
 
 def upper_zero_success_yield(n: int, confidence: float = 0.95) -> float:
