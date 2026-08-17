@@ -160,6 +160,33 @@ def _write_status(state: dict) -> None:
     shutil.move(str(tmp), str(STATUS_FILE))
 
 
+def _terminate_process_tree(proc_or_pid: subprocess.Popen | int) -> None:
+    """Terminate a stage and all descendants, including Windows workers."""
+    pid = proc_or_pid.pid if isinstance(proc_or_pid, subprocess.Popen) else proc_or_pid
+    if os.name == "nt":
+        subprocess.run(
+            ["taskkill", "/PID", str(pid), "/T", "/F"],
+            capture_output=True,
+            check=False,
+        )
+    elif isinstance(proc_or_pid, subprocess.Popen):
+        proc_or_pid.kill()
+
+
+def _set_active_pid(pid: int | None) -> None:
+    """Persist the current stage PID so reload recovery can clean it up."""
+    try:
+        with open(STATUS_FILE, encoding="utf-8") as f:
+            status = json.load(f)
+        if pid is None:
+            status.pop("active_pid", None)
+        else:
+            status["active_pid"] = pid
+        _write_status(status)
+    except (OSError, json.JSONDecodeError):
+        pass
+
+
 def read_status() -> dict:
     if STATUS_FILE.exists():
         try:
@@ -172,6 +199,9 @@ def read_status() -> dict:
                 owner_pid = status.get("owner_pid")
                 live = bool(owner_pid == os.getpid() and is_running())
                 if not live:
+                    active_pid = status.get("active_pid")
+                    if active_pid:
+                        _terminate_process_tree(int(active_pid))
                     status.update({
                         "state": "FAILED",
                         "current_stage": None,
@@ -179,6 +209,7 @@ def read_status() -> dict:
                         "last_run_at": _now_ist(),
                         "stale_reason": "Persisted RUNNING state has no live pipeline worker",
                     })
+                    status.pop("active_pid", None)
                     _write_status(status)
             return status
         except Exception:
@@ -240,6 +271,7 @@ def _run_stage(run_id: str, stage_id: str, module: str, label: str, timeout: int
     )
     with _proc_lock:
         _active_proc = proc
+    _set_active_pid(proc.pid)
 
     output_lines: list[str] = []
     output_queue: queue.Queue[str | None] = queue.Queue()
@@ -256,8 +288,9 @@ def _run_stage(run_id: str, stage_id: str, module: str, label: str, timeout: int
 
     while True:
         if _stop_event.is_set():
-            proc.kill()
+            _terminate_process_tree(proc)
             proc.wait()
+            _set_active_pid(None)
             with _proc_lock:
                 if _active_proc is proc:
                     _active_proc = None
@@ -268,8 +301,9 @@ def _run_stage(run_id: str, stage_id: str, module: str, label: str, timeout: int
 
         elapsed = time.monotonic() - t0
         if elapsed > timeout:
-            proc.kill()
+            _terminate_process_tree(proc)
             proc.wait()
+            _set_active_pid(None)
             with _proc_lock:
                 if _active_proc is proc:
                     _active_proc = None
@@ -295,6 +329,7 @@ def _run_stage(run_id: str, stage_id: str, module: str, label: str, timeout: int
     with _proc_lock:
         if _active_proc is proc:
             _active_proc = None
+    _set_active_pid(None)
     elapsed = time.monotonic() - t0
     finished_at = _now_ist()
     status = "DONE" if rc == 0 else "FAILED"
@@ -420,10 +455,7 @@ def stop_pipeline() -> tuple[bool, str]:
     with _proc_lock:
         proc = _active_proc
     if proc is not None and proc.poll() is None:
-        try:
-            proc.kill()
-        except OSError:
-            pass
+        _terminate_process_tree(proc)
     if is_running():
         return True, "Stop signal sent - active stage is being terminated"
     return True, "Stop flag set (pipeline was not running)"
