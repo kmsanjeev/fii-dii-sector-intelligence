@@ -207,11 +207,13 @@ function DailyPipelinePanel({
   const [log, setLog]             = useState<Record<string, unknown>[]>([])
   const [showLog, setShowLog]     = useState(false)
   const [actionMsg, setActionMsg] = useState('')
+  const [runRequested, setRunRequested] = useState(false)
+  const requestedBaselineRef = useRef<string | null>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const fetchStatus = useCallback(async () => {
     try {
-      const r = await fetch(`${API_BASE}/api/pipeline/status`)
+      const r = await fetch(`${API_BASE}/api/pipeline/status`, { cache: 'no-store' })
       if (r.ok) setPs(await r.json())
     } catch {}
   }, [])
@@ -229,16 +231,31 @@ function DailyPipelinePanel({
       fetchStatus()
       if (showLog) fetchLog()
     }
-    pollRef.current = setInterval(tick, ps?.state === 'RUNNING' ? 5000 : 30000)
+    pollRef.current = setInterval(
+      tick,
+      runRequested || ps?.state === 'RUNNING' ? 5000 : 30000,
+    )
     return () => { if (pollRef.current) clearInterval(pollRef.current) }
-  }, [ps?.state, showLog, fetchStatus, fetchLog])
+  }, [ps?.state, runRequested, showLog, fetchStatus, fetchLog])
+
+  useEffect(() => {
+    if (!runRequested || !ps?.run_id) return
+    const newRun = ps.run_id !== requestedBaselineRef.current
+    if (newRun && ps.state !== 'RUNNING') setRunRequested(false)
+  }, [runRequested, ps?.run_id, ps?.state])
 
   async function runNow() {
     setActionMsg('')
     try {
       const r    = await fetch(`${API_BASE}/api/pipeline/run`, { method: 'POST' })
       const body = await r.json()
-      setActionMsg(r.ok ? 'Pipeline started.' : body.detail ?? 'Already running.')
+      if (r.ok) {
+        requestedBaselineRef.current = ps?.run_id ?? null
+        setRunRequested(true)
+        setActionMsg('Pipeline started.')
+      } else {
+        setActionMsg(body.detail ?? 'Already running.')
+      }
       fetchStatus()
     } catch { setActionMsg('Could not reach backend.') }
   }
@@ -253,7 +270,7 @@ function DailyPipelinePanel({
     } catch { setActionMsg('Could not reach backend.') }
   }
 
-  const isRunning  = ps?.state === 'RUNNING'
+  const isRunning  = runRequested || ps?.state === 'RUNNING'
   const doneCount  = STAGE_ORDER.filter(id => ps?.stages?.[id]?.status === 'DONE').length
 
   return (

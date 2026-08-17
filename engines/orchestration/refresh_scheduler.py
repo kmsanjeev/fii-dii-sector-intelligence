@@ -14,7 +14,7 @@ from datetime import datetime, timezone, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 
-from engines.orchestration.daily_refresh import start_pipeline, read_status
+from engines.orchestration.daily_refresh import start_pipeline
 from engines.common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -32,12 +32,6 @@ def _scheduled_run() -> None:
     """Called by APScheduler at 18:00 IST weekdays."""
     ist_now = datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
     logger.info("[Scheduler] Triggered at %s IST", ist_now.strftime("%Y-%m-%d %H:%M"))
-
-    # Guard: skip if already running
-    status = read_status()
-    if status.get("state") == "RUNNING":
-        logger.info("[Scheduler] Pipeline already running — skipping scheduled trigger")
-        return
 
     ok, msg = start_pipeline()
     logger.info("[Scheduler] %s", msg)

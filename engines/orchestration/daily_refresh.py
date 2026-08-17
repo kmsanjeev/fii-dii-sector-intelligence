@@ -187,30 +187,100 @@ def _set_active_pid(pid: int | None) -> None:
         pass
 
 
+def _pid_exists(pid: int | None) -> bool:
+    """Return whether a process ID currently exists without raising."""
+    if not pid or pid <= 0:
+        return False
+    try:
+        if os.name == "nt":
+            result = subprocess.run(
+                ["tasklist", "/FI", f"PID eq {pid}", "/FO", "CSV", "/NH"],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            return f'"{pid}"' in result.stdout
+        os.kill(pid, 0)
+        return True
+    except (OSError, ValueError):
+        return False
+
+
+def _recover_stale_status() -> None:
+    """Recover a run left behind by a dead controller, once at admission time.
+
+    Status polling must remain read-only.  Killing a child from GET /status can
+    race the live pipeline and was the source of the repeated exit-code-1
+    failures.  Recovery is therefore performed only before admitting a new
+    run or a scheduled run.
+    """
+    if not STATUS_FILE.exists():
+        return
+    try:
+        with open(STATUS_FILE, encoding="utf-8") as f:
+            status = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return
+
+    if status.get("state") != "RUNNING":
+        return
+
+    owner_pid = status.get("owner_pid")
+    if owner_pid == os.getpid():
+        owner_live = is_running()
+    else:
+        owner_live = _pid_exists(owner_pid)
+    if owner_live:
+        return
+
+    active_pid = status.get("active_pid")
+    if active_pid and _pid_exists(int(active_pid)):
+        _terminate_process_tree(int(active_pid))
+
+    status.update({
+        "state": "FAILED",
+        "current_stage": None,
+        "current_label": None,
+        "last_run_at": _now_ist(),
+        "stale_reason": "Recovered persisted RUNNING state after controller exit",
+    })
+    status.pop("active_pid", None)
+    _write_status(status)
+
+
 def read_status() -> dict:
     if STATUS_FILE.exists():
         try:
             with open(STATUS_FILE, encoding="utf-8") as f:
                 status = json.load(f)
-            # RUNNING is not durable truth: the process may have died or the
-            # backend may have been restarted.  Recover stale persisted state
-            # instead of making the UI report a permanently running pipeline.
-            if status.get("state") == "RUNNING":
-                owner_pid = status.get("owner_pid")
-                live = bool(owner_pid == os.getpid() and is_running())
-                if not live:
-                    active_pid = status.get("active_pid")
-                    if active_pid:
-                        _terminate_process_tree(int(active_pid))
-                    status.update({
-                        "state": "FAILED",
-                        "current_stage": None,
-                        "current_label": None,
-                        "last_run_at": _now_ist(),
-                        "stale_reason": "Persisted RUNNING state has no live pipeline worker",
-                    })
-                    status.pop("active_pid", None)
-                    _write_status(status)
+            # A controller can die between the subprocess log append and the
+            # final status write.  Reconcile only terminal snapshots from the
+            # append-only refresh log; never mutate the file during polling.
+            if status.get("state") != "RUNNING":
+                run_id = status.get("run_id")
+                log_rows = read_log(500)
+                for stage_id, stage in status.get("stages", {}).items():
+                    if stage.get("status") != "RUNNING":
+                        continue
+                    matches = [
+                        row for row in log_rows
+                        if row.get("run_id") == run_id
+                        and row.get("stage_id") == stage_id
+                    ]
+                    if matches:
+                        row = matches[-1]
+                        stage.update({
+                            "status": row.get("status", "FAILED"),
+                            "finished_at": row.get("finished_at") or status.get("last_run_at"),
+                            "duration_s": float(row["duration_s"]) if row.get("duration_s") else None,
+                            "error": row.get("error", ""),
+                        })
+                    else:
+                        stage.update({
+                            "status": "FAILED",
+                            "finished_at": status.get("last_run_at"),
+                            "error": stage.get("error") or "Orphaned RUNNING stage in terminal snapshot",
+                        })
             return status
         except Exception:
             pass
@@ -383,6 +453,7 @@ def _pipeline_body() -> None:
             "current_stage": stage_id,
             "current_label": label,
             "stages":        stage_statuses,
+            "owner_pid":     os.getpid(),
         })
 
         logger.info("[Pipeline] Starting stage: %s (%s)", stage_id, label)
@@ -438,7 +509,13 @@ def start_pipeline() -> tuple[bool, str]:
     with _lock:
         if _run_thread is not None and _run_thread.is_alive():
             return False, "Pipeline already running"
-        t = threading.Thread(target=_pipeline_body, daemon=True, name="daily-refresh")
+
+    _recover_stale_status()
+
+    t = threading.Thread(target=_pipeline_body, daemon=True, name="daily-refresh")
+    with _lock:
+        if _run_thread is not None and _run_thread.is_alive():
+            return False, "Pipeline already running"
         _run_thread = t
         t.start()
     return True, "Pipeline started"

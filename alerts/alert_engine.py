@@ -651,8 +651,38 @@ class AlertEngine:
         return alerts
 
 
+def run_pipeline_alert_delivery() -> tuple[int, int]:
+    """Evaluate and deliver eligible alerts for a completed daily refresh.
+
+    This entry point is used only when the daily pipeline executes this module
+    as ``__main__``.  The independent 08:45 alert scheduler imports
+    ``AlertEngine`` and remains unchanged.
+    """
+    from alerts.alert_store import AlertStore
+    from alerts.telegram_bot import send_alerts
+
+    store = AlertStore()
+    engine = AlertEngine(previous_regime=store.get_previous_regime())
+    raw_alerts = engine.run()
+    eligible = store.filter_eligible(raw_alerts)
+    sent = send_alerts(eligible) if eligible else 0
+
+    for alert in eligible[:sent]:
+        store.mark_sent(alert)
+
+    # Keep the regime baseline in sync exactly as the regular alert scheduler
+    # does, without starting or modifying that scheduler.
+    if PARTICIPANT_INTEL.exists():
+        df = pd.read_csv(PARTICIPANT_INTEL, usecols=["date", "Market_Regime"])
+        df = df.dropna(subset=["Market_Regime"]).sort_values("date")
+        if not df.empty:
+            store.set_current_regime(str(df.iloc[-1]["Market_Regime"]))
+
+    logger.info("[AlertEngine] Pipeline delivery complete — %s eligible, %s sent",
+                len(eligible), sent)
+    print(f"Telegram delivery: {sent}/{len(eligible)} eligible alerts sent")
+    return len(eligible), sent
+
+
 if __name__ == "__main__":
-    engine = AlertEngine(previous_regime="DISTRIBUTION")
-    alerts = engine.run()
-    for a in alerts:
-        print(f"[P{a.priority}] {a.alert_type}: {a.title}")
+    run_pipeline_alert_delivery()
