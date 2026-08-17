@@ -7,7 +7,10 @@ Credentials always from environment — NEVER hardcoded.
 import os
 import time
 import requests
+import html
+import tempfile
 from typing import Optional
+from pathlib import Path
 
 from engines.common.logger import get_logger
 
@@ -103,6 +106,87 @@ def send_alerts(alerts: list) -> int:
 
     logger.info(f"[TelegramBot] Sent {sent}/{len(alerts)} alerts")
     return sent
+
+
+def _alert_digest_plain_text(alerts: list) -> str:
+    """Build one complete plain-text digest for a pipeline delivery."""
+    lines = [
+        "DAILY PIPELINE ALERT DIGEST",
+        f"Alerts: {len(alerts)}",
+        "",
+    ]
+    for index, alert in enumerate(alerts, start=1):
+        lines.extend([
+            f"[{index}] {alert.title}",
+            str(alert.body or ""),
+            f"Type: {alert.alert_type} | Priority: {alert.priority} | "
+            f"Symbol: {alert.symbol or '-'} | Sector: {alert.sector or '-'} | "
+            f"Score: {alert.score if alert.score is not None else '-'} | "
+            f"Date: {alert.data_date or '-'}",
+            "",
+        ])
+    return "\n".join(lines).strip()
+
+
+def _alert_digest_html(alerts: list) -> str:
+    """Build a Telegram-safe HTML digest for a single message delivery."""
+    lines = [
+        "<b>DAILY PIPELINE ALERT DIGEST</b>",
+        f"Alerts: {len(alerts)}",
+        "",
+    ]
+    for index, alert in enumerate(alerts, start=1):
+        lines.extend([
+            f"<b>[{index}] {html.escape(str(alert.title))}</b>",
+            html.escape(str(alert.body or "")),
+            html.escape(
+                f"Type: {alert.alert_type} | Priority: {alert.priority} | "
+                f"Symbol: {alert.symbol or '-'} | Sector: {alert.sector or '-'} | "
+                f"Score: {alert.score if alert.score is not None else '-'} | "
+                f"Date: {alert.data_date or '-'}"
+            ),
+            "",
+        ])
+    return "\n".join(lines).strip()
+
+
+def send_alert_digest(alerts: list) -> bool:
+    """Deliver all pipeline alerts as exactly one Telegram message.
+
+    Telegram text messages are limited to 4096 characters.  For a larger
+    digest, send one temporary document containing the complete context.  The
+    caller can therefore persist the whole batch atomically: success means the
+    single message/document was accepted; failure means none are marked sent.
+
+    This is intentionally pipeline-only.  The 08:45 Daily Market Brief keeps
+    its existing delivery path and is not routed through this helper.
+    """
+    if not alerts:
+        return True
+
+    plain = _alert_digest_plain_text(alerts)
+    rendered = _alert_digest_html(alerts)
+    if len(rendered) <= MAX_MSG_LEN:
+        return send_message(rendered, parse_mode="HTML")
+
+    temp_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", suffix=".txt", prefix="veda-alert-digest-",
+            delete=False,
+        ) as handle:
+            handle.write(plain)
+            temp_path = Path(handle.name)
+        return send_document(
+            temp_path,
+            caption=f"Daily pipeline alert digest ({len(alerts)} alerts)",
+        )
+    finally:
+        if temp_path is not None:
+            try:
+                temp_path.unlink(missing_ok=True)
+            except OSError:
+                logger.warning("[TelegramBot] Could not remove temporary alert digest: %s", temp_path)
 
 
 def _format_alert(alert) -> str:

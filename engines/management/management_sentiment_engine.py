@@ -3,7 +3,7 @@ Management Sentiment Engine -- Phase 16C
 Scores management quality and sentiment from:
   - Holding trend signals (promoter stake change)
   - Announcement patterns (dividends, buybacks, AGM tone)
-  - Claude API tone scoring of board meeting text (ANTHROPIC_API_KEY required)
+  - Optional provider-backed AI tone scoring of board meeting text
 
 Output: data/NSE/shareholding/management_sentiment.csv
 
@@ -18,13 +18,14 @@ Management labels:
   WEAK              : score <  35 (promoter selling or negative signals)
 
 Security:
-  ANTHROPIC_API_KEY ALWAYS from os.getenv() -- NEVER hardcoded.
-  If not set, AI tone scoring is skipped (engine still runs with rule-based score).
+  Provider credentials are loaded from the environment -- NEVER hardcoded.
+  If no provider is configured or available, AI tone scoring is skipped and
+  the engine continues with its rule-based score.
 
 Guardrails:
   - G-D-02: atomic writes
   - G-D-03: no empty DataFrame writes
-  - G-A-01: rate limiting for Claude API calls
+  - G-A-01: rate limiting for optional LLM calls
 """
 
 import os
@@ -151,9 +152,11 @@ class ManagementSentimentEngine:
 
     def _apply_ai_tone(self, df: pd.DataFrame, ann_df: pd.DataFrame) -> pd.DataFrame:
         """
-        Use Claude API to score tone of board meeting announcement text.
-        Only runs when ANTHROPIC_API_KEY is set.
-        Processes top 50 symbols by preliminary combined score to stay within budget.
+        Use the configured provider fallback to score tone of board meeting
+        announcement text. Only runs when at least one provider is configured.
+        Processes a bounded number of symbols by preliminary combined score to
+        stay within the daily pipeline budget.  The rule-based score remains
+        available for every symbol when the optional AI provider is unavailable.
         """
         from engines.common.llm_client import call_llm as _call_llm_fn
 
@@ -162,7 +165,16 @@ class ManagementSentimentEngine:
             return df
 
         df["_pre_score"] = 0.5 * df["holding_score"] + 0.5 * df["announcement_score"]
-        top = df.nlargest(50, "_pre_score")
+        max_symbols = cfg.MANAGEMENT_AI_MAX_SYMBOLS
+        if max_symbols == 0:
+            logger.info("[MgmtSentiment] AI tone disabled by MANAGEMENT_AI_MAX_SYMBOLS=0")
+            return df.drop(columns=["_pre_score"], errors="ignore")
+
+        top = df.nlargest(max_symbols, "_pre_score")
+        logger.info(
+            "[MgmtSentiment] AI tone bounded to %s symbols (configured limit)",
+            len(top),
+        )
 
         ai_scores: dict[str, float] = {}
         for _, row in top.iterrows():
@@ -187,6 +199,11 @@ class ManagementSentimentEngine:
                     ),
                     max_tokens=16,
                 )
+                if not score_text.strip():
+                    logger.warning(
+                        "[MgmtSentiment] LLM providers unavailable; stopping AI tone pass"
+                    )
+                    break
                 ai_score = float(score_text.split()[0])
                 ai_scores[symbol] = max(0, min(100, ai_score))
                 logger.debug(f"[MgmtSentiment] AI tone {symbol}: {ai_score}")

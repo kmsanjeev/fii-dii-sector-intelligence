@@ -103,6 +103,16 @@ class AlertStore:
         self._state["sent"][key] = datetime.now().isoformat()
         self._save()
 
+    def mark_sent_many(self, alerts: list[Alert]):
+        """Persist one successfully delivered digest in a single atomic save."""
+        if not alerts:
+            return
+        sent_at = datetime.now().isoformat()
+        sent = self._state.setdefault("sent", {})
+        for alert in alerts:
+            sent[self._cooldown_key(alert)] = sent_at
+        self._save()
+
     # ── Filter ────────────────────────────────────────────────────────────────
 
     def filter_eligible(self, alerts: list) -> list:

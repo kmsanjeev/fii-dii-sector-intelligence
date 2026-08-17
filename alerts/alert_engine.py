@@ -659,16 +659,17 @@ def run_pipeline_alert_delivery() -> tuple[int, int]:
     ``AlertEngine`` and remains unchanged.
     """
     from alerts.alert_store import AlertStore
-    from alerts.telegram_bot import send_alerts
+    from alerts.telegram_bot import send_alert_digest
 
     store = AlertStore()
     engine = AlertEngine(previous_regime=store.get_previous_regime())
     raw_alerts = engine.run()
     eligible = store.filter_eligible(raw_alerts)
-    sent = send_alerts(eligible) if eligible else 0
+    delivered = send_alert_digest(eligible) if eligible else True
+    sent = len(eligible) if delivered else 0
 
-    for alert in eligible[:sent]:
-        store.mark_sent(alert)
+    if delivered:
+        store.mark_sent_many(eligible)
 
     # Keep the regime baseline in sync exactly as the regular alert scheduler
     # does, without starting or modifying that scheduler.

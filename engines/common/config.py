@@ -276,6 +276,10 @@ WRITE_PARQUET = True
 
 API_TIMEOUT = 30
 API_DELAY = 1.0
+# Management sentiment keeps its rule-based result when AI is unavailable and
+# limits optional provider work so one daily refresh cannot spend its whole
+# stage budget on serial LLM calls.
+MANAGEMENT_AI_MAX_SYMBOLS = max(0, _env_int("MANAGEMENT_AI_MAX_SYMBOLS", 10))
 
 MAX_RETRIES = 3
 RETRY_DELAY = 3

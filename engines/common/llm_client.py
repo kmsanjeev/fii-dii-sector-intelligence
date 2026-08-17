@@ -114,6 +114,7 @@ _PROVIDERS = [
 # Track which providers are temporarily exhausted (reset after COOLDOWN_S)
 _PROVIDER_COOLDOWN: dict[str, float] = {}
 COOLDOWN_S = 300   # 5 minutes before retrying a rate-limited provider
+MODEL_FAILURE_COOLDOWN_S = 3600  # invalid/retired model: do not retry this run
 
 
 def _get_active_providers() -> list[dict]:
@@ -140,6 +141,23 @@ def _is_credit_error(exc: Exception) -> bool:
     return (
         "credit" in msg or "402" in msg or "billing" in msg
         or "insufficient" in msg or "balance" in msg
+    )
+
+
+def _is_model_unavailable_error(exc: Exception) -> bool:
+    """Return True for a provider/model configuration failure.
+
+    A retired or inaccessible model is deterministic, not transient.  It must
+    be quarantined after the first failure instead of being retried for every
+    management-sentiment symbol.
+    """
+    msg = str(exc).lower()
+    return (
+        "model_not_found" in msg
+        or "model does not exist" in msg
+        or "unknown model" in msg
+        or "invalid model" in msg
+        or ("404" in msg and "model" in msg)
     )
 
 
@@ -187,7 +205,13 @@ def call_llm(
             return text
 
         except Exception as exc:
-            if _is_rate_limit_error(exc):
+            if _is_model_unavailable_error(exc):
+                logger.error(
+                    "[LLMClient] %s model unavailable; cooling down provider for %ss: %s",
+                    p["name"], MODEL_FAILURE_COOLDOWN_S, exc,
+                )
+                _PROVIDER_COOLDOWN[p["name"]] = time.time() + MODEL_FAILURE_COOLDOWN_S
+            elif _is_rate_limit_error(exc):
                 logger.warning(f"[LLMClient] {p['name']} rate-limited — cooling down {COOLDOWN_S}s")
                 _PROVIDER_COOLDOWN[p["name"]] = time.time() + COOLDOWN_S
             elif _is_credit_error(exc):

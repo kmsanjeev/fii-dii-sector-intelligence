@@ -210,11 +210,19 @@ async def _download_dates(trade_dates: list, year: int) -> dict:
 
 
 def download_year(year: int) -> dict:
+    # Never probe future business dates.  The old fixed Dec-31 endpoint made
+    # an incremental run spend its budget checking dates that cannot yet have
+    # an NSE bhavcopy, especially for the current year.
+    start_date = date(year, 1, 1)
+    end_date = min(date(year, 12, 31), datetime.today().date())
+    if end_date < start_date:
+        return {"downloaded": 0, "skipped": 0, "failed": 0}
+
     dates = [
         d.date()
         for d in pd.date_range(
-            start=f"{year}-01-01",
-            end=f"{year}-12-31",
+            start=start_date,
+            end=end_date,
             freq="B",
         )
     ]
