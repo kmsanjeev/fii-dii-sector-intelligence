@@ -10,6 +10,8 @@ Run manually:   py -3.11 -m engines.orchestration.daily_refresh
 """
 
 import json
+import os
+import queue
 import shutil
 import subprocess
 import sys
@@ -136,6 +138,8 @@ STAGE_SECTIONS = {
 _lock        = threading.Lock()
 _stop_event  = threading.Event()
 _run_thread: threading.Thread | None = None
+_proc_lock   = threading.Lock()
+_active_proc: subprocess.Popen | None = None
 
 
 # ── Status helpers ────────────────────────────────────────────────────────────
@@ -160,7 +164,23 @@ def read_status() -> dict:
     if STATUS_FILE.exists():
         try:
             with open(STATUS_FILE, encoding="utf-8") as f:
-                return json.load(f)
+                status = json.load(f)
+            # RUNNING is not durable truth: the process may have died or the
+            # backend may have been restarted.  Recover stale persisted state
+            # instead of making the UI report a permanently running pipeline.
+            if status.get("state") == "RUNNING":
+                owner_pid = status.get("owner_pid")
+                live = bool(owner_pid == os.getpid() and is_running())
+                if not live:
+                    status.update({
+                        "state": "FAILED",
+                        "current_stage": None,
+                        "current_label": None,
+                        "last_run_at": _now_ist(),
+                        "stale_reason": "Persisted RUNNING state has no live pipeline worker",
+                    })
+                    _write_status(status)
+            return status
         except Exception:
             pass
     return {"state": "IDLE", "last_run_at": None, "current_stage": None, "stages": {}}
@@ -209,6 +229,7 @@ def _run_stage(run_id: str, stage_id: str, module: str, label: str, timeout: int
     started_at = _now_ist()
     t0 = time.monotonic()
 
+    global _active_proc
     proc = subprocess.Popen(
         [sys.executable, "-m", module],
         stdout=subprocess.PIPE,
@@ -217,22 +238,29 @@ def _run_stage(run_id: str, stage_id: str, module: str, label: str, timeout: int
         encoding="utf-8",
         errors="replace",
     )
+    with _proc_lock:
+        _active_proc = proc
 
     output_lines: list[str] = []
+    output_queue: queue.Queue[str | None] = queue.Queue()
+
+    def _read_output() -> None:
+        try:
+            for line in proc.stdout or ():
+                output_queue.put(line.rstrip())
+        finally:
+            output_queue.put(None)
+
+    reader = threading.Thread(target=_read_output, name=f"pipeline-output-{stage_id}", daemon=True)
+    reader.start()
 
     while True:
-        try:
-            line = proc.stdout.readline()  # type: ignore[union-attr]
-        except Exception:
-            break
-        if line:
-            output_lines.append(line.rstrip())
-            logger.debug("[Pipeline][%s] %s", stage_id, line.rstrip())
-        elif proc.poll() is not None:
-            break
-
         if _stop_event.is_set():
             proc.kill()
+            proc.wait()
+            with _proc_lock:
+                if _active_proc is proc:
+                    _active_proc = None
             elapsed = time.monotonic() - t0
             finished_at = _now_ist()
             _append_log(run_id, stage_id, label, "STOPPED", started_at, finished_at, elapsed)
@@ -241,12 +269,32 @@ def _run_stage(run_id: str, stage_id: str, module: str, label: str, timeout: int
         elapsed = time.monotonic() - t0
         if elapsed > timeout:
             proc.kill()
+            proc.wait()
+            with _proc_lock:
+                if _active_proc is proc:
+                    _active_proc = None
             finished_at = _now_ist()
             _append_log(run_id, stage_id, label, "TIMEOUT", started_at, finished_at, elapsed,
                         f"Exceeded {timeout}s timeout")
             return "TIMEOUT", f"Exceeded {timeout}s timeout"
 
+        try:
+            line = output_queue.get(timeout=0.25)
+        except queue.Empty:
+            if proc.poll() is not None:
+                break
+            continue
+        if line is None:
+            if proc.poll() is not None:
+                break
+            continue
+        output_lines.append(line)
+        logger.debug("[Pipeline][%s] %s", stage_id, line)
+
     rc = proc.wait()
+    with _proc_lock:
+        if _active_proc is proc:
+            _active_proc = None
     elapsed = time.monotonic() - t0
     finished_at = _now_ist()
     status = "DONE" if rc == 0 else "FAILED"
@@ -277,6 +325,7 @@ def _pipeline_body() -> None:
         "last_run_at":  None,
         "current_stage": None,
         "stages":       stage_statuses,
+        "owner_pid":    os.getpid(),
     })
 
     logger.info("[Pipeline] Run %s started at %s", run_id, started)
@@ -335,6 +384,7 @@ def _pipeline_body() -> None:
         "last_run_at":   finished,
         "current_stage": None,
         "stages":        stage_statuses,
+        "owner_pid":     os.getpid(),
     })
     logger.info("[Pipeline] Run %s finished: %s at %s", run_id, final_state, finished)
 
@@ -364,10 +414,18 @@ def stop_pipeline() -> tuple[bool, str]:
     Signal the pipeline to stop after the current stage finishes.
     Also writes the stop sentinel file so any hung subprocess can be killed.
     """
+    global _active_proc
     _stop_event.set()
     STOP_FLAG.touch()
+    with _proc_lock:
+        proc = _active_proc
+    if proc is not None and proc.poll() is None:
+        try:
+            proc.kill()
+        except OSError:
+            pass
     if is_running():
-        return True, "Stop signal sent - pipeline will abort after current stage"
+        return True, "Stop signal sent - active stage is being terminated"
     return True, "Stop flag set (pipeline was not running)"
 
 

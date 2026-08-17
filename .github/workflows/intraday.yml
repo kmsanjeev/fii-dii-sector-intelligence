@@ -1,0 +1,11 @@
+name: Intraday Pipeline (manual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain status
+        run: echo "Intraday acquisition is not enabled in this repository; no push-triggered job is configured."
