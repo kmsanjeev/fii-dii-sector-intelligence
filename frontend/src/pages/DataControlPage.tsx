@@ -46,6 +46,14 @@ type StageInfo = {
   started_at?:  string
   finished_at?: string
   duration_s?:  number
+  elapsed_s?:   number
+  estimate_s?:  number
+  eta_s?:       number
+  progress_pct?: number
+  progress_basis?: string
+  process_alive?: boolean
+  last_output?: string
+  timeout_s?:   number
   error?:       string
 }
 
@@ -57,6 +65,8 @@ type PipelineStatus = {
   current_stage: string | null
   current_label: string | null
   next_run_ist:  string | null
+  active_pid?:   number | null
+  heartbeat_at?: string | null
   stages:        Record<string, StageInfo>
 }
 
@@ -187,6 +197,23 @@ function stateColor(state: string): string {
   return '#334155'
 }
 
+function formatEta(seconds?: number): string {
+  if (seconds == null || !Number.isFinite(seconds)) return '--'
+  if (seconds < 60) return `${Math.max(0, Math.round(seconds))}s`
+  const minutes = Math.floor(seconds / 60)
+  const remainder = Math.round(seconds % 60)
+  return `${minutes}m ${remainder}s`
+}
+
+function ProgressBar({ pct, color = '#F59E0B' }: { pct: number; color?: string }) {
+  const safePct = Math.max(0, Math.min(100, Number.isFinite(pct) ? pct : 0))
+  return (
+    <div style={{ height: 5, minWidth: 76, backgroundColor: '#1E2332', borderRadius: 3 }}>
+      <div style={{ width: `${safePct}%`, height: 5, borderRadius: 3, backgroundColor: color, transition: 'width 0.5s' }} />
+    </div>
+  )
+}
+
 function SectionLabel({ label }: { label: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '14px 0 6px' }}>
@@ -233,7 +260,7 @@ function DailyPipelinePanel({
     }
     pollRef.current = setInterval(
       tick,
-      runRequested || ps?.state === 'RUNNING' ? 5000 : 30000,
+      runRequested || ps?.state === 'RUNNING' ? (showLog ? 2000 : 5000) : 30000,
     )
     return () => { if (pollRef.current) clearInterval(pollRef.current) }
   }, [ps?.state, runRequested, showLog, fetchStatus, fetchLog])
@@ -323,6 +350,11 @@ function DailyPipelinePanel({
         <span>Last run: <span style={{ color: '#94A3B8' }}>{ps?.last_run_at ?? 'never'}</span></span>
         {isRunning && ps?.current_label && (
           <span style={{ color: '#F59E0B' }}>Running: {ps.current_label}</span>
+        )}
+        {isRunning && (
+          <span style={{ color: ps?.active_pid ? '#22C55E' : '#F59E0B' }}>
+            Process: {ps?.active_pid ? `alive (PID ${ps.active_pid})` : 'starting'}
+          </span>
         )}
       </div>
 
@@ -426,10 +458,12 @@ function DailyPipelinePanel({
         >
           {showLog ? 'Hide Log' : 'Show Log'}
         </button>
-        <span style={{ fontSize: 9, color: '#475569' }}>Last 60 stage entries from refresh_log.csv</span>
+        <span style={{ fontSize: 9, color: '#475569' }}>
+          Last 60 stage entries from refresh_log.csv · live heartbeat includes progress, ETA and process state
+        </span>
       </div>
 
-      {showLog && log.length > 0 && (
+      {showLog && (
         <div style={{
           marginTop: 8, backgroundColor: '#0A0D14',
           border: '1px solid #1E2332', borderRadius: 4,
@@ -438,21 +472,50 @@ function DailyPipelinePanel({
         }}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 60px 50px 100px',
+            gridTemplateColumns: '1fr 60px 90px 55px 50px 60px 100px',
             gap: '0 8px', color: '#475569', marginBottom: 4, fontWeight: 700,
           }}>
-            <span>Stage</span><span>Status</span><span>Dur(s)</span><span>Finished</span>
+            <span>Stage</span><span>Status</span><span>Progress</span><span>ETA</span><span>Alive</span><span>Elapsed</span><span>Finished</span>
           </div>
+          {isRunning && ps?.current_stage && ps.stages[ps.current_stage] && (() => {
+            const live = ps.stages[ps.current_stage]
+            const liveColor = live.process_alive ? '#F59E0B' : '#EF4444'
+            return (
+              <div style={{
+                display: 'grid', gridTemplateColumns: '1fr 60px 90px 55px 50px 60px 100px',
+                gap: '0 8px', borderBottom: '1px solid #F59E0B55', padding: '5px 0',
+              }}>
+                <span style={{ color: '#F59E0B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  LIVE: {live.label ?? ps.current_stage}
+                </span>
+                <span style={{ color: liveColor }}>{live.process_alive ? 'RUNNING' : 'CHECKING'}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <ProgressBar pct={live.progress_pct ?? 0} />
+                  <span style={{ color: '#F59E0B' }}>{Math.round(live.progress_pct ?? 0)}%</span>
+                </span>
+                <span style={{ color: '#F59E0B' }}>{formatEta(live.eta_s)}</span>
+                <span style={{ color: liveColor }}>{live.process_alive ? 'YES' : 'NO'}</span>
+                <span style={{ color: '#64748B' }}>{live.elapsed_s != null ? `${live.elapsed_s}s` : '--'}</span>
+                <span style={{ color: '#64748B' }}>--</span>
+              </div>
+            )
+          })()}
           {log.slice().reverse().map((row, i) => {
             const st  = String(row.status ?? '')
             const col = st === 'DONE' ? '#22C55E' : st === 'FAILED' || st === 'TIMEOUT' ? '#EF4444' : '#64748B'
             return (
               <div key={i} style={{
-                display: 'grid', gridTemplateColumns: '1fr 60px 50px 100px',
+                display: 'grid', gridTemplateColumns: '1fr 60px 90px 55px 50px 60px 100px',
                 gap: '0 8px', borderBottom: '1px solid #1E233220', padding: '2px 0',
               }}>
                 <span style={{ color: '#94A3B8' }}>{String(row.label ?? row.stage_id ?? '')}</span>
                 <span style={{ color: col }}>{st}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <ProgressBar pct={st === 'DONE' ? 100 : 0} color={col} />
+                  <span style={{ color: col }}>{st === 'DONE' ? '100%' : '--'}</span>
+                </span>
+                <span style={{ color: '#64748B' }}>--</span>
+                <span style={{ color: '#64748B' }}>--</span>
                 <span style={{ color: '#64748B' }}>{String(row.duration_s ?? '--')}</span>
                 <span style={{ color: '#64748B' }}>{String(row.finished_at ?? '--').slice(0, 19)}</span>
               </div>

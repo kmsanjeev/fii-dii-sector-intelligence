@@ -319,6 +319,58 @@ def read_log(n: int = 100) -> list[dict]:
     return rows[-n:]
 
 
+def _estimate_stage_seconds(stage_id: str, timeout_s: int) -> tuple[float, str]:
+    """Estimate normal stage duration from recent successful runs."""
+    durations: list[float] = []
+    for row in read_log(500):
+        if row.get("stage_id") != stage_id or row.get("status") != "DONE":
+            continue
+        try:
+            value = float(row.get("duration_s", ""))
+        except (TypeError, ValueError):
+            continue
+        if value > 0:
+            durations.append(value)
+    if not durations:
+        return float(timeout_s), "timeout_budget"
+    durations.sort()
+    return durations[len(durations) // 2], "recent_success_median"
+
+
+def _update_live_stage_progress(
+    stage_id: str,
+    elapsed_s: float,
+    estimate_s: float,
+    estimate_basis: str,
+    timeout_s: int,
+    process_alive: bool,
+    last_output: str,
+) -> None:
+    """Publish a read-only heartbeat for the active child process."""
+    try:
+        with open(STATUS_FILE, encoding="utf-8") as f:
+            status = json.load(f)
+        if status.get("state") != "RUNNING" or status.get("current_stage") != stage_id:
+            return
+        stage = status.setdefault("stages", {}).setdefault(stage_id, {})
+        expected = max(1.0, estimate_s)
+        stage.update({
+            "elapsed_s": round(elapsed_s, 1),
+            "estimate_s": round(expected, 1),
+            "eta_s": round(max(0.0, expected - elapsed_s), 1),
+            "progress_pct": round(min(99.0, elapsed_s / expected * 100.0), 1),
+            "progress_basis": estimate_basis,
+            "timeout_s": timeout_s,
+            "process_alive": process_alive,
+            "last_output": last_output[-240:] if last_output else "",
+        })
+        status["heartbeat_at"] = _now_ist()
+        _write_status(status)
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        # Progress must never interrupt or fail the stage itself.
+        return
+
+
 # ── Stage runner ──────────────────────────────────────────────────────────────
 
 def _run_stage(run_id: str, stage_id: str, module: str, label: str, timeout: int) -> tuple[str, str]:
@@ -345,6 +397,9 @@ def _run_stage(run_id: str, stage_id: str, module: str, label: str, timeout: int
 
     output_lines: list[str] = []
     output_queue: queue.Queue[str | None] = queue.Queue()
+    estimate_s, estimate_basis = _estimate_stage_seconds(stage_id, timeout)
+    last_progress_at = 0.0
+    last_output = ""
 
     def _read_output() -> None:
         try:
@@ -370,6 +425,17 @@ def _run_stage(run_id: str, stage_id: str, module: str, label: str, timeout: int
             return "STOPPED", "Stop flag set by user"
 
         elapsed = time.monotonic() - t0
+        if elapsed - last_progress_at >= 1.0:
+            _update_live_stage_progress(
+                stage_id=stage_id,
+                elapsed_s=elapsed,
+                estimate_s=estimate_s,
+                estimate_basis=estimate_basis,
+                timeout_s=timeout,
+                process_alive=proc.poll() is None,
+                last_output=last_output,
+            )
+            last_progress_at = elapsed
         if elapsed > timeout:
             _terminate_process_tree(proc)
             proc.wait()
@@ -393,6 +459,7 @@ def _run_stage(run_id: str, stage_id: str, module: str, label: str, timeout: int
                 break
             continue
         output_lines.append(line)
+        last_output = line
         logger.debug("[Pipeline][%s] %s", stage_id, line)
 
     rc = proc.wait()
@@ -444,7 +511,19 @@ def _pipeline_body() -> None:
             final_state = "STOPPED"
             break
 
-        stage_statuses[stage_id] = {"label": label, "status": "RUNNING", "started_at": _now_ist()}
+        estimate_s, estimate_basis = _estimate_stage_seconds(stage_id, timeout)
+        stage_statuses[stage_id] = {
+            "label": label,
+            "status": "RUNNING",
+            "started_at": _now_ist(),
+            "elapsed_s": 0.0,
+            "estimate_s": round(estimate_s, 1),
+            "eta_s": round(estimate_s, 1),
+            "progress_pct": 0.0,
+            "progress_basis": estimate_basis,
+            "timeout_s": timeout,
+            "process_alive": True,
+        }
         _write_status({
             "state":         "RUNNING",
             "run_id":        run_id,
@@ -465,6 +544,14 @@ def _pipeline_body() -> None:
             "status":      status,
             "finished_at": _now_ist(),
             "duration_s":  round(elapsed, 1),
+            "elapsed_s":   round(elapsed, 1),
+            "eta_s":       0.0,
+            "progress_pct": 100.0 if status == "DONE" else round(
+                min(99.0, elapsed / max(1.0, stage_statuses[stage_id].get("estimate_s", timeout)) * 100.0), 1
+            ),
+            "timeout_s":   timeout,
+            "process_alive": False,
+            "progress_basis": "completed" if status == "DONE" else stage_statuses[stage_id].get("progress_basis", "timeout_budget"),
             "error":       error,
         })
 

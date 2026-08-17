@@ -33,6 +33,8 @@ class PipelineStatusResponse(BaseModel):
     current_stage: str | None
     current_label: str | None
     next_run_ist: str | None
+    active_pid: int | None
+    heartbeat_at: str | None
     stages: dict
 
 
@@ -55,6 +57,8 @@ def get_status() -> PipelineStatusResponse:
         current_stage = status.get("current_stage"),
         current_label = status.get("current_label"),
         next_run_ist  = next_run_ist(),
+        active_pid    = status.get("active_pid"),
+        heartbeat_at  = status.get("heartbeat_at"),
         stages        = status.get("stages", {}),
     )
 
