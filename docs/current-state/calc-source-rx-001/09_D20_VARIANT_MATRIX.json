@@ -1,0 +1,26 @@
+[
+  {
+    "authority": "CLASSICAL_PRIMARY_PARTIAL",
+    "category_starts": "Aries/Sagittarius/Leo",
+    "destination_mapping": "sequential inference",
+    "matches_current": true,
+    "method_id": "D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1",
+    "status": "EVIDENCE_QUALIFIED_NOT_COMPLETE"
+  },
+  {
+    "authority": "VEDA_HISTORICAL_RUNTIME",
+    "category_starts": "generic odd/even",
+    "destination_mapping": "generic fallback",
+    "matches_current": false,
+    "method_id": "D20_LEGACY_GENERIC_VARGA_V0",
+    "status": "RETAINED_FOR_COMPARISON_ONLY"
+  },
+  {
+    "authority": "PRACTITIONER_SECONDARY",
+    "category_starts": "Aries/Sagittarius/Leo",
+    "destination_mapping": "forward count representation",
+    "matches_current": "METHOD_EQUIVALENCE_REQUIRES_DEFINITION",
+    "method_id": "D20_PRACTITIONER_FORWARD_COUNT_V1",
+    "status": "RESEARCH_CANDIDATE"
+  }
+]

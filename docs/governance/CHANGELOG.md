@@ -4204,3 +4204,10 @@ Completed the first governed source-ranked feature-level empirical study. A sing
 - Verified 5 new Tier A records and no new Tier B records; combined raw verified pool is 114, with source-diverse bound 27.
 - The parent 90.83% yield is classified `IS_CLUSTER_SPECIFIC`; decision is `CONTINUE_STAGED_ADJUDICATION`.
 - Existing DAY events remain discovery-only; no event corroboration expansion, astrology, features, ML, RAG, production, PRED-M4, Approved Core, or recruitment changes.
+
+# 2026-08-18 — VEDA-CALC-SOURCE-RX-001
+
+- Resolved the primary-source contract for Ashtakavarga at the source-audit level: BPHS Ch.66 records seven planetary targets plus Lagna, contributor-specific Rekhaprad tables, and Ch.67-69 reduction scope.
+- Compared that contract with the frozen target-only BAV/SAV helpers. The mismatch is structural, not a safe constant correction; BAV/SAV remain `IMPLEMENTED_UNVALIDATED` / research-only and no production logic was changed.
+- Audited D20/Vimshamsha. The current 20-part category-start route matches the inspected BPHS start signs, while the complete destination-sign mapping remains unresolved. D20 interpretation remains gated as `NOT_VALIDATED`.
+- Focused source-resolution and inherited calculation tests passed. No prediction, ML, PRED-M4, RAG, Approved Core, raw ADB or empirical status changed. Evidence: `docs/current-state/calc-source-rx-001/`.

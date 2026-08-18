@@ -1,0 +1,14 @@
+{
+  "ashtakavarga": {
+    "code_to_tests": "INTERNAL_INVARIANT_ONLY",
+    "contract_to_code": "BROKEN_BY_TARGET_ONLY_SCHEMA",
+    "rule_to_contract": "COMPLETE_FOR_SOURCE_TABLE",
+    "source_to_rule": "PARTIAL"
+  },
+  "d20": {
+    "code_to_tests": "DETERMINISTIC_REGRESSION_ONLY",
+    "contract_to_code": "COMPLETE_FOR_SELECTED_INFERENCE",
+    "rule_to_contract": "COMPLETE_FOR_CATEGORY_START",
+    "source_to_rule": "PARTIAL_CATEGORY_START"
+  }
+}

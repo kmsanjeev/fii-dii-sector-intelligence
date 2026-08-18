@@ -1,0 +1,21 @@
+{
+  "boundary_policy": "lower-inclusive upper-exclusive with Decimal floor",
+  "calculation_status": "PARTIALLY_VALIDATED",
+  "destination_mapping": "sequential start + amsa modulo 12",
+  "division": 20,
+  "division_size_degrees": "1.5",
+  "interpretation_status": "NOT_VALIDATED",
+  "legacy_method": "D20_LEGACY_GENERIC_VARGA_V0",
+  "mapping_status": "SOURCE_MAPPING_INCOMPLETE",
+  "method": "d20_vimshamsha_bphs_category_start_v1",
+  "method_id": "D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1",
+  "method_version": "1.0",
+  "progression_status": "SEQUENTIAL_INFERENCE_FROM_CATEGORY_START",
+  "snapshot_hash": "B33AF92D2E54CABC65CD46D74CED355034D92B2C67E46F7E819CE8C94739AFD2",
+  "source_ref": "BPHS_CH6_17_20; BPHS_CH7_4",
+  "starting_signs": {
+    "dual": "Leo",
+    "fixed": "Sagittarius",
+    "movable": "Aries"
+  }
+}

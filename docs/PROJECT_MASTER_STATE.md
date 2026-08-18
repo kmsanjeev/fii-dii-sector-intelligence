@@ -525,3 +525,10 @@ Phase goals:
 - ADRs: docs/decisions/ (ADR-001 to ADR-024; next = ADR-025)
 - Session logs: chat history/ (module-wise append files)
 - Memory: C:\Users\hp\.claude\projects\D--Projects-fii-dii-sector-intelligence\memory\
+
+## VEDA-CALC-SOURCE-RX-001 — 2026-08-18
+
+- Status: `PASS_WITH_CONDITION`.
+- BPHS Ch.66-69 source resolution found an eight-reference-point, contributor-specific Ashtakavarga contract and reduction scope that the current target-only BAV helper cannot represent. BAV/SAV remain `IMPLEMENTED_UNVALIDATED` / research-only; no production logic changed.
+- D20 category starts match the inspected BPHS route; complete destination-sign mapping remains unresolved and interpretation remains `NOT_VALIDATED`.
+- No prediction, ML, PRED-M4, RAG, Approved Core, empirical or raw ADB state changed. Evidence: `docs/current-state/calc-source-rx-001/`.
