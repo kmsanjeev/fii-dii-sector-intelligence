@@ -1,0 +1,110 @@
+{
+  "ambiguous": [
+    "dst_end_fold"
+  ],
+  "passed": 7,
+  "policy": "No current-offset substitution; unresolved and ambiguous civil times are not assigned false precision.",
+  "result_hash": "4D7F86879EA65CE362ABFE2B64CE37095E56A13788E9A9F91118C294BCB60E84",
+  "rows": [
+    {
+      "candidates": [
+        {
+          "fold": 0,
+          "offset": 19800,
+          "utc": "1984-11-03T01:00:00Z"
+        }
+      ],
+      "case_id": "india_standard",
+      "local": "1984-11-03T06:30:00",
+      "precedence": "explicit documentary offset > IANA historical zone > unresolved",
+      "status": "RESOLVED",
+      "zone": "Asia/Kolkata"
+    },
+    {
+      "candidates": [],
+      "case_id": "dst_start_gap",
+      "local": "2020-03-08T02:30:00",
+      "precedence": "explicit documentary offset > IANA historical zone > unresolved",
+      "status": "TIMEZONE_UNRESOLVED",
+      "zone": "America/New_York"
+    },
+    {
+      "candidates": [
+        {
+          "fold": 0,
+          "offset": -14400,
+          "utc": "2020-11-01T05:30:00Z"
+        },
+        {
+          "fold": 1,
+          "offset": -18000,
+          "utc": "2020-11-01T06:30:00Z"
+        }
+      ],
+      "case_id": "dst_end_fold",
+      "local": "2020-11-01T01:30:00",
+      "precedence": "explicit documentary offset > IANA historical zone > unresolved",
+      "status": "TIMEZONE_AMBIGUOUS",
+      "zone": "America/New_York"
+    },
+    {
+      "candidates": [
+        {
+          "fold": 0,
+          "offset": 10800,
+          "utc": "1945-05-24T09:00:00Z"
+        }
+      ],
+      "case_id": "historical_berlin",
+      "local": "1945-05-24T12:00:00",
+      "precedence": "explicit documentary offset > IANA historical zone > unresolved",
+      "status": "RESOLVED",
+      "zone": "Europe/Berlin"
+    },
+    {
+      "candidates": [
+        {
+          "fold": 0,
+          "offset": 37800,
+          "utc": "2020-07-01T01:30:00Z"
+        }
+      ],
+      "case_id": "half_hour_lord_howe",
+      "local": "2020-07-01T12:00:00",
+      "precedence": "explicit documentary offset > IANA historical zone > unresolved",
+      "status": "RESOLVED",
+      "zone": "Australia/Lord_Howe"
+    },
+    {
+      "candidates": [
+        {
+          "fold": 0,
+          "offset": 20700,
+          "utc": "1990-01-01T06:15:00Z"
+        }
+      ],
+      "case_id": "quarter_hour_nepal",
+      "local": "1990-01-01T12:00:00",
+      "precedence": "explicit documentary offset > IANA historical zone > unresolved",
+      "status": "RESOLVED",
+      "zone": "Asia/Kathmandu"
+    },
+    {
+      "candidates": [
+        {
+          "fold": 0,
+          "offset": 50400,
+          "utc": "1994-12-31T22:00:00Z"
+        }
+      ],
+      "case_id": "date_line_kiritimati",
+      "local": "1995-01-01T12:00:00",
+      "precedence": "explicit documentary offset > IANA historical zone > unresolved",
+      "status": "RESOLVED",
+      "zone": "Pacific/Kiritimati"
+    }
+  ],
+  "unresolved": [
+    "dst_start_gap"
+  ]
+}

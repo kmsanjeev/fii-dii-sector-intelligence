@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-18 | VEDA-CALC-ORACLE-001
+
+Completed the independent calculation-oracle activity with `PASS_WITH_CONDITION`.
+The local astronomy policy now explicitly selects MOSEPH and rejects an
+unauthorized returned backend. NASA/JPL Horizons geometric tropical vectors
+provided an independent comparison for 72 fixed timestamps and seven bodies:
+504/504 comparisons passed. Explicit Lahiri initialization reproduced the
+frozen P004 Ascendant references; the known runtime/reference boundary sign
+flips remain documented rather than patched. Seven timezone cases preserve
+resolved, ambiguous-fold and unresolved-gap states. Goldset A/B/C counts,
+D20 interpretation, prediction, ML, PRED-M4, production, RAG and Approved
+Core remain unchanged. Raw ADB data remains local/ignored.
+
 ## 2026-08-18 | VEDA-CALC-GOLDSET-001
 
 Completed the calculation-only benchmark activity. The existing P004 fixtures

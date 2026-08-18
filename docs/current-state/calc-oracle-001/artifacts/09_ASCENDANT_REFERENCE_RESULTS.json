@@ -1,0 +1,98 @@
+{
+  "decision": "REFERENCE_REPRODUCED_RUNTIME_BOUNDARY_REMAINS",
+  "epsilon_rows": [
+    {
+      "case_id": "VEDA-FIX-CALC-000005",
+      "houses_ex_sidereal_deg": 179.9926185288,
+      "houses_ex_sign": 5,
+      "independent_tropical_deg": 203.5077353857,
+      "offset_seconds": -1,
+      "runtime_sidereal_deg": 179.996772131,
+      "runtime_sign": 5
+    },
+    {
+      "case_id": "VEDA-FIX-CALC-000005",
+      "houses_ex_sidereal_deg": 179.9959072113,
+      "houses_ex_sign": 5,
+      "independent_tropical_deg": 203.5110240404,
+      "offset_seconds": 0,
+      "runtime_sidereal_deg": 180.0000608135,
+      "runtime_sign": 6
+    },
+    {
+      "case_id": "VEDA-FIX-CALC-000005",
+      "houses_ex_sidereal_deg": 179.9991957553,
+      "houses_ex_sign": 5,
+      "independent_tropical_deg": 203.5143125566,
+      "offset_seconds": 1,
+      "runtime_sidereal_deg": 180.0033493574,
+      "runtime_sign": 6
+    },
+    {
+      "case_id": "VEDA-FIX-CALC-000006",
+      "houses_ex_sidereal_deg": 149.9924045155,
+      "houses_ex_sign": 4,
+      "independent_tropical_deg": 173.7102606946,
+      "offset_seconds": -1,
+      "runtime_sidereal_deg": 149.9960596069,
+      "runtime_sign": 4
+    },
+    {
+      "case_id": "VEDA-FIX-CALC-000006",
+      "houses_ex_sidereal_deg": 149.9988035456,
+      "houses_ex_sign": 4,
+      "independent_tropical_deg": 173.7166593581,
+      "offset_seconds": 0,
+      "runtime_sidereal_deg": 150.0024586365,
+      "runtime_sign": 5
+    },
+    {
+      "case_id": "VEDA-FIX-CALC-000006",
+      "houses_ex_sidereal_deg": 150.005202625,
+      "houses_ex_sign": 5,
+      "independent_tropical_deg": 173.7230580714,
+      "offset_seconds": 1,
+      "runtime_sidereal_deg": 150.0088577156,
+      "runtime_sign": 5
+    }
+  ],
+  "independent_method": "GMST + mean obliquity Ascendant formula; Swiss only for comparison and Lahiri subtraction",
+  "result_hash": "F8B14B14B5613E2741A468865E9932297A68EB62423F7A9FDD27576D2A998A44",
+  "root_cause": "The earlier oracle comparison omitted the process-global Lahiri sidereal-mode initialization required by houses_ex(..., FLG_SIDEREAL). With Lahiri explicitly set, the frozen P004 houses_ex values are reproduced; the remaining runtime-vs-reference difference is the known houses()+ayanamsha subtraction boundary behavior.",
+  "rows": [
+    {
+      "boundary_classification": "NUMERICAL_BOUNDARY_ONLY",
+      "case_id": "VEDA-FIX-CALC-000005",
+      "houses_ex_sidereal_deg": 179.9959072113,
+      "houses_ex_sign": 5,
+      "independent_tropical_deg": 203.5110240404,
+      "jd_ut": 2442578.309027778,
+      "latitude": 40.7128,
+      "longitude": -74.006,
+      "runtime_sidereal_deg": 180.0000608135,
+      "runtime_sign": 6,
+      "runtime_vs_houses_ex_error_deg": 0.0041536022,
+      "swe_houses_tropical_deg": 203.5142431949,
+      "tropical_error_deg": 0.0032191544,
+      "utc": "1975-06-14T19:25:00"
+    },
+    {
+      "boundary_classification": "NUMERICAL_BOUNDARY_ONLY",
+      "case_id": "VEDA-FIX-CALC-000006",
+      "houses_ex_sidereal_deg": 149.9988035456,
+      "houses_ex_sign": 4,
+      "independent_tropical_deg": 173.7166593581,
+      "jd_ut": 2447934.923611111,
+      "latitude": -33.8688,
+      "longitude": 151.2093,
+      "runtime_sidereal_deg": 150.0024586365,
+      "runtime_sign": 5,
+      "runtime_vs_houses_ex_error_deg": 0.0036550909,
+      "swe_houses_tropical_deg": 173.7214876721,
+      "tropical_error_deg": 0.004828314,
+      "utc": "1990-02-12T10:10:00"
+    }
+  ],
+  "sidereal_independence": "SAME_ENGINE_REFERENCE_LIMITATION",
+  "tropical_tolerance_deg": 0.01
+}

@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Optional
 
 from engines.common import config as cfg
+from engines.common.astronomy_policy import calc_ut as governed_calc_ut
 from engines.common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -256,7 +257,7 @@ class GannEngine:
         result = {}
 
         for planet, pid in self._PLANET_IDS.items():
-            xx, _ = swe.calc_ut(jd, pid, flags)
+            xx, _ = governed_calc_ut(swe, jd, pid, flags)
             lon   = xx[0] % 360
 
             base_price   = lon * price_factor
@@ -279,7 +280,7 @@ class GannEngine:
             }
 
         # Rahu (True Node)
-        xx, _ = swe.calc_ut(jd, swe.TRUE_NODE, flags)
+        xx, _ = governed_calc_ut(swe, jd, swe.TRUE_NODE, flags)
         rahu_lon = xx[0] % 360
         result['Rahu'] = {
             'longitude':  round(rahu_lon, 2),
@@ -306,7 +307,7 @@ class GannEngine:
         swe     = self._swe
         jd      = self._date_to_jd(date_str)
         flags   = swe.FLG_SIDEREAL | swe.FLG_SPEED
-        xx, _   = swe.calc_ut(jd, 0, flags)  # Sun
+        xx, _   = governed_calc_ut(swe, jd, 0, flags)  # Sun
         sun_lon = xx[0] % 360
 
         # Find last time Sun was at 0° (Aries ingress = Vedic New Year)
@@ -373,7 +374,7 @@ class GannEngine:
         zones   = []
 
         for planet, pid in list(self._PLANET_IDS.items())[:7]:  # Main planets
-            xx, _ = swe.calc_ut(jd, pid, flags)
+            xx, _ = governed_calc_ut(swe, jd, pid, flags)
             lon   = xx[0] % 360
             speed = xx[3]  # degrees/day
 

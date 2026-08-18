@@ -1,0 +1,3 @@
+# Silver and stress regression
+
+The parent Goldset remains frozen at 109 adjudicated SILVER records and 7,022/7,022 STRESS calculations. A fresh isolated rerun completed 109/109 SILVER and 7,022/7,022 STRESS with no failures; the canonical SILVER result hash remained `62379DCBA7DB397BA3FBF5B1C585F8649A71B7F078F636D11EA5E5648F413245`, and the stress result hash was `5EB3967F9C2249B340827A479CD7579E25BB7D287B43999D221D85CEBC117AD6`. The explicit MOSEPH policy is output-neutral for the parent corpus: expected changed cases are 0. The parent Goldset deterministic artifacts remain the comparison baseline; no prediction or event outcome is used.

@@ -51,6 +51,7 @@ except ImportError:
     )
 
 from engines.common import config as cfg
+from engines.common.astronomy_policy import calc_ut as governed_calc_ut
 from engines.common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -201,7 +202,7 @@ class AstroEngine:
 
         positions: dict[str, dict] = {}
         for name, pid in self._PLANET_IDS.items():
-            xx, _ = swe.calc_ut(jd_ut, pid, flags)
+            xx, _ = governed_calc_ut(swe, jd_ut, pid, flags)
             lon = xx[0] % 360
             retrograde = xx[3] < 0  # longitude speed, deg/day; negative = retrograde
 
@@ -220,7 +221,7 @@ class AstroEngine:
             }
 
         # Rahu (True Node) and Ketu -- same convention as kundli_engine.py
-        xx, _ = swe.calc_ut(jd_ut, swe.TRUE_NODE, flags)
+        xx, _ = governed_calc_ut(swe, jd_ut, swe.TRUE_NODE, flags)
         rahu_lon = xx[0] % 360
         ketu_lon = (rahu_lon + 180) % 360
         for name, lon in [("Rahu", rahu_lon), ("Ketu", ketu_lon)]:

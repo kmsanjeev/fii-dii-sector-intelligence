@@ -1,0 +1,13 @@
+{
+  "standard_id": "VEDA-CALC-STANDARD-002",
+  "version": "1.1.0",
+  "requested_backend": "MOSEPH",
+  "actual_backend": "MOSEPH",
+  "ephemeris_file_set": "NONE_REQUIRED_FOR_MOSEPH",
+  "fail_on_unauthorized_fallback": true,
+  "sidereal_mode": "SIDM_LAHIRI",
+  "node_policy": "TRUE_NODE; Ketu=(Rahu+180)%360",
+  "house_system": "W Ascendant path; whole-sign downstream assignment",
+  "timezone_policy": "explicit historical offset > IANA historical zone > unresolved",
+  "source_artifact": "artifacts/03_EPHEMERIS_STANDARD.json"
+}

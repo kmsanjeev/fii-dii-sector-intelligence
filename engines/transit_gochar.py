@@ -28,6 +28,7 @@ import pandas as pd
 from pydantic import BaseModel, ConfigDict, Field
 
 from engines.common import config as cfg
+from engines.common.astronomy_policy import calc_ut as governed_calc_ut
 from engines.intelligence.kundli_engine import KundliEngine, NAKSHATRAS, SIGNS
 
 TRANSIT_OUTPUT_DIR = cfg.DATA_DIR / "gochar"
@@ -241,9 +242,9 @@ class TransitGocharEngine:
         jd = self._jd(dt_utc)
         pid = self._kundli._PLANET_IDS[planet]  # noqa: SLF001 - canonical engine IDs
         sidereal_flags = self._kundli._swe.FLG_SIDEREAL | self._kundli._swe.FLG_SPEED  # noqa: SLF001
-        sidereal, _ = self._kundli._swe.calc_ut(jd, pid, sidereal_flags)  # noqa: SLF001
+        sidereal, _ = governed_calc_ut(self._kundli._swe, jd, pid, sidereal_flags)  # noqa: SLF001
         flags = self._kundli._swe.FLG_SPEED  # noqa: SLF001 - tropical reference only
-        tropical, _ = self._kundli._swe.calc_ut(jd, pid, flags)  # noqa: SLF001
+        tropical, _ = governed_calc_ut(self._kundli._swe, jd, pid, flags)  # noqa: SLF001
         ayanamsha = float(self._kundli._swe.get_ayanamsa_ut(jd))  # noqa: SLF001
         position = HistoricalTransitPosition(
             transit_time_utc=dt_utc.isoformat().replace("+00:00", "Z"),

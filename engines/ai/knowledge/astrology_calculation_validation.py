@@ -13,6 +13,7 @@ import swisseph as swe
 
 from engines.ai.chatbot.tools import kundli_calculator as personal_kundli
 from engines.intelligence.kundli_engine import COUNTRY_CHARTS, EXCHANGES, KundliEngine
+from engines.common.astronomy_policy import calc_ut as governed_calc_ut
 
 
 PHASE_ID = "VEDA-P004"
@@ -255,7 +256,7 @@ def _nakshatra_reference(longitude: float) -> dict[str, Any]:
 
 def _reference_ephemeris_flag() -> int:
     jd = swe.julday(FROZEN_NOW_UTC.year, FROZEN_NOW_UTC.month, FROZEN_NOW_UTC.day, 0.0)
-    _, retflag = swe.calc_ut(jd, swe.SUN, CORE_EPH_FLAGS)
+    _, retflag = governed_calc_ut(swe, jd, swe.SUN, CORE_EPH_FLAGS)
     if retflag & swe.FLG_JPLEPH:
         return swe.FLG_JPLEPH
     if retflag & swe.FLG_SWIEPH:
@@ -289,7 +290,7 @@ def _planet_positions_reference(jd: float, *, include_outer: bool = True) -> dic
         planet_ids["Neptune"] = swe.NEPTUNE
     out: dict[str, dict[str, Any]] = {}
     for name, pid in planet_ids.items():
-        xx, retflag = swe.calc_ut(jd, pid, flags)
+        xx, retflag = governed_calc_ut(swe, jd, pid, flags)
         lon = xx[0] % 360.0
         out[name] = {
             "longitude": round(lon, 6),
@@ -299,7 +300,7 @@ def _planet_positions_reference(jd: float, *, include_outer: bool = True) -> dic
             **_sign_details(lon),
             "nakshatra": _nakshatra_reference(lon),
         }
-    node_xx, _ = swe.calc_ut(jd, swe.TRUE_NODE, flags)
+    node_xx, _ = governed_calc_ut(swe, jd, swe.TRUE_NODE, flags)
     rahu = node_xx[0] % 360.0
     ketu = (rahu + 180.0) % 360.0
     for name, lon in (("Rahu", rahu), ("Ketu", ketu)):

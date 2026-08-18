@@ -29,6 +29,7 @@ from pathlib import Path
 from typing import Optional
 
 from engines.common import config as cfg
+from engines.common.astronomy_policy import calc_ut as governed_calc_ut
 from engines.common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -436,11 +437,11 @@ class KundliEngine:
         flags  = swe.FLG_SIDEREAL | swe.FLG_SPEED
         result = {}
         for name, pid in self._PLANET_IDS.items():
-            xx, _ = swe.calc_ut(jd, pid, flags)
+            xx, _ = governed_calc_ut(swe, jd, pid, flags)
             result[name] = xx[0] % 360
 
         # Rahu (True Node) and Ketu
-        xx, _ = swe.calc_ut(jd, swe.TRUE_NODE, flags)
+        xx, _ = governed_calc_ut(swe, jd, swe.TRUE_NODE, flags)
         rahu  = xx[0] % 360
         ketu  = (rahu + 180) % 360
         result['Rahu'] = rahu
@@ -453,7 +454,7 @@ class KundliEngine:
         flags  = swe.FLG_SIDEREAL | swe.FLG_SPEED
         result = {}
         for name, pid in self._PLANET_IDS.items():
-            xx, _ = swe.calc_ut(jd, pid, flags)
+            xx, _ = governed_calc_ut(swe, jd, pid, flags)
             lon = xx[0] % 360
             speed = xx[3]  # degrees per day
             retrograde = speed < 0
@@ -465,7 +466,7 @@ class KundliEngine:
             }
 
         # Rahu (True Node) and Ketu (always retrograde)
-        xx, _ = swe.calc_ut(jd, swe.TRUE_NODE, flags)
+        xx, _ = governed_calc_ut(swe, jd, swe.TRUE_NODE, flags)
         rahu_lon  = xx[0] % 360
         ketu_lon  = (rahu_lon + 180) % 360
         speed = xx[3]  # True Node speed
@@ -500,7 +501,7 @@ class KundliEngine:
         if pid is None:
             return False
         flags = self._swe.FLG_SIDEREAL | self._swe.FLG_SPEED
-        xx, _ = self._swe.calc_ut(jd, pid, flags)
+        xx, _ = governed_calc_ut(self._swe, jd, pid, flags)
         return xx[3] < 0  # Negative speed = retrograde
 
     # ── Nakshatra ─────────────────────────────────────────────────────────────
