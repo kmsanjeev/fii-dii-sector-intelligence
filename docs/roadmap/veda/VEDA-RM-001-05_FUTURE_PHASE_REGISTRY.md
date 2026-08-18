@@ -63,6 +63,7 @@ This is the single authoritative future registry.
 | VEDA-AUTOLOOP-R3 | Information-Gain Scheduling & Low-Value Repetition Prevention | Governance | IMPLEMENTED / FROZEN | VEDA-AUTOLOOP-R2, VEDA-RM-002 | Fingerprinted activity history, novelty/information-gain scoring, cooldowns, validation exhaustion and track-diversity scheduling; evidence in `docs/current-state/veda-autoloop-r3.md` |
 | VEDA-AUTOLOOP-R4 | Resume-State & Transient-Stop Recovery Hardening | Governance | IMPLEMENTED / FROZEN | VEDA-AUTOLOOP-R3 | Distinguishes transient bounded-run stops from programme stops; resumes eligible stored priorities and preserves stop history; evidence in `docs/current-state/veda-autoloop-r4.md` |
 | VEDA-RM-002 | Autonomous Roadmap Rebaseline & Prediction-Maturity Expansion | Governance | IMPLEMENTED / FROZEN | VEDA-AUTOLOOP-R2, PRED-001–004, EMP-001 | Reopened justified source, timing, method, Tajika, strength and input-preparation tracks; ALL_TRACKS_BLOCKED now escalates to roadmap rebaseline; evidence in `docs/current-state/rm-002/` |
+| VEDA-ROADMAP-REBASELINE-001 | Post-foundation state audit, roadmap reconciliation & next-work authorization | Governance | COMPLETE_WITH_CONDITION | VEDA-RM-002, VEDA-CALC-SOURCE-RX-001, VEDA-P032-MUHURTA-FOUNDATION-001, VEDA-LANG-002-HI-SOURCE-VALIDATION-001 | Repository-derived current-state inventory, human/external gates, stop-work matrix and next-work ranking; evidence in `docs/current-state/roadmap-rebaseline-001/` |
 | P032 | Muhurta foundation | A | IMPLEMENTED / FROZEN | P031 acceptance, VEDA-MUH-R1, VEDA-KNOW-MUH-001/002/003 | Deterministic five-limb Panchanga facts, event taxonomy, traceable inactive atomic rules and unscored transition windows; Tara/Chandra Bala, scoring, ranking, recommendations and Prashna remain gated; evidence in `docs/current-state/p032-muhurta-foundation-001/` |
 | VEDA-EMP-001 | Empirical case acquisition and learning | D/C | ACTIVE_LONGITUDINAL | PRED-001–003 | Requires legitimate cases; no new store |
 | VEDA-STD-003 | Universal Conversational Intelligence, Pragmatics & Multilingual Expression Standard | B/E | IMPLEMENTED / FROZEN | STD-001, STD-002, RM-001 | Shared context foundations; see `docs/current-state/std-003/` |
@@ -74,9 +75,11 @@ This is the single authoritative future registry.
 | VEDA-LANG-002-MULTILINGUAL-FOUNDATION-001 | Language-neutral semantics, multilingual rendering & translation-governance foundation | E | IMPLEMENTED / FROZEN | STD-003, LANG-001, COMM-002, quality gates | English baseline, canonical IDs, deterministic fallback, structured display separation and translation safety; additional target-language selection/review remains open; see `docs/current-state/lang-002-multilingual-foundation-001/` |
 | VEDA-LANG-002-HI-001 | Hindi locale, Jyotisha terminology, semantic safety & review-candidate foundation | E | IMPLEMENTED / FROZEN | LANG-002 foundation, STD-003, review gates | 49-key Hindi presentation pack; external source review is complete with the human gate preserved; production Hindi remains unauthorized; see `docs/current-state/lang-002-hi-001/` and `docs/current-state/lang-002-hi-source-validation-001/` |
 | VEDA-LANG-002+ | Additional language packs | E | PLANNED | LANG-001, quality gates | Language-specific authorization |
-| P030 | Next Jyotisha capability | A | NOT STARTED | P029 acceptance and separate authorization | No phase assigned or started |
 | VEDA-ADM-EMP-001 | Empirical Case Intake & Bulk Import Console | F/D | IMPLEMENTED / FROZEN | EMP-001, shared case registry | Preview → validate → accept → ingest; see `docs/current-state/adm-emp-001/` |
 
-Statuses are controlled vocabulary: IMPLEMENTED, ACTIVE, PLANNED, DEFERRED, RESERVED, BLOCKED, SUPERSEDED, RETIRED.
+The table preserves detailed programme statuses used by individual acceptance
+records. The canonical operational states for this rebaseline are defined in
+`docs/current-state/roadmap-rebaseline-001/01_PROGRAMME_INVENTORY.json` and
+must not be collapsed into one maturity or production label.
 
 P027 policy: the historical reservation is preserved in prior roadmap records; the current scope is Advanced Synthesis & Multi-Chart Reasoning. P027 is `IMPLEMENTED / FROZEN`; the full-repository timeout condition remains documented separately from P027-specific acceptance.

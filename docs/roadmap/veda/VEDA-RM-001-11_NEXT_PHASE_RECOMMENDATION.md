@@ -1,5 +1,9 @@
 # Next Implementation Recommendation
 
+> RM-001 historical recommendation. Current post-foundation priority is
+> governed by `VEDA-ROADMAP-REBASELINE-001` and is recorded in
+> `docs/current-state/roadmap-rebaseline-001/10_NEXT_WORK_RANKING.md`.
+
 **Recommended next operational step:** populate the implemented `VEDA-ADM-EMP-001` intake console with legitimate governed case data.
 
 **Why:** The current bottleneck is zero legitimate empirical cases. A governed intake workflow would enable founder/user case submission and CSV/Excel batch ingestion while reusing the existing shared case registry and provenance controls.

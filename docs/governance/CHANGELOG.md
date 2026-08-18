@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-18 | VEDA-ROADMAP-REBASELINE-001
+
+Completed the repository-derived post-foundation VEDA rebaseline. The current
+programme inventory now separates calculation, knowledge, source, empirical,
+predictive, production and language maturity; human/external gates and
+stop-work areas are explicit; stale P030/P029 current references were corrected
+without rewriting history. The generated Barh Nominatim city-cache row was
+validated and committed as a reference-data change. Split validation passed
+157/157; a bounded combined evidence/language attempt timed out and remains
+recorded as `TIMEOUT`, not pass. RAG and Approved Core were unchanged, and no
+new feature, prediction, ML, language, Muhurta or external-access activity was
+started. Evidence: `docs/current-state/roadmap-rebaseline-001/`.
+
 ## 2026-08-18 | VEDA-LANG-002-HI-SOURCE-VALIDATION-001
 
 Completed the Hindi external-reference validation with `47_ACCEPT_2_CHANGE_0_UNSURE`.

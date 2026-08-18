@@ -1,6 +1,6 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.73.0 | 2026-08-14
+# Version 4.73.1 | 2026-08-18
 
 ---
 
@@ -23,9 +23,9 @@ This project is NOT a screener. It IS a decision intelligence platform.
 - P027 Advanced Synthesis & Multi-Chart Reasoning is implemented/frozen; it reuses the existing Jyotisha runtime and preserves chart/evidence authority.
 - P028 Compatibility & Relationship Synthesis is implemented/frozen; it reuses P024/P027 contracts, preserves chart identity, and does not fabricate traditional match scores.
 - P028-R1 Traditional Compatibility Methods is implemented/frozen as a research-candidate, versioned Ashtakoota foundation; VEDA-KNOW-COMPAT-001 completed source validation with partial framework validation only. Executable Kuta tables remain research candidates, Manglik cancellation remains deferred, and no Approved Core compatibility promotion occurred.
-- P029 Property, Residence & Real-Estate Synthesis is implemented/frozen as a governed domain layer over existing D1/property facts, P022 wealth context, P027 synthesis, Dasha and Transit. D4 is explicitly not validated; P030 remains not started.
-- VEDA-KNOW-PROP-001 completed the property/D4 source audit with `PASS_WITH_CONDITION`; D4 calculation is available with conditions but its current generic method does not match the inspected source-referenced 1/4/7/10 method. `P015-RX_REQUIRED` is recorded; P029-R1 and P030 remain not started.
-- P015-RX remediated D4 calculation to `D4_CHATURTHAMSHA_1_4_7_10_V1` with calculation status validated and interpretation status not validated. P029 remains D1-first and does not use D4 interpretively; P029-R1 and P030 remain not started.
+- P029 Property, Residence & Real-Estate Synthesis is implemented/frozen as a governed domain layer over existing D1/property facts, P022 wealth context, P027 synthesis, Dasha and Transit. D4 interpretation remains explicitly gated; P030 is implemented/frozen.
+- VEDA-KNOW-PROP-001 completed the property/D4 source audit with `PASS_WITH_CONDITION`; the source-selected D4 calculation remediation is recorded in P015-RX and D4 interpretation remains not validated. P029-R1 is not required by the current comparison.
+- P015-RX remediated D4 calculation to `D4_CHATURTHAMSHA_1_4_7_10_V1` with calculation status validated and interpretation status not validated. P029 remains D1-first and does not use D4 interpretively; P030 is implemented/frozen and P030-R1 is not required.
 - P030 Travel, Relocation & Foreign Residence synthesis is implemented/frozen as a separate movement domain over existing Dasha, Transit, P021, P023, P024/P028 and P029 context. Travel, relocation, foreign residence and settlement remain distinct; D4 interpretation remains disabled.
 - VEDA-KNOW-TRAVEL-001 remains `PASS_WITH_CONDITION`: Hāyanaratna annual/Tājika journey rules, Brihat Saṃhitā movement/return transit statements, Brihat Jataka house nomenclature, and pravāsa terminology are recorded with method limits. No universal 12th-house settlement or Rahu-settlement rule was promoted; D4 interpretation remains gated; P030-R1 is not required.
 - VEDA-P031 Spirituality, Dharma & Inner Development is implemented/frozen as a deterministic domain adapter over existing P014/P015/P016/P019/P027 facts. It preserves dharma/religiosity, interest/practice, detachment/clinical, pilgrimage/renunciation and potential/timing distinctions; D20 interpretation remains gated.
@@ -75,6 +75,7 @@ This project is NOT a screener. It IS a decision intelligence platform.
 - VEDA-EVIDENCE-ADB-SCALE-001 completed a source-cluster-aware 400-record follow-up. The full structured universe is 4,623 candidates; the new sample verified 5 records (1.25%), all Tier A from the UNKNOWN cluster. The combined verified pool is 114 subjects, but the source-diverse bound is 27 and the parent 90.83% yield is classified cluster-specific. Decision: `CONTINUE_STAGED_ADJUDICATION`; event corroboration remains limited/deferred and formal access remains high-value but unsent.
 - VEDA-EVIDENCE-ADB-SOURCE-DIVERSITY-001 completed the final bounded unknown-source audit. The 1,358-record UNKNOWN frame was resolved with separate collector/publication/original-document provenance levels; a frozen 240-record source-diverse sample produced 0 new Tier A/B records. The verified pool remains 114 and the outcome-blind source-diverse bound remains 27. Decision: `FREE_SAMPLE_USEFUL_BUT_FORMAL_ACCESS_REQUIRED_FOR_SCALE`; no further generic free-sample adjudication is authorized. Formal access remains high-value, prepared and unsent; no event corroboration, astrology, ML, PRED, production, recruitment, raw-data or RAG change occurred.
 - Historical P027 reservation is preserved; current assignment is governed by `docs/current-state/p027/`.
+- VEDA-ROADMAP-REBASELINE-001 completed on 2026-08-18 with `PASS_WITH_CONDITION`. It reconciled the post-foundation programme inventory, preserved calculation/knowledge/empirical/predictive/production/language trust separation, corrected stale current pointers, recorded human/external gates and selected feature-blind POSITION_END evidence redesign as the next programme. The next programme was not started; RAG and Approved Core were unchanged.
 
 **ALL 25 CORE PHASES + A/B/C/D/FPI/KU/AF/CH/TI/SH/UI-S COMPLETE. Full investment operating system is live.**
 

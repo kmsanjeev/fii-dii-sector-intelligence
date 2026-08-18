@@ -1,0 +1,14 @@
+{
+  "observed_at": "2026-08-18",
+  "rows": [
+    {"track":"Calculation / D20","current_state":"PARTIALLY_VALIDATED","blocker":"Ashtakavarga contract and D20 destination mapping","can_run_autonomously":true,"human_action":"None for bounded audit","value":"High","effort":"Medium","next_decision":"Bounded Ashtakavarga method decision; do not repeat D20 search"},
+    {"track":"Muhurta / P032","current_state":"COMPLETE_WITH_CONDITION","blocker":"Personal Bala, recommendation authority and source gaps","can_run_autonomously":false,"human_action":"None currently; source evidence needed","value":"Medium","effort":"High","next_decision":"Hold recommendations inactive"},
+    {"track":"ADB evidence","current_state":"EXTERNAL_ACTION_REQUIRED","blocker":"Formal provider access and terms","can_run_autonomously":false,"human_action":"Submit/review prepared request","value":"Very high","effort":"External","next_decision":"Human gate"},
+    {"track":"Consented corpus","current_state":"HUMAN_VALIDATION_REQUIRED","blocker":"Legal/privacy/ethics/security","can_run_autonomously":false,"human_action":"Organizational reviews","value":"High","effort":"External","next_decision":"Remain synthetic-only"},
+    {"track":"POSITION_END evidence","current_state":"AUTONOMOUS_WORK_READY","blocker":"Evidence redesign before scoring","can_run_autonomously":true,"human_action":"None for feature-blind redesign","value":"High","effort":"Small/medium","next_decision":"Recommend VEDA-EVIDENCE-POSEND-REBASELINE-001"},
+    {"track":"Hindi","current_state":"HUMAN_VALIDATION_REQUIRED","blocker":"Native linguistic review","can_run_autonomously":false,"human_action":"Human review and production decision","value":"Medium","effort":"External","next_decision":"Hold production"},
+    {"track":"COMM/GROUP","current_state":"HUMAN_VALIDATION_REQUIRED","blocker":"Human A/B and group evaluation","can_run_autonomously":false,"human_action":"Founder/group evaluation","value":"Medium","effort":"External","next_decision":"Run in parallel"},
+    {"track":"Prediction / ML","current_state":"BLOCKED","blocker":"Insufficient governed cases and maturity gate","can_run_autonomously":false,"human_action":"Legitimate data and governance","value":"High","effort":"High","next_decision":"Stop until new evidence"},
+    {"track":"RAG","current_state":"COMPLETE_WITH_CONDITION","blocker":"None; no semantic drift","can_run_autonomously":false,"human_action":"None","value":"Low now","effort":"None","next_decision":"No rebuild"}
+  ]
+}

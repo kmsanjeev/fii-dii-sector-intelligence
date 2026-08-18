@@ -40,9 +40,9 @@ The implemented baseline is frozen through P032 foundation plus P031, P015-RX, P
 - `VEDA-EVIDENCE-ADB-ADJUDICATION-001` adjudicated the exact frozen 120-record pool without astrology or outcome selection: 32 Tier A, 77 Tier B, 11 unresolved; 65 verified subjects have 129 existing DAY events. Decision: `SCALE_ADJUDICATION_TO_BROADER_ADB_POOL`; event corroboration remains separate and formal access is high-value for scale. Evidence is in `docs/current-state/evidence-adb-adjudication-001/`.
 - `VEDA-EVIDENCE-ADB-SCALE-001` tested generalization with a capped, source-cluster-stratified 400-record sample from the 4,623-record structured universe. Only 5 new records verified (1.25%), all Tier A from UNKNOWN; combined verified pool is 114 raw subjects versus a source-diverse bound of 27. Decision: `CONTINUE_STAGED_ADJUDICATION`; parent yield is cluster-specific. Evidence is in `docs/current-state/evidence-adb-scale-001/`.
 - `VEDA-EVIDENCE-ADB-SOURCE-DIVERSITY-001` resolved the 1,358-record UNKNOWN source bucket using separate collector, publication and original-document signals. A frozen, capped 240-record sample yielded 0 new Tier A/B records; the verified pool remains 114 and the outcome-blind source-diverse bound remains 27. Decision: `FREE_SAMPLE_USEFUL_BUT_FORMAL_ACCESS_REQUIRED_FOR_SCALE`; no further generic free-sample adjudication is authorized. Formal ADB access remains high-value, prepared and unsent. Evidence is in `docs/current-state/evidence-adb-source-diversity-001/`.
-- VEDA-RM-002 active tracks: `CLASSICAL_SOURCE_EXPANSION`, `TIMING_VALIDATION`, `METHOD_COMPARISON`, `TAJIKA_FOUNDATION`, `ASHTAKAVARGA_VALIDATION`, `SHADBALA_VALIDATION`, and `MUHURTA_SOURCE_EXPANSION`.
-- VEDA-AUTOLOOP-R3 is implemented/frozen; the controller uses information-gain, input fingerprints, cooldowns and track diversity, with `METHOD_COMPARISON` as next priority.
-- `VEDA-ADM-EMP-001` is implemented/frozen by its own acceptance record; the next operational step is to supply legitimate governed case data.
+- VEDA-RM-002 is implemented/frozen. Its source, timing, method, Tajika, strength and input-preparation tracks are historical track inventory, not a current live authorization; current decisions are reconciled in `docs/current-state/roadmap-rebaseline-001/`.
+- VEDA-AUTOLOOP-R3 and R4 are implemented/frozen; the controller retains information-gain, cooldown and transient-stop safety, but no activity is active in this rebaseline.
+- `VEDA-ADM-EMP-001` is implemented/frozen by its own acceptance record; the historical data-intake recommendation is superseded by the current evidence and POSEND redesign ranking.
 - ADM-EMP-001 implementation: `38bd7a03`, tag `veda-adm-emp-001-case-intake-console`.
 - STD-003 is implemented/frozen by its current-state acceptance record; COMM-001 is implemented/frozen by `docs/current-state/comm-001/`; LANG-001 and LANG-001-R1 are implemented/frozen by their current-state records; COMM-002 is implemented/frozen by `docs/current-state/comm-002/`; GROUP-001 is implemented/frozen by `docs/current-state/group-001/`; EMO-001 is implemented/frozen in `docs/current-state/emo-001/`; P027 is implemented/frozen in `docs/current-state/p027/`; the LANG-002 language-neutral foundation is implemented/frozen in `docs/current-state/lang-002-multilingual-foundation-001/`; VEDA-LANG-002-HI-001 is implemented/frozen as a review-candidate Hindi presentation pack, and `VEDA-LANG-002-HI-SOURCE-VALIDATION-001` is complete with the human-review and production gates preserved in `docs/current-state/lang-002-hi-source-validation-001/`; other target packs remain planned pending separate authorization and review.
 - STD-003 implementation: `c73261e1`, tag `veda-std-003-conversational-intelligence-standard`.
@@ -54,4 +54,10 @@ The implemented baseline is frozen through P032 foundation plus P031, P015-RX, P
 - GROUP-001 implementation: evidence is in `docs/current-state/group-001/`; human group evaluation remains pending.
 - GROUP-001 implementation commit: `925b76f2`; release tag: `veda-group-001-multi-speaker-intelligence`.
 
-This directory is the VEDA roadmap, status, and cold-start entrypoint. Do not use the historical P000/P013 roadmap files or the governance-audit P027 pathway to infer current scope.
+This directory is the VEDA roadmap, status, and cold-start entrypoint. The
+post-foundation state is rebaselined by
+`VEDA-ROADMAP-REBASELINE-001` at
+`docs/current-state/roadmap-rebaseline-001/`; its primary recommendation is
+feature-blind POSITION_END evidence redesign, and it was not started
+automatically. Do not use the historical P000/P013 roadmap files or the
+governance-audit P027 pathway to infer current scope.
