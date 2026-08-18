@@ -137,6 +137,15 @@ def build() -> dict[str, Any]:
                 )
             )
 
+    def required_for_effect(effect: float) -> list[int]:
+        return sorted(
+            {
+                row["approximate_independent_subjects"]
+                for row in scenario_rows
+                if round(row["absolute_effect"], 2) == effect
+            }
+        )
+
     contracts = []
     for contract in family["contracts"]:
         contracts.append(
@@ -281,10 +290,10 @@ def build() -> dict[str, Any]:
             "day_eligible_n": 0,
             "month_secondary_n": 0,
             "year_exploratory_n": len(subjects),
-            "required_n_plus_5pp": sorted({row["approximate_independent_subjects"] for row in scenario_rows if row["absolute_effect"] == 0.05}),
-            "required_n_plus_10pp": sorted({row["approximate_independent_subjects"] for row in scenario_rows if row["absolute_effect"] == 0.10}),
-            "required_n_plus_15pp": sorted({row["approximate_independent_subjects"] for row in scenario_rows if row["absolute_effect"] == 0.15}),
-            "required_n_plus_20pp": sorted({row["approximate_independent_subjects"] for row in scenario_rows if row["absolute_effect"] == 0.20}),
+            "required_n_plus_5pp": required_for_effect(0.05),
+            "required_n_plus_10pp": required_for_effect(0.10),
+            "required_n_plus_15pp": required_for_effect(0.15),
+            "required_n_plus_20pp": required_for_effect(0.20),
             "scenarios": scenario_rows,
             "confirmatory_powered": False,
             "limitation": "These are deterministic planning sensitivities, not a conditional-risk-set power guarantee.",

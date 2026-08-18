@@ -37,6 +37,8 @@ def test_readiness_and_safety_block_premature_scoring():
     assert result["power"]["month_secondary_n"] == 0
     assert result["power"]["year_exploratory_n"] == 20
     assert result["power"]["confirmatory_powered"] is False
+    assert result["power"]["required_n_plus_5pp"] == [3390, 5410, 6808]
+    assert result["power"]["required_n_plus_10pp"] == [982, 1448, 1758]
     assert result["safety"]["feature_scoring"] is False
     assert result["safety"]["astrology_calculation"] is False
     assert result["safety"]["ml"] == "LOCKED"
