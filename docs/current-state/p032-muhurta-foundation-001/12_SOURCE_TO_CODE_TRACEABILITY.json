@@ -1,0 +1,14 @@
+{
+  "implementation": "engines/ai/knowledge/muhurta_foundation.py",
+  "traceability": [
+    {"rule_id": "P032-CALC-VARA-001", "function": "compute_panchanga_facts", "field": "vara", "source_status": "VALIDATED_KNOWLEDGE"},
+    {"rule_id": "P032-CALC-TITHI-001", "function": "compute_panchanga_facts", "field": "tithi", "source_status": "VALIDATED_KNOWLEDGE"},
+    {"rule_id": "P032-CALC-NAKSHATRA-001", "function": "compute_panchanga_facts", "field": "nakshatra", "source_status": "VALIDATED_KNOWLEDGE"},
+    {"rule_id": "P032-CALC-YOGA-001", "function": "compute_panchanga_facts", "field": "yoga", "source_status": "VALIDATED_KNOWLEDGE"},
+    {"rule_id": "P032-CALC-KARANA-001", "function": "compute_panchanga_facts", "field": "karana", "source_status": "VALIDATED_KNOWLEDGE"},
+    {"rule_id": "P032-RULE-EVENT-SCOPED-001", "function": "evaluate_atomic_rules", "field": "reference_only", "source_status": "VALIDATED_KNOWLEDGE"},
+    {"rule_id": "P032-RULE-TARABALA-001", "function": "atomic_rule_registry", "field": "no_executable_function", "source_status": "RESEARCH_CANDIDATE"},
+    {"rule_id": "P032-RULE-CHANDRABALA-001", "function": "atomic_rule_registry", "field": "no_executable_function", "source_status": "RESEARCH_CANDIDATE"}
+  ],
+  "negative_traceability": ["No rule maps to a score, ranking, recommendation, outcome, ML, or PRED-M4 output."]
+}

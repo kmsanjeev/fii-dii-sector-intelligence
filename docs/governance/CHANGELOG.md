@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-08-18 | VEDA-P032-MUHURTA-FOUNDATION-001
+
+Completed the bounded Muhurta foundation with `PASS_WITH_CONDITION`. The
+existing solar-day foundation was extended with deterministic five-limb
+Panchanga facts, explicit half-open angular boundary policy, event taxonomy,
+source-to-code traceability, inactive atomic rule metadata and unscored
+transition-window splitting. Existing Bṛhat Saṃhitā event families remain
+scoped and disabled; Tara Bala, Chandra Bala, composite scoring, ranking and
+recommendations remain gated because operative source formulas were not
+verified. No Prashna, prediction, ML, PRED-M4, RAG or Approved Core change
+occurred. The pre-existing city-coordinate working-tree edit was preserved.
+
 ## 2026-08-18 | VEDA-CALC-JYOTISHA-CORE-001
 
 Completed the governed Jyotisha core calculation audit with `PASS_WITH_CONDITION`.

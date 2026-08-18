@@ -1,0 +1,11 @@
+{
+  "status": "REFERENCE_ONLY",
+  "production_activation": "DISABLED",
+  "rows": [
+    {"id": "P032-POS-NAKSHATRA-001", "scope": "Event-specific action family", "source": "BRIHAT_SAMHITA_CH97_06_12", "status": "VALIDATED_KNOWLEDGE", "executable": false},
+    {"id": "P032-POS-TITHI-001", "scope": "Event-specific action family", "source": "BRIHAT_SAMHITA_CH99", "status": "VALIDATED_KNOWLEDGE", "executable": false},
+    {"id": "P032-POS-KARANA-001", "scope": "Event-specific action family", "source": "BRIHAT_SAMHITA_CH99", "status": "VALIDATED_KNOWLEDGE", "executable": false},
+    {"id": "P032-POS-UNIVERSAL-001", "scope": "Universal positive condition", "source": "NO_SINGLE_VERIFIED_METHOD", "status": "DEFERRED", "executable": false}
+  ],
+  "policy": "A positive source rule remains event-scoped and cannot become a ranking score."
+}

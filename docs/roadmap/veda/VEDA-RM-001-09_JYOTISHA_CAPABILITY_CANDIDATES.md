@@ -9,7 +9,7 @@ These are candidates, not authorized phases:
 | Travel / relocation | FUTURE_CANDIDATE | No current authoritative scope |
 | Spirituality | IMPLEMENTED / FROZEN | VEDA-P031; evidence in `docs/current-state/p031/` |
 | Longevity | RESEARCH_ACTIVE / PRODUCTION_RESTRICTED | High-stakes boundary |
-| Muhurta | FOUNDATION_IMPLEMENTED / ELECTIONAL_INACTIVE | VEDA-MUH-R1 provides solar-day facts only; event rules and recommendation require separate authorization |
+| Muhurta | FOUNDATION_IMPLEMENTED / ELECTIONAL_INACTIVE | VEDA-MUH-R1 plus VEDA-P032 provide solar-day and five-limb Panchanga facts, event taxonomy and inactive traceable rule/window primitives; personal Bala, scoring and recommendation require separate authorization |
 | Remedies | RESEARCH_ACTIVE / PRODUCTION_RESTRICTED | Safety and provenance required |
 | Compatibility | FUTURE_CANDIDATE | Reuse marriage and relationship foundation |
 | Prashna | UNDEFINED | No authoritative current implementation plan |

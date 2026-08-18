@@ -1,0 +1,20 @@
+{
+  "activity_id": "VEDA-P032-MUHURTA-FOUNDATION-001",
+  "taxonomy_policy": "Event applicability is metadata; event type does not imply auspiciousness.",
+  "events": [
+    {"event_type": "MARRIAGE", "family": "RELATIONSHIP", "status": "SCOPED_RULES_AVAILABLE", "production": "DISABLED"},
+    {"event_type": "TRAVEL", "family": "MOVEMENT", "status": "SCOPED_RULES_AVAILABLE", "production": "DISABLED"},
+    {"event_type": "EDUCATION", "family": "LEARNING", "status": "SCOPED_RULES_AVAILABLE", "production": "DISABLED"},
+    {"event_type": "CONSTRUCTION_PROPERTY", "family": "PROPERTY", "status": "SCOPED_RULES_AVAILABLE", "production": "DISABLED"},
+    {"event_type": "NAMING", "family": "LIFE_CYCLE", "status": "SCOPED_RULES_AVAILABLE", "production": "DISABLED"},
+    {"event_type": "INITIATION", "family": "RITUAL", "status": "SCOPED_RULES_AVAILABLE", "production": "DISABLED"},
+    {"event_type": "MEDICAL_PROCEDURE", "family": "HEALTH", "status": "HIGH_RISK_INACTIVE", "production": "DISABLED"},
+    {"event_type": "BUSINESS_CONTRACT", "family": "COMMERCE", "status": "SCOPED_RULES_AVAILABLE", "production": "DISABLED"},
+    {"event_type": "PROPERTY_PURCHASE", "family": "PROPERTY", "status": "TAXONOMY_ONLY", "production": "DISABLED"},
+    {"event_type": "HOUSE_ENTRY", "family": "PROPERTY", "status": "TAXONOMY_ONLY", "production": "DISABLED"},
+    {"event_type": "RELIGIOUS_RITUAL", "family": "RITUAL", "status": "TAXONOMY_ONLY", "production": "DISABLED"},
+    {"event_type": "VEHICLE", "family": "PROPERTY", "status": "TAXONOMY_ONLY", "production": "DISABLED"},
+    {"event_type": "FINANCIAL_TRANSACTION", "family": "COMMERCE", "status": "TAXONOMY_ONLY", "production": "DISABLED"},
+    {"event_type": "OTHER", "family": "UNSPECIFIED", "status": "TAXONOMY_ONLY", "production": "DISABLED"}
+  ]
+}

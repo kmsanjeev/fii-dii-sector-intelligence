@@ -1,0 +1,13 @@
+{
+  "activity_id": "VEDA-P032-MUHURTA-FOUNDATION-001",
+  "method_id": "MUHURTA_PANCHANGA_SIDEREAL_FACTS_V1",
+  "reference_results": [
+    {"fixture_id": "P032-PAN-001", "sun": 0, "moon": 0, "tithi": 1, "nakshatra": 1, "yoga": 1, "karana": 1, "status": "PASS"},
+    {"fixture_id": "P032-PAN-002", "sun": 0, "moon": 11.9999999999, "tithi": 1, "nakshatra": 1, "karana": 2, "status": "PASS"},
+    {"fixture_id": "P032-PAN-003", "sun": 0, "moon": 12, "tithi": 2, "nakshatra": 1, "karana": 3, "status": "PASS"},
+    {"fixture_id": "P032-PAN-004", "sun": 0, "moon": 360, "tithi": 1, "nakshatra": 1, "yoga": 1, "karana": 1, "status": "PASS"},
+    {"fixture_id": "P032-PAN-005", "sun": 0, "moon": 359.9999999999, "tithi": 30, "nakshatra": 27, "karana": 60, "status": "PASS"}
+  ],
+  "oracle_state": "INTERNAL_INVARIANT_VALIDATED;NO_INDEPENDENT_MUHURTA_ORACLE",
+  "selection_result": "NOT_GENERATED"
+}

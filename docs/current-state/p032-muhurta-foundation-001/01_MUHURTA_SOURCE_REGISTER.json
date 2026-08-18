@@ -1,0 +1,55 @@
+{
+  "activity_id": "VEDA-P032-MUHURTA-FOUNDATION-001",
+  "source_policy": "VEDA-STD-001",
+  "records": [
+    {
+      "source_id": "VEDA-SRC-BS-MUHURTA-001",
+      "title": "Brihat Samhita",
+      "author_tradition": "Varahamihira",
+      "locator": "Chapters 97-99 and 100 in the established chapter numbering used by the consulted translation",
+      "accessed_page": "https://astroamerica.com/text/brihatsamhita.html",
+      "authority_tier": "TIER_1_CLASSICAL_PRIMARY",
+      "access": "PUBLIC_TRANSLATION_AND_SANSKRIT_WITNESSES",
+      "verified_scope": "Scoped nakshatra, tithi and karana action families; not a universal score",
+      "status": "VALIDATED_KNOWLEDGE_WITH_SCOPE_LIMIT"
+    },
+    {
+      "source_id": "VEDA-SRC-PANCHANGA-FACTS-001",
+      "title": "Existing VEDA Panchanga calculation contract",
+      "author_tradition": "VEDA governed implementation",
+      "locator": "engines/ai/chatbot/tools/kundli_calculator.py::_compute_panchang",
+      "authority_tier": "TIER_4_CITED_TECHNICAL_IMPLEMENTATION",
+      "verified_scope": "Deterministic Vara, Tithi, Nakshatra, Yoga and Karana facts",
+      "status": "INTERNAL_REGRESSION_REFERENCE"
+    },
+    {
+      "source_id": "VEDA-SRC-MUH-CHINTAMANI-1928",
+      "title": "Muhurta Chintamani with Pramitakshara commentary",
+      "author_tradition": "Rama Daivajna; Anupa Misra edition",
+      "locator": "CiNii BA46170738; metadata-only record",
+      "authority_tier": "TIER_2_TRADITIONAL_PRIMARY_WITNESS",
+      "verified_scope": "Candidate source for personal Bala; operative passage not verified",
+      "status": "RESEARCH_CANDIDATE_REFERENCE_NOT_VERIFIED"
+    },
+    {
+      "source_id": "VEDA-SRC-MUH-CHINTAMANI-BL",
+      "title": "Muhurta Chintamani Piyush Dhara witness",
+      "author_tradition": "British Library EAP886/1/26",
+      "locator": "Metadata-only manuscript record",
+      "authority_tier": "TIER_2_TRADITIONAL_PRIMARY_WITNESS",
+      "verified_scope": "Candidate source; no operative formula/page verified",
+      "status": "RESEARCH_CANDIDATE_REFERENCE_NOT_VERIFIED"
+    },
+    {
+      "source_id": "VEDA-SRC-P016-NAKSHATRA-001",
+      "title": "P016 canonical Nakshatra boundary contract",
+      "author_tradition": "VEDA governed calculation",
+      "locator": "engines/ai/knowledge/dasha_governance.py::nakshatra_info",
+      "authority_tier": "TIER_4_CITED_TECHNICAL_IMPLEMENTATION",
+      "verified_scope": "27 equal segments and four padas",
+      "status": "VALIDATED_KNOWLEDGE"
+    }
+  ],
+  "unverified_rule_policy": "No formula without a verifiable passage is executable.",
+  "approved_core_promoted": 0
+}

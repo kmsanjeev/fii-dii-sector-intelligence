@@ -1,0 +1,16 @@
+{
+  "activity_id": "VEDA-P032-MUHURTA-FOUNDATION-001",
+  "implementation": "engines/ai/knowledge/muhurta_foundation.py",
+  "rules": [
+    {"rule_id": "P032-CALC-VARA-001", "concept": "LOCAL_WEEKDAY", "classification": "CLASSICAL_DERIVED", "status": "VALIDATED_KNOWLEDGE", "activation": "FACTS_ONLY"},
+    {"rule_id": "P032-CALC-TITHI-001", "concept": "MOON_SUN_ELONGATION_12_DEGREE_SEGMENTS", "classification": "CLASSICAL_DERIVED", "status": "VALIDATED_KNOWLEDGE", "activation": "FACTS_ONLY"},
+    {"rule_id": "P032-CALC-NAKSHATRA-001", "concept": "MOON_27_LUNAR_MANSIONS_AND_PADA", "classification": "CLASSICAL_DERIVED", "status": "VALIDATED_KNOWLEDGE", "activation": "FACTS_ONLY"},
+    {"rule_id": "P032-CALC-YOGA-001", "concept": "SUN_MOON_SUM_27_SEGMENTS", "classification": "CLASSICAL_DERIVED", "status": "VALIDATED_KNOWLEDGE", "activation": "FACTS_ONLY"},
+    {"rule_id": "P032-CALC-KARANA-001", "concept": "SIX_DEGREE_HALF_TITHI_SEQUENCE", "classification": "CLASSICAL_DERIVED", "status": "VALIDATED_KNOWLEDGE", "activation": "FACTS_ONLY"},
+    {"rule_id": "P032-RULE-EVENT-SCOPED-001", "concept": "SCOPED_EVENT_ACTION_FAMILIES", "classification": "CLASSICAL_EXPLICIT", "status": "VALIDATED_KNOWLEDGE", "activation": "DISABLED"},
+    {"rule_id": "P032-RULE-TARABALA-001", "concept": "TARA_BALA", "classification": "UNRESOLVED", "status": "RESEARCH_CANDIDATE", "activation": "DISABLED"},
+    {"rule_id": "P032-RULE-CHANDRABALA-001", "concept": "CHANDRA_BALA", "classification": "UNRESOLVED", "status": "RESEARCH_CANDIDATE", "activation": "DISABLED"},
+    {"rule_id": "P032-RULE-SCORE-001", "concept": "GENERAL_AUSPICIOUSNESS_SCORE", "classification": "UNRESOLVED", "status": "DEFERRED", "activation": "DISABLED"}
+  ],
+  "score_fields": "Always null; no composite scoring is implemented."
+}

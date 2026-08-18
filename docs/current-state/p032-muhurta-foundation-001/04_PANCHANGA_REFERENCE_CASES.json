@@ -1,0 +1,13 @@
+{
+  "method_id": "MUHURTA_PANCHANGA_SIDEREAL_FACTS_V1",
+  "boundary_policy": "HALF_OPEN_NEXT_SEGMENT;360_WRAP_TO_ZERO",
+  "cases": [
+    {"id": "P032-PAN-001", "sun": 0, "moon": 0, "expected": {"tithi": 1, "karana": 1, "nakshatra": 1, "yoga": 1}},
+    {"id": "P032-PAN-002", "sun": 0, "moon": 11.9999999999, "expected": {"tithi": 1, "karana": 2, "nakshatra": 1}},
+    {"id": "P032-PAN-003", "sun": 0, "moon": 12, "expected": {"tithi": 2, "karana": 3, "nakshatra": 1}},
+    {"id": "P032-PAN-004", "sun": 0, "moon": 360, "expected": {"tithi": 1, "karana": 1, "nakshatra": 1, "yoga": 1}},
+    {"id": "P032-PAN-005", "sun": 0, "moon": 359.9999999999, "expected": {"tithi": 30, "karana": 60, "nakshatra": 27}}
+  ],
+  "expected_failures": [],
+  "external_oracle": "UNAVAILABLE;INTERNAL_CONTRACT_AND_INVARIANT_VALIDATED"
+}
