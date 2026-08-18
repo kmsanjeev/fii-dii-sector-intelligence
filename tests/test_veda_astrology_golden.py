@@ -60,7 +60,8 @@ def _assert_snapshot(actual, expected, path: str = "root") -> None:
     assert actual == expected, f"{path}: expected {expected!r}, got {actual!r}"
 
 
-def test_personal_kundli_golden_fixtures():
+def test_personal_kundli_golden_fixtures(monkeypatch):
+    monkeypatch.setenv("VEDA_TEST_SNAPSHOT_DATE", "2026-08-10")
     payload = _load_json(GOLDEN_PATH)
 
     for case in payload["personal"]:

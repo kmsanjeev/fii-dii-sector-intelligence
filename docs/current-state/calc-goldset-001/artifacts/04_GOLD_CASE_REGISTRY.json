@@ -1,0 +1,1640 @@
+{
+  "cases": [
+    {
+      "case_hash": "A45ABFA6D2C87E438CE9419D11D6A0A5198593361774D05727EA29A92610D460",
+      "case_id": "VEDA-FIX-CALC-000001",
+      "expected_values_compact": {
+        "birth_lord": "Rahu",
+        "d10_jupiter": "Taurus",
+        "d20_jupiter": "Gemini",
+        "d9_jupiter": "Leo",
+        "lagna": {
+          "degree_in_sign": 14.092874,
+          "full_longitude": 194.092874,
+          "longitude": 194.092874,
+          "sign": "Libra",
+          "sign_index": 6
+        },
+        "planets": {
+          "Jupiter": 255.538691,
+          "Ketu": 213.929238,
+          "Mars": 266.922683,
+          "Mercury": 211.225144,
+          "Moon": 314.926678,
+          "Neptune": 245.791515,
+          "Rahu": 33.929238,
+          "Saturn": 204.443325,
+          "Sun": 197.150395,
+          "Uranus": 228.221912,
+          "Venus": 233.124784
+        }
+      },
+      "input": {
+        "latitude": 19.076,
+        "local_date": "1984-11-03",
+        "local_time": "06:30:00",
+        "longitude": 72.8777,
+        "timezone_name": "Asia/Kolkata",
+        "timezone_offset_hours": 5.5,
+        "utc_datetime": "1984-11-03T01:00:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "30D1634C5E9B54200243A70DC85473A8AEA2E62B84A5BC8ECFAFE2FADD17EF62",
+      "case_id": "VEDA-FIX-CALC-000002",
+      "expected_values_compact": {
+        "birth_lord": "Saturn",
+        "d10_jupiter": "Sagittarius",
+        "d20_jupiter": "Leo",
+        "d9_jupiter": "Pisces",
+        "lagna": {
+          "degree_in_sign": 17.942882,
+          "full_longitude": 77.942882,
+          "longitude": 77.942882,
+          "sign": "Gemini",
+          "sign_index": 2
+        },
+        "planets": {
+          "Jupiter": 79.113609,
+          "Ketu": 248.073928,
+          "Mars": 253.314419,
+          "Mercury": 181.282164,
+          "Moon": 215.915227,
+          "Neptune": 282.299671,
+          "Rahu": 68.073928,
+          "Saturn": 51.069699,
+          "Sun": 155.128486,
+          "Uranus": 297.632457,
+          "Venus": 127.165504
+        }
+      },
+      "input": {
+        "latitude": 51.5074,
+        "local_date": "2001-09-21",
+        "local_time": "23:40:00",
+        "longitude": -0.1278,
+        "timezone_name": "Europe/London",
+        "timezone_offset_hours": 1.0,
+        "utc_datetime": "2001-09-21T22:40:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "72A50AF9C5FB140A39038E75361E5EF1775392A97D578B0C3E1FDE9057DBDDDC",
+      "case_id": "VEDA-FIX-CALC-000003",
+      "expected_values_compact": {
+        "birth_lord": "Sun",
+        "d10_jupiter": "Leo",
+        "d20_jupiter": "Sagittarius",
+        "d9_jupiter": "Sagittarius",
+        "lagna": {
+          "degree_in_sign": 28.620291,
+          "full_longitude": 88.620291,
+          "longitude": 88.620291,
+          "sign": "Gemini",
+          "sign_index": 2
+        },
+        "planets": {
+          "Jupiter": 67.346114,
+          "Ketu": 112.753912,
+          "Mars": 256.193911,
+          "Mercury": 276.609228,
+          "Moon": 148.995853,
+          "Neptune": 259.803813,
+          "Rahu": 292.753912,
+          "Saturn": 266.735447,
+          "Sun": 299.581266,
+          "Uranus": 254.362201,
+          "Venus": 267.501233
+        }
+      },
+      "input": {
+        "latitude": -33.8688,
+        "local_date": "1990-02-12",
+        "local_time": "18:05:00",
+        "longitude": 151.2093,
+        "timezone_name": "Australia/Sydney",
+        "timezone_offset_hours": 11.0,
+        "utc_datetime": "1990-02-12T07:05:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "D2214DDD8742A505BCA545A9820C930B7A5A550D06A11D4AEC2E2A344755F953",
+      "case_id": "VEDA-FIX-CALC-000004",
+      "expected_values_compact": {
+        "birth_lord": "Mercury",
+        "d10_jupiter": "Cancer",
+        "d20_jupiter": "Capricorn",
+        "d9_jupiter": "Aquarius",
+        "lagna": {
+          "degree_in_sign": 21.536091,
+          "full_longitude": 51.536091,
+          "longitude": 51.536091,
+          "sign": "Taurus",
+          "sign_index": 1
+        },
+        "planets": {
+          "Jupiter": 355.602446,
+          "Ketu": 37.243352,
+          "Mars": 354.344477,
+          "Mercury": 53.783982,
+          "Moon": 119.21101,
+          "Neptune": 226.56239,
+          "Rahu": 217.243352,
+          "Saturn": 85.017923,
+          "Sun": 59.184838,
+          "Uranus": 185.061356,
+          "Venus": 104.478615
+        }
+      },
+      "input": {
+        "latitude": 40.7128,
+        "local_date": "1975-06-14",
+        "local_time": "04:59:00",
+        "longitude": -74.006,
+        "timezone_name": "America/New_York",
+        "timezone_offset_hours": -4.0,
+        "utc_datetime": "1975-06-14T08:59:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "0F9ED33CF8F24D0B6AF4598E7757BF59623FEF9EFB79C03E618A093819945984",
+      "case_id": "VEDA-FIX-CALC-000005",
+      "expected_values_compact": {
+        "birth_lord": "Ketu",
+        "d10_jupiter": "Cancer",
+        "d20_jupiter": "Capricorn",
+        "d9_jupiter": "Aquarius",
+        "lagna": {
+          "degree_in_sign": 29.995907,
+          "full_longitude": 179.995907,
+          "longitude": 179.995907,
+          "sign": "Virgo",
+          "sign_index": 5
+        },
+        "planets": {
+          "Jupiter": 355.674423,
+          "Ketu": 37.229162,
+          "Mars": 354.662851,
+          "Mercury": 53.571863,
+          "Moon": 125.432344,
+          "Neptune": 226.550968,
+          "Rahu": 217.229162,
+          "Saturn": 85.070716,
+          "Sun": 59.600176,
+          "Uranus": 185.053128,
+          "Venus": 104.906754
+        }
+      },
+      "input": {
+        "latitude": 40.7128,
+        "local_date": "1975-06-14",
+        "local_time": "15:25:00",
+        "longitude": -74.006,
+        "timezone_name": "America/New_York",
+        "timezone_offset_hours": -4.0,
+        "utc_datetime": "1975-06-14T19:25:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "110226AA0BB71EA12016F1848F10E47C489CDAD5C42ACE3AA993D5FED5FFD254",
+      "case_id": "VEDA-FIX-CALC-000006",
+      "expected_values_compact": {
+        "birth_lord": "Sun",
+        "d10_jupiter": "Leo",
+        "d20_jupiter": "Sagittarius",
+        "d9_jupiter": "Sagittarius",
+        "lagna": {
+          "degree_in_sign": 29.998804,
+          "full_longitude": 149.998804,
+          "longitude": 149.998804,
+          "sign": "Leo",
+          "sign_index": 4
+        },
+        "planets": {
+          "Jupiter": 67.340803,
+          "Ketu": 112.752176,
+          "Mars": 256.287345,
+          "Mercury": 276.783282,
+          "Moon": 150.598564,
+          "Neptune": 259.807771,
+          "Rahu": 292.752176,
+          "Saturn": 266.74904,
+          "Sun": 299.711132,
+          "Uranus": 254.368173,
+          "Venus": 267.521205
+        }
+      },
+      "input": {
+        "latitude": -33.8688,
+        "local_date": "1990-02-12",
+        "local_time": "21:10:00",
+        "longitude": 151.2093,
+        "timezone_name": "Australia/Sydney",
+        "timezone_offset_hours": 11.0,
+        "utc_datetime": "1990-02-12T10:10:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "F03511FE42712099E6B38B7E34F7F375D96C5775431F3ED0681CC0C327D61079",
+      "case_id": "VEDA-FIX-CALC-000007",
+      "expected_values_compact": {
+        "birth_lord": "Ketu",
+        "d10_jupiter": "Cancer",
+        "d20_jupiter": "Capricorn",
+        "d9_jupiter": "Aquarius",
+        "lagna": {
+          "degree_in_sign": 17.508209,
+          "full_longitude": 47.508209,
+          "longitude": 47.508209,
+          "sign": "Taurus",
+          "sign_index": 1
+        },
+        "planets": {
+          "Jupiter": 355.765309,
+          "Ketu": 37.213852,
+          "Mars": 355.066878,
+          "Mercury": 53.312842,
+          "Moon": 133.329893,
+          "Neptune": 226.536499,
+          "Rahu": 217.213852,
+          "Saturn": 85.137905,
+          "Sun": 60.127572,
+          "Uranus": 185.042891,
+          "Venus": 105.448688
+        }
+      },
+      "input": {
+        "latitude": 40.7128,
+        "local_date": "1975-06-15",
+        "local_time": "04:40:00",
+        "longitude": -74.006,
+        "timezone_name": "America/New_York",
+        "timezone_offset_hours": -4.0,
+        "utc_datetime": "1975-06-15T08:40:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "1A3E8386D7BDB1C431A7238C7B0D26A2A171A5913B02741EEC1F9134DA868E5C",
+      "case_id": "VEDA-FIX-CALC-000008",
+      "expected_values_compact": {
+        "birth_lord": "Ketu",
+        "d10_jupiter": "Taurus",
+        "d20_jupiter": "Cancer",
+        "d9_jupiter": "Taurus",
+        "lagna": {
+          "degree_in_sign": 12.333645,
+          "full_longitude": 12.333645,
+          "longitude": 12.333645,
+          "sign": "Aries",
+          "sign_index": 0
+        },
+        "planets": {
+          "Jupiter": 5.177976,
+          "Ketu": 149.359444,
+          "Mars": 252.853812,
+          "Mercury": 292.361803,
+          "Moon": 133.329157,
+          "Neptune": 256.077091,
+          "Rahu": 329.359444,
+          "Saturn": 247.634929,
+          "Sun": 319.076887,
+          "Uranus": 246.894555,
+          "Venus": 2.593085
+        }
+      },
+      "input": {
+        "latitude": 27.7172,
+        "local_date": "1988-03-03",
+        "local_time": "09:05:00",
+        "longitude": 85.324,
+        "timezone_name": "Asia/Kathmandu",
+        "timezone_offset_hours": 5.75,
+        "utc_datetime": "1988-03-03T03:20:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "E142CF3453E4DA019ECA7F61E2B1140B69F123666BC1C69F5657DDB200BF63BC",
+      "case_id": "VEDA-FIX-CALC-000009",
+      "expected_values_compact": {
+        "birth_lord": "Mercury",
+        "d10_jupiter": "Virgo",
+        "d20_jupiter": "Aquarius",
+        "d9_jupiter": "Leo",
+        "lagna": {
+          "degree_in_sign": 14.448315,
+          "full_longitude": 194.448315,
+          "longitude": 194.448315,
+          "sign": "Libra",
+          "sign_index": 6
+        },
+        "planets": {
+          "Jupiter": 15.489673,
+          "Ketu": 44.132755,
+          "Mars": 135.696912,
+          "Mercury": 342.580423,
+          "Moon": 226.667826,
+          "Neptune": 307.435895,
+          "Rahu": 224.132755,
+          "Saturn": 184.42853,
+          "Sun": 329.819468,
+          "Uranus": 339.869534,
+          "Venus": 15.312974
+        }
+      },
+      "input": {
+        "latitude": -33.4489,
+        "local_date": "2012-03-13",
+        "local_time": "22:00:00",
+        "longitude": -70.6693,
+        "timezone_name": "America/Santiago",
+        "timezone_offset_hours": -3.0,
+        "utc_datetime": "2012-03-14T01:00:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "2D48C9A32D11572C048833CBBC71C3AA32B3DA88967474EDC15A0BC3419A2B84",
+      "case_id": "VEDA-FIX-CALC-000010",
+      "expected_values_compact": {
+        "birth_lord": "Ketu",
+        "d10_jupiter": "Cancer",
+        "d20_jupiter": "Libra",
+        "d9_jupiter": "Gemini",
+        "lagna": {
+          "degree_in_sign": 18.5792,
+          "full_longitude": 258.5792,
+          "longitude": 258.5792,
+          "sign": "Sagittarius",
+          "sign_index": 8
+        },
+        "planets": {
+          "Jupiter": 9.395723,
+          "Ketu": 287.858037,
+          "Mars": 232.020823,
+          "Mercury": 173.600048,
+          "Moon": 0.008011,
+          "Neptune": 277.818058,
+          "Rahu": 107.858037,
+          "Saturn": 22.654684,
+          "Sun": 159.583499,
+          "Uranus": 289.293621,
+          "Venus": 119.363166
+        }
+      },
+      "input": {
+        "latitude": -36.8485,
+        "local_date": "1999-09-27",
+        "local_time": "11:40:00",
+        "longitude": 174.7633,
+        "timezone_name": "Pacific/Auckland",
+        "timezone_offset_hours": 12.0,
+        "utc_datetime": "1999-09-26T23:40:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "134B9BA69C0E2FDBDFEA378967B9EC3B80870F7C59BA207A1D04F71DB2D445AF",
+      "case_id": "VEDA-FIX-CALC-000011",
+      "expected_values_compact": {
+        "birth_lord": "Saturn",
+        "d10_jupiter": "Gemini",
+        "d20_jupiter": "Virgo",
+        "d9_jupiter": "Taurus",
+        "lagna": {
+          "degree_in_sign": 7.73227,
+          "full_longitude": 37.73227,
+          "longitude": 37.73227,
+          "sign": "Taurus",
+          "sign_index": 1
+        },
+        "planets": {
+          "Jupiter": 205.877703,
+          "Ketu": 215.742629,
+          "Mars": 67.456229,
+          "Mercury": 103.674277,
+          "Moon": 93.983538,
+          "Neptune": 165.70726,
+          "Rahu": 35.742629,
+          "Saturn": 110.473015,
+          "Sun": 117.989021,
+          "Uranus": 62.053332,
+          "Venus": 112.561206
+        }
+      },
+      "input": {
+        "latitude": 28.6139,
+        "local_date": "1947-08-15",
+        "local_time": "00:00:00",
+        "longitude": 77.209,
+        "timezone_name": "Asia/Kolkata",
+        "timezone_offset_hours": 5.5,
+        "utc_datetime": "1947-08-14T18:30:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "FDE7ADACBAE33C944A8D60B43D4126BD68E48458D656670B84CC11D3A1C706B5",
+      "case_id": "VEDA-FIX-CALC-000012",
+      "expected_values_compact": {
+        "birth_lord": "Jupiter",
+        "d10_jupiter": "Gemini",
+        "d20_jupiter": "Virgo",
+        "d9_jupiter": "Taurus",
+        "lagna": {
+          "degree_in_sign": 5.733662,
+          "full_longitude": 155.733662,
+          "longitude": 155.733662,
+          "sign": "Virgo",
+          "sign_index": 5
+        },
+        "planets": {
+          "Jupiter": 205.826615,
+          "Ketu": 215.824112,
+          "Mars": 67.058602,
+          "Mercury": 102.593471,
+          "Moon": 84.897493,
+          "Neptune": 165.690948,
+          "Rahu": 35.824112,
+          "Saturn": 110.39577,
+          "Sun": 117.408549,
+          "Uranus": 62.029731,
+          "Venus": 111.815107
+        }
+      },
+      "input": {
+        "latitude": 24.8607,
+        "local_date": "1947-08-14",
+        "local_time": "09:30:00",
+        "longitude": 67.0011,
+        "timezone_name": "Asia/Karachi",
+        "timezone_offset_hours": 5.5,
+        "utc_datetime": "1947-08-14T04:00:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "98C40AC610C81027B18974146FBC8CF2787E400785982756F1B8A1C2084A68A3",
+      "case_id": "VEDA-FIX-CALC-000013",
+      "expected_values_compact": {
+        "birth_lord": "Mars",
+        "d10_jupiter": "Scorpio",
+        "d20_jupiter": "Gemini",
+        "d9_jupiter": "Aquarius",
+        "lagna": {
+          "degree_in_sign": 20.661177,
+          "full_longitude": 230.661177,
+          "longitude": 230.661177,
+          "sign": "Scorpio",
+          "sign_index": 7
+        },
+        "planets": {
+          "Jupiter": 75.199519,
+          "Ketu": 285.860501,
+          "Mars": 60.64037,
+          "Mercury": 93.465596,
+          "Moon": 306.392501,
+          "Neptune": 151.686394,
+          "Rahu": 105.860501,
+          "Saturn": 174.072284,
+          "Sun": 82.586534,
+          "Uranus": 48.188203,
+          "Venus": 72.367851
+        }
+      },
+      "input": {
+        "latitude": 39.9526,
+        "local_date": "1776-07-04",
+        "local_time": "17:10:00",
+        "longitude": -75.1652,
+        "timezone_name": "America/New_York",
+        "timezone_offset_hours": -4.933889,
+        "utc_datetime": "1776-07-04T22:06:02+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "042B751F8EF78FD1861DA142972DAFF9F8235327B9FA5010DEEF2F1EA0F4A23C",
+      "case_id": "VEDA-FIX-CALC-000014",
+      "expected_values_compact": {
+        "birth_lord": "Moon",
+        "d10_jupiter": "Cancer",
+        "d20_jupiter": "Sagittarius",
+        "d9_jupiter": "Cancer",
+        "lagna": {
+          "degree_in_sign": 3.305767,
+          "full_longitude": 273.305767,
+          "longitude": 273.305767,
+          "sign": "Capricorn",
+          "sign_index": 9
+        },
+        "planets": {
+          "Jupiter": 211.048339,
+          "Ketu": 219.521029,
+          "Mars": 352.832837,
+          "Mercury": 3.789942,
+          "Moon": 167.68021,
+          "Neptune": 165.486238,
+          "Rahu": 39.521029,
+          "Saturn": 99.575309,
+          "Sun": 18.248474,
+          "Uranus": 56.439153,
+          "Venus": 345.871855
+        }
+      },
+      "input": {
+        "latitude": 35.6762,
+        "local_date": "1947-05-03",
+        "local_time": "00:00:00",
+        "longitude": 139.6503,
+        "timezone_name": "Asia/Tokyo",
+        "timezone_offset_hours": 9.0,
+        "utc_datetime": "1947-05-02T15:00:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "E42B7AA38C75D39E6188982BFB96DB98F383E71711902A4505C2A3D347A57530",
+      "case_id": "VEDA-FIX-CALC-000015",
+      "expected_values_compact": {
+        "birth_lord": "Sun",
+        "d10_jupiter": "Virgo",
+        "d20_jupiter": "Pisces",
+        "d9_jupiter": "Sagittarius",
+        "lagna": {
+          "degree_in_sign": 8.400192,
+          "full_longitude": 278.400192,
+          "longitude": 278.400192,
+          "sign": "Capricorn",
+          "sign_index": 9
+        },
+        "planets": {
+          "Jupiter": 269.436999,
+          "Ketu": 173.561876,
+          "Mars": 111.72847,
+          "Mercury": 170.025209,
+          "Moon": 279.903874,
+          "Neptune": 171.490513,
+          "Rahu": 353.561876,
+          "Saturn": 139.991258,
+          "Sun": 164.613488,
+          "Uranus": 71.821302,
+          "Venus": 206.282097
+        }
+      },
+      "input": {
+        "latitude": 39.9042,
+        "local_date": "1949-10-01",
+        "local_time": "15:01:00",
+        "longitude": 116.4074,
+        "timezone_name": "Asia/Shanghai",
+        "timezone_offset_hours": 8.0,
+        "utc_datetime": "1949-10-01T07:01:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "A8C7D4FA927407F9C7A1B01085040B8C99707C3748D2F2AC230A88B4EEFAD74A",
+      "case_id": "VEDA-FIX-CALC-000016",
+      "expected_values_compact": {
+        "birth_lord": "Ketu",
+        "d10_jupiter": "Aquarius",
+        "d20_jupiter": "Capricorn",
+        "d9_jupiter": "Libra",
+        "lagna": {
+          "degree_in_sign": 0.399622,
+          "full_longitude": 120.399622,
+          "longitude": 120.399622,
+          "sign": "Leo",
+          "sign_index": 4
+        },
+        "planets": {
+          "Jupiter": 140.836175,
+          "Ketu": 76.109841,
+          "Mars": 235.445771,
+          "Mercury": 227.700854,
+          "Moon": 129.399697,
+          "Neptune": 262.231627,
+          "Rahu": 256.109841,
+          "Saturn": 281.418949,
+          "Sun": 249.675977,
+          "Uranus": 259.558651,
+          "Venus": 209.158703
+        }
+      },
+      "input": {
+        "latitude": 55.7558,
+        "local_date": "1991-12-25",
+        "local_time": "19:38:00",
+        "longitude": 37.6173,
+        "timezone_name": "Europe/Moscow",
+        "timezone_offset_hours": 2.0,
+        "utc_datetime": "1991-12-25T17:38:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "3D4143BA3A7D3065D6850F31D26C4FC0E95C9A2CE89B77EFFFC7E390CFF85C41",
+      "case_id": "VEDA-FIX-CALC-000017",
+      "expected_values_compact": {
+        "birth_lord": "Mars",
+        "d10_jupiter": "Aquarius",
+        "d20_jupiter": "Sagittarius",
+        "d9_jupiter": "Capricorn",
+        "lagna": {
+          "degree_in_sign": 23.265883,
+          "full_longitude": 353.265883,
+          "longitude": 353.265883,
+          "sign": "Pisces",
+          "sign_index": 11
+        },
+        "planets": {
+          "Jupiter": 192.078542,
+          "Ketu": 359.053504,
+          "Mars": 39.016179,
+          "Mercury": 167.08664,
+          "Moon": 62.316963,
+          "Neptune": 190.365409,
+          "Rahu": 179.053504,
+          "Saturn": 237.184561,
+          "Sun": 167.696187,
+          "Uranus": 112.035442,
+          "Venus": 158.004141
+        }
+      },
+      "input": {
+        "latitude": 48.8566,
+        "local_date": "1958-10-04",
+        "local_time": "18:30:00",
+        "longitude": 2.3522,
+        "timezone_name": "Europe/Paris",
+        "timezone_offset_hours": 1.0,
+        "utc_datetime": "1958-10-04T17:30:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "4FAF2BE096EFB5623FC3514C788A2CB675367BD81089D4712AFC044CBAF3DFCB",
+      "case_id": "VEDA-FIX-CALC-000018",
+      "expected_values_compact": {
+        "birth_lord": "Saturn",
+        "d10_jupiter": "Sagittarius",
+        "d20_jupiter": "Libra",
+        "d9_jupiter": "Pisces",
+        "lagna": {
+          "degree_in_sign": 11.809891,
+          "full_longitude": 251.809891,
+          "longitude": 251.809891,
+          "sign": "Sagittarius",
+          "sign_index": 8
+        },
+        "planets": {
+          "Jupiter": 279.016275,
+          "Ketu": 182.092718,
+          "Mars": 23.754361,
+          "Mercury": 54.066965,
+          "Moon": 342.244363,
+          "Neptune": 169.510701,
+          "Rahu": 2.092718,
+          "Saturn": 126.569782,
+          "Sun": 38.300494,
+          "Uranus": 65.80946,
+          "Venus": 47.792912
+        }
+      },
+      "input": {
+        "latitude": 50.7374,
+        "local_date": "1949-05-23",
+        "local_time": "00:00:00",
+        "longitude": 7.0982,
+        "timezone_name": "Europe/Berlin",
+        "timezone_offset_hours": 2.0,
+        "utc_datetime": "1949-05-22T22:00:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "333FC6F302FDDF006E4CC4D9F5BB6F9EC0460D65CB643C72458BF6647414B677",
+      "case_id": "VEDA-FIX-CALC-000019",
+      "expected_values_compact": {
+        "birth_lord": "Moon",
+        "d10_jupiter": "Taurus",
+        "d20_jupiter": "Virgo",
+        "d9_jupiter": "Taurus",
+        "lagna": {
+          "degree_in_sign": 3.24868,
+          "full_longitude": 303.24868,
+          "longitude": 303.24868,
+          "sign": "Aquarius",
+          "sign_index": 10
+        },
+        "planets": {
+          "Jupiter": 44.66549,
+          "Ketu": 114.414179,
+          "Mars": 192.281974,
+          "Mercury": 152.360045,
+          "Moon": 45.288155,
+          "Neptune": 251.109978,
+          "Rahu": 294.414179,
+          "Saturn": 18.557095,
+          "Sun": 143.157799,
+          "Uranus": 252.023446,
+          "Venus": 116.581882
+        }
+      },
+      "input": {
+        "latitude": -12.9714,
+        "local_date": "1822-09-07",
+        "local_time": "16:30:00",
+        "longitude": -38.5014,
+        "timezone_name": "America/Bahia",
+        "timezone_offset_hours": -2.567778,
+        "utc_datetime": "1822-09-07T19:04:04+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "4D8D8101C9E666CE09246E0F042BCD2357E4B0C27C859FD6B7165EF621C3D800",
+      "case_id": "VEDA-FIX-CALC-000020",
+      "expected_values_compact": {
+        "birth_lord": "Moon",
+        "d10_jupiter": "Cancer",
+        "d20_jupiter": "Sagittarius",
+        "d9_jupiter": "Pisces",
+        "lagna": {
+          "degree_in_sign": 10.263255,
+          "full_longitude": 280.263255,
+          "longitude": 280.263255,
+          "sign": "Capricorn",
+          "sign_index": 9
+        },
+        "planets": {
+          "Jupiter": 157.35642,
+          "Ketu": 149.048473,
+          "Mars": 219.390088,
+          "Mercury": 93.032826,
+          "Moon": 168.166993,
+          "Neptune": 212.587733,
+          "Rahu": 329.048473,
+          "Saturn": 14.680853,
+          "Sun": 94.756692,
+          "Uranus": 157.268098,
+          "Venus": 51.92614
+        }
+      },
+      "input": {
+        "latitude": 34.0522,
+        "local_date": "1969-07-20",
+        "local_time": "20:17:00",
+        "longitude": -118.2437,
+        "timezone_name": "America/Los_Angeles",
+        "timezone_offset_hours": -7.0,
+        "utc_datetime": "1969-07-21T03:17:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "84C3C82BCA62CB16A0A03442C78D839E2A4341CA34FF35B8FBA3F8FFD748C443",
+      "case_id": "VEDA-FIX-CALC-000021",
+      "expected_values_compact": {
+        "birth_lord": "Saturn",
+        "d10_jupiter": "Pisces",
+        "d20_jupiter": "Aquarius",
+        "d9_jupiter": "Aquarius",
+        "lagna": {
+          "degree_in_sign": 26.354414,
+          "full_longitude": 86.354414,
+          "longitude": 86.354414,
+          "sign": "Gemini",
+          "sign_index": 2
+        },
+        "planets": {
+          "Jupiter": 196.382261,
+          "Ketu": 30.034958,
+          "Mars": 346.021822,
+          "Mercury": 9.654516,
+          "Moon": 215.71892,
+          "Neptune": 269.567656,
+          "Rahu": 210.034958,
+          "Saturn": 316.102652,
+          "Sun": 13.135092,
+          "Uranus": 272.55736,
+          "Venus": 37.619836
+        }
+      },
+      "input": {
+        "latitude": -26.2041,
+        "local_date": "1994-04-27",
+        "local_time": "12:00:00",
+        "longitude": 28.0473,
+        "timezone_name": "Africa/Johannesburg",
+        "timezone_offset_hours": 2.0,
+        "utc_datetime": "1994-04-27T10:00:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "A73B3981C08D1CD360CFA46665519182707B29537EC91AF5CF2FFDFDDCF512DD",
+      "case_id": "VEDA-FIX-CALC-000022",
+      "expected_values_compact": {
+        "birth_lord": "Mars",
+        "d10_jupiter": "Aries",
+        "d20_jupiter": "Gemini",
+        "d9_jupiter": "Pisces",
+        "lagna": {
+          "degree_in_sign": 15.575336,
+          "full_longitude": 315.575336,
+          "longitude": 315.575336,
+          "sign": "Aquarius",
+          "sign_index": 10
+        },
+        "planets": {
+          "Jupiter": 237.440888,
+          "Ketu": 232.27063,
+          "Mars": 169.222021,
+          "Mercury": 254.519553,
+          "Moon": 303.45594,
+          "Neptune": 244.91303,
+          "Rahu": 52.27063,
+          "Saturn": 198.272811,
+          "Sun": 234.353741,
+          "Uranus": 226.250389,
+          "Venus": 190.944209
+        }
+      },
+      "input": {
+        "latitude": -34.6037,
+        "local_date": "1983-12-10",
+        "local_time": "11:59:00",
+        "longitude": -58.3816,
+        "timezone_name": "America/Argentina/Buenos_Aires",
+        "timezone_offset_hours": -3.0,
+        "utc_datetime": "1983-12-10T14:59:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "1C39C5E7FB38ECF4DEA39F1F97C3F2E6C8A7CAFB81335BB5ECEFDBD691D62889",
+      "case_id": "VEDA-FIX-CALC-000023",
+      "expected_values_compact": {
+        "birth_lord": "Rahu",
+        "d10_jupiter": "Aries",
+        "d20_jupiter": "Taurus",
+        "d9_jupiter": "Sagittarius",
+        "lagna": {
+          "degree_in_sign": 2.627512,
+          "full_longitude": 182.627512,
+          "longitude": 182.627512,
+          "sign": "Libra",
+          "sign_index": 6
+        },
+        "planets": {
+          "Jupiter": 308.335715,
+          "Ketu": 187.435382,
+          "Mars": 231.771255,
+          "Mercury": 334.515532,
+          "Moon": 193.356936,
+          "Neptune": 251.760536,
+          "Rahu": 7.435382,
+          "Saturn": 225.757363,
+          "Sun": 316.440479,
+          "Uranus": 238.40219,
+          "Venus": 326.180001
+        }
+      },
+      "input": {
+        "latitude": 64.1466,
+        "local_date": "1986-02-28",
+        "local_time": "23:58:00",
+        "longitude": -21.9426,
+        "timezone_name": "Atlantic/Reykjavik",
+        "timezone_offset_hours": 0.0,
+        "utc_datetime": "1986-02-28T23:58:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "E8A2A90D76250FA476FE16ABD52CEC6DF111CBDE2824043E4F4C854821E7B58F",
+      "case_id": "VEDA-FIX-CALC-000024",
+      "expected_values_compact": {
+        "birth_lord": "Venus",
+        "d10_jupiter": "Leo",
+        "d20_jupiter": "Sagittarius",
+        "d9_jupiter": "Sagittarius",
+        "lagna": {
+          "degree_in_sign": 13.929069,
+          "full_longitude": 133.929069,
+          "longitude": 133.929069,
+          "sign": "Leo",
+          "sign_index": 4
+        },
+        "planets": {
+          "Jupiter": 66.693213,
+          "Ketu": 252.382417,
+          "Mars": 231.370343,
+          "Mercury": 69.441264,
+          "Moon": 20.149486,
+          "Neptune": 283.906837,
+          "Rahu": 72.382417,
+          "Saturn": 46.714161,
+          "Sun": 89.24644,
+          "Uranus": 300.144226,
+          "Venus": 46.964312
+        }
+      },
+      "input": {
+        "latitude": 40.7128,
+        "local_date": "2001-07-15",
+        "local_time": "09:30:00",
+        "longitude": -74.006,
+        "timezone_name": "America/New_York",
+        "timezone_offset_hours": -4.0,
+        "utc_datetime": "2001-07-15T13:30:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    },
+    {
+      "case_hash": "6B2F01FAA15FB200568AA09922DC9A8E29590600A24DFDBF06E8FA2DC4FCB799",
+      "case_id": "VEDA-FIX-CALC-000025",
+      "expected_values_compact": {
+        "birth_lord": "Venus",
+        "d10_jupiter": "Leo",
+        "d20_jupiter": "Sagittarius",
+        "d9_jupiter": "Scorpio",
+        "lagna": {
+          "degree_in_sign": 29.679057,
+          "full_longitude": 119.679057,
+          "longitude": 119.679057,
+          "sign": "Cancer",
+          "sign_index": 3
+        },
+        "planets": {
+          "Jupiter": 66.63342,
+          "Ketu": 252.376447,
+          "Mars": 231.387626,
+          "Mercury": 69.074735,
+          "Moon": 16.640553,
+          "Neptune": 283.91389,
+          "Rahu": 72.376447,
+          "Saturn": 46.685163,
+          "Sun": 88.988049,
+          "Uranus": 300.152959,
+          "Venus": 46.663264
+        }
+      },
+      "input": {
+        "latitude": 51.5074,
+        "local_date": "2001-07-15",
+        "local_time": "08:00:00",
+        "longitude": -0.1278,
+        "timezone_name": "Europe/London",
+        "timezone_offset_hours": 1.0,
+        "utc_datetime": "2001-07-15T07:00:00+00:00"
+      },
+      "input_precision": "FIXTURE_DEFINED",
+      "input_source": "P004_REFERENCE_FIXTURE",
+      "quality_class": "GOLD_C",
+      "reference_configuration": {
+        "flags": [
+          "FLG_SIDEREAL",
+          "FLG_SPEED"
+        ],
+        "house_method": "houses_ex sidereal reference",
+        "sidereal_mode": "SIDM_LAHIRI"
+      },
+      "reference_engine": "pyswisseph",
+      "reference_independence_class": "SAME_ENGINE_REFERENCE_LIMITATION",
+      "reference_output_fields": [
+        "planetary_longitudes",
+        "lagna",
+        "nakshatra",
+        "pada",
+        "D9",
+        "D10",
+        "D20",
+        "Vimshottari_start"
+      ],
+      "reference_retrieval_date": "2026-08-18",
+      "reference_source": "P004 direct Swiss Ephemeris reference path",
+      "reference_version": "2.10.03"
+    }
+  ],
+  "cases_attempted": 25,
+  "cases_failed": 0,
+  "cases_passed": 23,
+  "cases_unresolved": 2,
+  "gold_a": 0,
+  "gold_b": 0,
+  "gold_c": 25,
+  "programme": "VEDA-CALC-GOLDSET-001",
+  "quality_policy": "GOLD_A/B require independent or reproducible external reference; GOLD_C is diagnostic only",
+  "reference_independence": "SAME_ENGINE_REFERENCE_LIMITATION",
+  "result_hash": "F2064AB62A7FB494C469908C620925D920A2FE970C5CF8A15142D7D7D010B7E0"
+}

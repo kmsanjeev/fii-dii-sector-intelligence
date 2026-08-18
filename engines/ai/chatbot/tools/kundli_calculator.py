@@ -16,6 +16,7 @@ formatted report) is unchanged.
 
 from __future__ import annotations
 from datetime import datetime, timezone, timedelta
+import os
 from typing import Optional
 
 from engines.intelligence.kundli_engine import KundliEngine
@@ -363,7 +364,17 @@ def _vimshottari(moon_nak_idx: int, elapsed: float, birth_utc: datetime) -> dict
                             "years": yrs})
             cur = end
 
-    today = datetime.now(timezone.utc)
+    # Calculation fixtures and benchmark runs need a reproducible evaluation
+    # date. Production keeps wall-clock behaviour unless the explicit test
+    # snapshot override is supplied.
+    snapshot = os.getenv("VEDA_TEST_SNAPSHOT_DATE", "").strip()
+    if snapshot:
+        try:
+            today = datetime.strptime(snapshot, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        except ValueError:
+            today = datetime.now(timezone.utc)
+    else:
+        today = datetime.now(timezone.utc)
     cur_maha = next(
         (m for m in all_mds
          if datetime.strptime(m["start_date"], "%Y-%m-%d").replace(tzinfo=timezone.utc) <= today

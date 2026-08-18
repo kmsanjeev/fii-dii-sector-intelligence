@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "classification": "REFERENCE_LIMITATION",
+      "component": "ASCENDANT",
+      "detail": "P004 records a boundary sign flip between runtime houses()+ayanamsha and houses_ex sidereal reference.",
+      "id": "CALC-GOLDSET-001-D001",
+      "status": "OPEN"
+    },
+    {
+      "classification": "REFERENCE_LIMITATION",
+      "component": "EPHEMERIS",
+      "detail": "Local pyswisseph runtime is not explicitly pinned to installed Swiss ephemeris files and observes MOSEPH.",
+      "id": "CALC-GOLDSET-001-D002",
+      "status": "OPEN"
+    },
+    {
+      "classification": "TIMEZONE_DIFFERENCE",
+      "component": "TIMEZONE",
+      "detail": "Personal/REST APIs accept fixed numeric offsets; ADB and OGDB source-derived offsets are preserved separately.",
+      "id": "CALC-GOLDSET-001-D003",
+      "status": "OPEN"
+    }
+  ]
+}

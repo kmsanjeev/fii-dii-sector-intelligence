@@ -826,8 +826,8 @@ class KundliEngine:
         # Raja Yoga: Kendra lord + Trikona lord conjunction or mutual aspect
         kl = set(kendra_lords())
         tl = set(trikona_lords())
-        for kp in kl:
-            for tp in tl:
+        for kp in sorted(kl):
+            for tp in sorted(tl):
                 if kp == tp:
                     continue
                 if kp in p and tp in p and house(kp) == house(tp):
@@ -881,8 +881,8 @@ class KundliEngine:
                           'strength': 'present', **YOGA_FINANCIAL['Kala Sarpa']})
 
         # Parivartana: Two planets in each other's signs
-        for pa in list(p.keys()):
-            for pb in list(p.keys()):
+        for pa in sorted(p.keys()):
+            for pb in sorted(p.keys()):
                 if pa >= pb:
                     continue
                 if pa in ('Rahu','Ketu','Uranus','Neptune') or pb in ('Rahu','Ketu','Uranus','Neptune'):
@@ -892,7 +892,15 @@ class KundliEngine:
                     yogas.append({'name': 'Parivartana', 'planets': [pa, pb],
                                   'strength': 'present', **YOGA_FINANCIAL['Parivartana']})
 
-        return yogas
+        # Set-based lord discovery above must not leak hash-seed-dependent
+        # ordering into chart payloads or downstream canonical hashes.
+        for yoga in yogas:
+            yoga['planets'] = sorted(yoga.get('planets', []))
+        return sorted(yogas, key=lambda yoga: (
+            yoga.get('name', ''),
+            tuple(yoga.get('planets', [])),
+            yoga.get('strength', ''),
+        ))
 
     def _in_arc(self, lon: float, from_lon: float, to_lon: float) -> bool:
         """Check if longitude is in the arc from from_lon to to_lon (clockwise)."""

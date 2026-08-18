@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-08-18 | VEDA-CALC-GOLDSET-001
+
+Completed the calculation-only benchmark activity. The existing P004 fixtures
+remain diagnostic `GOLD_C` because the reference and runtime both use
+pyswisseph: 23 of 25 cases pass and two known Ascendant boundary cases remain
+unresolved. The adjudicated ADB input layer contains 109 records (32 Tier A,
+77 Tier B), and the combined ADB/OGDB stress corpus completed 7,022/7,022
+calculations with no invariant failures. A deterministic ordering defect in
+set-derived yoga output was fixed and regression-tested; compact ADB
+coordinates, documentary unknown-time placeholders and malformed-date handling
+were made explicit. No raw provider data, outcome fields, ML, prediction,
+PRED-M4, production, RAG or Approved Core change occurred. Evidence is in
+`docs/current-state/calc-goldset-001/`.
+
 ## 2026-08-17 | VEDA-EVIDENCE-ADB-SOURCE-DIVERSITY-001
 
 Completed the bounded unknown-source resolution and source-diversity stop/go

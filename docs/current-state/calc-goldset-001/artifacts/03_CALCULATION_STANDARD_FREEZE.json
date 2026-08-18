@@ -1,0 +1,19 @@
+{
+  "ayanamsha": "Lahiri / Chitrapaksha via swisseph.get_ayanamsa_ut",
+  "dasha_policy": "Vimshottari using Moon Nakshatra and 120-year proportions",
+  "divisional_chart_policy": "reuse current KundliEngine/P015 methods; D20 method remains PARTIALLY_VALIDATED",
+  "ephemeris": "pyswisseph; local runtime observed MOSEPH because no explicit ephemeris files/path are pinned",
+  "geocentric_topocentric": "geocentric planetary positions; geographic coordinates for Ascendant",
+  "house_system": "W for Ascendant, then whole-sign downstream houses",
+  "node_policy": "TRUE_NODE; Ketu=(Rahu+180)%360",
+  "predictive_maturity": "PRED-M3_OPERATIONAL_PLUS; PRED-M4 unchanged",
+  "production_prediction": "UNCHANGED",
+  "rounding_policy": "raw calculation floats for comparison; derived artifact values canonicalized; runtime timestamps excluded from hashes",
+  "sidereal_mode": "SIDM_LAHIRI",
+  "snapshot_date": "2026-08-18",
+  "standard_hash": "6E7404C5E941989624F90F607FF3950A1D4E91D6ECC34B2A6D0CF6F39F64E210",
+  "standard_id": "VEDA-CALC-STANDARD-001",
+  "time_standard": "UTC Julian Day; caller fixed offsets for runtime APIs; ADB source jd_ut delta preserved",
+  "transit_policy": "reuse current KundliEngine historical/current transit surface",
+  "version": "1.0.0"
+}

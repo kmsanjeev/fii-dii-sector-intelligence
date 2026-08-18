@@ -1,0 +1,146 @@
+{
+  "available_inputs": {
+    "adb": {
+      "chart_ready": 6022,
+      "invalid_or_incomplete": 14,
+      "raw_artifact_committed": false,
+      "raw_artifact_sha256": "918610001C05F5447B5BFF71CF8157C153B5E29FCFA520DFEDCF47444FB10BEB",
+      "records": 6036,
+      "status": "AVAILABLE"
+    },
+    "adb_adjudicated_tier_a_b": 109,
+    "combined_stress_candidates": 7022,
+    "duplicate_subjects": 0,
+    "ogdb": {
+      "artifact_sha256": "FDE33CD9FE02A871A0388196550E88425A64CCADF989038BF3EAF5CA144A608E",
+      "chart_ready": 1000,
+      "invalid_or_incomplete": 0,
+      "raw_artifact_committed": false,
+      "records": 1000,
+      "status": "AVAILABLE"
+    },
+    "user_benchmark": {
+      "automatic_gold_promotion": false,
+      "life_events_required": false,
+      "records": 0,
+      "status": "READY_EMPTY"
+    }
+  },
+  "boundaries": {
+    "dasha_boundaries": {
+      "cases": 3,
+      "passed": 3
+    },
+    "high_latitude_cases": [
+      "GOLD-REYKJAVIK-1986"
+    ],
+    "longitude_wrap": {
+      "cases": 5,
+      "passed": 5
+    },
+    "nakshatra_boundaries": {
+      "cases": 81,
+      "passed": 81
+    },
+    "pada_boundaries": {
+      "cases": 324,
+      "passed": 324
+    },
+    "rows_hash": "EB3B5425FD702B99F31DE4CE2AE62A269117413A42432E938FFF99293DE5D5E8",
+    "sign_boundaries": {
+      "cases": 36,
+      "passed": 36
+    },
+    "status": "PASS",
+    "varga_boundaries": {
+      "cases": 144,
+      "passed": 144
+    }
+  },
+  "component_scorecard": {
+    "ANTARDASHA": "INTERNAL_INVARIANT_VALIDATED",
+    "ASCENDANT": "UNVALIDATED",
+    "ASHTAKAVARGA": "UNVALIDATED",
+    "ASTRONOMY": "DETERMINISTIC_REGRESSION_ONLY",
+    "AYANAMSHA": "DETERMINISTIC_REGRESSION_ONLY",
+    "D1": "DETERMINISTIC_REGRESSION_ONLY",
+    "D10": "INDEPENDENT_IMPLEMENTATION_AGREEMENT",
+    "D20": "DETERMINISTIC_REGRESSION_ONLY",
+    "D9": "INDEPENDENT_IMPLEMENTATION_AGREEMENT",
+    "DASHA": "INTERNAL_INVARIANT_VALIDATED",
+    "INPUT_NORMALIZATION": "INTERNAL_INVARIANT_VALIDATED",
+    "NAKSHATRA": "INTERNAL_INVARIANT_VALIDATED",
+    "OTHER_VARGAS": "DETERMINISTIC_REGRESSION_ONLY",
+    "RULE_ENGINE": "DETERMINISTIC_REGRESSION_ONLY",
+    "TIMEZONE": "DETERMINISTIC_REGRESSION_ONLY",
+    "TRANSITS": "DETERMINISTIC_REGRESSION_ONLY"
+  },
+  "generated_on": "2026-08-18",
+  "governance": {
+    "approved_core_changed": false,
+    "ml_used": false,
+    "outcome_fields_used": false,
+    "pred_m4_changed": false,
+    "prediction_scoring": false,
+    "rag_changed": false,
+    "raw_adb_committed": false,
+    "raw_provider_data_emitted": false
+  },
+  "layers": {
+    "gold": {
+      "cases_attempted": 25,
+      "cases_passed": 23,
+      "cases_unresolved": 2,
+      "gold_a": 0,
+      "gold_b": 0,
+      "gold_c": 25,
+      "result_hash": "F2064AB62A7FB494C469908C620925D920A2FE970C5CF8A15142D7D7D010B7E0"
+    },
+    "silver": {
+      "attempted": 109,
+      "completed": 109,
+      "determinism_fields_excluded": [
+        "runtime_ms"
+      ],
+      "error_categories": {},
+      "failed": 0,
+      "result_hash": "62379DCBA7DB397BA3FBF5B1C585F8649A71B7F078F636D11EA5E5648F413245",
+      "success_rate": 1.0,
+      "warnings": 0
+    },
+    "stress": {
+      "attempted": 7022,
+      "completed": 7022,
+      "determinism_fields_excluded": [
+        "runtime_ms"
+      ],
+      "error_categories": {},
+      "failed": 0,
+      "result_hash": "5EB3967F9C2249B340827A479CD7579E25BB7D287B43999D221D85CEBC117AD6",
+      "success_rate": 1.0,
+      "warnings": 0
+    }
+  },
+  "next_decision": "CALCULATION_FOUNDATION_PARTIALLY_VALIDATED",
+  "programme": "VEDA-CALC-GOLDSET-001",
+  "report_hash": "5AF288651D541BB49D934E425F63C8ECF3B6D1153BD380F2E183B46972985E53",
+  "standard": {
+    "ayanamsha": "Lahiri / Chitrapaksha via swisseph.get_ayanamsa_ut",
+    "dasha_policy": "Vimshottari using Moon Nakshatra and 120-year proportions",
+    "divisional_chart_policy": "reuse current KundliEngine/P015 methods; D20 method remains PARTIALLY_VALIDATED",
+    "ephemeris": "pyswisseph; local runtime observed MOSEPH because no explicit ephemeris files/path are pinned",
+    "geocentric_topocentric": "geocentric planetary positions; geographic coordinates for Ascendant",
+    "house_system": "W for Ascendant, then whole-sign downstream houses",
+    "node_policy": "TRUE_NODE; Ketu=(Rahu+180)%360",
+    "predictive_maturity": "PRED-M3_OPERATIONAL_PLUS; PRED-M4 unchanged",
+    "production_prediction": "UNCHANGED",
+    "rounding_policy": "raw calculation floats for comparison; derived artifact values canonicalized; runtime timestamps excluded from hashes",
+    "sidereal_mode": "SIDM_LAHIRI",
+    "snapshot_date": "2026-08-18",
+    "standard_hash": "6E7404C5E941989624F90F607FF3950A1D4E91D6ECC34B2A6D0CF6F39F64E210",
+    "standard_id": "VEDA-CALC-STANDARD-001",
+    "time_standard": "UTC Julian Day; caller fixed offsets for runtime APIs; ADB source jd_ut delta preserved",
+    "transit_policy": "reuse current KundliEngine historical/current transit surface",
+    "version": "1.0.0"
+  }
+}
