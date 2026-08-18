@@ -1,0 +1,31 @@
+{
+  "astrology_used": false,
+  "purpose": "synthetic binary-state plumbing smoke test only; not feature validation or a power claim",
+  "real_r1_feature_values_used": false,
+  "real_r1_subject_ids_used": false,
+  "results": [
+    {
+      "controls_per_event": 2,
+      "mean_case_minus_control_contrast": 0.04380208,
+      "mesi_odds_ratio": 1.5,
+      "replicates": 120,
+      "synthetic_event_subjects": 400
+    },
+    {
+      "controls_per_event": 4,
+      "mean_case_minus_control_contrast": 0.04288021,
+      "mesi_odds_ratio": 1.5,
+      "replicates": 120,
+      "synthetic_event_subjects": 400
+    },
+    {
+      "controls_per_event": 8,
+      "mean_case_minus_control_contrast": 0.04548958,
+      "mesi_odds_ratio": 1.5,
+      "replicates": 120,
+      "synthetic_event_subjects": 400
+    }
+  ],
+  "seed": 20260819,
+  "status": "PASS"
+}

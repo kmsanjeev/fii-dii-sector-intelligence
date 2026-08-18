@@ -1,0 +1,1 @@
+The R1 3/1 split protects process only and is not meaningful replication. R2 must freeze the full denominator before partitions. A design set may test software/control mechanics only. Holdout is subject-level, protected and unopened for association, thresholds, control tuning or feature selection. If future N cannot support meaningful protection, return HOLDOUT_UNDERPOWERED.

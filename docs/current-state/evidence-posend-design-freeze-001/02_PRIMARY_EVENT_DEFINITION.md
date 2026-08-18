@@ -1,0 +1,1 @@
+The primary event is FORMAL_PUBLIC_ROLE_END_EFFECTIVE_DATE: an exact DAY on which an identifiable substantive public or institutional role effectively ends while active immediately before the date. Both boundaries require official or strong institutional evidence. Announcement-only, generic career-end, death and unresolved-conflict records are excluded from the primary lane.

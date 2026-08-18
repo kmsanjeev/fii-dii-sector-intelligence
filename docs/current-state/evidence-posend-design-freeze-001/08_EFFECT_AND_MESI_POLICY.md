@@ -1,0 +1,1 @@
+Primary effect: feature-specific conditional matched odds ratio. Raw independent-proportion differences are prohibited. MESI scenarios are fixed before scoring: LOW OR 1.5, MEDIUM OR 2.0, HIGH OR 3.0. These are practical planning scenarios, not pilot estimates; testing is non-directional.

@@ -1,0 +1,1 @@
+PASS: R1 hashes, legacy, holdout, event/eligibility, controls, feature family, multiplicity, MESI, split, source gate, R2 status, safety and deterministic artifacts. PASS_WITH_CONDITION: R1 is not powered or suitable for effect estimation; one birth cluster blocks confirmatory inference; formal ADB access is high-value. BLOCKED: none. FAIL: none.

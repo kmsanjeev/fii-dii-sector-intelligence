@@ -1,0 +1,20 @@
+{
+  "astrology_used": false,
+  "birth_evidence": [
+    "Tier A",
+    "Tier B"
+  ],
+  "birth_frame": "PRE_EXISTING_GOVERNED_BIRTH_FRAME_ONLY",
+  "date_precision": "DAY for role start and role end",
+  "event_evidence": [
+    "primary official",
+    "strong institutional"
+  ],
+  "event_search_direction": "BIRTH_FRAME_TO_OBJECTIVE_EVENT",
+  "feature_values_used": false,
+  "mortality_policy": "ROLE_END_BY_DEATH_EXCLUDED",
+  "one_primary_event_per_subject": true,
+  "pre_screen": "pre-existing public-role metadata may prioritize search only if frozen before event lookup",
+  "role_active_before_event": true,
+  "selection": "chronologically first eligible event after frame freeze; event_id tie-break only"
+}

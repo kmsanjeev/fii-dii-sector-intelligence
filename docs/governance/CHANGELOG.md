@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-EVIDENCE-POSEND-DESIGN-FREEZE-001
+
+Completed the feature-blind formal public-role-end study-design freeze.
+Protocol `POSEND_FORMAL_ROLE_END_PROTOCOL v1` freezes exact DAY effective role
+ends, a within-subject matched risk-set design, four future controls per event,
+a 14-day exclusion/separation policy, conditional matched odds ratios, Holm
+family-wise control, MESI scenarios, protected split rules, source-diversity
+gates and the R2 acquisition protocol. The four-subject R1 pilot remains
+design-feasibility only and was not scored. Formal ADB access is high-value for
+scale but no request was submitted. No astrology, feature scoring, ML, PRED-M4,
+production, RAG, Approved Core or R2 acquisition changed. Evidence:
+`docs/current-state/evidence-posend-design-freeze-001/`.
+
 ## 2026-08-18 | VEDA-EVIDENCE-POSEND-ACQ-R1
 
 Completed the bounded, feature-blind, source-first POSITION_END acquisition.

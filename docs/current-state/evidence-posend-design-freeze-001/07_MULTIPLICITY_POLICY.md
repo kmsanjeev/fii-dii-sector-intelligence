@@ -1,0 +1,1 @@
+The five features are one family. Confirmatory family-wise error is controlled at alpha 0.05 with Holm adjustment. All five hypotheses are fixed before scoring. Maximum-statistic permutation is secondary and conditional on justified exchangeability; FDR is exploratory only. No correction is executed here.
