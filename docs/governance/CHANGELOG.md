@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-08-18 | VEDA-EVIDENCE-POSEND-ACQ-R1
+
+Completed the bounded, feature-blind, source-first POSITION_END acquisition.
+The frozen ADB birth frame contains 114 subjects. Four exact-day formal
+public-role-end events were accepted from official institutional sources, with
+eight pre-event controls generated inside role intervals. A deterministic 3/1
+validation/holdout split and power-readiness record were frozen. The result is
+pilot-ready but not confirmatory: source dependence and small sample size remain
+material limitations. No astrology calculation, feature scoring, ML, PRED-M4,
+production, RAG, Approved Core or raw provider data changed. Evidence:
+`docs/current-state/evidence-posend-acq-r1/`.
+
 ## 2026-08-18 | VEDA-EVIDENCE-POSEND-REBASELINE-001
 
 Completed the feature-blind POSITION_END evidence redesign from the roadmap

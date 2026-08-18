@@ -1,0 +1,18 @@
+{
+  "acquisition_frozen_before_split": true,
+  "feature_results_inspected": false,
+  "holdout_event_hash": "3574DF614792E0E181C2B24DEBF80FCAFA483D043C0179F8DDEE76423F650420",
+  "holdout_protected": true,
+  "holdout_subject_hash": "E152B616466BD5CBFA083AD31919DBACAC49CA23148EB9AF4282DBEA057D9966",
+  "holdout_subjects": [
+    "ADB-53866"
+  ],
+  "policy": "subject-level deterministic lexicographic split after acquisition freeze; final subject reserved as holdout",
+  "split_id": "POSEND-ACQ-R1-SPLIT-001",
+  "validation_subject_hash": "6AAC1EB01AB560C7804B23C1E2AD23300A10A6444D65083891613A69A11FDC68",
+  "validation_subjects": [
+    "ADB-51916",
+    "ADB-53387",
+    "ADB-53441"
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "day_eligible_n": 4,
+  "interpretation": "planning requirements only; current pilot is not powered and no feature effect was estimated",
+  "powered": false,
+  "risk_set_ready_n": 4,
+  "scenarios": [
+    {
+      "absolute_effect": 0.04999999999999999,
+      "allocation_ratio": 1.0,
+      "alpha": 0.05,
+      "approximate_control_subjects": 1695,
+      "approximate_exposed_subjects": 1695,
+      "approximate_independent_subjects": 3390,
+      "baseline_rate": 0.1,
+      "design_effect": 1.1,
+      "exclusion_fraction": 0.15,
+      "limitation": "Not a case-crossover power guarantee; exact conditional/permutation planning remains required.",
+      "method": "TWO_PROPORTION_NORMAL_APPROXIMATION_RESEARCH_ONLY",
+      "power": 0.8,
+      "recruitment_target_after_exclusions": 3989,
+      "target_rate": 0.15
+    },
+    {
+      "absolute_effect": 0.1,
+      "allocation_ratio": 1.0,
+      "alpha": 0.05,
+      "approximate_control_subjects": 491,
+      "approximate_exposed_subjects": 491,
+      "approximate_independent_subjects": 982,
+      "baseline_rate": 0.1,
+      "design_effect": 1.1,
+      "exclusion_fraction": 0.15,
+      "limitation": "Not a case-crossover power guarantee; exact conditional/permutation planning remains required.",
+      "method": "TWO_PROPORTION_NORMAL_APPROXIMATION_RESEARCH_ONLY",
+      "power": 0.8,
+      "recruitment_target_after_exclusions": 1156,
+      "target_rate": 0.2
+    },
+    {
+      "absolute_effect": 0.15,
+      "allocation_ratio": 1.0,
+      "alpha": 0.05,
+      "approximate_control_subjects": 245,
+      "approximate_exposed_subjects": 245,
+      "approximate_independent_subjects": 490,
+      "baseline_rate": 0.1,
+      "design_effect": 1.1,
+      "exclusion_fraction": 0.15,
+      "limitation": "Not a case-crossover power guarantee; exact conditional/permutation planning remains required.",
+      "method": "TWO_PROPORTION_NORMAL_APPROXIMATION_RESEARCH_ONLY",
+      "power": 0.8,
+      "recruitment_target_after_exclusions": 577,
+      "target_rate": 0.25
+    },
+    {
+      "absolute_effect": 0.19999999999999998,
+      "allocation_ratio": 1.0,
+      "alpha": 0.05,
+      "approximate_control_subjects": 151,
+      "approximate_exposed_subjects": 151,
+      "approximate_independent_subjects": 302,
+      "baseline_rate": 0.1,
+      "design_effect": 1.1,
+      "exclusion_fraction": 0.15,
+      "limitation": "Not a case-crossover power guarantee; exact conditional/permutation planning remains required.",
+      "method": "TWO_PROPORTION_NORMAL_APPROXIMATION_RESEARCH_ONLY",
+      "power": 0.8,
+      "recruitment_target_after_exclusions": 356,
+      "target_rate": 0.3
+    }
+  ],
+  "source_diverse_bound": 1
+}
