@@ -2,6 +2,8 @@
 # MASTER PROJECT STATE
 # Version 4.73.1 | 2026-08-19
 
+- `VEDA-CALC-ASHTAKAVARGA-REMEDIATION-001` is in a governed blocked state: the verified frozen contract requires 337 ordinary planetary SAV and 386 combined display, while its verified 768-cell source matrix computes 336 and 385. No production BAV/SAV, P018, prediction, ML, RAG, D20 or Approved Core state changed. Source-governance reconciliation is required before remediation resumes. Evidence is in `docs/current-state/calc-ashtakavarga-remediation-001/`.
+
 ---
 
 # PROJECT MISSION

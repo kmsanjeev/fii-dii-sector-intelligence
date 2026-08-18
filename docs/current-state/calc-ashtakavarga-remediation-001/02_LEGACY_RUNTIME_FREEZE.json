@@ -1,0 +1,22 @@
+{
+  "activity_id": "VEDA-CALC-ASHTAKAVARGA-REMEDIATION-001",
+  "runtime_module": "engines.ai.knowledge.shadbala_engine",
+  "bav_method_id": "P018-R2-BAV-001",
+  "sav_method_id": "P018-R2-SAV-001",
+  "implementation_hash": "FB65ECC9812492E3A615609C852E9342522EF80404735785D66EA4971F32468D",
+  "table_hash": "D0FE98707743EA6390CD83F7CF04DF18A05FCBC26E7AD13179E172E71AFFCEE5",
+  "status": "IMPLEMENTED_UNVALIDATED",
+  "self_contributor": "EXCLUDED",
+  "target_policy": "seven planetary targets only",
+  "contributor_policy": "implicit input keys; no explicit target/contributor table",
+  "lagna_target": false,
+  "rahu": false,
+  "ketu": false,
+  "reductions": {
+    "trikona_shodhana": false,
+    "ekadhipatya_shodhana": false,
+    "pinda_shodhana": false
+  },
+  "legacy_preserved": true,
+  "source": "docs/current-state/calc-ashtakavarga-decision-001/01_RUNTIME_METHOD_FREEZE.json"
+}

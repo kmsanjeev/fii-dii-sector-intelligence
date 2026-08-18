@@ -1,0 +1,12 @@
+{
+  "status": "AUDITED_WITHOUT_MIGRATION",
+  "direct_production_bav_sav_consumers": [],
+  "indirect_context_consumer": "engines/intelligence/kundli_engine.py",
+  "audit_and_test_consumers": [
+    "scripts/veda_calc_source_rx_001.py",
+    "scripts/veda_calc_jyotisha_core_001.py",
+    "tests/test_veda_shadbala_engine_p018_r2.py"
+  ],
+  "migration": "NOT_STARTED",
+  "reason": "Canonical contract gate failed before implementation."
+}

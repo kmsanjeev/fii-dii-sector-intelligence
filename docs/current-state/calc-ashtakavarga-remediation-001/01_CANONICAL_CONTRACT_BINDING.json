@@ -1,0 +1,75 @@
+{
+  "activity_id": "VEDA-CALC-ASHTAKAVARGA-REMEDIATION-001",
+  "computed_invariants": {
+    "combined_total": 385,
+    "invariant_failures": [
+      {
+        "actual": 336,
+        "expected": 337,
+        "invariant": "ordinary_planetary_sav"
+      },
+      {
+        "actual": 385,
+        "expected": 386,
+        "invariant": "lagna_combined_display"
+      }
+    ],
+    "lagna_bav_total": 49,
+    "planetary_sav_total": 336
+  },
+  "contract": {
+    "combined_lagna_display_expected": 386,
+    "contract_hash": "0E296628F989A9EE1AA14CF2F767ECEA8142042CD266DC9C98D0FF32A6771134",
+    "contract_id": "ASHTAKAVARGA_RAW_BPHS_PRIMARY_KNR_GOVERNED_V1",
+    "expected_contract_hash": "0E296628F989A9EE1AA14CF2F767ECEA8142042CD266DC9C98D0FF32A6771134",
+    "expected_contract_id": "ASHTAKAVARGA_RAW_BPHS_PRIMARY_KNR_GOVERNED_V1",
+    "hash_verified": true,
+    "ordinary_planetary_sav_expected": 337,
+    "path": "docs/current-state/calc-ashtakavarga-normalization-rx2-001/17_CANONICAL_RAW_CONTRACT.json"
+  },
+  "decision": "CANONICAL_CONTRACT_INCONSISTENT",
+  "next_action": "Source-governance reconciliation must resolve the contract/matrix discrepancy before production remediation resumes.",
+  "production_change": false,
+  "source_matrix": {
+    "computed_rows_hash": "0B7A869F3A3682A3BFFADA28E82AC23DC96EFE7E6FF3763997317C5050EE159D",
+    "contributors": [
+      "Sun",
+      "Moon",
+      "Mars",
+      "Mercury",
+      "Jupiter",
+      "Venus",
+      "Saturn",
+      "Lagna"
+    ],
+    "coverage_complete": true,
+    "expected_cells": 768,
+    "hash_verified": true,
+    "invalid_rows": [],
+    "path": "docs/current-state/calc-source-rx-001/04_ASHTAKAVARGA_SOURCE_RULE_MATRIX.json",
+    "positions_per_cell": 12,
+    "recorded_rows_hash": "0B7A869F3A3682A3BFFADA28E82AC23DC96EFE7E6FF3763997317C5050EE159D",
+    "rows": 768,
+    "targets": [
+      "Sun",
+      "Moon",
+      "Mars",
+      "Mercury",
+      "Jupiter",
+      "Venus",
+      "Saturn",
+      "Lagna"
+    ]
+  },
+  "stop_reason": "The frozen contract requires 337 ordinary planetary SAV and 386 combined display, but the hash-verified 768-cell source matrix computes 336 and 385 respectively. No source cell may be changed from code assumptions.",
+  "target_totals": {
+    "Jupiter": 54,
+    "Lagna": 49,
+    "Mars": 39,
+    "Mercury": 54,
+    "Moon": 49,
+    "Saturn": 39,
+    "Sun": 49,
+    "Venus": 52
+  }
+}

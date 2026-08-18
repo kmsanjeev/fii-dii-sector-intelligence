@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-REMEDIATION-001
+
+Started the authorized raw BAV/SAV production remediation and stopped at the
+programme-mandated contract-consistency gate. The frozen contract hash and the
+768-cell source-matrix hash both verify, but the matrix totals 336 planetary
+points and 385 with Lagna while the contract requires 337 and 386. No source
+cell was changed from code assumptions; no production calculation, reduction,
+prediction, ML, PRED-M4, RAG or Approved Core state changed. Evidence is in
+`docs/current-state/calc-ashtakavarga-remediation-001/`.
+
 ## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-NORMALIZATION-RX2-001
 
 Completed the controlled Ashtakavarga normalization and K.N. Rao

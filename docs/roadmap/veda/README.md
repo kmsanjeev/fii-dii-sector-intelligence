@@ -1,5 +1,11 @@
 # VEDA Roadmap Entry Point
 
+Current synchronization (2026-08-19): `VEDA-CALC-ASHTAKAVARGA-REMEDIATION-001` is `BLOCKED` with decision `CANONICAL_CONTRACT_INCONSISTENT`. The frozen contract requires 337 ordinary planetary SAV and 386 Lagna-combined display, while its hash-verified 768-cell source matrix computes 336 and 385. Production BAV/SAV was not changed; source-governance reconciliation is required before remediation resumes. Evidence: `docs/current-state/calc-ashtakavarga-remediation-001/`.
+
+This entry supersedes older activity-history wording below that described the
+remediation as not started. The remediation was started in the bounded
+activity, reached the explicit contract stop condition, and remains blocked.
+
 Current synchronization (2026-08-19): `VEDA-CALC-ASHTAKAVARGA-NORMALIZATION-RX2-001` completed with `PASS_WITH_CONDITION`. Lawful source checks verified K.N. Rao implementation lineage and a modern 337/386 witness, while full 1985-86/1998 article text, complete Bṛhat Jātaka numerical normalization, complete Saravali normalization and Jataka Parijata text remain unavailable. A BPHS-primary raw contract specification now governs seven-planet SAV=337, optional combined 386, Lagna contributor/target separation, self contribution and node exclusion; reductions remain deferred and production remediation remains unauthorized. Evidence: `docs/current-state/calc-ashtakavarga-normalization-rx2-001/`.
 
 Current synchronization (2026-08-19): `VEDA-CALC-ASHTAKAVARGA-CROSSSOURCE-RX-001` completed with `PASS_WITH_CONDITION`. BPHS and Phaladeepika were independently normalized where accessible; Phaladeepika preserves an explicit Varahamihira table variant, Saravali is incomplete with a polarity terminology reversal, and the full Jataka Parijata text was not accessible. The resulting decision is `ASHTAKAVARGA_TEXTUAL_AMBIGUITY_BLOCKS_REMEDIATION`; production BAV/SAV, P018, D20, P032, prediction, ML, RAG and Approved Core remain unchanged. Evidence: `docs/current-state/calc-ashtakavarga-crosssource-rx-001/`.
