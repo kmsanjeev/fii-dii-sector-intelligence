@@ -1,0 +1,25 @@
+{
+  "activity": "VEDA-EVIDENCE-INDIA-ACCESS-RX-001",
+  "constraints": {
+    "clinical_fields": "EXCLUDED",
+    "identity_custody": "PROVIDER_ONLY",
+    "outcome_lookup_at_acquisition": false,
+    "real_subjects": false,
+    "rectified": "EXPECTED_NO"
+  },
+  "fields": [
+    "SUBJECT_ID",
+    "DATE_OF_BIRTH",
+    "TIME_OF_BIRTH",
+    "TIME_PRECISION",
+    "PLACE_OF_BIRTH",
+    "HOSPITAL_INSTITUTION",
+    "SOURCE_TYPE",
+    "SOURCE_DATE",
+    "DOCUMENTARY_STATUS",
+    "RECTIFIED",
+    "APPROXIMATE",
+    "CONSENT_GOVERNANCE_STATE",
+    "IDENTITY_HELD_BY_PROVIDER"
+  ]
+}

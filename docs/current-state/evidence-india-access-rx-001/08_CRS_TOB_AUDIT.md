@@ -1,0 +1,3 @@
+# Delhi CRS / Form No. 1 audit
+
+The Delhi Chief Registrar page publishes the current Form No. 1 link and metadata contact. The linked one-page PDF is a scan; the official 2024 instructions identify date, place, residence, education and occupation fields, but do not establish a standard time-of-birth field. Therefore the bounded result is **CRS_TOB_NOT_ESTABLISHED_FROM_FORM**. This does not establish whether TOB is stored in hospital/registrar systems, appears on certificates, exists historically, or is accessible for research. Those are separate metadata questions. No state-wide inference is made.

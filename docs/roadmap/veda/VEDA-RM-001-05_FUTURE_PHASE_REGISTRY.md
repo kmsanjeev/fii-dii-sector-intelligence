@@ -85,6 +85,8 @@ This is the single authoritative future registry.
 | VEDA-LANG-002+ | Additional language packs | E | PLANNED | LANG-001, quality gates | Language-specific authorization |
 | VEDA-ADM-EMP-001 | Empirical Case Intake & Bulk Import Console | F/D | IMPLEMENTED / FROZEN | EMP-001, shared case registry | Preview → validate → accept → ingest; see `docs/current-state/adm-emp-001/` |
 
+| VEDA-EVIDENCE-INDIA-ACCESS-RX-001 | India birth-data source reconciliation, institutional access strategy and research collaboration pack | Governance | PASS_WITH_CONDITION | VEDA-EVIDENCE-ADB-ACCESS-RX-2026-001, VEDA-EVIDENCE-HYBRID-001, EMP-001 | BVB/K.N. Rao, ICAS, Shodhganga, Delhi CRS, DPDP/RBD/RTI and ICMR hospital routes audited. BVB 50,000+ is a reported collection claim; 150,000 and centralized ICAS data are not verified; Delhi Form No. 1 does not establish TOB. Unsent packs prepared; hospital route remains design-only and human-gated. No personal data or external request. Evidence in `docs/current-state/evidence-india-access-rx-001/` |
+
 The table preserves detailed programme statuses used by individual acceptance
 records. The canonical operational states for this rebaseline are defined in
 `docs/current-state/roadmap-rebaseline-001/01_PROGRAMME_INVENTORY.json` and

@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-EVIDENCE-INDIA-ACCESS-RX-001
+
+Completed the bounded India birth-data source reconciliation with
+`PASS_WITH_CONDITION`. Official BVB/K.N. Rao, ICAS, Shodhganga, Delhi CRS,
+DPDP/RBD/RTI and ICMR sources were audited; BVB's 50,000+ statement remains a
+reported collection claim while 150,000 is not verified, no centralized ICAS
+dataset was established, and the current Delhi Form No. 1 does not establish a
+standard TOB field. A hospital/medical-college route is the leading design-only
+option subject to institutional, ethics, privacy and legal approval. BVB, ICAS,
+hospital and Delhi metadata packs were prepared but not sent. No personal data,
+scraping, RTI submission, provider contact, astrology, scoring, ML, RAG,
+prediction, PRED-M4 or production change occurred. Evidence is in
+`docs/current-state/evidence-india-access-rx-001/`.
+
 ## 2026-08-19 | VEDA-EVIDENCE-OGDB-MULLER-VERIFY-001
 
 Completed the bounded, outcome-blind Müller/AFD documentary verification pilot with

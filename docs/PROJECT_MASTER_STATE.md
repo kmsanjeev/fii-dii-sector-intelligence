@@ -18,6 +18,8 @@ This project is NOT a screener. It IS a decision intelligence platform.
 
 # CURRENT PLATFORM STATE (2026-08-19)
 
+- VEDA-EVIDENCE-INDIA-ACCESS-RX-001 completed with `PASS_WITH_CONDITION`: official Indian birth-data source routes were reconciled without acquisition. BVB/K.N. Rao institution and research activity are verified; 50,000+ remains a reported collection claim and 150,000 is not verified. ICAS has no verified centralized dataset, Shodhganga is discovery-only, Delhi Form No. 1 does not establish a standard TOB field, and a hospital/medical-college route is the leading design-only path subject to institutional, ethics, privacy and legal approval. Unsent BVB/ICAS/hospital/Delhi metadata packs were prepared; no personal data, provider contact, RTI submission, astrology, scoring, ML, RAG, PRED-M4 or production change occurred. Evidence is in `docs/current-state/evidence-india-access-rx-001/`.
+
 ## VEDA CURRENT JYOTISHA STATE (2026-08-15)
 
 - P027 Advanced Synthesis & Multi-Chart Reasoning is implemented/frozen; it reuses the existing Jyotisha runtime and preserves chart/evidence authority.

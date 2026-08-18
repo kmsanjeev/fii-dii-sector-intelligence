@@ -1,5 +1,7 @@
 # VEDA Roadmap Entry Point
 
+Current synchronization (2026-08-19): `VEDA-EVIDENCE-INDIA-ACCESS-RX-001` completed with `PASS_WITH_CONDITION`; official Indian BVB/K.N. Rao, ICAS, Shodhganga, Delhi CRS, DPDP/RBD/RTI and ICMR routes were audited, unsent human-action packs were prepared, and no personal data or external request was made. The hospital route is promising but requires institutional, ethics, privacy and legal gates; BVB 50,000+ is a reported collection claim while 150,000 is not verified; CRS TOB is not established from the current Delhi Form No. 1. Evidence: `docs/current-state/evidence-india-access-rx-001/`.
+
 Current synchronization: `VEDA-EVIDENCE-OGDB-MULLER-VERIFY-001` completed with `PASS_WITH_CONDITION`; official Müller/AFD German Dynasties (1,145) and French Académie de Médecine (1,083) source files were extracted, a frozen feature-blind 25+25 sample was created, and record-level documentary verification remains manual-access-required. No empirical frame, POSITION_END lookup, astrology, scoring, ML or prediction work was started. Evidence: `docs/current-state/evidence-ogdb-muller-verify-001/`.
 
 Read this directory before starting any future VEDA work. `VEDA-RM-001-05_FUTURE_PHASE_REGISTRY.md` is the single authoritative future registry; historical roadmaps remain preserved and are classified in `VEDA-RM-001-02_ROADMAP_CONFLICT_AUDIT.md` and `VEDA-RM-001-03_SUPERSESSION_REGISTER.md`.

@@ -1,0 +1,46 @@
+{
+  "activity": "VEDA-EVIDENCE-INDIA-ACCESS-RX-001",
+  "classes": [
+    {
+      "class": "INDIA_HOSPITAL_DOCUMENT",
+      "confirmatory": true,
+      "veda_tier": "TIER_A_DOCUMENTARY"
+    },
+    {
+      "class": "INDIA_CIVIL_DOCUMENT",
+      "confirmatory": true,
+      "veda_tier": "TIER_A_DOCUMENTARY"
+    },
+    {
+      "class": "INDIA_INSTITUTION_DOCUMENTARY",
+      "confirmatory": "CONDITIONAL_SOURCE_REVIEW",
+      "veda_tier": "TIER_B_INSTITUTIONAL"
+    },
+    {
+      "class": "INDIA_FAMILY_REPORTED",
+      "confirmatory": false,
+      "veda_tier": "TIER_C_REPORTED"
+    },
+    {
+      "class": "INDIA_BIOGRAPHICAL",
+      "confirmatory": false,
+      "veda_tier": "TIER_C_REPORTED"
+    },
+    {
+      "class": "INDIA_RECTIFIED",
+      "confirmatory": false,
+      "risk": "OUTCOME_LEAKAGE_RISK_IF_RECTIFIED_FROM_STUDIED_EVENTS",
+      "veda_tier": "RESEARCH_ONLY"
+    },
+    {
+      "class": "INDIA_APPROXIMATE",
+      "confirmatory": false,
+      "veda_tier": "RESEARCH_ONLY"
+    },
+    {
+      "class": "INDIA_UNKNOWN",
+      "confirmatory": false,
+      "veda_tier": "UNQUALIFIED"
+    }
+  ]
+}

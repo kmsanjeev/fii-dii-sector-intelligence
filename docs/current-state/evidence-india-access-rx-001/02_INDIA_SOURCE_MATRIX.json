@@ -1,0 +1,124 @@
+{
+  "activity": "VEDA-EVIDENCE-INDIA-ACCESS-RX-001",
+  "sources": [
+    {
+      "authority": "OFFICIAL_INSTITUTION",
+      "finding": "K.N. Rao Institute exists within Bharatiya Vidya Bhavan Delhi; courses, research classes and contact route are documented.",
+      "id": "BVB-ASTROLOGY",
+      "status": "VERIFIED",
+      "url": "https://www.bvbdelhi.org/astrology/"
+    },
+    {
+      "authority": "OFFICIAL_INSTITUTION",
+      "finding": "The institute describes K.N. Rao courses, research selection and Journal of Astrology publications.",
+      "id": "BVB-INSTITUTE",
+      "status": "VERIFIED",
+      "url": "https://www.bvbdelhi.org/aaa/"
+    },
+    {
+      "authority": "OFFICIAL_PUBLICATION",
+      "finding": "The page reports that K.N. Rao has more than 50,000 horoscopes with ten important events noted; it is not a documentary inventory.",
+      "id": "JOURNAL-KN-RAO",
+      "status": "CLAIM_SUPPORTED_NOT_INVENTORY",
+      "url": "https://www.journalofastrology.com/page.php?lang=lt&page=KNRAO"
+    },
+    {
+      "authority": "OFFICIAL_INSTITUTION",
+      "finding": "ICAS describes its establishment, study, research, practice, courses and membership; no central birth-data repository is established.",
+      "id": "ICAS-FAQ",
+      "status": "VERIFIED_SCOPE_ONLY",
+      "url": "https://www.icasindia.org/ICAS/FAQ.html"
+    },
+    {
+      "authority": "OFFICIAL_INSTITUTION",
+      "finding": "Public contact route, secretary/registrar and chapter structure are documented.",
+      "id": "ICAS-CONTACT",
+      "status": "VERIFIED",
+      "url": "https://www.icasindia.org/ICAS/Contacts.html"
+    },
+    {
+      "authority": "OFFICIAL_REPOSITORY",
+      "finding": "INFLIBNET describes Shodhganga as an open-access thesis repository; item-level licensing and methodology must be checked.",
+      "id": "SHODHGANGA",
+      "status": "VERIFIED_DISCOVERY_ONLY",
+      "url": "https://betasg.inflibnet.ac.in/home"
+    },
+    {
+      "authority": "OFFICIAL_REPOSITORY_DOCUMENT",
+      "finding": "Repository brochure describes thesis discovery and CC BY-NC-SA licensing; current home page displays CC BY-NC, so item-level licence verification is required.",
+      "id": "SHODHGANGA-BROCHURE",
+      "status": "LICENSE_VARIANCE_RECORDED",
+      "url": "https://inflibnet.ac.in/downloads/brochure/shodhganga.pdf"
+    },
+    {
+      "authority": "OFFICIAL_GOVERNMENT",
+      "finding": "Delhi Chief Registrar page links current Birth Reporting Form No. 1 and publishes a metadata contact route.",
+      "id": "DELHI-CRS",
+      "status": "VERIFIED",
+      "url": "https://des.delhi.gov.in/des/registration-births-and-deaths-0"
+    },
+    {
+      "authority": "OFFICIAL_FORM",
+      "finding": "Current linked one-page form is a scan; the official 2024 instructions enumerate date/place and other reporting fields but do not establish a standard TOB field.",
+      "id": "DELHI-FORM-1",
+      "status": "CRS_TOB_NOT_ESTABLISHED_FROM_FORM",
+      "url": "https://des.delhi.gov.in/sites/default/files/DES/generic_multiple_files/birth_reporting_form_no._1.pdf"
+    },
+    {
+      "authority": "OFFICIAL_STATUTE",
+      "finding": "Registration statute governs registration and national registration administration; it does not by itself create a bulk research disclosure entitlement.",
+      "id": "RBD-ACT",
+      "status": "VERIFIED_GOVERNANCE",
+      "url": "https://www.indiacode.nic.in/handle/123456789/1682?view_type=browse"
+    },
+    {
+      "authority": "OFFICIAL_STATUTE",
+      "finding": "The RTI Act provides a regime for information under public-authority control; this audit prepares metadata-only questions and does not submit a request for personal records.",
+      "id": "RTI-ACT",
+      "status": "VERIFIED_METADATA_SCOPE",
+      "url": "https://www.indiacode.nic.in/handle/123456789/17520"
+    },
+    {
+      "authority": "OFFICIAL_STATE_RULES",
+      "finding": "Delhi 2024 rules and Form 1 instructions were used for the bounded form audit; they do not establish a standard TOB field in the current form evidence reviewed.",
+      "id": "DELHI-RULES-2024",
+      "status": "VERIFIED_BOUNDED_SCOPE",
+      "url": "https://des.delhi.gov.in/sites/default/files/DES/generic_multiple_files/gazette_notification_amendment_rules_2024.pdf"
+    },
+    {
+      "authority": "OFFICIAL_STATUTE",
+      "finding": "Research, archiving and statistical processing conditions are distinct from a right to receive personal data.",
+      "id": "DPDP-ACT",
+      "status": "VERIFIED_NUANCED",
+      "url": "https://www.indiacode.nic.in/handle/123456789/22037"
+    },
+    {
+      "authority": "OFFICIAL_RULES",
+      "finding": "Notified DPDP Rules 2025 are a current implementation source; activation and application require legal review at execution time.",
+      "id": "DPDP-RULES",
+      "status": "VERIFIED_REVIEW_REQUIRED",
+      "url": "https://www.meity.gov.in/documents/act-and-policies/digital-personal-data-protection-rules-2025-gDOxUjMtQWa"
+    },
+    {
+      "authority": "OFFICIAL_GUIDANCE",
+      "finding": "ICMR publishes National Ethical Guidelines and current ethics-review guidance relevant to a hospital research route.",
+      "id": "ICMR-ETHICS",
+      "status": "VERIFIED_DESIGN_ONLY",
+      "url": "https://www.icmr.gov.in/guidelines"
+    },
+    {
+      "authority": "PRACTITIONER_PROVIDER",
+      "finding": "Official site invites data submission/research contact, but size, Indian representation, upstream provenance, rights, consent and rectification policy are not established.",
+      "id": "SAPTARISHIS-OFFICIAL",
+      "status": "PROVENANCE_RIGHTS_CONSENT_NOT_VERIFIED",
+      "url": "https://saptarishisastrology.com/"
+    },
+    {
+      "authority": "PRACTITIONER_PUBLICATION",
+      "finding": "An official article says data came from various websites and may not be precise; this is a provenance warning, not an empirical source qualification.",
+      "id": "SAPTARISHIS-SOURCE-WARNING",
+      "status": "DOWNGRADED_VARIANT_DISCOVERY",
+      "url": "https://saptarishisastrology.com/gouri-jatakam-part-5-by-d-m-sudhindra-kumar-india/"
+    }
+  ]
+}

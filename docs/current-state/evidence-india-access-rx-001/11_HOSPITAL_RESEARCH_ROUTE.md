@@ -1,0 +1,3 @@
+# Hospital / medical-college research route
+
+This is the primary promising route, but design-only. A formal institutional partnership could provide original documentary TOB with an outcome-independent cohort, provider-held identity key, minimum pseudonymous fields, no clinical extras, ethics review, data-sharing agreement, security and publication controls. A 500-1,000 record historical/prospective pilot is only a bounded design option if the institution and ethics process approve it; no acquisition or outcome lookup is authorized. Longitudinal linkage must be consented prospective follow-up or trusted-third-party linkage, never public deanonymization.
