@@ -1,0 +1,31 @@
+{
+  "invariants": [
+    "positions are integers 1..12",
+    "source value is 0 or 1 for resolved cells",
+    "NOT_STATED is not zero",
+    "BAV is distinct from SAV",
+    "no nodes inserted"
+  ],
+  "source_rule_cardinality_by_target": {
+    "BPHS": {
+      "Jupiter": 96,
+      "Lagna": 96,
+      "Mars": 96,
+      "Mercury": 96,
+      "Moon": 96,
+      "Saturn": 96,
+      "Sun": 96,
+      "Venus": 96
+    },
+    "PHALADEEPIKA": {
+      "Jupiter": 55,
+      "Mars": 39,
+      "Mercury": 54,
+      "Moon": 49,
+      "Saturn": 39,
+      "Sun": 48,
+      "Venus": 52
+    }
+  },
+  "static_total_claim": "No universal chart BAV total is inferred from row cardinalities; chart totals depend on occupied contributor signs."
+}

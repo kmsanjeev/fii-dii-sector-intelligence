@@ -1,0 +1,61 @@
+{
+  "activity": "VEDA-CALC-ASHTAKAVARGA-CROSSSOURCE-RX-001",
+  "bphs_parent_hash": "0B7A869F3A3682A3BFFADA28E82AC23DC96EFE7E6FF3763997317C5050EE159D",
+  "decision": "ASHTAKAVARGA_TEXTUAL_AMBIGUITY_BLOCKS_REMEDIATION",
+  "matrix_hash": "ACF7521A1D00C00727B8D33EE8DEC3016075772FA76DF45E12D5BE2787846180",
+  "matrix_rows": 3840,
+  "production_change": false,
+  "remediation_ready": false,
+  "runtime_baseline": {
+    "bav_method": "P018-R2-BAV-001",
+    "implementation_hash": "FB65ECC9812492E3A615609C852E9342522EF80404735785D66EA4971F32468D",
+    "production_code_changed": false,
+    "sav_method": "P018-R2-SAV-001",
+    "table_hash": "D0FE98707743EA6390CD83F7CF04DF18A05FCBC26E7AD13179E172E71AFFCEE5"
+  },
+  "source_comparison": {
+    "comparable_cells": 56,
+    "full_convergence_cells": 0,
+    "source_variant_cells": 56
+  },
+  "source_counts": {
+    "BPHS": {
+      "cells": 768,
+      "not_stated": 0,
+      "resolved": 768
+    },
+    "BRIHAT_JATAKA": {
+      "cells": 768,
+      "not_stated": 768,
+      "resolved": 0
+    },
+    "JATAKA_PARIJATA": {
+      "cells": 768,
+      "not_stated": 768,
+      "resolved": 0
+    },
+    "PHALADEEPIKA": {
+      "cells": 768,
+      "not_stated": 96,
+      "resolved": 672
+    },
+    "SARAVALI": {
+      "cells": 768,
+      "not_stated": 768,
+      "resolved": 0
+    }
+  },
+  "synthetic": {
+    "bav_chart_exact_agreements": 0,
+    "charts": 96,
+    "coverage": "8 targets x 8 contributors x 12 positions per executable variant; 7-target SAV aggregation",
+    "deterministic_hash": "B6AA379F0B46A8BC6F47B212356F88C821D141FB7A8761C4D3464FA94B10FA22",
+    "production_imports": [],
+    "production_tables_reused": false,
+    "sav_exact_agreements": 0,
+    "variants": [
+      "BPHS_PARASHARA_MAIN",
+      "PHALADEEPIKA_MAIN_TEXT"
+    ]
+  }
+}

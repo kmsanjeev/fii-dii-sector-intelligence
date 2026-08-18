@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-CROSSSOURCE-RX-001
+
+Completed the bounded classical cross-source Ashtakavarga reconciliation with
+`PASS_WITH_CONDITION`. Five named witnesses were registered and a deterministic
+3,840-cell matrix preserves source-specific values and `NOT_STATED` states.
+BPHS and Phaladeepika were independently encoded and compared across 56 common
+planetary target/contributor pairs and 96 synthetic charts. Phaladeepika retains
+an explicit Varahamihira Jupiter/Moon variant and a seven-planet SAV statement;
+Saravali's accessible transcription is incomplete and uses reversed descriptive
+Bindu/Rekha polarity; the accessed Jataka Parijata page does not provide the
+full text. The final decision is
+`ASHTAKAVARGA_TEXTUAL_AMBIGUITY_BLOCKS_REMEDIATION`. No production BAV/SAV,
+P018, D20, P032, prediction, ML, RAG, Approved Core or raw-book change occurred;
+`VEDA-CALC-ASHTAKAVARGA-REMEDIATION-001` remains not started. Evidence is in
+`docs/current-state/calc-ashtakavarga-crosssource-rx-001/`.
+
 ## 2026-08-19 | VEDA-EVIDENCE-INDIA-ACCESS-RX-001
 
 Completed the bounded India birth-data source reconciliation with

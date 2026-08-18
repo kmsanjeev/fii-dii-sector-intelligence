@@ -1,0 +1,49 @@
+{
+  "dimensions": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Venus",
+    "Saturn",
+    "Lagna"
+  ],
+  "witnesses": {
+    "BPHS": {
+      "contributors": "EXPLICIT_CONTRIBUTOR",
+      "lagna": "BOTH",
+      "nodes": "NOT_PRESENT_IN_VERIFIED_CONTRACT",
+      "self": "EXPLICIT_SELF",
+      "targets": "EXPLICIT_TARGET"
+    },
+    "BRIHAT_JATAKA": {
+      "contributors": "PASSAGE_PRESENT; NORMALIZATION_PENDING",
+      "lagna": "NOT_NORMALIZED",
+      "nodes": "NOT_STATED",
+      "self": "NOT_NORMALIZED",
+      "targets": "PASSAGE_PRESENT; NORMALIZATION_PENDING"
+    },
+    "JATAKA_PARIJATA": {
+      "contributors": "REFERENCE_NOT_VERIFIED",
+      "lagna": "REFERENCE_NOT_VERIFIED",
+      "nodes": "REFERENCE_NOT_VERIFIED",
+      "self": "REFERENCE_NOT_VERIFIED",
+      "targets": "REFERENCE_NOT_VERIFIED"
+    },
+    "PHALADEEPIKA": {
+      "contributors": "EXPLICIT_CONTRIBUTOR",
+      "lagna": "BOTH",
+      "nodes": "NOT_PRESENT_IN_VERIFIED_PASSAGE",
+      "self": "EXPLICIT_SELF",
+      "targets": "EXPLICIT_TARGET"
+    },
+    "SARAVALI": {
+      "contributors": "NOT_STATED",
+      "lagna": "NOT_STATED",
+      "nodes": "NOT_STATED",
+      "self": "NOT_STATED",
+      "targets": "NOT_STATED"
+    }
+  }
+}

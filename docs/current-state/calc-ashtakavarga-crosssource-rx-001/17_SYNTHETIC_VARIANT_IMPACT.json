@@ -1,0 +1,141 @@
+{
+  "bav_chart_exact_agreements": 0,
+  "charts": 96,
+  "coverage": "8 targets x 8 contributors x 12 positions per executable variant; 7-target SAV aggregation",
+  "deterministic_hash": "B6AA379F0B46A8BC6F47B212356F88C821D141FB7A8761C4D3464FA94B10FA22",
+  "production_imports": [],
+  "production_tables_reused": false,
+  "sample_cases": [
+    {
+      "bav_equal": false,
+      "bphs_sav": {
+        "1": 7,
+        "2": 7,
+        "3": 7,
+        "4": 0,
+        "5": 7,
+        "6": 0,
+        "7": 7,
+        "8": 7,
+        "9": 0,
+        "10": 7,
+        "11": 0,
+        "12": 7
+      },
+      "case_id": 0,
+      "chart": {
+        "Jupiter": 5,
+        "Lagna": 2,
+        "Mars": 3,
+        "Mercury": 10,
+        "Moon": 8,
+        "Saturn": 7,
+        "Sun": 1,
+        "Venus": 12
+      },
+      "phaladeepika_sav": {
+        "1": 5,
+        "2": 2,
+        "3": 2,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 4,
+        "8": 4,
+        "9": 0,
+        "10": 5,
+        "11": 0,
+        "12": 5
+      }
+    },
+    {
+      "bav_equal": false,
+      "bphs_sav": {
+        "1": 7,
+        "2": 0,
+        "3": 7,
+        "4": 0,
+        "5": 7,
+        "6": 7,
+        "7": 7,
+        "8": 7,
+        "9": 0,
+        "10": 7,
+        "11": 0,
+        "12": 7
+      },
+      "case_id": 1,
+      "chart": {
+        "Jupiter": 10,
+        "Lagna": 7,
+        "Mars": 8,
+        "Mercury": 3,
+        "Moon": 1,
+        "Saturn": 12,
+        "Sun": 6,
+        "Venus": 5
+      },
+      "phaladeepika_sav": {
+        "1": 4,
+        "2": 0,
+        "3": 5,
+        "4": 0,
+        "5": 5,
+        "6": 5,
+        "7": 2,
+        "8": 2,
+        "9": 0,
+        "10": 5,
+        "11": 0,
+        "12": 4
+      }
+    },
+    {
+      "bav_equal": false,
+      "bphs_sav": {
+        "1": 7,
+        "2": 0,
+        "3": 7,
+        "4": 0,
+        "5": 7,
+        "6": 7,
+        "7": 0,
+        "8": 7,
+        "9": 0,
+        "10": 7,
+        "11": 7,
+        "12": 7
+      },
+      "case_id": 2,
+      "chart": {
+        "Jupiter": 3,
+        "Lagna": 12,
+        "Mars": 1,
+        "Mercury": 8,
+        "Moon": 6,
+        "Saturn": 5,
+        "Sun": 11,
+        "Venus": 10
+      },
+      "phaladeepika_sav": {
+        "1": 2,
+        "2": 0,
+        "3": 5,
+        "4": 0,
+        "5": 4,
+        "6": 4,
+        "7": 0,
+        "8": 5,
+        "9": 0,
+        "10": 5,
+        "11": 5,
+        "12": 2
+      }
+    }
+  ],
+  "sav_exact_agreements": 0,
+  "variants": [
+    "BPHS_PARASHARA_MAIN",
+    "PHALADEEPIKA_MAIN_TEXT"
+  ]
+}
