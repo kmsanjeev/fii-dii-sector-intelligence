@@ -36,7 +36,7 @@ Conditions:
 | Selective staging and raw-provider exclusion | PASS |
 | Git diff check | PASS |
 
-Acceptance summary: `PASS 20, PASS_WITH_CONDITION 5, BLOCKED 0, FAIL 0,
-TOTAL 25`.
+Acceptance summary: `PASS 19, PASS_WITH_CONDITION 4, BLOCKED 0, FAIL 0,
+TOTAL 23`.
 
 The recommended next activity is recorded but not started.
