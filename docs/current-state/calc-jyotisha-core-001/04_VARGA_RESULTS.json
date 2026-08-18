@@ -1,0 +1,242 @@
+{
+  "all_pass": true,
+  "results_hash": "C776327B923C88880F100C60DA69D0200B4B2ECCD17E7667C5E63108F3EBE403",
+  "rows": [
+    {
+      "calculation_status": "IMPLEMENTED_VALIDATED",
+      "cases": 12,
+      "failed": 0,
+      "interpretation_status": "NOT_APPLICABLE",
+      "method": "identity",
+      "method_id": null,
+      "name": "Rashi",
+      "passed": 12,
+      "reference_class": "DETERMINISTIC_REGRESSION_ONLY",
+      "rows_hash": "7CC4394053456955C88EE48DB0A56CA3EB8D589635E94DFD3979103075BED58A",
+      "varga": "D1"
+    },
+    {
+      "calculation_status": "IMPLEMENTED_WITH_CONDITIONS",
+      "cases": 24,
+      "failed": 0,
+      "interpretation_status": "NOT_APPLICABLE",
+      "method": "hora",
+      "method_id": null,
+      "name": "Hora",
+      "passed": 24,
+      "reference_class": "DETERMINISTIC_REGRESSION_ONLY",
+      "rows_hash": "44E81C19914F89EC6A4DFA5E5C61CA043AEB285332C855747A6F516BF49B3B6A",
+      "varga": "D2"
+    },
+    {
+      "calculation_status": "IMPLEMENTED_WITH_CONDITIONS",
+      "cases": 36,
+      "failed": 0,
+      "interpretation_status": "NOT_APPLICABLE",
+      "method": "drekkana",
+      "method_id": null,
+      "name": "Drekkana",
+      "passed": 36,
+      "reference_class": "DETERMINISTIC_REGRESSION_ONLY",
+      "rows_hash": "F4DC4952F0B676ED2A7ABF0BB410C763D58450A0492D785F69DDD3916F6E7C0B",
+      "varga": "D3"
+    },
+    {
+      "calculation_status": "IMPLEMENTED_VALIDATED",
+      "cases": 48,
+      "failed": 0,
+      "interpretation_status": "NOT_VALIDATED",
+      "method": "chaturthamsa_14710",
+      "method_id": "D4_CHATURTHAMSHA_1_4_7_10_V1",
+      "name": "Chaturthamsha",
+      "passed": 48,
+      "reference_class": "DETERMINISTIC_REGRESSION_ONLY",
+      "rows_hash": "6DDBA95F7E0D5881346D50E2B50336D85FEB46042D37C46F88B67C012199F99E",
+      "varga": "D4"
+    },
+    {
+      "calculation_status": "IMPLEMENTED_WITH_CONDITIONS",
+      "cases": 84,
+      "failed": 0,
+      "interpretation_status": "NOT_APPLICABLE",
+      "method": "saptamsa",
+      "method_id": null,
+      "name": "Saptamsha",
+      "passed": 84,
+      "reference_class": "DETERMINISTIC_REGRESSION_ONLY",
+      "rows_hash": "9B40CEF3ABCEDD421CC2A73509F0EBCDFE7D91C87FB5230D4B3811FC0086DEF8",
+      "varga": "D7"
+    },
+    {
+      "calculation_status": "IMPLEMENTED_VALIDATED",
+      "cases": 108,
+      "failed": 0,
+      "interpretation_status": "NOT_APPLICABLE",
+      "method": "navamsa",
+      "method_id": null,
+      "name": "Navamsha",
+      "passed": 108,
+      "reference_class": "INDEPENDENT_IMPLEMENTATION_AGREEMENT",
+      "rows_hash": "1D2019B3ABD3852913E10A45308C1CE3C2D85F8BCF403BEE7E52D17FE42A5FD7",
+      "varga": "D9"
+    },
+    {
+      "calculation_status": "IMPLEMENTED_VALIDATED",
+      "cases": 120,
+      "failed": 0,
+      "interpretation_status": "NOT_APPLICABLE",
+      "method": "dasamsa",
+      "method_id": null,
+      "name": "Dashamsha",
+      "passed": 120,
+      "reference_class": "INDEPENDENT_IMPLEMENTATION_AGREEMENT",
+      "rows_hash": "5A41814F8F85E1D24F8BAD05BEF8B06F638C407987EBA048A1AFA0D7F0A3EDA0",
+      "varga": "D10"
+    },
+    {
+      "calculation_status": "IMPLEMENTED_WITH_CONDITIONS",
+      "cases": 132,
+      "failed": 0,
+      "interpretation_status": "NOT_APPLICABLE",
+      "method": "general",
+      "method_id": null,
+      "name": "Ekadashamsha",
+      "passed": 132,
+      "reference_class": "DETERMINISTIC_REGRESSION_ONLY",
+      "rows_hash": "0E0598D194A9996EFE7D035E1316967EA770485B85E7C81B65501FF54579762C",
+      "varga": "D11"
+    },
+    {
+      "calculation_status": "IMPLEMENTED_WITH_CONDITIONS",
+      "cases": 144,
+      "failed": 0,
+      "interpretation_status": "NOT_APPLICABLE",
+      "method": "dwadasamsa",
+      "method_id": null,
+      "name": "Dwadashamsha",
+      "passed": 144,
+      "reference_class": "DETERMINISTIC_REGRESSION_ONLY",
+      "rows_hash": "9E2A53638DCF76E47D1F75555ECA841D76FF1EF3BA00215C8B1946A0DC35FED3",
+      "varga": "D12"
+    },
+    {
+      "calculation_status": "IMPLEMENTED_WITH_CONDITIONS",
+      "cases": 192,
+      "failed": 0,
+      "interpretation_status": "NOT_APPLICABLE",
+      "method": "general",
+      "method_id": null,
+      "name": "Shodashamsha",
+      "passed": 192,
+      "reference_class": "DETERMINISTIC_REGRESSION_ONLY",
+      "rows_hash": "B4E72A307C5E7B950FC8261327F589AC7FE760169B827C1635AE8EDE25622504",
+      "varga": "D16"
+    },
+    {
+      "calculation_status": "PARTIALLY_VALIDATED",
+      "cases": 240,
+      "failed": 0,
+      "interpretation_status": "NOT_VALIDATED",
+      "method": "d20_vimshamsha_bphs_category_start_v1",
+      "method_id": "D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1",
+      "name": "Vimshamsha",
+      "passed": 240,
+      "reference_class": "DETERMINISTIC_REGRESSION_ONLY",
+      "rows_hash": "27A57524D03B1A14BEA2855809BBC69E7225AC6ADD032097E2B8CDF3951E1597",
+      "varga": "D20"
+    },
+    {
+      "calculation_status": "IMPLEMENTED_WITH_CONDITIONS",
+      "cases": 360,
+      "failed": 0,
+      "interpretation_status": "NOT_APPLICABLE",
+      "method": "trimshamsa",
+      "method_id": null,
+      "name": "Trimshamsha",
+      "passed": 360,
+      "reference_class": "DETERMINISTIC_REGRESSION_ONLY",
+      "rows_hash": "052D23A643ED12C38A36F24E49608CC5F20EB61BBB233CDD327F4B171CBD2423",
+      "varga": "D30"
+    },
+    {
+      "calculation_status": "IMPLEMENTED_WITH_CONDITIONS",
+      "cases": 720,
+      "failed": 0,
+      "interpretation_status": "NOT_APPLICABLE",
+      "method": "general",
+      "method_id": null,
+      "name": "Shashtyamsha",
+      "passed": 720,
+      "reference_class": "DETERMINISTIC_REGRESSION_ONLY",
+      "rows_hash": "0163F5D539A504F04FB3541BAE765A005F7DB66EA8E7FF3F1AA216500465DE1E",
+      "varga": "D60"
+    }
+  ],
+  "summary": {
+    "D1": {
+      "cases": 12,
+      "failed": 0,
+      "passed": 12
+    },
+    "D10": {
+      "cases": 120,
+      "failed": 0,
+      "passed": 120
+    },
+    "D11": {
+      "cases": 132,
+      "failed": 0,
+      "passed": 132
+    },
+    "D12": {
+      "cases": 144,
+      "failed": 0,
+      "passed": 144
+    },
+    "D16": {
+      "cases": 192,
+      "failed": 0,
+      "passed": 192
+    },
+    "D2": {
+      "cases": 24,
+      "failed": 0,
+      "passed": 24
+    },
+    "D20": {
+      "cases": 240,
+      "failed": 0,
+      "passed": 240
+    },
+    "D3": {
+      "cases": 36,
+      "failed": 0,
+      "passed": 36
+    },
+    "D30": {
+      "cases": 360,
+      "failed": 0,
+      "passed": 360
+    },
+    "D4": {
+      "cases": 48,
+      "failed": 0,
+      "passed": 48
+    },
+    "D60": {
+      "cases": 720,
+      "failed": 0,
+      "passed": 720
+    },
+    "D7": {
+      "cases": 84,
+      "failed": 0,
+      "passed": 84
+    },
+    "D9": {
+      "cases": 108,
+      "failed": 0,
+      "passed": 108
+    }
+  }
+}

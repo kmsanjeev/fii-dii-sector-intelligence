@@ -1,0 +1,26 @@
+[
+  {
+    "component": "D20",
+    "decision": "NO_CHANGE",
+    "id": "ECR-001",
+    "new": "source-selected category-start routing already present",
+    "old": "general legacy fallback",
+    "reason": "P015-RX2 already owns the contained remediation; mapping remains partial"
+  },
+  {
+    "component": "ASHTAKAVARGA",
+    "decision": "DEFERRED",
+    "id": "ECR-002",
+    "new": "unchanged",
+    "old": "unvalidated contributor method",
+    "reason": "No passage-level numerical witness"
+  },
+  {
+    "component": "GOVERNANCE_METADATA",
+    "decision": "RECONCILIATION_REQUIRED",
+    "id": "ECR-003",
+    "new": "documented drift",
+    "old": "P018 docs say BAV/SAV absent while helper code exists",
+    "reason": "Metadata/code inventory discrepancy; no production activation or semantic change in this phase"
+  }
+]

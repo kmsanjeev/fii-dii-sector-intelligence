@@ -1,0 +1,112 @@
+{
+  "D1": {
+    "division": 1,
+    "method": "identity",
+    "name": "Rashi",
+    "p004": "VALIDATED",
+    "status": "IMPLEMENTED_VALIDATED"
+  },
+  "D10": {
+    "division": 10,
+    "method": "dasamsa",
+    "name": "Dashamsha",
+    "p004": "VALIDATED",
+    "priority": "P1",
+    "status": "IMPLEMENTED_VALIDATED"
+  },
+  "D11": {
+    "division": 11,
+    "method": "general",
+    "name": "Ekadashamsha",
+    "p004": "VALIDATED_WITH_CONDITIONS",
+    "status": "IMPLEMENTED_WITH_CONDITIONS"
+  },
+  "D12": {
+    "division": 12,
+    "method": "dwadasamsa",
+    "name": "Dwadashamsha",
+    "p004": "VALIDATED_WITH_CONDITIONS",
+    "priority": "P1",
+    "status": "IMPLEMENTED_WITH_CONDITIONS"
+  },
+  "D16": {
+    "division": 16,
+    "method": "general",
+    "name": "Shodashamsha",
+    "p004": "VALIDATED_WITH_CONDITIONS",
+    "status": "IMPLEMENTED_WITH_CONDITIONS"
+  },
+  "D2": {
+    "division": 2,
+    "method": "hora",
+    "name": "Hora",
+    "p004": "VALIDATED_WITH_CONDITIONS",
+    "status": "IMPLEMENTED_WITH_CONDITIONS"
+  },
+  "D20": {
+    "authority": "CLASSICAL_PRIMARY",
+    "calculation_status": "PARTIALLY_VALIDATED",
+    "division": 20,
+    "interpretation_status": "NOT_VALIDATED",
+    "legacy_method": "D20_LEGACY_GENERIC_VARGA_V0",
+    "mapping_status": "SOURCE_MAPPING_INCOMPLETE",
+    "method": "d20_vimshamsha_bphs_category_start_v1",
+    "method_id": "D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1",
+    "method_version": "1.0",
+    "name": "Vimshamsha",
+    "p004": "VALIDATED_WITH_CONDITIONS",
+    "progression_status": "SEQUENTIAL_INFERENCE_FROM_CATEGORY_START",
+    "source_ref": "BPHS_CH6_17_20; BPHS_CH7_4",
+    "status": "IMPLEMENTED_WITH_CONDITIONS"
+  },
+  "D3": {
+    "division": 3,
+    "method": "drekkana",
+    "name": "Drekkana",
+    "p004": "VALIDATED_WITH_CONDITIONS",
+    "status": "IMPLEMENTED_WITH_CONDITIONS"
+  },
+  "D30": {
+    "division": 30,
+    "method": "trimshamsa",
+    "name": "Trimshamsha",
+    "p004": "VALIDATED_WITH_CONDITIONS",
+    "safety": "HIGH_STAKES_REVIEW_REQUIRED",
+    "status": "IMPLEMENTED_WITH_CONDITIONS"
+  },
+  "D4": {
+    "division": 4,
+    "interpretation_status": "NOT_VALIDATED",
+    "method": "chaturthamsa_14710",
+    "method_id": "D4_CHATURTHAMSHA_1_4_7_10_V1",
+    "method_version": "1.0",
+    "name": "Chaturthamsha",
+    "p004": "VALIDATED",
+    "source_ref": "KNOW-PROP-001 / P015-RX",
+    "status": "IMPLEMENTED_VALIDATED"
+  },
+  "D60": {
+    "division": 60,
+    "method": "general",
+    "name": "Shashtyamsha",
+    "p004": "VALIDATED_WITH_CONDITIONS",
+    "safety": "HIGH_SENSITIVITY",
+    "status": "IMPLEMENTED_WITH_CONDITIONS"
+  },
+  "D7": {
+    "division": 7,
+    "method": "saptamsa",
+    "name": "Saptamsha",
+    "p004": "VALIDATED_WITH_CONDITIONS",
+    "safety": "HIGH_STAKES_REVIEW_REQUIRED",
+    "status": "IMPLEMENTED_WITH_CONDITIONS"
+  },
+  "D9": {
+    "division": 9,
+    "method": "navamsa",
+    "name": "Navamsha",
+    "p004": "VALIDATED",
+    "priority": "P1",
+    "status": "IMPLEMENTED_VALIDATED"
+  }
+}

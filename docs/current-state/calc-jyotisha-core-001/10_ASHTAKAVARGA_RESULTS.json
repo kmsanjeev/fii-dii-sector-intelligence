@@ -1,0 +1,75 @@
+{
+  "cases": 1,
+  "failed": 0,
+  "interpretation_status": "NOT_AUTHORIZED",
+  "method_status": "UNVALIDATED",
+  "passed": 1,
+  "rows": [
+    {
+      "bav_total": 6,
+      "chart": {
+        "Jupiter": 1,
+        "Mars": 7,
+        "Mercury": 10,
+        "Moon": 4,
+        "Saturn": 7,
+        "Sun": 1,
+        "Venus": 4
+      },
+      "expected_nonzero_sav": {
+        "1": 12,
+        "4": 10,
+        "7": 10,
+        "10": 6
+      },
+      "expected_nonzero_sun_bav": {
+        "1": 1,
+        "4": 2,
+        "7": 2,
+        "10": 1
+      },
+      "external_numerical_witness": false,
+      "fixture_id": "P018-R2-TARGET-SIGN-INVARIANT",
+      "method_status": "IMPLEMENTED_UNVALIDATED",
+      "observed_sav": {
+        "1": 12,
+        "2": 0,
+        "3": 0,
+        "4": 10,
+        "5": 0,
+        "6": 0,
+        "7": 10,
+        "8": 0,
+        "9": 0,
+        "10": 6,
+        "11": 0,
+        "12": 0
+      },
+      "observed_sun_bav": {
+        "1": 1,
+        "2": 0,
+        "3": 0,
+        "4": 2,
+        "5": 0,
+        "6": 0,
+        "7": 2,
+        "8": 0,
+        "9": 0,
+        "10": 1,
+        "11": 0,
+        "12": 0
+      },
+      "pass": true,
+      "sav_aggregates_bav": true,
+      "sav_total": 38,
+      "source_status": "RESEARCH_REQUIRED",
+      "target_sign_sensitive": {
+        "1": true,
+        "10": true,
+        "4": true,
+        "7": true
+      }
+    }
+  ],
+  "rows_hash": "1DFD498525545A3EF8C4361F8BF851AB656A9375AF6A0DE1C58B2A51EF425114"
+}

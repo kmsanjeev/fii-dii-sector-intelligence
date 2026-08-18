@@ -1,0 +1,198 @@
+{
+  "cases": 10,
+  "failed": 0,
+  "passed": 10,
+  "production_activation": "NOT_EXECUTED",
+  "rows": [
+    {
+      "deterministic": true,
+      "interpretation_status": "RESEARCH_REQUIRED",
+      "name": "Neecha Bhanga Structural Cancellation",
+      "negative_status": "NOT_FORMED",
+      "negative_trace": {
+        "children": [
+          {
+            "actual": false,
+            "expected": true,
+            "matched": false,
+            "operator": "EQUALS",
+            "path": "relationships.debilitated_planet_lord_in_kendra"
+          }
+        ],
+        "operator": "ALL"
+      },
+      "positive_status": "FORMED",
+      "positive_trace": {
+        "children": [
+          {
+            "actual": true,
+            "expected": true,
+            "matched": true,
+            "operator": "EQUALS",
+            "path": "relationships.debilitated_planet_lord_in_kendra"
+          }
+        ],
+        "operator": "ALL"
+      },
+      "production_activation": "NOT_EXECUTED",
+      "rule_id": "VEDA-RUL-CANCEL-000001"
+    },
+    {
+      "deterministic": true,
+      "interpretation_status": "RESEARCH_REQUIRED",
+      "name": "Manglik / Kuja Structural Formation",
+      "negative_status": "NOT_FORMED",
+      "negative_trace": {
+        "children": [
+          {
+            "actual": 3,
+            "expected": [
+              1,
+              2,
+              4,
+              7,
+              8,
+              12
+            ],
+            "matched": false,
+            "operator": "IN",
+            "path": "planets.Mars.house"
+          }
+        ],
+        "operator": "ALL"
+      },
+      "positive_status": "FORMED",
+      "positive_trace": {
+        "children": [
+          {
+            "actual": 7,
+            "expected": [
+              1,
+              2,
+              4,
+              7,
+              8,
+              12
+            ],
+            "matched": true,
+            "operator": "IN",
+            "path": "planets.Mars.house"
+          }
+        ],
+        "operator": "ALL"
+      },
+      "production_activation": "NOT_EXECUTED",
+      "rule_id": "VEDA-RUL-DOSHA-000001"
+    },
+    {
+      "deterministic": true,
+      "interpretation_status": "RESEARCH_REQUIRED",
+      "name": "Gaja Kesari Formation",
+      "negative_status": "NOT_FORMED",
+      "negative_trace": {
+        "children": [
+          {
+            "actual": 2,
+            "expected": [
+              0,
+              3,
+              6,
+              9
+            ],
+            "matched": false,
+            "operator": "IN",
+            "path": "relationships.jupiter_from_moon.house_distance"
+          }
+        ],
+        "operator": "ALL"
+      },
+      "positive_status": "FORMED",
+      "positive_trace": {
+        "children": [
+          {
+            "actual": 3,
+            "expected": [
+              0,
+              3,
+              6,
+              9
+            ],
+            "matched": true,
+            "operator": "IN",
+            "path": "relationships.jupiter_from_moon.house_distance"
+          }
+        ],
+        "operator": "ALL"
+      },
+      "production_activation": "NOT_EXECUTED",
+      "rule_id": "VEDA-RUL-YOGA-000001"
+    },
+    {
+      "deterministic": true,
+      "interpretation_status": "RESEARCH_REQUIRED",
+      "name": "Kendra-Trikona Raja Formation",
+      "negative_status": "NOT_FORMED",
+      "negative_trace": {
+        "children": [
+          {
+            "actual": false,
+            "expected": true,
+            "matched": false,
+            "operator": "EQUALS",
+            "path": "relationships.kendra_trikona_lord_conjunction"
+          }
+        ],
+        "operator": "ALL"
+      },
+      "positive_status": "FORMED",
+      "positive_trace": {
+        "children": [
+          {
+            "actual": true,
+            "expected": true,
+            "matched": true,
+            "operator": "EQUALS",
+            "path": "relationships.kendra_trikona_lord_conjunction"
+          }
+        ],
+        "operator": "ALL"
+      },
+      "production_activation": "NOT_EXECUTED",
+      "rule_id": "VEDA-RUL-YOGA-000002"
+    },
+    {
+      "deterministic": true,
+      "interpretation_status": "RESEARCH_REQUIRED",
+      "name": "Dhana Formation",
+      "negative_status": "NOT_FORMED",
+      "negative_trace": {
+        "children": [
+          {
+            "actual": false,
+            "expected": true,
+            "matched": false,
+            "operator": "EQUALS",
+            "path": "relationships.dhana_lords_connected"
+          }
+        ],
+        "operator": "ALL"
+      },
+      "positive_status": "FORMED",
+      "positive_trace": {
+        "children": [
+          {
+            "actual": true,
+            "expected": true,
+            "matched": true,
+            "operator": "EQUALS",
+            "path": "relationships.dhana_lords_connected"
+          }
+        ],
+        "operator": "ALL"
+      },
+      "production_activation": "NOT_EXECUTED",
+      "rule_id": "VEDA-RUL-YOGA-000003"
+    }
+  ],
+  "rows_hash": "0E12973F1236BE26411D6367030EEE75DEB99F69B4A441BD294FACDB9D942058"
+}

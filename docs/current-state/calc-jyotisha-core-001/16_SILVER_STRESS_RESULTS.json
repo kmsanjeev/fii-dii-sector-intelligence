@@ -1,0 +1,37 @@
+{
+  "gold": {
+    "cases_attempted": 25,
+    "cases_passed": 23,
+    "cases_unresolved": 2,
+    "gold_a": 0,
+    "gold_b": 0,
+    "gold_c": 25,
+    "result_hash": "F2064AB62A7FB494C469908C620925D920A2FE970C5CF8A15142D7D7D010B7E0"
+  },
+  "scope": "reused parent deterministic corpus results; no outcomes or predictive scoring",
+  "silver": {
+    "attempted": 109,
+    "completed": 109,
+    "determinism_fields_excluded": [
+      "runtime_ms"
+    ],
+    "error_categories": {},
+    "failed": 0,
+    "result_hash": "62379DCBA7DB397BA3FBF5B1C585F8649A71B7F078F636D11EA5E5648F413245",
+    "success_rate": 1.0,
+    "warnings": 0
+  },
+  "source": "calc-goldset-001/artifacts/00_RUN_REPORT.json",
+  "stress": {
+    "attempted": 7022,
+    "completed": 7022,
+    "determinism_fields_excluded": [
+      "runtime_ms"
+    ],
+    "error_categories": {},
+    "failed": 0,
+    "result_hash": "5EB3967F9C2249B340827A479CD7579E25BB7D287B43999D221D85CEBC117AD6",
+    "success_rate": 1.0,
+    "warnings": 0
+  }
+}

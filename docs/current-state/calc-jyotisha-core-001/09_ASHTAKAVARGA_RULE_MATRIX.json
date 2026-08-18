@@ -1,0 +1,16 @@
+{
+  "BAV": {
+    "activation": "NOT_EXECUTED",
+    "passage": "REFERENCE_NOT_VERIFIED",
+    "runtime": "engines/ai/knowledge/shadbala_engine.py::calculate_bav",
+    "source_claim": "VEDA-R2-CLM-000008",
+    "status": "IMPLEMENTED_UNVALIDATED"
+  },
+  "SAV": {
+    "activation": "NOT_EXECUTED",
+    "passage": "REFERENCE_NOT_VERIFIED",
+    "runtime": "engines/ai/knowledge/shadbala_engine.py::calculate_sav",
+    "source_claim": "VEDA-R2-CLM-000009",
+    "status": "BLOCKED_BY_BAV_METHOD_VALIDATION"
+  }
+}

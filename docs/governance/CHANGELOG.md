@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-18 | VEDA-CALC-JYOTISHA-CORE-001
+
+Completed the governed Jyotisha core calculation audit with `PASS_WITH_CONDITION`.
+The phase added source/variant matrices and independent deterministic fixtures for
+D1/Rashi, implemented Vargas, Vimshottari/Antardasha and the rule engine. The
+Varga grid covers 2,220 cases; focused component suites pass, and inherited Silver
+109/109 and Stress 7,022/7,022 results remain stable. Ashtakavarga is retained as
+`UNVALIDATED` beyond its internal target-sign invariant, while D20 destination
+mapping remains evidence-qualified and D20 interpretation remains gated. The full
+repository suite timed out at the 15-minute bound and is not reported as a pass.
+No production, predictive, ML, PRED-M4, RAG or Approved Core change occurred.
+Raw local validation inputs remain ignored and uncommitted.
+
 ## 2026-08-18 | VEDA-CALC-SIDEREAL-ASC-TZ-001
 
 Completed the bounded independent Lahiri/Nirayana, Ascendant and historical-time

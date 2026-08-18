@@ -1,0 +1,95 @@
+[
+  {
+    "authority": "CLASSICAL_PRIMARY_REFERENCE_EDITION",
+    "edition": "Rishi Parashara translation PDF, inspected 2026-08-18",
+    "limitations": [
+      "D20 category start and deity list do not by themselves prove the modern destination-sign sequence used by VEDA"
+    ],
+    "locator": "Ch.6.12-21, PDF pp.8-9; Ch.7.1-8, PDF p.10",
+    "source_id": "SRC-BPHS-PDF-CH6-7",
+    "supported": [
+      "D9 modality starts",
+      "D10 odd/even starts",
+      "D20 20 x 1°30′ and category starts",
+      "Vimshamsha worship scope"
+    ],
+    "title": "Brihat Parashara Hora Shastra",
+    "url": "https://vedic-astro.s3.amazonaws.com/books/bhrihat_parasara_hora_shastra.pdf"
+  },
+  {
+    "authority": "CLASSICAL_PRIMARY_REFERENCE_EDITION",
+    "edition": "same inspected edition",
+    "limitations": [
+      "Modern UTC/365.25 calendar conversion is engineering policy, not a direct textual calendar standard"
+    ],
+    "locator": "Ch.46.12-16, PDF p.75",
+    "source_id": "SRC-BPHS-PDF-CH46",
+    "supported": [
+      "Vimshottari choice",
+      "cyclic lord sequence",
+      "120-year span",
+      "period lengths",
+      "Moon Janma Nakshatra elapsed/balance calculation"
+    ],
+    "title": "Brihat Parashara Hora Shastra",
+    "url": "https://vedic-astro.s3.amazonaws.com/books/bhrihat_parasara_hora_shastra.pdf"
+  },
+  {
+    "authority": "CLASSICAL_TEXT_WEB_EDITION",
+    "edition": "Enjoy Learning Sanskrit, inspected 2026-08-18",
+    "limitations": [
+      "The inspected excerpt does not establish the complete BAV contributor table used by the runtime"
+    ],
+    "locator": "Verses 1-4",
+    "source_id": "SRC-BPHS-CH69-SANSKRIT",
+    "supported": [
+      "Pinda Sadhana terminology and sign/planet measures"
+    ],
+    "title": "bṛhat-pārāśara-horā-śāstram Chapter 69",
+    "url": "https://enjoylearningsanskrit.com/scriptures/parashara/chapter-69/"
+  },
+  {
+    "authority": "PRACTITIONER_SECONDARY_REFERENCE_ONLY",
+    "edition": "Hadahana Lanka page, inspected 2026-08-18",
+    "limitations": [
+      "Not sufficient to validate VEDA interpretation or replace BPHS primary provenance"
+    ],
+    "locator": "D20 section",
+    "source_id": "SRC-D20-SECONDARY-2014",
+    "supported": [
+      "secondary description of D20 worship/upasana scope and category starts"
+    ],
+    "title": "Divisional Charts - D16 / D20",
+    "url": "https://www.hadahanalanka.online/2014/08/divisional-charts-d16-d20.html"
+  },
+  {
+    "authority": "VEDA_INTERNAL_GOVERNANCE",
+    "edition": "repository HEAD",
+    "limitations": [
+      "No independently reviewed classical numerical witness is registered"
+    ],
+    "locator": "docs/current-state/p018 and docs/current-state/rm-002",
+    "source_id": "SRC-P018-LOCAL",
+    "supported": [
+      "BAV/SAV calculation defect closure as internal invariant only",
+      "method validation remains research-required"
+    ],
+    "title": "VEDA-P018 / VEDA-RM-002 Ashtakavarga governance",
+    "url": null
+  },
+  {
+    "authority": "VEDA_PLATFORM_GOVERNANCE",
+    "edition": "repository HEAD",
+    "limitations": [
+      "Platform governance is not classical source evidence"
+    ],
+    "locator": "docs/current-state/p013/VEDA-P013-04_RULE_ENGINEERING_STANDARD.md",
+    "source_id": "SRC-P013-LOCAL",
+    "supported": [
+      "rule-to-claim-to-passage traceability requirement",
+      "no activation from unsupported knowledge"
+    ],
+    "title": "VEDA-P013 Rule Engineering Standard",
+    "url": null
+  }
+]
