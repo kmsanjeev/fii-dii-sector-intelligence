@@ -1,0 +1,48 @@
+{
+  "authority_axis": "PRIMARY_PRACTITIONER_SOURCE; NOT_CLASSICAL_PRIMARY",
+  "lineage_policy": "KNR_IMPLEMENTATION_TRADITION is one dependent modern school lineage, not independent classical votes.",
+  "rejected_or_downgraded": [
+    "pirated_or_unauthorized_rehosts",
+    "SEO_or_copy_pasted_tables",
+    "single_practitioner_claims_as_independent_classical_evidence"
+  ],
+  "sources": [
+    {
+      "finding": "Later official Journal material reports the 1985-86 Dots of Destiny series; original full text was not lawfully accessible in this audit.",
+      "id": "KNR_DOTS_1985_86",
+      "status": "BIBLIOGRAPHIC_ONLY_FULL_TEXT_NOT_LOCATED",
+      "url": "https://www.journalofastrology.com/product_details.php?item_id=166"
+    },
+    {
+      "finding": "Official Journal catalogue lists Dots of Destiny—Some Principles of Ashtakavarga by K.N. Rao.",
+      "id": "KNR_DOTS_1998",
+      "status": "OFFICIAL_ISSUE_CONTENTS_VERIFIED_FULL_ARTICLE_NOT_ACCESSED",
+      "url": "https://www.journalofastrology.com/product_details.php?item_id=166"
+    },
+    {
+      "finding": "Official Journal page identifies M.S. Mehta, guide/editor K.N. Rao, and sections for reductions, Pinda, Mandal and examples; full numerical text was not extracted.",
+      "id": "MEHTA_2002",
+      "status": "OFFICIAL_BIBLIOGRAPHY_CONTENTS_VERIFIED",
+      "url": "https://www.journalofastrology.com/product_details.php?category_id=11&item_id=126&lang=en"
+    },
+    {
+      "finding": "Contents include computing, reductions, Shodhya Pinda, timing and examples; full preview unavailable.",
+      "id": "VINAY_ADITYA",
+      "status": "GOOGLE_BOOKS_METADATA_CONTENTS_VERIFIED",
+      "url": "https://books.google.co.in/books?id=1Uwi1LAZb7QC&lr=&num=20"
+    },
+    {
+      "finding": "Official institute page verifies the K.N. Rao school, research and Journal publication route; it does not specify a formula.",
+      "id": "BVB_LINEAGE",
+      "status": "INSTITUTIONAL_LINEAGE_VERIFIED",
+      "url": "https://www.bvbdelhi.org/aaa/"
+    },
+    {
+      "finding": "Public vendor PDF shows planetary total 337, Lagna row 49, combined 386 and reduced tables; not classical or direct KNR proof.",
+      "id": "HOROSOFT_SAMPLE",
+      "page": 2,
+      "status": "MODERN_IMPLEMENTATION_WITNESS_PAGE_2_INSPECTED",
+      "url": "https://www.horosoft.net/Sample/eng_tables.pdf"
+    }
+  ]
+}

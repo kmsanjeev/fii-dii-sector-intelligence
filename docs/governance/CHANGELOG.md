@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-NORMALIZATION-RX2-001
+
+Completed the controlled Ashtakavarga normalization and K.N. Rao
+implementation-witness reconciliation with `PASS_WITH_CONDITION`. Lawful
+official Journal/BVB/Google Books routes verified the practitioner lineage;
+full 1985-86 and 1998 article text was not accessible. A page-inspected modern
+vendor witness records 337 planetary points, a 49-point Lagna row and 386 as a
+combined display. A BPHS-primary raw contract specification now separates
+planetary SAV=337 from optional combined 386, governs Lagna contributor/target,
+self contribution, node exclusion, polarity and raw/reduced stages. Bṛhat
+Jātaka and Saravali remain controlled but numerically unresolved and Jataka
+Parijata remains reference-not-verified; reductions remain deferred. No
+production Ashtakavarga, P018, D20, P032, prediction, ML, RAG, Approved Core or
+raw-book change occurred. Evidence is in
+`docs/current-state/calc-ashtakavarga-normalization-rx2-001/`.
+
 ## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-CROSSSOURCE-RX-001
 
 Completed the bounded classical cross-source Ashtakavarga reconciliation with
