@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-18 | VEDA-LANG-002-HI-REVIEW-PACK-001
+
+Generated the bounded 49-entry Hindi human-review pack from the committed
+VEDA-LANG-002-HI-001 English/Hindi values. The Markdown and CSV artifacts are
+review-only; no Hindi translation, locale/runtime behavior, calculation,
+prediction, RAG, or production-authority state changed. Human Reviewed and
+Approved Presentation remain zero, and Production Hindi remains unauthorized.
+
 ## 2026-08-18 | VEDA-LANG-002-HI-001
 
 Completed the first non-English content locale with `PASS_WITH_CONDITION`.
