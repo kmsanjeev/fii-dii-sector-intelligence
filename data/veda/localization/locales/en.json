@@ -3,7 +3,18 @@
   "locale": "en",
   "parent": null,
   "status": "CANONICAL_ENGLISH_BASELINE",
+  "classification": "CANONICAL_BASELINE",
   "review_state": "REVIEW_PENDING",
+  "human_reviewed": false,
+  "production_authorized": true,
+  "review_counts": {
+    "CANONICAL_BASELINE": 49,
+    "MACHINE_DRAFT": 0,
+    "SOURCE_REVIEWED": 0,
+    "HUMAN_REVIEWED": 0,
+    "APPROVED_PRESENTATION": 0,
+    "REVIEW_PENDING": 49
+  },
   "messages": {
     "OUTPUT.CHART.HEADER": "Chart facts",
     "STATUS.VALIDATED": "Validated",

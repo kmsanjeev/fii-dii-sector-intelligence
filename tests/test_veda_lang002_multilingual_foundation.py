@@ -20,8 +20,8 @@ from engines.ai.knowledge.language_foundation import (
 
 def test_lang002_baseline_and_target_selection_are_explicit():
     assert CANONICAL_LOCALE == "en"
-    assert LANGUAGE_TARGET_STATUS == "LANGUAGE_TARGET_SELECTION_REQUIRED"
-    assert available_locales() == ("en",)
+    assert LANGUAGE_TARGET_STATUS == "HINDI_LOCALE_REVIEW_CANDIDATE_READY"
+    assert available_locales() == ("en", "hi")
 
 
 def test_canonical_ids_and_aliases_resolve_to_one_identity():
@@ -41,8 +41,8 @@ def test_term_rendering_preserves_identity_and_english_baseline():
 
 
 def test_locale_fallback_is_explicit_and_never_empty():
-    rendered = render_term("D20", "hi-IN")
-    message = render_message("STATUS.NOT_VALIDATED", "hi-IN")
+    rendered = render_term("D20", "ta-IN")
+    message = render_message("STATUS.NOT_VALIDATED", "ta-IN")
     assert rendered["text"] == "D20 (Vimshamsha)"
     assert rendered["locale_used"] == "en"
     assert rendered["fallback_used"] is True
@@ -78,7 +78,7 @@ def test_source_citation_metadata_survives_localization():
     result = render_source_citation(citation, "hi")
     for key, value in citation.items():
         assert result[key] == value
-    assert result["source_label"]["text"] == "Source citation"
+    assert result["source_label"]["text"] == "स्रोत उद्धरण"
 
 
 def test_interpretation_text_is_not_machine_translated_without_review():
@@ -88,7 +88,7 @@ def test_interpretation_text_is_not_machine_translated_without_review():
     assert result["locale"] == "en"
     assert result["translation_state"] == "CANONICAL_TEXT_ONLY"
     assert result["source_metadata"] == source
-    assert result["translation_note"]["fallback_used"] is True
+    assert result["translation_note"]["fallback_used"] is False
 
 
 def test_certainty_and_negation_preservation():
@@ -119,20 +119,26 @@ def test_unicode_and_json_serialization_are_utf8_safe():
 def test_locale_does_not_change_canonical_semantics():
     facts = {"planet_id": "JUPITER", "status": "NOT_VALIDATED", "value": 20.5}
     english = render_structured(facts, "en")
-    hindi_fallback = render_structured(facts, "hi")
-    assert english["fact_payload"] == hindi_fallback["fact_payload"] == facts
-    assert english["display"]["planet_display"] == hindi_fallback["display"]["planet_display"]
-    assert english["display"]["status_display"] == hindi_fallback["display"]["status_display"]
+    hindi = render_structured(facts, "hi")
+    assert english["fact_payload"] == hindi["fact_payload"] == facts
+    assert english["display"]["planet_display"] != hindi["display"]["planet_display"]
+    assert english["display"]["status_display"] != hindi["display"]["status_display"]
 
 
 def test_coverage_report_does_not_claim_unimplemented_locale_complete():
     english = coverage_report("en")
+    tamil = coverage_report("ta")
     hindi = coverage_report("hi")
     assert english["coverage"] == 1.0
+    assert english["classification"] == "CANONICAL_BASELINE"
+    assert english["machine_draft"] == 0
     assert english["missing"] == 0
-    assert hindi["status"] == "UNIMPLEMENTED_LOCALE"
-    assert hindi["coverage"] == 0.0
-    assert hindi["fallback_used"] == hindi["missing"]
+    assert tamil["status"] == "UNIMPLEMENTED_LOCALE"
+    assert tamil["coverage"] == 0.0
+    assert tamil["fallback_used"] == tamil["missing"]
+    assert hindi["coverage"] == 1.0
+    assert hindi["machine_draft"] == 49
+    assert hindi["human_reviewed"] == 0
 
 
 def test_two_runs_are_deterministic():

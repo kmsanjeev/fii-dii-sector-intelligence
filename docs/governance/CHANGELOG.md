@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-18 | VEDA-LANG-002-HI-001
+
+Completed the first non-English content locale with `PASS_WITH_CONDITION`.
+The Hindi pack covers all 49 current governed English keys, preserves the 33
+canonical Jyotisha IDs, adds Devanagari terminology and locale-scoped aliases,
+and passes semantic, negation, certainty, source-citation, Unicode and
+determinism checks. All Hindi entries remain machine-draft/review-pending;
+human review is required before production authority. No other locale,
+calculation, prediction, ML, PRED-M4, RAG or production semantic changed.
+
 ## 2026-08-18 | VEDA-LANG-002-MULTILINGUAL-FOUNDATION-001
 
 Completed the language-neutral multilingual foundation with

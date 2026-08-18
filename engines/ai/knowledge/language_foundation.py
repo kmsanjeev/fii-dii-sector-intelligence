@@ -16,7 +16,7 @@ from typing import Any, Mapping
 
 LANGUAGE_FOUNDATION_VERSION = "LANG-002-1.0.0"
 CANONICAL_LOCALE = "en"
-LANGUAGE_TARGET_STATUS = "LANGUAGE_TARGET_SELECTION_REQUIRED"
+LANGUAGE_TARGET_STATUS = "HINDI_LOCALE_REVIEW_CANDIDATE_READY"
 _ROOT = Path(__file__).resolve().parents[3]
 _REGISTRY_PATH = _ROOT / "data" / "veda" / "localization" / "canonical_term_registry.json"
 _LOCALE_DIR = _ROOT / "data" / "veda" / "localization" / "locales"
@@ -63,7 +63,7 @@ def load_locale(locale: str = CANONICAL_LOCALE) -> dict[str, Any]:
     raise FileNotFoundError("The canonical English locale pack is missing")
 
 
-def _term_maps() -> tuple[dict[str, dict[str, Any]], dict[str, str]]:
+def _term_maps(locale: str = CANONICAL_LOCALE) -> tuple[dict[str, dict[str, Any]], dict[str, str]]:
     terms = load_term_registry()["terms"]
     by_id = {item["canonical_id"]: item for item in terms}
     aliases: dict[str, str] = {}
@@ -72,12 +72,19 @@ def _term_maps() -> tuple[dict[str, dict[str, Any]], dict[str, str]]:
         aliases[_normalize(item["english"])] = item["canonical_id"]
         for alias in item.get("aliases", []):
             aliases[_normalize(alias)] = item["canonical_id"]
+    for candidate in _locale_chain(locale):
+        locale_pack = _load_locale_exact(candidate)
+        if locale_pack is None:
+            continue
+        for alias, canonical_id in locale_pack.get("aliases", {}).items():
+            if canonical_id in by_id:
+                aliases[_normalize(alias)] = canonical_id
     return by_id, aliases
 
 
-def canonicalize_term(value: str) -> str | None:
+def canonicalize_term(value: str, locale: str = CANONICAL_LOCALE) -> str | None:
     """Resolve a controlled term ID or alias to one canonical ID."""
-    return _term_maps()[1].get(_normalize(value))
+    return _term_maps(locale)[1].get(_normalize(value))
 
 
 def _resolve_locale(locale: str) -> tuple[dict[str, Any], str, bool]:
@@ -91,7 +98,7 @@ def _resolve_locale(locale: str) -> tuple[dict[str, Any], str, bool]:
 
 def render_term(value: str, locale: str = CANONICAL_LOCALE) -> dict[str, Any]:
     """Render a controlled vocabulary item while preserving its canonical ID."""
-    by_id, aliases = _term_maps()
+    by_id, aliases = _term_maps(locale)
     canonical_id = value if value in by_id else aliases.get(_normalize(value))
     if canonical_id is None:
         return {"canonical_id": value, "text": None, "status": "MISSING_CANONICAL_TERM", "review_state": "REVIEW_PENDING"}
@@ -200,6 +207,8 @@ def coverage_report(locale: str = CANONICAL_LOCALE) -> dict[str, Any]:
         missing = len(message_ids) + len(term_ids)
         fallback = missing
         status = "UNIMPLEMENTED_LOCALE"
+        classification = "UNIMPLEMENTED_LOCALE"
+        counts = {}
     else:
         translated_terms = len(term_ids) if _normalize(locale) == CANONICAL_LOCALE else len(set(locale_pack.get("terms", {})) & term_ids)
         translated = len(set(locale_pack.get("messages", {})) & message_ids) + translated_terms
@@ -207,8 +216,25 @@ def coverage_report(locale: str = CANONICAL_LOCALE) -> dict[str, Any]:
         missing = total - translated
         fallback = 0
         status = locale_pack.get("status", "REVIEW_PENDING")
+        classification = locale_pack.get("classification", status)
+        counts = locale_pack.get("review_counts", {})
     total = len(message_ids) + len(term_ids)
-    return {"locale": _normalize(locale).replace("_", "-") or CANONICAL_LOCALE, "total_keys": total, "translated": translated, "missing": missing, "fallback_used": fallback, "coverage": round(translated / total, 4) if total else 1.0, "status": status, "human_reviewed": 0, "machine_draft": translated, "review_pending": total}
+    canonical_baseline = classification == "CANONICAL_BASELINE"
+    return {
+        "locale": _normalize(locale).replace("_", "-") or CANONICAL_LOCALE,
+        "total_keys": total,
+        "translated": translated,
+        "missing": missing,
+        "fallback_used": fallback,
+        "coverage": round(translated / total, 4) if total else 1.0,
+        "status": status,
+        "classification": classification,
+        "human_reviewed": int(counts.get("HUMAN_REVIEWED", 0)),
+        "machine_draft": int(counts.get("MACHINE_DRAFT", 0)) if not canonical_baseline else 0,
+        "source_reviewed": int(counts.get("SOURCE_REVIEWED", 0)),
+        "approved_presentation": int(counts.get("APPROVED_PRESENTATION", 0)),
+        "review_pending": int(counts.get("REVIEW_PENDING", total)),
+    }
 
 
 def serialize_unicode(payload: Any) -> str:

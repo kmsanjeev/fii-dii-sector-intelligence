@@ -1,0 +1,26 @@
+{
+  "activity_id": "VEDA-LANG-002-HI-001",
+  "source_register": [
+    {
+      "source": "data/veda/localization/canonical_term_registry.json",
+      "role": "canonical IDs, aliases, ontology source paths",
+      "authority": "VEDA governed registry",
+      "use": "inherited terminology boundary"
+    },
+    {
+      "source": "docs/standards/veda/VEDA-STD-003-05_HINDI.md",
+      "role": "Hindi/Devanagari language boundary",
+      "authority": "VEDA standard",
+      "use": "script and presentation context"
+    },
+    {
+      "source": "VEDA-LANG-002-HI-001 specification",
+      "role": "authorized locale, safety and review requirements",
+      "authority": "programme instruction",
+      "use": "acceptance and governance"
+    }
+  ],
+  "external_terminology_research": "NOT_REQUIRED_FOR_THIS_BOUNDED_DRAFT",
+  "human_source_review": "PENDING",
+  "fabricated_citations": 0
+}
