@@ -1,0 +1,35 @@
+{
+  "cohort_id": "VEDA-EMP-POSEND-ACQ-001-COHORT-001",
+  "event_definition_hash": "e53c366072b5323c8d0938725ac2c667d5e45c711eef5f8c875218c16342ae1b",
+  "event_hash": "041d75312b19d5ef56a45594f6a93e2419a8ca4f2c1c75ed4d70f10b99503a56",
+  "events": 20,
+  "holdout_protected": true,
+  "holdout_subject_hash": "9259a24bbb1343c33d600f278afaf48cf4c076c9841461c385f57ee769e4ba7e",
+  "holdout_subjects": 6,
+  "legacy_subjects": 4,
+  "precision_distribution": {
+    "YEAR": 20
+  },
+  "selection_policy": {
+    "event_family": "POSITION_END",
+    "feature_based_selection": false,
+    "holdout_split": "existing_subject_level_70_30",
+    "one_primary_event_per_subject": true,
+    "prior_exposure_exclusion": true,
+    "selection_lane": "BIRTH_FIRST",
+    "source_and_date_precision_preserved": true
+  },
+  "selection_policy_hash": "11761f3c6e2ca02332d4ed1f6f6d11e4201af02a95f1077371d6c5e8f06731ef",
+  "source_manifest_hash": "5bff8c30eda9c96c8ee7541070b1d138b7a65f4090066af0f1c213a0d1b9b3dd",
+  "subject_hash": "1851965a9fc9fafd8c970ad51012ac3633b795de0cdd000e11f794bcf1568015",
+  "subjects": 20,
+  "subtype_distribution_governed": {
+    "CAREER_END_INFERRED": 20
+  },
+  "subtype_distribution_raw": {
+    "RETIREMENT": 20
+  },
+  "validation_subject_hash": "de1fdc7370cf5ea8f16d44a1d538d179e7867c24159fd7a1c891262f094a157d",
+  "validation_subjects": 14,
+  "version": "1.0.0"
+}

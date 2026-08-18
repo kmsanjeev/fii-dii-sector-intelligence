@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-08-18 | VEDA-EVIDENCE-POSEND-REBASELINE-001
+
+Completed the feature-blind POSITION_END evidence redesign from the roadmap
+rebaseline. The authoritative 20-subject cohort and 14/6 validation/holdout
+split were recomputed and preserved. All 20 event records remain YEAR precision;
+the current retirement labels are governed as inferred career ends pending a
+formal effective-role ontology. Source provenance is 2 Tier A, 7 Tier B and 11
+Tier C, with 18 records in one Wikipedia-derived dependence cluster. Bounded
+source review produced no honest day/month upgrade and identified one unresolved
+event-definition conflict. No role-start risk intervals or final control dates
+were generated. Decision: `POSEND_EXPLORATORY_ONLY_REACQUIRE_REQUIRED`; the
+next candidate `VEDA-EVIDENCE-POSEND-ACQ-R1` is not started. No astrology,
+feature scoring, ML, PRED-M4, production, RAG, Approved Core or raw provider
+data changed. Evidence: `docs/current-state/evidence-posend-rebaseline-001/`.
+
 ## 2026-08-18 | VEDA-ROADMAP-REBASELINE-001
 
 Completed the repository-derived post-foundation VEDA rebaseline. The current

@@ -1,0 +1,83 @@
+{
+  "activation_inspected": false,
+  "astrology_calculation": false,
+  "contracts": [
+    {
+      "activation_inspected": false,
+      "feature_id": "PEND-P01_MD_LORD_IS_10TH_LORD",
+      "hash": "f530d4490ec6c1c78493ed47f1df8e3d1a02f5644855128f6f121ef1ad8b5e9e",
+      "implementation_status": "RESEARCH_ONLY",
+      "name": "Mahadasha lord equals the 10th lord",
+      "source_ids": [
+        "P016",
+        "VEDA-KNOW-TIMING-001",
+        "VEDA-EMP-FEATURE-003"
+      ],
+      "source_status": "PLATFORM_SYNTHESIS",
+      "version": "1.0.0"
+    },
+    {
+      "activation_inspected": false,
+      "feature_id": "PEND-P02_MD_LORD_OCCUPIES_10TH",
+      "hash": "d75acee41934a26e17c198b8fb14a181e3821428de1c24b193536d4e75662354",
+      "implementation_status": "RESEARCH_ONLY",
+      "name": "Mahadasha lord occupies the 10th house",
+      "source_ids": [
+        "P016",
+        "VEDA-KNOW-TIMING-001",
+        "VEDA-EMP-FEATURE-003"
+      ],
+      "source_status": "PLATFORM_SYNTHESIS",
+      "version": "1.0.0"
+    },
+    {
+      "activation_inspected": false,
+      "feature_id": "PEND-P03_AD_LORD_IS_10TH_LORD",
+      "hash": "2cf6c5d7a35681f4abf87a0e9fe8a32b196d15c3437d8fa8bb4a9692bfdb8aa7",
+      "implementation_status": "RESEARCH_ONLY",
+      "name": "Antardasha lord equals the 10th lord",
+      "source_ids": [
+        "P016",
+        "VEDA-KNOW-TIMING-001",
+        "VEDA-EMP-FEATURE-003"
+      ],
+      "source_status": "PLATFORM_SYNTHESIS",
+      "version": "1.0.0"
+    },
+    {
+      "activation_inspected": false,
+      "feature_id": "PEND-S01_AD_LORD_OCCUPIES_10TH",
+      "hash": "69dd5d6bbf487fbb0271ad1628d6ab5377a65c623cb2fbfe99148a2a69894268",
+      "implementation_status": "RESEARCH_ONLY",
+      "name": "Antardasha lord occupies the 10th house",
+      "source_ids": [
+        "P016",
+        "VEDA-KNOW-TIMING-001",
+        "VEDA-EMP-FEATURE-003"
+      ],
+      "source_status": "PLATFORM_SYNTHESIS",
+      "version": "1.0.0"
+    },
+    {
+      "activation_inspected": false,
+      "feature_id": "PEND-S02_MD_LORD_IS_8TH_LORD",
+      "hash": "a49526c4dd5405b873a6a494f5e423bcedf38be009ba651c24f3d5151c8c1540",
+      "implementation_status": "RESEARCH_ONLY",
+      "name": "Mahadasha lord equals the 8th lord",
+      "source_ids": [
+        "P016",
+        "VEDA-KNOW-TIMING-001",
+        "VEDA-EMP-FEATURE-003"
+      ],
+      "source_status": "PLATFORM_SYNTHESIS",
+      "version": "1.0.0"
+    }
+  ],
+  "feature_changes": 0,
+  "feature_count": 5,
+  "feature_family_hash": "da810777ea18ff74ebcdb9b3003dd8a0b4a5b88f68cd79b0c27b569c18340297",
+  "feature_family_id": "VEDA_EMP_FEATURE_FAMILY_POSITION_END_V1",
+  "feature_family_version": "1.0.0",
+  "feature_scoring": false,
+  "semantic_compatibility": "UNASSESSED_FEATURE_BLIND"
+}
