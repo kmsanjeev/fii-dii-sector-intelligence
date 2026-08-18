@@ -1,0 +1,77 @@
+{
+  "activity": "VEDA-CALC-ASHTAKAVARGA-INVARIANT-RX-001",
+  "claims": [
+    {
+      "authority_axes": {
+        "empirical": "NOT_APPLICABLE",
+        "implementation": "SOURCE_ONLY_RECONSTRUCTION",
+        "scholarly": "NOT_ASSESSED",
+        "textual": "TRANSLATED_WITNESS",
+        "traditional": "PRIMARY_TEXT_TRADITION"
+      },
+      "claim_id": "TARGET_TOTAL_BPHS_MATRIX",
+      "combined_display": 385,
+      "lagna_bav": 49,
+      "passage": "BPHS Ch.66.43-68; Ch.66.69-76 for Lagna; PDF pp.135-136",
+      "planetary_sav": 336,
+      "source": "SRC-BPHS-CH66-REKHAPRAD",
+      "status": "SOURCE_DERIVED_AND_RECOMPUTED",
+      "target_totals": {
+        "Jupiter": 54,
+        "Lagna": 49,
+        "Mars": 39,
+        "Mercury": 54,
+        "Moon": 49,
+        "Saturn": 39,
+        "Sun": 49,
+        "Venus": 52
+      }
+    },
+    {
+      "authority_axes": {
+        "empirical": "NOT_APPLICABLE",
+        "implementation": "INDEPENDENT_AUDIT_TABLE",
+        "scholarly": "OCR_WARNING",
+        "textual": "ACCESSED_TRANSLATION",
+        "traditional": "LATER_TRADITIONAL_TEXT"
+      },
+      "claim_id": "TARGET_TOTAL_PHALADEEPIKA_MAIN",
+      "combined_display": "NOT_STATED",
+      "lagna_bav": "NOT_STATED_AS_TARGET",
+      "passage": "Chapter 23, verses 3-9 and 20; accessed translation pp.258-303",
+      "planetary_sav": 336,
+      "source": "PHALADEEPIKA_CH23",
+      "status": "SOURCE_DERIVED_WITH_TRANSLATION_AND_OCR_UNCERTAINTY",
+      "target_totals": {
+        "Jupiter": 55,
+        "Mars": 39,
+        "Mercury": 54,
+        "Moon": 49,
+        "Saturn": 39,
+        "Sun": 48,
+        "Venus": 52
+      }
+    },
+    {
+      "authority_axes": {
+        "empirical": "NOT_APPLICABLE",
+        "implementation": "MODERN_VENDOR_DISPLAY",
+        "scholarly": "NOT_ESTABLISHED",
+        "textual": "WITNESS_PAGE_OBSERVED",
+        "traditional": "NOT_ESTABLISHED"
+      },
+      "claim_id": "337_386_MODERN_WITNESS",
+      "lineage_note": "The accessed KNR/Journal material verifies lineage and article metadata, not a complete numerical table. 337 and 386 therefore remain unproven as direct KNR invariants.",
+      "passage": "Public vendor PDF, page 2",
+      "source": "HOROSOFT_SAMPLE",
+      "status": "MODERN_IMPLEMENTATION_WITNESS_ONLY",
+      "target_totals": {
+        "combined_display": 386,
+        "lagna_bav": 49,
+        "planetary_sav": 337
+      },
+      "url": "https://www.horosoft.net/Sample/eng_tables.pdf"
+    }
+  ],
+  "conclusion": "The hash-verified BPHS matrix is 336/385. The retained Phaladeepika main table is also 336, but its pair positions are a separate method. 337/386 are not established by either complete source matrix."
+}

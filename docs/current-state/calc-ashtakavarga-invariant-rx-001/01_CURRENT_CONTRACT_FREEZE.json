@@ -1,0 +1,56 @@
+{
+  "activity": "VEDA-CALC-ASHTAKAVARGA-INVARIANT-RX-001",
+  "contract": {
+    "contract_hash": "0E296628F989A9EE1AA14CF2F767ECEA8142042CD266DC9C98D0FF32A6771134",
+    "contract_id": "ASHTAKAVARGA_RAW_BPHS_PRIMARY_KNR_GOVERNED_V1",
+    "contributor_policy": "seven planets plus Lagna where source table explicitly supplies contributor",
+    "created": true,
+    "nodes": "Rahu/Ketu excluded; absent from verified source contract",
+    "polarity": "qualifying Bindu/Rekha normalized to 1 with source-specific terminology retained",
+    "primary_method": "BPHS_SELECTED_ANCHOR; PHALADEEPIKA_MAIN_RETAINED_AS_EXPLICIT_ALTERNATIVE",
+    "raw_vs_reduced": "raw contract only; reductions separate and deferred",
+    "sav_policy": "337 = sum of seven planetary BAVs; 386 = optional combined display adding Lagna BAV, not canonical planetary SAV",
+    "self_contribution": "included in source table; current production exclusion remains a mismatch",
+    "status": "SPECIFICATION_ONLY_NOT_PRODUCTION",
+    "target_policy": "seven planetary targets; optional Lagna target separate"
+  },
+  "freeze": {
+    "contributors": 8,
+    "coverage_complete": true,
+    "expected_cells": 768,
+    "hash_verified": true,
+    "path": "docs/current-state/calc-source-rx-001/04_ASHTAKAVARGA_SOURCE_RULE_MATRIX.json",
+    "positions_per_pair": 12,
+    "recomputed_rows_hash": "0B7A869F3A3682A3BFFADA28E82AC23DC96EFE7E6FF3763997317C5050EE159D",
+    "recorded_rows_hash": "0B7A869F3A3682A3BFFADA28E82AC23DC96EFE7E6FF3763997317C5050EE159D",
+    "rows": 768,
+    "targets": 8
+  },
+  "starting_commit": "2a875cd4ab888402283dec8af3f53ddb04f6822c",
+  "totals": {
+    "combined_display": 385,
+    "independent_totals_agree": true,
+    "lagna_bav": 49,
+    "method_1_matrix_rows": {
+      "Jupiter": 54,
+      "Lagna": 49,
+      "Mars": 39,
+      "Mercury": 54,
+      "Moon": 49,
+      "Saturn": 39,
+      "Sun": 49,
+      "Venus": 52
+    },
+    "method_2_source_reconstruction": {
+      "Jupiter": 54,
+      "Lagna": 49,
+      "Mars": 39,
+      "Mercury": 54,
+      "Moon": 49,
+      "Saturn": 39,
+      "Sun": 49,
+      "Venus": 52
+    },
+    "planetary_sav": 336
+  }
+}

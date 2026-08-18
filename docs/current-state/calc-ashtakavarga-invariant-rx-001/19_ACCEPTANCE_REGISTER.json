@@ -1,0 +1,210 @@
+{
+  "activity": "VEDA-CALC-ASHTAKAVARGA-INVARIANT-RX-001",
+  "counts": {
+    "PASS": 34,
+    "PASS_WITH_CONDITION": 6
+  },
+  "criteria": [
+    {
+      "criterion": "Starting commit and branch baseline verified",
+      "id": "AC01",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Existing source and contract artifacts audited first",
+      "id": "AC02",
+      "status": "PASS"
+    },
+    {
+      "criterion": "768-cell BPHS matrix frozen",
+      "id": "AC03",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Frozen matrix hash independently recomputed",
+      "id": "AC04",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Source-only reconstruction independently recomputed",
+      "id": "AC05",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Two independent total methods agree",
+      "id": "AC06",
+      "status": "PASS"
+    },
+    {
+      "criterion": "BPHS totals recorded as 336 planetary, 49 Lagna, 385 combined",
+      "id": "AC07",
+      "status": "PASS"
+    },
+    {
+      "criterion": "337 provenance chain recorded",
+      "id": "AC08",
+      "status": "PASS"
+    },
+    {
+      "criterion": "386 provenance chain recorded",
+      "id": "AC09",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Witness metadata uses edition/passage/source-layer fields",
+      "id": "AC10",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Passage identifiers and unavailable fields are explicit",
+      "id": "AC11",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "Authority axes remain separate",
+      "id": "AC12",
+      "status": "PASS"
+    },
+    {
+      "criterion": "All 64 BPHS target/contributor cells audited",
+      "id": "AC13",
+      "status": "PASS"
+    },
+    {
+      "criterion": "All 56 planetary Phaladeepika pairs audited",
+      "id": "AC14",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Phaladeepika method is not merged into BPHS",
+      "id": "AC15",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Varahamihira alternative preserved as a conflict",
+      "id": "AC16",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Other classical witness limitations retained",
+      "id": "AC17",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "KNR direct numerical provenance not overstated",
+      "id": "AC18",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "No fabricated quotations, Sanskrit or citations",
+      "id": "AC19",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No raw book/provider data added",
+      "id": "AC20",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Modern 337/386 witness classified as implementation-only",
+      "id": "AC21",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Current V1 hybrid defect explicitly decided",
+      "id": "AC22",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Non-production V2 candidate is self-consistent",
+      "id": "AC23",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "V1 contract remains immutable",
+      "id": "AC24",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Production Ashtakavarga code remains unchanged",
+      "id": "AC25",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Production target-only mismatch is recorded",
+      "id": "AC26",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No source cell was forced or corrected",
+      "id": "AC27",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Reductions remain outside scope and deferred",
+      "id": "AC28",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No prediction, ML, PRED-M4 or outcome validation used",
+      "id": "AC29",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No RAG/store or Approved Core change",
+      "id": "AC30",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No parallel governance trust zone created",
+      "id": "AC31",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Method variants and translation uncertainty remain visible",
+      "id": "AC32",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Remediation owner and separate authorization gate explicit",
+      "id": "AC33",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "No remediation was started in this activity",
+      "id": "AC34",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Deterministic script output is repeatable",
+      "id": "AC35",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Focused invariant tests pass",
+      "id": "AC36",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Current roadmap/status synchronization prepared",
+      "id": "AC37",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Historical reports remain preserved",
+      "id": "AC38",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Selective staging required",
+      "id": "AC39",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Overall activity accepted with explicit conditions",
+      "id": "AC40",
+      "status": "PASS_WITH_CONDITION"
+    }
+  ],
+  "overall": "PASS_WITH_CONDITION"
+}

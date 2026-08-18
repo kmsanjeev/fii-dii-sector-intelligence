@@ -1,0 +1,48 @@
+{
+  "BPHS": {
+    "combined_display": 385,
+    "independent_totals_agree": true,
+    "lagna_bav": 49,
+    "method_1_matrix_rows": {
+      "Jupiter": 54,
+      "Lagna": 49,
+      "Mars": 39,
+      "Mercury": 54,
+      "Moon": 49,
+      "Saturn": 39,
+      "Sun": 49,
+      "Venus": 52
+    },
+    "method_2_source_reconstruction": {
+      "Jupiter": 54,
+      "Lagna": 49,
+      "Mars": 39,
+      "Mercury": 54,
+      "Moon": 49,
+      "Saturn": 39,
+      "Sun": 49,
+      "Venus": 52
+    },
+    "planetary_sav": 336
+  },
+  "Modern_witness": {
+    "combined": 386,
+    "lagna_bav": 49,
+    "planetary_sav": 337
+  },
+  "Phaladeepika": {
+    "Jupiter": 55,
+    "Mars": 39,
+    "Mercury": 54,
+    "Moon": 49,
+    "Saturn": 39,
+    "Sun": 48,
+    "Venus": 52
+  },
+  "conclusion": [
+    "The frozen BPHS matrix is complete, hash-verified, and independently reconstructed as 336 planetary / 385 combined.",
+    "The Phaladeepika main witness is a separate pair-level method and totals 336 planetary; it cannot repair the BPHS matrix by assertion.",
+    "337/386 are observed in a modern implementation witness, but direct KNR numerical provenance is unavailable.",
+    "Contract V1 labels BPHS as primary while asserting a total not produced by that matrix, so it is a hybrid contract defect."
+  ]
+}

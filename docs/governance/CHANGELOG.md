@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-INVARIANT-RX-001
+
+Completed the source-invariant reconciliation with `PASS_WITH_CONDITION`.
+The 768-cell BPHS matrix was frozen and independently reconstructed from the
+source-only transcription: both methods compute 336 planetary points, 49 for
+Lagna and 385 combined. The retained Phaladeepika main witness was audited
+across all 56 planetary pairs and independently totals 336, while preserving
+its pair-level and Varahamihira variants. The modern vendor 337/386 display is
+not direct BPHS or KNR numerical proof. The prior V1 contract is therefore
+classified as `ASHTAKAVARGA_CURRENT_CANONICAL_IS_INVALID_HYBRID`; a
+non-production 336/49/385 V2 candidate was recorded without mutating V1 or
+production code. No reductions, prediction, ML, PRED-M4, RAG, Approved Core or
+external source data changed. Evidence is in
+`docs/current-state/calc-ashtakavarga-invariant-rx-001/`.
+
 ## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-REMEDIATION-001
 
 Started the authorized raw BAV/SAV production remediation and stopped at the
