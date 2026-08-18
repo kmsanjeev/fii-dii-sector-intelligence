@@ -1,0 +1,29 @@
+{
+  "audit_and_test_consumers": [
+    {
+      "path": "scripts/veda_calc_source_rx_001.py",
+      "status": "AUDIT_ONLY",
+      "surface": "source/runtime audit"
+    },
+    {
+      "path": "scripts/veda_calc_jyotisha_core_001.py",
+      "status": "AUDIT_ONLY",
+      "surface": "calculation evidence report"
+    },
+    {
+      "path": "tests/test_veda_shadbala_engine_p018_r2.py",
+      "status": "TEST_ONLY",
+      "surface": "focused regression"
+    }
+  ],
+  "ml_consumers": [],
+  "prediction_consumers": [],
+  "production_activation": false,
+  "production_runtime_consumers": [
+    {
+      "path": "engines/intelligence/kundli_engine.py",
+      "status": "INDIRECT_CONTEXT",
+      "surface": "generic Shadbala import only; no direct BAV/SAV call"
+    }
+  ]
+}

@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-DECISION-001
+
+Completed the bounded Ashtakavarga source-contract equivalence decision with
+`PASS_WITH_CONDITION`. The independent evaluator covered the governed 768-cell
+BPHS target/contributor matrix and a deterministic 96-chart comparison. The
+current target-only BAV implementation mismatched 268 of 595 physically
+comparable cells, and all 96 SAV comparisons differed. Lagna target handling,
+self-contributor policy and reduction stages remain explicit gaps. Decision:
+`ASHTAKAVARGA_REMEDIATION_SPEC_READY`; no production calculation, prediction,
+ML, PRED-M4, RAG or Approved Core change occurred. Evidence is in
+`docs/current-state/calc-ashtakavarga-decision-001/`.
+
 ## 2026-08-19 | VEDA-EVIDENCE-ADB-ACCESS-RX-2026-001
 
 Reconciled the current official Astro-Databank access policy and prepared a

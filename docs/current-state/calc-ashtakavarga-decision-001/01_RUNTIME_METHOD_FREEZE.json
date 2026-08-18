@@ -1,0 +1,149 @@
+{
+  "bindu_destination": "contributor occupied sign",
+  "contributors": "implicit input keys; no explicit contributor dimension",
+  "functions": [
+    "_relative_position",
+    "calculate_bav",
+    "calculate_sav"
+  ],
+  "implementation_hash": "FB65ECC9812492E3A615609C852E9342522EF80404735785D66EA4971F32468D",
+  "lagna_contributor": "implicitly accepted as an input key, using target-only vector",
+  "lagna_target": false,
+  "method_ids": {
+    "BAV": "P018-R2-BAV-001",
+    "SAV": "P018-R2-SAV-001"
+  },
+  "module": "engines.ai.knowledge.shadbala_engine",
+  "nodes": {
+    "Ketu": false,
+    "Rahu": false
+  },
+  "reductions": {
+    "ekadhipatya_shodhana": false,
+    "pinda_shodhana": false,
+    "trikona_shodhana": false
+  },
+  "relative_position": "((contributor_sign - target_sign) % 12) + 1",
+  "sav_contributors": "whatever input keys are iterated by BAV; no explicit policy metadata",
+  "sav_targets": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Venus",
+    "Saturn"
+  ],
+  "self_contributor": "excluded by runtime",
+  "status": "IMPLEMENTED_UNVALIDATED",
+  "table": {
+    "Jupiter": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0
+    ],
+    "Mars": [
+      1,
+      1,
+      0,
+      1,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0
+    ],
+    "Mercury": [
+      1,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      1,
+      1,
+      1,
+      0
+    ],
+    "Moon": [
+      1,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      0
+    ],
+    "Saturn": [
+      1,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0
+    ],
+    "Sun": [
+      1,
+      1,
+      0,
+      1,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0
+    ],
+    "Venus": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "table_hash": "D0FE98707743EA6390CD83F7CF04DF18A05FCBC26E7AD13179E172E71AFFCEE5",
+  "targets": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Venus",
+    "Saturn"
+  ]
+}
