@@ -118,6 +118,8 @@ def render_term(value: str, locale: str = CANONICAL_LOCALE) -> dict[str, Any]:
         "knowledge_zone": registry_item.get("knowledge_zone", "PRESENTATION_ONLY"),
         "sanskrit": registry_item.get("sanskrit"),
         "transliteration": registry_item.get("transliteration"),
+        "iast": registry_item.get("iast"),
+        "metadata_roles": copy.deepcopy(registry_item.get("metadata_roles", {})),
         "transliteration_status": registry_item.get("transliteration_status", "NOT_RECORDED"),
     }
 

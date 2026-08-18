@@ -13,18 +13,18 @@ from engines.ai.knowledge.language_foundation import (
 )
 
 
-def test_hindi_pack_is_complete_draft_and_not_production_authorized():
+def test_hindi_pack_is_complete_source_reviewed_and_not_production_authorized():
     pack = load_locale("hi")
     report = coverage_report("hi")
     assert pack["status"] == "REVIEW_CANDIDATE"
-    assert pack["review_state"] == "REVIEW_PENDING"
+    assert pack["review_state"] == "SOURCE_REVIEWED"
     assert pack["human_reviewed"] is False
     assert pack["production_authorized"] is False
     assert report["total_keys"] == 49
     assert report["translated"] == 49
     assert report["missing"] == 0
     assert report["fallback_used"] == 0
-    assert pack["entry_metadata_defaults"]["translation_state"] == "MACHINE_DRAFT"
+    assert pack["entry_metadata_defaults"]["translation_state"] == "SOURCE_REVIEWED"
     assert "canonical_term_registry.json" in pack["entry_metadata_defaults"]["terminology_reference"]
 
 
@@ -73,7 +73,7 @@ def test_critical_hindi_messages_preserve_state_and_negation():
 def test_explicit_safety_fixtures_cover_unrepresented_negations():
     fixtures = load_locale("hi")["safety_fixtures"]
     assert len(fixtures) == 7
-    assert all(item["translation_state"] == "MACHINE_DRAFT" for item in fixtures)
+    assert all(item["translation_state"] == "SOURCE_REVIEWED" for item in fixtures)
     assert all("नहीं" in item["hindi"] for item in fixtures)
     assert {item["criticality"] for item in fixtures} == {"CRITICAL"}
 
@@ -129,8 +129,9 @@ def test_hindi_parent_fallback_is_explicit_and_nonempty():
 def test_hindi_source_review_and_production_gates_are_not_promoted():
     pack = load_locale("hi")
     counts = pack["review_counts"]
-    assert counts["MACHINE_DRAFT"] == 49
-    assert counts["SOURCE_REVIEWED"] == 0
+    assert counts["MACHINE_DRAFT"] == 0
+    assert counts["SOURCE_REVIEWED"] == 49
+    assert counts["REVIEW_PENDING"] == 0
     assert counts["HUMAN_REVIEWED"] == 0
     assert counts["APPROVED_PRESENTATION"] == 0
     assert pack["production_authorized"] is False

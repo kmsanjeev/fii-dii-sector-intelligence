@@ -137,7 +137,9 @@ def test_coverage_report_does_not_claim_unimplemented_locale_complete():
     assert tamil["coverage"] == 0.0
     assert tamil["fallback_used"] == tamil["missing"]
     assert hindi["coverage"] == 1.0
-    assert hindi["machine_draft"] == 49
+    assert hindi["machine_draft"] == 0
+    assert hindi["source_reviewed"] == 49
+    assert hindi["review_pending"] == 0
     assert hindi["human_reviewed"] == 0
 
 

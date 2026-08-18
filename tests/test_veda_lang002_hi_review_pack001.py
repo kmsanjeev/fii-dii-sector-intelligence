@@ -2,6 +2,7 @@ import csv
 import hashlib
 import json
 import re
+import subprocess
 from pathlib import Path
 
 from engines.ai.knowledge.language_foundation import load_locale
@@ -11,6 +12,15 @@ ROOT = Path(__file__).resolve().parents[1]
 PACK_DIR = ROOT / "docs" / "current-state" / "lang-002-hi-review-pack-001"
 CSV_PATH = PACK_DIR / "VEDA_HINDI_HUMAN_REVIEW.csv"
 MD_PATH = PACK_DIR / "VEDA_HINDI_HUMAN_REVIEW.md"
+
+
+def _baseline_locale():
+    raw = subprocess.check_output([
+        "git",
+        "show",
+        "b603fde41441c8a93b25e7fa4688f838ffe6ce8e:data/veda/localization/locales/hi.json",
+    ])
+    return json.loads(raw)
 
 
 def test_review_pack_has_exactly_49_unique_current_entries():
@@ -28,7 +38,9 @@ def test_review_pack_has_exactly_49_unique_current_entries():
 
 
 def test_review_pack_strings_and_states_match_committed_locale():
-    pack = load_locale("hi")
+    # The review pack is historical evidence and must remain tied to its
+    # committed pre-source-review baseline, not the corrected locale.
+    pack = _baseline_locale()
     english = json.loads((ROOT / "data/veda/localization/locales/en.json").read_text(encoding="utf-8"))
     with CSV_PATH.open(encoding="utf-8-sig", newline="") as handle:
         rows = list(csv.DictReader(handle))
@@ -72,7 +84,8 @@ def test_markdown_has_exactly_the_same_49_canonical_headings():
 
 
 def test_markdown_current_hindi_values_match_the_locale_pack():
-    pack = load_locale("hi")
+    # Historical review material intentionally retains the pre-correction text.
+    pack = _baseline_locale()
     english = json.loads((ROOT / "data/veda/localization/locales/en.json").read_text(encoding="utf-8"))
     expected = {**pack["terms"], **pack["messages"]}
     markdown = MD_PATH.read_text(encoding="utf-8")

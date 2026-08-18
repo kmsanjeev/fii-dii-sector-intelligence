@@ -1,0 +1,37 @@
+{
+  "programme_id": "VEDA-LANG-002-HI-SOURCE-VALIDATION-001",
+  "parent": "VEDA-LANG-002-HI-REVIEW-PACK-001",
+  "baseline_commit": "b603fde41441c8a93b25e7fa4688f838ffe6ce8e",
+  "review_date": "2026-08-18",
+  "counts": {
+    "ACCEPT": 47,
+    "CHANGE": 2,
+    "UNSURE": 0
+  },
+  "decision": "HINDI_EXTERNAL_SOURCE_REVIEW_COMPLETE_WITH_HUMAN_GATE",
+  "changes": [
+    {
+      "canonical_id": "OUTPUT.MUHURTA.RECOMMENDATION_NOT_AUTHORIZED",
+      "decision": "CHANGE",
+      "before": "मुहूर्त की सिफारिशें अधिकृत नहीं हैं; केवल आधारभूत तथ्य और निष्क्रिय नियम-मेटाडेटा उपलब्ध हैं।",
+      "after": "मुहूर्त संबंधी सिफारिशें अधिकृत नहीं हैं; केवल आधारभूत तथ्य और निष्क्रिय नियमों से संबंधित मेटाडेटा उपलब्ध है।"
+    },
+    {
+      "canonical_id": "SAFETY.MISSING_TRANSLATION",
+      "decision": "CHANGE",
+      "before": "अनुवाद उपलब्ध नहीं है; मूल अंग्रेज़ी दिखाई जा रही है।",
+      "after": "अनुवाद उपलब्ध नहीं है; मानक अंग्रेज़ी पाठ प्रदर्शित किया जा रहा है।"
+    }
+  ],
+  "withdrawn_change": {
+    "canonical_id": "GOVERNANCE.SOURCE_CITATION",
+    "proposed_value": "स्रोत-संदर्भ",
+    "final_value": "स्रोत उद्धरण",
+    "decision": "WITHDRAWN_KEEP_BASELINE"
+  },
+  "unchanged_entry_count": 47,
+  "review_hash": "c69d8838ac6cad4bd525b5bdf1b91002d734e9c9bf9dfbe545b1f35c2852c82a",
+  "human_reviewed": false,
+  "approved_presentation": false,
+  "production_authorized": false
+}

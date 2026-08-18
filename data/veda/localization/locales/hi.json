@@ -5,12 +5,12 @@
   "parent": "en",
   "status": "REVIEW_CANDIDATE",
   "classification": "FIRST_NON_ENGLISH_CONTENT_LOCALE",
-  "review_state": "REVIEW_PENDING",
+  "review_state": "SOURCE_REVIEWED",
   "human_reviewed": false,
   "production_authorized": false,
   "translation_policy": {
     "source": "VEDA-LANG-002-HI-001",
-    "default_translation_state": "MACHINE_DRAFT",
+    "default_translation_state": "SOURCE_REVIEWED",
     "canonical_sanskrit_retained": true,
     "technical_terms_are_presentation_only": true,
     "unresolved_terms_use_english_fallback": true
@@ -19,14 +19,14 @@
     "canonical_registry": "data/veda/localization/canonical_term_registry.json",
     "technical_usage": "docs/standards/veda/VEDA-STD-003-05_HINDI.md",
     "ontology_sources_are_inherited": true,
-    "source_review_state": "REVIEW_PENDING"
+    "source_review_state": "SOURCE_REVIEWED"
   },
   "entry_metadata_defaults": {
     "english_baseline": "same key in data/veda/localization/locales/en.json or canonical_term_registry.json",
-    "translation_state": "MACHINE_DRAFT",
+    "translation_state": "SOURCE_REVIEWED",
     "source": "inherited governed registry and STD-003 Hindi boundary",
     "terminology_reference": "data/veda/localization/canonical_term_registry.json",
-    "notes": "Per-entry IDs remain the JSON keys; no source, trust-zone, or semantic field is replaced."
+    "notes": "Per-entry IDs remain the JSON keys; source review changes presentation evidence state only; no trust-zone or semantic field is replaced."
   },
   "terms": {
     "TERM.PLANET.SUN": "सूर्य",
@@ -109,30 +109,46 @@
     "STATUS.NOT_VALIDATED": "सत्यापित नहीं",
     "STATUS.NOT_AUTHORIZED": "अधिकृत नहीं",
     "STATUS.INSUFFICIENT_EVIDENCE": "अपर्याप्त साक्ष्य",
-    "SAFETY.MISSING_TRANSLATION": "अनुवाद उपलब्ध नहीं है; मूल अंग्रेज़ी दिखाई जा रही है।",
+    "SAFETY.MISSING_TRANSLATION": "अनुवाद उपलब्ध नहीं है; मानक अंग्रेज़ी पाठ प्रदर्शित किया जा रहा है।",
     "SAFETY.NO_PREDICTIVE_CLAIM": "कोई भविष्यवाणी संबंधी दावा नहीं किया गया है।",
     "SAFETY.QUALIFIED_INDICATION": "यह {topic} की ओर संकेत कर सकता है; यह निश्चित परिणाम नहीं है।",
     "SAFETY.NOT_PROVEN_BY_TRANSLATION": "यह केवल अनुवाद से सिद्ध नहीं होता।",
     "SAFETY.D20_INTERPRETATION_NOT_VALIDATED": "D20 की व्याख्या सत्यापित नहीं है।",
     "SAFETY.ASHTAKAVARGA_RESEARCH_ONLY": "अष्टकवर्ग अभी केवल शोध हेतु है।",
-    "OUTPUT.MUHURTA.RECOMMENDATION_NOT_AUTHORIZED": "मुहूर्त की सिफारिशें अधिकृत नहीं हैं; केवल आधारभूत तथ्य और निष्क्रिय नियम-मेटाडेटा उपलब्ध हैं।",
+    "OUTPUT.MUHURTA.RECOMMENDATION_NOT_AUTHORIZED": "मुहूर्त संबंधी सिफारिशें अधिकृत नहीं हैं; केवल आधारभूत तथ्य और निष्क्रिय नियमों से संबंधित मेटाडेटा उपलब्ध है।",
     "GOVERNANCE.SOURCE_CITATION": "स्रोत उद्धरण",
     "GOVERNANCE.REVIEW_PENDING": "अनुवाद समीक्षा लंबित है"
   },
   "safety_fixtures": [
-    {"id": "NEG-001", "english": "Not validated", "hindi": "सत्यापित नहीं", "criticality": "CRITICAL", "translation_state": "MACHINE_DRAFT"},
-    {"id": "NEG-002", "english": "Not authorized", "hindi": "अधिकृत नहीं", "criticality": "CRITICAL", "translation_state": "MACHINE_DRAFT"},
-    {"id": "NEG-003", "english": "Not recommended", "hindi": "अनुशंसित नहीं", "criticality": "CRITICAL", "translation_state": "MACHINE_DRAFT"},
-    {"id": "NEG-004", "english": "Not ready", "hindi": "तैयार नहीं", "criticality": "CRITICAL", "translation_state": "MACHINE_DRAFT"},
-    {"id": "NEG-005", "english": "No predictive claim", "hindi": "कोई भविष्यवाणी संबंधी दावा नहीं", "criticality": "CRITICAL", "translation_state": "MACHINE_DRAFT"},
-    {"id": "NEG-006", "english": "No life-event validation", "hindi": "जीवन-घटना का कोई सत्यापन नहीं", "criticality": "CRITICAL", "translation_state": "MACHINE_DRAFT"},
-    {"id": "NEG-007", "english": "No production recommendation", "hindi": "उत्पादन संबंधी कोई सिफारिश नहीं", "criticality": "CRITICAL", "translation_state": "MACHINE_DRAFT"}
+    {"id": "NEG-001", "english": "Not validated", "hindi": "सत्यापित नहीं", "criticality": "CRITICAL", "translation_state": "SOURCE_REVIEWED"},
+    {"id": "NEG-002", "english": "Not authorized", "hindi": "अधिकृत नहीं", "criticality": "CRITICAL", "translation_state": "SOURCE_REVIEWED"},
+    {"id": "NEG-003", "english": "Not recommended", "hindi": "अनुशंसित नहीं", "criticality": "CRITICAL", "translation_state": "SOURCE_REVIEWED"},
+    {"id": "NEG-004", "english": "Not ready", "hindi": "तैयार नहीं", "criticality": "CRITICAL", "translation_state": "SOURCE_REVIEWED"},
+    {"id": "NEG-005", "english": "No predictive claim", "hindi": "कोई भविष्यवाणी संबंधी दावा नहीं", "criticality": "CRITICAL", "translation_state": "SOURCE_REVIEWED"},
+    {"id": "NEG-006", "english": "No life-event validation", "hindi": "जीवन-घटना का कोई सत्यापन नहीं", "criticality": "CRITICAL", "translation_state": "SOURCE_REVIEWED"},
+    {"id": "NEG-007", "english": "No production recommendation", "hindi": "उत्पादन संबंधी कोई सिफारिश नहीं", "criticality": "CRITICAL", "translation_state": "SOURCE_REVIEWED"}
   ],
   "review_counts": {
-    "MACHINE_DRAFT": 49,
-    "SOURCE_REVIEWED": 0,
-    "REVIEW_PENDING": 49,
+    "MACHINE_DRAFT": 0,
+    "SOURCE_REVIEWED": 49,
+    "REVIEW_PENDING": 0,
     "HUMAN_REVIEWED": 0,
     "APPROVED_PRESENTATION": 0
+  },
+  "review_metadata": {
+    "external_reference_classes": [
+      "GOVERNMENT_TERMINOLOGY",
+      "GOVERNMENT_HINDI_USAGE",
+      "DEVANAGARI_STANDARD",
+      "PANCHANGA_JYOTISHA_REFERENCE",
+      "UNICODE_LOCALE_STANDARD",
+      "SCHOLARLY_TRANSLITERATION_REFERENCE"
+    ],
+    "review_date": "2026-08-18",
+    "programme_id": "VEDA-LANG-002-HI-SOURCE-VALIDATION-001",
+    "review_hash": "c69d8838ac6cad4bd525b5bdf1b91002d734e9c9bf9dfbe545b1f35c2852c82a",
+    "validation_result": "47_ACCEPT_2_CHANGE_0_UNSURE",
+    "human_reviewed": false,
+    "production_authorized": false
   }
 }

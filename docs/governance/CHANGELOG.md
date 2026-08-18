@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-18 | VEDA-LANG-002-HI-SOURCE-VALIDATION-001
+
+Completed the Hindi external-reference validation with `47_ACCEPT_2_CHANGE_0_UNSURE`.
+Applied only the authorized Muhurta safety and canonical-English fallback wording
+corrections; the proposed `स्रोत-संदर्भ` change was withdrawn and `स्रोत उद्धरण`
+was preserved. Hindi entries are now `SOURCE_REVIEWED`, while Human Reviewed,
+Approved Presentation and Production Hindi remain zero/unauthorized. Graha IAST
+metadata is recorded separately from retained legacy Roman aliases. No RAG,
+calculation, prediction, ML, PRED-M4 or other language-pack state changed.
+
 ## 2026-08-18 | VEDA-LANG-002-HI-REVIEW-PACK-001
 
 Generated the bounded 49-entry Hindi human-review pack from the committed
