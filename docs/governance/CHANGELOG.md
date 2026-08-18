@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-CONTRACT-RX2-001
+
+Accepted the source-consistent Ashtakavarga V2 contract with condition.
+`ASHTAKAVARGA_RAW_BPHS_PRIMARY_V2` is now the canonical raw source contract,
+frozen at contract hash
+`084E19B2D61880066A503E1CED38810CA9D51962354A9520DD2E5E5946279A62` and
+matrix hash `0B7A869F3A3682A3BFFADA28E82AC23DC96EFE7E6FF3763997317C5050EE159D`.
+It defines 336 planetary, 49 Lagna and 385 combined semantics; 337/386 remain
+modern implementation-witness values, not canonical BPHS invariants. V1 was
+not edited and remains historically superseded as an invalid hybrid.
+Phaladeepika's seven variant pairs and Varahamihira alternative remain
+isolated. Runtime remains `IMPLEMENTED_UNVALIDATED`, and the new
+`VEDA-CALC-ASHTAKAVARGA-REMEDIATION-RX2-001` is authorized but not started.
+No production code, reductions, RAG, prediction, ML or Approved Core state
+changed. Evidence is in
+`docs/current-state/calc-ashtakavarga-contract-rx2-001/`.
+
 ## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-INVARIANT-RX-001
 
 Completed the source-invariant reconciliation with `PASS_WITH_CONDITION`.

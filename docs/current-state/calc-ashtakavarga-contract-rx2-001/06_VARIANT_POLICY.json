@@ -1,0 +1,181 @@
+{
+  "canonical_variant": "BPHS_PARASHARA_MAIN",
+  "exact_bphs_matches": 49,
+  "explicit_alternative": "PHALADEEPIKA_MAIN_TEXT",
+  "mixing_allowed": false,
+  "phala_pair_count": 56,
+  "phaladeepika_planetary_total": 336,
+  "varahamihira_variant": {
+    "alternative_positions": [
+      1,
+      4,
+      7,
+      8,
+      10,
+      11,
+      12
+    ],
+    "conflict_id": "CSR-001",
+    "main_text_positions": [
+      1,
+      2,
+      4,
+      7,
+      8,
+      10,
+      11
+    ],
+    "scope": "Phaladeepika Jupiter target from Moon",
+    "status": "PRESERVED_NOT_MERGED"
+  },
+  "variant_pair_count": 7,
+  "variant_pairs": [
+    {
+      "bphs_positions": [
+        6,
+        7,
+        11,
+        12
+      ],
+      "comparison": "COUNT_VARIANT",
+      "contributor": "Venus",
+      "phaladeepika_positions": [
+        6,
+        7,
+        12
+      ],
+      "target": "Sun"
+    },
+    {
+      "bphs_positions": [
+        1,
+        3,
+        6,
+        7,
+        9,
+        10,
+        11
+      ],
+      "comparison": "COUNT_VARIANT",
+      "contributor": "Moon",
+      "phaladeepika_positions": [
+        1,
+        3,
+        6,
+        7,
+        10,
+        11
+      ],
+      "target": "Moon"
+    },
+    {
+      "bphs_positions": [
+        2,
+        3,
+        5,
+        6,
+        10,
+        11
+      ],
+      "comparison": "COUNT_VARIANT",
+      "contributor": "Mars",
+      "phaladeepika_positions": [
+        2,
+        3,
+        5,
+        6,
+        9,
+        10,
+        11
+      ],
+      "target": "Moon"
+    },
+    {
+      "bphs_positions": [
+        6,
+        9,
+        11,
+        12
+      ],
+      "comparison": "COUNT_VARIANT",
+      "contributor": "Sun",
+      "phaladeepika_positions": [
+        5,
+        6,
+        9,
+        11,
+        12
+      ],
+      "target": "Mercury"
+    },
+    {
+      "bphs_positions": [
+        1,
+        2,
+        4,
+        5,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "comparison": "COUNT_VARIANT",
+      "contributor": "Saturn",
+      "phaladeepika_positions": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "target": "Mercury"
+    },
+    {
+      "bphs_positions": [
+        2,
+        3,
+        7,
+        8,
+        10,
+        11
+      ],
+      "comparison": "COUNT_VARIANT",
+      "contributor": "Jupiter",
+      "phaladeepika_positions": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        10,
+        11
+      ],
+      "target": "Jupiter"
+    },
+    {
+      "bphs_positions": [
+        3,
+        4,
+        6,
+        9,
+        11,
+        12
+      ],
+      "comparison": "COUNT_MATCH_POSITION_VARIANT",
+      "contributor": "Mars",
+      "phaladeepika_positions": [
+        3,
+        5,
+        6,
+        9,
+        11,
+        12
+      ],
+      "target": "Venus"
+    }
+  ]
+}

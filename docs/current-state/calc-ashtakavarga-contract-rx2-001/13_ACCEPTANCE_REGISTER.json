@@ -1,0 +1,190 @@
+{
+  "activity": "VEDA-CALC-ASHTAKAVARGA-CONTRACT-RX2-001",
+  "counts": {
+    "PASS": 35,
+    "PASS_WITH_CONDITION": 1
+  },
+  "criteria": [
+    {
+      "criterion": "Starting commit verified",
+      "id": "AC01",
+      "status": "PASS"
+    },
+    {
+      "criterion": "V1 hash preserved",
+      "id": "AC02",
+      "status": "PASS"
+    },
+    {
+      "criterion": "V1 contents immutable",
+      "id": "AC03",
+      "status": "PASS"
+    },
+    {
+      "criterion": "V1 superseded as invalid hybrid",
+      "id": "AC04",
+      "status": "PASS"
+    },
+    {
+      "criterion": "V2 derives from frozen BPHS matrix",
+      "id": "AC05",
+      "status": "PASS"
+    },
+    {
+      "criterion": "768 source cells represented",
+      "id": "AC06",
+      "status": "PASS"
+    },
+    {
+      "criterion": "64 BPHS target/contributor pairs represented",
+      "id": "AC07",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Independent reconstruction agrees",
+      "id": "AC08",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Planetary totals equal 336",
+      "id": "AC09",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Lagna total equals 49",
+      "id": "AC10",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Combined total equals 385",
+      "id": "AC11",
+      "status": "PASS"
+    },
+    {
+      "criterion": "RAW_PLANETARY_SAV excludes Lagna",
+      "id": "AC12",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Lagna contributor and target roles separated",
+      "id": "AC13",
+      "status": "PASS"
+    },
+    {
+      "criterion": "337 is non-canonical modern witness",
+      "id": "AC14",
+      "status": "PASS"
+    },
+    {
+      "criterion": "386 is non-canonical modern combined display",
+      "id": "AC15",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Phaladeepika 7 variants isolated",
+      "id": "AC16",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Varahamihira variant isolated",
+      "id": "AC17",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No cross-tradition invariant merge",
+      "id": "AC18",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Authority axes separated",
+      "id": "AC19",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Passage metadata retained",
+      "id": "AC20",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Reductions deferred",
+      "id": "AC21",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Rahu/Ketu excluded",
+      "id": "AC22",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Self cells preserved",
+      "id": "AC23",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Contract hash deterministic",
+      "id": "AC24",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Canonical status separate from runtime status",
+      "id": "AC25",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Production runtime unchanged",
+      "id": "AC26",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No RAG change required",
+      "id": "AC27",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No Approved Core promotion",
+      "id": "AC28",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No prediction or ML activation",
+      "id": "AC29",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Old remediation history preserved",
+      "id": "AC30",
+      "status": "PASS"
+    },
+    {
+      "criterion": "RX2 remediation handoff created",
+      "id": "AC31",
+      "status": "PASS"
+    },
+    {
+      "criterion": "RX2 remediation not automatically started",
+      "id": "AC32",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Parallel evidence unchanged",
+      "id": "AC33",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Focused validation complete",
+      "id": "AC34",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Selective staging required",
+      "id": "AC35",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Overall accepted with implementation condition",
+      "id": "AC36",
+      "status": "PASS_WITH_CONDITION"
+    }
+  ],
+  "overall": "ASHTAKAVARGA_V2_CONTRACT_ACCEPTED_WITH_CONDITION"
+}

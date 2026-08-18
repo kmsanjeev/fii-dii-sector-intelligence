@@ -1,0 +1,18 @@
+{
+  "activity": "VEDA-CALC-ASHTAKAVARGA-CONTRACT-RX2-001",
+  "historical_record_preserved": true,
+  "v1": {
+    "contents_modified": false,
+    "expected_hash": "0E296628F989A9EE1AA14CF2F767ECEA8142042CD266DC9C98D0FF32A6771134",
+    "expected_id": "ASHTAKAVARGA_RAW_BPHS_PRIMARY_KNR_GOVERNED_V1",
+    "hash_verified": true,
+    "historical_path": "docs/current-state/calc-ashtakavarga-normalization-rx2-001/17_CANONICAL_RAW_CONTRACT.json",
+    "id": "ASHTAKAVARGA_RAW_BPHS_PRIMARY_KNR_GOVERNED_V1",
+    "immutable": true,
+    "reason": "The selected BPHS matrix computes 336/49/385 while V1 asserted 337/49/386 by combining a BPHS matrix with an unverified modern implementation invariant.",
+    "recomputed_hash": "0E296628F989A9EE1AA14CF2F767ECEA8142042CD266DC9C98D0FF32A6771134",
+    "recorded_hash": "0E296628F989A9EE1AA14CF2F767ECEA8142042CD266DC9C98D0FF32A6771134",
+    "status": "SUPERSEDED_INVALID_HYBRID"
+  },
+  "v1_path_unchanged": true
+}
