@@ -1,0 +1,22 @@
+{
+  "activity_id": "VEDA-LANG-002-MULTILINGUAL-FOUNDATION-001",
+  "implemented_locales": [
+    {
+      "locale": "en",
+      "total_keys": 49,
+      "translated": 49,
+      "missing": 0,
+      "fallback_used": 0,
+      "coverage": 1.0,
+      "human_reviewed": 0,
+      "review_state": "REVIEW_PENDING",
+      "status": "CANONICAL_ENGLISH_BASELINE"
+    }
+  ],
+  "unimplemented_locale_probe": {
+    "locale": "hi",
+    "status": "UNIMPLEMENTED_LOCALE",
+    "fallback_policy": "English with explicit fallback_used metadata"
+  },
+  "target_selection": "LANGUAGE_TARGET_SELECTION_REQUIRED"
+}

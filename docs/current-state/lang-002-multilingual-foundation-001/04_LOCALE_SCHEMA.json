@@ -1,0 +1,13 @@
+{
+  "schema_version": "LANG-002-1.0.0",
+  "locale_pack": {
+    "locale": "BCP-47-like lowercase identifier",
+    "parent": "optional locale identifier",
+    "status": "CANONICAL_ENGLISH_BASELINE | MACHINE_DRAFT | REVIEW_PENDING | ...",
+    "review_state": "MACHINE_DRAFT | REVIEW_PENDING | HUMAN_REVIEWED | SOURCE_REVIEWED | APPROVED_PRESENTATION",
+    "messages": {"MESSAGE_ID": "presentation text"},
+    "terms": {"TERM.CANONICAL.ID": "localized display term"}
+  },
+  "fallback": ["requested locale", "parent locale", "en", "explicit missing state"],
+  "canonical_values": "Never localize API enums, IDs, statuses, source IDs, dates, numbers, or calculation inputs."
+}

@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-08-18 | VEDA-LANG-002-MULTILINGUAL-FOUNDATION-001
+
+Completed the language-neutral multilingual foundation with
+`PASS_WITH_CONDITION`. The implementation adds a deterministic canonical term
+registry, English baseline locale pack, explicit locale fallback/missing
+states, structured fact/display separation, source-citation preservation,
+certainty/negation safety checks, Unicode-safe JSON serialization and coverage
+reporting. LANG-001 expression understanding, ChatEngine/COMM boundaries,
+Jyotisha semantics, P032 foundation-only gates, D20 interpretation gating,
+Ashtakavarga research-only status, RAG, prediction, ML and provider-call
+boundaries remain unchanged. No target language was guessed; additional pack
+selection and human/source review remain open. The unrelated city-coordinate
+working-tree edit was preserved and excluded from staging.
+
 ## 2026-08-18 | VEDA-P032-MUHURTA-FOUNDATION-001
 
 Completed the bounded Muhurta foundation with `PASS_WITH_CONDITION`. The

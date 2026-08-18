@@ -1,0 +1,22 @@
+{
+  "registry_path": "data/veda/localization/canonical_term_registry.json",
+  "schema_version": "LANG-002-1.0.0",
+  "term_count": 33,
+  "classes": [
+    "JYOTISHA_TECHNICAL",
+    "GOVERNANCE",
+    "RESEARCH",
+    "SAFETY_HIGH_RISK",
+    "GENERAL_UI"
+  ],
+  "canonical_id_policy": "Stable TERM.* IDs are language-neutral; English, aliases, Sanskrit fields and future localized display are presentation metadata.",
+  "representative_ids": [
+    "TERM.PLANET.JUPITER",
+    "TERM.SIGN.ARIES",
+    "TERM.NAKSHATRA.ASHWINI",
+    "TERM.VARGA.D20",
+    "TERM.DASHA.VIMSHOTTARI",
+    "TERM.PANCHANGA.TITHI"
+  ],
+  "source_policy": "Ontology references are retained; translations are not independent source witnesses."
+}
