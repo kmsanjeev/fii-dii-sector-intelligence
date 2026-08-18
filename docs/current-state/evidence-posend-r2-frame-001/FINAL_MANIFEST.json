@@ -1,0 +1,424 @@
+{
+  "baseline": {
+    "feature_family_hash": "da810777ea18ff74ebcdb9b3003dd8a0b4a5b88f68cd79b0c27b569c18340297",
+    "parent_design_freeze_commit": "4f2fbef7674a99223eaed896ef18caab15bb84ee",
+    "protocol_hash": "5d39c917ad75c81187088d31d8b6cf03318f234da4b1d91e6d008e9100aad276",
+    "r1_events": 4,
+    "r1_holdout": 1,
+    "r1_holdout_opened": false,
+    "r1_subjects": 4,
+    "r1_validation": 3
+  },
+  "current_frame": {
+    "classification": [
+      "EMPIRICAL_ELIGIBLE_WITH_CONDITION",
+      "DUPLICATE_OF_EXISTING_FRAME"
+    ],
+    "condition": "R1 is a design-feasibility pilot only; no independent R2 records are created by re-screening it.",
+    "frame_id": "ADB-VERIFIED-BIRTH-POOL-SOURCE-DIVERSITY-001",
+    "new_unique_subjects_for_r2": 0,
+    "overlap_with_r1": 114,
+    "r1_birth_source_clusters": 1,
+    "r1_event_source_clusters": 3,
+    "raw_provider_data_committed": false,
+    "records": 114,
+    "source_cluster_hash": "622B990479B75955234E03BF51B35CA5D1134DF1E13E067B0DD83CC0C3EADA8C",
+    "source_clusters": 6,
+    "subject_hash": "00A440AC49A2C9DEA623C5665334F33729B72ECA88FAA6E9BCEE27077AA84D66",
+    "unique_subjects": 114,
+    "version": "VEDA-EVIDENCE-ADB-SOURCE-DIVERSITY-001/R1"
+  },
+  "decision": "R2_FRAME_BLOCKED_FORMAL_ACCESS_REQUIRED",
+  "exhaustion": {
+    "candidate_status_counts": {
+      "ELIGIBLE_EXACT_DAY": 4,
+      "EVENT_FOUND_BUT_INSUFFICIENT_PRECISION": 1,
+      "NOT_APPLICABLE": 2,
+      "SEARCH_EXHAUSTED": 107
+    },
+    "candidates_screened": 114,
+    "current_frame_exhausted": true,
+    "eligible_exact_day": 4,
+    "event_subjects": [
+      "ADB-51916",
+      "ADB-53387",
+      "ADB-53441",
+      "ADB-53866"
+    ],
+    "insufficient_precision": 1,
+    "not_applicable": 2,
+    "risk_interval_ready": 4,
+    "search_exhausted": 107
+  },
+  "external_frame_register": [
+    {
+      "access": "open download route observed; no download performed",
+      "bias": "famous-person and historical-data bias",
+      "birth_provenance": "heterogeneous five-level trust model; only a small subset tied to certificates",
+      "candidate_id": "EXT-OGDB-001",
+      "dataset": "Open Gauquelin Database",
+      "decision": "MECHANICS_PREVALENCE_ONLY",
+      "event_provenance": "none for POSITION_END",
+      "license_or_terms": "Creative Commons statement on official site; verify exact dataset license before redistribution",
+      "overlap": "not the ADB frame, but not independently eligible without event/provenance work",
+      "owner_or_route": "opengauquelin.org",
+      "reason": "No dated formal-role-end event and source-quality gate is not met.",
+      "selection_mechanism": "outcome-free population ordering",
+      "timed_births": "24,542 site-wide claim; local VEDA pilot uses 1,000 deterministic rows"
+    },
+    {
+      "access": "previously observed through documented route; no new access in this activity",
+      "bias": "public-figure selection and provider lineage",
+      "birth_provenance": "current governed pool 114 A/B; broader sample unresolved",
+      "candidate_id": "EXT-ADB-FREE-001",
+      "dataset": "Astro-Databank official free sample",
+      "decision": "PROVIDER_ACCESS_GATED",
+      "event_provenance": "R1 only for four event subjects",
+      "license_or_terms": "non-commercial factual-data statement does not replace formal research-access terms for scale",
+      "overlap": "current R1 frame is a subset",
+      "owner_or_route": "Astrodienst/Astro-Databank",
+      "reason": "No lawful new independent R2 frame can be asserted from the existing sample.",
+      "selection_mechanism": "source-first birth frame; generic free-sample adjudication closed",
+      "timed_births": "prior observed sample; governed metadata records 6,036 observed"
+    },
+    {
+      "access": "public metadata route; no download performed",
+      "bias": "notability and retrospective selection",
+      "birth_provenance": "date/place-focused; no demonstrated DAY time provenance for this protocol",
+      "candidate_id": "EXT-NOTABLE-BIRTH-DATA-001",
+      "dataset": "Cross-verified notable-person database / Dataverse candidate",
+      "decision": "NOT_SUITABLE",
+      "event_provenance": "no POSITION_END event corpus",
+      "license_or_terms": "must be verified before use",
+      "overlap": "unknown",
+      "owner_or_route": "scholarly public release",
+      "reason": "Candidate discovery only; the required birth-time/event contract is not established.",
+      "selection_mechanism": "notable-person database; likely outcome/eminence selection",
+      "timed_births": "not established from source review"
+    },
+    {
+      "access": "not activated",
+      "bias": "unknown until lawful recruitment and consent",
+      "birth_provenance": "not real-world evidence",
+      "candidate_id": "EXT-CONSENT-001",
+      "dataset": "consented longitudinal corpus",
+      "decision": "CONSENT_GATED",
+      "event_provenance": "synthetic only",
+      "license_or_terms": "requires external legal/privacy/ethics/security review",
+      "overlap": "none established",
+      "owner_or_route": "VEDA consent programme",
+      "reason": "No recruitment or real-person collection is authorized in this activity.",
+      "selection_mechanism": "future participant process not authorized",
+      "timed_births": "synthetic only at present"
+    }
+  ],
+  "formal_access": {
+    "human_action_required": true,
+    "package_prepared": true,
+    "raw_data_submission": false,
+    "recommended_action": "Review terms and submit the prepared access request through the official provider route if approved by the responsible human.",
+    "role": "HIGH_VALUE_AND_REQUIRED_FOR_MEANINGFUL_R2_SCALE",
+    "route": "Astro-Databank qualified-researcher/provider-directed route",
+    "submitted": false
+  },
+  "governance": {
+    "approved_core_changed": false,
+    "astrology": false,
+    "feature_activation": false,
+    "feature_values": false,
+    "legacy_cohort_combined": false,
+    "ml": false,
+    "new_provider_calls": 0,
+    "pred_m4": "UNCHANGED",
+    "production": false,
+    "r1_protocol_changed": false,
+    "rag_changed": false,
+    "raw_provider_data_committed": false,
+    "recruitment": false
+  },
+  "hashes": {
+    "external_register_hash": "A05E066ED0A9668F98A78BC7B81B9630C178BFD4ABC7C8382C0567A96370F358",
+    "inventory_hash": "AA7DB1EB5912A16203F90957CC9AEC80D3058F730D96D531FDD12147AE475A34",
+    "prescreen_policy_hash": "7DAD6A466917228CB0031EB7345F5DB2BE02D7575A80038858C3D0FF449A8EB8",
+    "r2_frame_hash": "784A3C1B33385C4857F2217566C36ADC26D8FB490F1928B7778EBFFED9761F69",
+    "result_hash": "84FB85FFAB3F47762F71101EDBA1222812DF160573FF777B778EDB484AF877AF"
+  },
+  "inventory": [
+    {
+      "birth_time_place": "governed R1 metadata; raw provider data ignored",
+      "classification": [
+        "EMPIRICAL_ELIGIBLE_WITH_CONDITION",
+        "DUPLICATE_OF_EXISTING_FRAME"
+      ],
+      "current_use": "R1 design-feasibility pilot; R2 duplicate exclusion",
+      "event_metadata": "R1 event register only",
+      "frame_id": "ADB-VERIFIED-BIRTH-POOL-SOURCE-DIVERSITY-001",
+      "gap": "no new independent subjects",
+      "records": 114,
+      "selection_mechanism": "source-first complete-frame screen, frozen before event review",
+      "source": "Astro-Databank governed A/B pool",
+      "source_independence": "single dominant birth cluster; 1 birth cluster among R1 event subjects"
+    },
+    {
+      "birth_time_place": "observed provider sample; raw local only",
+      "classification": [
+        "PROVIDER_ACCESS_GATED",
+        "SOURCE_PROVENANCE_TOO_WEAK"
+      ],
+      "current_use": "source-yield and access feasibility only",
+      "event_metadata": "not acquired in this activity",
+      "frame_id": "ADB-FREE-SAMPLE-OBSERVED-6036",
+      "gap": "formal provenance/access required; no R2 re-adjudication authorized",
+      "records": 6036,
+      "selection_mechanism": "prior governed sample; generic adjudication closed",
+      "source": "Astro-Databank official free sample",
+      "source_independence": "same provider lineage and overlap with governed pool"
+    },
+    {
+      "birth_time_place": "timed rows; source reliability is heterogeneous",
+      "classification": [
+        "MECHANICS_PREVALENCE_ONLY",
+        "NOT_SUITABLE"
+      ],
+      "current_use": "outcome-free mechanics/prevalence only",
+      "event_metadata": "none joined",
+      "frame_id": "OGDB-TIMED-POPULATION-1000",
+      "gap": "no dated formal-role-end outcome and insufficient source provenance for R2 eligibility",
+      "records": 1000,
+      "selection_mechanism": "deterministic outcome-free population ordering",
+      "source": "Open Gauquelin Database",
+      "source_independence": "independent provider, but not documentary Tier A/B frame for this endpoint"
+    },
+    {
+      "birth_time_place": "calculation benchmark metadata",
+      "classification": [
+        "CALCULATION_BENCHMARK_ONLY",
+        "DUPLICATE_OF_EXISTING_FRAME"
+      ],
+      "current_use": "calculation regression",
+      "event_metadata": "calculation benchmark only",
+      "frame_id": "CALC-SILVER-109",
+      "gap": "not an empirical outcome frame; no event acquisition",
+      "records": 109,
+      "selection_mechanism": "gold/silver calculation case selection",
+      "source": "VEDA calculation Silver corpus",
+      "source_independence": "overlaps calculation/ADB inputs; not an empirical cohort"
+    },
+    {
+      "birth_time_place": "calculation benchmark metadata",
+      "classification": [
+        "CALCULATION_BENCHMARK_ONLY"
+      ],
+      "current_use": "calculation validation",
+      "event_metadata": "none for empirical use",
+      "frame_id": "CALC-GOLD-REFERENCE",
+      "gap": "not suitable for POSITION_END acquisition",
+      "records": 25,
+      "selection_mechanism": "calculation reference-case governance",
+      "source": "VEDA calculation Gold reference set",
+      "source_independence": "benchmark source lineage; not an empirical cohort"
+    },
+    {
+      "birth_time_place": "timed population rows",
+      "classification": [
+        "MECHANICS_PREVALENCE_ONLY",
+        "NOT_SUITABLE"
+      ],
+      "current_use": "population/mechanics research",
+      "event_metadata": "no lawful event linkage",
+      "frame_id": "OGDB-POPULATION-EMPIRICAL-CANDIDATES",
+      "gap": "event absence and source-quality gate",
+      "records": 1275,
+      "selection_mechanism": "outcome-free deterministic ordering",
+      "source": "VEDA OGDB pilot variants",
+      "source_independence": "same OGDB lineage"
+    },
+    {
+      "birth_time_place": "synthetic placeholders; no real people",
+      "classification": [
+        "SYNTHETIC_ONLY",
+        "CONSENT_GATED"
+      ],
+      "current_use": "architecture and privacy rehearsal",
+      "event_metadata": "synthetic only",
+      "frame_id": "CONSENT-SYNTHETIC-25",
+      "gap": "recruitment and external legal/privacy/ethics/security review not authorized",
+      "records": 25,
+      "selection_mechanism": "synthetic scenario generation",
+      "source": "VEDA consent programme synthetic corpus",
+      "source_independence": "not real-world evidence"
+    },
+    {
+      "birth_time_place": "personal benchmark input, not research corpus",
+      "classification": [
+        "CALCULATION_BENCHMARK_ONLY",
+        "NOT_SUITABLE"
+      ],
+      "current_use": "calculation validation only",
+      "event_metadata": "none",
+      "frame_id": "USER-CALCULATION-BENCHMARK",
+      "gap": "no empirical event use or participant recruitment",
+      "records": 0,
+      "selection_mechanism": "user-directed calculation validation",
+      "source": "user-provided DOB/TOB/POB benchmark pathway",
+      "source_independence": "not an empirical sampling frame"
+    },
+    {
+      "birth_time_place": "mixed provenance; year-level event dates",
+      "classification": [
+        "OUTCOME_SELECTED",
+        "DUPLICATE_OF_EXISTING_FRAME",
+        "NOT_SUITABLE"
+      ],
+      "current_use": "historical report preserved; not combined with R1",
+      "event_metadata": "retrospective year-level inferred career ends",
+      "frame_id": "LEGACY-POSEND-YEAR-20",
+      "gap": "wrong precision/ontology and prior outcome selection",
+      "records": 20,
+      "selection_mechanism": "legacy event-first/retrospective cohort",
+      "source": "legacy EMP POSITION_END cohort",
+      "source_independence": "18 records share one Wikipedia-derived dependence cluster"
+    },
+    {
+      "birth_time_place": "potentially licensed fields, not yet accessed",
+      "classification": [
+        "PROVIDER_ACCESS_GATED"
+      ],
+      "current_use": "prepare-only access dependency",
+      "event_metadata": "not acquired",
+      "frame_id": "ADB-FORMAL-ACCESS-PREPARED",
+      "gap": "human submission/approval and terms review required",
+      "records": 0,
+      "selection_mechanism": "future source-first licensed frame",
+      "source": "Astro-Databank formal researcher route",
+      "source_independence": "provider lineage can expand source coverage subject to access terms"
+    }
+  ],
+  "parent_commit": "4f2fbef7674a99223eaed896ef18caab15bb84ee",
+  "prescreen_policy": {
+    "allowed_before_event_lookup": [
+      "provider/source route and license status",
+      "birth-record precision and source-provenance tier",
+      "pre-existing occupation or role category",
+      "country/era coverage metadata",
+      "identity deduplication and prior-frame overlap",
+      "source-cluster diversity bookkeeping"
+    ],
+    "event_first_construction": false,
+    "feature_values_used": false,
+    "forbidden_before_event_lookup": [
+      "specific role-end date",
+      "event outcome or event availability",
+      "feature values or chart placements",
+      "event-source strength discovered after candidate selection",
+      "selection to improve an observed association"
+    ],
+    "outcome_selected_frame": false,
+    "policy_hash": "7DAD6A466917228CB0031EB7345F5DB2BE02D7575A80038858C3D0FF449A8EB8",
+    "policy_id": "POSEND-R2-BIRTH-FIRST-PRESCREEN-v1",
+    "status": "FROZEN_POLICY_NOT_ACQUISITION"
+  },
+  "programme": "VEDA-EVIDENCE-POSEND-R2-FRAME-001",
+  "r2_frame": {
+    "acquisition_ready": false,
+    "birth_source_clusters": 0,
+    "candidate_universe_frozen": false,
+    "decision": "R2_FRAME_BLOCKED_FORMAL_ACCESS_REQUIRED",
+    "eligible_new_subjects": 0,
+    "event_acquisition_performed": false,
+    "event_source_clusters": 0,
+    "feature_family_hash": "da810777ea18ff74ebcdb9b3003dd8a0b4a5b88f68cd79b0c27b569c18340297",
+    "feature_values_used": false,
+    "frame_status": "NO_NEW_LAWFUL_INDEPENDENT_FRAME_ESTABLISHED",
+    "new_unique_subjects": 0,
+    "next_action": "FORMAL_ACCESS_REQUIRED",
+    "overlap_with_r1": 114,
+    "prescreen_policy_hash": "7DAD6A466917228CB0031EB7345F5DB2BE02D7575A80038858C3D0FF449A8EB8",
+    "programme": "VEDA-EVIDENCE-POSEND-R2-FRAME-001",
+    "protocol_hash": "5d39c917ad75c81187088d31d8b6cf03318f234da4b1d91e6d008e9100aad276",
+    "r1_holdout_opened": false,
+    "raw_records": 0,
+    "reason": "The current 114-subject frame is exhausted and duplicate for R2; OGDB lacks the required event/provenance contract; consent and formal ADB access are gated; no new lawful independent frame was established.",
+    "status": "BLOCKED",
+    "subject_hash": "4F53CDA18C2BAA0C0354BB5F9A3ECBE5ED12AB4D8E11BA873C2F11161202B945",
+    "unique_subjects": 0
+  },
+  "status": "PASS_WITH_CONDITION",
+  "yield_and_scale": {
+    "candidate_targets": [
+      {
+        "candidates_at_exact_day_rate": 713,
+        "target_events": 25
+      },
+      {
+        "candidates_at_exact_day_rate": 1425,
+        "target_events": 50
+      },
+      {
+        "candidates_at_exact_day_rate": 2850,
+        "target_events": 100
+      }
+    ],
+    "current_birth_clusters_for_r1_events": 1,
+    "current_event_clusters_for_r1_events": 3,
+    "observed_exact_day_rate": 0.03508771929824561,
+    "observed_risk_ready_rate": 0.03508771929824561,
+    "observed_target_position_end_lead_rate": 0.06140350877192982,
+    "planning_only": true,
+    "power_vs_birth_frame": [
+      {
+        "birth_frame_candidates_at_r1_exact_day_rate": 21005,
+        "event_subjects_from_frozen_scenario": 737,
+        "feature_values_used": false,
+        "mesi_odds_ratio": 1.5,
+        "planning_only": true
+      },
+      {
+        "birth_frame_candidates_at_r1_exact_day_rate": 6755,
+        "event_subjects_from_frozen_scenario": 237,
+        "feature_values_used": false,
+        "mesi_odds_ratio": 2.0,
+        "planning_only": true
+      },
+      {
+        "birth_frame_candidates_at_r1_exact_day_rate": 2537,
+        "event_subjects_from_frozen_scenario": 89,
+        "feature_values_used": false,
+        "mesi_odds_ratio": 3.0,
+        "planning_only": true
+      }
+    ],
+    "scenarios": [
+      {
+        "additional_candidates": 100,
+        "expected_exact_day_events_at_observed_rate": 3.5088,
+        "expected_position_end_leads_at_observed_rate": 6.1404,
+        "not_a_prediction": true,
+        "planning_only": true
+      },
+      {
+        "additional_candidates": 250,
+        "expected_exact_day_events_at_observed_rate": 8.7719,
+        "expected_position_end_leads_at_observed_rate": 15.3509,
+        "not_a_prediction": true,
+        "planning_only": true
+      },
+      {
+        "additional_candidates": 500,
+        "expected_exact_day_events_at_observed_rate": 17.5439,
+        "expected_position_end_leads_at_observed_rate": 30.7018,
+        "not_a_prediction": true,
+        "planning_only": true
+      },
+      {
+        "additional_candidates": 1000,
+        "expected_exact_day_events_at_observed_rate": 35.0877,
+        "expected_position_end_leads_at_observed_rate": 61.4035,
+        "not_a_prediction": true,
+        "planning_only": true
+      }
+    ],
+    "source_diversity_minimum_birth_clusters": 2,
+    "source_diversity_minimum_event_clusters": 2
+  }
+}

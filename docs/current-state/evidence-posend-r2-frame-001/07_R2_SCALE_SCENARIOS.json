@@ -1,0 +1,77 @@
+{
+  "candidate_targets": [
+    {
+      "candidates_at_exact_day_rate": 713,
+      "target_events": 25
+    },
+    {
+      "candidates_at_exact_day_rate": 1425,
+      "target_events": 50
+    },
+    {
+      "candidates_at_exact_day_rate": 2850,
+      "target_events": 100
+    }
+  ],
+  "current_birth_clusters_for_r1_events": 1,
+  "current_event_clusters_for_r1_events": 3,
+  "observed_exact_day_rate": 0.03508771929824561,
+  "observed_risk_ready_rate": 0.03508771929824561,
+  "observed_target_position_end_lead_rate": 0.06140350877192982,
+  "planning_only": true,
+  "power_vs_birth_frame": [
+    {
+      "birth_frame_candidates_at_r1_exact_day_rate": 21005,
+      "event_subjects_from_frozen_scenario": 737,
+      "feature_values_used": false,
+      "mesi_odds_ratio": 1.5,
+      "planning_only": true
+    },
+    {
+      "birth_frame_candidates_at_r1_exact_day_rate": 6755,
+      "event_subjects_from_frozen_scenario": 237,
+      "feature_values_used": false,
+      "mesi_odds_ratio": 2.0,
+      "planning_only": true
+    },
+    {
+      "birth_frame_candidates_at_r1_exact_day_rate": 2537,
+      "event_subjects_from_frozen_scenario": 89,
+      "feature_values_used": false,
+      "mesi_odds_ratio": 3.0,
+      "planning_only": true
+    }
+  ],
+  "scenarios": [
+    {
+      "additional_candidates": 100,
+      "expected_exact_day_events_at_observed_rate": 3.5088,
+      "expected_position_end_leads_at_observed_rate": 6.1404,
+      "not_a_prediction": true,
+      "planning_only": true
+    },
+    {
+      "additional_candidates": 250,
+      "expected_exact_day_events_at_observed_rate": 8.7719,
+      "expected_position_end_leads_at_observed_rate": 15.3509,
+      "not_a_prediction": true,
+      "planning_only": true
+    },
+    {
+      "additional_candidates": 500,
+      "expected_exact_day_events_at_observed_rate": 17.5439,
+      "expected_position_end_leads_at_observed_rate": 30.7018,
+      "not_a_prediction": true,
+      "planning_only": true
+    },
+    {
+      "additional_candidates": 1000,
+      "expected_exact_day_events_at_observed_rate": 35.0877,
+      "expected_position_end_leads_at_observed_rate": 61.4035,
+      "not_a_prediction": true,
+      "planning_only": true
+    }
+  ],
+  "source_diversity_minimum_birth_clusters": 2,
+  "source_diversity_minimum_event_clusters": 2
+}

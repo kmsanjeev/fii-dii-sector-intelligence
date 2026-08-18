@@ -1,0 +1,62 @@
+[
+  {
+    "access": "open download route observed; no download performed",
+    "bias": "famous-person and historical-data bias",
+    "birth_provenance": "heterogeneous five-level trust model; only a small subset tied to certificates",
+    "candidate_id": "EXT-OGDB-001",
+    "dataset": "Open Gauquelin Database",
+    "decision": "MECHANICS_PREVALENCE_ONLY",
+    "event_provenance": "none for POSITION_END",
+    "license_or_terms": "Creative Commons statement on official site; verify exact dataset license before redistribution",
+    "overlap": "not the ADB frame, but not independently eligible without event/provenance work",
+    "owner_or_route": "opengauquelin.org",
+    "reason": "No dated formal-role-end event and source-quality gate is not met.",
+    "selection_mechanism": "outcome-free population ordering",
+    "timed_births": "24,542 site-wide claim; local VEDA pilot uses 1,000 deterministic rows"
+  },
+  {
+    "access": "previously observed through documented route; no new access in this activity",
+    "bias": "public-figure selection and provider lineage",
+    "birth_provenance": "current governed pool 114 A/B; broader sample unresolved",
+    "candidate_id": "EXT-ADB-FREE-001",
+    "dataset": "Astro-Databank official free sample",
+    "decision": "PROVIDER_ACCESS_GATED",
+    "event_provenance": "R1 only for four event subjects",
+    "license_or_terms": "non-commercial factual-data statement does not replace formal research-access terms for scale",
+    "overlap": "current R1 frame is a subset",
+    "owner_or_route": "Astrodienst/Astro-Databank",
+    "reason": "No lawful new independent R2 frame can be asserted from the existing sample.",
+    "selection_mechanism": "source-first birth frame; generic free-sample adjudication closed",
+    "timed_births": "prior observed sample; governed metadata records 6,036 observed"
+  },
+  {
+    "access": "public metadata route; no download performed",
+    "bias": "notability and retrospective selection",
+    "birth_provenance": "date/place-focused; no demonstrated DAY time provenance for this protocol",
+    "candidate_id": "EXT-NOTABLE-BIRTH-DATA-001",
+    "dataset": "Cross-verified notable-person database / Dataverse candidate",
+    "decision": "NOT_SUITABLE",
+    "event_provenance": "no POSITION_END event corpus",
+    "license_or_terms": "must be verified before use",
+    "overlap": "unknown",
+    "owner_or_route": "scholarly public release",
+    "reason": "Candidate discovery only; the required birth-time/event contract is not established.",
+    "selection_mechanism": "notable-person database; likely outcome/eminence selection",
+    "timed_births": "not established from source review"
+  },
+  {
+    "access": "not activated",
+    "bias": "unknown until lawful recruitment and consent",
+    "birth_provenance": "not real-world evidence",
+    "candidate_id": "EXT-CONSENT-001",
+    "dataset": "consented longitudinal corpus",
+    "decision": "CONSENT_GATED",
+    "event_provenance": "synthetic only",
+    "license_or_terms": "requires external legal/privacy/ethics/security review",
+    "overlap": "none established",
+    "owner_or_route": "VEDA consent programme",
+    "reason": "No recruitment or real-person collection is authorized in this activity.",
+    "selection_mechanism": "future participant process not authorized",
+    "timed_births": "synthetic only at present"
+  }
+]

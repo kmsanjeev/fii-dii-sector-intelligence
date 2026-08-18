@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-EVIDENCE-POSEND-R2-FRAME-001
+
+Completed the lawful prospective POSITION_END R2 candidate-frame and
+exhaustion audit with `PASS_WITH_CONDITION`. The existing 114-subject R1 frame
+was fully screened, producing 4 exact-day eligible events and no new R2
+subjects. Existing ADB, OGDB, calculation benchmark, synthetic, consent and
+legacy lanes were classified with source-independence and duplicate controls.
+OGDB remains outcome-free mechanics/prevalence-only; no new lawful independent
+event-ready frame was established. Decision:
+`R2_FRAME_BLOCKED_FORMAL_ACCESS_REQUIRED`. The prepared Astro-Databank formal
+access route remains unsent and human-gated. No event acquisition, astrology,
+feature values, scoring, ML, production, RAG, Approved Core or PRED-M4 change
+occurred. Evidence is in
+`docs/current-state/evidence-posend-r2-frame-001/`.
+
 ## 2026-08-19 | VEDA-EVIDENCE-POSEND-DESIGN-FREEZE-001
 
 Completed the feature-blind formal public-role-end study-design freeze.

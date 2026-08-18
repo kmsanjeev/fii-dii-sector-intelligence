@@ -42,6 +42,7 @@ The implemented baseline is frozen through P032 foundation plus P031, P015-RX, P
 - `VEDA-EVIDENCE-ADB-SOURCE-DIVERSITY-001` resolved the 1,358-record UNKNOWN source bucket using separate collector, publication and original-document signals. A frozen, capped 240-record sample yielded 0 new Tier A/B records; the verified pool remains 114 and the outcome-blind source-diverse bound remains 27. Decision: `FREE_SAMPLE_USEFUL_BUT_FORMAL_ACCESS_REQUIRED_FOR_SCALE`; no further generic free-sample adjudication is authorized. Formal ADB access remains high-value, prepared and unsent. Evidence is in `docs/current-state/evidence-adb-source-diversity-001/`.
 - `VEDA-EVIDENCE-POSEND-ACQ-R1` completed with `PASS_WITH_CONDITION`: a feature-blind bounded source-first acquisition screened the frozen 114-subject ADB birth frame, found 4 exact-day formal public-role-end events, generated 8 interval-bounded controls, and froze a deterministic 3-subject validation/1-subject holdout pilot. Source dependence and small-sample limits remain explicit; no astrology, feature scoring, ML, PRED-M4, production, RAG, Approved Core or raw provider data changed. Evidence is in `docs/current-state/evidence-posend-acq-r1/`.
 - `VEDA-EVIDENCE-POSEND-DESIGN-FREEZE-001` completed with `PASS_WITH_CONDITION`: the formal public-role-end event definition, within-subject matched risk-set controls, primary estimand, five-feature family hash, Holm multiplicity policy, MESI scenarios, source-diversity gate, protected split and R2 acquisition protocol were frozen. The R1 pilot remains design-feasibility only; formal ADB access is high-value for scale. No scoring, astrology, ML, PRED-M4, production or R2 acquisition started. Evidence is in `docs/current-state/evidence-posend-design-freeze-001/`.
+- `VEDA-EVIDENCE-POSEND-R2-FRAME-001` completed with `PASS_WITH_CONDITION`: all existing birth-frame lanes were inventoried, the 114-subject R1 frame was confirmed exhausted with 4 exact-day eligible events, OGDB was retained for outcome-free mechanics/prevalence only, and no new lawful independent event-ready frame was established. The R2 frame is therefore `R2_FRAME_BLOCKED_FORMAL_ACCESS_REQUIRED`; the prepared Astro-Databank formal-access route remains unsent and human-gated. No R2 events, feature values, scoring, astrology, ML, production, RAG or PRED-M4 activity occurred. Evidence is in `docs/current-state/evidence-posend-r2-frame-001/`.
 - VEDA-RM-002 is implemented/frozen. Its source, timing, method, Tajika, strength and input-preparation tracks are historical track inventory, not a current live authorization; current decisions are reconciled in `docs/current-state/roadmap-rebaseline-001/`.
 - VEDA-AUTOLOOP-R3 and R4 are implemented/frozen; the controller retains information-gain, cooldown and transient-stop safety, but no activity is active in this rebaseline.
 - `VEDA-ADM-EMP-001` is implemented/frozen by its own acceptance record; the historical data-intake recommendation is superseded by the current evidence and POSEND redesign ranking.
@@ -62,7 +63,9 @@ post-foundation state is rebaselined by
 `docs/current-state/roadmap-rebaseline-001/`; its feature-blind POSITION_END
 evidence redesign is complete with conditions in
 `docs/current-state/evidence-posend-design-freeze-001/`. `VEDA-EVIDENCE-POSEND-DESIGN-FREEZE-001`
-is complete with conditions; the next candidate is
-`VEDA-EVIDENCE-POSEND-ACQ-R2` and it was not started automatically. Do not use
+is complete with conditions, and `VEDA-EVIDENCE-POSEND-R2-FRAME-001` has
+completed with a formal-access stop; `VEDA-EVIDENCE-POSEND-ACQ-R2` remains
+not started and is blocked until a new lawful independent frame is available.
+Do not use
 the historical P000/P013 roadmap files or the
 governance-audit P027 pathway to infer current scope.

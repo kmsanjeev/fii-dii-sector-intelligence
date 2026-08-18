@@ -1,0 +1,151 @@
+[
+  {
+    "birth_time_place": "governed R1 metadata; raw provider data ignored",
+    "classification": [
+      "EMPIRICAL_ELIGIBLE_WITH_CONDITION",
+      "DUPLICATE_OF_EXISTING_FRAME"
+    ],
+    "current_use": "R1 design-feasibility pilot; R2 duplicate exclusion",
+    "event_metadata": "R1 event register only",
+    "frame_id": "ADB-VERIFIED-BIRTH-POOL-SOURCE-DIVERSITY-001",
+    "gap": "no new independent subjects",
+    "records": 114,
+    "selection_mechanism": "source-first complete-frame screen, frozen before event review",
+    "source": "Astro-Databank governed A/B pool",
+    "source_independence": "single dominant birth cluster; 1 birth cluster among R1 event subjects"
+  },
+  {
+    "birth_time_place": "observed provider sample; raw local only",
+    "classification": [
+      "PROVIDER_ACCESS_GATED",
+      "SOURCE_PROVENANCE_TOO_WEAK"
+    ],
+    "current_use": "source-yield and access feasibility only",
+    "event_metadata": "not acquired in this activity",
+    "frame_id": "ADB-FREE-SAMPLE-OBSERVED-6036",
+    "gap": "formal provenance/access required; no R2 re-adjudication authorized",
+    "records": 6036,
+    "selection_mechanism": "prior governed sample; generic adjudication closed",
+    "source": "Astro-Databank official free sample",
+    "source_independence": "same provider lineage and overlap with governed pool"
+  },
+  {
+    "birth_time_place": "timed rows; source reliability is heterogeneous",
+    "classification": [
+      "MECHANICS_PREVALENCE_ONLY",
+      "NOT_SUITABLE"
+    ],
+    "current_use": "outcome-free mechanics/prevalence only",
+    "event_metadata": "none joined",
+    "frame_id": "OGDB-TIMED-POPULATION-1000",
+    "gap": "no dated formal-role-end outcome and insufficient source provenance for R2 eligibility",
+    "records": 1000,
+    "selection_mechanism": "deterministic outcome-free population ordering",
+    "source": "Open Gauquelin Database",
+    "source_independence": "independent provider, but not documentary Tier A/B frame for this endpoint"
+  },
+  {
+    "birth_time_place": "calculation benchmark metadata",
+    "classification": [
+      "CALCULATION_BENCHMARK_ONLY",
+      "DUPLICATE_OF_EXISTING_FRAME"
+    ],
+    "current_use": "calculation regression",
+    "event_metadata": "calculation benchmark only",
+    "frame_id": "CALC-SILVER-109",
+    "gap": "not an empirical outcome frame; no event acquisition",
+    "records": 109,
+    "selection_mechanism": "gold/silver calculation case selection",
+    "source": "VEDA calculation Silver corpus",
+    "source_independence": "overlaps calculation/ADB inputs; not an empirical cohort"
+  },
+  {
+    "birth_time_place": "calculation benchmark metadata",
+    "classification": [
+      "CALCULATION_BENCHMARK_ONLY"
+    ],
+    "current_use": "calculation validation",
+    "event_metadata": "none for empirical use",
+    "frame_id": "CALC-GOLD-REFERENCE",
+    "gap": "not suitable for POSITION_END acquisition",
+    "records": 25,
+    "selection_mechanism": "calculation reference-case governance",
+    "source": "VEDA calculation Gold reference set",
+    "source_independence": "benchmark source lineage; not an empirical cohort"
+  },
+  {
+    "birth_time_place": "timed population rows",
+    "classification": [
+      "MECHANICS_PREVALENCE_ONLY",
+      "NOT_SUITABLE"
+    ],
+    "current_use": "population/mechanics research",
+    "event_metadata": "no lawful event linkage",
+    "frame_id": "OGDB-POPULATION-EMPIRICAL-CANDIDATES",
+    "gap": "event absence and source-quality gate",
+    "records": 1275,
+    "selection_mechanism": "outcome-free deterministic ordering",
+    "source": "VEDA OGDB pilot variants",
+    "source_independence": "same OGDB lineage"
+  },
+  {
+    "birth_time_place": "synthetic placeholders; no real people",
+    "classification": [
+      "SYNTHETIC_ONLY",
+      "CONSENT_GATED"
+    ],
+    "current_use": "architecture and privacy rehearsal",
+    "event_metadata": "synthetic only",
+    "frame_id": "CONSENT-SYNTHETIC-25",
+    "gap": "recruitment and external legal/privacy/ethics/security review not authorized",
+    "records": 25,
+    "selection_mechanism": "synthetic scenario generation",
+    "source": "VEDA consent programme synthetic corpus",
+    "source_independence": "not real-world evidence"
+  },
+  {
+    "birth_time_place": "personal benchmark input, not research corpus",
+    "classification": [
+      "CALCULATION_BENCHMARK_ONLY",
+      "NOT_SUITABLE"
+    ],
+    "current_use": "calculation validation only",
+    "event_metadata": "none",
+    "frame_id": "USER-CALCULATION-BENCHMARK",
+    "gap": "no empirical event use or participant recruitment",
+    "records": 0,
+    "selection_mechanism": "user-directed calculation validation",
+    "source": "user-provided DOB/TOB/POB benchmark pathway",
+    "source_independence": "not an empirical sampling frame"
+  },
+  {
+    "birth_time_place": "mixed provenance; year-level event dates",
+    "classification": [
+      "OUTCOME_SELECTED",
+      "DUPLICATE_OF_EXISTING_FRAME",
+      "NOT_SUITABLE"
+    ],
+    "current_use": "historical report preserved; not combined with R1",
+    "event_metadata": "retrospective year-level inferred career ends",
+    "frame_id": "LEGACY-POSEND-YEAR-20",
+    "gap": "wrong precision/ontology and prior outcome selection",
+    "records": 20,
+    "selection_mechanism": "legacy event-first/retrospective cohort",
+    "source": "legacy EMP POSITION_END cohort",
+    "source_independence": "18 records share one Wikipedia-derived dependence cluster"
+  },
+  {
+    "birth_time_place": "potentially licensed fields, not yet accessed",
+    "classification": [
+      "PROVIDER_ACCESS_GATED"
+    ],
+    "current_use": "prepare-only access dependency",
+    "event_metadata": "not acquired",
+    "frame_id": "ADB-FORMAL-ACCESS-PREPARED",
+    "gap": "human submission/approval and terms review required",
+    "records": 0,
+    "selection_mechanism": "future source-first licensed frame",
+    "source": "Astro-Databank formal researcher route",
+    "source_independence": "provider lineage can expand source coverage subject to access terms"
+  }
+]

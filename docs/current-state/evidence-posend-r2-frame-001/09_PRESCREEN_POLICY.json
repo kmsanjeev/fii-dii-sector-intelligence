@@ -1,0 +1,23 @@
+{
+  "allowed_before_event_lookup": [
+    "provider/source route and license status",
+    "birth-record precision and source-provenance tier",
+    "pre-existing occupation or role category",
+    "country/era coverage metadata",
+    "identity deduplication and prior-frame overlap",
+    "source-cluster diversity bookkeeping"
+  ],
+  "event_first_construction": false,
+  "feature_values_used": false,
+  "forbidden_before_event_lookup": [
+    "specific role-end date",
+    "event outcome or event availability",
+    "feature values or chart placements",
+    "event-source strength discovered after candidate selection",
+    "selection to improve an observed association"
+  ],
+  "outcome_selected_frame": false,
+  "policy_hash": "7DAD6A466917228CB0031EB7345F5DB2BE02D7575A80038858C3D0FF449A8EB8",
+  "policy_id": "POSEND-R2-BIRTH-FIRST-PRESCREEN-v1",
+  "status": "FROZEN_POLICY_NOT_ACQUISITION"
+}
