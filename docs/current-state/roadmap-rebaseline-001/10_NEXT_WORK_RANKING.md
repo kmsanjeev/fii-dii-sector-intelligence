@@ -1,38 +1,35 @@
 # Next Work Ranking
 
-## Top three candidates (not started)
+## Top three candidates (not started; reconciled 2026-08-19)
 
-1. **VEDA-EVIDENCE-POSEND-REBASELINE-001** - Reconcile the acquired
-   POSITION_END cohort with the evidence-rebaseline source/date/risk-set
-   requirements before any scoring. It has the best immediate dependency
-   unlock and remains feature-blind.
-2. **VEDA-CALC-ASHTAKAVARGA-DECISION-001** - Resolve the source-to-code BAV/SAV
+1. **VEDA-CALC-ASHTAKAVARGA-DECISION-001** - Resolve the source-to-code BAV/SAV
    implementation contract or explicitly split methods. It addresses a real
    calculation trust gap but has higher method risk.
-3. **VEDA-EVIDENCE-ADB-FORMAL-ACCESS-001** - Execute the prepared formal ADB
+2. **VEDA-EVIDENCE-ADB-FORMAL-ACCESS-001** - Execute the prepared formal ADB
    access path after human/provider/legal review. It has the highest evidence
    value but is not autonomous.
+3. **VEDA-KNOW-D20-002** - Revisit D20 destination mapping only if new source
+   evidence becomes available; do not repeat exhausted source searching.
 
 ## Primary next programme recommendation
 
-**ID:** `VEDA-EVIDENCE-POSEND-REBASELINE-001`
+**ID:** `VEDA-CALC-ASHTAKAVARGA-DECISION-001`
 
-**Title:** Feature-blind POSITION_END evidence redesign
+**Title:** BAV/SAV source-to-code decision
 
-**Mission:** Make the acquired POSITION_END cohort compatible with the
-evidence-rebaseline requirements for provenance, date precision, risk sets,
-controls and multiple-testing before authorizing `EMP-FEATURE-003-R1` scoring.
+**Mission:** Produce a bounded source-to-code implementation decision for
+contributor-specific BAV/SAV without changing production behavior.
 
-**Why now:** The cohort is frozen and chart-ready, but the evidence lane
-explicitly blocks scoring until the redesign is complete. This is a bounded
-governance dependency, not a new prediction feature.
+**Why now:** The POSEND redesign dependency is complete and the current helper
+has an explicit contributor-specific mismatch that is independently testable.
+This is a calculation-governance activity, not prediction or production work.
 
-**Prerequisites:** `VEDA-EVIDENCE-REBASELINE-001`,
-`VEDA-EMP-POSEND-ACQ-001`, frozen cohort and feature-family hashes.
+**Prerequisites:** `VEDA-CALC-SOURCE-RX-001`, P018 governance, and a
+source-selected method decision.
 
-**Success criteria:** deterministic redesign register; provenance/date-risk
-classification for every subject/event; protected holdout and controls;
-explicit go/no-go; no feature scoring, outcome leakage, ML, production or
+**Success criteria:** deterministic source/code comparison, explicit method
+split or remediation decision, no production calculation change unless a
+separate authorization is issued, and no prediction, ML, production or
 PRED-M4 change.
 
 No next programme was started automatically.

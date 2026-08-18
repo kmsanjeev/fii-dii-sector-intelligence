@@ -1,0 +1,58 @@
+{
+  "programme": "VEDA-EVIDENCE-ADB-ACCESS-RX-2026-001",
+  "retrieved_on": "2026-08-19",
+  "route_matrix_source": "scripts/veda_evidence_adb_access_rx_2026_001.py",
+  "routes": [
+    {
+      "route_id": "FULL_DATABASE_EXPORT_ACCESS",
+      "status": "SUSPENDED_FOR_2026",
+      "available_now": false,
+      "application_status": "NO_APPLICATION_SUBMITTED",
+      "export_capability": "NOT_AVAILABLE_PUBLICLY_DURING_2026_SUSPENSION",
+      "programmatic_or_bulk_capability": "NOT_DOCUMENTED"
+    },
+    {
+      "route_id": "ONLINE_RESEARCH_TOOL_ACCESS",
+      "status": "PUBLIC_PARTIAL_AND_GUEST_ROUTES_OBSERVED",
+      "available_now": true,
+      "partial_access": "UP_TO_TWO_FILTER_CARDS",
+      "full_access": "UP_TO_FIVE_FILTERS",
+      "subscription_sufficiency_for_veda_scale": "PARTIAL_INTERACTIVE_SUFFICIENCY_ONLY_BULK_UNESTABLISHED",
+      "export_capability": "NOT_ESTABLISHED",
+      "programmatic_or_bulk_capability": "NOT_DOCUMENTED"
+    },
+    {
+      "route_id": "SPECIAL_QUALIFIED_RESEARCHER_PERMISSION",
+      "status": "DOCUMENTED_ROUTE_NOT_SUBMITTED",
+      "available_now": "REQUIRES_PROVIDER_DECISION",
+      "export_capability": "REQUIRES_EXPLICIT_PROVIDER_TERMS",
+      "programmatic_or_bulk_capability": "NOT_DOCUMENTED"
+    },
+    {
+      "route_id": "FREE_C_SAMPLE_ACCESS",
+      "status": "CURRENT_SAMPLE_REMAINS_AVAILABLE",
+      "available_now": true,
+      "use_in_this_activity": "NO_NEW_ACQUISITION",
+      "export_capability": "SAMPLE_ARTIFACT_ONLY",
+      "programmatic_or_bulk_capability": "NOT_DOCUMENTED_BEYOND_SAMPLE_ARTIFACT"
+    }
+  ],
+  "official_sources": [
+    "https://www.astro.com/adbexport/00_readme.htm",
+    "https://www.astro.com/adbexport/",
+    "https://www.astro.com/cgi/aq.cgi/adb-search",
+    "https://www.astro.com/prod/pr_astroplus_e.htm",
+    "https://www.astro.com/adbexport/c_sample.zip"
+  ],
+  "veda_request": {
+    "full_export_requested": false,
+    "research_tool_or_special_permission_requested": true,
+    "submission_sent": false,
+    "purchase_or_license_accepted": false,
+    "scraping": false,
+    "redistribution": false,
+    "ai_ml_training": false,
+    "raw_adb_in_rag": false,
+    "provider_calls_added": 0
+  }
+}

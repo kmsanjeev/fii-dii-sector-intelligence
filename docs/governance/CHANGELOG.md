@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-EVIDENCE-ADB-ACCESS-RX-2026-001
+
+Reconciled the current official Astro-Databank access policy and prepared a
+human-ready qualified-researcher/provider-route request pack. The 2026 public
+full export contract and ZIP are suspended; the C sample remains available;
+research-tool guest, partial, full, and special-permission routes are separate.
+No application, purchase, provider call, download, scraping, raw ADB staging,
+R2 activation, RAG, ML, prediction, PRED-M4 or production change occurred.
+Evidence is in `docs/current-state/evidence-adb-access-rx-2026-001/`.
+
 ## 2026-08-19 | VEDA-EVIDENCE-POSEND-R2-FRAME-001
 
 Completed the lawful prospective POSITION_END R2 candidate-frame and
