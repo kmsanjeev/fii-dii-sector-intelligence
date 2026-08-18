@@ -1,0 +1,67 @@
+{
+  "activity_id": "VEDA-EVIDENCE-OGDB-MULLER-VERIFY-001",
+  "cohorts": {
+    "french": {
+      "duplicate_identity": 0,
+      "duplicate_muid": 0,
+      "missing_muid": 0,
+      "missing_pob": 0,
+      "muid_prefixes": {
+        "M2": 3,
+        "M5": 1080
+      },
+      "raw_records": 1083,
+      "source_references": {
+        "AFD5": 1083
+      },
+      "time_precision": {
+        "HALF_HOUR": 142,
+        "MINUTE": 42,
+        "WHOLE_HOUR": 899
+      },
+      "timed": 1083,
+      "unique_subjects": 1083,
+      "untimed": 0
+    },
+    "german": {
+      "duplicate_identity": 13,
+      "duplicate_muid": 0,
+      "missing_muid": 0,
+      "missing_pob": 1145,
+      "muid_prefixes": {
+        "M4": 1145
+      },
+      "raw_records": 1145,
+      "source_references": {
+        "AFD4": 1145
+      },
+      "time_precision": {
+        "HALF_HOUR": 493,
+        "MINUTE": 163,
+        "WHOLE_HOUR": 489
+      },
+      "timed": 1145,
+      "unique_subjects": 1145,
+      "untimed": 0
+    }
+  },
+  "full_cohort_traceability": {
+    "french": "YES_FOR_MUID_AND_GQID_FIELDS; DOCUMENTARY_CHAIN_PARTIAL",
+    "german": "PARTIAL",
+    "reason": "The source files are deterministic and count-complete, but German place names are missing and neither cohort has civil-document links."
+  },
+  "source_files": {
+    "french": {
+      "page": "https://tig12.github.io/g5/muller5-1083-medics.html",
+      "raw_local_ignored": true,
+      "sha256": "b33d3a32c0765790f8bcd0da3f116ebe524f6696cbb7d75006f56455257f1fe4",
+      "url": "https://opengauquelin.org/download/history/1994-muller5-medics/muller-1083-medics.csv.zip"
+    },
+    "german": {
+      "page": "https://tig12.github.io/g5/muller4-1145-dynasties.html",
+      "raw_local_ignored": true,
+      "sha256": "ae14410ca097f81fb1c24037aaa8c3a4244cb7e5cb8b524d84b0524d69f0e777",
+      "url": "https://github.com/tig12/gauquelin5/raw/refs/heads/main/data/raw/muller/4-dynasties/muller-1145-utf8.txt.zip"
+    }
+  }
+}

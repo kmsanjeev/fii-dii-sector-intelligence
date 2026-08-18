@@ -1,0 +1,9 @@
+{
+  "feature_blind": true,
+  "policy": "SHA256(source_family|muid|dob|tob|pob|era|precision|region); stratify by era, precision and region; stable hash order; take round-robin strata until 25",
+  "replace_after_freeze": false,
+  "sample_hash": "d9f24d0bcf19dab34f4aa7784c0aa67e1bdbd9854c829ce14ad790cac4bdf643",
+  "sampled_total": 50,
+  "selection_policy_hash": "866c700ab4088955b6f52480ed4c7851bfff3f75147c79acda421f77920efd9b",
+  "target_each": 25
+}

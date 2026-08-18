@@ -1,0 +1,15 @@
+{
+  "calendar_mismatch_check": "NOT_ASSESSED",
+  "french_source_tzo_records_in_sample": 25,
+  "french_utc_fields_in_sample": 22,
+  "german_lmt_records_in_sample": 25,
+  "local_time_records_in_sample": 50,
+  "round_time_counts": {
+    "HALF_HOUR": 17,
+    "MINUTE": 17,
+    "WHOLE_HOUR": 16
+  },
+  "round_time_interpretation": "WHOLE_HOUR_AND_HALF_HOUR_VALUES_RETAINED_AS_SOURCE_PRECISION; NOT_ROUNDED_BY_AUDIT",
+  "tob_conflict_check": "NOT_ASSESSED_NO_DOCUMENT_COMPARATOR",
+  "utc_conversion_check": "NOT_PERFORMED_RECORD_LEVEL_DOCUMENT_ACCESS_REQUIRED"
+}

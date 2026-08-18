@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-EVIDENCE-OGDB-MULLER-VERIFY-001
+
+Completed the bounded, outcome-blind Müller/AFD documentary verification pilot with
+`PASS_WITH_CONDITION` and decision
+`MULLER_MANUAL_VERIFICATION_REQUIRED_FOR_SCALE`. The official German Dynasties
+and French Académie de Médecine source archives were extracted at 1,145 and 1,083
+records respectively. A deterministic feature-blind 25+25 sample was frozen;
+Müller source matching was recorded, while record-level civil/archive inspection,
+canonical ADB overlap and documentary rights adjudication remain manual or
+unresolved. No empirical frame, POSITION_END lookup, astrology, feature scoring,
+ML, prediction, RAG, production, Approved Core or raw-data change occurred. The
+four compact-format German rows and three inherited French MUID prefixes are
+preserved as source-lineage conditions. Evidence is in
+`docs/current-state/evidence-ogdb-muller-verify-001/`.
+
 ## 2026-08-19 | VEDA-EVIDENCE-OGDB-SUBCOHORT-RX-001
 
 Completed the source-only OGDB subcohort audit with `PASS_WITH_CONDITION` and

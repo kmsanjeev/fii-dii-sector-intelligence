@@ -1,0 +1,21 @@
+{
+  "french": [
+    "IDENTITY_MAPPING",
+    "SOURCE_TIME_MISMATCH",
+    "CALENDAR_OR_TIMEZONE_CONVERSION_REQUIRES_LOCAL_TIME_CHECK",
+    "DOCUMENT_AMBIGUITY"
+  ],
+  "german": [
+    "DOCUMENT_NOT_DIGITIZED_OR_SOURCE_SCAN_UNAVAILABLE",
+    "PLACE_NORMALIZATION",
+    "DOCUMENT_AMBIGUITY"
+  ],
+  "official_g5_context": {
+    "known_date_differences_among_shared": 39,
+    "known_registry_time_checks": 7,
+    "known_time_error_examples": 1,
+    "not_counted_as_current_sample_results": true,
+    "shared_gq_records": 859,
+    "without_gqid": 224
+  }
+}

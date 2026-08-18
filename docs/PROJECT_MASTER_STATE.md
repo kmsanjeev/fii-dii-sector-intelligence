@@ -1,6 +1,6 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.73.1 | 2026-08-18
+# Version 4.73.1 | 2026-08-19
 
 ---
 
@@ -16,7 +16,7 @@ This project is NOT a screener. It IS a decision intelligence platform.
 
 ---
 
-# CURRENT PLATFORM STATE (2026-08-04)
+# CURRENT PLATFORM STATE (2026-08-19)
 
 ## VEDA CURRENT JYOTISHA STATE (2026-08-15)
 
@@ -79,6 +79,7 @@ This project is NOT a screener. It IS a decision intelligence platform.
 - VEDA-EVIDENCE-POSEND-DESIGN-FREEZE-001 completed with `PASS_WITH_CONDITION`: protocol `POSEND_FORMAL_ROLE_END_PROTOCOL v1` freezes the effective DAY event ontology, within-subject matched risk-set design, four future controls/event, 14-day exclusion/separation, conditional matched odds ratio, Holm family control, independent MESI scenarios, source-diversity gate and protected split policy. The R1 pilot remains design-feasibility only; formal ADB access is high-value for scale. No astrology, feature scoring, ML, PRED-M4, production, RAG, Approved Core or R2 acquisition changed. Evidence is in `docs/current-state/evidence-posend-design-freeze-001/`; `VEDA-EVIDENCE-POSEND-ACQ-R2` is not started.
 - VEDA-EVIDENCE-POSEND-R2-FRAME-001 completed with `PASS_WITH_CONDITION`: existing birth-frame lanes were inventoried, the 114-subject R1 frame was confirmed exhausted with 4 exact-day eligible events, and no new lawful independent event-ready frame was established. Decision `R2_FRAME_BLOCKED_FORMAL_ACCESS_REQUIRED`; formal ADB access remains prepared and unsent. No R2 event acquisition, astrology, feature values, scoring, ML, production, RAG or PRED-M4 change occurred. Evidence is in `docs/current-state/evidence-posend-r2-frame-001/`.
 - VEDA-EVIDENCE-ADB-ACCESS-RX-2026-001 completed with `PASS_WITH_CONDITION`: current official Astro-Databank policy was reconciled on 2026-08-19. The full export contract/ZIP is suspended for 2026, the C sample remains available, and research-tool partial/full and qualified-researcher permission routes are distinct. The human-ready provider request pack is unsent; no purchase, provider call, raw ADB staging, R2 start, RAG, ML, prediction, PRED-M4 or production change occurred. Evidence is in `docs/current-state/evidence-adb-access-rx-2026-001/`.
+- VEDA-EVIDENCE-OGDB-MULLER-VERIFY-001 completed with `PASS_WITH_CONDITION`: official Müller/AFD source archives were extracted at the governed full-cohort counts of 1,145 German Dynasties and 1,083 French Académie de Médecine records. A deterministic, feature-blind 25+25 sample was frozen and source-matched; record-level civil/archive verification was not performed, so 50 cases remain manual-access-required. ADB overlap is unresolved and source independence is kept separate from identity overlap. Decision: `MULLER_MANUAL_VERIFICATION_REQUIRED_FOR_SCALE`; no empirical frame, POSITION_END lookup, astrology, scoring, ML, prediction, RAG, production, Approved Core or raw-data change occurred. Evidence is in `docs/current-state/evidence-ogdb-muller-verify-001/`.
 - Historical P027 reservation is preserved; current assignment is governed by `docs/current-state/p027/`.
 - VEDA-ROADMAP-REBASELINE-001 completed on 2026-08-18 with `PASS_WITH_CONDITION`. It reconciled the post-foundation programme inventory, preserved calculation/knowledge/empirical/predictive/production/language trust separation, corrected stale current pointers, recorded human/external gates and selected feature-blind POSITION_END evidence redesign as the next programme. The next programme was not started; RAG and Approved Core were unchanged.
 
