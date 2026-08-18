@@ -1,0 +1,70 @@
+{
+  "edges": [
+    [
+      "OGDB_OFFICIAL_CATALOGUE",
+      "LERRCP"
+    ],
+    [
+      "OGDB_OFFICIAL_CATALOGUE",
+      "AFD_MULLER"
+    ],
+    [
+      "LERRCP",
+      "CURA5"
+    ],
+    [
+      "LERRCP",
+      "NEW_ALCHEMY"
+    ],
+    [
+      "AFD_MULLER",
+      "NEW_ALCHEMY"
+    ],
+    [
+      "MULTIPLE_UPSTREAMS",
+      "WIKIDATA"
+    ],
+    [
+      "OGDB_OFFICIAL_DOWNLOAD",
+      "VEDA_OGDB_PILOT_1000"
+    ]
+  ],
+  "independence_rule": "Repeated catalogue, Cura, New Alchemy and Wikidata references are not counted as independent evidence without upstream separation.",
+  "nodes": [
+    {
+      "authority": "PRIMARY_OFFICIAL_METADATA",
+      "id": "OGDB_OFFICIAL_CATALOGUE",
+      "kind": "official_catalogue"
+    },
+    {
+      "id": "LERRCP",
+      "kind": "primary_upstream",
+      "parent": null
+    },
+    {
+      "id": "AFD_MULLER",
+      "kind": "primary_upstream",
+      "parent": null
+    },
+    {
+      "id": "CURA5",
+      "kind": "secondary_derivative",
+      "parent": "LERRCP"
+    },
+    {
+      "id": "NEW_ALCHEMY",
+      "kind": "secondary_derivative",
+      "parent": "LERRCP_AND_AFD"
+    },
+    {
+      "id": "WIKIDATA",
+      "kind": "secondary_enrichment",
+      "parent": "MULTIPLE_UPSTREAMS"
+    },
+    {
+      "id": "VEDA_OGDB_PILOT_1000",
+      "kind": "local_bounded_derivative",
+      "parent": "OGDB_OFFICIAL_DOWNLOAD"
+    }
+  ]
+}

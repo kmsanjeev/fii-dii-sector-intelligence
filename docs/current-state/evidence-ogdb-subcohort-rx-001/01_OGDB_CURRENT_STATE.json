@@ -1,0 +1,35 @@
+{
+  "activity_id": "VEDA-EVIDENCE-OGDB-SUBCOHORT-RX-001",
+  "official_current_state": {
+    "counts": {
+      "countries": 25,
+      "timed": 24542,
+      "total": 25872,
+      "untimed": 1330
+    },
+    "trust_level_note": "Official OGDB documentation states Gauquelin/Muller data are trust level 5 and requires record-by-record checking.",
+    "urls": [
+      "https://opengauquelin.org/stats",
+      "https://opengauquelin.org/sources",
+      "https://opengauquelin.org/downloads",
+      "https://opengauquelin.org/history",
+      "https://opengauquelin.org/wiki/issues"
+    ]
+  },
+  "pilot": {
+    "case_eligibility": "RESEARCH_ONLY_NO_EVENT",
+    "feed_id": "VEDA-EMP-OGDB-001",
+    "pilot_limit": 1000,
+    "records": 1000,
+    "source_quality": "SOURCE_RECORD_UNREVIEWED",
+    "usable_empirical_cases": 0
+  },
+  "scope": {
+    "astrology": false,
+    "feature_scoring": false,
+    "ml": false,
+    "position_end_lookup": false,
+    "prediction": false
+  },
+  "status": "PASS_WITH_CONDITION"
+}

@@ -1,0 +1,19 @@
+{
+  "historical_calendar_audit": "NOT_PERFORMED_SOURCE_ONLY_LOCAL_PILOT",
+  "limitation": "Pilot metadata retains a local time and optional offset, but not a source-document chain or a full local/UTC audit frame.",
+  "local_pilot_records": 1000,
+  "local_vs_utc_separated": false,
+  "precision": {
+    "MINUTE": 1000
+  },
+  "round_clock": {
+    "00:00": 5,
+    "12:00": 29,
+    "NON_ROUND_MINUTE": 256,
+    "OTHER_HOUR": 710
+  },
+  "timed_records": 1000,
+  "timezone_offset_present": 702,
+  "untimed_records": 0,
+  "utc_datetime_present": 0
+}

@@ -1,0 +1,195 @@
+{
+  "activity_id": "VEDA-EVIDENCE-OGDB-SUBCOHORT-RX-001",
+  "blocked_conditions": [
+    "record-level source-document sampling",
+    "canonical ADB overlap map",
+    "rights scope for source documents"
+  ],
+  "entries": [
+    {
+      "criterion": "STD-001 inherited",
+      "id": "AC01",
+      "status": "PASS"
+    },
+    {
+      "criterion": "P031/P032 state preserved",
+      "id": "AC02",
+      "status": "PASS"
+    },
+    {
+      "criterion": "existing knowledge audited",
+      "id": "AC03",
+      "status": "PASS"
+    },
+    {
+      "criterion": "official research performed",
+      "id": "AC04",
+      "status": "PASS"
+    },
+    {
+      "criterion": "source families inventoried",
+      "id": "AC05",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "provenance DAG recorded",
+      "id": "AC06",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Muller subcohorts audited",
+      "id": "AC07",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "LERRCP audited",
+      "id": "AC08",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "secondary/derivative sources separated",
+      "id": "AC09",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "time completeness audited",
+      "id": "AC10",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "round-time states audited",
+      "id": "AC11",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "local/UTC limitation recorded",
+      "id": "AC12",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "document traceability gate recorded",
+      "id": "AC13",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "ADB overlap limitation recorded",
+      "id": "AC14",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "Wikidata P1811 corrected",
+      "id": "AC15",
+      "status": "PASS"
+    },
+    {
+      "criterion": "no TOB overwrite",
+      "id": "AC16",
+      "status": "PASS"
+    },
+    {
+      "criterion": "eligibility state assigned",
+      "id": "AC17",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "no provisional frame without gate",
+      "id": "AC18",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "scale scenarios non-power",
+      "id": "AC19",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "legal scope classified",
+      "id": "AC20",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "no raw data committed",
+      "id": "AC21",
+      "status": "PASS"
+    },
+    {
+      "criterion": "no POSITION_END lookup",
+      "id": "AC22",
+      "status": "PASS"
+    },
+    {
+      "criterion": "no astrology",
+      "id": "AC23",
+      "status": "PASS"
+    },
+    {
+      "criterion": "no feature scoring",
+      "id": "AC24",
+      "status": "PASS"
+    },
+    {
+      "criterion": "no ML/prediction",
+      "id": "AC25",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Ashtakavarga lane preserved",
+      "id": "AC26",
+      "status": "PASS"
+    },
+    {
+      "criterion": "R1 lane preserved",
+      "id": "AC27",
+      "status": "PASS"
+    },
+    {
+      "criterion": "RAG unchanged",
+      "id": "AC28",
+      "status": "PASS"
+    },
+    {
+      "criterion": "EMP-001 preserved",
+      "id": "AC29",
+      "status": "PASS"
+    },
+    {
+      "criterion": "PRED-M4 preserved",
+      "id": "AC30",
+      "status": "PASS"
+    },
+    {
+      "criterion": "research log complete",
+      "id": "AC31",
+      "status": "PASS"
+    },
+    {
+      "criterion": "weak sources rejected",
+      "id": "AC32",
+      "status": "PASS"
+    },
+    {
+      "criterion": "deterministic hash emitted",
+      "id": "AC33",
+      "status": "PASS"
+    },
+    {
+      "criterion": "focused tests added",
+      "id": "AC34",
+      "status": "PASS"
+    },
+    {
+      "criterion": "selective staging",
+      "id": "AC35",
+      "status": "PASS"
+    },
+    {
+      "criterion": "commit/push/tag planned",
+      "id": "AC36",
+      "status": "PASS"
+    },
+    {
+      "criterion": "tracked tree clean after handoff",
+      "id": "AC37",
+      "status": "PASS"
+    }
+  ]
+}

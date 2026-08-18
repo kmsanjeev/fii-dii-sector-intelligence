@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-EVIDENCE-OGDB-SUBCOHORT-RX-001
+
+Completed the source-only OGDB subcohort audit with `PASS_WITH_CONDITION` and
+decision `OGDB_SOURCE_DIVERSITY_USEFUL_BUT_SCALE_LIMITED`. Official OGDB
+statistics and source-family metadata were reconciled; LERRCP and Müller/AFD
+were separated from Cura, New Alchemy and Wikidata derivative/enrichment
+lineages. The existing bounded 1,000-record pilot remains
+`RESEARCH_ONLY_NO_EVENT`; record-level source-document sampling, canonical ADB
+overlap mapping and source-document rights scope remain unresolved. No
+POSITION_END lookup, astrology, feature scoring, ML, prediction, RAG,
+production, Approved Core or raw-data change occurred. Evidence is in
+`docs/current-state/evidence-ogdb-subcohort-rx-001/`.
+
 ## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-DECISION-001
 
 Completed the bounded Ashtakavarga source-contract equivalence decision with

@@ -1,0 +1,462 @@
+{
+  "activity_id": "VEDA-EVIDENCE-OGDB-SUBCOHORT-RX-001",
+  "audit_hash": "97a44f22b02e0223667056d51fdfee8ffd6c14ee0fdf36438d3d26affcbae6bb",
+  "decision": "OGDB_SOURCE_DIVERSITY_USEFUL_BUT_SCALE_LIMITED",
+  "deduplication": {
+    "adb_overlap": "NOT_RESOLVED_NO_CANONICAL_ADB_ID_MAP_IN_LOCAL_DERIVED_ARTIFACTS",
+    "boundary": "No event-bearing or outcome-bearing local files were opened for deduplication; a canonical cross-corpus ID map is required in a later governed lane.",
+    "canonical_ogdb_ids": 1000,
+    "gold_silver_overlap": "NOT_RESOLVED_NO_SUBJECT_LEVEL_ID_MAP_USED",
+    "other_local_ogdb_derivative_files": [],
+    "overlap_with_other_local_ogdb_derivatives": "NOT_RESOLVED",
+    "position_end_overlap": "NOT_QUERIED_BY_POLICY",
+    "raw_subject_records_written": false
+  },
+  "document_traceability": {
+    "completed": 0,
+    "reason": "No documentary scans/source notes were locally available and no bulk source documents were acquired.",
+    "required_per_potential_family": 25,
+    "state": "SOURCE_VERIFICATION_REQUIRED"
+  },
+  "empirical_eligibility": [
+    {
+      "reason": "No source-family traceability or dated outcome frame.",
+      "scope": "WHOLE_OGDB",
+      "state": "MECHANICS_PREVALENCE_ONLY"
+    },
+    {
+      "reason": "Primary lineage identified, documentary birth-time chain not verified in local artifact.",
+      "scope": "LERRCP",
+      "state": "SOURCE_VERIFICATION_REQUIRED"
+    },
+    {
+      "reason": "Potentially independent official upstream families, pending source-document sample and dedup verification.",
+      "scope": "MULLER_AFD_SUBCOHORTS",
+      "state": "EMPIRICAL_ELIGIBLE_WITH_CONDITION"
+    },
+    {
+      "reason": "Derivative or enrichment lineage; not independent birth-time authority.",
+      "scope": "CURA_NEW_ALCHEMY_WIKIDATA",
+      "state": "PROVENANCE_INSUFFICIENT"
+    }
+  ],
+  "governance": {
+    "approved_core_changed": false,
+    "emp_001": "ACTIVE_LONGITUDINAL",
+    "pred_m4": "INSUFFICIENT_SAMPLE",
+    "production_changed": false,
+    "rag_changed": false,
+    "raw_data_committed": false
+  },
+  "legal_scope": {
+    "database_access": "OPEN_DOWNLOAD_METADATA_REVIEWED_RAW_LOCAL_ONLY",
+    "derived_metadata": "PERMITTED_WITH_CONDITION",
+    "local_storage": "LOCAL_IGNORED_ONLY",
+    "redistribution": "NOT_AUTHORIZED",
+    "source_docs": "RIGHTS_SCOPE_UNRESOLVED"
+  },
+  "lerrcp_subcohort_audit": {
+    "decision": "SOURCE_VERIFICATION_REQUIRED",
+    "documentary_sample": "NOT_COMPLETED",
+    "official_family": "LERRCP"
+  },
+  "muller_subcohort_audit": {
+    "decision": "CONDITIONAL_CANDIDATE_ONLY",
+    "documentary_sample": "NOT_COMPLETED",
+    "official_families": [
+      {
+        "authority": "PRIMARY_OFFICIAL_SOURCE_FAMILY",
+        "eligibility": "EMPIRICAL_ELIGIBLE_WITH_CONDITION",
+        "family_id": "MULLER_AFD_GERMAN_DYNASTIES",
+        "final_use": "NO_EMPIRICAL_FRAME_CREATED",
+        "independence": "POTENTIALLY_INDEPENDENT_UPSTREAM",
+        "lineage_parent": null,
+        "local_family_count": null,
+        "local_family_traceability": "NOT_PRESENT_IN_BOUNDED_PILOT",
+        "official_count": 1145,
+        "source_document_sample_completed": 0,
+        "source_document_sample_requested": 25,
+        "source_document_sample_status": "SOURCE_DOCUMENTS_NOT_LOCALLY_AVAILABLE",
+        "source_key": "afd"
+      },
+      {
+        "authority": "PRIMARY_OFFICIAL_SOURCE_FAMILY",
+        "eligibility": "EMPIRICAL_ELIGIBLE_WITH_CONDITION",
+        "family_id": "MULLER_AFD_FRENCH_ACADEMIE_MEDICINE",
+        "final_use": "NO_EMPIRICAL_FRAME_CREATED",
+        "independence": "POTENTIALLY_INDEPENDENT_UPSTREAM",
+        "lineage_parent": null,
+        "local_family_count": null,
+        "local_family_traceability": "NOT_PRESENT_IN_BOUNDED_PILOT",
+        "official_count": 1083,
+        "source_document_sample_completed": 0,
+        "source_document_sample_requested": 25,
+        "source_document_sample_status": "SOURCE_DOCUMENTS_NOT_LOCALLY_AVAILABLE",
+        "source_key": "afd"
+      },
+      {
+        "authority": "PRIMARY_OFFICIAL_SOURCE_FAMILY",
+        "eligibility": "EMPIRICAL_ELIGIBLE_WITH_CONDITION",
+        "family_id": "MULLER_AFD_ITALIAN_WRITERS",
+        "final_use": "NO_EMPIRICAL_FRAME_CREATED",
+        "independence": "POTENTIALLY_INDEPENDENT_UPSTREAM",
+        "lineage_parent": null,
+        "local_family_count": null,
+        "local_family_traceability": "NOT_PRESENT_IN_BOUNDED_PILOT",
+        "official_count": 402,
+        "source_document_sample_completed": 0,
+        "source_document_sample_requested": 25,
+        "source_document_sample_status": "SOURCE_DOCUMENTS_NOT_LOCALLY_AVAILABLE",
+        "source_key": "afd"
+      },
+      {
+        "authority": "PRIMARY_OFFICIAL_SOURCE_FAMILY",
+        "eligibility": "EMPIRICAL_ELIGIBLE_WITH_CONDITION",
+        "family_id": "MULLER_AFD_FAMOUS_MEN",
+        "final_use": "NO_EMPIRICAL_FRAME_CREATED",
+        "independence": "POTENTIALLY_INDEPENDENT_UPSTREAM",
+        "lineage_parent": null,
+        "local_family_count": null,
+        "local_family_traceability": "NOT_PRESENT_IN_BOUNDED_PILOT",
+        "official_count": 612,
+        "source_document_sample_completed": 0,
+        "source_document_sample_requested": 25,
+        "source_document_sample_status": "SOURCE_DOCUMENTS_NOT_LOCALLY_AVAILABLE",
+        "source_key": "afd"
+      },
+      {
+        "authority": "PRIMARY_OFFICIAL_SOURCE_FAMILY",
+        "eligibility": "EMPIRICAL_ELIGIBLE_WITH_CONDITION",
+        "family_id": "MULLER_AFD_FAMOUS_WOMEN",
+        "final_use": "NO_EMPIRICAL_FRAME_CREATED",
+        "independence": "POTENTIALLY_INDEPENDENT_UPSTREAM",
+        "lineage_parent": null,
+        "local_family_count": null,
+        "local_family_traceability": "NOT_PRESENT_IN_BOUNDED_PILOT",
+        "official_count": 234,
+        "source_document_sample_completed": 0,
+        "source_document_sample_requested": 25,
+        "source_document_sample_status": "SOURCE_DOCUMENTS_NOT_LOCALLY_AVAILABLE",
+        "source_key": "afd"
+      }
+    ]
+  },
+  "official_current_state": {
+    "counts": {
+      "countries": 25,
+      "timed": 24542,
+      "total": 25872,
+      "untimed": 1330
+    },
+    "trust_level_note": "Official OGDB documentation states Gauquelin/Muller data are trust level 5 and requires record-by-record checking.",
+    "urls": [
+      "https://opengauquelin.org/stats",
+      "https://opengauquelin.org/sources",
+      "https://opengauquelin.org/downloads",
+      "https://opengauquelin.org/history",
+      "https://opengauquelin.org/wiki/issues"
+    ]
+  },
+  "parallel_lane_state": {
+    "ashtakavarga_next": "VEDA-CALC-ASHTAKAVARGA-REMEDIATION-001",
+    "ashtakavarga_started": false,
+    "position_end": "WAIT_EXTERNAL_ACCESS",
+    "position_end_r2": "BLOCKED_FORMAL_ACCESS_REQUIRED"
+  },
+  "pilot": {
+    "case_eligibility": "RESEARCH_ONLY_NO_EVENT",
+    "feed_id": "VEDA-EMP-OGDB-001",
+    "pilot_limit": 1000,
+    "records": 1000,
+    "source_quality": "SOURCE_RECORD_UNREVIEWED",
+    "usable_empirical_cases": 0
+  },
+  "provenance_dag": {
+    "edges": [
+      [
+        "OGDB_OFFICIAL_CATALOGUE",
+        "LERRCP"
+      ],
+      [
+        "OGDB_OFFICIAL_CATALOGUE",
+        "AFD_MULLER"
+      ],
+      [
+        "LERRCP",
+        "CURA5"
+      ],
+      [
+        "LERRCP",
+        "NEW_ALCHEMY"
+      ],
+      [
+        "AFD_MULLER",
+        "NEW_ALCHEMY"
+      ],
+      [
+        "MULTIPLE_UPSTREAMS",
+        "WIKIDATA"
+      ],
+      [
+        "OGDB_OFFICIAL_DOWNLOAD",
+        "VEDA_OGDB_PILOT_1000"
+      ]
+    ],
+    "independence_rule": "Repeated catalogue, Cura, New Alchemy and Wikidata references are not counted as independent evidence without upstream separation.",
+    "nodes": [
+      {
+        "authority": "PRIMARY_OFFICIAL_METADATA",
+        "id": "OGDB_OFFICIAL_CATALOGUE",
+        "kind": "official_catalogue"
+      },
+      {
+        "id": "LERRCP",
+        "kind": "primary_upstream",
+        "parent": null
+      },
+      {
+        "id": "AFD_MULLER",
+        "kind": "primary_upstream",
+        "parent": null
+      },
+      {
+        "id": "CURA5",
+        "kind": "secondary_derivative",
+        "parent": "LERRCP"
+      },
+      {
+        "id": "NEW_ALCHEMY",
+        "kind": "secondary_derivative",
+        "parent": "LERRCP_AND_AFD"
+      },
+      {
+        "id": "WIKIDATA",
+        "kind": "secondary_enrichment",
+        "parent": "MULTIPLE_UPSTREAMS"
+      },
+      {
+        "id": "VEDA_OGDB_PILOT_1000",
+        "kind": "local_bounded_derivative",
+        "parent": "OGDB_OFFICIAL_DOWNLOAD"
+      }
+    ]
+  },
+  "provisional_frame": {
+    "created": false,
+    "next_gate": "VEDA-EVIDENCE-POSEND-R2-FRAME-RX2_OR_EQUIVALENT",
+    "no_event_acquisition": true,
+    "state": "NOT_CREATED_SOURCE_VERIFICATION_REQUIRED"
+  },
+  "scale_context": {
+    "power_claim": false,
+    "r1_yield": 0.03508771929824561,
+    "scenarios": {
+      "100_percent": 237,
+      "150_percent": 89,
+      "50_percent": 737
+    }
+  },
+  "scope": {
+    "astrology": false,
+    "feature_scoring": false,
+    "ml": false,
+    "position_end_lookup": false,
+    "prediction": false
+  },
+  "skeptic_source_audit": {
+    "csicop_cfepp_comite_para": "COLLECTION_OR_VERIFICATION_LINEAGE_NOT_COUNTED_AS_INDEPENDENT",
+    "cura": "DERIVATIVE_LERRCP",
+    "cura_new_alchemy": "NOT_AUTOMATICALLY_INDEPENDENT",
+    "ertel": "OVERLAP_OR_VERIFICATION_LINEAGE_REQUIRES_CASE_LEVEL_REVIEW"
+  },
+  "source_family_inventory": {
+    "activity_id": "VEDA-EVIDENCE-OGDB-SUBCOHORT-RX-001",
+    "authority_note": "Official OGDB catalogue metadata was reviewed; local pilot records are source-preserving birth-record metadata, not documentary source verification.",
+    "local_artifact": {
+      "astrology_used": false,
+      "outcome_fields_present": false,
+      "path": "data\\veda\\research\\empirical\\ogdb_pilot_1000.json",
+      "record_count": 1000,
+      "source_document_fields_present": false,
+      "source_family_fields_present": false
+    },
+    "official_catalogue_urls": [
+      "https://opengauquelin.org/stats",
+      "https://opengauquelin.org/sources",
+      "https://opengauquelin.org/downloads",
+      "https://opengauquelin.org/history",
+      "https://opengauquelin.org/wiki/issues"
+    ],
+    "official_counts": {
+      "countries": 25,
+      "timed": 24542,
+      "total": 25872,
+      "untimed": 1330
+    },
+    "source_families": [
+      {
+        "authority": "PRIMARY_OFFICIAL_SOURCE_FAMILY",
+        "eligibility": "SOURCE_VERIFICATION_REQUIRED",
+        "family_id": "LERRCP",
+        "final_use": "NO_EMPIRICAL_FRAME_CREATED",
+        "independence": "PRIMARY_UPSTREAM_BUT_DOCUMENTARY_TRACEABILITY_UNVERIFIED",
+        "lineage_parent": null,
+        "local_family_count": null,
+        "local_family_traceability": "NOT_PRESENT_IN_BOUNDED_PILOT",
+        "official_count": 21469,
+        "official_scope": "Gauquelin/LERRCP historical data",
+        "source_document_sample_completed": 0,
+        "source_document_sample_requested": 25,
+        "source_document_sample_status": "SOURCE_DOCUMENTS_NOT_LOCALLY_AVAILABLE",
+        "source_key": "lerrcp"
+      },
+      {
+        "authority": "PRIMARY_OFFICIAL_SOURCE_FAMILY",
+        "eligibility": "EMPIRICAL_ELIGIBLE_WITH_CONDITION",
+        "family_id": "MULLER_AFD_GERMAN_DYNASTIES",
+        "final_use": "NO_EMPIRICAL_FRAME_CREATED",
+        "independence": "POTENTIALLY_INDEPENDENT_UPSTREAM",
+        "lineage_parent": null,
+        "local_family_count": null,
+        "local_family_traceability": "NOT_PRESENT_IN_BOUNDED_PILOT",
+        "official_count": 1145,
+        "source_document_sample_completed": 0,
+        "source_document_sample_requested": 25,
+        "source_document_sample_status": "SOURCE_DOCUMENTS_NOT_LOCALLY_AVAILABLE",
+        "source_key": "afd"
+      },
+      {
+        "authority": "PRIMARY_OFFICIAL_SOURCE_FAMILY",
+        "eligibility": "EMPIRICAL_ELIGIBLE_WITH_CONDITION",
+        "family_id": "MULLER_AFD_FRENCH_ACADEMIE_MEDICINE",
+        "final_use": "NO_EMPIRICAL_FRAME_CREATED",
+        "independence": "POTENTIALLY_INDEPENDENT_UPSTREAM",
+        "lineage_parent": null,
+        "local_family_count": null,
+        "local_family_traceability": "NOT_PRESENT_IN_BOUNDED_PILOT",
+        "official_count": 1083,
+        "source_document_sample_completed": 0,
+        "source_document_sample_requested": 25,
+        "source_document_sample_status": "SOURCE_DOCUMENTS_NOT_LOCALLY_AVAILABLE",
+        "source_key": "afd"
+      },
+      {
+        "authority": "PRIMARY_OFFICIAL_SOURCE_FAMILY",
+        "eligibility": "EMPIRICAL_ELIGIBLE_WITH_CONDITION",
+        "family_id": "MULLER_AFD_ITALIAN_WRITERS",
+        "final_use": "NO_EMPIRICAL_FRAME_CREATED",
+        "independence": "POTENTIALLY_INDEPENDENT_UPSTREAM",
+        "lineage_parent": null,
+        "local_family_count": null,
+        "local_family_traceability": "NOT_PRESENT_IN_BOUNDED_PILOT",
+        "official_count": 402,
+        "source_document_sample_completed": 0,
+        "source_document_sample_requested": 25,
+        "source_document_sample_status": "SOURCE_DOCUMENTS_NOT_LOCALLY_AVAILABLE",
+        "source_key": "afd"
+      },
+      {
+        "authority": "PRIMARY_OFFICIAL_SOURCE_FAMILY",
+        "eligibility": "EMPIRICAL_ELIGIBLE_WITH_CONDITION",
+        "family_id": "MULLER_AFD_FAMOUS_MEN",
+        "final_use": "NO_EMPIRICAL_FRAME_CREATED",
+        "independence": "POTENTIALLY_INDEPENDENT_UPSTREAM",
+        "lineage_parent": null,
+        "local_family_count": null,
+        "local_family_traceability": "NOT_PRESENT_IN_BOUNDED_PILOT",
+        "official_count": 612,
+        "source_document_sample_completed": 0,
+        "source_document_sample_requested": 25,
+        "source_document_sample_status": "SOURCE_DOCUMENTS_NOT_LOCALLY_AVAILABLE",
+        "source_key": "afd"
+      },
+      {
+        "authority": "PRIMARY_OFFICIAL_SOURCE_FAMILY",
+        "eligibility": "EMPIRICAL_ELIGIBLE_WITH_CONDITION",
+        "family_id": "MULLER_AFD_FAMOUS_WOMEN",
+        "final_use": "NO_EMPIRICAL_FRAME_CREATED",
+        "independence": "POTENTIALLY_INDEPENDENT_UPSTREAM",
+        "lineage_parent": null,
+        "local_family_count": null,
+        "local_family_traceability": "NOT_PRESENT_IN_BOUNDED_PILOT",
+        "official_count": 234,
+        "source_document_sample_completed": 0,
+        "source_document_sample_requested": 25,
+        "source_document_sample_status": "SOURCE_DOCUMENTS_NOT_LOCALLY_AVAILABLE",
+        "source_key": "afd"
+      },
+      {
+        "authority": "SECONDARY_OFFICIAL_CATALOG_ENTRY",
+        "eligibility": "MECHANICS_PREVALENCE_ONLY",
+        "family_id": "CURA_V5",
+        "final_use": "NO_EMPIRICAL_FRAME_CREATED",
+        "independence": "DERIVATIVE_OR_REPACKAGED_NOT_INDEPENDENT",
+        "lineage_parent": "LERRCP",
+        "local_family_count": null,
+        "local_family_traceability": "NOT_PRESENT_IN_BOUNDED_PILOT",
+        "official_count": null,
+        "source_document_sample_completed": 0,
+        "source_document_sample_requested": 25,
+        "source_document_sample_status": "SOURCE_DOCUMENTS_NOT_LOCALLY_AVAILABLE",
+        "source_key": "cura5"
+      },
+      {
+        "authority": "SECONDARY_OFFICIAL_CATALOG_ENTRY",
+        "eligibility": "PROVENANCE_INSUFFICIENT",
+        "family_id": "NEW_ALCHEMY",
+        "final_use": "NO_EMPIRICAL_FRAME_CREATED",
+        "independence": "DERIVATIVE_OR_MIXED_LINEAGE",
+        "lineage_parent": "LERRCP_AND_AFD",
+        "local_family_count": null,
+        "local_family_traceability": "NOT_PRESENT_IN_BOUNDED_PILOT",
+        "official_count": null,
+        "source_document_sample_completed": 0,
+        "source_document_sample_requested": 25,
+        "source_document_sample_status": "SOURCE_DOCUMENTS_NOT_LOCALLY_AVAILABLE",
+        "source_key": "newalch"
+      },
+      {
+        "authority": "SECONDARY_ENRICHMENT",
+        "eligibility": "NOT_SUITABLE",
+        "family_id": "WIKIDATA_ENRICHMENT",
+        "final_use": "NO_EMPIRICAL_FRAME_CREATED",
+        "independence": "IDENTITY_ENRICHMENT_ONLY",
+        "lineage_parent": "MULTIPLE_UPSTREAMS",
+        "local_family_count": null,
+        "local_family_traceability": "NOT_PRESENT_IN_BOUNDED_PILOT",
+        "official_count": null,
+        "source_document_sample_completed": 0,
+        "source_document_sample_requested": 25,
+        "source_document_sample_status": "SOURCE_DOCUMENTS_NOT_LOCALLY_AVAILABLE",
+        "source_key": "wd"
+      }
+    ]
+  },
+  "status": "PASS_WITH_CONDITION",
+  "time_provenance": {
+    "historical_calendar_audit": "NOT_PERFORMED_SOURCE_ONLY_LOCAL_PILOT",
+    "limitation": "Pilot metadata retains a local time and optional offset, but not a source-document chain or a full local/UTC audit frame.",
+    "local_pilot_records": 1000,
+    "local_vs_utc_separated": false,
+    "precision": {
+      "MINUTE": 1000
+    },
+    "round_clock": {
+      "00:00": 5,
+      "12:00": 29,
+      "NON_ROUND_MINUTE": 256,
+      "OTHER_HOUR": 710
+    },
+    "timed_records": 1000,
+    "timezone_offset_present": 702,
+    "untimed_records": 0,
+    "utc_datetime_present": 0
+  },
+  "wikidata_correction": {
+    "P1811": "LIST_OF_EPISODES_NOT_TIME_OF_BIRTH",
+    "P569": "DATE_OF_BIRTH_IDENTITY_ENRICHMENT",
+    "exact_tob_source": "NO",
+    "overwrite_tob": false,
+    "veda_role": "IDENTITY_OCCUPATION_COUNTRY_PUBLIC_ROLE_EVENT_SOURCE_ENRICHMENT_ONLY"
+  }
+}
