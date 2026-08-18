@@ -5,7 +5,7 @@ P013 establishes a governed capability-engineering lifecycle on top of the exist
 Key outcomes:
 
 - Capabilities registered: `25`
-- Dependency edges recorded: `145`
+- Dependency edges recorded: `148`
 - Research mission proposals generated: `22`
 - Pilot capability: `VEDA-CAP-DIGNITY-000001` -> `ACTIVATION_READY`
 - Lifecycle fail-closed: `True`

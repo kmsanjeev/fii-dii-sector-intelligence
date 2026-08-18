@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## 2026-08-18 | VEDA-CALC-SIDEREAL-ASC-TZ-001
+
+Completed the bounded independent Lahiri/Nirayana, Ascendant and historical-time
+validation with `PASS_WITH_CONDITION`. The official IMD/PAC Indian Astronomical
+Ephemeris 2026 was inspected at edition/page level and supplied a bounded
+ayanamsha/Nirayana convention check; full all-body independent sidereal authority
+remains partial because frame, time-scale and apparent/geometric equivalence are
+not completely resolved. A fixed 120-case independent tropical Ascendant corpus
+passed 120/120 within 0.05 degrees, while inherited runtime/reference boundary
+cases remain governed by an explicit boundary policy and were not silently
+migrated. A 64-case timezone corpus records tzdata 2025.2, pre-standard LMT,
+nonexistent DST gaps and ambiguous folds without false precision. The stale
+OpenAPI contract snapshot was regenerated through its canonical generator to
+140 paths/153 operations. No production chart, D20 interpretation, prediction
+or ML activation occurred. The unified RAG snapshots were deterministically
+regenerated because the current P013 capability export changed governed
+capability records; no new RAG store or trust-zone promotion occurred. Raw
+provider material remains uncommitted.
+
 ## 2026-08-18 | VEDA-CALC-ORACLE-001
 
 Completed the independent calculation-oracle activity with `PASS_WITH_CONDITION`.

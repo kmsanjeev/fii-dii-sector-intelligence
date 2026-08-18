@@ -2,8 +2,8 @@
   "meta": {
     "baseline_id": "VEDA-P001-M003",
     "generated_on": "2026-08-10",
-    "openapi_path_count": 129,
-    "operation_count": 141
+    "openapi_path_count": 140,
+    "operation_count": 153
   },
   "critical_endpoints": [
     {
@@ -1607,6 +1607,277 @@
       "query_params": [],
       "response_codes": [
         "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/empirical/cases",
+      "owner": "veda-empirical-admin",
+      "operation_id": "list_cases_api_empirical_cases_get",
+      "tags": [
+        "veda-empirical-admin"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "limit"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/empirical/cases",
+      "owner": "veda-empirical-admin",
+      "operation_id": "create_case_api_empirical_cases_post",
+      "tags": [
+        "veda-empirical-admin"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/empirical/cases/validate",
+      "owner": "veda-empirical-admin",
+      "operation_id": "validate_case_api_empirical_cases_validate_post",
+      "tags": [
+        "veda-empirical-admin"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/empirical/cases/{case_id}",
+      "owner": "veda-empirical-admin",
+      "operation_id": "get_case_api_empirical_cases__case_id__get",
+      "tags": [
+        "veda-empirical-admin"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "case_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/empirical/imports",
+      "owner": "veda-empirical-admin",
+      "operation_id": "list_imports_api_empirical_imports_get",
+      "tags": [
+        "veda-empirical-admin"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "limit"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/empirical/imports/preview",
+      "owner": "veda-empirical-admin",
+      "operation_id": "preview_import_api_empirical_imports_preview_post",
+      "tags": [
+        "veda-empirical-admin"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "multipart/form-data"
+      ],
+      "path_params": [],
+      "query_params": [
+        "sheet"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/empirical/imports/{import_id}",
+      "owner": "veda-empirical-admin",
+      "operation_id": "get_import_api_empirical_imports__import_id__get",
+      "tags": [
+        "veda-empirical-admin"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "import_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/empirical/imports/{import_id}/ingest",
+      "owner": "veda-empirical-admin",
+      "operation_id": "ingest_import_api_empirical_imports__import_id__ingest_post",
+      "tags": [
+        "veda-empirical-admin"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [
+        "import_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/empirical/overview",
+      "owner": "veda-empirical-admin",
+      "operation_id": "overview_api_empirical_overview_get",
+      "tags": [
+        "veda-empirical-admin"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/empirical/templates/csv",
+      "owner": "veda-empirical-admin",
+      "operation_id": "download_csv_template_api_empirical_templates_csv_get",
+      "tags": [
+        "veda-empirical-admin"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/empirical/templates/xlsx",
+      "owner": "veda-empirical-admin",
+      "operation_id": "download_xlsx_template_api_empirical_templates_xlsx_get",
+      "tags": [
+        "veda-empirical-admin"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/empirical/validation-report/{import_id}",
+      "owner": "veda-empirical-admin",
+      "operation_id": "validation_report_api_empirical_validation_report__import_id__get",
+      "tags": [
+        "veda-empirical-admin"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "import_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
       ],
       "response_content_types": [
         "application/json"

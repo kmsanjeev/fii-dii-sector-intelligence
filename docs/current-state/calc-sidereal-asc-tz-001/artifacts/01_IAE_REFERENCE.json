@@ -1,0 +1,75 @@
+{
+  "authority_state": "REFERENCE_STANDARD_PARTIALLY_RESOLVED",
+  "comparisons": [
+    {
+      "absolute_difference_arcsec": 3.905672,
+      "date": "2026-01-01",
+      "iae_ayanamsha_deg": 24.2213888889,
+      "iae_page": 387,
+      "status": "BOUNDED_AGREEMENT_WITH_CONVENTION_DIFFERENCE",
+      "swiss_sidm_lahiri_deg": 24.2203039799
+    },
+    {
+      "absolute_difference_arcsec": 3.020836,
+      "date": "2026-02-20",
+      "iae_ayanamsha_deg": 24.2230555556,
+      "iae_page": 389,
+      "status": "BOUNDED_AGREEMENT_WITH_CONVENTION_DIFFERENCE",
+      "swiss_sidm_lahiri_deg": 24.2222164345
+    },
+    {
+      "absolute_difference_arcsec": 3.027629,
+      "date": "2026-03-21",
+      "iae_ayanamsha_deg": 24.2241666667,
+      "iae_page": 391,
+      "status": "BOUNDED_AGREEMENT_WITH_CONVENTION_DIFFERENCE",
+      "swiss_sidm_lahiri_deg": 24.2233256586
+    },
+    {
+      "absolute_difference_arcsec": 1.759027,
+      "date": "2026-04-21",
+      "iae_ayanamsha_deg": 24.225,
+      "iae_page": 393,
+      "status": "BOUNDED_AGREEMENT_WITH_CONVENTION_DIFFERENCE",
+      "swiss_sidm_lahiri_deg": 24.2245113814
+    },
+    {
+      "absolute_difference_arcsec": 1.62812,
+      "date": "2026-05-21",
+      "iae_ayanamsha_deg": 24.2261111111,
+      "iae_page": 395,
+      "status": "BOUNDED_AGREEMENT_WITH_CONVENTION_DIFFERENCE",
+      "swiss_sidm_lahiri_deg": 24.2256588555
+    },
+    {
+      "absolute_difference_arcsec": 2.359515,
+      "date": "2026-06-21",
+      "iae_ayanamsha_deg": 24.2275,
+      "iae_page": 397,
+      "status": "BOUNDED_AGREEMENT_WITH_CONVENTION_DIFFERENCE",
+      "swiss_sidm_lahiri_deg": 24.2268445792
+    }
+  ],
+  "edition_pages_inspected": [
+    4,
+    387,
+    389,
+    391,
+    393,
+    395,
+    397
+  ],
+  "edition_pdf_sha256": "58A16722E98F3E9DD23E8E188C39B577E24135306F20674B52FBBB172DB2E25A",
+  "edition_standard": {
+    "calendar_scope": "Indian Calendar tithi/nakshatra and Nirayana solar entries",
+    "calendar_time": "Indian Standard Time (IST) or local mean time of 82.5E meridian as stated in calendar tables",
+    "ephemeris_argument": "Terrestrial Time (TT)",
+    "reference_epoch": "J2000.0"
+  },
+  "html_edition_note": "The IMD overview page currently says J2000.5 while the inspected 2026 edition preface says J2000.0; edition-level PDF wording is retained and the discrepancy remains tracked.",
+  "limitation": "IAE provides an independent official bounded calendar/ayanamsha check, not a complete per-body modern Lahiri longitude oracle with identical VEDA frame and apparent/geometric conventions.",
+  "result_hash": "610542872E6B049E76C2849316BA11E6D23FC0108CDA3985F91FB671A8D857E6",
+  "retrieval_date": "2026-08-18",
+  "source": "Indian Astronomical Ephemeris 2026, Positional Astronomy Centre, IMD",
+  "source_url": "https://packolkata.imd.gov.in/download/IAE2026.zip"
+}

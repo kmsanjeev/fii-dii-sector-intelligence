@@ -1259,11 +1259,11 @@
     "domain": "ADVANCED",
     "subdomain": "MUHURTA",
     "capability_type": "COMPOSITE_ANALYSIS",
-    "status": "IDENTIFIED",
-    "research_status": "KNOWLEDGE_GAP_IDENTIFIED",
-    "knowledge_status": "NOT_YET_GOVERNED",
-    "implementation_status": "NO_P013_PACKAGE",
-    "validation_status": "NOT_STARTED",
+    "status": "IMPLEMENTING",
+    "research_status": "FOUNDATION_AUDIT_COMPLETED_WITH_CONDITIONS",
+    "knowledge_status": "PARTIAL_SOURCE_GOVERNANCE",
+    "implementation_status": "FOUNDATION_ONLY_NO_ELECTIONAL_SELECTION",
+    "validation_status": "PARTIAL_FOUNDATION_VALIDATED",
     "activation_status": "INACTIVE",
     "safety_class": "MODERATE",
     "dependencies": [
@@ -1271,8 +1271,11 @@
       "VEDA-CAP-FOUNDATION-000002"
     ],
     "required_chart_facts": [
-      "transit",
-      "lagna",
+      "date",
+      "location",
+      "timezone",
+      "sunrise",
+      "sunset",
       "tithi",
       "nakshatra"
     ],

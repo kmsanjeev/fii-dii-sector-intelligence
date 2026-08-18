@@ -33,4 +33,4 @@ The capability registry is machine-readable and links every future Jyotisha capa
 | `VEDA-CAP-DOMAIN-000006` | Longevity intelligence | RESEARCHING | ADVANCED | AYURDAYA | HIGH_STAKES |
 | `VEDA-CAP-DOMAIN-000007` | Remedy governance | RESEARCHING | ADVANCED | REMEDIES | HIGH_STAKES |
 | `VEDA-CAP-ADVANCED-000001` | Jaimini systems | IDENTIFIED | ADVANCED | JAIMINI | MODERATE |
-| `VEDA-CAP-ADVANCED-000002` | Muhurta and electional astrology | IDENTIFIED | ADVANCED | MUHURTA | MODERATE |
+| `VEDA-CAP-ADVANCED-000002` | Muhurta and electional astrology | IMPLEMENTING | ADVANCED | MUHURTA | MODERATE |

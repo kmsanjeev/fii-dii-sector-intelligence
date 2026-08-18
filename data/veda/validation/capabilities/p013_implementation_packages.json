@@ -636,12 +636,15 @@
     "approved_claim_ids": [],
     "approved_rule_ids": [],
     "calculation_dependencies": [
-      "transit",
-      "lagna",
+      "date",
+      "location",
+      "timezone",
+      "sunrise",
+      "sunset",
       "tithi",
       "nakshatra"
     ],
-    "implementation_module": "UNASSIGNED",
+    "implementation_module": "engines.ai.knowledge.muhurta_foundation",
     "validation_datasets": [
       "P001 fixtures",
       "P004 fixtures",

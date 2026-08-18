@@ -1271,23 +1271,50 @@
   {
     "dependency_id": "VEDA-CDEP-000142",
     "capability_id": "VEDA-CAP-ADVANCED-000002",
-    "depends_on": "transit",
+    "depends_on": "date",
     "dependency_kind": "CHART_FACT",
     "minimum_status": "FACT_AVAILABLE",
-    "rationale": "Muhurta and electional astrology needs canonical fact `transit` from the P012 runtime boundary.",
+    "rationale": "Muhurta and electional astrology needs canonical fact `date` from the P012 runtime boundary.",
     "blocking": false
   },
   {
     "dependency_id": "VEDA-CDEP-000143",
     "capability_id": "VEDA-CAP-ADVANCED-000002",
-    "depends_on": "lagna",
+    "depends_on": "location",
     "dependency_kind": "CHART_FACT",
     "minimum_status": "FACT_AVAILABLE",
-    "rationale": "Muhurta and electional astrology needs canonical fact `lagna` from the P012 runtime boundary.",
+    "rationale": "Muhurta and electional astrology needs canonical fact `location` from the P012 runtime boundary.",
     "blocking": false
   },
   {
     "dependency_id": "VEDA-CDEP-000144",
+    "capability_id": "VEDA-CAP-ADVANCED-000002",
+    "depends_on": "timezone",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Muhurta and electional astrology needs canonical fact `timezone` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000145",
+    "capability_id": "VEDA-CAP-ADVANCED-000002",
+    "depends_on": "sunrise",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Muhurta and electional astrology needs canonical fact `sunrise` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000146",
+    "capability_id": "VEDA-CAP-ADVANCED-000002",
+    "depends_on": "sunset",
+    "dependency_kind": "CHART_FACT",
+    "minimum_status": "FACT_AVAILABLE",
+    "rationale": "Muhurta and electional astrology needs canonical fact `sunset` from the P012 runtime boundary.",
+    "blocking": false
+  },
+  {
+    "dependency_id": "VEDA-CDEP-000147",
     "capability_id": "VEDA-CAP-ADVANCED-000002",
     "depends_on": "tithi",
     "dependency_kind": "CHART_FACT",
@@ -1296,7 +1323,7 @@
     "blocking": false
   },
   {
-    "dependency_id": "VEDA-CDEP-000145",
+    "dependency_id": "VEDA-CDEP-000148",
     "capability_id": "VEDA-CAP-ADVANCED-000002",
     "depends_on": "nakshatra",
     "dependency_kind": "CHART_FACT",
