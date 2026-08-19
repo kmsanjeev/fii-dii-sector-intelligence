@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any, Mapping
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from engines.common.logger import get_logger
 from engines.ai.knowledge.muhurta_foundation import compute_panchanga_facts
 from scripts.veda_muhurta_predicate_evaluator import (
     PredicateResult,
@@ -67,6 +68,8 @@ BLOCKING_REASONS = {
     "CALCULATION_DEPENDENCY_UNAVAILABLE",
     "ACTIVITY_SCOPE_MISMATCH",
 }
+
+logger = get_logger(__name__)
 
 
 class MuhurtaEngineError(RuntimeError):
@@ -402,4 +405,14 @@ _original_recommend = recommend
 
 
 def recommend(request: Mapping[str, Any]) -> dict[str, Any]:  # noqa: E305
-    return _refresh_trace(_original_recommend(request))
+    result = _refresh_trace(_original_recommend(request))
+    logger.info(
+        "engine_id=%s activity=%s contract_id=%s recommendation_state=%s abstention_reason=%s rule_ids=%s",
+        ENGINE_ID,
+        result.get("activity_id"),
+        result.get("contract_metadata", {}).get("contract_id"),
+        result.get("recommendation_state"),
+        result.get("abstention_reason"),
+        result.get("source_trace", {}).get("rules_evaluated", []),
+    )
+    return result
