@@ -1,0 +1,54 @@
+{
+  "BUSINESS_OPENING_INAUGURATION": {
+    "abstention": [
+      "INSUFFICIENT_RULE_COVERAGE",
+      "SOURCE_CONFLICT_UNRESOLVED",
+      "REQUIRED_FACTOR_UNAVAILABLE",
+      "PERSONAL_FACTOR_REQUIRED",
+      "CALCULATION_DEPENDENCY_UNAVAILABLE",
+      "ACTIVITY_SCOPE_MISMATCH"
+    ],
+    "activity_id": "BUSINESS_OPENING_INAUGURATION",
+    "scope_exclusions": [
+      "investment selection",
+      "stock trading",
+      "loans",
+      "major financing",
+      "incorporation deadlines",
+      "tax filings"
+    ]
+  },
+  "EDUCATION_COMMENCEMENT": {
+    "abstention": [
+      "INSUFFICIENT_RULE_COVERAGE",
+      "SOURCE_CONFLICT_UNRESOLVED",
+      "REQUIRED_FACTOR_UNAVAILABLE",
+      "PERSONAL_FACTOR_REQUIRED",
+      "CALCULATION_DEPENDENCY_UNAVAILABLE",
+      "ACTIVITY_SCOPE_MISMATCH"
+    ],
+    "activity_id": "EDUCATION_COMMENCEMENT",
+    "scope_exclusions": [
+      "routine daily studying",
+      "examinations",
+      "admission deadlines",
+      "mandatory school requirements"
+    ]
+  },
+  "RELIGIOUS_SPIRITUAL_CEREMONY": {
+    "abstention": [
+      "INSUFFICIENT_RULE_COVERAGE",
+      "SOURCE_CONFLICT_UNRESOLVED",
+      "REQUIRED_FACTOR_UNAVAILABLE",
+      "PERSONAL_FACTOR_REQUIRED",
+      "CALCULATION_DEPENDENCY_UNAVAILABLE",
+      "ACTIVITY_SCOPE_MISMATCH"
+    ],
+    "activity_id": "RELIGIOUS_SPIRITUAL_CEREMONY",
+    "scope_exclusions": [
+      "automatic priest/guru selection",
+      "religious superiority claims",
+      "universal rules for all traditions"
+    ]
+  }
+}

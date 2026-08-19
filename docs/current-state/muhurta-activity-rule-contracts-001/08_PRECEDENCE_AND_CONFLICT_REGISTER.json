@@ -1,0 +1,45 @@
+{
+  "conflicts": [
+    {
+      "activity": "ALL_MVP",
+      "conflict_id": "MUH-CONFLICT-SCOPED-VS-UNIVERSAL-001",
+      "conflict_type": "DIFFERENT_SCOPE",
+      "normalization_checked": true,
+      "resolution": "Keep scoped action families categorical; reject universal score construction.",
+      "rule_a": "P032-RULE-EVENT-SCOPED-001",
+      "rule_b": "P032-RULE-SCORE-001",
+      "unresolved": false
+    },
+    {
+      "activity": "ALL_MVP",
+      "conflict_id": "MUH-CONFLICT-MARRIAGE-SCOPE-001",
+      "conflict_type": "DIFFERENT_SCOPE",
+      "normalization_checked": true,
+      "resolution": "Exclude marriage-specific conditions from all MVP contracts.",
+      "rule_a": "MARRIAGE_SPECIFIC_KARANA_CONDITIONS",
+      "rule_b": "MVP_ACTIVITY_RULES",
+      "unresolved": false
+    },
+    {
+      "activity": "ALL_MVP",
+      "conflict_id": "MUH-CONFLICT-PERSONAL-BALA-001",
+      "conflict_type": "UNRESOLVED",
+      "normalization_checked": true,
+      "resolution": "Mark personalization deferred and abstain when a personal rule is required.",
+      "rule_a": "P032-RULE-TARABALA-001;P032-RULE-CHANDRABALA-001",
+      "rule_b": "GENERAL_MUHURTA_CONTRACTS",
+      "unresolved": true
+    }
+  ],
+  "cross_tradition_guard": "NO_CROSS_TRADITION_RULE_OR_INVARIANT_MERGE_WITHOUT_EQUIVALENCE_OR_SCOPE_PROOF",
+  "precedence": [
+    "HARD_EXCLUSION",
+    "HARD_REQUIREMENT",
+    "STRONG_NEGATIVE",
+    "CONTEXT_DEPENDENT",
+    "PREFERENCE_NEGATIVE",
+    "PREFERENCE_POSITIVE",
+    "STRONG_POSITIVE",
+    "NEUTRAL"
+  ]
+}

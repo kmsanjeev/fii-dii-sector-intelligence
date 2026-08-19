@@ -1,0 +1,186 @@
+{
+  "authorization": {
+    "at_least_one_engine_ready": true,
+    "authorization_scope": "Future conditional engine programme only; not started and not production-bound.",
+    "business": "ENGINE_READY_WITH_CONDITION",
+    "education": "ENGINE_READY_WITH_CONDITION",
+    "programme_decision": "MUHURTA_PARTIAL_ACTIVITY_CONTRACTS_READY",
+    "reason": "Business and education have narrow conditional general contracts with deterministic inputs, precedence, abstention and caution. Religious ceremony requires ceremony-specific source hardening.",
+    "recommendation_engine_authorized": true,
+    "religious": "SOURCE_HARDENING_REQUIRED"
+  },
+  "handoffs": [
+    {
+      "abstention": [
+        "INSUFFICIENT_RULE_COVERAGE",
+        "SOURCE_CONFLICT_UNRESOLVED",
+        "REQUIRED_FACTOR_UNAVAILABLE",
+        "PERSONAL_FACTOR_REQUIRED",
+        "CALCULATION_DEPENDENCY_UNAVAILABLE",
+        "ACTIVITY_SCOPE_MISMATCH"
+      ],
+      "caution_class": "MODERATE_CONSEQUENCE_BUSINESS_CONTEXT",
+      "contract_hash": "941E9ECB9960652C",
+      "contract_id": "VEDA-MUH-CONTRACT-BUSINESS-OPENING-V1",
+      "output_states": [
+        "SUPPORTED_WITH_CAUTION",
+        "INSUFFICIENT_RULE_COVERAGE",
+        "ACTIVITY_SCOPE_MISMATCH",
+        "SOURCE_CONFLICT_UNRESOLVED",
+        "ABSTAIN"
+      ],
+      "precedence": [
+        "HARD_EXCLUSION",
+        "HARD_REQUIREMENT",
+        "STRONG_NEGATIVE",
+        "CONTEXT_DEPENDENT",
+        "PREFERENCE_NEGATIVE",
+        "PREFERENCE_POSITIVE",
+        "STRONG_POSITIVE",
+        "NEUTRAL"
+      ],
+      "production_bound": false,
+      "required_inputs": [
+        "activity_id",
+        "activity_subscope_if_required",
+        "local_date",
+        "timezone",
+        "location",
+        "tithi",
+        "nakshatra",
+        "vara",
+        "yoga",
+        "karana",
+        "selected_ruleset"
+      ],
+      "rule_ids": [
+        "MUH-BIZ-NAK-001",
+        "MUH-BIZ-TITHI-KARANA-001",
+        "MUH-BIZ-PANCHANGA-INPUT-001",
+        "MUH-BIZ-VARA-YOGA-GAP-001"
+      ],
+      "supported_activity": "BUSINESS_OPENING_INAUGURATION",
+      "unresolved_non_blocking_items": [
+        "No complete activity-specific Vara/Yoga contract.",
+        "Personal Bala is not executable.",
+        "No ranking or universal score."
+      ]
+    },
+    {
+      "abstention": [
+        "INSUFFICIENT_RULE_COVERAGE",
+        "SOURCE_CONFLICT_UNRESOLVED",
+        "REQUIRED_FACTOR_UNAVAILABLE",
+        "PERSONAL_FACTOR_REQUIRED",
+        "CALCULATION_DEPENDENCY_UNAVAILABLE",
+        "ACTIVITY_SCOPE_MISMATCH"
+      ],
+      "caution_class": "LOW_RISK_TRADITIONAL_EDUCATION_CONTEXT",
+      "contract_hash": "FFE718B6AAA8D6C9",
+      "contract_id": "VEDA-MUH-CONTRACT-EDUCATION-COMMENCEMENT-V1",
+      "output_states": [
+        "SUPPORTED_WITH_CAUTION",
+        "INSUFFICIENT_RULE_COVERAGE",
+        "ACTIVITY_SCOPE_MISMATCH",
+        "SOURCE_CONFLICT_UNRESOLVED",
+        "ABSTAIN"
+      ],
+      "precedence": [
+        "HARD_EXCLUSION",
+        "HARD_REQUIREMENT",
+        "STRONG_NEGATIVE",
+        "CONTEXT_DEPENDENT",
+        "PREFERENCE_NEGATIVE",
+        "PREFERENCE_POSITIVE",
+        "STRONG_POSITIVE",
+        "NEUTRAL"
+      ],
+      "production_bound": false,
+      "required_inputs": [
+        "activity_id",
+        "activity_subscope_if_required",
+        "local_date",
+        "timezone",
+        "location",
+        "tithi",
+        "nakshatra",
+        "vara",
+        "yoga",
+        "karana",
+        "selected_ruleset"
+      ],
+      "rule_ids": [
+        "MUH-EDU-NAK-001",
+        "MUH-EDU-TITHI-KARANA-001",
+        "MUH-EDU-PANCHANGA-INPUT-001",
+        "MUH-EDU-ROUTINE-SCOPE-001",
+        "MUH-EDU-VARA-YOGA-GAP-001"
+      ],
+      "supported_activity": "EDUCATION_COMMENCEMENT",
+      "unresolved_non_blocking_items": [
+        "Ceremonial commencement versus modern course start needs source separation.",
+        "Personal Bala is not executable.",
+        "No ranking or universal score."
+      ]
+    },
+    {
+      "abstention": [
+        "INSUFFICIENT_RULE_COVERAGE",
+        "SOURCE_CONFLICT_UNRESOLVED",
+        "REQUIRED_FACTOR_UNAVAILABLE",
+        "PERSONAL_FACTOR_REQUIRED",
+        "CALCULATION_DEPENDENCY_UNAVAILABLE",
+        "ACTIVITY_SCOPE_MISMATCH"
+      ],
+      "caution_class": "LOW_RISK_TRADITIONAL_CONSULTATION_REQUIRED",
+      "contract_hash": "A700789D07BD477D",
+      "contract_id": "VEDA-MUH-CONTRACT-RELIGIOUS-SPIRITUAL-CEREMONY-V1",
+      "output_states": [
+        "SUPPORTED_WITH_CAUTION",
+        "INSUFFICIENT_RULE_COVERAGE",
+        "ACTIVITY_SCOPE_MISMATCH",
+        "SOURCE_CONFLICT_UNRESOLVED",
+        "ABSTAIN"
+      ],
+      "precedence": [
+        "HARD_EXCLUSION",
+        "HARD_REQUIREMENT",
+        "STRONG_NEGATIVE",
+        "CONTEXT_DEPENDENT",
+        "PREFERENCE_NEGATIVE",
+        "PREFERENCE_POSITIVE",
+        "STRONG_POSITIVE",
+        "NEUTRAL"
+      ],
+      "production_bound": false,
+      "required_inputs": [
+        "activity_id",
+        "activity_subscope_if_required",
+        "local_date",
+        "timezone",
+        "location",
+        "tithi",
+        "nakshatra",
+        "vara",
+        "yoga",
+        "karana",
+        "selected_ruleset"
+      ],
+      "rule_ids": [
+        "MUH-REL-NAK-001",
+        "MUH-REL-TITHI-KARANA-001",
+        "MUH-REL-SUBSCOPE-001",
+        "MUH-REL-PANCHANGA-INPUT-001",
+        "MUH-REL-PERSONAL-BALA-001"
+      ],
+      "supported_activity": "RELIGIOUS_SPIRITUAL_CEREMONY",
+      "unresolved_non_blocking_items": [
+        "Ceremony-specific corpus is incomplete.",
+        "Tradition and lineage differences are material.",
+        "Personal Bala is not executable.",
+        "No ranking or universal score."
+      ]
+    }
+  ],
+  "recommendation_engine": "VEDA-MUHURTA-RECOMMENDATION-ENGINE-001"
+}

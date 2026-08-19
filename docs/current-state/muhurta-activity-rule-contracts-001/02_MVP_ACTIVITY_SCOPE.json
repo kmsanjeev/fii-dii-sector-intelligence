@@ -1,0 +1,55 @@
+{
+  "activities": [
+    {
+      "activity_id": "BUSINESS_OPENING_INAUGURATION",
+      "scope": {
+        "excluded": [
+          "investment selection",
+          "stock trading",
+          "loans",
+          "major financing",
+          "incorporation deadlines",
+          "tax filings"
+        ],
+        "included": [
+          "opening or inaugurating a commercial establishment"
+        ],
+        "mode": "GENERAL_MUHURTA_ONLY"
+      },
+      "state": "ENGINE_READY_WITH_CONDITION"
+    },
+    {
+      "activity_id": "EDUCATION_COMMENCEMENT",
+      "scope": {
+        "excluded": [
+          "routine daily studying",
+          "examinations",
+          "admission deadlines",
+          "mandatory school requirements"
+        ],
+        "included": [
+          "formal course, programme, first lesson, or separately identified ceremonial commencement"
+        ],
+        "mode": "GENERAL_MUHURTA_ONLY"
+      },
+      "state": "ENGINE_READY_WITH_CONDITION"
+    },
+    {
+      "activity_id": "RELIGIOUS_SPIRITUAL_CEREMONY",
+      "scope": {
+        "excluded": [
+          "automatic priest/guru selection",
+          "religious superiority claims",
+          "universal rules for all traditions"
+        ],
+        "included": [
+          "generic ceremony scope only when ceremony subtype is explicit"
+        ],
+        "mode": "GENERAL_MUHURTA_ONLY"
+      },
+      "state": "SOURCE_HARDENING_REQUIRED"
+    }
+  ],
+  "marriage": "MVP_DEFERRED",
+  "medical_legal_financial": "OUT_OF_SCOPE"
+}

@@ -1,0 +1,55 @@
+{
+  "existing_assets": [
+    {
+      "asset": "P032 deterministic facts",
+      "reuse": "VARA/TITHI/NAKSHATRA/YOGA/KARANA/transitions",
+      "status": "IMPLEMENTED / FROZEN"
+    },
+    {
+      "asset": "KNOW-MUH-001/002/003",
+      "reuse": "Scoped action families; personal Bala and universal score remain inactive",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "asset": "Source-witness standard",
+      "reuse": "Activity rule lineage fields",
+      "status": "IMPLEMENTED / FROZEN"
+    }
+  ],
+  "predecessor": {
+    "activity": "VEDA-MUHURTA-RECOMMENDATION-GOVERNANCE-001",
+    "decision": "MUHURTA_RECOMMENDATION_GOVERNANCE_READY_WITH_CONDITION",
+    "mvp_activities": [
+      "BUSINESS_OPENING_INAUGURATION",
+      "EDUCATION_COMMENCEMENT",
+      "RELIGIOUS_SPIRITUAL_CEREMONY"
+    ],
+    "recommendation_runtime": "INACTIVE"
+  },
+  "rules": [
+    {
+      "activation": "DISABLED",
+      "rule_id": "P032-RULE-EVENT-SCOPED-001",
+      "scope": "Event-specific action families",
+      "status": "VALIDATED_KNOWLEDGE"
+    },
+    {
+      "activation": "DISABLED",
+      "rule_id": "P032-RULE-TARABALA-001",
+      "scope": "Personal only",
+      "status": "RESEARCH_CANDIDATE"
+    },
+    {
+      "activation": "DISABLED",
+      "rule_id": "P032-RULE-CHANDRABALA-001",
+      "scope": "Personal only",
+      "status": "RESEARCH_CANDIDATE"
+    },
+    {
+      "activation": "DISABLED",
+      "rule_id": "P032-RULE-SCORE-001",
+      "scope": "Universal score",
+      "status": "DEFERRED"
+    }
+  ]
+}

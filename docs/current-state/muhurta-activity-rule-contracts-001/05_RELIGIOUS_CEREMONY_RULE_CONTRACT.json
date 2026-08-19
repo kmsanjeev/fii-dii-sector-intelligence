@@ -1,0 +1,240 @@
+{
+  "abstention_policy": [
+    "INSUFFICIENT_RULE_COVERAGE",
+    "SOURCE_CONFLICT_UNRESOLVED",
+    "REQUIRED_FACTOR_UNAVAILABLE",
+    "PERSONAL_FACTOR_REQUIRED",
+    "CALCULATION_DEPENDENCY_UNAVAILABLE",
+    "ACTIVITY_SCOPE_MISMATCH"
+  ],
+  "activity_id": "RELIGIOUS_SPIRITUAL_CEREMONY",
+  "activity_scope": {
+    "excluded": [
+      "automatic priest/guru selection",
+      "religious superiority claims",
+      "universal rules for all traditions"
+    ],
+    "included": [
+      "generic ceremony scope only when ceremony subtype is explicit"
+    ],
+    "mode": "GENERAL_MUHURTA_ONLY"
+  },
+  "arbitrary_numeric_score": false,
+  "caution_class": "LOW_RISK_TRADITIONAL_CONSULTATION_REQUIRED",
+  "conflict_policy": {
+    "policy_id": "MUH-POLICY-CONFLICT-CATEGORICAL-V1",
+    "resolution": "Do not average competing rules; isolate variants and abstain on unresolved material conflict.",
+    "unresolved_conflict_state": "SOURCE_CONFLICT_UNRESOLVED"
+  },
+  "consultation_class": "QUALIFIED_TRADITIONAL_PRACTITIONER_WHERE_CEREMONY_SPECIFIC",
+  "contract_hash": "A700789D07BD477D",
+  "contract_id": "VEDA-MUH-CONTRACT-RELIGIOUS-SPIRITUAL-CEREMONY-V1",
+  "hard_exclusions": [],
+  "hard_requirements": [
+    "MUH-REL-SUBSCOPE-001"
+  ],
+  "hidden_weights": false,
+  "personal_factors": [
+    "MUH-REL-PERSONAL-BALA-001"
+  ],
+  "precedence_policy": [
+    "HARD_EXCLUSION",
+    "HARD_REQUIREMENT",
+    "STRONG_NEGATIVE",
+    "CONTEXT_DEPENDENT",
+    "PREFERENCE_NEGATIVE",
+    "PREFERENCE_POSITIVE",
+    "STRONG_POSITIVE",
+    "NEUTRAL"
+  ],
+  "preference_negatives": [],
+  "preference_positives": [
+    "MUH-REL-NAK-001"
+  ],
+  "production_bound": false,
+  "recommendation_engine_state": "SOURCE_HARDENING_REQUIRED",
+  "rule_coverage": {
+    "coverage_state": "INSUFFICIENT_FOR_GENERIC_RELIGIOUS_ENGINE_CONTRACT",
+    "dimensions": [
+      "VARA",
+      "TITHI",
+      "NAKSHATRA",
+      "YOGA",
+      "KARANA",
+      "TRANSITIONS",
+      "PERSONAL_FACTORS",
+      "CEREMONY_SUBSCOPE"
+    ],
+    "resolved": [
+      "P032_FACTS",
+      "NAKSHATRA_SCOPED_CONSECRATION",
+      "TITHI_KARANA_SCOPED_ACTION"
+    ],
+    "unresolved": [
+      "CEREMONY_SPECIFIC_RULES",
+      "ACTIVITY_SPECIFIC_VARA",
+      "ACTIVITY_SPECIFIC_YOGA",
+      "PERSONAL_BALA"
+    ],
+    "variant_dependent": [
+      "CEREMONY_TRADITION_AND_LINEAGE"
+    ]
+  },
+  "rule_ids": [
+    "MUH-REL-NAK-001",
+    "MUH-REL-TITHI-KARANA-001",
+    "MUH-REL-SUBSCOPE-001",
+    "MUH-REL-PANCHANGA-INPUT-001",
+    "MUH-REL-PERSONAL-BALA-001"
+  ],
+  "rules": [
+    {
+      "activity_scope": "RELIGIOUS_SPIRITUAL_CEREMONY",
+      "condition": "Nakshatra action class is the scoped consecration/establishment/pacification family and matches ceremony subtype.",
+      "exceptions": [],
+      "explanation_label": "Only the documented ceremony family is covered.",
+      "factor_type": "NAKSHATRA",
+      "hard_exclusion": false,
+      "hard_requirement": false,
+      "personal_required": false,
+      "precedence_class": "PREFERENCE_POSITIVE",
+      "production_activation": false,
+      "recommendation_effect": "PREFERENCE_POSITIVE",
+      "rule_class": "PREFERENCE_POSITIVE",
+      "rule_id": "MUH-REL-NAK-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-BS-NAK-CONSECRATION-001"
+      ],
+      "source_layer": "CLASSICAL_PRIMARY",
+      "validation_state": "CONTRACT_FROZEN",
+      "variant_id": "BS_SCOPED_ACTION_FAMILY_V1"
+    },
+    {
+      "activity_scope": "RELIGIOUS_SPIRITUAL_CEREMONY",
+      "condition": "Tithi/Karana action correspondence applies to the declared ritual action.",
+      "exceptions": [],
+      "explanation_label": "Event-specific correspondence remains conditional.",
+      "factor_type": "TITHI_KARANA",
+      "hard_exclusion": false,
+      "hard_requirement": false,
+      "personal_required": false,
+      "precedence_class": "CONTEXT_DEPENDENT",
+      "production_activation": false,
+      "recommendation_effect": "CONTEXT_DEPENDENT",
+      "rule_class": "CONTEXT_DEPENDENT",
+      "rule_id": "MUH-REL-TITHI-KARANA-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-BS-TITHI-KARANA-ACTIONS-001"
+      ],
+      "source_layer": "CLASSICAL_PRIMARY",
+      "validation_state": "CONTRACT_FROZEN",
+      "variant_id": "BS_SCOPED_ACTION_FAMILY_V1"
+    },
+    {
+      "activity_scope": "RELIGIOUS_SPIRITUAL_CEREMONY",
+      "condition": "Puja, homa, japa, initiation, vrata, installation and other ceremonies cannot share one undocumented rule set.",
+      "exceptions": [],
+      "explanation_label": "A ceremony subtype is required before future evaluation.",
+      "factor_type": "CEREMONY_SUBSCOPE",
+      "hard_exclusion": false,
+      "hard_requirement": true,
+      "personal_required": false,
+      "precedence_class": "HARD_REQUIREMENT",
+      "production_activation": false,
+      "recommendation_effect": "ABSTAIN",
+      "rule_class": "HARD_REQUIREMENT",
+      "rule_id": "MUH-REL-SUBSCOPE-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-P032-FACTS-001"
+      ],
+      "source_layer": "IMPLEMENTATION",
+      "validation_state": "SOURCE_LIMITED",
+      "variant_id": "BS_SCOPED_ACTION_FAMILY_V1"
+    },
+    {
+      "activity_scope": "RELIGIOUS_SPIRITUAL_CEREMONY",
+      "condition": "P032 provides the requested local-date facts and transition boundaries.",
+      "exceptions": [],
+      "explanation_label": "Input dependency only; it does not select a Muhurta.",
+      "factor_type": "PANCHANGA_FACTS",
+      "hard_exclusion": false,
+      "hard_requirement": false,
+      "personal_required": false,
+      "precedence_class": "NEUTRAL",
+      "production_activation": false,
+      "recommendation_effect": "NEUTRAL",
+      "rule_class": "NEUTRAL",
+      "rule_id": "MUH-REL-PANCHANGA-INPUT-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-P032-FACTS-001"
+      ],
+      "source_layer": "IMPLEMENTATION",
+      "validation_state": "INTERNALLY_VALIDATED",
+      "variant_id": "BS_SCOPED_ACTION_FAMILY_V1"
+    },
+    {
+      "activity_scope": "RELIGIOUS_SPIRITUAL_CEREMONY",
+      "condition": "Personal Bala is not evaluated because its operative source formula is not verified.",
+      "exceptions": [],
+      "explanation_label": "Personalization remains deferred and cannot be silently omitted.",
+      "factor_type": "TARA_CHANDRA_BALA",
+      "hard_exclusion": false,
+      "hard_requirement": false,
+      "personal_required": true,
+      "precedence_class": "PERSONAL_FACTOR",
+      "production_activation": false,
+      "recommendation_effect": "ABSTAIN",
+      "rule_class": "PERSONAL_FACTOR",
+      "rule_id": "MUH-REL-PERSONAL-BALA-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-P032-FACTS-001"
+      ],
+      "source_layer": "IMPLEMENTATION",
+      "validation_state": "SOURCE_LIMITED",
+      "variant_id": "BS_SCOPED_ACTION_FAMILY_V1"
+    }
+  ],
+  "source_tradition": [
+    "BRIHAT_SAMHITA_SCOPED_ACTION_FAMILIES",
+    "VEDA_P032_FACT_CONTRACT"
+  ],
+  "source_variants": [
+    "BS_SCOPED_ACTION_FAMILY_V1",
+    "CEREMONY_LINEAGE_VARIANT_UNRESOLVED"
+  ],
+  "strong_negatives": [],
+  "strong_positives": [],
+  "subscopes": [
+    {
+      "id": "GENERAL_RELIGIOUS_CEREMONY",
+      "state": "SOURCE_HARDENING_REQUIRED"
+    },
+    {
+      "id": "CONSECRATION_OR_INSTALLATION",
+      "state": "SCOPED_SOURCE_SUPPORT"
+    },
+    {
+      "id": "PUJA_COMMENCEMENT",
+      "state": "SOURCE_HARDENING_REQUIRED"
+    },
+    {
+      "id": "JAPA_COMMENCEMENT",
+      "state": "SOURCE_HARDENING_REQUIRED"
+    },
+    {
+      "id": "INITIATION",
+      "state": "SOURCE_HARDENING_REQUIRED"
+    },
+    {
+      "id": "VRATA",
+      "state": "SOURCE_HARDENING_REQUIRED"
+    }
+  ],
+  "unresolved_areas": [
+    "Ceremony-specific corpus is incomplete.",
+    "Tradition and lineage differences are material.",
+    "Personal Bala is not executable.",
+    "No ranking or universal score."
+  ],
+  "version": "1.0.0"
+}

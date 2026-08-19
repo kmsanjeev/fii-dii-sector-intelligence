@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-ACTIVITY-RULE-CONTRACTS-001
+
+Completed the source-bound MVP activity contract package with
+MUHURTA_PARTIAL_ACTIVITY_CONTRACTS_READY. Business opening and education
+commencement have narrow ENGINE_READY_WITH_CONDITION general contracts.
+Religious/spiritual ceremony remains SOURCE_HARDENING_REQUIRED because
+ceremony subscopes and lineage-specific rules are incomplete. Rule contracts,
+source-registry-reconciled lineage, categorical precedence, abstention,
+caution, consultation, and future engine handoff are deterministic and
+non-production. P032, personal Bala, scoring, ranking, recommendation
+runtime, RAG, Approved Core, prediction and ML were unchanged. Evidence is
+in docs/current-state/muhurta-activity-rule-contracts-001/.
+
 ## 2026-08-19 | VEDA-MUHURTA-RECOMMENDATION-GOVERNANCE-001
 
 Completed the governance-only Muhurta advisory design with
