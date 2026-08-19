@@ -1,0 +1,70 @@
+{
+  "ASPECTS": {
+    "condition": "exact Sputa Drishti and contribution policy absent",
+    "consumers": [
+      "Drik"
+    ],
+    "status": "MISSING_FOUNDATION"
+  },
+  "ASTRONOMY": {
+    "consumers": [
+      "Uccha longitude",
+      "Ayana declination",
+      "Cheshta motion"
+    ],
+    "status": "AVAILABLE_WITH_CONDITIONS"
+  },
+  "DECLINATION": {
+    "condition": "tropical vs sidereal and obliquity policy explicit",
+    "consumers": [
+      "Ayana"
+    ],
+    "status": "AVAILABLE_WITH_CONDITIONS"
+  },
+  "FRIENDSHIP_TABLES": {
+    "condition": "temporary/permanent friendship method unresolved",
+    "consumers": [
+      "Saptavargaja"
+    ],
+    "status": "PARTIAL"
+  },
+  "HOUSES": {
+    "condition": "current runtime uses whole-sign house number",
+    "consumers": [
+      "Dig",
+      "Kendradi"
+    ],
+    "status": "AVAILABLE_WITH_METHOD_CONDITION"
+  },
+  "LAGNA": {
+    "condition": "house/sign-vs-cusp policy",
+    "consumers": [
+      "house classification",
+      "Dig/Kendradi"
+    ],
+    "status": "AVAILABLE"
+  },
+  "PLANET_MOTION": {
+    "condition": "retrograde exists; complete speed/stationary/mean-true facts not governed",
+    "consumers": [
+      "Cheshta"
+    ],
+    "status": "PARTIAL"
+  },
+  "SUNRISE_SUNSET": {
+    "condition": "local-time and historical timezone policy",
+    "consumers": [
+      "Nathonatha",
+      "Tribhaga",
+      "Hora"
+    ],
+    "status": "AVAILABLE_WITH_CONDITIONS"
+  },
+  "VARGAS": {
+    "condition": "seven-varga dignity contract and friendship inputs not closed",
+    "consumers": [
+      "Saptavargaja"
+    ],
+    "status": "AVAILABLE_WITH_CONDITIONS"
+  }
+}

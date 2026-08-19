@@ -1,0 +1,151 @@
+{
+  "aggregate_probe": {
+    "status": "IMPLEMENTED_UNVALIDATED",
+    "total": 385.0,
+    "unit_labels": [
+      "RUPA"
+    ]
+  },
+  "dig": [
+    {
+      "current_at_source_house": 60.0,
+      "current_declared_max_house": 10,
+      "match": true,
+      "planet": "Sun",
+      "source_max_house": 10
+    },
+    {
+      "current_at_source_house": 60.0,
+      "current_declared_max_house": 4,
+      "match": true,
+      "planet": "Moon",
+      "source_max_house": 4
+    },
+    {
+      "current_at_source_house": 60.0,
+      "current_declared_max_house": 10,
+      "match": true,
+      "planet": "Mars",
+      "source_max_house": 10
+    },
+    {
+      "current_at_source_house": 60.0,
+      "current_declared_max_house": 1,
+      "match": true,
+      "planet": "Mercury",
+      "source_max_house": 1
+    },
+    {
+      "current_at_source_house": 60.0,
+      "current_declared_max_house": 1,
+      "match": true,
+      "planet": "Jupiter",
+      "source_max_house": 1
+    },
+    {
+      "current_at_source_house": 50.0,
+      "current_declared_max_house": 7,
+      "match": false,
+      "planet": "Venus",
+      "source_max_house": 4
+    },
+    {
+      "current_at_source_house": 60.0,
+      "current_declared_max_house": 7,
+      "match": true,
+      "planet": "Saturn",
+      "source_max_house": 7
+    }
+  ],
+  "naisargika": [
+    {
+      "current": 60.0,
+      "match": true,
+      "planet": "Sun",
+      "source_oracle": 60.0,
+      "unit": "RUPA"
+    },
+    {
+      "current": 51.4286,
+      "match": true,
+      "planet": "Moon",
+      "source_oracle": 51.4286,
+      "unit": "RUPA"
+    },
+    {
+      "current": 17.1429,
+      "match": true,
+      "planet": "Mars",
+      "source_oracle": 17.1429,
+      "unit": "RUPA"
+    },
+    {
+      "current": 25.7143,
+      "match": true,
+      "planet": "Mercury",
+      "source_oracle": 25.7143,
+      "unit": "RUPA"
+    },
+    {
+      "current": 42.8571,
+      "match": false,
+      "planet": "Jupiter",
+      "source_oracle": 34.2857,
+      "unit": "RUPA"
+    },
+    {
+      "current": 34.2857,
+      "match": false,
+      "planet": "Venus",
+      "source_oracle": 42.8571,
+      "unit": "RUPA"
+    },
+    {
+      "current": 8.5714,
+      "match": true,
+      "planet": "Saturn",
+      "source_oracle": 8.5714,
+      "unit": "RUPA"
+    }
+  ],
+  "nathonatha_proxy": {
+    "Jupiter": {
+      "day": 135.0,
+      "night": 105.0
+    },
+    "Mars": {
+      "day": 135.0,
+      "night": 105.0
+    },
+    "Mercury": {
+      "day": 105.0,
+      "night": 135.0
+    },
+    "Moon": {
+      "day": 105.0,
+      "night": 135.0
+    },
+    "Saturn": {
+      "day": 135.0,
+      "night": 105.0
+    },
+    "Sun": {
+      "day": 135.0,
+      "night": 105.0
+    },
+    "Venus": {
+      "day": 105.0,
+      "night": 135.0
+    }
+  },
+  "production_imported_for_diagnostic_comparison_only": true,
+  "production_module": "engines.ai.knowledge.shadbala_engine",
+  "summary": {
+    "dig_cases": 7,
+    "dig_max_mapping_matches": 6,
+    "material_mismatch_found": true,
+    "naisargika_cases": 7,
+    "naisargika_matches": 5,
+    "production_changed": false
+  }
+}

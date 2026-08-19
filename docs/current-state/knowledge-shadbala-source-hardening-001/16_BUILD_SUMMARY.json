@@ -1,0 +1,516 @@
+{
+  "activity": "VEDA-KNOWLEDGE-SHADBALA-SOURCE-HARDENING-001",
+  "assertion_count": 25,
+  "component_inventory": [
+    {
+      "component": "STHANA_BALA",
+      "runtime": "calculate_sthana_bala",
+      "source_state": "SOURCE_PARTIAL",
+      "state": "PARTIALLY_IMPLEMENTED",
+      "subcomponents": [
+        "Uchcha implemented",
+        "Saptavargaja absent",
+        "Ojhayugma simplified",
+        "Kendradi implemented",
+        "Drekkana absent"
+      ]
+    },
+    {
+      "component": "DIG_BALA",
+      "runtime": "calculate_dig_bala",
+      "source_state": "SOURCE_PARTIAL",
+      "state": "IMPLEMENTED",
+      "subcomponents": [
+        "house-level approximation"
+      ]
+    },
+    {
+      "component": "KALA_BALA",
+      "runtime": "calculate_kala_bala",
+      "source_state": "SOURCE_PARTIAL",
+      "state": "PARTIALLY_IMPLEMENTED",
+      "subcomponents": [
+        "Nathonatha approximation",
+        "fixed Ayana/Varsha/Masa/Vara/Hora placeholders",
+        "Paksha absent",
+        "Tribhaga absent",
+        "Yuddha absent"
+      ]
+    },
+    {
+      "component": "CHESHTA_BALA",
+      "runtime": "calculate_cheshta_bala",
+      "source_state": "SOURCE_PARTIAL",
+      "state": "PARTIALLY_IMPLEMENTED",
+      "subcomponents": [
+        "generic daily-motion ratio"
+      ]
+    },
+    {
+      "component": "NAISARGIKA_BALA",
+      "runtime": "calculate_naisargika_bala",
+      "source_state": "SOURCE_RESOLVED_WITH_CONDITION",
+      "state": "IMPLEMENTED",
+      "subcomponents": [
+        "fixed table"
+      ]
+    },
+    {
+      "component": "DRIK_BALA",
+      "runtime": "calculate_drik_bala",
+      "source_state": "SOURCE_PARTIAL",
+      "state": "PARTIALLY_IMPLEMENTED",
+      "subcomponents": [
+        "fixed aspect contribution table",
+        "standard aspect list"
+      ]
+    },
+    {
+      "component": "SHADBALA_TOTAL",
+      "runtime": "calculate_shadbala",
+      "source_state": "SOURCE_PARTIAL",
+      "state": "IMPLEMENTED_WITH_UNVALIDATED_COMPONENTS",
+      "subcomponents": [
+        "six-component aggregate"
+      ]
+    },
+    {
+      "component": "BAV_SAV",
+      "runtime": "same module; not reopened",
+      "source_state": "OUT_OF_SCOPE_PRESERVED",
+      "state": "IMPLEMENTED_FROZEN_SEPARATE",
+      "subcomponents": [
+        "canonical RX2 raw contract",
+        "legacy replay"
+      ]
+    }
+  ],
+  "conflict_count": 1,
+  "contract_count": 3,
+  "contract_hashes": [
+    "2F08240636ABCBC2C413DE9925CDBA89E5F0BDC95FC0404CDCC2B009DAE4F6A8",
+    "829D46BF679189045C60F09BF2484BDEBD473F9BFF37B3A66C6F9378801445DB",
+    "D53AA1564C054D90A56D0660E09276C9538DDFB7EBE4240A2097F0E76F0C692E"
+  ],
+  "decision": "SHADBALA_IMPLEMENTATION_SOURCE_MISMATCH_REMEDIATION_REQUIRED",
+  "decision_reason": "Passage-mapped source rules expose material runtime differences in units, Naisargika ordering, Venus Dig Bala, Sthana subcomponents, Kala simplification, Cheshta motion model, Drik contribution model and aggregation semantics. Remediation is justified but not started.",
+  "dependency_graph": {
+    "ASPECTS": {
+      "condition": "exact Sputa Drishti and contribution policy absent",
+      "consumers": [
+        "Drik"
+      ],
+      "status": "MISSING_FOUNDATION"
+    },
+    "ASTRONOMY": {
+      "consumers": [
+        "Uccha longitude",
+        "Ayana declination",
+        "Cheshta motion"
+      ],
+      "status": "AVAILABLE_WITH_CONDITIONS"
+    },
+    "DECLINATION": {
+      "condition": "tropical vs sidereal and obliquity policy explicit",
+      "consumers": [
+        "Ayana"
+      ],
+      "status": "AVAILABLE_WITH_CONDITIONS"
+    },
+    "FRIENDSHIP_TABLES": {
+      "condition": "temporary/permanent friendship method unresolved",
+      "consumers": [
+        "Saptavargaja"
+      ],
+      "status": "PARTIAL"
+    },
+    "HOUSES": {
+      "condition": "current runtime uses whole-sign house number",
+      "consumers": [
+        "Dig",
+        "Kendradi"
+      ],
+      "status": "AVAILABLE_WITH_METHOD_CONDITION"
+    },
+    "LAGNA": {
+      "condition": "house/sign-vs-cusp policy",
+      "consumers": [
+        "house classification",
+        "Dig/Kendradi"
+      ],
+      "status": "AVAILABLE"
+    },
+    "PLANET_MOTION": {
+      "condition": "retrograde exists; complete speed/stationary/mean-true facts not governed",
+      "consumers": [
+        "Cheshta"
+      ],
+      "status": "PARTIAL"
+    },
+    "SUNRISE_SUNSET": {
+      "condition": "local-time and historical timezone policy",
+      "consumers": [
+        "Nathonatha",
+        "Tribhaga",
+        "Hora"
+      ],
+      "status": "AVAILABLE_WITH_CONDITIONS"
+    },
+    "VARGAS": {
+      "condition": "seven-varga dignity contract and friendship inputs not closed",
+      "consumers": [
+        "Saptavargaja"
+      ],
+      "status": "AVAILABLE_WITH_CONDITIONS"
+    }
+  },
+  "formula_contracts": [
+    {
+      "boundaries": "Sun=60; Saturn=8.5714; seven visible grahas only",
+      "component_id": "NAISARGIKA_BALA",
+      "decision": "SOURCE_CONTRACT_READY_NON_PRODUCTION",
+      "formula": "planet-specific fixed 1/7-Rupa progression",
+      "implementation_state": "IMPLEMENTED",
+      "inputs": [
+        "planet"
+      ],
+      "source_state": "SOURCE_RESOLVED_WITH_CONDITION",
+      "unit": "VIRUPA",
+      "variant": "current runtime swaps Jupiter and Venus"
+    },
+    {
+      "boundaries": "0-60 Virupas",
+      "component_id": "DIG_BALA",
+      "decision": "SOURCE_CONTRACT_READY_NON_PRODUCTION",
+      "formula": "shortest angular distance from minimum direction / 3",
+      "implementation_state": "IMPLEMENTED",
+      "inputs": [
+        "planet longitude",
+        "minimum-direction longitude"
+      ],
+      "source_state": "SOURCE_RESOLVED_WITH_CONDITION",
+      "unit": "VIRUPA",
+      "variant": "current API reduces to integer house distance and Venus max house differs"
+    },
+    {
+      "boundaries": "Uchcha 0-60; other subcomponent limits vary",
+      "component_id": "STHANA_BALA",
+      "decision": "RESEARCH_CANDIDATE",
+      "formula": "sum of five source subcomponents",
+      "implementation_state": "PARTIALLY_IMPLEMENTED",
+      "inputs": [
+        "longitude",
+        "Vargas",
+        "dignity",
+        "Rashi/Navamsa",
+        "house",
+        "Drekkana"
+      ],
+      "source_state": "SOURCE_PARTIAL",
+      "unit": "VIRUPA",
+      "variant": "current runtime only approximates Uchcha/Ojhayugma/Kendradi"
+    },
+    {
+      "boundaries": "individual components have explicit 0-60 or 15/30/45/60 rules",
+      "component_id": "KALA_BALA",
+      "decision": "RESEARCH_CANDIDATE",
+      "formula": "sum of six source subcomponents",
+      "implementation_state": "PARTIALLY_IMPLEMENTED",
+      "inputs": [
+        "birth time",
+        "sunrise/sunset",
+        "Moon/Sun",
+        "weekday",
+        "month/year",
+        "Hora",
+        "declination",
+        "planetary war"
+      ],
+      "source_state": "SOURCE_PARTIAL",
+      "unit": "VIRUPA",
+      "variant": "current runtime hardcodes five subcomponents and reverses several Nathonatha classes"
+    },
+    {
+      "boundaries": "0-60 Virupas",
+      "component_id": "CHESHTA_BALA",
+      "decision": "BLOCKED_BY_MOTION_FACTS",
+      "formula": "named motion classes or Sun/Moon derived substitutions",
+      "implementation_state": "PARTIALLY_IMPLEMENTED",
+      "inputs": [
+        "motion class",
+        "mean/true longitude",
+        "ephemeris",
+        "retrograde/stationary state"
+      ],
+      "source_state": "SOURCE_PARTIAL",
+      "unit": "VIRUPA",
+      "variant": "current generic speed ratio is not the source motion-class method"
+    },
+    {
+      "boundaries": "one Rupa = 60 Virupas",
+      "component_id": "NAISARGIKA_BALA",
+      "decision": "MATERIAL_MISMATCH",
+      "formula": "fixed natural progression",
+      "implementation_state": "IMPLEMENTED",
+      "inputs": [
+        "planet"
+      ],
+      "source_state": "SOURCE_RESOLVED_WITH_CONDITION",
+      "unit": "RUPA_LABEL_CURRENTLY; VIRUPA_SOURCE",
+      "variant": "runtime labels Virupa-scale values as RUPA and claims a 420 total"
+    },
+    {
+      "boundaries": "requires governed aspect foundation",
+      "component_id": "DRIK_BALA",
+      "decision": "BLOCKED_BY_ASPECT_FOUNDATION",
+      "formula": "quarter-adjusted aspect contributions plus full Mercury/Jupiter Drishti",
+      "implementation_state": "PARTIALLY_IMPLEMENTED",
+      "inputs": [
+        "exact aspect geometry",
+        "benefic/malefic class",
+        "Sputa Drishti",
+        "special aspects"
+      ],
+      "source_state": "SOURCE_PARTIAL",
+      "unit": "VIRUPA",
+      "variant": "current fixed contributor table is not source formula"
+    },
+    {
+      "boundaries": "missing components must remain unavailable",
+      "component_id": "SHADBALA_TOTAL",
+      "decision": "AGGREGATE_NOT_READY",
+      "formula": "sum six Bala sources; source thresholds in Virupas",
+      "implementation_state": "IMPLEMENTED_WITH_UNVALIDATED_COMPONENTS",
+      "inputs": [
+        "six Bala components"
+      ],
+      "source_state": "SOURCE_PARTIAL",
+      "unit": "VIRUPA_SOURCE; RUPA_RUNTIME_LABEL",
+      "variant": "runtime excludes nulls and applies a no-op Vimshopaka factor"
+    }
+  ],
+  "governance": {
+    "approved_core_after": 17,
+    "approved_core_before": 17,
+    "approved_core_promotions": 0,
+    "ashtakavarga": "FROZEN / COMPLETE_WITH_CONDITION; unchanged",
+    "d20": "D20_SOURCE_CONTRACT_PARTIALLY_RESOLVED_FREEZE; unchanged",
+    "interpretation_changed": false,
+    "ml": "LOCKED",
+    "p032": "unchanged",
+    "parallel_evidence": "unchanged",
+    "pred_m4": "UNCHANGED",
+    "prediction_changed": false,
+    "production_shadbala_changed": false,
+    "provider_calls": 0,
+    "rag_changed": false,
+    "rag_documents_after": 1205,
+    "rag_documents_before": 1205,
+    "rag_rebuild": false
+  },
+  "oracle_status": {
+    "external_numerical_validation": "UNAVAILABLE",
+    "independent_oracles": [
+      {
+        "component": "NAISARGIKA_BALA",
+        "evaluator": "independent_naisargika",
+        "production_formula_imported": false,
+        "scope": "fixed source values and units",
+        "status": "BUILT"
+      },
+      {
+        "component": "DIG_BALA",
+        "evaluator": "independent_dig_from_minimum plus source max/min table",
+        "production_formula_imported": false,
+        "scope": "angular /3 rule and directional boundaries",
+        "status": "BUILT"
+      },
+      {
+        "component": "STHANA_BALA",
+        "reason": "exact dignity, Varga and exaltation-input contract incomplete",
+        "status": "NOT_BUILT"
+      },
+      {
+        "component": "KALA_BALA",
+        "reason": "temporal subcomponents and astronomical dependencies incomplete",
+        "status": "NOT_BUILT"
+      },
+      {
+        "component": "CHESHTA_BALA",
+        "reason": "complete motion-state inputs unavailable",
+        "status": "NOT_BUILT"
+      },
+      {
+        "component": "DRIK_BALA",
+        "reason": "governed exact aspect geometry unavailable",
+        "status": "NOT_BUILT"
+      },
+      {
+        "component": "SHADBALA_TOTAL",
+        "reason": "aggregate is not source-ready",
+        "status": "NOT_BUILT"
+      }
+    ],
+    "same_engine_reference_limitation": "runtime comparison is diagnostic only and does not establish external correctness"
+  },
+  "runtime_comparison": {
+    "aggregate_probe": {
+      "status": "IMPLEMENTED_UNVALIDATED",
+      "total": 385.0,
+      "unit_labels": [
+        "RUPA"
+      ]
+    },
+    "dig": [
+      {
+        "current_at_source_house": 60.0,
+        "current_declared_max_house": 10,
+        "match": true,
+        "planet": "Sun",
+        "source_max_house": 10
+      },
+      {
+        "current_at_source_house": 60.0,
+        "current_declared_max_house": 4,
+        "match": true,
+        "planet": "Moon",
+        "source_max_house": 4
+      },
+      {
+        "current_at_source_house": 60.0,
+        "current_declared_max_house": 10,
+        "match": true,
+        "planet": "Mars",
+        "source_max_house": 10
+      },
+      {
+        "current_at_source_house": 60.0,
+        "current_declared_max_house": 1,
+        "match": true,
+        "planet": "Mercury",
+        "source_max_house": 1
+      },
+      {
+        "current_at_source_house": 60.0,
+        "current_declared_max_house": 1,
+        "match": true,
+        "planet": "Jupiter",
+        "source_max_house": 1
+      },
+      {
+        "current_at_source_house": 50.0,
+        "current_declared_max_house": 7,
+        "match": false,
+        "planet": "Venus",
+        "source_max_house": 4
+      },
+      {
+        "current_at_source_house": 60.0,
+        "current_declared_max_house": 7,
+        "match": true,
+        "planet": "Saturn",
+        "source_max_house": 7
+      }
+    ],
+    "naisargika": [
+      {
+        "current": 60.0,
+        "match": true,
+        "planet": "Sun",
+        "source_oracle": 60.0,
+        "unit": "RUPA"
+      },
+      {
+        "current": 51.4286,
+        "match": true,
+        "planet": "Moon",
+        "source_oracle": 51.4286,
+        "unit": "RUPA"
+      },
+      {
+        "current": 17.1429,
+        "match": true,
+        "planet": "Mars",
+        "source_oracle": 17.1429,
+        "unit": "RUPA"
+      },
+      {
+        "current": 25.7143,
+        "match": true,
+        "planet": "Mercury",
+        "source_oracle": 25.7143,
+        "unit": "RUPA"
+      },
+      {
+        "current": 42.8571,
+        "match": false,
+        "planet": "Jupiter",
+        "source_oracle": 34.2857,
+        "unit": "RUPA"
+      },
+      {
+        "current": 34.2857,
+        "match": false,
+        "planet": "Venus",
+        "source_oracle": 42.8571,
+        "unit": "RUPA"
+      },
+      {
+        "current": 8.5714,
+        "match": true,
+        "planet": "Saturn",
+        "source_oracle": 8.5714,
+        "unit": "RUPA"
+      }
+    ],
+    "nathonatha_proxy": {
+      "Jupiter": {
+        "day": 135.0,
+        "night": 105.0
+      },
+      "Mars": {
+        "day": 135.0,
+        "night": 105.0
+      },
+      "Mercury": {
+        "day": 105.0,
+        "night": 135.0
+      },
+      "Moon": {
+        "day": 105.0,
+        "night": 135.0
+      },
+      "Saturn": {
+        "day": 135.0,
+        "night": 105.0
+      },
+      "Sun": {
+        "day": 135.0,
+        "night": 105.0
+      },
+      "Venus": {
+        "day": 105.0,
+        "night": 135.0
+      }
+    },
+    "production_imported_for_diagnostic_comparison_only": true,
+    "production_module": "engines.ai.knowledge.shadbala_engine",
+    "summary": {
+      "dig_cases": 7,
+      "dig_max_mapping_matches": 6,
+      "material_mismatch_found": true,
+      "naisargika_cases": 7,
+      "naisargika_matches": 5,
+      "production_changed": false
+    }
+  },
+  "snapshot_date": "2026-08-19",
+  "source_passage_count": 14,
+  "source_witness_validation": {
+    "errors": [],
+    "is_valid": true,
+    "warnings": []
+  },
+  "starting_commit": "021a805ca68bc6e4730e1d2978e3e944200c2849",
+  "variant_count": 25
+}

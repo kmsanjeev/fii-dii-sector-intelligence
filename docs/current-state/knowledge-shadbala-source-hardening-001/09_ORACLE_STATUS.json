@@ -1,0 +1,45 @@
+{
+  "external_numerical_validation": "UNAVAILABLE",
+  "independent_oracles": [
+    {
+      "component": "NAISARGIKA_BALA",
+      "evaluator": "independent_naisargika",
+      "production_formula_imported": false,
+      "scope": "fixed source values and units",
+      "status": "BUILT"
+    },
+    {
+      "component": "DIG_BALA",
+      "evaluator": "independent_dig_from_minimum plus source max/min table",
+      "production_formula_imported": false,
+      "scope": "angular /3 rule and directional boundaries",
+      "status": "BUILT"
+    },
+    {
+      "component": "STHANA_BALA",
+      "reason": "exact dignity, Varga and exaltation-input contract incomplete",
+      "status": "NOT_BUILT"
+    },
+    {
+      "component": "KALA_BALA",
+      "reason": "temporal subcomponents and astronomical dependencies incomplete",
+      "status": "NOT_BUILT"
+    },
+    {
+      "component": "CHESHTA_BALA",
+      "reason": "complete motion-state inputs unavailable",
+      "status": "NOT_BUILT"
+    },
+    {
+      "component": "DRIK_BALA",
+      "reason": "governed exact aspect geometry unavailable",
+      "status": "NOT_BUILT"
+    },
+    {
+      "component": "SHADBALA_TOTAL",
+      "reason": "aggregate is not source-ready",
+      "status": "NOT_BUILT"
+    }
+  ],
+  "same_engine_reference_limitation": "runtime comparison is diagnostic only and does not establish external correctness"
+}

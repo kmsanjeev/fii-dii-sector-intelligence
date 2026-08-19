@@ -4,6 +4,7 @@ This is the single authoritative future registry.
 
 | ID | Title | Track | Status | Dependencies | Gate / notes |
 |---|---|---|---|---|---|
+| VEDA-KNOWLEDGE-SHADBALA-SOURCE-HARDENING-001 | Shadbala/Bala Source-Witness Audit, Component Contract Reconciliation & Calculation Readiness | Governance | PASS_WITH_CONDITION | VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001, P018, P018-R1, P018-R2, RM-002 | BPHS/Saravali component witnesses, formula/unit contracts, dependency graph and independent diagnostic oracles are recorded. Material source/runtime mismatches require a separately authorized contained remediation; production Shadbala remains unchanged. Evidence in `docs/current-state/knowledge-shadbala-source-hardening-001/` |
 | P027 | Advanced Synthesis & Multi-Chart Reasoning | A | IMPLEMENTED / FROZEN | P014–P026, PRED-001–003, STD-001–003 | Evidence convergence, contradiction resolution, timing hierarchy, and governed multi-chart context; implementation evidence in `docs/current-state/p027/` |
 | P028 | Compatibility & Relationship Synthesis Engine | A | IMPLEMENTED / FROZEN | P024, P027, P014–P019 | Multidimensional, asymmetric relationship synthesis with traditional-method boundaries; implementation evidence in `docs/current-state/p028/` |
 | P028-R1 | Traditional Compatibility Methods Foundation | A | IMPLEMENTED / FROZEN | P028, P015, P017 | Versioned Ashtakoota foundation, Kuta breakdown, governed provenance, and P027/P028 evidence integration; implementation evidence in `docs/current-state/p028-r1/` |

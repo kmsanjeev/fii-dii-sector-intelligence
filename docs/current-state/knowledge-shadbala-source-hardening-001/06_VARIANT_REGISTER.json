@@ -1,0 +1,34 @@
+{
+  "variants": [
+    {
+      "detail": "Accessible mirror labels the strength chapter 27; repository Sagar metadata labels it chapter 29.",
+      "id": "BPHS_CHAPTER_NUMBER_VARIANCE",
+      "status": "DOCUMENTED",
+      "type": "TRANSLATION_DIFFERENCE"
+    },
+    {
+      "detail": "Saravali open documentation supplies modern component descriptions and examples; it is not merged into the BPHS contract.",
+      "id": "SARAVALI_IMPLEMENTATION_VARIANT",
+      "status": "SEPARATE",
+      "type": "PRACTITIONER_VARIANT"
+    },
+    {
+      "detail": "Current runtime places Jupiter above Venus; inspected source witness places Venus above Jupiter.",
+      "id": "NAISARGIKA_ORDER_VARIANCE",
+      "status": "MATERIAL",
+      "type": "IMPLEMENTATION_MISMATCH"
+    },
+    {
+      "detail": "Current runtime uses Venus maximum at house 7; inspected BPHS/Saravali witness uses the 4th-house nadir.",
+      "id": "DIG_VENUS_DIRECTION_VARIANCE",
+      "status": "MATERIAL",
+      "type": "IMPLEMENTATION_MISMATCH"
+    },
+    {
+      "detail": "No formula averaging or hybrid source/inference contract is created.",
+      "id": "CROSS_TRADITION_GUARD",
+      "status": "ENFORCED",
+      "type": "GOVERNANCE"
+    }
+  ]
+}

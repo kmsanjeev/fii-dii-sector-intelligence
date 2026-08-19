@@ -1,0 +1,110 @@
+{
+  "activity": "VEDA-KNOWLEDGE-SHADBALA-SOURCE-HARDENING-001",
+  "components": [
+    {
+      "component": "STHANA_BALA",
+      "runtime": "calculate_sthana_bala",
+      "source_state": "SOURCE_PARTIAL",
+      "state": "PARTIALLY_IMPLEMENTED",
+      "subcomponents": [
+        "Uchcha implemented",
+        "Saptavargaja absent",
+        "Ojhayugma simplified",
+        "Kendradi implemented",
+        "Drekkana absent"
+      ]
+    },
+    {
+      "component": "DIG_BALA",
+      "runtime": "calculate_dig_bala",
+      "source_state": "SOURCE_PARTIAL",
+      "state": "IMPLEMENTED",
+      "subcomponents": [
+        "house-level approximation"
+      ]
+    },
+    {
+      "component": "KALA_BALA",
+      "runtime": "calculate_kala_bala",
+      "source_state": "SOURCE_PARTIAL",
+      "state": "PARTIALLY_IMPLEMENTED",
+      "subcomponents": [
+        "Nathonatha approximation",
+        "fixed Ayana/Varsha/Masa/Vara/Hora placeholders",
+        "Paksha absent",
+        "Tribhaga absent",
+        "Yuddha absent"
+      ]
+    },
+    {
+      "component": "CHESHTA_BALA",
+      "runtime": "calculate_cheshta_bala",
+      "source_state": "SOURCE_PARTIAL",
+      "state": "PARTIALLY_IMPLEMENTED",
+      "subcomponents": [
+        "generic daily-motion ratio"
+      ]
+    },
+    {
+      "component": "NAISARGIKA_BALA",
+      "runtime": "calculate_naisargika_bala",
+      "source_state": "SOURCE_RESOLVED_WITH_CONDITION",
+      "state": "IMPLEMENTED",
+      "subcomponents": [
+        "fixed table"
+      ]
+    },
+    {
+      "component": "DRIK_BALA",
+      "runtime": "calculate_drik_bala",
+      "source_state": "SOURCE_PARTIAL",
+      "state": "PARTIALLY_IMPLEMENTED",
+      "subcomponents": [
+        "fixed aspect contribution table",
+        "standard aspect list"
+      ]
+    },
+    {
+      "component": "SHADBALA_TOTAL",
+      "runtime": "calculate_shadbala",
+      "source_state": "SOURCE_PARTIAL",
+      "state": "IMPLEMENTED_WITH_UNVALIDATED_COMPONENTS",
+      "subcomponents": [
+        "six-component aggregate"
+      ]
+    },
+    {
+      "component": "BAV_SAV",
+      "runtime": "same module; not reopened",
+      "source_state": "OUT_OF_SCOPE_PRESERVED",
+      "state": "IMPLEMENTED_FROZEN_SEPARATE",
+      "subcomponents": [
+        "canonical RX2 raw contract",
+        "legacy replay"
+      ]
+    }
+  ],
+  "consumers": [
+    "engines/intelligence/kundli_engine.py",
+    "tests/test_veda_shadbala_engine_p018_r2.py",
+    "engines/ai/knowledge/career_wealth_governance.py",
+    "engines/intelligence/marriage_synthesis_engine.py"
+  ],
+  "major_families": [
+    "STHANA_BALA",
+    "DIG_BALA",
+    "KALA_BALA",
+    "CHESHTA_BALA",
+    "NAISARGIKA_BALA",
+    "DRIK_BALA"
+  ],
+  "source_only_or_missing": [
+    "Saptavargaja",
+    "Drekkana",
+    "Paksha",
+    "Tribhaga",
+    "Yuddha",
+    "complete Ayana",
+    "complete exact Drik geometry"
+  ]
+}

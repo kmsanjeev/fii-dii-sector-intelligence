@@ -1,0 +1,146 @@
+{
+  "activity": "VEDA-KNOWLEDGE-SHADBALA-SOURCE-HARDENING-001",
+  "aggregate_ready": false,
+  "contracts": [
+    {
+      "boundaries": "Sun=60; Saturn=8.5714; seven visible grahas only",
+      "component_id": "NAISARGIKA_BALA",
+      "decision": "SOURCE_CONTRACT_READY_NON_PRODUCTION",
+      "formula": "planet-specific fixed 1/7-Rupa progression",
+      "implementation_state": "IMPLEMENTED",
+      "inputs": [
+        "planet"
+      ],
+      "source_state": "SOURCE_RESOLVED_WITH_CONDITION",
+      "unit": "VIRUPA",
+      "variant": "current runtime swaps Jupiter and Venus"
+    },
+    {
+      "boundaries": "0-60 Virupas",
+      "component_id": "DIG_BALA",
+      "decision": "SOURCE_CONTRACT_READY_NON_PRODUCTION",
+      "formula": "shortest angular distance from minimum direction / 3",
+      "implementation_state": "IMPLEMENTED",
+      "inputs": [
+        "planet longitude",
+        "minimum-direction longitude"
+      ],
+      "source_state": "SOURCE_RESOLVED_WITH_CONDITION",
+      "unit": "VIRUPA",
+      "variant": "current API reduces to integer house distance and Venus max house differs"
+    },
+    {
+      "boundaries": "Uchcha 0-60; other subcomponent limits vary",
+      "component_id": "STHANA_BALA",
+      "decision": "RESEARCH_CANDIDATE",
+      "formula": "sum of five source subcomponents",
+      "implementation_state": "PARTIALLY_IMPLEMENTED",
+      "inputs": [
+        "longitude",
+        "Vargas",
+        "dignity",
+        "Rashi/Navamsa",
+        "house",
+        "Drekkana"
+      ],
+      "source_state": "SOURCE_PARTIAL",
+      "unit": "VIRUPA",
+      "variant": "current runtime only approximates Uchcha/Ojhayugma/Kendradi"
+    },
+    {
+      "boundaries": "individual components have explicit 0-60 or 15/30/45/60 rules",
+      "component_id": "KALA_BALA",
+      "decision": "RESEARCH_CANDIDATE",
+      "formula": "sum of six source subcomponents",
+      "implementation_state": "PARTIALLY_IMPLEMENTED",
+      "inputs": [
+        "birth time",
+        "sunrise/sunset",
+        "Moon/Sun",
+        "weekday",
+        "month/year",
+        "Hora",
+        "declination",
+        "planetary war"
+      ],
+      "source_state": "SOURCE_PARTIAL",
+      "unit": "VIRUPA",
+      "variant": "current runtime hardcodes five subcomponents and reverses several Nathonatha classes"
+    },
+    {
+      "boundaries": "0-60 Virupas",
+      "component_id": "CHESHTA_BALA",
+      "decision": "BLOCKED_BY_MOTION_FACTS",
+      "formula": "named motion classes or Sun/Moon derived substitutions",
+      "implementation_state": "PARTIALLY_IMPLEMENTED",
+      "inputs": [
+        "motion class",
+        "mean/true longitude",
+        "ephemeris",
+        "retrograde/stationary state"
+      ],
+      "source_state": "SOURCE_PARTIAL",
+      "unit": "VIRUPA",
+      "variant": "current generic speed ratio is not the source motion-class method"
+    },
+    {
+      "boundaries": "one Rupa = 60 Virupas",
+      "component_id": "NAISARGIKA_BALA",
+      "decision": "MATERIAL_MISMATCH",
+      "formula": "fixed natural progression",
+      "implementation_state": "IMPLEMENTED",
+      "inputs": [
+        "planet"
+      ],
+      "source_state": "SOURCE_RESOLVED_WITH_CONDITION",
+      "unit": "RUPA_LABEL_CURRENTLY; VIRUPA_SOURCE",
+      "variant": "runtime labels Virupa-scale values as RUPA and claims a 420 total"
+    },
+    {
+      "boundaries": "requires governed aspect foundation",
+      "component_id": "DRIK_BALA",
+      "decision": "BLOCKED_BY_ASPECT_FOUNDATION",
+      "formula": "quarter-adjusted aspect contributions plus full Mercury/Jupiter Drishti",
+      "implementation_state": "PARTIALLY_IMPLEMENTED",
+      "inputs": [
+        "exact aspect geometry",
+        "benefic/malefic class",
+        "Sputa Drishti",
+        "special aspects"
+      ],
+      "source_state": "SOURCE_PARTIAL",
+      "unit": "VIRUPA",
+      "variant": "current fixed contributor table is not source formula"
+    },
+    {
+      "boundaries": "missing components must remain unavailable",
+      "component_id": "SHADBALA_TOTAL",
+      "decision": "AGGREGATE_NOT_READY",
+      "formula": "sum six Bala sources; source thresholds in Virupas",
+      "implementation_state": "IMPLEMENTED_WITH_UNVALIDATED_COMPONENTS",
+      "inputs": [
+        "six Bala components"
+      ],
+      "source_state": "SOURCE_PARTIAL",
+      "unit": "VIRUPA_SOURCE; RUPA_RUNTIME_LABEL",
+      "variant": "runtime excludes nulls and applies a no-op Vimshopaka factor"
+    }
+  ],
+  "non_production_contracts": [
+    {
+      "contract_id": "VEDA-SWW-CONTRACT-SHADBALA-NAISARGIKA-BPHS-V1-96711952D234",
+      "hash": "2F08240636ABCBC2C413DE9925CDBA89E5F0BDC95FC0404CDCC2B009DAE4F6A8",
+      "status": "PASSAGE_MAPPED"
+    },
+    {
+      "contract_id": "VEDA-SWW-CONTRACT-SHADBALA-DIG-BPHS-V1-C4C1DF409BBF",
+      "hash": "829D46BF679189045C60F09BF2484BDEBD473F9BFF37B3A66C6F9378801445DB",
+      "status": "PASSAGE_MAPPED"
+    },
+    {
+      "contract_id": "VEDA-SWW-CONTRACT-SHADBALA-KENDRADI-BPHS-V1-76C401EA969C",
+      "hash": "D53AA1564C054D90A56D0660E09276C9538DDFB7EBE4240A2097F0E76F0C692E",
+      "status": "PASSAGE_MAPPED"
+    }
+  ]
+}

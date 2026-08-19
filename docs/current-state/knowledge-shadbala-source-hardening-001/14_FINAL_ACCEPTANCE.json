@@ -1,0 +1,32 @@
+{
+  "activity": "VEDA-KNOWLEDGE-SHADBALA-SOURCE-HARDENING-001",
+  "blocked": 0,
+  "checks": {
+    "approved_core_17": true,
+    "ashtakavarga_unchanged": true,
+    "component_contracts_separate": true,
+    "cross_tradition_guard": true,
+    "d20_unchanged": true,
+    "dependency_graph": true,
+    "existing_inventory_complete": true,
+    "independent_oracle_separation": true,
+    "ml_locked": true,
+    "not_stated_distinct_from_contradiction": true,
+    "p032_unchanged": true,
+    "passage_level_provenance": true,
+    "prediction_unchanged": true,
+    "production_code_changed": false,
+    "rag_preserved": true,
+    "remediation_not_started": true,
+    "runtime_unchanged": true,
+    "source_unavailable_distinct": true,
+    "source_witness_reused": true,
+    "two_run_determinism": true,
+    "units_audited": true,
+    "variants_isolated": true
+  },
+  "decision": "SHADBALA_IMPLEMENTATION_SOURCE_MISMATCH_REMEDIATION_REQUIRED",
+  "fail": 0,
+  "pass": 21,
+  "pass_with_condition": 2
+}

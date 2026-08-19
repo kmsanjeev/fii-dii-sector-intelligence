@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-KNOWLEDGE-SHADBALA-SOURCE-HARDENING-001
+
+Completed the bounded Shadbala/Bala source-witness and component-contract audit
+with `PASS_WITH_CONDITION` and decision
+`SHADBALA_IMPLEMENTATION_SOURCE_MISMATCH_REMEDIATION_REQUIRED`. BPHS and
+Saravali witnesses reconcile the six Bala families, component formulas and
+Virupa/Rupa units while exposing material current-runtime gaps in Naisargika,
+Dig, Sthana, Kala, Cheshta, Drik and aggregate handling. Production Shadbala,
+P018 interpretation, prediction, ML, RAG, Ashtakavarga, D20 and Approved Core
+remain unchanged. Evidence is in
+`docs/current-state/knowledge-shadbala-source-hardening-001/`.
+
 ## 2026-08-19 | VEDA-KNOWLEDGE-D20-SOURCE-HARDENING-001
 
 Completed the bounded D20/Vimshamsha source-hardening audit with
