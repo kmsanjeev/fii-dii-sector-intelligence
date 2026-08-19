@@ -1,0 +1,48 @@
+{
+  "all_roundtrips_pass": true,
+  "canonical_unit": "VIRUPA",
+  "conversion": "RUPA = VIRUPA / 60; VIRUPA = RUPA * 60",
+  "roundtrips": [
+    {
+      "pass": true,
+      "roundtrip_virupa": 0.0,
+      "rupa": 0.0,
+      "virupa": 0.0
+    },
+    {
+      "pass": true,
+      "roundtrip_virupa": 8.5714,
+      "rupa": 0.14285667,
+      "virupa": 8.5714
+    },
+    {
+      "pass": true,
+      "roundtrip_virupa": 30.0,
+      "rupa": 0.5,
+      "virupa": 30.0
+    },
+    {
+      "pass": true,
+      "roundtrip_virupa": 60.0,
+      "rupa": 1.0,
+      "virupa": 60.0
+    },
+    {
+      "pass": true,
+      "roundtrip_virupa": 240.0,
+      "rupa": 4.0,
+      "virupa": 240.0
+    }
+  ],
+  "source_total_rupa": 4.0,
+  "source_total_virupa": 240.0,
+  "source_values": {
+    "Jupiter": 34.2857,
+    "Mars": 17.1429,
+    "Mercury": 25.7143,
+    "Moon": 51.4286,
+    "Saturn": 8.5714,
+    "Sun": 60.0,
+    "Venus": 42.8571
+  }
+}

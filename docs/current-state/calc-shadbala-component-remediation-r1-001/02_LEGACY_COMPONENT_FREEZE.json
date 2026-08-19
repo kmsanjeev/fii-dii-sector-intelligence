@@ -1,0 +1,30 @@
+{
+  "aggregate_isolation": {
+    "aggregate_calls_legacy_components": true,
+    "partial_hybrid_aggregate_created": false,
+    "unremediated_components_untouched": [
+      "STHANA_BALA",
+      "KALA_BALA",
+      "CHESHTA_BALA",
+      "DRIK_BALA"
+    ]
+  },
+  "legacy_behavior": {
+    "dig_model": "house-step approximation; explicit replay route only",
+    "dig_venus_maximum_house": 7,
+    "naisargika_jupiter": 42.8571,
+    "naisargika_venus": 34.2857
+  },
+  "legacy_routes": {
+    "aggregate_version": "P018-R2-SHADBALA-001",
+    "dig_method_id": "P018-R2-DIG-001",
+    "naisargika_method_id": "P018-R2-NAISARGIKA-001",
+    "status": "IMPLEMENTED_UNVALIDATED",
+    "units": "RUPA"
+  },
+  "source_digests": {
+    "aggregate": "97524A5A075FE20EE645DDB28CE12D9756F12C659F62C56BF2087504389E10AB",
+    "dig": "B91FDF2345CBFA16E3CEFD4F9D59308164CC479BC3951FAE64C88AD890FD48AE",
+    "naisargika": "7E0BD94585B14B051E8C1B47EFC1DEC8F83C66670C19CB9A6A0FC84A07C564BB"
+  }
+}

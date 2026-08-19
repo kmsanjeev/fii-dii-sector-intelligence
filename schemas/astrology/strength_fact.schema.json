@@ -17,6 +17,10 @@
     "source_claim_ids": {"type": "array", "items": {"type": "string"}},
     "runtime_version": {"type": "string"},
     "validation_status": {"type": "string"},
-    "interpretation_status": {"type": "string"}
+    "interpretation_status": {"type": "string"},
+    "method_id": {"type": ["string", "null"]},
+    "contract_id": {"type": ["string", "null"]},
+    "contract_version": {"type": ["string", "null"]},
+    "source_lineage": {"type": ["object", "null"], "additionalProperties": {"type": "string"}}
   }
 }

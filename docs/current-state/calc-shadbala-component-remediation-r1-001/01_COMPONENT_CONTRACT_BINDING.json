@@ -1,0 +1,51 @@
+{
+  "activity": "VEDA-CALC-SHADBALA-COMPONENT-REMEDIATION-R1-001",
+  "authority_boundary": "Source contract implementation and internal oracle agreement do not establish predictive or interpretive validity.",
+  "components": {
+    "DIG_BALA": {
+      "assertion_id": "VEDA-SWW-ASSERTION-SHADBALA-DIG-FORMULA-53C850BEEBF1",
+      "contract_hash": "829D46BF679189045C60F09BF2484BDEBD473F9BFF37B3A66C6F9378801445DB",
+      "contract_id": "VEDA-SWW-CONTRACT-SHADBALA-DIG-BPHS-V1-C4C1DF409BBF",
+      "contract_version": "1.0",
+      "edition_id": "VEDA-SWW-EDITION-BPHS-SAGAR-2006-6D746A86B2DB",
+      "formula": "shortest angular distance from minimum direction divided by 3; capped at 60 Virupas",
+      "method_id": "P018-SHADBALA-DIG-BPHS-V1",
+      "passage_id": "VEDA-SWW-PASSAGE-BPHS-DIG-B1FAFADBC806",
+      "source_state": "SOURCE_CONTRACT_IMPLEMENTED_AND_INTERNALLY_VALIDATED",
+      "unit": "VIRUPA",
+      "witness_id": "VEDA-SWW-WITNESS-BPHS-MIRROR-B004F6226DD6",
+      "work_id": "VEDA-SWW-WORK-BPHS-EC30601CE401"
+    },
+    "NAISARGIKA_BALA": {
+      "assertion_id": "VEDA-SWW-ASSERTION-SHADBALA-NAISARGIKA-VALUES-463C846ADE76",
+      "contract_hash": "2F08240636ABCBC2C413DE9925CDBA89E5F0BDC95FC0404CDCC2B009DAE4F6A8",
+      "contract_id": "VEDA-SWW-CONTRACT-SHADBALA-NAISARGIKA-BPHS-V1-96711952D234",
+      "contract_version": "1.0",
+      "edition_id": "VEDA-SWW-EDITION-BPHS-SAGAR-2006-6D746A86B2DB",
+      "formula": "fixed source values in Virupas; 60 Virupas = 1 Rupa",
+      "method_id": "P018-SHADBALA-NAISARGIKA-BPHS-V1",
+      "passage_id": "VEDA-SWW-PASSAGE-BPHS-THRESHOLD-F57E35066FA8",
+      "source_state": "SOURCE_CONTRACT_IMPLEMENTED_AND_INTERNALLY_VALIDATED",
+      "unit": "VIRUPA",
+      "witness_id": "VEDA-SWW-WITNESS-BPHS-MIRROR-B004F6226DD6",
+      "work_id": "VEDA-SWW-WORK-BPHS-EC30601CE401"
+    }
+  },
+  "lineage_order": [
+    "runtime",
+    "contract",
+    "assertion",
+    "passage",
+    "edition",
+    "witness",
+    "work"
+  ],
+  "snapshot_date": "2026-08-19",
+  "source_family": "Brihat Parashara Hora Shastra; predecessor governed source-witness contracts",
+  "starting_commit": "bae998b6457399649e09519d4b785336000860f9",
+  "unit_contract": {
+    "canonical_unit": "VIRUPA",
+    "conversion_explicit": true,
+    "virupas_per_rupa": 60.0
+  }
+}

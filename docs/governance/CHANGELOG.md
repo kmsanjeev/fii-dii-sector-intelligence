@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-CALC-SHADBALA-COMPONENT-REMEDIATION-R1-001
+
+Completed the contained Naisargika Bala and Dig Bala remediation with
+`PASS_WITH_CONDITION` and decision
+`SHADBALA_R1_NAISARGIKA_DIG_REMEDIATED_WITH_LEGACY_COMPATIBILITY`. The source
+contracts are bound through runtime, contract, assertion, passage, edition,
+witness and work lineage. Independent checks pass for all seven Naisargika
+values and 700 Dig Bala synthetic records. Explicit historical P018-R2 routes
+remain available and the aggregate remains legacy/unvalidated; Sthana, Kala,
+Cheshta, Drik, interpretation, prediction, ML, RAG, D20 and Approved Core
+were not changed. Evidence is in
+`docs/current-state/calc-shadbala-component-remediation-r1-001/`.
+
 ## 2026-08-19 | VEDA-KNOWLEDGE-SHADBALA-SOURCE-HARDENING-001
 
 Completed the bounded Shadbala/Bala source-witness and component-contract audit

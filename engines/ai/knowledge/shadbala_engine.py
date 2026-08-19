@@ -37,27 +37,55 @@ from engines.ai.knowledge.ashtakavarga_contract_v2 import (
 # Constants — all source-traceable to BPHS Chapter 29 / Jataka Parijata
 # ---------------------------------------------------------------------------
 
-# Naisargika Bala (natural strength) — fixed values in rupas
-# Source: BPHS Ch.29, confirmed by Phaladeepika, Jataka Parijata, Saravali
-# Total = 420 rupas distributed proportionally
+# Naisargika Bala (natural strength) — source-bound fixed values in Virupas
+# Source: predecessor BPHS source-witness contract; 60 Virupas = 1 Rupa.
+# The explicit legacy P018-R2 table below preserves its historical 420-Rupa route.
+NAISARGIKA_METHOD_ID = "P018-SHADBALA-NAISARGIKA-BPHS-V1"
+NAISARGIKA_CONTRACT_ID = "VEDA-SWW-CONTRACT-SHADBALA-NAISARGIKA-BPHS-V1-96711952D234"
+NAISARGIKA_CONTRACT_VERSION = "1.0"
+NAISARGIKA_CONTRACT_HASH = "2F08240636ABCBC2C413DE9925CDBA89E5F0BDC95FC0404CDCC2B009DAE4F6A8"
+NAISARGIKA_ASSERTION_ID = "VEDA-SWW-ASSERTION-SHADBALA-NAISARGIKA-VALUES-463C846ADE76"
+NAISARGIKA_PASSAGE_ID = "VEDA-SWW-PASSAGE-BPHS-THRESHOLD-F57E35066FA8"
+NAISARGIKA_EDITION_ID = "VEDA-SWW-EDITION-BPHS-SAGAR-2006-6D746A86B2DB"
+NAISARGIKA_WITNESS_ID = "VEDA-SWW-WITNESS-BPHS-MIRROR-B004F6226DD6"
+NAISARGIKA_WORK_ID = "VEDA-SWW-WORK-BPHS-EC30601CE401"
+VIRUPAS_PER_RUPA = 60.0
+
 NAISARGIKA_BALA: dict[str, float] = {
-    "Sun":     60.0,       # 420 * 1/7
-    "Moon":    51.4286,    # 420 * 6/7 * 1/6  (actually 360/7 simplified)
-    "Jupiter": 42.8571,    # 420 * 5/7 * 1/5
-    "Venus":   34.2857,    # 420 * 4/7 * 1/4
-    "Mercury": 25.7143,    # 420 * 3/7 * 1/3
-    "Mars":    17.1429,    # 420 * 2/7 * 1/2
-    "Saturn":  8.5714,     # 420 * 1/7
+    "Sun": 60.0,
+    "Moon": 360.0 / 7.0,
+    "Venus": 300.0 / 7.0,
+    "Jupiter": 240.0 / 7.0,
+    "Mercury": 180.0 / 7.0,
+    "Mars": 120.0 / 7.0,
+    "Saturn": 60.0 / 7.0,
 }
-# NAISARGIKA_TOTAL is defined by classical allocation (BPHS) as 420 rupas total
-NAISARGIKA_TOTAL = 420.0
+NAISARGIKA_TOTAL = sum(NAISARGIKA_BALA.values())
+
+LEGACY_NAISARGIKA_METHOD_ID = "P018-R2-NAISARGIKA-001"
+LEGACY_NAISARGIKA_BALA: dict[str, float] = {
+    "Sun": 60.0, "Moon": 51.4286, "Jupiter": 42.8571, "Venus": 34.2857,
+    "Mercury": 25.7143, "Mars": 17.1429, "Saturn": 8.5714,
+}
+LEGACY_NAISARGIKA_TOTAL = 420.0
 
 # Dig Bala (directional strength) — maximum at specific houses
 # Source: BPHS Ch.29, confirmed by Phaladeepika Ch.21, Jataka Parijata
-# Value is position in degrees from maximum direction; strength = 60 - 3.333 * distance
-# Maximum Dig Bala = 60 rupas
+# Value is position in degrees from the source minimum direction; strength is
+# shortest angular distance / 3, capped at 60 Virupas. The explicit legacy
+# house-step route below preserves the historical P018-R2 approximation.
 DIG_BALA_MAXIMUM = 60.0
-DIG_BALA_RATE = 60.0 / 18.0  # 3.333 per house-step (180 degrees / 6 steps)
+DIG_METHOD_ID = "P018-SHADBALA-DIG-BPHS-V1"
+DIG_CONTRACT_ID = "VEDA-SWW-CONTRACT-SHADBALA-DIG-BPHS-V1-C4C1DF409BBF"
+DIG_CONTRACT_VERSION = "1.0"
+DIG_CONTRACT_HASH = "829D46BF679189045C60F09BF2484BDEBD473F9BFF37B3A66C6F9378801445DB"
+DIG_ASSERTION_ID = "VEDA-SWW-ASSERTION-SHADBALA-DIG-FORMULA-53C850BEEBF1"
+DIG_PASSAGE_ID = "VEDA-SWW-PASSAGE-BPHS-DIG-B1FAFADBC806"
+DIG_EDITION_ID = "VEDA-SWW-EDITION-BPHS-SAGAR-2006-6D746A86B2DB"
+DIG_WITNESS_ID = "VEDA-SWW-WITNESS-BPHS-MIRROR-B004F6226DD6"
+DIG_WORK_ID = "VEDA-SWW-WORK-BPHS-EC30601CE401"
+DIG_BALA_RATE = 1.0 / 3.0
+LEGACY_DIG_BALA_RATE = 60.0 / 18.0
 
 # Planets and their direction of maximum strength (house number from ascendant)
 # Source: BPHS Ch.29, confirmed by all classical sources
@@ -67,9 +95,11 @@ DIG_BALA_MAXIMUM_HOUSE: dict[str, int] = {
     "Sun":     10,  # 10th house (MC)
     "Mars":    10,  # 10th house
     "Moon":    4,   # 4th house (IC)
-    "Venus":   7,   # 7th house (Descendant)
+    "Venus":   4,   # 4th house (Nadir)
     "Saturn":  7,   # 7th house
 }
+
+LEGACY_DIG_BALA_MAXIMUM_HOUSE = {**DIG_BALA_MAXIMUM_HOUSE, "Venus": 7}
 
 # Sthana Bala sub-component constants
 # Source: BPHS Ch.29, Jataka Parijata
@@ -181,7 +211,7 @@ def _relative_position(planet_rashi: int, target_rashi: int) -> int:
 # Component calculators
 # ---------------------------------------------------------------------------
 
-def calculate_naisargika_bala(planet: str) -> dict[str, Any]:
+def _calculate_naisargika_bala_legacy(planet: str) -> dict[str, Any]:
     """Calculate natural strength (Naisargika Bala).
 
     This is a fixed table lookup — no input dependency.
@@ -193,7 +223,7 @@ def calculate_naisargika_bala(planet: str) -> dict[str, Any]:
     Returns:
         Dict with raw_value, unit, validation_status, source_claim_ids
     """
-    raw_value = NAISARGIKA_BALA.get(planet)
+    raw_value = LEGACY_NAISARGIKA_BALA.get(planet)
     return canonical_strength_fact(
         strength_system="SHADBALA",
         subject_entity=f"VEDA-GRAHA-{planet.upper()}",
@@ -209,7 +239,7 @@ def calculate_naisargika_bala(planet: str) -> dict[str, Any]:
     )
 
 
-def calculate_dig_bala(planet: str, house_number: int) -> dict[str, Any]:
+def _calculate_dig_bala_legacy(planet: str, house_number: int) -> dict[str, Any]:
     """Calculate directional strength (Dig Bala).
 
     Maximum Dig Bala (60 rupas) at the planet's preferred direction.
@@ -223,7 +253,7 @@ def calculate_dig_bala(planet: str, house_number: int) -> dict[str, Any]:
     Returns:
         Dict with raw_value, unit, validation_status
     """
-    if planet not in DIG_BALA_MAXIMUM_HOUSE:
+    if planet not in LEGACY_DIG_BALA_MAXIMUM_HOUSE:
         return canonical_strength_fact(
             strength_system="SHADBALA",
             subject_entity=f"VEDA-GRAHA-{planet.upper()}",
@@ -233,7 +263,7 @@ def calculate_dig_bala(planet: str, house_number: int) -> dict[str, Any]:
             validation_status="RESEARCH_REQUIRED",
         )
 
-    max_house = DIG_BALA_MAXIMUM_HOUSE[planet]
+    max_house = LEGACY_DIG_BALA_MAXIMUM_HOUSE[planet]
     # Angular distance in house-steps (1-6)
     distance = abs(house_number - max_house)
     if distance > 6:
@@ -241,7 +271,8 @@ def calculate_dig_bala(planet: str, house_number: int) -> dict[str, Any]:
     # Convert to degrees: each house = 30 degrees
     degree_distance = distance * 30
     # Strength = max - (distance * rate)
-    raw_value = max(DIG_BALA_MAXIMUM - (degree_distance * DIG_BALA_RATE / 30), 0)
+    # Preserve the exact pre-remediation house-step semantics for replay.
+    raw_value = max(DIG_BALA_MAXIMUM - (degree_distance * LEGACY_DIG_BALA_RATE / 30), 0)
 
     return canonical_strength_fact(
         strength_system="SHADBALA",
@@ -256,6 +287,124 @@ def calculate_dig_bala(planet: str, house_number: int) -> dict[str, Any]:
         source_claim_ids=["VEDA-R2-CLM-000003"],
         validation_status="IMPLEMENTED_UNVALIDATED",
     )
+
+
+def virupa_to_rupa(value: float) -> float:
+    """Convert canonical Virupas to Rupas explicitly."""
+    return float(value) / VIRUPAS_PER_RUPA
+
+
+def rupa_to_virupa(value: float) -> float:
+    """Convert Rupas to canonical Virupas explicitly."""
+    return float(value) * VIRUPAS_PER_RUPA
+
+
+def _source_lineage(work: str, witness: str, edition: str, passage: str, assertion: str) -> dict[str, str]:
+    return {
+        "work_id": work,
+        "witness_id": witness,
+        "edition_id": edition,
+        "passage_id": passage,
+        "assertion_id": assertion,
+        "variant": "BPHS_SOURCE_BOUND_V1",
+    }
+
+
+def calculate_naisargika_bala_legacy(planet: str) -> dict[str, Any]:
+    """Explicit historical P018-R2 natural-strength replay route."""
+    return _calculate_naisargika_bala_legacy(planet)
+
+
+def calculate_naisargika_bala(planet: str, *, method: str = NAISARGIKA_METHOD_ID) -> dict[str, Any]:
+    """Calculate source-bound Naisargika Bala in canonical Virupas."""
+    if method in {LEGACY_NAISARGIKA_METHOD_ID, "LEGACY_P018_R2"}:
+        return _calculate_naisargika_bala_legacy(planet)
+    if method != NAISARGIKA_METHOD_ID:
+        raise ValueError(f"unsupported Naisargika method: {method}")
+    raw_value = NAISARGIKA_BALA.get(planet)
+    lineage = _source_lineage(NAISARGIKA_WORK_ID, NAISARGIKA_WITNESS_ID, NAISARGIKA_EDITION_ID, NAISARGIKA_PASSAGE_ID, NAISARGIKA_ASSERTION_ID)
+    return canonical_strength_fact(
+        strength_system="SHADBALA", subject_entity=f"VEDA-GRAHA-{planet.upper()}",
+        component="NAISARGIKA_BALA", raw_value=round(raw_value, 4) if raw_value is not None else None,
+        normalized_value=round(raw_value, 4) if raw_value is not None else None,
+        unit="VIRUPA", threshold=0.0, classification="FIXED_NATURAL_STRENGTH",
+        calculation_rule_id=NAISARGIKA_METHOD_ID, source_claim_ids=[NAISARGIKA_ASSERTION_ID],
+        runtime_version=NAISARGIKA_METHOD_ID,
+        validation_status="SOURCE_CONTRACT_IMPLEMENTED_AND_INTERNALLY_VALIDATED",
+        method_id=NAISARGIKA_METHOD_ID, contract_id=NAISARGIKA_CONTRACT_ID,
+        contract_version=NAISARGIKA_CONTRACT_VERSION, source_lineage=lineage,
+    )
+
+
+def calculate_dig_bala_legacy(planet: str, house_number: int) -> dict[str, Any]:
+    """Explicit historical house-step Dig Bala replay route."""
+    return _calculate_dig_bala_legacy(planet, house_number)
+
+
+def calculate_dig_bala_source(planet: str, planet_longitude_deg: float, minimum_direction_longitude_deg: float) -> dict[str, Any]:
+    """Calculate source-bound continuous Dig Bala from degree geometry."""
+    if planet not in DIG_BALA_MAXIMUM_HOUSE:
+        return canonical_strength_fact(
+            strength_system="SHADBALA", subject_entity=f"VEDA-GRAHA-{planet.upper()}",
+            component="DIG_BALA", raw_value=None, unit="VIRUPA",
+            validation_status="RESEARCH_REQUIRED", calculation_rule_id=DIG_METHOD_ID,
+            source_claim_ids=[DIG_ASSERTION_ID], method_id=DIG_METHOD_ID,
+            contract_id=DIG_CONTRACT_ID, contract_version=DIG_CONTRACT_VERSION,
+        )
+    planet_longitude_deg = float(planet_longitude_deg) % 360.0
+    minimum_direction_longitude_deg = float(minimum_direction_longitude_deg) % 360.0
+    forward = (planet_longitude_deg - minimum_direction_longitude_deg) % 360.0
+    angular_distance = min(forward, 360.0 - forward)
+    raw_value = min(angular_distance * DIG_BALA_RATE, DIG_BALA_MAXIMUM)
+    lineage = _source_lineage(DIG_WORK_ID, DIG_WITNESS_ID, DIG_EDITION_ID, DIG_PASSAGE_ID, DIG_ASSERTION_ID)
+    lineage["reference_geometry"] = "planet_longitude_vs_minimum_direction_longitude"
+    return canonical_strength_fact(
+        strength_system="SHADBALA", subject_entity=f"VEDA-GRAHA-{planet.upper()}",
+        component="DIG_BALA", raw_value=round(raw_value, 4), normalized_value=round(raw_value, 4),
+        unit="VIRUPA", threshold=0.0, classification="DIRECTIONAL_POSITION",
+        calculation_rule_id=DIG_METHOD_ID, source_claim_ids=[DIG_ASSERTION_ID],
+        runtime_version=DIG_METHOD_ID,
+        validation_status="SOURCE_CONTRACT_IMPLEMENTED_AND_INTERNALLY_VALIDATED",
+        method_id=DIG_METHOD_ID, contract_id=DIG_CONTRACT_ID,
+        contract_version=DIG_CONTRACT_VERSION, source_lineage=lineage,
+    )
+
+
+def calculate_dig_bala(
+    planet: str,
+    house_number: int | None = None,
+    *,
+    planet_longitude_deg: float | None = None,
+    minimum_direction_longitude_deg: float | None = None,
+    method: str = DIG_METHOD_ID,
+) -> dict[str, Any]:
+    """Calculate Dig Bala; source mode requires explicit degree geometry."""
+    if method in {"P018-R2-DIG-001", "LEGACY_P018_R2"}:
+        if house_number is None:
+            raise ValueError("legacy Dig Bala requires house_number")
+        return _calculate_dig_bala_legacy(planet, house_number)
+    if method != DIG_METHOD_ID:
+        raise ValueError(f"unsupported Dig Bala method: {method}")
+    if planet_longitude_deg is None or minimum_direction_longitude_deg is None:
+        return canonical_strength_fact(
+            strength_system="SHADBALA", subject_entity=f"VEDA-GRAHA-{planet.upper()}",
+            component="DIG_BALA", raw_value=None, unit="VIRUPA",
+            classification="INSUFFICIENT_SOURCE_GEOMETRY", calculation_rule_id=DIG_METHOD_ID,
+            source_claim_ids=[DIG_ASSERTION_ID], validation_status="INSUFFICIENT_DATA",
+            runtime_version=DIG_METHOD_ID,
+            method_id=DIG_METHOD_ID, contract_id=DIG_CONTRACT_ID,
+            contract_version=DIG_CONTRACT_VERSION,
+        )
+    return calculate_dig_bala_source(planet, planet_longitude_deg, minimum_direction_longitude_deg)
+
+
+def directional_minimum_longitude(planet: str, ascendant_longitude_deg: float) -> float:
+    """Resolve the source contract's minimum direction from a chart axis."""
+    if planet not in DIG_BALA_MAXIMUM_HOUSE:
+        raise ValueError(f"unsupported Dig Bala planet: {planet}")
+    maximum_house = DIG_BALA_MAXIMUM_HOUSE[planet]
+    maximum_direction = (float(ascendant_longitude_deg) + (maximum_house - 1) * 30.0) % 360.0
+    return (maximum_direction + 180.0) % 360.0
 
 
 def calculate_sthana_bala(planet: str, lon_deg: float, ascendant_lon: float) -> dict[str, Any]:
@@ -530,8 +679,8 @@ def calculate_shadbala(
     house = _house_from_position(rashi, _rashi_from_longitude(ascendant_lon))
 
     components = [
-        calculate_naisargika_bala(planet),
-        calculate_dig_bala(planet, house),
+        calculate_naisargika_bala_legacy(planet),
+        calculate_dig_bala_legacy(planet, house),
         calculate_sthana_bala(planet, lon_deg, ascendant_lon),
         calculate_kala_bala(planet, is_daytime, planet_day_lord),
         calculate_cheshta_bala(planet, daily_motion_arcsec, is_retrograde),
@@ -856,7 +1005,22 @@ def calculate_sav(
 
 __all__ = [
     "NAISARGIKA_BALA",
+    "NAISARGIKA_METHOD_ID",
+    "NAISARGIKA_TOTAL",
+    "NAISARGIKA_CONTRACT_ID",
+    "NAISARGIKA_CONTRACT_VERSION",
+    "NAISARGIKA_CONTRACT_HASH",
+    "LEGACY_NAISARGIKA_BALA",
+    "LEGACY_NAISARGIKA_METHOD_ID",
+    "LEGACY_NAISARGIKA_TOTAL",
+    "VIRUPAS_PER_RUPA",
     "DIG_BALA_MAXIMUM_HOUSE",
+    "LEGACY_DIG_BALA_MAXIMUM_HOUSE",
+    "LEGACY_DIG_BALA_RATE",
+    "DIG_METHOD_ID",
+    "DIG_CONTRACT_ID",
+    "DIG_CONTRACT_VERSION",
+    "DIG_CONTRACT_HASH",
     "BAV_CONTRIBUTIONS",
     "VIMSHOPAKA_WEIGHTS",
     "DRIK_BALA_CONTRIBUTIONS",
@@ -870,7 +1034,13 @@ __all__ = [
     "LEGACY_BAV_METHOD_ID",
     "LEGACY_SAV_METHOD_ID",
     "calculate_naisargika_bala",
+    "calculate_naisargika_bala_legacy",
     "calculate_dig_bala",
+    "calculate_dig_bala_source",
+    "calculate_dig_bala_legacy",
+    "directional_minimum_longitude",
+    "virupa_to_rupa",
+    "rupa_to_virupa",
     "calculate_sthana_bala",
     "calculate_kala_bala",
     "calculate_cheshta_bala",

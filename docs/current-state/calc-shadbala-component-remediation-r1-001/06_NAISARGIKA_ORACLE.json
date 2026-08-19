@@ -1,0 +1,24 @@
+{
+  "expected_values_virupa": {
+    "Jupiter": 34.2857,
+    "Mars": 17.1429,
+    "Mercury": 25.7143,
+    "Moon": 51.4286,
+    "Saturn": 8.5714,
+    "Sun": 60.0,
+    "Venus": 42.8571
+  },
+  "fixture_source": "local predecessor contract values; production constants not imported",
+  "planets": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Venus",
+    "Saturn"
+  ],
+  "runtime_matches": 7,
+  "runtime_total": 7,
+  "status": "PASS"
+}

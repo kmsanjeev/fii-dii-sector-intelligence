@@ -552,14 +552,14 @@ def runtime_comparison() -> dict[str, Any]:
 
     naisargika = []
     for planet in PLANETS:
-        current = runtime.calculate_naisargika_bala(planet)
+        current = runtime.calculate_naisargika_bala_legacy(planet)
         expected = independent_naisargika(planet)
         naisargika.append({"planet": planet, "current": current["raw_value"], "source_oracle": round(expected, 4), "match": abs(current["raw_value"] - expected) < 0.01, "unit": current["unit"]})
 
     dig = []
     for planet in PLANETS:
         expected_house = SOURCE_DIG_MAX_HOUSE[planet]
-        current_at_source_house = runtime.calculate_dig_bala(planet, expected_house)["raw_value"]
+        current_at_source_house = runtime.calculate_dig_bala_legacy(planet, expected_house)["raw_value"]
         dig.append({"planet": planet, "source_max_house": expected_house, "current_at_source_house": current_at_source_house, "current_declared_max_house": runtime.DIG_BALA_MAXIMUM_HOUSE[planet], "match": current_at_source_house == 60.0 and runtime.DIG_BALA_MAXIMUM_HOUSE[planet] == expected_house})
 
     nathonatha = {

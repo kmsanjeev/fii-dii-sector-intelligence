@@ -51,9 +51,13 @@ def canonical_strength_fact(
     runtime_version: str = "P012_CANONICAL_RUNTIME",
     validation_status: str = "RESEARCH_REQUIRED",
     interpretation_status: str = "RESEARCH_REQUIRED",
+    method_id: str | None = None,
+    contract_id: str | None = None,
+    contract_version: str | None = None,
+    source_lineage: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Return a schema-shaped fact; null values explicitly mean unavailable."""
-    return {
+    fact = {
         "strength_system": strength_system,
         "subject_entity": subject_entity,
         "component": component,
@@ -68,6 +72,15 @@ def canonical_strength_fact(
         "validation_status": validation_status,
         "interpretation_status": interpretation_status,
     }
+    if method_id is not None:
+        fact["method_id"] = method_id
+    if contract_id is not None:
+        fact["contract_id"] = contract_id
+    if contract_version is not None:
+        fact["contract_version"] = contract_version
+    if source_lineage is not None:
+        fact["source_lineage"] = dict(source_lineage)
+    return fact
 
 
 def strength_registry() -> list[dict[str, Any]]:

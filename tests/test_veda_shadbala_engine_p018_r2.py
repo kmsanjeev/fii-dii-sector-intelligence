@@ -9,18 +9,28 @@ import json
 from pathlib import Path
 
 import jsonschema
+import pytest
 
 from engines.ai.knowledge.shadbala_engine import (
     NAISARGIKA_BALA,
     NAISARGIKA_TOTAL,
+    LEGACY_NAISARGIKA_BALA,
+    LEGACY_NAISARGIKA_TOTAL,
     DIG_BALA_MAXIMUM_HOUSE,
+    LEGACY_DIG_BALA_MAXIMUM_HOUSE,
     BAV_CONTRIBUTIONS,
     VIMSHOPAKA_WEIGHTS,
     VIMSHOPAKA_TOTAL,
     DRIK_BALA_CONTRIBUTIONS,
     STANDARD_ASPECTS,
     calculate_naisargika_bala,
+    calculate_naisargika_bala_legacy,
     calculate_dig_bala,
+    calculate_dig_bala_source,
+    calculate_dig_bala_legacy,
+    directional_minimum_longitude,
+    virupa_to_rupa,
+    rupa_to_virupa,
     calculate_sthana_bala,
     calculate_kala_bala,
     calculate_cheshta_bala,
@@ -42,8 +52,9 @@ class TestNaisargikaBala:
     def test_sun_has_maximum_naisargika(self):
         result = calculate_naisargika_bala("Sun")
         assert result["raw_value"] == 60.0
-        assert result["unit"] == "RUPA"
-        assert result["validation_status"] == "IMPLEMENTED_UNVALIDATED"
+        assert result["unit"] == "VIRUPA"
+        assert result["validation_status"] == "SOURCE_CONTRACT_IMPLEMENTED_AND_INTERNALLY_VALIDATED"
+        assert result["contract_id"].startswith("VEDA-SWW-CONTRACT-SHADBALA-NAISARGIKA")
 
     def test_saturn_has_minimum_naisargika(self):
         result = calculate_naisargika_bala("Saturn")
@@ -56,14 +67,18 @@ class TestNaisargikaBala:
             assert result["raw_value"] > 0
 
     def test_naisargika_total_is_420(self):
-        # The canonical NAISARGIKA total is a defined classical constant (420 rupas).
-        # The per-planet table contains proportional allocations; the module exposes
-        # NAISARGIKA_TOTAL for the canonical total.
-        assert abs(NAISARGIKA_TOTAL - 420.0) < 0.1
+        assert abs(NAISARGIKA_TOTAL - 240.0) < 0.1
+        assert abs(LEGACY_NAISARGIKA_TOTAL - 420.0) < 0.1
+
+    def test_legacy_route_preserves_historical_unit_and_values(self):
+        result = calculate_naisargika_bala_legacy("Jupiter")
+        assert result["raw_value"] == LEGACY_NAISARGIKA_BALA["Jupiter"]
+        assert result["unit"] == "RUPA"
+        assert result["calculation_rule_id"] == "P018-R2-NAISARGIKA-001"
 
     def test_naisargika_has_source_claim(self):
         result = calculate_naisargika_bala("Sun")
-        assert "VEDA-R2-CLM-000005" in result["source_claim_ids"]
+        assert "VEDA-SWW-ASSERTION-SHADBALA-NAISARGIKA-VALUES-463C846ADE76" in result["source_claim_ids"]
 
     def test_naisargika_produces_canonical_fact(self):
         result = calculate_naisargika_bala("Jupiter")
@@ -82,43 +97,63 @@ class TestDigBala:
     """Tests for directional strength (Dig Bala) calculation."""
 
     def test_jupiter_maximum_at_first_house(self):
-        result = calculate_dig_bala("Jupiter", 1)
+        result = calculate_dig_bala_source("Jupiter", 0.0, 180.0)
         assert result["raw_value"] == 60.0
 
     def test_sun_maximum_at_tenth_house(self):
-        result = calculate_dig_bala("Sun", 10)
+        result = calculate_dig_bala_source("Sun", 270.0, 90.0)
         assert result["raw_value"] == 60.0
 
     def test_moon_maximum_at_fourth_house(self):
-        result = calculate_dig_bala("Moon", 4)
+        result = calculate_dig_bala_source("Moon", 90.0, 270.0)
         assert result["raw_value"] == 60.0
 
     def test_venus_maximum_at_seventh_house(self):
-        result = calculate_dig_bala("Venus", 7)
+        result = calculate_dig_bala_source("Venus", 90.0, 270.0)
         assert result["raw_value"] == 60.0
 
     def test_saturn_maximum_at_seventh_house(self):
-        result = calculate_dig_bala("Saturn", 7)
+        result = calculate_dig_bala_source("Saturn", 180.0, 0.0)
         assert result["raw_value"] == 60.0
 
     def test_dig_bala_decreases_away_from_maximum(self):
-        result_max = calculate_dig_bala("Jupiter", 1)
-        result_away = calculate_dig_bala("Jupiter", 4)
+        result_max = calculate_dig_bala_source("Jupiter", 0.0, 180.0)
+        result_away = calculate_dig_bala_source("Jupiter", 90.0, 180.0)
         assert result_max["raw_value"] > result_away["raw_value"]
 
     def test_dig_bala_opposite_house_is_minimum(self):
-        result_max = calculate_dig_bala("Jupiter", 1)
-        result_opp = calculate_dig_bala("Jupiter", 7)
+        result_max = calculate_dig_bala_source("Jupiter", 0.0, 180.0)
+        result_opp = calculate_dig_bala_source("Jupiter", 180.0, 180.0)
         assert result_max["raw_value"] > result_opp["raw_value"]
 
     def test_dig_bala_has_source_claim(self):
-        result = calculate_dig_bala("Sun", 10)
-        assert "VEDA-R2-CLM-000003" in result["source_claim_ids"]
+        result = calculate_dig_bala_source("Sun", 270.0, 90.0)
+        assert "VEDA-SWW-ASSERTION-SHADBALA-DIG-FORMULA-53C850BEEBF1" in result["source_claim_ids"]
+
+    def test_continuous_midpoint_and_wraparound(self):
+        assert calculate_dig_bala_source("Sun", 0.0, 180.0)["raw_value"] == 60.0
+        assert calculate_dig_bala_source("Sun", 180.0, 180.0)["raw_value"] == 0.0
+        assert calculate_dig_bala_source("Sun", 0.0, 90.0)["raw_value"] == 30.0
+        assert calculate_dig_bala_source("Sun", 359.0, 180.0)["raw_value"] == pytest.approx(59.6667, abs=0.0001)
+
+    def test_chart_axis_resolves_source_minimum_direction(self):
+        minimum = directional_minimum_longitude("Venus", 0.0)
+        assert minimum == 270.0
+        assert calculate_dig_bala_source("Venus", 90.0, minimum)["raw_value"] == 60.0
+
+    def test_legacy_route_preserves_historical_venus_direction(self):
+        assert LEGACY_DIG_BALA_MAXIMUM_HOUSE["Venus"] == 7
+        assert calculate_dig_bala_legacy("Venus", 7)["raw_value"] == 60.0
 
     def test_unknown_planet_returns_blocked(self):
-        result = calculate_dig_bala("Rahu", 1)
+        result = calculate_dig_bala_source("Rahu", 0.0, 180.0)
         assert result["raw_value"] is None
         assert result["validation_status"] == "RESEARCH_REQUIRED"
+
+    def test_explicit_unit_conversion_round_trip(self):
+        assert virupa_to_rupa(60.0) == 1.0
+        assert rupa_to_virupa(1.0) == 60.0
+        assert virupa_to_rupa(rupa_to_virupa(2.5)) == 2.5
 
 
 # ---------------------------------------------------------------------------
@@ -408,9 +443,11 @@ class TestConflictReconciliation:
     """Tests for method variant visibility and conflict tracking."""
 
     def test_naisargika_values_match_classical_sources(self):
-        # BPHS Ch.29 values
+        # BPHS source-bound Virupa values
         assert NAISARGIKA_BALA["Sun"] == 60.0
         assert abs(NAISARGIKA_BALA["Moon"] - 51.4286) < 0.01
+        assert abs(NAISARGIKA_BALA["Venus"] - 42.8571) < 0.01
+        assert abs(NAISARGIKA_BALA["Jupiter"] - 34.2857) < 0.01
         assert abs(NAISARGIKA_BALA["Saturn"] - 8.5714) < 0.01
 
     def test_vimshopaka_total_is_16(self):
