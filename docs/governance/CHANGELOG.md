@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-RECOMMENDATION-ENGINE-001-RX1
+
+Completed the authorized contract-bound restart with `PASS_WITH_CONDITION`.
+The RX2 Business and Education V4 contracts were independently hash-verified
+and are evaluated through the existing P032 calculation and factor adapter.
+The new boundary evaluates one candidate categorically, discloses nonblocking
+source gaps, abstains on missing calculation dependencies and scope mismatch,
+and emits caution, consultation and source trace. Default capability access is
+enabled; personal Bala, scoring, ranking, prediction, ML, RAG, Approved Core
+and provider calls remain unchanged. The historical blocked engine is preserved.
+Evidence is in `docs/current-state/muhurta-recommendation-engine-rx1-001/`.
+
 ## 2026-08-19 | VEDA-MUHURTA-DEDICATED-CLASSICAL-SOURCE-RX2-001
 
 Completed the bounded dedicated-source expansion with `PASS_WITH_CONDITION`

@@ -1,6 +1,8 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.73.3 | 2026-08-19
+# Version 4.73.4 | 2026-08-19
+
+- `VEDA-MUHURTA-RECOMMENDATION-ENGINE-001-RX1` completed with `PASS_WITH_CONDITION`: the existing RX2 Business and Education V4 contracts are hash-verified and consumed by a single-candidate categorical general recommendation boundary at `POST /api/muhurta/recommend`. P032 calculation and its factor adapter are reused. Default access is enabled for the validated capability; source gaps, calculation-dependency abstention, scope abstention, caution, consultation, personal Bala gating and source trace are explicit. No scoring, ranking, prediction, ML, RAG, Approved Core or provider-call change occurred. Religious and other unactivated activities remain abstaining. Evidence: `docs/current-state/muhurta-recommendation-engine-rx1-001/`.
 
 - `VEDA-MUHURTA-DEDICATED-CLASSICAL-SOURCE-RX2-001` completed with `PASS_WITH_CONDITION` and decision `MUHURTA_BLOCKERS_RECLASSIFIED_ENGINE_READY`. The blocker-necessity audit found that the V3 Business and Education Tithi/Karana residuals were contextual/source-partial, not hard exclusions or hard requirements. A dedicated Muhurtacintamani witness supports a conditional Education Vidyarambha/Akshararambha Tithi predicate `{2,3,5,6,10,11,12}`; no Education-specific Karana set was found. Dedicated market/shop evidence is not generalized to Business-opening inauguration, which remains an explicit abstaining scope gap. Deterministic Business/Education V4 contracts and `ENGINE_HANDOFF_RX1` are recorded for a future inactive recommendation activity. P032 calculation, recommendation runtime, RAG, Approved Core (`17`), prediction, ML, PRED-M4 and provider calls remain unchanged. Evidence: `docs/current-state/muhurta-dedicated-classical-source-rx2-001/`.
 

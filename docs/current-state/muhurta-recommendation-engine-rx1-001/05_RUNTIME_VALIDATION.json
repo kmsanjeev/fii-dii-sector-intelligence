@@ -1,0 +1,28 @@
+{
+  "programme": "VEDA-MUHURTA-RECOMMENDATION-ENGINE-001-RX1",
+  "starting_commit": "18ed5c6375c643e23dd827d035a898b52881fac4",
+  "engine_version": "1.0.0",
+  "endpoint": "POST /api/muhurta/recommend",
+  "contracts": {
+    "business": "DBC0DF78DCBDC0DC58842895B68733D0E6DDEFB946550419E88D3B6E2584BE60",
+    "education": "7A17DB6B6256D9BD1C6F1F6737FACC4A6F2AAF9B8A74C56FD0FA05A3B6805F35"
+  },
+  "default_access_state": "ENABLED",
+  "provider_calls_added": 0,
+  "numeric_score": false,
+  "personal_bala": "NOT_EVALUATED",
+  "d1_or_natal_data": "NOT_USED",
+  "rag_changed": false,
+  "safety": {
+    "guarantee": false,
+    "prediction": false,
+    "unsupported_activity_abstention": true,
+    "calculation_dependency_abstention": true,
+    "contract_hash_fail_closed": true
+  },
+  "focused_tests": {
+    "rx1": 8,
+    "legacy_and_adapter": 11,
+    "status": "PASS"
+  }
+}
