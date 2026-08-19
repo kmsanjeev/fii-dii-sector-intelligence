@@ -73,6 +73,12 @@ def test_education_routine_study_abstains_on_scope():
     assert result["abstention_reason"] == "ACTIVITY_SCOPE_MISMATCH"
 
 
+def test_business_excluded_activity_abstains_on_scope():
+    result = engine.recommend(_request("BUSINESS_OPENING_INAUGURATION", activity_subscope="investment selection"))
+    assert result["recommendation_state"] == "ABSTAIN"
+    assert result["abstention_reason"] == "ACTIVITY_SCOPE_MISMATCH"
+
+
 def test_missing_p032_dependency_is_governed_abstention():
     result = engine.recommend({"activity_id": "BUSINESS_OPENING_INAUGURATION", "candidate_start": LOCAL, "location": LOCATION})
     assert result["recommendation_state"] == "ABSTAIN"
