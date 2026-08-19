@@ -1,0 +1,10 @@
+{
+  "activity": "BUSINESS_OPENING_INAUGURATION",
+  "scenario_count": 2,
+  "scenarios": [
+    {"id": "BUSINESS_VALID_FACTS", "expected": "MUHURTA_ACTIVITY_CONTRACT_IMPLEMENTATION_BLOCKED"},
+    {"id": "BUSINESS_MISSING_FACTS", "expected": "MUHURTA_ACTIVITY_CONTRACT_IMPLEMENTATION_BLOCKED"}
+  ],
+  "no_commercial_viability_claim": true,
+  "no_recommendation_emitted": true
+}

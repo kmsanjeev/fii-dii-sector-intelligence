@@ -1,0 +1,10 @@
+{
+  "activity": "EDUCATION_COMMENCEMENT",
+  "scenario_count": 2,
+  "scenarios": [
+    {"id": "EDUCATION_FORMAL_COMMENCEMENT", "expected": "MUHURTA_ACTIVITY_CONTRACT_IMPLEMENTATION_BLOCKED"},
+    {"id": "EDUCATION_ROUTINE_STUDY", "expected": "ACTIVITY_SCOPE_MISMATCH_OR_BLOCKED"}
+  ],
+  "institutional_requirements_remain_primary": true,
+  "no_recommendation_emitted": true
+}

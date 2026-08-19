@@ -1,0 +1,10 @@
+{
+  "guards": [
+    {"activity": "RELIGIOUS_SPIRITUAL_CEREMONY", "state": "SOURCE_HARDENING_REQUIRED"},
+    {"activity": "MARRIAGE", "state": "UNSUPPORTED_ACTIVITY"},
+    {"activity": "MEDICAL_PROCEDURE", "state": "UNSUPPORTED_ACTIVITY;DO_NOT_DELAY_NECESSARY_CARE"},
+    {"activity": "LEGAL_DEADLINE", "state": "UNSUPPORTED_ACTIVITY;DO_NOT_MISS_DEADLINES"},
+    {"activity": "FINANCIAL_TRANSACTION", "state": "UNSUPPORTED_ACTIVITY"}
+  ],
+  "general_fallback": false
+}

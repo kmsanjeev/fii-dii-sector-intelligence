@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-RECOMMENDATION-ENGINE-001
+
+Completed the bounded recommendation-engine conformance audit with decision
+`MUHURTA_ENGINE_CONTRACT_BLOCKED`. The immutable business and education
+contracts passed hash verification but contain prose conditions without
+machine evaluator bindings, predicates or factor mappings. The fail-closed
+gate refuses to interpret prose or invent source semantics. No recommendation
+runtime, API, UI, scoring, ranking, personal Bala, P032 behavior, RAG,
+prediction, ML or Approved Core state changed. Evidence is in
+`docs/current-state/muhurta-recommendation-engine-001/`. A separate contract
+remediation activity is required before implementation can proceed.
+
 ## 2026-08-19 | VEDA-MUHURTA-ACTIVITY-RULE-CONTRACTS-001
 
 Completed the source-bound MVP activity contract package with

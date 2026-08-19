@@ -1,0 +1,29 @@
+{
+  "programme": "VEDA-MUHURTA-RECOMMENDATION-ENGINE-001",
+  "decision": "MUHURTA_ACTIVITY_CONTRACT_IMPLEMENTATION_BLOCKED",
+  "contracts_immutable": true,
+  "bindings": [
+    {
+      "activity_id": "BUSINESS_OPENING_INAUGURATION",
+      "contract_id": "VEDA-MUH-CONTRACT-BUSINESS-OPENING-V1",
+      "contract_hash": "941E9ECB9960652C",
+      "hash_verified": true,
+      "machine_evaluator_binding": false
+    },
+    {
+      "activity_id": "EDUCATION_COMMENCEMENT",
+      "contract_id": "VEDA-MUH-CONTRACT-EDUCATION-COMMENCEMENT-V1",
+      "contract_hash": "FFE718B6AAA8D6C9",
+      "hash_verified": true,
+      "machine_evaluator_binding": false
+    },
+    {
+      "activity_id": "RELIGIOUS_SPIRITUAL_CEREMONY",
+      "contract_id": "VEDA-MUH-CONTRACT-RELIGIOUS-SPIRITUAL-CEREMONY-V1",
+      "contract_hash": "A700789D07BD477D",
+      "hash_verified": true,
+      "machine_evaluator_binding": false,
+      "activation_scope": "NOT_AUTHORIZED"
+    }
+  ]
+}

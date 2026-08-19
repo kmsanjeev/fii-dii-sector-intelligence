@@ -1,0 +1,15 @@
+{
+  "precedence": [
+    "HARD_EXCLUSION",
+    "HARD_REQUIREMENT",
+    "STRONG_NEGATIVE",
+    "CONTEXT_DEPENDENT",
+    "PREFERENCE_NEGATIVE",
+    "PREFERENCE_POSITIVE",
+    "STRONG_POSITIVE",
+    "NEUTRAL"
+  ],
+  "contract_policy_verified": true,
+  "runtime_applied": false,
+  "reason": "No rule evaluator may run until the frozen contracts supply machine predicates."
+}

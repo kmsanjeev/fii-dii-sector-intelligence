@@ -1,0 +1,20 @@
+{
+  "rule_execution": [
+    {
+      "activity": "BUSINESS_OPENING_INAUGURATION",
+      "rule_ids": ["MUH-BIZ-NAK-001", "MUH-BIZ-TITHI-KARANA-001", "MUH-BIZ-PANCHANGA-INPUT-001", "MUH-BIZ-VARA-YOGA-GAP-001"],
+      "contract_hash_verified": true,
+      "predicate_bindings_present": false,
+      "result": "BLOCKED"
+    },
+    {
+      "activity": "EDUCATION_COMMENCEMENT",
+      "rule_ids": ["MUH-EDU-NAK-001", "MUH-EDU-TITHI-KARANA-001", "MUH-EDU-PANCHANGA-INPUT-001", "MUH-EDU-ROUTINE-SCOPE-001", "MUH-EDU-VARA-YOGA-GAP-001"],
+      "contract_hash_verified": true,
+      "predicate_bindings_present": false,
+      "result": "BLOCKED"
+    }
+  ],
+  "prose_conditions_parsed": false,
+  "numeric_scoring": false
+}
