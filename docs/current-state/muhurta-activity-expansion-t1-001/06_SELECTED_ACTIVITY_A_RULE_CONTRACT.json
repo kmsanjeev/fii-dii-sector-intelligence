@@ -1,0 +1,21 @@
+{
+  "contract_id":"VEDA-MUH-T1-CONTRACT-VEHICLE-CONVEYANCE-COMMENCEMENT-V1",
+  "version":"1.0.0",
+  "activity_id":"VEHICLE_CONVEYANCE_COMMENCEMENT",
+  "activity_scope":"Vehicle or conveyance first use/acquisition commencement",
+  "source_tradition":["BRIHAT_SAMHITA_SCOPED_ACTION_FAMILIES","VEDA_P032_FACT_CONTRACT"],
+  "rule_ids":["MUH-T1-VEHICLE-NAK-001"],
+  "hard_exclusions":[],
+  "hard_requirements":[],
+  "strong_negatives":[],"preference_negatives":[],"preference_positives":["MUH-T1-VEHICLE-NAK-001"],"strong_positives":[],
+  "context_rules":["NO_UNIVERSAL_AUSPICIOUSNESS","NO_OUTCOME_GUARANTEE"],
+  "personal_factors":["TARA_CHANDRA_DIAGNOSTIC_ONLY"],
+  "source_variants":["BRIHAT_SAMHITA_NUMBERING_VARIANT_RETAINED"],
+  "precedence":["HARD_EXCLUSION","HARD_REQUIREMENT","CONTEXT","PREFERENCE","ABSTAIN"],
+  "abstention":["MISSING_NAKSHATRA","ACTIVITY_SCOPE_MISMATCH"],
+  "caution_class":"MODERATE_CONSEQUENCE_PROPERTY_CONTEXT",
+  "consultation_class":"PRACTICAL_FINANCIAL_AND_SAFETY_CONTEXT_REQUIRED",
+  "production_bound":false,
+  "readiness":"MACHINE_CONTRACT_READY_WITH_NONBLOCKING_GAPS",
+  "contract_hash":"D5967EA716874DA9ABB0FC8D4D25691A46F0EEC4446F3C987459942D8FCEAA41"
+}

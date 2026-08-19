@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-ACTIVITY-EXPANSION-T1-001
+
+Completed the first Muhurta activity-expansion tranche with
+`MUHURTA_ACTIVITY_EXPANSION_TWO_CONTRACTS_READY`. Added source-governed,
+non-production machine contracts for vehicle/conveyance commencement and
+consecration/installation commencement. Both reuse P032 Nakshatra facts,
+retain source-witness lineage, abstain on missing or mismatched scope, and
+carry explicit nonblocking gaps and caution/consultation metadata. Existing
+Business, Education, Window Search, Personal Bala, P032, RAG, prediction, ML
+and Approved Core state remain unchanged. The next engine-expansion activity is
+authorized but was not started automatically.
+
 ## 2026-08-19 | VEDA-MUHURTA-PERSONAL-BALA-SOURCE-HARDENING-001
 
 Completed the bounded Tara Bala and Chandra Bala source-hardening activity with

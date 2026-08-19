@@ -1,6 +1,17 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.73.6 | 2026-08-19
+# Version 4.73.7 | 2026-08-19
+
+- `VEDA-MUHURTA-ACTIVITY-EXPANSION-T1-001` completed with
+  `MUHURTA_ACTIVITY_EXPANSION_TWO_CONTRACTS_READY`: narrow non-production
+  machine contracts were created for vehicle/conveyance commencement and
+  consecration/installation commencement using existing P032 Nakshatra facts
+  and source-witness lineage. Both have explicit abstention, caution,
+  consultation and nonblocking-gap metadata. Existing Muhurta runtime,
+  Personal Bala, P032, RAG, Approved Core (`17`), prediction, ML and other
+  calculation state remain unchanged. The separate engine-expansion activity
+  is authorized but not started. Evidence:
+  `docs/current-state/muhurta-activity-expansion-t1-001/`.
 
 - `VEDA-MUHURTA-PERSONAL-BALA-SOURCE-HARDENING-001` completed with `PERSONAL_MUHURTA_SOURCE_PARTIAL`: Tara Bala and Chandra Bala candidate calculations are independently evaluated in non-production 729-case and 144-case matrices, with explicit source-witness gaps, variants, birth-data uncertainty and qualitative composition contracts. Personalized recommendations remain unimplemented; general Muhurta/window search, P032, Business/Education contracts, RAG, Approved Core (`17`), prediction, ML, Shadbala, Ashtakavarga and D20 remain unchanged. Evidence: `docs/current-state/muhurta-personal-bala-source-hardening-001/`.
 

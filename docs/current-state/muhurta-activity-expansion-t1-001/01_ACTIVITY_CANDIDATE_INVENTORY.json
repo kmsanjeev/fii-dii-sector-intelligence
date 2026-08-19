@@ -1,0 +1,17 @@
+{
+  "programme": "VEDA-MUHURTA-ACTIVITY-EXPANSION-T1-001",
+  "selection_policy": "qualitative_source_strength_then_machine_feasibility_then_variant_clarity_then_utility",
+  "candidates": [
+    {"activity_id":"CONSECRATION_INSTALLATION_COMMENCEMENT","source_activity_class":"ABHISHEKA_SHANTI_DHRUVA_ESTABLISHMENT_ACTION_FAMILY","source_readiness":"SOURCE_STRONG_MACHINE_FEASIBLE","machine_state":"FEASIBLE_NAKSHATRA_PREDICATE","runtime_state":"INACTIVE","next_evidence_need":"activity-specific tithi/vara/yoga and lineage rules"},
+    {"activity_id":"VEHICLE_CONVEYANCE_COMMENCEMENT","source_activity_class":"SHILPA_AUSHADHA_YANA_ACTION_FAMILY","source_readiness":"SOURCE_STRONG_MACHINE_FEASIBLE","machine_state":"FEASIBLE_NAKSHATRA_PREDICATE","runtime_state":"INACTIVE","next_evidence_need":"activity-specific tithi/vara/yoga and practical scope refinement"},
+    {"activity_id":"HOUSE_CONSTRUCTION_COMMENCEMENT","source_activity_class":"BHAVANA_ARAMBHA","source_readiness":"SOURCE_STRONG_MACHINE_PARTIAL","machine_state":"LAGNA_AND_GRAHA_DEPENDENCY","runtime_state":"INACTIVE","next_evidence_need":"trusted lagna/planetary election contract"},
+    {"activity_id":"HOUSE_ENTRY_OR_GRIHA_PRAVESHA","source_activity_class":"BHAVANA_PRAVESHA","source_readiness":"SOURCE_STRONG_MACHINE_PARTIAL","machine_state":"LAGNA_AND_GRAHA_DEPENDENCY","runtime_state":"INACTIVE","next_evidence_need":"trusted lagna/planetary and practical property contract"},
+    {"activity_id":"MARRIAGE_CEREMONY_TIMING","source_activity_class":"PANIGRAHANA","source_readiness":"SOURCE_STRONG_MACHINE_PARTIAL","machine_state":"LAGNA_AND_GRAHA_DEPENDENCY","runtime_state":"INACTIVE","next_evidence_need":"marriage-specific lagna/graha and tradition variant contract"},
+    {"activity_id":"TRAVEL_JOURNEY_COMMENCEMENT","source_activity_class":"GAMANA_OR_JOURNEY","source_readiness":"SOURCE_SCOPE_AMBIGUOUS","machine_state":"PARTIAL","runtime_state":"INACTIVE","next_evidence_need":"journey subtype and direction/source contract"},
+    {"activity_id":"PUJA_JAPA_VRATA_COMMENCEMENT","source_activity_class":"RITUAL_SUBTYPE_REQUIRED","source_readiness":"SOURCE_VARIANT_COMPLEX","machine_state":"PARTIAL","runtime_state":"INACTIVE","next_evidence_need":"separate ceremony-specific primary passages"},
+    {"activity_id":"PROPERTY_PURCHASE_OR_REGISTRATION","source_activity_class":"PROPERTY_TRANSACTION","source_readiness":"SOURCE_SCOPE_AMBIGUOUS","machine_state":"PRACTICAL_AND_LEGAL_DEPENDENCIES","runtime_state":"INACTIVE","next_evidence_need":"title/registration/finance separation"},
+    {"activity_id":"MEDICAL_PROCEDURE","source_activity_class":"TREATMENT_OR_PROCEDURE","source_readiness":"SOURCE_ACCESS_LIMITED","machine_state":"RESTRICTED_CONTEXT","runtime_state":"INACTIVE","next_evidence_need":"specialist source audit; necessary care always takes priority"}
+  ],
+  "selected": ["VEHICLE_CONVEYANCE_COMMENCEMENT","CONSECRATION_INSTALLATION_COMMENCEMENT"],
+  "numeric_readiness_score": false
+}

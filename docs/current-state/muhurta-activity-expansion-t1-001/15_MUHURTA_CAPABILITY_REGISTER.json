@@ -1,0 +1,10 @@
+{
+  "activities":[
+    {"activity_id":"BUSINESS_OPENING_INAUGURATION","source_readiness":"VALIDATED_WITH_CONDITIONS","contract_state":"FROZEN","machine_state":"EXISTING_ENGINE_CONTRACT","runtime_state":"OPERATIONAL_WITH_LIMITATIONS","personalization_state":"INACTIVE","access_default":"ENABLED"},
+    {"activity_id":"EDUCATION_COMMENCEMENT","source_readiness":"VALIDATED_WITH_CONDITIONS","contract_state":"FROZEN","machine_state":"EXISTING_ENGINE_CONTRACT","runtime_state":"OPERATIONAL_WITH_LIMITATIONS","personalization_state":"INACTIVE","access_default":"ENABLED"},
+    {"activity_id":"VEHICLE_CONVEYANCE_COMMENCEMENT","source_readiness":"SOURCE_STRONG_MACHINE_FEASIBLE","contract_state":"T1_CONTRACT_READY","machine_state":"MACHINE_CONTRACT_READY_WITH_NONBLOCKING_GAPS","runtime_state":"INACTIVE","personalization_state":"DIAGNOSTIC_ONLY","caution_class":"MODERATE_CONSEQUENCE_PROPERTY_CONTEXT","access_default":"ENABLED_WHEN_IMPLEMENTED_VALIDATED"},
+    {"activity_id":"CONSECRATION_INSTALLATION_COMMENCEMENT","source_readiness":"SOURCE_STRONG_MACHINE_FEASIBLE","contract_state":"T1_CONTRACT_READY","machine_state":"MACHINE_CONTRACT_READY_WITH_NONBLOCKING_GAPS","runtime_state":"INACTIVE","personalization_state":"DIAGNOSTIC_ONLY","caution_class":"LOW_RISK_TRADITIONAL","access_default":"ENABLED_WHEN_IMPLEMENTED_VALIDATED"}
+  ],
+  "permanent_topic_restrictions":false,
+  "capability_access_separated":true
+}

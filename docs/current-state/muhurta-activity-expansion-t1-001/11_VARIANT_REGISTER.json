@@ -1,0 +1,7 @@
+{
+  "variants":[
+    {"variant_id":"BRIHAT_SAMHITA_NUMBERING_VARIANT_RETAINED","issue":"online editions may number the tithi/karana/marriage chapters differently","policy":"retain repository consulted numbering and do not merge chapter labels silently"},
+    {"variant_id":"CEREMONY_LINEAGE_SCOPE","issue":"consecration/installation procedures vary by tradition","policy":"require explicit subtype and qualified traditional context"}
+  ],
+  "cross_tradition_merge":"PROHIBITED_WITHOUT_EQUIVALENCE_OR_SCOPE_PROOF"
+}

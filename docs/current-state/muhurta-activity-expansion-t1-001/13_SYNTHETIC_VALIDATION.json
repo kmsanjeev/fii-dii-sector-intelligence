@@ -1,0 +1,13 @@
+{
+  "cases":[
+    {"activity":"VEHICLE_CONVEYANCE_COMMENCEMENT","factors":{"nakshatra":"Ashwini"},"expected":"PREFERENCE_POSITIVE"},
+    {"activity":"VEHICLE_CONVEYANCE_COMMENCEMENT","factors":{"nakshatra":"Rohini"},"expected":"ABSTAIN"},
+    {"activity":"VEHICLE_CONVEYANCE_COMMENCEMENT","factors":{},"expected":"ABSTAIN"},
+    {"activity":"CONSECRATION_INSTALLATION_COMMENCEMENT","factors":{"nakshatra":"Rohini","ceremony_subtype":"DEITY_INSTALLATION"},"expected":"PREFERENCE_POSITIVE"},
+    {"activity":"CONSECRATION_INSTALLATION_COMMENCEMENT","factors":{"nakshatra":"Rohini"},"expected":"ABSTAIN"},
+    {"activity":"CONSECRATION_INSTALLATION_COMMENCEMENT","factors":{"nakshatra":"Ashwini","ceremony_subtype":"DEITY_INSTALLATION"},"expected":"ABSTAIN"}
+  ],
+  "numeric_score":false,
+  "personal_data":false,
+  "production_activation":false
+}

@@ -1,0 +1,21 @@
+{
+  "contract_id":"VEDA-MUH-T1-CONTRACT-CONSECRATION-INSTALLATION-COMMENCEMENT-V1",
+  "version":"1.0.0",
+  "activity_id":"CONSECRATION_INSTALLATION_COMMENCEMENT",
+  "activity_scope":"Consecration or deity/temple installation commencement",
+  "source_tradition":["BRIHAT_SAMHITA_SCOPED_ACTION_FAMILIES","VEDA_P032_FACT_CONTRACT"],
+  "rule_ids":["MUH-T1-INSTALLATION-NAK-001"],
+  "hard_exclusions":[],
+  "hard_requirements":["CEREMONY_SUBTYPE_EXPLICIT"],
+  "strong_negatives":[],"preference_negatives":[],"preference_positives":["MUH-T1-INSTALLATION-NAK-001"],"strong_positives":[],
+  "context_rules":["NO_UNIVERSAL_AUSPICIOUSNESS","NO_OUTCOME_GUARANTEE","TRADITION_LINEAGE_REQUIRED"],
+  "personal_factors":["TARA_CHANDRA_DIAGNOSTIC_ONLY"],
+  "source_variants":["BRIHAT_SAMHITA_NUMBERING_VARIANT_RETAINED"],
+  "precedence":["HARD_EXCLUSION","HARD_REQUIREMENT","CONTEXT","PREFERENCE","ABSTAIN"],
+  "abstention":["MISSING_NAKSHATRA","ACTIVITY_SCOPE_MISMATCH","CEREMONY_SUBTYPE_MISSING"],
+  "caution_class":"LOW_RISK_TRADITIONAL",
+  "consultation_class":"QUALIFIED_TRADITIONAL_PRACTITIONER_WHERE_RITUAL_SPECIFIC",
+  "production_bound":false,
+  "readiness":"MACHINE_CONTRACT_READY_WITH_NONBLOCKING_GAPS",
+  "contract_hash":"F4EC72B91060F965E30D826A1EA44E39F994AA6A1D78C537654FD2E7064AF52C"
+}

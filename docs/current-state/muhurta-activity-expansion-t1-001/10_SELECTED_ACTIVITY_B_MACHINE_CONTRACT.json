@@ -1,0 +1,13 @@
+{
+  "activity_id":"CONSECRATION_INSTALLATION_COMMENCEMENT",
+  "factor_id":"P032-CALC-NAKSHATRA-001",
+  "evaluator_id":"MUH-T1-EVAL-NAKSHATRA-FIXED-001",
+  "operator":"IN_SET",
+  "expected_set":["Rohini","Uttara Phalguni","Uttara Ashadha","Uttara Bhadrapada"],
+  "missing_value_policy":"ABSTAIN_MISSING_NAKSHATRA_OR_SUBTYPE",
+  "recommendation_effect":"PREFERENCE_POSITIVE_ONLY",
+  "precedence":"HARD_REQUIREMENT_THEN_PREFERENCE_THEN_ABSTENTION",
+  "source_assertion_ids":["VEDA-SWW-ASSERTION-BS-NAK-CONSECRATION-001"],
+  "hard_exclusion":false,
+  "production_activation":false
+}

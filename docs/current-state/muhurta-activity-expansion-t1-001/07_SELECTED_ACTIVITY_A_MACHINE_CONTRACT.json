@@ -1,0 +1,13 @@
+{
+  "activity_id":"VEHICLE_CONVEYANCE_COMMENCEMENT",
+  "factor_id":"P032-CALC-NAKSHATRA-001",
+  "evaluator_id":"MUH-T1-EVAL-NAKSHATRA-LIGHT-001",
+  "operator":"IN_SET",
+  "expected_set":["Ashwini","Pushya","Hasta"],
+  "missing_value_policy":"ABSTAIN_MISSING_NAKSHATRA",
+  "recommendation_effect":"PREFERENCE_POSITIVE_ONLY",
+  "precedence":"PREFERENCE_BEFORE_ABSTENTION",
+  "source_assertion_ids":["VEDA-SWW-ASSERTION-BS-NAK-VEHICLE-001"],
+  "hard_exclusion":false,
+  "production_activation":false
+}
