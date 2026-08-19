@@ -1,0 +1,8 @@
+{
+  "policy_version": "2026-08-20",
+  "schema_version": 1,
+  "default_profile": "FULL_AVAILABLE_CAPABILITIES",
+  "capabilities": ["GENERAL_CHAT", "MARKET_INTELLIGENCE", "SECTOR_INTELLIGENCE", "STOCK_INTELLIGENCE", "CORPORATE_INTELLIGENCE", "ASTROLOGY", "RESEARCH", "MUHURTA", "ATTACHMENTS", "REVIEWED_MEMORY", "MIT_REPO_INTAKE", "MCP", "VOICE"],
+  "maturity_rule": "configuration never promotes maturity",
+  "protected_rule": "GENERAL_CHAT and safety safeguards cannot be disabled"
+}

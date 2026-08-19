@@ -2,8 +2,8 @@
   "meta": {
     "baseline_id": "VEDA-P001-M003",
     "generated_on": "2026-08-10",
-    "openapi_path_count": 142,
-    "operation_count": 155
+    "openapi_path_count": 145,
+    "operation_count": 158
   },
   "critical_endpoints": [
     {
@@ -3615,6 +3615,65 @@
       "response_codes": [
         "200",
         "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/veda/configuration",
+      "owner": "api",
+      "operation_id": "get_veda_configuration_api_veda_configuration_get",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/veda/configuration/access/{capability_id}",
+      "owner": "api",
+      "operation_id": "update_veda_capability_access_api_veda_configuration_access__capability_id__put",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [
+        "capability_id"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/veda/configuration/reset",
+      "owner": "api",
+      "operation_id": "reset_veda_configuration_api_veda_configuration_reset_post",
+      "tags": [],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
       ],
       "response_content_types": [
         "application/json"

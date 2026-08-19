@@ -20,8 +20,8 @@ def test_api_contract_baseline_snapshot():
 
 def test_api_contract_baseline_matches_current_canonical_endpoint_count():
     payload = _load_fixture()
-    assert payload["meta"]["openapi_path_count"] == 142
-    assert payload["meta"]["operation_count"] == 155
+    assert payload["meta"]["openapi_path_count"] == 145
+    assert payload["meta"]["operation_count"] == 158
 
 
 def test_api_contract_critical_endpoints_are_present():

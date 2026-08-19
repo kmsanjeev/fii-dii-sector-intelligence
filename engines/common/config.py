@@ -105,6 +105,7 @@ REPORT_CACHE = CACHE_DIR / "reports"
 # ==========================================================
 
 VEDA_CACHE_DIR = DATA_DIR / "veda"
+VEDA_CONVERSATIONAL_ACCESS_CONFIG = VEDA_CACHE_DIR / "conversation_access.json"
 VEDA_RESEARCH_CACHE_DIR = VEDA_CACHE_DIR / "research_cache"
 VEDA_CHAT_UPLOAD_DIR = VEDA_CACHE_DIR / "uploads"
 VEDA_CHAT_SESSION_DIR = VEDA_CACHE_DIR / "chat_sessions"

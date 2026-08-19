@@ -1216,8 +1216,8 @@ export function ChatPage() {
                       : researchEnabled && !researchRuntimeReady
                         ? 'Research is temporarily unavailable right now. Ask locally or try again after the provider is back.'
                       : attachmentsEnabled
-                        ? 'Ask about markets, sectors, stocks, or attach a file... type / for quick questions'
-                        : 'Ask about markets, sectors, stocks... or type / for quick questions'
+                        ? 'Ask anything, explore markets or Jyotish, or attach a file... type / for quick questions'
+                        : 'Ask anything, or explore markets, Jyotish, research... type / for quick questions'
                 }
                 rows={1}
                 style={{

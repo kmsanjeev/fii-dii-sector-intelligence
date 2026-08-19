@@ -391,7 +391,7 @@ export function VedaWidget() {
     <div style={{ position: 'relative' }} ref={panelRef}>
       <button
         onClick={() => setOpen(!open)}
-        title="Veda -- your market voice assistant"
+        title="Veda -- your conversational assistant"
         style={{
           background: open ? '#141720' : 'transparent',
           border: `1px solid ${open ? '#4080FF66' : 'transparent'}`,
@@ -565,7 +565,7 @@ export function VedaWidget() {
                         ? 'Research is temporarily unavailable right now.'
                       : attachmentsEnabled
                         ? 'Ask or attach a file...'
-                        : 'Ask about markets, sectors, stocks...'
+                        : 'Ask anything, or explore Veda capabilities...'
                 }
                 disabled={loading}
                 style={{

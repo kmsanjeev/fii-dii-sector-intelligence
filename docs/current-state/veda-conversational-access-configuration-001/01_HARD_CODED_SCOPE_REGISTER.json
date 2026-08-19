@@ -1,0 +1,15 @@
+{
+  "programme": "VEDA-CONVERSATIONAL-ACCESS-CONFIGURATION-001",
+  "classification_rule": "DEVELOPMENT_AGENT_ONLY, PRODUCT_IDENTITY_BIAS, RUNTIME_ROUTING_DEFECT, PROTECTED_SAFETY, or UI_IDENTITY_BIAS",
+  "hits": [
+    {"path": "CLAUDE.md:10", "text": "Never act as: tutor, explainer, or generic assistant.", "classification": "DEVELOPMENT_AGENT_ONLY", "runtime": false, "action": "Clarified separation from runtime."},
+    {"path": "engines/ai/chatbot/intent_router.py:119", "text": "unmatched messages returned RESEARCH", "classification": "RUNTIME_ROUTING_DEFECT", "runtime": true, "action": "GENERAL fallback."},
+    {"path": "engines/ai/chatbot/intent_router.py:174-194", "text": "market-platform greeting identity and market-only invitation", "classification": "PRODUCT_IDENTITY_BIAS", "runtime": true, "action": "Neutral greeting."},
+    {"path": "engines/ai/chatbot/intent_router.py:198-220", "text": "market identity was the base prompt for every non-greeting", "classification": "PRODUCT_IDENTITY_BIAS", "runtime": true, "action": "Neutral base with additive domain hints."},
+    {"path": "engines/ai/chatbot/safety.py:59-63", "text": "fallback invited only market and astrology questions", "classification": "PRODUCT_IDENTITY_BIAS", "runtime": true, "action": "Neutral fallback."},
+    {"path": "frontend/src/store/vedaStore.ts:187", "text": "market intelligence chatbot welcome", "classification": "UI_IDENTITY_BIAS", "runtime": true, "action": "Broad Veda welcome."},
+    {"path": "frontend/src/components/veda/VedaWidget.tsx:568", "text": "Ask about markets, sectors, stocks", "classification": "UI_IDENTITY_BIAS", "runtime": true, "action": "General placeholder."},
+    {"path": "engines/ai/chatbot/intent_router.py:132-174", "text": "compliance addendum", "classification": "PROTECTED_SAFETY", "runtime": true, "action": "Preserved."}
+  ],
+  "local_memory": {"runtime_market_only_rule_found": false, "backup_required": false, "action": "No local memory mutation."}
+}

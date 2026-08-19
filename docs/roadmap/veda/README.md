@@ -1,5 +1,15 @@
 # VEDA Roadmap Entry Point
 
+Current synchronization (2026-08-20):
+`VEDA-CONVERSATIONAL-ACCESS-CONFIGURATION-001` completed with
+`PASS_WITH_CONDITION` and is implemented/frozen with conditions. It decouples
+broad conversational access from the market-origin product identity while
+preserving specialist domains, protected safety, maturity gates and the
+current research/provider boundaries. Full Python validation is 1,285/1,285;
+frontend source validation is 29/29, with only a local ignored dependency
+backup affecting broad Vitest discovery. Evidence:
+`docs/current-state/veda-conversational-access-configuration-001/`.
+
 Current authoritative rebaseline (2026-08-19):
 `VEDA-AUTONOMOUS-WORK-REBASELINE-001` completed with
 `PASS_WITH_CONDITION` and decision

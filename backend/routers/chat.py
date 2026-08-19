@@ -16,7 +16,7 @@ from typing import Any, Optional
 from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
-from backend.auth.middleware import require_auth
+from backend.auth.middleware import require_admin, require_auth
 from backend.auth.store import User, is_auth_enabled
 from engines.common import config as cfg
 from engines.common.logger import get_logger
@@ -169,6 +169,20 @@ class ChatCapabilities(BaseModel):
     mcp_enabled: bool
     mcp_server_names: list[str] = Field(default_factory=list)
     supported_attachment_mime_prefixes: list[str] = Field(default_factory=list)
+    policy_version: str = "2026-08-20"
+    capability_states: list[dict[str, Any]] = Field(default_factory=list)
+    protected_safeguards: dict[str, Any] = Field(default_factory=dict)
+
+
+class ChatCapabilityAccessUpdate(BaseModel):
+    state: str
+
+
+class VedaConfigurationResponse(BaseModel):
+    schema_version: int
+    policy_version: str
+    capabilities: list[dict[str, Any]] = Field(default_factory=list)
+    protected_safeguards: dict[str, Any] = Field(default_factory=dict)
 
 
 class ChatRequest(BaseModel):
@@ -205,6 +219,8 @@ class ChatResponse(BaseModel):
     retrieval_audit: ChatRetrievalAudit = Field(default_factory=ChatRetrievalAudit)
     orchestration: dict[str, Any] = Field(default_factory=dict)
     conversational_context: dict[str, Any] = Field(default_factory=dict)
+    access: dict[str, Any] = Field(default_factory=dict)
+    telemetry: dict[str, Any] = Field(default_factory=dict)
 
 
 class ChatKnowledgeSource(BaseModel):
@@ -443,6 +459,8 @@ async def chat(req: ChatRequest):
     last_retrieval_audit = getattr(engine, "last_retrieval_audit", {})
     last_orchestration = getattr(engine, "last_orchestration", {})
     conversational_context = getattr(engine, "last_conversational_context", {})
+    last_access = getattr(engine, "last_access_decision", {})
+    last_telemetry = getattr(engine, "last_telemetry", {})
     return ChatResponse(
         reply=reply,
         session_id=session_id,
@@ -455,6 +473,8 @@ async def chat(req: ChatRequest):
         retrieval_audit=ChatRetrievalAudit(**last_retrieval_audit),
         orchestration=last_orchestration,
         conversational_context=conversational_context,
+        access=last_access,
+        telemetry=last_telemetry,
     )
 
 
@@ -476,6 +496,8 @@ async def chat_capabilities():
         capabilities = get_research_service().capabilities()
     except Exception as exc:
         logger.debug("[ChatRouter] Research capabilities fallback used: %s", exc)
+    from engines.ai.capabilities import configuration
+    policy = configuration()
     return ChatCapabilities(
         research_enabled=bool(capabilities.get("research_enabled", cfg.VEDA_RESEARCH_ENABLED)),
         research_provider_available=bool(capabilities.get("provider_available", False)),
@@ -493,7 +515,39 @@ async def chat_capabilities():
             "text/",
             "application/json",
         ],
+        policy_version=str(policy["policy_version"]),
+        capability_states=list(policy["capabilities"]),
+        protected_safeguards=dict(policy["protected_safeguards"]),
     )
+
+
+@router.get("/veda/configuration", response_model=VedaConfigurationResponse)
+async def get_veda_configuration(current_user: User = Depends(require_admin)):
+    from engines.ai.capabilities import configuration
+    return VedaConfigurationResponse(**configuration())
+
+
+@router.put("/veda/configuration/access/{capability_id}", response_model=VedaConfigurationResponse)
+async def update_veda_capability_access(
+    capability_id: str,
+    req: ChatCapabilityAccessUpdate,
+    current_user: User = Depends(require_admin),
+):
+    from engines.ai.capabilities import configuration, set_access
+    try:
+        set_access(capability_id, req.state)
+        return VedaConfigurationResponse(**configuration())
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.post("/veda/configuration/reset", response_model=VedaConfigurationResponse)
+async def reset_veda_configuration(current_user: User = Depends(require_admin)):
+    from engines.ai.capabilities import configuration, reset_defaults
+    reset_defaults()
+    return VedaConfigurationResponse(**configuration())
 
 
 @router.post("/chat/attachments", response_model=ChatAttachment)

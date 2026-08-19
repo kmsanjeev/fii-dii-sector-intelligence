@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 2026-08-20 | VEDA-CONVERSATIONAL-ACCESS-CONFIGURATION-001
+
+Started the authorized conversational-access remediation from the clean
+baseline. The prior unmatched-message fallback incorrectly routed ordinary
+conversation to `RESEARCH` and supplied market identity/framing; greeting
+substring matching created additional false routes. The implementation adds a
+`GENERAL` fallback, neutral base prompts and UI, context-aware retrieval gating,
+central versioned capability access persistence/API/UI, explicit access and
+telemetry states, and no-disable protected safeguards. Specialist capabilities,
+maturity, RAG, Approved Core, prediction, ML, provider configuration and human
+validation states remain unchanged. Final validation recorded 1,285 Python
+tests and 29 frontend source tests passing; the activity is released with a
+local-only frontend discovery condition caused by an ignored dependency-backup
+directory. The canonical API snapshot was regenerated from 142/155 to 145/158
+to include the governed configuration endpoints.
+
 ## 2026-08-19 | VEDA-AUTONOMOUS-WORK-REBASELINE-001
 
 - Reconciled whole-programme calculation, knowledge, Muhurta, evidence,

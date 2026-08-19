@@ -184,7 +184,7 @@ export function genId(): string {
 export function makeWelcome(): Msg {
   return {
     role: 'assistant',
-    content: "Hello! I'm your market intelligence chatbot — Ask me anything about markets, sectors, stocks, or flows.",
+    content: "Hello! I'm Veda, your conversational assistant. Ask me anything, or explore markets, Jyotish, research, and other specialist capabilities.",
     ts: Date.now(),
   }
 }

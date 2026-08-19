@@ -516,6 +516,27 @@ export type ChatCapabilities = {
   mcp_enabled: boolean
   mcp_server_names: string[]
   supported_attachment_mime_prefixes: string[]
+  policy_version?: string
+  capability_states?: CapabilityAccessState[]
+  protected_safeguards?: Record<string, unknown>
+}
+export type CapabilityAccessState = {
+  capability_id: string
+  label: string
+  description: string
+  admin_access_state: 'ENABLED' | 'DISABLED' | 'ADMIN_ONLY'
+  runtime_available: boolean
+  capability_maturity: string
+  effective_access: string
+  effective_answer_mode: string
+  reason: string
+  policy_version: string
+}
+export type VedaConfiguration = {
+  schema_version: number
+  policy_version: string
+  capabilities: CapabilityAccessState[]
+  protected_safeguards: Record<string, unknown>
 }
 export type ChatResponseData = {
   reply: string
@@ -527,6 +548,8 @@ export type ChatResponseData = {
   research?: ChatResearchMeta
   local_evidence?: ChatLocalEvidenceMeta
   retrieval_audit?: ChatRetrievalAudit
+  access?: Record<string, unknown>
+  telemetry?: Record<string, unknown>
 }
 export type ChatKnowledgeSource = {
   kind: string
@@ -633,6 +656,12 @@ export const resetChatSession = (session_id: string) =>
   chatApi.delete(`/chat/session/${session_id}`).then(r => r.data)
 export const fetchChatCapabilities = () =>
   chatApi.get<ChatCapabilities>('/chat/capabilities').then(r => r.data)
+export const fetchVedaConfiguration = () =>
+  chatApi.get<VedaConfiguration>('/veda/configuration').then(r => r.data)
+export const updateVedaCapabilityAccess = (capabilityId: string, state: CapabilityAccessState['admin_access_state']) =>
+  chatApi.put<VedaConfiguration>(`/veda/configuration/access/${encodeURIComponent(capabilityId)}`, { state }).then(r => r.data)
+export const resetVedaConfiguration = () =>
+  chatApi.post<VedaConfiguration>('/veda/configuration/reset').then(r => r.data)
 export const uploadChatAttachment = (file: File) => {
   const form = new FormData()
   form.append('file', file)

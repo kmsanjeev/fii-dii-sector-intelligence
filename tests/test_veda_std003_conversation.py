@@ -84,8 +84,10 @@ def test_std003_chat_engine_consumes_context_without_extra_provider_call(monkeyp
     assert engine.chat("I feel lonely and need to talk.") == "I am here with you."
     assert engine.last_conversational_context["conversation_type"] == "HEART_TO_HEART"
     assert "SUPPORTIVE" in captured["prompt"]
-    assert calls["rag"] == 1
+    # General conversation must not inherit market/RAG context merely because
+    # it is not a specialist keyword match.
+    assert calls["rag"] == 0
 
     engine.chat("How was your weekend?")
     assert engine.last_conversational_context["conversation_type"] == "SMALL_TALK"
-    assert calls["rag"] == 1
+    assert calls["rag"] == 0

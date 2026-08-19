@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { ResearchAdminConsole } from '../components/admin/ResearchAdminConsole'
 import { EmpiricalCaseIntake } from '../components/admin/EmpiricalCaseIntake'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { fetchVedaConfiguration, resetVedaConfiguration, updateVedaCapabilityAccess, type CapabilityAccessState } from '../api/client'
 
 const API = '/api/auth'
 
@@ -335,6 +337,64 @@ function AuthConfigTab() {
   )
 }
 
+function VedaConfigurationTab() {
+  const queryClient = useQueryClient()
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['veda-configuration'],
+    queryFn: fetchVedaConfiguration,
+  })
+  const update = useMutation({
+    mutationFn: ({ id, state }: { id: string; state: CapabilityAccessState['admin_access_state'] }) => updateVedaCapabilityAccess(id, state),
+    onSuccess: next => queryClient.setQueryData(['veda-configuration'], next),
+  })
+  const reset = useMutation({
+    mutationFn: resetVedaConfiguration,
+    onSuccess: next => queryClient.setQueryData(['veda-configuration'], next),
+  })
+
+  if (isLoading) return <div style={{ color: '#64748B', fontSize: 13 }}>Loading Veda configuration...</div>
+  if (error || !data) return <div style={{ color: '#EF4444', fontSize: 13 }}>Veda configuration is unavailable. Admin authentication may be required.</div>
+
+  const stateColor = (state: string) => state === 'ENABLED' ? '#22C55E' : state === 'DISABLED' ? '#EF4444' : '#F59E0B'
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div>
+          <div style={{ fontWeight: 700, fontSize: 14, color: '#E2E8F0' }}>Veda conversational access</div>
+          <div style={{ color: '#64748B', fontSize: 12, marginTop: 4 }}>Policy {data.policy_version}. Access is configurable; maturity and safety are not.</div>
+        </div>
+        <button onClick={() => reset.mutate()} disabled={reset.isPending}
+          style={{ padding: '7px 14px', borderRadius: 5, border: '1px solid #22C55E', background: 'transparent', color: '#22C55E', cursor: 'pointer', fontSize: 12 }}>
+          {reset.isPending ? 'Resetting...' : 'Enable all available'}
+        </button>
+      </div>
+      <div style={{ display: 'grid', gap: 10 }}>
+        {data.capabilities.map(cap => (
+          <div key={cap.capability_id} style={{ padding: 14, borderRadius: 7, background: '#141720', border: '1px solid #1E2332', display: 'grid', gridTemplateColumns: 'minmax(180px, 1.4fr) repeat(4, minmax(100px, 1fr))', gap: 12, alignItems: 'center' }}>
+            <div>
+              <div style={{ color: '#E2E8F0', fontWeight: 700, fontSize: 13 }}>{cap.label}</div>
+              <div style={{ color: '#64748B', fontSize: 11, marginTop: 3 }}>{cap.description}</div>
+            </div>
+            <label style={{ color: '#94A3B8', fontSize: 11 }}>Access
+              <select value={cap.admin_access_state} disabled={cap.capability_id === 'GENERAL_CHAT' || update.isPending}
+                onChange={e => update.mutate({ id: cap.capability_id, state: e.target.value as CapabilityAccessState['admin_access_state'] })}
+                style={{ display: 'block', marginTop: 4, background: '#1E2332', border: '1px solid #2D3348', color: stateColor(cap.admin_access_state), padding: '4px 6px', borderRadius: 4, fontSize: 11 }}>
+                <option value="ENABLED">ON</option><option value="DISABLED">OFF</option><option value="ADMIN_ONLY">ADMIN</option>
+              </select>
+            </label>
+            <div style={{ color: cap.runtime_available ? '#22C55E' : '#F59E0B', fontSize: 11 }}>Runtime<br /><strong>{cap.runtime_available ? 'AVAILABLE' : 'UNAVAILABLE'}</strong></div>
+            <div style={{ color: '#94A3B8', fontSize: 11 }}>Maturity<br /><strong>{cap.capability_maturity}</strong></div>
+            <div style={{ color: stateColor(cap.effective_access), fontSize: 11 }}>Effective<br /><strong>{cap.effective_access} / {cap.effective_answer_mode}</strong></div>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 18, padding: 12, borderRadius: 6, background: '#1A1D2E', color: '#94A3B8', fontSize: 12 }}>
+        <strong style={{ color: '#22C55E' }}>Protected safeguards: ACTIVE</strong> — safety, privacy, prompt-leak, and high-stakes boundaries cannot be disabled. Research access may be on while its external provider remains unavailable.
+      </div>
+    </div>
+  )
+}
+
 // ── Password Tab ──────────────────────────────────────────────────────────────
 
 function PasswordTab() {
@@ -392,11 +452,11 @@ export function AdminPage() {
   })()
 
   const isAdmin = !storedUser || storedUser.role === 'admin'
-  const defaultTab: 'users' | 'apikeys' | 'config' | 'password' | 'research' | 'empirical' = isAdmin ? 'users' : 'apikeys'
-  const [tab, setTab] = useState<'users' | 'apikeys' | 'config' | 'password' | 'research' | 'empirical'>(defaultTab)
+  const defaultTab: 'users' | 'apikeys' | 'config' | 'veda' | 'password' | 'research' | 'empirical' = isAdmin ? 'users' : 'apikeys'
+  const [tab, setTab] = useState<'users' | 'apikeys' | 'config' | 'veda' | 'password' | 'research' | 'empirical'>(defaultTab)
 
   useEffect(() => {
-    if (!isAdmin && ['users', 'config', 'research'].includes(tab)) {
+    if (!isAdmin && ['users', 'config', 'veda', 'research'].includes(tab)) {
       setTab('apikeys')
     }
   }, [isAdmin, tab])
@@ -407,6 +467,7 @@ export function AdminPage() {
     { key: 'empirical', label: 'Empirical Cases', adminOnly: true },
     { key: 'apikeys',  label: 'API Keys',    adminOnly: false },
     { key: 'config',   label: 'Auth Config', adminOnly: true  },
+    { key: 'veda',     label: 'Veda Access', adminOnly: true  },
     { key: 'password', label: 'My Password', adminOnly: false },
   ] as const
 
@@ -433,6 +494,7 @@ export function AdminPage() {
       {tab === 'empirical' && isAdmin && <EmpiricalCaseIntake />}
       {tab === 'apikeys'  && <ApiKeysTab />}
       {tab === 'config'   && isAdmin && <AuthConfigTab />}
+      {tab === 'veda'     && isAdmin && <VedaConfigurationTab />}
       {tab === 'password' && <PasswordTab />}
     </div>
   )

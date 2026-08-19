@@ -361,6 +361,8 @@ class ChatEngine:
         self.last_response_adaptation: dict = {}
         self.last_group_context: dict = {}
         self.last_generation: dict = {}
+        self.last_access_decision: dict = {}
+        self.last_telemetry: dict = {}
         self._research_service = None
         self._knowledge_review_service = None
         self._repo_capability_service = None
@@ -493,6 +495,8 @@ class ChatEngine:
         self.history = self._bounded_history()
         self.last_symbols = []
         self.last_flag = {"flagged": False, "reason": None}
+        self.last_access_decision = {}
+        self.last_telemetry = {}
         self.last_research = {
             "requested": research_mode,
             "used": False,
@@ -532,6 +536,31 @@ class ChatEngine:
             "max_tokens": None,
             "error": None,
         }
+        try:
+            from engines.ai.capabilities import disabled_reply, resolve_intent
+            access_state = resolve_intent(intent.intent_type, research_mode=research_mode)
+            self.last_access_decision = access_state.to_dict()
+            if access_state.effective_access != "ENABLED":
+                reply = disabled_reply(access_state)
+                self.last_telemetry = {
+                    "event": "CONFIG_ACCESS_DENIED",
+                    "intent": intent.intent_type,
+                    "capability_id": access_state.capability_id,
+                }
+                self.history.append({"role": "user", "content": user_message})
+                self.history.append({"role": "assistant", "content": reply})
+                self.history = self._bounded_history()
+                self.last_generation["error"] = "configuration_access_denied"
+                return reply
+        except Exception as exc:
+            # A policy read failure must not silently turn ordinary chat into
+            # a market-only path. Preserve the normal runtime and expose the
+            # diagnostic state for operators.
+            self.last_access_decision = {
+                "effective_access": "UNKNOWN",
+                "reason": f"access_policy_error:{type(exc).__name__}",
+            }
+            self.last_telemetry = {"event": "CAPABILITY_POLICY_ERROR", "error": type(exc).__name__}
         if group_context:
             try:
                 group = analyze_group_turn(
@@ -604,7 +633,7 @@ class ChatEngine:
             system_prompt += self._VOICE_ADDENDUM
 
         # A "hi" needs no market context and must never trigger a tool call
-        rag_context = "" if (is_greeting or is_small_talk) else self._get_rag_context(user_message, intent)
+        rag_context = "" if (is_greeting or is_small_talk or intent.intent_type == "GENERAL") else self._get_rag_context(user_message, intent)
         if rag_context:
             system_prompt += f"\n\nRelevant intelligence context:\n{rag_context}"
         if self.last_orchestration.get("mode") == "ASSISTED":
@@ -693,6 +722,7 @@ class ChatEngine:
             )
             self.history.append({"role": "assistant", "content": reply})
             self.history = self._bounded_history()
+            self.last_telemetry = {"event": "PROVIDER_UNAVAILABLE", "intent": intent.intent_type}
             return reply
 
         for provider in providers:
@@ -729,6 +759,13 @@ class ChatEngine:
                         )
                 self.history.append({"role": "assistant", "content": reply})
                 self.history = self._bounded_history()
+                self.last_telemetry = {
+                    "event": "PROMPT_LEAK_BLOCKED" if self.last_flag.get("reason") == "prompt_leak"
+                    else "SAFETY_REFUSAL" if self.last_flag.get("reason") == "refused"
+                    else "SOURCE_QUALIFIED" if self.last_research.get("used") or self.last_local_evidence.get("used")
+                    else "NORMAL_ANSWER",
+                    "intent": intent.intent_type,
+                }
                 return reply
 
             if result["status"] == "rate_limited":
@@ -748,6 +785,7 @@ class ChatEngine:
         )
         self.history.append({"role": "assistant", "content": reply})
         self.history = self._bounded_history()
+        self.last_telemetry = {"event": "PROVIDER_UNAVAILABLE", "intent": intent.intent_type}
         return reply
 
     def _run_turn(self, client, model: str, system_prompt: str, user_message: str,

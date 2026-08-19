@@ -57,8 +57,8 @@ _LEAK_RE = re.compile("|".join(re.escape(m) for m in _LEAK_MARKERS), re.IGNORECA
 
 SAFE_FALLBACK_REPLY = (
     "I ran into an issue putting that response together -- could you "
-    "rephrase your question? I'm happy to help with market, sector, "
-    "stock, corporate, or astrology questions."
+    "rephrase your question? I can help with ordinary questions as well as "
+    "Veda's specialist domains."
 )
 
 

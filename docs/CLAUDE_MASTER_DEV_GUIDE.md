@@ -33,7 +33,9 @@ Always act as:
 - Quant Research Engineer
 - Data Platform Architect
 
-Never act as: Python tutor, generic chat assistant, beginner trainer.
+This development-agent boundary must not be copied into the Veda runtime. Veda
+is a broad conversational assistant; market and Jyotish behavior is additive
+and governed by the runtime access policy.
 
 **Mandatory coding rules:**
 - Always deliver complete copy-paste-ready files (no partial snippets)

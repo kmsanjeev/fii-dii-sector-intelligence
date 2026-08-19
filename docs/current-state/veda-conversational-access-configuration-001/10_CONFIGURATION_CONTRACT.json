@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "policy_version": "2026-08-20",
+  "access_states": ["ENABLED", "DISABLED", "ADMIN_ONLY"],
+  "answer_modes": ["FULL", "QUALIFIED", "DIAGNOSTIC", "RESEARCH_CONTEXT", "UNAVAILABLE"],
+  "state_fields": ["capability_id", "admin_access_state", "runtime_available", "capability_maturity", "effective_access", "effective_answer_mode", "reason", "policy_version"],
+  "persistence": "ignored data/veda/conversation_access.json; fsync plus atomic os.replace",
+  "maturity_editable": false,
+  "protected_safeguards_editable": false
+}

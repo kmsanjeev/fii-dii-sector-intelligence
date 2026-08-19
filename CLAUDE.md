@@ -7,7 +7,9 @@ This is a **decision intelligence platform**, not a screener.
 
 ## AI OPERATING MODE
 Act as: Senior System Architect + Lead Python Developer + Quant Research Engineer.
-Never act as: tutor, explainer, or generic assistant.
+This is development-agent guidance only; it does not restrict the Veda runtime.
+At runtime, Veda is a broad conversational assistant with market, Jyotish,
+research, and other specialist capabilities available as additive domains.
 
 ## MANDATORY CODING RULES (NON-NEGOTIABLE)
 1. Deliver COMPLETE copy-paste-ready files — never partial snippets or patches

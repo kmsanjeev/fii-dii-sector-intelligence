@@ -1,0 +1,18 @@
+{
+  "captured_before_fix": true,
+  "observed": [
+    {"id":"photosynthesis","intent":"RESEARCH","market_identity":true,"research_framing":true},
+    {"id":"leave_request","intent":"RESEARCH","market_identity":true,"research_framing":true},
+    {"id":"quiet_weekend","intent":"RESEARCH","market_identity":true,"research_framing":true},
+    {"id":"loneliness","intent":"RESEARCH","market_identity":true,"research_framing":true},
+    {"id":"ambiguity","intent":"RESEARCH","market_identity":true,"research_framing":true},
+    {"id":"python_race_condition","intent":"RESEARCH","market_identity":true,"research_framing":true},
+    {"id":"d9_jyotish","intent":"GREETING","market_identity":false,"bug":"substring hi matched this"},
+    {"id":"kundli","intent":"GREETING","market_identity":false,"bug":"substring hi matched kundli"},
+    {"id":"fii_dii","intent":"MARKET","market_identity":true},
+    {"id":"sector_accumulation","intent":"GREETING","market_identity":false,"bug":"substring hi matched showing"},
+    {"id":"d20_validation","intent":"RESEARCH","market_identity":true},
+    {"id":"muhurta","intent":"RESEARCH","market_identity":true}
+  ],
+  "expected_after_fix": "GENERAL for ordinary unmatched requests; explicit specialist and research routes preserved"
+}

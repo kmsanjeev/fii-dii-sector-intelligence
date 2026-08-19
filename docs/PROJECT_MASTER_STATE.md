@@ -1,6 +1,18 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.81.0 | 2026-08-19
+# Version 4.82.0 | 2026-08-20
+
+- `VEDA-CONVERSATIONAL-ACCESS-CONFIGURATION-001` completed with
+  `PASS_WITH_CONDITION` and is implemented/frozen with conditions from baseline
+  `8daae8a0c5bd21a6b2867b341d8551f0526c4940`. It corrects the application
+  routing defect that treated unmatched ordinary conversation as market-
+  oriented `RESEARCH`, adds the `GENERAL` fallback, neutral prompt/UI
+  identity, central capability access configuration and explicit telemetry.
+  Protected safety, capability maturity, source governance, RAG, prediction,
+  ML, EMP-001 and existing specialist behavior remain separate and unchanged.
+  Full Python validation is 1,285/1,285; frontend source validation is 29/29
+  with a local ignored-backup discovery condition. Evidence:
+  `docs/current-state/veda-conversational-access-configuration-001/`.
 
 - `VEDA-ADB-ACCESS-GATE-REFRESH-2026-001` completed with
   `PASS_WITH_CONDITION` and decision

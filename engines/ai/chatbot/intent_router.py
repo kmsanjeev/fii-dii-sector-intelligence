@@ -7,11 +7,12 @@ The router picks the most relevant agent type + context hints.
 
 Intents:
   GREETING -> hello/hi/namaste/good morning -- no market data, just talk back
+  GENERAL  -> ordinary conversation and non-domain questions
   MARKET   -> market regime, FII/DII flows, participant summary
   SECTOR   -> sector rotation, rotation signals, sector comparison
   STOCK    -> specific stocks, labels, watchlist, bull run scores
   CORPORATE -> deals, buybacks, confidence, corporate events
-  RESEARCH -> broad questions, capital flow analysis, comparisons
+  RESEARCH -> explicit research, evidence, comparison, or fresh-information requests
 """
 
 from __future__ import annotations
@@ -39,9 +40,13 @@ def _is_greeting(text: str) -> bool:
     t = text.strip().lower()
     if not t:
         return False
-    if not any(kw in t for kw in GREETING_KEYWORDS):
+    words = re.findall(r"[\w']+", t)
+    if not any(
+        (kw in t if " " in kw else re.search(rf"\b{re.escape(kw)}\b", t))
+        for kw in GREETING_KEYWORDS
+    ):
         return False
-    return len(t.split()) <= 6
+    return len(words) <= 6
 
 
 INTENT_KEYWORDS = {
@@ -67,7 +72,8 @@ INTENT_KEYWORDS = {
         "astro", "planet", "planetary", "jupiter", "saturn", "mercury", "venus",
         "mars", "moon", "rahu", "ketu", "retrograde", "eclipse", "zodiac",
         "cosmic", "celestial", "nakshatra", "hora", "transit", "aspect",
-        "benefic", "malefic", "exalted", "debilitated", "cycle",
+        "benefic", "malefic", "exalted", "debilitated", "cycle", "jyotish", "d9",
+        "navamsa", "d20", "vimshamsha", "vimshamsa", "muhurta", "tithi", "nakshatra",
         "financial astrology", "astrology",
     ],
     "KUNDLI": [
@@ -80,12 +86,16 @@ INTENT_KEYWORDS = {
         "dasha", "mahadasha", "antardasha", "vimshottari", "yoga in my chart",
         "my lagna", "my rashi", "personal chart", "personal horoscope",
     ],
+    "RESEARCH": [
+        "research", "deep research", "investigate", "compare sources", "source review",
+        "fresh evidence", "latest evidence", "literature review", "research report",
+    ],
 }
 
 
 @dataclass
 class Intent:
-    intent_type: str   # MARKET | SECTOR | STOCK | CORPORATE | ASTRO | RESEARCH
+    intent_type: str   # GENERAL | MARKET | SECTOR | STOCK | CORPORATE | ASTRO | KUNDLI | RESEARCH
     entity: str | None  # specific symbol/sector if detected
     confidence: float   # 0-1
 
@@ -116,7 +126,9 @@ def detect_intent(user_message: str) -> Intent:
     best_score = scores[best_intent]
 
     if best_score == 0:
-        return Intent("RESEARCH", entity, 0.3)
+        # Research is opt-in by meaning. An unmatched message is ordinary
+        # conversation, not a request to search the market or the web.
+        return Intent("GENERAL", entity, 0.3)
 
     confidence = min(1.0, best_score / 3.0)
     return Intent(best_intent, entity, confidence)
@@ -172,8 +184,8 @@ _COMPLIANCE_ADDENDUM = (
 
 
 _GREETING_PROMPT = (
-    "You are Veda, a warm, professional voice assistant for an Indian "
-    "institutional market intelligence platform -- the tone of a genuinely "
+    "You are Veda, a warm, professional conversational assistant -- the tone "
+    "of a genuinely "
     "attentive customer-support expert answering a call, not a peer chatting "
     "or a canned recording. The user just greeted you -- greet them back "
     "naturally and briefly. Rules:\n"
@@ -181,8 +193,8 @@ _GREETING_PROMPT = (
     "Hinglish -> Hinglish, English -> English.\n"
     "- If they said good morning/afternoon/evening/night, acknowledge the "
     "time of day naturally.\n"
-    "- Keep it to 1-2 short sentences. End by inviting them to ask about "
-    "markets, sectors, or stocks -- lightly, not a canned menu of options.\n"
+    "- Keep it to 1-2 short sentences. Invite them to ask for whatever help "
+    "they need, including general questions or Veda's specialist domains.\n"
     "- Do NOT mention scores, numbers, data, or call any tool -- this is a "
     "greeting exchange, not a market briefing.\n"
     "- Sound genuinely pleased to help, not scripted -- this is the "
@@ -199,13 +211,18 @@ def get_system_prompt(intent: Intent) -> str:
         return _GREETING_PROMPT + _COMPLIANCE_ADDENDUM
 
     base = (
-        "You are the Capital Flow Intelligence Assistant for an Indian institutional "
-        "market intelligence platform. You track FII/DII capital flows, sector rotation, "
-        "and stock accumulation patterns. Be concise, data-driven, and precise. "
-        "Always cite specific scores, labels, or signals from the data. "
-        "Use INR crores for monetary values. "
-        "Never speculate beyond what the data shows."
+        "You are Veda, a capable, neutral conversational assistant. Help with "
+        "ordinary education, writing, software, business, planning, brainstorming, "
+        "life questions, small talk, and Veda's specialist capabilities. Be clear, "
+        "useful, and honest about uncertainty. Do not assume a financial context "
+        "unless the user's message establishes one."
     )
+    if intent.intent_type in {"MARKET", "SECTOR", "STOCK", "CORPORATE", "ASTRO"}:
+        base += (
+            " For specialist market requests, be concise, data-driven, and precise; "
+            "cite available scores, labels, signals, dates, and source limitations. "
+            "Use INR crores for monetary values and never speculate beyond the evidence."
+        )
 
     domain_hints = {
         "MARKET": (
@@ -253,9 +270,15 @@ def get_system_prompt(intent: Intent) -> str:
             "get_institutional_deals() is a 30D market-wide aggregate only."
         ),
         "RESEARCH": (
-            " This is a broad research query. Use the RAG context provided. "
-            "Synthesize across all intelligence layers: participant, sector, stock, corporate. "
-            "Draw connections across the capital flow cascade."
+            " This is an explicit research or evidence request. Use governed local "
+            "knowledge and any explicitly enabled research context. State source "
+            "quality, freshness, and uncertainty; do not treat research mode as a "
+            "reason to force a market interpretation."
+        ),
+        "GENERAL": (
+            " Answer the user's ordinary question directly. Do not call market tools "
+            "or introduce market context unless the user asks for it. Ask a concise "
+            "clarifying question when the request is genuinely ambiguous."
         ),
         "ASTRO": (
             " Focus on AstroFinance planetary intelligence. "
