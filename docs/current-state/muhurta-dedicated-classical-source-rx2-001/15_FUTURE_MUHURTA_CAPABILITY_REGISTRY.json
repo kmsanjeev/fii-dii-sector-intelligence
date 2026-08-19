@@ -1,0 +1,29 @@
+{
+  "capabilities": [
+    {
+      "contract": "VEDA-MUH-CONTRACT-BUSINESS-OPENING-V4",
+      "id": "BUSINESS_OPENING_INAUGURATION",
+      "source_hardening": "CONDITIONAL",
+      "state": "FUTURE_ELIGIBLE"
+    },
+    {
+      "contract": "VEDA-MUH-CONTRACT-EDUCATION-COMMENCEMENT-V4",
+      "id": "EDUCATION_COMMENCEMENT",
+      "source_hardening": "CONDITIONAL",
+      "state": "FUTURE_ELIGIBLE"
+    },
+    {
+      "id": "RELIGIOUS_SPIRITUAL_CEREMONY",
+      "source_hardening": "SOURCE_HARDENING_REQUIRED",
+      "state": "NOT_YET_CONTRACTED"
+    },
+    {
+      "id": "HIGH_RISK_MEDICAL_LEGAL_FINANCIAL",
+      "source_hardening": "SOURCE_HARDENING_REQUIRED",
+      "state": "NOT_YET_CONTRACTED"
+    }
+  ],
+  "permanent_ban": false,
+  "policy": "Future capability availability is separated from runtime activation.",
+  "production_activation": false
+}

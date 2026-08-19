@@ -1,0 +1,20 @@
+{
+  "activities": [
+    "BUSINESS_OPENING_INAUGURATION",
+    "EDUCATION_COMMENCEMENT"
+  ],
+  "authorized": true,
+  "conditions": [
+    "recommendation runtime remains inactive until next programme acceptance",
+    "Business exact opening Tithi remains abstaining scope gap",
+    "Education Tithi is preference-only and Karana remains unavailable",
+    "no ranking, score, personal Bala or provider calls"
+  ],
+  "contract_hashes": {
+    "business": "DBC0DF78DCBDC0DC58842895B68733D0E6DDEFB946550419E88D3B6E2584BE60",
+    "education": "7A17DB6B6256D9BD1C6F1F6737FACC4A6F2AAF9B8A74C56FD0FA05A3B6805F35"
+  },
+  "handoff_id": "ENGINE_HANDOFF_RX1",
+  "next_programme": "VEDA-MUHURTA-RECOMMENDATION-ENGINE-001-RX1",
+  "state": "FUTURE_IMPLEMENTATION_AUTHORIZED_NOT_STARTED"
+}

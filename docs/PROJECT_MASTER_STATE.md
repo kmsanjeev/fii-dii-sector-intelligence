@@ -1,6 +1,8 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.73.2 | 2026-08-19
+# Version 4.73.3 | 2026-08-19
+
+- `VEDA-MUHURTA-DEDICATED-CLASSICAL-SOURCE-RX2-001` completed with `PASS_WITH_CONDITION` and decision `MUHURTA_BLOCKERS_RECLASSIFIED_ENGINE_READY`. The blocker-necessity audit found that the V3 Business and Education Tithi/Karana residuals were contextual/source-partial, not hard exclusions or hard requirements. A dedicated Muhurtacintamani witness supports a conditional Education Vidyarambha/Akshararambha Tithi predicate `{2,3,5,6,10,11,12}`; no Education-specific Karana set was found. Dedicated market/shop evidence is not generalized to Business-opening inauguration, which remains an explicit abstaining scope gap. Deterministic Business/Education V4 contracts and `ENGINE_HANDOFF_RX1` are recorded for a future inactive recommendation activity. P032 calculation, recommendation runtime, RAG, Approved Core (`17`), prediction, ML, PRED-M4 and provider calls remain unchanged. Evidence: `docs/current-state/muhurta-dedicated-classical-source-rx2-001/`.
 
 - `VEDA-MUHURTA-TITHI-KARANA-SOURCE-HARDENING-RX1-001` completed with `PASS_WITH_CONDITION` and decision `MUHURTA_BLOCKING_SEMANTICS_PARTIAL`. The inspected classical Bṛhat Saṃhitā witness verifies Tithi classes, but not activity-specific Business-opening or Education-commencement Tithi predicates; it verifies narrow Business Karana action classes, but not an Education-specific learning Karana set. Business Vara/Yoga is explicitly `NON_BLOCKING_UNRESOLVED` because the existing rule abstains and carries no hard requirement. Frozen V1/V2/V3 hashes remain unchanged; no V4 contract or engine handoff was created. P032 calculation, recommendation runtime, RAG, Approved Core, prediction and ML remain unchanged. Evidence: `docs/current-state/muhurta-tithi-karana-source-hardening-rx1-001/`.
 

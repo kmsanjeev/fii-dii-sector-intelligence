@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-DEDICATED-CLASSICAL-SOURCE-RX2-001
+
+Completed the bounded dedicated-source expansion with `PASS_WITH_CONDITION`
+and decision `MUHURTA_BLOCKERS_RECLASSIFIED_ENGINE_READY`. The blocker audit
+reclassified the prior combined Business/Education Tithi-Karana residuals as
+non-blocking source gaps because neither was a hard exclusion or hard
+requirement. A directly inspected Muhurtacintamani witness supplies a
+conditional Education Vidyarambha/Akshararambha Tithi set `{2,3,5,6,10,11,12}`.
+No Education-specific Karana set was found. A market/shop commerce passage is
+retained as partial adjacent evidence and is not generalized to Business
+opening/inauguration. Deterministic V4 contracts and a future, inactive
+recommendation-engine handoff were recorded. P032, recommendation runtime,
+RAG, Approved Core, prediction, ML, PRED-M4 and provider calls remain
+unchanged. Evidence is in
+`docs/current-state/muhurta-dedicated-classical-source-rx2-001/`.
+
 ## 2026-08-19 | VEDA-MUHURTA-TITHI-KARANA-SOURCE-HARDENING-RX1-001
 
 Completed the bounded Tithi/Karana source-semantics closure audit with

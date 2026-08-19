@@ -1,0 +1,322 @@
+{
+  "abstention_policy": [
+    "INSUFFICIENT_RULE_COVERAGE",
+    "SOURCE_CONFLICT_UNRESOLVED",
+    "REQUIRED_FACTOR_UNAVAILABLE",
+    "PERSONAL_FACTOR_REQUIRED",
+    "CALCULATION_DEPENDENCY_UNAVAILABLE",
+    "ACTIVITY_SCOPE_MISMATCH"
+  ],
+  "activity_id": "EDUCATION_COMMENCEMENT",
+  "activity_scope": {
+    "excluded": [
+      "routine daily studying",
+      "examinations",
+      "admission deadlines",
+      "mandatory school requirements"
+    ],
+    "included": [
+      "formal course, programme, first lesson, or separately identified ceremonial commencement"
+    ],
+    "mode": "GENERAL_MUHURTA_ONLY"
+  },
+  "arbitrary_numeric_score": false,
+  "blocking_policy_audit": {
+    "basis": "The V3 rule had no hard exclusion or hard requirement, and the dedicated source review did not establish mandatory status for the exact platform scope.",
+    "classification": "NON_BLOCKING_ADDITIONAL_COVERAGE",
+    "previous_blocker": "MUH-EDU-TITHI-KARANA-001",
+    "reclassified": true
+  },
+  "blocking_rule_ids": [],
+  "caution_class": "LOW_RISK_TRADITIONAL_EDUCATION_CONTEXT",
+  "conflict_policy": {
+    "policy_id": "MUH-POLICY-CONFLICT-CATEGORICAL-V1",
+    "resolution": "Do not average competing rules; isolate variants and abstain on unresolved material conflict.",
+    "unresolved_conflict_state": "SOURCE_CONFLICT_UNRESOLVED"
+  },
+  "consultation_class": "PRACTICAL_EDUCATION_REQUIREMENTS_PRIMARY",
+  "contract_hash": "7A17DB6B6256D9BD",
+  "contract_hash_full": "7A17DB6B6256D9BD1C6F1F6737FACC4A6F2AAF9B8A74C56FD0FA05A3B6805F35",
+  "contract_id": "VEDA-MUH-CONTRACT-EDUCATION-COMMENCEMENT-V4",
+  "evaluator_version": "MUHURTA_PREDICATE_EVALUATOR_V1",
+  "hard_exclusions": [],
+  "hard_requirements": [
+    "MUH-EDU-ROUTINE-SCOPE-001"
+  ],
+  "hidden_weights": false,
+  "machine_rule_ids": [
+    "MUH-EDU-NAK-001",
+    "MUH-EDU-PANCHANGA-INPUT-001",
+    "MUH-EDU-ROUTINE-SCOPE-001",
+    "MUH-EDU-TITHI-VIDYARAMBHA-001"
+  ],
+  "machine_rule_summary": {
+    "conflict_blocked": 0,
+    "factor_missing": 0,
+    "machine_ready": 4,
+    "non_executable": 2,
+    "personal_deferred": 0,
+    "rules_total": 6,
+    "source_partial": 2,
+    "source_partial_non_blocking": 1
+  },
+  "personal_factors": [],
+  "precedence_policy": [
+    "HARD_EXCLUSION",
+    "HARD_REQUIREMENT",
+    "STRONG_NEGATIVE",
+    "CONTEXT_DEPENDENT",
+    "PREFERENCE_NEGATIVE",
+    "PREFERENCE_POSITIVE",
+    "STRONG_POSITIVE",
+    "NEUTRAL"
+  ],
+  "preference_negatives": [],
+  "preference_positives": [
+    "MUH-EDU-NAK-001"
+  ],
+  "production_bound": false,
+  "recommendation_engine_state": "MACHINE_CONTRACT_READY_WITH_NONBLOCKING_SOURCE_GAPS",
+  "rule_coverage": {
+    "coverage_state": "SUFFICIENT_FOR_NARROW_CONDITIONAL_GENERAL_CONTRACT",
+    "dimensions": [
+      "VARA",
+      "TITHI",
+      "NAKSHATRA",
+      "YOGA",
+      "KARANA",
+      "TRANSITIONS",
+      "PERSONAL_FACTORS",
+      "ACTIVITY_SCOPE"
+    ],
+    "resolved": [
+      "EDUCATION_VIDYARAMBHA_TITHI_DIRECT_VALUES",
+      "NAKSHATRA_LAGHU_DIRECT_VALUES",
+      "P032_FACTS"
+    ],
+    "unresolved": [
+      "ACTIVITY_SPECIFIC_VARA",
+      "ACTIVITY_SPECIFIC_YOGA",
+      "EDUCATION_KARANA_ACTION_SET",
+      "PERSONAL_BALA"
+    ],
+    "variant_dependent": []
+  },
+  "rule_ids": [
+    "MUH-EDU-NAK-001",
+    "MUH-EDU-PANCHANGA-INPUT-001",
+    "MUH-EDU-ROUTINE-SCOPE-001",
+    "MUH-EDU-VARA-YOGA-GAP-001",
+    "MUH-EDU-TITHI-VIDYARAMBHA-001",
+    "MUH-EDU-KARANA-SCOPE-GAP-001"
+  ],
+  "rules": [
+    {
+      "activity_scope": "EDUCATION_COMMENCEMENT",
+      "condition": "P032 Nakshatra index is one of the directly named light-class values Ashwini, Pushya or Hasta.",
+      "condition_mode": "SINGLE",
+      "evaluator_id": "ENUM_MEMBERSHIP",
+      "evaluator_state": "EXECUTABLE",
+      "executability_state": "MACHINE_READY",
+      "expected_set": [
+        0,
+        7,
+        12
+      ],
+      "explanation_label": "Source-scoped light Nakshatra compatibility; not a success claim.",
+      "factor_id": "NAKSHATRA",
+      "factor_source": "P032_FACTOR_ADAPTER_V2_SOURCE_SEMANTIC_DERIVATION",
+      "factor_type": "NAKSHATRA",
+      "missing_value_policy": "ABSTAIN",
+      "operator": "IN",
+      "precedence_class": "PREFERENCE_POSITIVE",
+      "recommendation_effect": "PREFERENCE_POSITIVE",
+      "rule_class": "PREFERENCE_POSITIVE",
+      "rule_id": "MUH-EDU-NAK-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-BS-NAK-LAGHU-VALUES-001"
+      ],
+      "source_layer": "CLASSICAL_PRIMARY",
+      "value_type": "ENUM",
+      "variant_id": "BS_LAGHU_VALUES_V1"
+    },
+    {
+      "activity_scope": "EDUCATION_COMMENCEMENT",
+      "condition": "P032 provides the requested local-date facts and transition boundaries.",
+      "condition_mode": "SINGLE",
+      "evaluator_id": "BOOLEAN_REQUIRED",
+      "exceptions": [],
+      "executability_state": "MACHINE_READY",
+      "expected_value": true,
+      "explanation_label": "Input dependency only; it does not select a Muhurta.",
+      "factor_id": "PANCHANGA_FACTS_AVAILABLE",
+      "factor_source": "P032_FACTOR_ADAPTER_V1",
+      "factor_type": "PANCHANGA_FACTS",
+      "hard_exclusion": false,
+      "hard_requirement": false,
+      "missing_value_policy": "FAIL_CLOSED",
+      "operator": "BOOLEAN_TRUE",
+      "personal_required": false,
+      "precedence_class": "NEUTRAL",
+      "production_activation": false,
+      "recommendation_effect": "NEUTRAL",
+      "rule_class": "NEUTRAL",
+      "rule_id": "MUH-EDU-PANCHANGA-INPUT-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-P032-FACTS-001"
+      ],
+      "source_layer": "IMPLEMENTATION",
+      "validation_state": "INTERNALLY_VALIDATED",
+      "value_type": "BOOLEAN",
+      "variant_id": "P032_FACT_LAYER_V1"
+    },
+    {
+      "activity_scope": "EDUCATION_COMMENCEMENT",
+      "condition": "Routine study is not silently treated as formal commencement.",
+      "condition_mode": "SINGLE",
+      "evaluator_id": "ENUM_EXCLUSION",
+      "exceptions": [],
+      "executability_state": "MACHINE_READY",
+      "expected_set": [
+        "ROUTINE_DAILY_STUDY"
+      ],
+      "explanation_label": "Scope mismatch must abstain rather than force a recommendation.",
+      "factor_id": "ACTIVITY_SUBSCOPE",
+      "factor_source": "MUHURTA_REQUEST_CONTEXT_V1",
+      "factor_type": "ACTIVITY_SCOPE",
+      "hard_exclusion": false,
+      "hard_requirement": true,
+      "missing_value_policy": "ABSTAIN",
+      "operator": "NOT_IN",
+      "personal_required": false,
+      "precedence_class": "HARD_REQUIREMENT",
+      "production_activation": false,
+      "recommendation_effect": "ABSTAIN",
+      "rule_class": "HARD_REQUIREMENT",
+      "rule_id": "MUH-EDU-ROUTINE-SCOPE-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-P032-FACTS-001"
+      ],
+      "source_layer": "IMPLEMENTATION",
+      "validation_state": "CONTRACT_FROZEN",
+      "value_type": "ENUM",
+      "variant_id": "ACTIVITY_SCOPE_GUARD_V1"
+    },
+    {
+      "activity_scope": "EDUCATION_COMMENCEMENT",
+      "condition": "No activity-specific governed Vara or Yoga preference is established.",
+      "evaluator_state": "NON_EXECUTABLE",
+      "exceptions": [],
+      "executability_state": "SOURCE_PARTIAL",
+      "explanation_label": "Facts exist, but no source-bound education rule is claimed.",
+      "factor_state": "ACTIVITY_SPECIFIC_SOURCE_RULE_UNRESOLVED",
+      "factor_type": "VARA_YOGA",
+      "hard_exclusion": false,
+      "hard_requirement": false,
+      "personal_required": false,
+      "precedence_class": "UNRESOLVED",
+      "production_activation": false,
+      "recommendation_effect": "ABSTAIN",
+      "rule_class": "UNRESOLVED",
+      "rule_id": "MUH-EDU-VARA-YOGA-GAP-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-P032-FACTS-001"
+      ],
+      "source_layer": "IMPLEMENTATION",
+      "source_partial_reason": "ACTIVITY_SPECIFIC_SOURCE_RULE_UNRESOLVED",
+      "validation_state": "SOURCE_LIMITED",
+      "variant_id": "BS_SCOPED_ACTION_FAMILY_V1"
+    },
+    {
+      "activity_scope": "EDUCATION_COMMENCEMENT",
+      "condition": "Tithi is one of the dedicated Muhurtacintamani Vidyarambha/Akshararambha values.",
+      "condition_mode": "SINGLE",
+      "evaluator_id": "ENUM_MEMBERSHIP",
+      "evaluator_state": "EXECUTABLE",
+      "executability_state": "MACHINE_READY",
+      "expected_set": [
+        2,
+        3,
+        5,
+        6,
+        10,
+        11,
+        12
+      ],
+      "explanation_label": "Dedicated-source Tithi preference; no success or outcome claim.",
+      "factor_id": "TITHI",
+      "factor_source": "P032_FACTOR_ADAPTER_V2_SOURCE_SEMANTIC_DERIVATION",
+      "factor_type": "TITHI",
+      "hard_exclusion": false,
+      "hard_requirement": false,
+      "missing_value_policy": "ABSTAIN",
+      "operator": "IN",
+      "personal_required": false,
+      "precedence_class": "PREFERENCE_POSITIVE",
+      "production_activation": false,
+      "recommendation_effect": "PREFERENCE_POSITIVE",
+      "rule_class": "PREFERENCE_POSITIVE",
+      "rule_id": "MUH-EDU-TITHI-VIDYARAMBHA-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-MC-VIDYARAMBHA-TITHI-001"
+      ],
+      "source_layer": "CLASSICAL_PRIMARY_DEDICATED_WITNESS",
+      "validation_state": "SOURCE_CHECKED_CONDITIONAL",
+      "value_type": "ENUM",
+      "variant_id": "MUHURTACINTAMANI_VIDYARAMBHA_TITHI_V1"
+    },
+    {
+      "activity_scope": "EDUCATION_COMMENCEMENT",
+      "blocking_classification": "NON_BLOCKING_ADDITIONAL_COVERAGE",
+      "condition": "Tithi/Karana action correspondence applies to formal commencement of learning.",
+      "evaluator_state": "NON_EXECUTABLE",
+      "exceptions": [
+        "Mandatory educational dates take precedence over preference."
+      ],
+      "executability_state": "SOURCE_PARTIAL_NON_BLOCKING",
+      "explanation_label": "Disclosed source gap; unavailable for positive or negative evaluation.",
+      "factor_state": "ACTIVITY_SPECIFIC_SOURCE_RULE_UNRESOLVED",
+      "factor_type": "TITHI_KARANA",
+      "hard_exclusion": false,
+      "hard_requirement": false,
+      "non_blocking_reason": "No inspected source establishes this as a mandatory hard requirement for the activity contract.",
+      "personal_required": false,
+      "precedence_class": "UNRESOLVED",
+      "production_activation": false,
+      "recommendation_effect": "ABSTAIN",
+      "rule_class": "NON_BLOCKING_ADDITIONAL_COVERAGE",
+      "rule_id": "MUH-EDU-KARANA-SCOPE-GAP-001",
+      "source_assertions": [],
+      "source_layer": "CLASSICAL_PRIMARY",
+      "source_partial_reason": "The inspected dedicated education passage supplies Tithi/Nakshatra/Vara/planet conditions but no education-specific Karana set; generic Karana symmetry is not inferred.",
+      "validation_state": "SOURCE_LIMITED",
+      "variant_id": "ACTIVITY_SCOPE_AND_SOURCE_NECESSITY_AUDIT_V1"
+    }
+  ],
+  "source_partial_rule_ids": [
+    "MUH-EDU-VARA-YOGA-GAP-001",
+    "MUH-EDU-KARANA-SCOPE-GAP-001"
+  ],
+  "source_semantics_policy": "Dedicated primary-source predicates only; scope mismatches and unverified factors abstain and do not block when no source-mandatory requirement is established.",
+  "source_tradition": [
+    "BRIHAT_SAMHITA_SCOPED_ACTION_FAMILIES",
+    "VEDA_P032_FACT_CONTRACT"
+  ],
+  "source_variants": [
+    "BS_SCOPED_ACTION_FAMILY_V1"
+  ],
+  "strong_negatives": [],
+  "strong_positives": [],
+  "subscopes": [],
+  "supersedes": {
+    "contract_hash_full": "976D20F34B5E447CCDB96A773C37C664BBC596267F0BCE9AF248D19BD85A4CD4",
+    "contract_id": "VEDA-MUH-CONTRACT-EDUCATION-COMMENCEMENT-V3",
+    "legacy_v3_hash": "976D20F34B5E447CCDB96A773C37C664BBC596267F0BCE9AF248D19BD85A4CD4"
+  },
+  "unresolved_areas": [
+    "Ceremonial commencement versus modern course start needs source separation.",
+    "Personal Bala is not executable.",
+    "No ranking or universal score."
+  ],
+  "version": "4.0.0"
+}

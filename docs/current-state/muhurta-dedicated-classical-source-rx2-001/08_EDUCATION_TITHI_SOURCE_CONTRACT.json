@@ -1,0 +1,30 @@
+{
+  "activity": "EDUCATION_COMMENCEMENT",
+  "normalized_tithi_set": [
+    2,
+    3,
+    5,
+    6,
+    10,
+    11,
+    12
+  ],
+  "ocr_uncertainty": true,
+  "predicate": {
+    "expected_set": [
+      2,
+      3,
+      5,
+      6,
+      10,
+      11,
+      12
+    ],
+    "factor_id": "TITHI",
+    "missing_value_policy": "ABSTAIN",
+    "operator": "IN"
+  },
+  "scope": "formal Akshararambha/Vidy arambha-style learning commencement; not routine study, admission or outcome guarantee",
+  "source_witness": "VEDA-SWW-PASSAGE-MC-VIDYARAMBHA-001",
+  "status": "SOURCE_CHECKED_CONDITIONAL"
+}

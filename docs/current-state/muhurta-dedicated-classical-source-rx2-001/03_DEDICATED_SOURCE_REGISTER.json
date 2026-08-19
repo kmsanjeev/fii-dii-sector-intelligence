@@ -1,0 +1,88 @@
+{
+  "lineage_policy": "Archive OCR and the CSU chapter PDF are treated as witnesses to the same dedicated work; repeated modern tables are not independent evidence and are not voted together.",
+  "programme": "VEDA-MUHURTA-DEDICATED-CLASSICAL-SOURCE-RX2-001",
+  "rejected_or_downgraded": [
+    {
+      "class": "modern_business_or_education_tables",
+      "decision": "DOWNGRADED_DISCOVERY_ONLY",
+      "reason": "No passage-level lineage or primary verification."
+    },
+    {
+      "class": "search_snippets_and_SEO_pages",
+      "decision": "REJECTED",
+      "reason": "Not independent authority and not sufficient for a hard activity predicate."
+    }
+  ],
+  "snapshot_date": "2026-08-19",
+  "source_priority": "classical primary witness first; limited scans/OCR are bounded and uncertainty-labelled; modern pages discovery-only",
+  "sources": [
+    {
+      "accepted_claim": "direct Akshararambha/Vidyarambha Tithi passage and dedicated section structure",
+      "accessed": "2026-08-19",
+      "archive_url": "https://archive.org/details/in.ernet.dli.2015.345472",
+      "author_as_catalogued": "Acharya, Rama",
+      "full_text_locator": "https://archive.org/stream/in.ernet.dli.2015.345472/2015.345472.The-Muhurta_djvu.txt",
+      "language": "Sanskrit",
+      "pages": 338,
+      "publication_year": 1928,
+      "review_state": "SOURCE_CHECKED_CONDITIONAL",
+      "rights_basis": "metadata and bounded paraphrase only; no raw scan/OCR redistributed",
+      "rights_state": "RESEARCH_ONLY",
+      "source_id": "VEDA-SWW-WORK-MUHURTACINTAMANI-RAMA-001",
+      "source_type": "SCANNED_PRIMARY_WITNESS",
+      "title": "The Muhurta Chantimani"
+    },
+    {
+      "accepted_claim": "Akshararambha/Vidyarambha passage names a normalized Tithi set {2,3,5,6,10,11,12} with additional Nakshatra/Vara/planet conditions",
+      "authority": "CLASSICAL_PRIMARY_DEDICATED_WITNESS",
+      "locator": "Archive OCR lines approximately 7293-7320; Chapter/Prakarana 5, verses 37-38; corroborating chapter-5 PDF page 20",
+      "ocr_used": true,
+      "ocr_verified": "CONDITIONAL",
+      "parent_source_id": "VEDA-SWW-WORK-MUHURTACINTAMANI-RAMA-001",
+      "pdf_locator": "https://www.csu-guruvayoor.edu.in/studymaterial/jyothisha/MUHURTACHINTAMANI-5TH%20CHAPTER_s1.pdf",
+      "source_id": "VEDA-SWW-PASSAGE-MC-VIDYARAMBHA-001",
+      "translation_uncertainty": "OCR punctuation and some lexical readings are imperfect; only the corroborated Tithi set is admitted, while other conditions remain source metadata."
+    },
+    {
+      "accepted_claim": "commerce/market context distinguishes Rikta avoidance and related conditions",
+      "authority": "CLASSICAL_PRIMARY_DEDICATED_WITNESS",
+      "locator": "Archive OCR lines approximately 3317-3325; Prakarana 2, page 51, market/shop/sale context",
+      "not_established": [
+        "exact business-opening/inauguration predicate",
+        "universal business success"
+      ],
+      "ocr_used": true,
+      "ocr_verified": "CONDITIONAL",
+      "parent_source_id": "VEDA-SWW-WORK-MUHURTACINTAMANI-RAMA-001",
+      "scope_match": "PARTIAL",
+      "source_id": "VEDA-SWW-PASSAGE-MC-BUSINESS-MARKET-001"
+    },
+    {
+      "accepted_claim": "Karana sequence/Vishti context inspected; no education-specific Karana rule located",
+      "authority": "CLASSICAL_PRIMARY_DEDICATED_WITNESS",
+      "locator": "Archive OCR search around Karana/Vishti/Bhadra sequence, approximately lines 2374-2399",
+      "not_established": [
+        "education-specific Karana value set"
+      ],
+      "ocr_used": true,
+      "ocr_verified": "CONDITIONAL",
+      "parent_source_id": "VEDA-SWW-WORK-MUHURTACINTAMANI-RAMA-001",
+      "source_id": "VEDA-SWW-PASSAGE-MC-KARANA-001"
+    },
+    {
+      "authority": "SOURCE_ACCESS_LIMITED",
+      "decision": "NOT_VERIFIED",
+      "reason": "No reliable primary scan or passage-level witness was located in the bounded search; no claim admitted.",
+      "source_id": "VEDA-SWW-WORK-MUHURTA-MARTANDA-SEARCH-001",
+      "title": "Muhurta Martanda"
+    },
+    {
+      "authority": "SOURCE_ACCESS_LIMITED",
+      "decision": "NOT_VERIFIED_FOR_THIS_SCOPE",
+      "locator": "https://ignca.gov.in/PDF_data/Vedanga-Kalpa%28Dharma-Shastra%29-Vol-II-Part-XII.pdf",
+      "reason": "An institutional PDF was discoverable but relevant passage access failed; Dharmaśāstra context is not silently treated as dedicated Muhurta proof.",
+      "source_id": "VEDA-SWW-WORK-DHARMASINDHU-SEARCH-001",
+      "title": "Dharmasindhu"
+    }
+  ]
+}
