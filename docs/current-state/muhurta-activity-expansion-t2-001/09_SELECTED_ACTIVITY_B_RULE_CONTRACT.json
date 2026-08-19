@@ -1,0 +1,60 @@
+{
+  "abstention": [
+    "MISSING_ELECTIONAL_FACTORS",
+    "ACTIVITY_SCOPE_MISMATCH",
+    "SOURCE_VARIANT_UNRESOLVED"
+  ],
+  "activity_id": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+  "activity_scope": "First entry into a completed or substantially completed dwelling after construction",
+  "caution_class": "PROPERTY_OCCUPANCY_PRACTICAL_AND_TRADITIONAL_CONTEXT",
+  "consultation_class": "QUALIFIED_PROPERTY_AND_TRADITIONAL_CONTEXT_AS_APPLICABLE",
+  "context_rules": [
+    "NO_UNIVERSAL_AUSPICIOUSNESS",
+    "NO_OUTCOME_GUARANTEE",
+    "NO_CROSS_TRADITION_MERGE"
+  ],
+  "contract_hash": "B466C139E179D3ABCB55FD0D9D19F602159755C366E1272CEA8030EACEEB019C",
+  "contract_id": "VEDA-MUH-T2-CONTRACT-HOUSE_ENTRY_OR_GRIHA_PRAVESHA-V1",
+  "hard_exclusions": [
+    "PROPERTY_PURCHASE_OR_REGISTRATION",
+    "LEGAL_OCCUPANCY_DECISION",
+    "STRUCTURAL_SAFETY_DECISION"
+  ],
+  "hard_requirements": [
+    "SOURCE_BOUND_ACTIVITY_SCOPE",
+    "VALIDATED_ELECTIONAL_LAGNA_FACTOR",
+    "VALIDATED_PLANETARY_ELECTION_CONTEXT",
+    "EXPLICIT_COMPLETION_AND_OCCUPANCY_CONTEXT"
+  ],
+  "personal_factors": [
+    "TARA_CHANDRA_DIAGNOSTIC_ONLY"
+  ],
+  "precedence": [
+    "HARD_EXCLUSION",
+    "HARD_REQUIREMENT",
+    "CONTEXT",
+    "PREFERENCE",
+    "ABSTAIN"
+  ],
+  "preference_negatives": [],
+  "preference_positives": [
+    "SOURCE_BOUND_STHIRA_ACTION_CONTEXT"
+  ],
+  "production_bound": false,
+  "readiness": "SOURCE_CONTRACT_READY_MACHINE_PARTIAL",
+  "rule_ids": [
+    "MUH-T2-HOUSE-ENTRY-001"
+  ],
+  "source_standard": "VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001",
+  "source_tradition": [
+    "BRIHAT_SAMHITA_SCOPED_VASTU_AND_NAKSHATRA_ACTIONS",
+    "VEDA_P032_FACT_CONTRACT"
+  ],
+  "strong_negatives": [],
+  "strong_positives": [],
+  "variants": [
+    "BRIHAT_SAMHITA_CHAPTER_NUMBERING_VARIANT",
+    "GRIHA_PRAVESHA_TRADITION_AND_TRANSLATION_VARIANT"
+  ],
+  "version": "1.0.0"
+}

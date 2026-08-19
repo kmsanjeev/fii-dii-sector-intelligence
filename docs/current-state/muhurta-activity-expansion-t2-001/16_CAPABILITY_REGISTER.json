@@ -1,0 +1,15 @@
+{
+  "capabilities": [
+    {"activity_id":"BUSINESS_OPENING_INAUGURATION","capability_state":"IMPLEMENTED_VALIDATED","access_state":"ENABLED","runtime_state":"OPERATIONAL_WITH_CONDITIONS"},
+    {"activity_id":"EDUCATION_COMMENCEMENT","capability_state":"IMPLEMENTED_VALIDATED","access_state":"ENABLED","runtime_state":"OPERATIONAL_WITH_CONDITIONS"},
+    {"activity_id":"VEHICLE_CONVEYANCE_COMMENCEMENT","capability_state":"IMPLEMENTED_VALIDATED","access_state":"ENABLED","runtime_state":"OPERATIONAL_WITH_CONDITIONS"},
+    {"activity_id":"CONSECRATION_INSTALLATION_COMMENCEMENT","capability_state":"IMPLEMENTED_VALIDATED","access_state":"ENABLED","runtime_state":"OPERATIONAL_WITH_CONDITIONS"},
+    {"activity_id":"HOUSE_CONSTRUCTION_COMMENCEMENT","capability_state":"SOURCE_CONTRACT_READY_MACHINE_PARTIAL","access_state":"INACTIVE_UNTIL_IMPLEMENTED_VALIDATED","runtime_state":"INACTIVE","window_search_state":"TRANSITION_DEPENDENCY_MISSING","personalization_state":"DIAGNOSTIC_ONLY","next_evidence_need":"validated electional Lagna and planetary context"},
+    {"activity_id":"HOUSE_ENTRY_OR_GRIHA_PRAVESHA","capability_state":"SOURCE_CONTRACT_READY_MACHINE_PARTIAL","access_state":"INACTIVE_UNTIL_IMPLEMENTED_VALIDATED","runtime_state":"INACTIVE","window_search_state":"TRANSITION_DEPENDENCY_MISSING","personalization_state":"DIAGNOSTIC_ONLY","next_evidence_need":"validated electional Lagna, planetary context and occupancy context"}
+  ],
+  "capability_access_separated": true,
+  "permanent_topic_restrictions": false,
+  "approved_core_before": 17,
+  "approved_core_after": 17,
+  "t2_runtime_activation": false
+}

@@ -1,0 +1,9 @@
+{
+  "production_activation": false,
+  "activities": [
+    {"activity_id":"HOUSE_CONSTRUCTION_COMMENCEMENT","rule_to_factor":["MUH-T2-HOUSE-CONSTRUCTION-001 -> P032-CALC-NAKSHATRA-001 (class context only)","MUH-T2-HOUSE-CONSTRUCTION-001 -> VALIDATED_ELECTIONAL_LAGNA_FACTOR (missing)","MUH-T2-HOUSE-CONSTRUCTION-001 -> VALIDATED_PLANETARY_ELECTION_CONTEXT (missing)"],"transition_sources":["Nakshatra transition available","Lagna transition unavailable as governed election factor","Planetary election transition unavailable"],"readiness":"TRANSITION_DEPENDENCY_MISSING"},
+    {"activity_id":"HOUSE_ENTRY_OR_GRIHA_PRAVESHA","rule_to_factor":["MUH-T2-HOUSE-ENTRY-001 -> P032-CALC-NAKSHATRA-001 (class context only)","MUH-T2-HOUSE-ENTRY-001 -> VALIDATED_ELECTIONAL_LAGNA_FACTOR (missing)","MUH-T2-HOUSE-ENTRY-001 -> VALIDATED_PLANETARY_ELECTION_CONTEXT (missing)","MUH-T2-HOUSE-ENTRY-001 -> EXPLICIT_COMPLETION_AND_OCCUPANCY_CONTEXT (missing)"],"transition_sources":["Nakshatra transition available","Lagna transition unavailable as governed election factor","Planetary election transition unavailable"],"readiness":"TRANSITION_DEPENDENCY_MISSING"}
+  ],
+  "existing_window_search_changed": false,
+  "engine_handoff_created": false
+}

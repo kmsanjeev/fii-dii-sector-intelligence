@@ -1,0 +1,29 @@
+{
+  "programme": "VEDA-MUHURTA-ACTIVITY-EXPANSION-T2-001",
+  "source_inventory": "docs/current-state/muhurta-activity-expansion-t1-001/01_ACTIVITY_CANDIDATE_INVENTORY.json",
+  "original_candidates": 9,
+  "completed_excluded": [
+    "BUSINESS_OPENING_INAUGURATION",
+    "CONSECRATION_INSTALLATION_COMMENCEMENT",
+    "EDUCATION_COMMENCEMENT",
+    "VEHICLE_CONVEYANCE_COMMENCEMENT"
+  ],
+  "remaining_candidates": [
+    "HOUSE_CONSTRUCTION_COMMENCEMENT",
+    "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+    "MARRIAGE_CEREMONY_TIMING",
+    "TRAVEL_JOURNEY_COMMENCEMENT",
+    "PUJA_JAPA_VRATA_COMMENCEMENT",
+    "PROPERTY_PURCHASE_OR_REGISTRATION",
+    "MEDICAL_PROCEDURE"
+  ],
+  "counts": {
+    "source_strong_remaining": 3,
+    "source_ambiguous_remaining": 2,
+    "source_variant_complex_remaining": 1,
+    "source_limited_remaining": 1,
+    "machine_feasible_remaining": 0
+  },
+  "selection_policy": "qualitative source strength, scope clarity, factor availability and practical utility; no numeric score",
+  "selected": ["HOUSE_CONSTRUCTION_COMMENCEMENT", "HOUSE_ENTRY_OR_GRIHA_PRAVESHA"]
+}

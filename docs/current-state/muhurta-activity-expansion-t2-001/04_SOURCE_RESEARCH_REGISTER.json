@@ -1,0 +1,21 @@
+{
+  "programme": "VEDA-MUHURTA-ACTIVITY-EXPANSION-T2-001",
+  "research_mode": "existing_witness_first_with_targeted_gap_check",
+  "queries": [
+    "Brihat Samhita house construction commencement chapter 53",
+    "Brihat Samhita house entry Griharambha Grihapravesha chapter 98",
+    "Brihat Samhita tithi karana house work chapter 99"
+  ],
+  "accepted_witnesses": [
+    {"work_id":"VEDA-SWW-WORK-BRIHAT-SAMHITA-001","edition_id":"VEDA-SWW-EDITION-BRIHAT-SAMHITA-CONSULTED-001","witness_id":"VEDA-SWW-WITNESS-BRIHAT-SAMHITA-TRANSLATION-001","locator":"Chapter 53, verses 98-112","url":"https://www.wisdomlib.org/hinduism/book/brihat-samhita/d/doc229297.html","use":"house-site preparation, commencement of building, first foundation stone; paraphrase only"},
+    {"work_id":"VEDA-SWW-WORK-BRIHAT-SAMHITA-001","edition_id":"VEDA-SWW-EDITION-BRIHAT-SAMHITA-CONSULTED-001","witness_id":"VEDA-SWW-WITNESS-BRIHAT-SAMHITA-TRANSLITERAL-001","locator":"Chapter 98, verse 18 in consulted numbering; chapter numbering varies by edition","url":"https://www.transliteral.org/pages/z150223044104/view","use":"stable-work, Lagna and house commencement/entry context; translation uncertainty retained"},
+    {"work_id":"VEDA-SWW-WORK-BRIHAT-SAMHITA-001","edition_id":"VEDA-SWW-EDITION-BRIHAT-SAMHITA-CONSULTED-001","witness_id":"VEDA-SWW-WITNESS-BRIHAT-SAMHITA-TRANSLITERAL-001","locator":"Chapter 99, verses 6-8 in consulted numbering","url":"https://www.transliteral.org/pages/z150223051604/view","use":"house-work and fixed-work Karana context; not flattened into a complete T2 election"}
+  ],
+  "source_lineage": "ACTIVITY CONTRACT -> RULE -> ASSERTION -> PASSAGE -> EDITION -> WITNESS -> WORK",
+  "rights": "DERIVED_METADATA_ONLY; no full copyrighted source text committed",
+  "ocr_used": false,
+  "accepted_claims": ["house construction commencement is a bounded source activity", "house entry is a distinct bounded activity context", "stable Lagna/planetary context is a required source-layer dependency"],
+  "downgraded": ["modern Griha Pravesha lists without passage lineage", "generic property purchase/registration tables", "SEO or practitioner tables used without source witness"],
+  "translation_uncertainty": ["chapter numbering differs by digital witness", "the consulted vernacular translation of chapter 98 verse 18 is used as a bounded reference, not as a fabricated Sanskrit quotation"],
+  "unresolved": ["validated electional Lagna factor", "validated planetary-context factor", "complete activity-specific Tithi/Karana composition", "local property and ritual variants"]
+}

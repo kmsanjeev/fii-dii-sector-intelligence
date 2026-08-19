@@ -1,0 +1,52 @@
+[
+  {
+    "activity_id": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+    "case": "supported_context_only",
+    "expected": "ABSTAIN_MISSING_ELECTIONAL_FACTORS",
+    "factors": {
+      "nakshatra_class": "DHRUVA"
+    },
+    "production": false
+  },
+  {
+    "activity_id": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+    "case": "missing_factors",
+    "expected": "ABSTAIN_MISSING_ELECTIONAL_FACTORS",
+    "factors": {},
+    "production": false
+  },
+  {
+    "activity_id": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+    "case": "scope_mismatch",
+    "expected": "ABSTAIN_MISSING_ELECTIONAL_FACTORS",
+    "factors": {
+      "activity_scope": "PROPERTY_PURCHASE_OR_REGISTRATION"
+    },
+    "production": false
+  },
+  {
+    "activity_id": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+    "case": "supported_context_only",
+    "expected": "ABSTAIN_MISSING_ELECTIONAL_FACTORS",
+    "factors": {
+      "nakshatra_class": "DHRUVA"
+    },
+    "production": false
+  },
+  {
+    "activity_id": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+    "case": "missing_factors",
+    "expected": "ABSTAIN_MISSING_ELECTIONAL_FACTORS",
+    "factors": {},
+    "production": false
+  },
+  {
+    "activity_id": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+    "case": "scope_mismatch",
+    "expected": "ABSTAIN_MISSING_ELECTIONAL_FACTORS",
+    "factors": {
+      "activity_scope": "PROPERTY_PURCHASE_OR_REGISTRATION"
+    },
+    "production": false
+  }
+]

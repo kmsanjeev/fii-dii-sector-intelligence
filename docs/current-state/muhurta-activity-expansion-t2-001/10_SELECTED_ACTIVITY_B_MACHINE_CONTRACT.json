@@ -1,0 +1,50 @@
+{
+  "activity_id": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+  "blocking_dependencies": [
+    "The current trusted P032 contract does not expose validated electional Lagna and planetary-context factors.",
+    "The runtime request has no governed completion/occupancy context."
+  ],
+  "contract_id": "VEDA-MUH-T2-CONTRACT-HOUSE_ENTRY_OR_GRIHA_PRAVESHA-V1",
+  "machine_hash": "2AD390E55210E593984BE601EFF928F92B039CD01EF6014A43F516FF570D9A3D",
+  "machine_state": "MACHINE_PARTIAL",
+  "no_runtime_registration": true,
+  "predicates": [
+    {
+      "evaluator_id": "MUH-T2-EVAL-NAKSHATRA-CLASS-001",
+      "expected_class": "DHRUVA_OR_SOURCE_DEFINED_STHIRA",
+      "factor_id": "P032-CALC-NAKSHATRA-001",
+      "missing_value_policy": "ABSTAIN",
+      "operator": "CLASS_CONTEXT_ONLY",
+      "recommendation_effect": "PREFERENCE_POSITIVE_ONLY"
+    },
+    {
+      "evaluator_id": "MUH-T2-EVAL-LAGNA-CONTEXT-001",
+      "expected_class": "STHIRA_LAGNA_OR_SOURCE_DEFINED_EQUIVALENT",
+      "factor_id": "VALIDATED_ELECTIONAL_LAGNA_FACTOR",
+      "missing_value_policy": "ABSTAIN",
+      "operator": "REQUIRED_BUT_UNAVAILABLE",
+      "recommendation_effect": "BLOCKING_REQUIREMENT"
+    },
+    {
+      "evaluator_id": "MUH-T2-EVAL-GRAHA-CONTEXT-001",
+      "expected_class": "SOURCE_DEFINED_PLANETARY_CONTEXT",
+      "factor_id": "VALIDATED_PLANETARY_ELECTION_CONTEXT",
+      "missing_value_policy": "ABSTAIN",
+      "operator": "REQUIRED_BUT_UNAVAILABLE",
+      "recommendation_effect": "BLOCKING_REQUIREMENT"
+    }
+  ],
+  "production_activation": false,
+  "required_existing_p032_factors": [
+    "P032-CALC-NAKSHATRA-001",
+    "P032-CALC-TITHI-001",
+    "P032-CALC-KARANA-001"
+  ],
+  "source_assertion_ids": [
+    "VEDA-SWW-ASSERTION-BS-HOUSE-ENTRY-001"
+  ],
+  "variant_ids": [
+    "BRIHAT_SAMHITA_CHAPTER_NUMBERING_VARIANT",
+    "GRIHA_PRAVESHA_TRADITION_AND_TRANSLATION_VARIANT"
+  ]
+}

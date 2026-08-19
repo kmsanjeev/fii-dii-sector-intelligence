@@ -1,0 +1,9 @@
+{
+  "variants": [
+    {"variant_id":"BRIHAT_SAMHITA_CHAPTER_NUMBERING_VARIANT","scope":"digital editions number the relevant Nakshatra/Vastu material differently","handling":"preserve locator variant; do not merge by chapter number alone"},
+    {"variant_id":"STHIRA_LAGNA_TRANSLATION_SCOPE_UNCERTAINTY","scope":"stable Lagna and planetary context is paraphrased from the consulted translation","handling":"retain as blocking source-layer dependency; no fabricated Sanskrit or universal formula"},
+    {"variant_id":"GRIHA_PRAVESHA_TRADITION_AND_TRANSLATION_VARIANT","scope":"house-entry procedure and ritual context vary by tradition","handling":"preserve consultation dependency; do not flatten into a universal ceremony"}
+  ],
+  "merge_policy": "NO_CROSS_TRADITION_RULE_OR_INVARIANT_MERGE_WITHOUT_EQUIVALENCE_OR_SCOPE_PROOF",
+  "union_or_voting": false
+}

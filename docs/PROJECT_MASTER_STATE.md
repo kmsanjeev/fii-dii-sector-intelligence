@@ -1,6 +1,17 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.73.8 | 2026-08-19
+# Version 4.73.9 | 2026-08-19
+
+- `VEDA-MUHURTA-ACTIVITY-EXPANSION-T2-001` completed with `PASS_WITH_CONDITION`
+  and decision `MUHURTA_T2_ACTIVITY_EXPANSION_SOURCE_CONTRACTS_MACHINE_PARTIAL`.
+  The authoritative T1 inventory was reconciled with operational activities
+  excluded. House Construction Commencement and House Entry/Griha Pravesha
+  have deterministic, source-linked non-production contracts and
+  machine-partial mappings. Missing validated electional Lagna/planetary
+  context (plus explicit occupancy context for House Entry) prevents engine
+  handoff. No production runtime, P032, Personal Bala, RAG, prediction, ML or
+  Approved Core change occurred. Evidence:
+  `docs/current-state/muhurta-activity-expansion-t2-001/`.
 
 - `VEDA-MUHURTA-ENGINE-ACTIVITY-EXPANSION-T1-001` completed with
   `MUHURTA_T1_ENGINE_OPERATIONAL_VEHICLE_CONSECRATION_WITH_CONDITIONS`.

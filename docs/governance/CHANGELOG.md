@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-ACTIVITY-EXPANSION-T2-001
+
+Completed the bounded Muhurta activity-expansion T2 source-governance
+activity with `PASS_WITH_CONDITION` and decision
+`MUHURTA_T2_ACTIVITY_EXPANSION_SOURCE_CONTRACTS_MACHINE_PARTIAL`. The
+authoritative T1 inventory was reused after excluding the four operational
+activities. House Construction Commencement and House Entry/Griha Pravesha
+now have deterministic non-production source contracts and machine-partial
+factor mappings. Validated electional Lagna/planetary context is still
+missing, and House Entry also requires explicit occupancy context, so no
+engine handoff or runtime activation was created. Production Muhurta, P032,
+Personal Bala, RAG, prediction, ML and Approved Core remain unchanged.
+Evidence: `docs/current-state/muhurta-activity-expansion-t2-001/`.
+
 ## 2026-08-19 | VEDA-MUHURTA-ENGINE-ACTIVITY-EXPANSION-T1-001
 
 Completed the authorized production Muhurta engine expansion with
