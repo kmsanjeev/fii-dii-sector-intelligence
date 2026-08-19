@@ -1,0 +1,71 @@
+{
+  "accepted_witnesses": [
+    {
+      "authority": "CLASSICAL_TEXT_SECONDARY_TRANSLATION",
+      "claim": "The marriage chapter describes a distinct Godhuli context and says the ordinary Nakshatra/Tithi/Yoga/Karana/Lagna considerations need not be applied in that context.",
+      "edition_id": "VEDA-SWW-EDITION-BRIHAT-SAMHITA-TRANSLATION-IYER-1884-001",
+      "locator": "English translation chapter 103, verse 13; Sanskrit link exposed on witness page",
+      "passage_id": "VEDA-SWW-PASSAGE-BRIHAT-SAMHITA-103-13-001",
+      "rights": "DERIVED_METADATA_ONLY",
+      "role": "secondary translation witness for the bounded Godhuli exception",
+      "url": "https://www.wisdomlib.org/hinduism/book/brihat-samhita/d/doc229367.html",
+      "witness_id": "VEDA-SWW-WITNESS-BRIHAT-SAMHITA-WISDOMLIB-001",
+      "work_id": "VEDA-SWW-WORK-BRIHAT-SAMHITA-001"
+    },
+    {
+      "authority": "TRADITIONAL_WORK_DIGITIZED_EDITION",
+      "claim": "The marriage section discusses Guru/Sun/Moon strength and the need to examine the marriage Lagna; the source is historical and not generalized into modern outcome claims.",
+      "edition_id": "VEDA-SWW-EDITION-MUHURTACINTAMANI-NARAYANRAM-ACHARYA-1945-001",
+      "locator": "Marriage Prakarana 6, scanned edition page 249 / printed page 233",
+      "passage_id": "VEDA-SWW-PASSAGE-MUHURTACINTAMANI-6-P249-001",
+      "rights": "DERIVED_METADATA_ONLY; no scan committed",
+      "role": "digitized Sanskrit/Hindi edition witness",
+      "url": "https://jainqq.org/explore/002342/249",
+      "witness_id": "VEDA-SWW-WITNESS-MUHURTACINTAMANI-JAINQUANTUM-001",
+      "work_id": "VEDA-SWW-WORK-MUHURTACINTAMANI-001"
+    },
+    {
+      "authority": "TRADITIONAL_COMMENTARIAL_REFERENCE",
+      "claim": "A marriage-time Lagna/Navamsha relationship is described as a condition for favorable result within the source's own historical marriage framework.",
+      "edition_id": "VEDA-SWW-EDITION-MUHURTACINTAMANI-MANUSCRIPT-TRADITION-001",
+      "locator": "Chapter 6, verse 76, online Sanskrit/Hindi witness",
+      "passage_id": "VEDA-SWW-PASSAGE-MUHURTACINTAMANI-6-76-001",
+      "rights": "DERIVED_METADATA_ONLY",
+      "role": "secondary manuscript-tradition comparison",
+      "url": "https://vedicpupil.in/library/muhurta-chintamani-book-by-narayana/chapter-ch06/76",
+      "witness_id": "VEDA-SWW-WITNESS-MUHURTACINTAMANI-VEDICPUPIL-001",
+      "work_id": "VEDA-SWW-WORK-MUHURTACINTAMANI-001"
+    }
+  ],
+  "downgraded_or_rejected": [
+    {
+      "claim": "Generic online marriage-nakshatra tables",
+      "reason": "No passage-level lineage or method scope."
+    },
+    {
+      "claim": "Modern marriage success/compatibility guarantees",
+      "reason": "Outside timing-only scope and unsupported outcome certainty."
+    },
+    {
+      "claim": "Historical gendered outcome statements as universal rules",
+      "reason": "Context and translation limitations; not machine-promoted."
+    },
+    {
+      "claim": "OCR or search snippets without image/page verification",
+      "reason": "Discovery only under the source-witness standard."
+    }
+  ],
+  "lineage": "MACHINE PREDICATE -> RULE -> ASSERTION -> PASSAGE -> EDITION -> WITNESS -> WORK",
+  "ocr_used": false,
+  "programme": "VEDA-MUHURTA-ACTIVITY-EXPANSION-T3-001",
+  "queries": [
+    "Brihat Samhita chapter 103 marriage vivaha patala Godhuli Lagna",
+    "Muhurtacintamani marriage prakarana bride groom Bala Lagna page 249",
+    "Muhurtacintamani chapter 6 verse 76 marriage Lagna Navamsha"
+  ],
+  "research_mode": "existing_witness_first_with_one_bounded_marriage_gap_check",
+  "translation_uncertainty": [
+    "Godhuli is a contextual traditional term and is not treated as a generic sunset-time calculator.",
+    "Edition/page numbering and translated outcome language are not silently normalized into modern claims."
+  ]
+}

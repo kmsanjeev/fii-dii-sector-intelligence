@@ -1,0 +1,74 @@
+[
+  {
+    "activity_id": "MARRIAGE_CEREMONY_TIMING",
+    "case": "supporting_godhuli_context",
+    "expected": "ABSTAIN_BLOCKING_ELECTIONAL_DEPENDENCY",
+    "factors": {
+      "activity_scope": "MARRIAGE_CEREMONY_TIMING",
+      "godhuli_context": true,
+      "validated_lagna": null,
+      "validated_planetary_context": null
+    },
+    "production": false
+  },
+  {
+    "activity_id": "MARRIAGE_CEREMONY_TIMING",
+    "case": "nonmatching_context",
+    "expected": "ABSTAIN_BLOCKING_ELECTIONAL_DEPENDENCY",
+    "factors": {
+      "activity_scope": "MARRIAGE_CEREMONY_TIMING",
+      "godhuli_context": false,
+      "validated_lagna": null,
+      "validated_planetary_context": null
+    },
+    "production": false
+  },
+  {
+    "activity_id": "MARRIAGE_CEREMONY_TIMING",
+    "case": "missing_factor",
+    "expected": "ABSTAIN_MISSING_ELECTIONAL_FACTORS",
+    "factors": {
+      "activity_scope": "MARRIAGE_CEREMONY_TIMING"
+    },
+    "production": false
+  },
+  {
+    "activity_id": "MARRIAGE_CEREMONY_TIMING",
+    "case": "scope_mismatch",
+    "expected": "ABSTAIN_ACTIVITY_SCOPE_MISMATCH",
+    "factors": {
+      "activity_scope": "PARTNER_COMPATIBILITY"
+    },
+    "production": false
+  },
+  {
+    "activity_id": "MARRIAGE_CEREMONY_TIMING",
+    "case": "required_context_missing",
+    "expected": "ABSTAIN_MISSING_GODHULI_OR_LAGNA_CONTEXT",
+    "factors": {
+      "activity_scope": "MARRIAGE_CEREMONY_TIMING",
+      "godhuli_context": null
+    },
+    "production": false
+  },
+  {
+    "activity_id": "MARRIAGE_CEREMONY_TIMING",
+    "case": "variant_isolation",
+    "expected": "ABSTAIN_SOURCE_VARIANT_UNRESOLVED",
+    "factors": {
+      "activity_scope": "MARRIAGE_CEREMONY_TIMING",
+      "tradition_variant": "LOCAL_LINEAGE_UNSPECIFIED"
+    },
+    "production": false
+  },
+  {
+    "activity_id": "MARRIAGE_CEREMONY_TIMING",
+    "case": "source_trace",
+    "expected": "TRACE_REQUIRED_WITH_NO_RECOMMENDATION",
+    "factors": {
+      "activity_scope": "MARRIAGE_CEREMONY_TIMING",
+      "trace_requested": true
+    },
+    "production": false
+  }
+]

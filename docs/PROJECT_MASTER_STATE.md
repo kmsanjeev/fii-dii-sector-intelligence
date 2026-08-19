@@ -1,6 +1,19 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.74.0 | 2026-08-19
+# Version 4.75.0 | 2026-08-19
+
+- `VEDA-MUHURTA-ACTIVITY-EXPANSION-T3-001` completed with
+  `PASS_WITH_CONDITION` and decision
+  `MUHURTA_T3_ACTIVITY_EXPANSION_SOURCE_CONTRACTS_MACHINE_PARTIAL`. The
+  authoritative T1/T2 inventory was reused, House Construction and Griha
+  Pravesha remained frozen `MACHINE_PARTIAL`, and Marriage Ceremony Timing
+  received one deterministic non-production source contract with a
+  machine-partial mapping. The marriage source lineage records Bṛhat Saṃhitā
+  marriage/Godhūli context and Muhūrtacintāmaṇi marriage Lagna/planetary
+  context, while validated electional Lagna/planetary factors and Godhūli
+  calculation remain unavailable. No T3 engine handoff, runtime activation,
+  P032, Personal Bala, RAG, prediction, ML or Approved Core change occurred.
+  Evidence: `docs/current-state/muhurta-activity-expansion-t3-001/`.
 
 - `VEDA-MUHURTA-HOUSE-ELECTIONAL-FACTOR-HARDENING-001` completed with
   `PASS_WITH_CONDITION` and decision

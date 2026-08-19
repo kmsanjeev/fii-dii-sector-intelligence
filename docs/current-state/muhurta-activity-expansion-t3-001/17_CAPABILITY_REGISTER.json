@@ -1,0 +1,82 @@
+{
+  "activities": [
+    {
+      "access_state": "ENABLED",
+      "activity_id": "BUSINESS_OPENING_INAUGURATION",
+      "capability_state": "IMPLEMENTED_VALIDATED",
+      "runtime_state": "OPERATIONAL_WITH_CONDITIONS"
+    },
+    {
+      "access_state": "ENABLED",
+      "activity_id": "EDUCATION_COMMENCEMENT",
+      "capability_state": "IMPLEMENTED_VALIDATED",
+      "runtime_state": "OPERATIONAL_WITH_CONDITIONS"
+    },
+    {
+      "access_state": "ENABLED",
+      "activity_id": "VEHICLE_CONVEYANCE_COMMENCEMENT",
+      "capability_state": "IMPLEMENTED_VALIDATED",
+      "runtime_state": "OPERATIONAL_WITH_CONDITIONS"
+    },
+    {
+      "access_state": "ENABLED",
+      "activity_id": "CONSECRATION_INSTALLATION_COMMENCEMENT",
+      "capability_state": "IMPLEMENTED_VALIDATED",
+      "runtime_state": "OPERATIONAL_WITH_CONDITIONS"
+    },
+    {
+      "access_state": "INACTIVE_UNTIL_IMPLEMENTED_VALIDATED",
+      "activity_id": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "capability_state": "MACHINE_PARTIAL",
+      "reopen": "REOPEN_ON_NEW_ELECTIONAL_SOURCE_EVIDENCE",
+      "runtime_state": "INACTIVE"
+    },
+    {
+      "access_state": "INACTIVE_UNTIL_IMPLEMENTED_VALIDATED",
+      "activity_id": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "capability_state": "MACHINE_PARTIAL",
+      "reopen": "REOPEN_ON_NEW_ELECTIONAL_SOURCE_EVIDENCE",
+      "runtime_state": "INACTIVE"
+    },
+    {
+      "access_state": "INACTIVE_UNTIL_IMPLEMENTED_VALIDATED",
+      "activity_id": "MARRIAGE_CEREMONY_TIMING",
+      "capability_state": "SOURCE_CONTRACT_READY_MACHINE_PARTIAL",
+      "personalization_state": "DIAGNOSTIC_ONLY",
+      "runtime_state": "INACTIVE",
+      "window_search_state": "WINDOW_SEARCH_NOT_READY"
+    },
+    {
+      "access_state": "INACTIVE",
+      "activity_id": "TRAVEL_JOURNEY_COMMENCEMENT",
+      "capability_state": "SOURCE_HARDENING_REQUIRED",
+      "runtime_state": "INACTIVE"
+    },
+    {
+      "access_state": "INACTIVE",
+      "activity_id": "PUJA_JAPA_VRATA_COMMENCEMENT",
+      "capability_state": "SOURCE_HARDENING_REQUIRED",
+      "runtime_state": "INACTIVE"
+    },
+    {
+      "access_state": "INACTIVE",
+      "activity_id": "PROPERTY_PURCHASE_OR_REGISTRATION",
+      "capability_state": "SOURCE_HARDENING_REQUIRED",
+      "runtime_state": "INACTIVE"
+    },
+    {
+      "access_state": "INACTIVE",
+      "activity_id": "MEDICAL_PROCEDURE",
+      "capability_state": "SOURCE_HARDENING_REQUIRED",
+      "runtime_state": "INACTIVE"
+    },
+    {
+      "access_state": "DISABLED_FOR_PRODUCTION",
+      "activity_id": "PERSONAL_TARA_CHANDRA_BALA",
+      "capability_state": "DIAGNOSTIC_OPERATIONAL",
+      "runtime_state": "INACTIVE"
+    }
+  ],
+  "capability_access_separated": true,
+  "permanent_topic_restrictions": false
+}

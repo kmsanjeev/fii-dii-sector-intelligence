@@ -1,0 +1,175 @@
+{
+  "readiness_policy": "qualitative_only_no_numeric_score",
+  "remaining": [
+    {
+      "activity_id": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "blocking_gap": "Validated electional Lagna and planetary context are not exposed by the trusted production factor contract.",
+      "caution_class": "PROPERTY_CONSTRUCTION_PRACTICAL_AND_LEGAL_CONTEXT",
+      "machine_feasibility": "LAGNA_AND_GRAHA_DEPENDENCY",
+      "machine_state": "LAGNA_AND_GRAHA_DEPENDENCY",
+      "next_evidence_need": "trusted lagna/planetary election contract",
+      "p032_dependencies": [
+        "P032-CALC-NAKSHATRA-001",
+        "P032-CALC-TITHI-001",
+        "P032-CALC-KARANA-001"
+      ],
+      "personal_dependency": "Tara/Chandra diagnostic only",
+      "runtime_state": "INACTIVE",
+      "source_activity_class": "BHAVANA_ARAMBHA",
+      "source_readiness": "SOURCE_CONTRACT_READY_MACHINE_PARTIAL"
+    },
+    {
+      "activity_id": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "blocking_gap": "Validated electional Lagna, planetary context and explicit completion/occupancy context are unavailable.",
+      "caution_class": "PROPERTY_OCCUPANCY_PRACTICAL_AND_TRADITIONAL_CONTEXT",
+      "machine_feasibility": "LAGNA_GRAHA_AND_OCCUPANCY_DEPENDENCY",
+      "machine_state": "LAGNA_AND_GRAHA_DEPENDENCY",
+      "next_evidence_need": "trusted lagna/planetary and practical property contract",
+      "p032_dependencies": [
+        "P032-CALC-NAKSHATRA-001",
+        "P032-CALC-TITHI-001",
+        "P032-CALC-KARANA-001"
+      ],
+      "personal_dependency": "Tara/Chandra diagnostic only",
+      "runtime_state": "INACTIVE",
+      "source_activity_class": "BHAVANA_PRAVESHA",
+      "source_readiness": "SOURCE_CONTRACT_READY_MACHINE_PARTIAL"
+    },
+    {
+      "activity_id": "MARRIAGE_CEREMONY_TIMING",
+      "assertions": [
+        "VEDA-SWW-ASSERTION-BS-MARRIAGE-GODHULI-001",
+        "VEDA-SWW-ASSERTION-MC-MARRIAGE-BALA-LAGNA-001"
+      ],
+      "blocking_gap": "High-consequence marriage-specific election and tradition variants are not resolved.",
+      "blocking_gaps": [
+        "Validated electional Lagna and planetary predicates are not exposed by the trusted P032 contract.",
+        "The source-specific Godhuli/sunset context is not a governed P032 factor.",
+        "A high-consequence marriage activity requires explicit human-choice and practical-context boundaries."
+      ],
+      "caution_class": "HIGH_CONSEQUENCE_HUMAN_DECISION",
+      "consultation_class": "QUALIFIED_TRADITIONAL_AND_PRACTICAL_CONTEXT_AS_APPLICABLE",
+      "existing_factors": [
+        "P032-CALC-NAKSHATRA-001",
+        "P032-CALC-TITHI-001",
+        "P032-CALC-KARANA-001",
+        "P032-CALC-VARA-001",
+        "P032-CALC-YOGA-001"
+      ],
+      "hard_exclusions": [
+        "PARTNER_SELECTION_OR_COMPATIBILITY",
+        "SHOULD_MARRY_OR_SHOULD_NOT_MARRY_DECISION",
+        "MARRIAGE_OUTCOME_OR_DURATION_GUARANTEE",
+        "LEGAL_REGISTRATION_OR_DEADLINE_DECISION"
+      ],
+      "machine_feasibility": "PARTIAL_LAGNA_PLANETARY_AND_CONTEXT_DEPENDENCY",
+      "machine_state": "LAGNA_AND_GRAHA_DEPENDENCY",
+      "missing_dependencies": [
+        "VALIDATED_ELECTIONAL_LAGNA_FACTOR",
+        "VALIDATED_ELECTIONAL_PLANETARY_CONTEXT",
+        "GODHULI_SUNSET_CONTEXT_FACTOR"
+      ],
+      "next_evidence_need": "marriage-specific lagna/graha and tradition variant contract",
+      "nonblocking_gaps": [
+        "No complete VEDA activity-specific Tithi/Karana/Vara/Yoga value contract was established.",
+        "Local ritual, family and lineage practice is not universalized.",
+        "The source outcome language is historical and is not used as a modern outcome claim."
+      ],
+      "normalized_scope": "Timing of a human-chosen marriage ceremony or panigrahana event",
+      "p032_dependencies": [
+        "P032-CALC-NAKSHATRA-001",
+        "P032-CALC-TITHI-001",
+        "P032-CALC-KARANA-001"
+      ],
+      "passages": [
+        "VEDA-SWW-PASSAGE-BRIHAT-SAMHITA-103-13-001",
+        "VEDA-SWW-PASSAGE-MUHURTACINTAMANI-6-P249-001",
+        "VEDA-SWW-PASSAGE-MUHURTACINTAMANI-6-76-001"
+      ],
+      "personal_dependencies": [
+        "TARA_CHANDRA_DIAGNOSTIC_ONLY",
+        "BRIDE_GROOM_PERSONAL_FACTORS_SOURCE_PARTIAL"
+      ],
+      "personal_dependency": "Personal Bala remains diagnostic only",
+      "rule_ids": [
+        "MUH-T3-MARRIAGE-SCOPE-001",
+        "MUH-T3-MARRIAGE-GODHULI-001",
+        "MUH-T3-MARRIAGE-LAGNA-001",
+        "MUH-T3-MARRIAGE-GRAHA-001"
+      ],
+      "runtime_state": "INACTIVE",
+      "source_activity_class": "PANIGRAHANA",
+      "source_readiness": "SOURCE_STRONG_MACHINE_PARTIAL",
+      "variants": [
+        "GODHULI_OVERRIDE_SCOPE_VARIANT",
+        "MARRIAGE_LAGNA_AND_PLANETARY_PRIORITY_VARIANT",
+        "HISTORICAL_GENDERED_OUTCOME_LANGUAGE_LIMITATION"
+      ],
+      "works": [
+        "VEDA-SWW-WORK-BRIHAT-SAMHITA-001",
+        "VEDA-SWW-WORK-MUHURTACINTAMANI-001"
+      ]
+    },
+    {
+      "activity_id": "MEDICAL_PROCEDURE",
+      "blocking_gap": "Specialist source audit; necessary care always takes priority.",
+      "caution_class": "MEDICAL_SAFETY",
+      "machine_feasibility": "RESTRICTED_CONTEXT",
+      "machine_state": "RESTRICTED_CONTEXT",
+      "next_evidence_need": "specialist source audit; necessary care always takes priority",
+      "p032_dependencies": [],
+      "personal_dependency": "None",
+      "runtime_state": "INACTIVE",
+      "source_activity_class": "TREATMENT_OR_PROCEDURE",
+      "source_readiness": "SOURCE_ACCESS_LIMITED"
+    },
+    {
+      "activity_id": "PROPERTY_PURCHASE_OR_REGISTRATION",
+      "blocking_gap": "Purchase, title, registration, financing and legal scope must remain separate.",
+      "caution_class": "LEGAL_AND_FINANCIAL_CONTEXT",
+      "machine_feasibility": "PRACTICAL_AND_LEGAL_DEPENDENCIES",
+      "machine_state": "PRACTICAL_AND_LEGAL_DEPENDENCIES",
+      "next_evidence_need": "title/registration/finance separation",
+      "p032_dependencies": [],
+      "personal_dependency": "None",
+      "runtime_state": "INACTIVE",
+      "source_activity_class": "PROPERTY_TRANSACTION",
+      "source_readiness": "SOURCE_SCOPE_AMBIGUOUS"
+    },
+    {
+      "activity_id": "PUJA_JAPA_VRATA_COMMENCEMENT",
+      "blocking_gap": "Separate ceremony-specific primary passages and lineage variants are required.",
+      "caution_class": "TRADITION_SPECIFIC_CONSULTATION",
+      "machine_feasibility": "PARTIAL",
+      "machine_state": "PARTIAL",
+      "next_evidence_need": "separate ceremony-specific primary passages",
+      "p032_dependencies": [
+        "P032-CALC-NAKSHATRA-001",
+        "P032-CALC-TITHI-001",
+        "P032-CALC-KARANA-001"
+      ],
+      "personal_dependency": "Diagnostic only",
+      "runtime_state": "INACTIVE",
+      "source_activity_class": "RITUAL_SUBTYPE_REQUIRED",
+      "source_readiness": "SOURCE_VARIANT_COMPLEX"
+    },
+    {
+      "activity_id": "TRAVEL_JOURNEY_COMMENCEMENT",
+      "blocking_gap": "Journey subtype and direction semantics remain unresolved.",
+      "caution_class": "TRAVEL_SAFETY_AND_PRACTICAL_CONTEXT",
+      "machine_feasibility": "PARTIAL",
+      "machine_state": "PARTIAL",
+      "next_evidence_need": "journey subtype and direction/source contract",
+      "p032_dependencies": [
+        "P032-CALC-NAKSHATRA-001"
+      ],
+      "personal_dependency": "Diagnostic only",
+      "runtime_state": "INACTIVE",
+      "source_activity_class": "GAMANA_OR_JOURNEY",
+      "source_readiness": "SOURCE_SCOPE_AMBIGUOUS"
+    }
+  ],
+  "selected": [
+    "MARRIAGE_CEREMONY_TIMING"
+  ]
+}

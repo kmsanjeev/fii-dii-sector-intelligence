@@ -1,0 +1,149 @@
+{
+  "activities": [
+    {
+      "abstention": [
+        "MISSING_ELECTIONAL_FACTORS",
+        "MISSING_GODHULI_CONTEXT",
+        "ACTIVITY_SCOPE_MISMATCH",
+        "PERSONAL_FACTOR_REQUIRED_BUT_UNAVAILABLE",
+        "SOURCE_VARIANT_UNRESOLVED"
+      ],
+      "activity_id": "MARRIAGE_CEREMONY_TIMING",
+      "blocking_gaps": [
+        "Validated electional Lagna and planetary predicates are not exposed by the trusted P032 contract.",
+        "The source-specific Godhuli/sunset context is not a governed P032 factor.",
+        "A high-consequence marriage activity requires explicit human-choice and practical-context boundaries."
+      ],
+      "caution": "HIGH_CONSEQUENCE_HUMAN_DECISION",
+      "consultation": "QUALIFIED_TRADITIONAL_AND_PRACTICAL_CONTEXT_AS_APPLICABLE",
+      "contract_hash": "412B268562D4E1A1D9098FCE6622CBFC9B6F70739C69F16D923A73C12F5751B0",
+      "contract_id": "VEDA-MUH-T3-CONTRACT-MARRIAGE-CEREMONY-TIMING-V1",
+      "machine_hash": "544F45408CA337FB65B28BCC15F8671B0589F631D9677CB8BFBE9AE27E59F68D",
+      "machine_predicates": [
+        {
+          "evaluator_id": "MUH-T3-EVAL-MARRIAGE-NAKSHATRA-001",
+          "expected_class": "SOURCE_DEFINED_MARRIAGE_CLASS",
+          "factor_id": "P032-CALC-NAKSHATRA-001",
+          "missing_value_policy": "ABSTAIN_PREFERENCE_ONLY",
+          "operator": "OPTIONAL_CONTEXT_ONLY",
+          "recommendation_effect": "NONBLOCKING_PREFERENCE",
+          "source_assertion_ids": [
+            "VEDA-SWW-ASSERTION-MC-MARRIAGE-BALA-LAGNA-001"
+          ]
+        },
+        {
+          "evaluator_id": "MUH-T3-EVAL-MARRIAGE-TITHI-001",
+          "expected_class": "SOURCE_DEFINED_MARRIAGE_TITHI",
+          "factor_id": "P032-CALC-TITHI-001",
+          "missing_value_policy": "ABSTAIN_PREFERENCE_ONLY",
+          "operator": "OPTIONAL_CONTEXT_ONLY",
+          "recommendation_effect": "NONBLOCKING_PREFERENCE",
+          "source_assertion_ids": []
+        },
+        {
+          "evaluator_id": "MUH-T3-EVAL-MARRIAGE-KARANA-001",
+          "expected_class": "SOURCE_DEFINED_MARRIAGE_KARANA",
+          "factor_id": "P032-CALC-KARANA-001",
+          "missing_value_policy": "ABSTAIN_PREFERENCE_ONLY",
+          "operator": "OPTIONAL_CONTEXT_ONLY",
+          "recommendation_effect": "NONBLOCKING_PREFERENCE",
+          "source_assertion_ids": []
+        },
+        {
+          "evaluator_id": "MUH-T3-EVAL-GODHULI-CONTEXT-001",
+          "expected_value": true,
+          "factor_id": "GODHULI_SUNSET_CONTEXT_FACTOR",
+          "missing_value_policy": "ABSTAIN",
+          "operator": "BOOLEAN_TRUE",
+          "recommendation_effect": "EXPLICIT_CONTEXT_OVERRIDE_ONLY",
+          "source_assertion_ids": [
+            "VEDA-SWW-ASSERTION-BS-MARRIAGE-GODHULI-001"
+          ]
+        },
+        {
+          "evaluator_id": "MUH-T3-EVAL-MARRIAGE-LAGNA-001",
+          "expected_class": "SOURCE_DEFINED_MARRIAGE_LAGNA",
+          "factor_id": "VALIDATED_ELECTIONAL_LAGNA_FACTOR",
+          "missing_value_policy": "ABSTAIN",
+          "operator": "REQUIRED_BUT_UNAVAILABLE",
+          "recommendation_effect": "BLOCKING_REQUIREMENT",
+          "source_assertion_ids": [
+            "VEDA-SWW-ASSERTION-MC-MARRIAGE-BALA-LAGNA-001"
+          ]
+        },
+        {
+          "evaluator_id": "MUH-T3-EVAL-MARRIAGE-GRAHA-001",
+          "expected_class": "SOURCE_DEFINED_MARRIAGE_PLANETARY_CONTEXT",
+          "factor_id": "VALIDATED_ELECTIONAL_PLANETARY_CONTEXT",
+          "missing_value_policy": "ABSTAIN",
+          "operator": "REQUIRED_BUT_UNAVAILABLE",
+          "recommendation_effect": "BLOCKING_REQUIREMENT",
+          "source_assertion_ids": [
+            "VEDA-SWW-ASSERTION-BS-MARRIAGE-GODHULI-001",
+            "VEDA-SWW-ASSERTION-MC-MARRIAGE-BALA-LAGNA-001"
+          ]
+        }
+      ],
+      "nonblocking_gaps": [
+        "No complete VEDA activity-specific Tithi/Karana/Vara/Yoga value contract was established.",
+        "Local ritual, family and lineage practice is not universalized.",
+        "The source outcome language is historical and is not used as a modern outcome claim."
+      ],
+      "optional_factors": [
+        "P032-CALC-NAKSHATRA-001",
+        "P032-CALC-TITHI-001",
+        "P032-CALC-KARANA-001",
+        "P032-CALC-VARA-001",
+        "P032-CALC-YOGA-001"
+      ],
+      "precedence": [
+        "HARD_EXCLUSION",
+        "HARD_REQUIREMENT",
+        "EXPLICIT_CONTEXT_OVERRIDE",
+        "CONTEXT",
+        "PREFERENCE",
+        "ABSTAIN"
+      ],
+      "required_context": [
+        "HUMAN_CHOSEN_MARRIAGE_CEREMONY_SCOPE",
+        "GODHULI_SUNSET_CONTEXT_FACTOR"
+      ],
+      "required_factors": [
+        "VALIDATED_ELECTIONAL_LAGNA_FACTOR",
+        "VALIDATED_ELECTIONAL_PLANETARY_CONTEXT"
+      ],
+      "rule_ids": [
+        "MUH-T3-MARRIAGE-SCOPE-001",
+        "MUH-T3-MARRIAGE-GODHULI-001",
+        "MUH-T3-MARRIAGE-LAGNA-001",
+        "MUH-T3-MARRIAGE-GRAHA-001"
+      ],
+      "single_candidate_readiness": "NOT_READY",
+      "source_activity_class": "PANIGRAHANA",
+      "source_trace": {
+        "assertions": [
+          "VEDA-SWW-ASSERTION-BS-MARRIAGE-GODHULI-001",
+          "VEDA-SWW-ASSERTION-MC-MARRIAGE-BALA-LAGNA-001"
+        ],
+        "passages": [
+          "VEDA-SWW-PASSAGE-BRIHAT-SAMHITA-103-13-001",
+          "VEDA-SWW-PASSAGE-MUHURTACINTAMANI-6-P249-001",
+          "VEDA-SWW-PASSAGE-MUHURTACINTAMANI-6-76-001"
+        ],
+        "standard": "VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001",
+        "works": [
+          "VEDA-SWW-WORK-BRIHAT-SAMHITA-001",
+          "VEDA-SWW-WORK-MUHURTACINTAMANI-001"
+        ]
+      },
+      "window_search_readiness": "WINDOW_SEARCH_NOT_READY"
+    }
+  ],
+  "machine_ready_activities": [],
+  "production_activation": false,
+  "programme": "VEDA-MUHURTA-ACTIVITY-EXPANSION-T3-001",
+  "reason": "Marriage has a source contract and diagnostic predicate mapping, but validated electional Lagna/planetary context and a governed Godhuli factor are unavailable; no executable production handoff is generated.",
+  "selected_activity_ids": [
+    "MARRIAGE_CEREMONY_TIMING"
+  ]
+}

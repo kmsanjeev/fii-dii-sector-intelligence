@@ -1,5 +1,17 @@
 # VEDA Roadmap Entry Point
 
+Current synchronization (2026-08-19): `VEDA-MUHURTA-ACTIVITY-EXPANSION-T3-001`
+completed with `PASS_WITH_CONDITION` and decision
+`MUHURTA_T3_ACTIVITY_EXPANSION_SOURCE_CONTRACTS_MACHINE_PARTIAL`. The
+authoritative T1/T2 inventory was reused; the two House activities remain
+frozen `MACHINE_PARTIAL`. Marriage Ceremony Timing was selected as the one
+remaining evidence-rich activity and received a deterministic non-production
+source contract plus machine-partial predicate mapping. Travel, ritual,
+property and medical candidates were not forced into contracts. No T3 engine
+handoff, production activation, P032, Personal Bala, RAG, prediction, ML or
+Approved Core change occurred. Evidence:
+`docs/current-state/muhurta-activity-expansion-t3-001/`.
+
 Current synchronization (2026-08-19): `VEDA-MUHURTA-HOUSE-ELECTIONAL-FACTOR-HARDENING-001` completed with `PASS_WITH_CONDITION` and decision `MUHURTA_HOUSE_ELECTIONAL_FACTORS_MACHINE_PARTIAL`. The canonical existing Ascendant and planetary calculation paths were audited and reused diagnostically with conditions. Primary source semantics do not yet justify a complete electional Lagna/planetary predicate contract; Griha Pravesha construction-stage context is explicit but first-occupancy semantics remain a source variant. No production activity, P032, Personal Bala, RAG, prediction, ML or Approved Core change occurred. Evidence: `docs/current-state/muhurta-house-electional-factor-hardening-001/`.
 
 Current synchronization (2026-08-19): `VEDA-MUHURTA-ACTIVITY-EXPANSION-T2-001` completed with `PASS_WITH_CONDITION` and decision `MUHURTA_T2_ACTIVITY_EXPANSION_SOURCE_CONTRACTS_MACHINE_PARTIAL`. The T1 inventory was reconciled after removing the four already-operational activities; House Construction Commencement and House Entry/Griha Pravesha received deterministic, non-production source contracts and machine-partial mappings. Both remain blocked from engine activation by missing validated electional Lagna/planetary context (and explicit occupancy context for house entry). No runtime, P032, Personal Bala, RAG, prediction, ML or Approved Core change occurred. Evidence: `docs/current-state/muhurta-activity-expansion-t2-001/`.

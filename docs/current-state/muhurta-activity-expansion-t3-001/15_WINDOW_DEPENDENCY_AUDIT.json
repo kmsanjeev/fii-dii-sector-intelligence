@@ -1,0 +1,22 @@
+{
+  "activity_id": "MARRIAGE_CEREMONY_TIMING",
+  "rule_factor_transition_map": [
+    {
+      "factor_id": "GODHULI_SUNSET_CONTEXT_FACTOR",
+      "rule_id": "MUH-T3-MARRIAGE-GODHULI-001",
+      "transition_source": "NOT_AVAILABLE_OR_NOT_VALIDATED"
+    },
+    {
+      "factor_id": "VALIDATED_ELECTIONAL_LAGNA_FACTOR",
+      "rule_id": "MUH-T3-MARRIAGE-LAGNA-001",
+      "transition_source": "NOT_AVAILABLE_OR_NOT_VALIDATED"
+    },
+    {
+      "factor_id": "VALIDATED_ELECTIONAL_PLANETARY_CONTEXT",
+      "rule_id": "MUH-T3-MARRIAGE-GRAHA-001",
+      "transition_source": "NOT_AVAILABLE_OR_NOT_VALIDATED"
+    }
+  ],
+  "single_candidate": "NOT_READY",
+  "window_search": "WINDOW_SEARCH_NOT_READY"
+}

@@ -1,0 +1,93 @@
+{
+  "activity_id": "MARRIAGE_CEREMONY_TIMING",
+  "blocking_dependencies": [
+    "Validated electional Lagna and planetary predicates are not exposed by the trusted P032 contract.",
+    "The source-specific Godhuli/sunset context is not a governed P032 factor.",
+    "A high-consequence marriage activity requires explicit human-choice and practical-context boundaries."
+  ],
+  "contract_id": "VEDA-MUH-T3-CONTRACT-MARRIAGE-CEREMONY-TIMING-V1",
+  "machine_hash": "544F45408CA337FB65B28BCC15F8671B0589F631D9677CB8BFBE9AE27E59F68D",
+  "machine_state": "SOURCE_CONTRACT_READY_MACHINE_PARTIAL",
+  "no_numeric_score": true,
+  "no_runtime_registration": true,
+  "nonblocking_gaps": [
+    "No complete VEDA activity-specific Tithi/Karana/Vara/Yoga value contract was established.",
+    "Local ritual, family and lineage practice is not universalized.",
+    "The source outcome language is historical and is not used as a modern outcome claim."
+  ],
+  "predicates": [
+    {
+      "evaluator_id": "MUH-T3-EVAL-MARRIAGE-NAKSHATRA-001",
+      "expected_class": "SOURCE_DEFINED_MARRIAGE_CLASS",
+      "factor_id": "P032-CALC-NAKSHATRA-001",
+      "missing_value_policy": "ABSTAIN_PREFERENCE_ONLY",
+      "operator": "OPTIONAL_CONTEXT_ONLY",
+      "recommendation_effect": "NONBLOCKING_PREFERENCE",
+      "source_assertion_ids": [
+        "VEDA-SWW-ASSERTION-MC-MARRIAGE-BALA-LAGNA-001"
+      ]
+    },
+    {
+      "evaluator_id": "MUH-T3-EVAL-MARRIAGE-TITHI-001",
+      "expected_class": "SOURCE_DEFINED_MARRIAGE_TITHI",
+      "factor_id": "P032-CALC-TITHI-001",
+      "missing_value_policy": "ABSTAIN_PREFERENCE_ONLY",
+      "operator": "OPTIONAL_CONTEXT_ONLY",
+      "recommendation_effect": "NONBLOCKING_PREFERENCE",
+      "source_assertion_ids": []
+    },
+    {
+      "evaluator_id": "MUH-T3-EVAL-MARRIAGE-KARANA-001",
+      "expected_class": "SOURCE_DEFINED_MARRIAGE_KARANA",
+      "factor_id": "P032-CALC-KARANA-001",
+      "missing_value_policy": "ABSTAIN_PREFERENCE_ONLY",
+      "operator": "OPTIONAL_CONTEXT_ONLY",
+      "recommendation_effect": "NONBLOCKING_PREFERENCE",
+      "source_assertion_ids": []
+    },
+    {
+      "evaluator_id": "MUH-T3-EVAL-GODHULI-CONTEXT-001",
+      "expected_value": true,
+      "factor_id": "GODHULI_SUNSET_CONTEXT_FACTOR",
+      "missing_value_policy": "ABSTAIN",
+      "operator": "BOOLEAN_TRUE",
+      "recommendation_effect": "EXPLICIT_CONTEXT_OVERRIDE_ONLY",
+      "source_assertion_ids": [
+        "VEDA-SWW-ASSERTION-BS-MARRIAGE-GODHULI-001"
+      ]
+    },
+    {
+      "evaluator_id": "MUH-T3-EVAL-MARRIAGE-LAGNA-001",
+      "expected_class": "SOURCE_DEFINED_MARRIAGE_LAGNA",
+      "factor_id": "VALIDATED_ELECTIONAL_LAGNA_FACTOR",
+      "missing_value_policy": "ABSTAIN",
+      "operator": "REQUIRED_BUT_UNAVAILABLE",
+      "recommendation_effect": "BLOCKING_REQUIREMENT",
+      "source_assertion_ids": [
+        "VEDA-SWW-ASSERTION-MC-MARRIAGE-BALA-LAGNA-001"
+      ]
+    },
+    {
+      "evaluator_id": "MUH-T3-EVAL-MARRIAGE-GRAHA-001",
+      "expected_class": "SOURCE_DEFINED_MARRIAGE_PLANETARY_CONTEXT",
+      "factor_id": "VALIDATED_ELECTIONAL_PLANETARY_CONTEXT",
+      "missing_value_policy": "ABSTAIN",
+      "operator": "REQUIRED_BUT_UNAVAILABLE",
+      "recommendation_effect": "BLOCKING_REQUIREMENT",
+      "source_assertion_ids": [
+        "VEDA-SWW-ASSERTION-BS-MARRIAGE-GODHULI-001",
+        "VEDA-SWW-ASSERTION-MC-MARRIAGE-BALA-LAGNA-001"
+      ]
+    }
+  ],
+  "production_activation": false,
+  "source_assertion_ids": [
+    "VEDA-SWW-ASSERTION-BS-MARRIAGE-GODHULI-001",
+    "VEDA-SWW-ASSERTION-MC-MARRIAGE-BALA-LAGNA-001"
+  ],
+  "variant_ids": [
+    "GODHULI_OVERRIDE_SCOPE_VARIANT",
+    "MARRIAGE_LAGNA_AND_PLANETARY_PRIORITY_VARIANT",
+    "HISTORICAL_GENDERED_OUTCOME_LANGUAGE_LIMITATION"
+  ]
+}

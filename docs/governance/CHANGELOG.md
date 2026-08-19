@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-ACTIVITY-EXPANSION-T3-001
+
+Completed the bounded Muhurta activity-expansion T3 source-governance
+activity with `PASS_WITH_CONDITION` and decision
+`MUHURTA_T3_ACTIVITY_EXPANSION_SOURCE_CONTRACTS_MACHINE_PARTIAL`. The
+authoritative T1/T2 inventory was reused and the House Construction/Griha
+Pravesha contracts were hash-verified and frozen. Marriage Ceremony Timing
+was selected as the single evidence-rich remaining candidate and received a
+deterministic non-production source contract and machine-partial mapping from
+Bṛhat Saṃhitā marriage context and Muhūrtacintāmaṇi witnesses. Travel,
+ritual, property and medical candidates were not broadened from incomplete
+evidence. No engine handoff, runtime activation, P032, Personal Bala, RAG,
+prediction, ML or Approved Core change occurred. Evidence:
+`docs/current-state/muhurta-activity-expansion-t3-001/`.
+
 ## 2026-08-19 | VEDA-MUHURTA-HOUSE-ELECTIONAL-FACTOR-HARDENING-001
 
 Completed the bounded electional-factor hardening activity with
