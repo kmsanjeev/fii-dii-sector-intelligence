@@ -1,0 +1,54 @@
+{
+  "programme": "VEDA-MUHURTA-TITHI-KARANA-SOURCE-HARDENING-RX1-001",
+  "snapshot_date": "2026-08-19",
+  "source_lineage": "Repeated online education tables are not independent evidence and are not merged or voted.",
+  "source_priority": "classical primary witness first; secondary sources discovery-only",
+  "sources": [
+    {
+      "accepted_claim": "Tithi class names and a general correspondence principle",
+      "accessed": "2026-08-19",
+      "authority": "CLASSICAL_PRIMARY",
+      "locator": "Bṛhat Saṃhitā 98.2-3 in Tripathi/SanskritDocuments numbering; 99.2-3 in Bhat/Siva numbering",
+      "not_established": [
+        "business-opening Tithi value set",
+        "education-commencement Tithi value set"
+      ],
+      "source_id": "VEDA-SWW-PASSAGE-BS-TITHI-CLASS-001",
+      "url": "https://sanskritdocuments.org/doc_z_misc_sociology_astrology/bRRihatsaMhitA.html"
+    },
+    {
+      "accepted_claim": "Vanija is merchant/trade-scoped; Gara is houses/shelters/establishment-scoped; Vishti is a caution",
+      "accessed": "2026-08-19",
+      "authority": "CLASSICAL_PRIMARY",
+      "locator": "Bṛhat Saṃhitā 99.1-5 in Tripathi/SanskritDocuments numbering; 100.1-5 in Bhat/Siva numbering",
+      "not_established": [
+        "education-specific learning/study Karana set"
+      ],
+      "source_id": "VEDA-SWW-PASSAGE-BS-KARANA-ACTIONS-001",
+      "url": "https://www.siva.sh/brihat-samhita/100"
+    },
+    {
+      "accepted_claim": "Modern table claims a Vidyarambha Tithi list",
+      "accessed": "2026-08-19",
+      "authority": "MODERN_SECONDARY_DISCOVERY_ONLY",
+      "decision": "DOWNGRADED",
+      "reason": "No passage-level primary Jyotisha provenance was established in the accessed page; not admitted to a governed predicate.",
+      "source_id": "MODERN-VIDYARAMBHA-TABLES-DISCOVERY-001",
+      "url": "https://www.drikpanchang.com/shubh-dates/sanskara/education/vidyarambha/vidyarambha-dates-with-muhurat.html"
+    },
+    {
+      "accepted_claim": "Modern education Muhurta page combines Tithi, Vara, Yoga and Karana claims",
+      "accessed": "2026-08-19",
+      "authority": "MODERN_SECONDARY_DISCOVERY_ONLY",
+      "decision": "REJECTED_FOR_PROMOTION",
+      "reason": "Method lineage and primary passage provenance are not supplied; cannot close a hard source-semantic blocker.",
+      "source_id": "MODERN-EDUCATION-MUHURTA-TABLES-DISCOVERY-002",
+      "url": "https://dekhopanchang.com/ta/learn/modules/17-4"
+    }
+  ],
+  "translation_uncertainty": [
+    "Tithi class/action correspondence is not equivalent to an activity-specific modern opening rule.",
+    "Business opening and education commencement are narrower modern scopes than the historical action categories.",
+    "Chapter numbering differs between digital witnesses; locator difference has no established semantic impact."
+  ]
+}

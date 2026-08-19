@@ -1,6 +1,8 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.73.1 | 2026-08-19
+# Version 4.73.2 | 2026-08-19
+
+- `VEDA-MUHURTA-TITHI-KARANA-SOURCE-HARDENING-RX1-001` completed with `PASS_WITH_CONDITION` and decision `MUHURTA_BLOCKING_SEMANTICS_PARTIAL`. The inspected classical Bṛhat Saṃhitā witness verifies Tithi classes, but not activity-specific Business-opening or Education-commencement Tithi predicates; it verifies narrow Business Karana action classes, but not an Education-specific learning Karana set. Business Vara/Yoga is explicitly `NON_BLOCKING_UNRESOLVED` because the existing rule abstains and carries no hard requirement. Frozen V1/V2/V3 hashes remain unchanged; no V4 contract or engine handoff was created. P032 calculation, recommendation runtime, RAG, Approved Core, prediction and ML remain unchanged. Evidence: `docs/current-state/muhurta-tithi-karana-source-hardening-rx1-001/`.
 
 - `VEDA-MUHURTA-RULE-EVALUATOR-CONTRACT-REMEDIATION-001` completed with `MUHURTA_MACHINE_CONTRACTS_PARTIAL`. Versioned V2 contracts bind only trusted P032 fact availability and the Education formal-commencement scope guard; six classical action-family rules remain source-partial because their governed records lack explicit machine value sets. V1 history is preserved, no recommendation runtime was activated, and P032 mathematics, RAG, Approved Core, prediction and ML remain unchanged. Capability state is separated from future configuration access state. Evidence is in `docs/current-state/muhurta-rule-evaluator-contract-remediation-001/`.
 

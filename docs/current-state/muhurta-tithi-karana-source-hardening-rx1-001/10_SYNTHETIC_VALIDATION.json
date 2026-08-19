@@ -1,0 +1,41 @@
+{
+  "all_expected_states_explicit": true,
+  "cases": [
+    {
+      "case_id": "TITHI_CLASS_DERIVATION_ONLY",
+      "expected": "DERIVED_ONLY_NO_ACTIVITY_PREDICATE",
+      "facts": {
+        "KARANA": 7,
+        "KARANA_NAME": "VANIJA",
+        "NAKSHATRA": 0,
+        "PANCHANGA_FACTS_AVAILABLE": true,
+        "TITHI": 4,
+        "TITHI_CLASS": "PURNA"
+      }
+    },
+    {
+      "case_id": "BUSINESS_VARA_YOGA_ABSTAIN",
+      "expected": "ABSTAIN_NON_BLOCKING",
+      "facts": {
+        "VARA": null,
+        "YOGA": null
+      }
+    },
+    {
+      "case_id": "EDUCATION_KARANA_MISSING_MAPPING",
+      "expected": "NOT_EVALUABLE_NO_EDUCATION_PREDICATE",
+      "facts": {
+        "KARANA": 7,
+        "KARANA_NAME": "VANIJA",
+        "NAKSHATRA": 0,
+        "PANCHANGA_FACTS_AVAILABLE": true,
+        "TITHI": 4,
+        "TITHI_CLASS": "PURNA"
+      }
+    }
+  ],
+  "date_search": false,
+  "numeric_scoring": false,
+  "production_runtime_invoked": false,
+  "recommendation_runtime_invoked": false
+}

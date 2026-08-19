@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-TITHI-KARANA-SOURCE-HARDENING-RX1-001
+
+Completed the bounded Tithi/Karana source-semantics closure audit with
+`PASS_WITH_CONDITION` and decision `MUHURTA_BLOCKING_SEMANTICS_PARTIAL`.
+The existing classical Bṛhat Saṃhitā witness verifies named Tithi classes and
+narrow Business Karana action classes, but does not provide a passage-level
+Business-opening Tithi set, Education-commencement Tithi set, or
+Education-specific learning Karana set. Business Vara/Yoga is classified
+`NON_BLOCKING_UNRESOLVED` because its existing contract effect is abstention,
+not a mandatory or exclusion rule. Modern education tables were retained as
+discovery-only and not promoted. Frozen V1/V2/V3 contracts remain unchanged;
+no V4 contract, engine handoff, recommendation runtime, P032 mathematics,
+RAG, prediction, ML or Approved Core state changed. Evidence is in
+`docs/current-state/muhurta-tithi-karana-source-hardening-rx1-001/`.
+
 ## 2026-08-19 | VEDA-MUHURTA-RULE-EVALUATOR-CONTRACT-REMEDIATION-001
 
 Completed the source-bound evaluator-contract remediation with decision

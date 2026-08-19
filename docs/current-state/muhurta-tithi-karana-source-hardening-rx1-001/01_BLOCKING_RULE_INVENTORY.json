@@ -1,0 +1,29 @@
+{
+  "business": {
+    "current_contract": "VEDA-MUH-CONTRACT-BUSINESS-OPENING-V3",
+    "non_blocking_unresolved": [
+      "MUH-BIZ-VARA-YOGA-GAP-001"
+    ],
+    "principal_blockers": [
+      "MUH-BIZ-TITHI-KARANA-001"
+    ],
+    "resolved_source_rules": [
+      "MUH-BIZ-NAK-001",
+      "MUH-BIZ-KARANA-TRADE-001",
+      "MUH-BIZ-KARANA-ESTABLISHMENT-001"
+    ]
+  },
+  "classification_policy": "A missing positive predicate is not converted into a permissive rule; only an explicitly ABSTAIN/non-mandatory gap is non-blocking.",
+  "education": {
+    "current_contract": "VEDA-MUH-CONTRACT-EDUCATION-COMMENCEMENT-V3",
+    "non_blocking_unresolved": [
+      "MUH-EDU-VARA-YOGA-GAP-001"
+    ],
+    "principal_blockers": [
+      "MUH-EDU-TITHI-KARANA-001"
+    ],
+    "resolved_source_rules": [
+      "MUH-EDU-NAK-001"
+    ]
+  }
+}
