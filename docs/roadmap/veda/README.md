@@ -10,6 +10,17 @@ P032 freeze, PRED-M4 stop, ML lock, Hindi review, COMM/GROUP review and EMP-001
 longitudinal status are preserved. Evidence:
 `docs/current-state/autonomous-work-rebaseline-001/`.
 
+Current synchronization (2026-08-19):
+`VEDA-ADB-ACCESS-GATE-REFRESH-2026-001` completed with `PASS_WITH_CONDITION`
+and decision `ADB_FORMAL_EXPORT_SUSPENDED_2026_PACKAGE_PRESERVED`. The official
+Astrodienst policy was refreshed: the full export contract and ZIP are removed
+for 2026, the current C sample remains available, and the research-tool route
+does not establish bulk/export rights. The preserved access package remains
+`PACKAGE_READY_FOR_REOPEN_NEEDS_POLICY_REFRESH` and `UNSENT`; POSITION_END R2
+remains provider-gated. No request, acquisition, scraping, provider call, raw
+ADB, RAG, ML, prediction or production work occurred. Evidence:
+`docs/current-state/adb-access-gate-refresh-2026-001/`.
+
 Current synchronization (2026-08-19): `VEDA-MUHURTA-REMAINING-CAPABILITY-REBASELINE-001`
 completed with `PASS_WITH_CONDITION` and decision
 `MUHURTA_REBASELINE_ACTIVITY_EXPANSION_FREEZE_NEW_EVIDENCE_REQUIRED`.

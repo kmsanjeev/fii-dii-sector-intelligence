@@ -1,6 +1,18 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.80.0 | 2026-08-19
+# Version 4.81.0 | 2026-08-19
+
+- `VEDA-ADB-ACCESS-GATE-REFRESH-2026-001` completed with
+  `PASS_WITH_CONDITION` and decision
+  `ADB_FORMAL_EXPORT_SUSPENDED_2026_PACKAGE_PRESERVED`. The current official
+  Astrodienst policy was rechecked: the 2026 full-export contract and ZIP are
+  removed, the C sample remains available, and research-tool access is not an
+  established bulk/export route. The preserved formal-access package remains
+  policy-refresh-required and `UNSENT`; POSITION_END remains
+  `R2_FRAME_BLOCKED_FORMAL_ACCESS_REQUIRED`. No acquisition, submission,
+  scraping, provider call, raw ADB, RAG, ML, prediction, production or
+  Approved Core change occurred. Evidence:
+  `docs/current-state/adb-access-gate-refresh-2026-001/`.
 
 - `VEDA-AUTONOMOUS-WORK-REBASELINE-001` completed with
   `PASS_WITH_CONDITION` and decision

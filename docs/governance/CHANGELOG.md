@@ -4829,3 +4829,18 @@ non-production evidence contracts are deterministic. No recommendation
 runtime, P032 calculation, API/UI, RAG, prediction, ML or Approved Core
 change occurred. Evidence is in
 `docs/current-state/muhurta-mvp-source-semantics-hardening-001/`.
+# 2026-08-19 — VEDA-ADB-ACCESS-GATE-REFRESH-2026-001
+
+- Rechecked the current official Astro-Databank/Astrodienst export policy.
+- Recorded the 2026 suspension of the full export contract and ZIP, preserved
+  the current C-sample route, and kept research-tool access distinct from
+  bulk/export access.
+- Preserved the Founder-ready package as
+  `PACKAGE_READY_FOR_REOPEN_NEEDS_POLICY_REFRESH` with submission state
+  `UNSENT`; no request, purchase, login, download, scraping or provider call
+  occurred.
+- Synchronized the POSITION_END state as
+  `R2_FRAME_BLOCKED_FORMAL_ACCESS_REQUIRED` without changing its design or
+  threshold. No sample loop, R2, RAG, ML, prediction, production or Approved
+  Core change occurred.
+- Evidence: `docs/current-state/adb-access-gate-refresh-2026-001/`.
