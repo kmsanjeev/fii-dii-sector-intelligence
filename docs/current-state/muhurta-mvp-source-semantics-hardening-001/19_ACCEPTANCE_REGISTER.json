@@ -1,0 +1,159 @@
+{
+  "blocked": 0,
+  "criteria": [
+    {
+      "criterion": "Starting commit verified",
+      "id": "AC01",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Existing V1/V2 contracts preserved with exact hashes",
+      "id": "AC02",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Existing source-witness standard reused",
+      "id": "AC03",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Primary Bṛhat Saṃhitā witness inspected",
+      "id": "AC04",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No fabricated quotation or Sanskrit",
+      "id": "AC05",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Chapter-numbering variant preserved",
+      "id": "AC06",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Nakshatra value set source-bound",
+      "id": "AC07",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Tithi value classes separated from activity mapping",
+      "id": "AC08",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "Business Karana trade and establishment values source-bound",
+      "id": "AC09",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "Education Karana mapping not overclaimed",
+      "id": "AC10",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Vara/Yoga gap remains explicit",
+      "id": "AC11",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Value derivations recorded and do not change P032 math",
+      "id": "AC12",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Machine predicates use declarative evaluator only",
+      "id": "AC13",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Missing values abstain",
+      "id": "AC14",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Business V3 deterministic and non-production",
+      "id": "AC15",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Education V3 deterministic and non-production",
+      "id": "AC16",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Business remains source-semantics partial",
+      "id": "AC17",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "Education remains source-semantics partial",
+      "id": "AC18",
+      "status": "PASS_WITH_CONDITION"
+    },
+    {
+      "criterion": "No ENGINE_HANDOFF_V3 because no activity is fully ready",
+      "id": "AC19",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No recommendation runtime activation",
+      "id": "AC20",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No scoring, ranking, Bala, personal factors or recommendation mathematics",
+      "id": "AC21",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No religious, marriage, medical, legal or financial expansion",
+      "id": "AC22",
+      "status": "PASS"
+    },
+    {
+      "criterion": "RAG unchanged",
+      "id": "AC23",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Approved Core unchanged at 17",
+      "id": "AC24",
+      "status": "PASS"
+    },
+    {
+      "criterion": "EMP-001 and human-validation states preserved",
+      "id": "AC25",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Focused and inherited source-witness tests pass",
+      "id": "AC26",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Deterministic two-run rebuild stable",
+      "id": "AC27",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No new provider calls",
+      "id": "AC28",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No raw source text redistributed",
+      "id": "AC29",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Selective staging required",
+      "id": "AC30",
+      "status": "PASS"
+    }
+  ],
+  "fail": 0,
+  "pass": 25,
+  "pass_with_condition": 5,
+  "programme": "VEDA-MUHURTA-MVP-SOURCE-SEMANTICS-HARDENING-001"
+}

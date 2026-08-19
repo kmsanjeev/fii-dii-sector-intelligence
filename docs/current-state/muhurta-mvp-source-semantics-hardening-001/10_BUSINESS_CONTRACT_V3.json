@@ -1,0 +1,301 @@
+{
+  "abstention_policy": [
+    "INSUFFICIENT_RULE_COVERAGE",
+    "SOURCE_CONFLICT_UNRESOLVED",
+    "REQUIRED_FACTOR_UNAVAILABLE",
+    "PERSONAL_FACTOR_REQUIRED",
+    "CALCULATION_DEPENDENCY_UNAVAILABLE",
+    "ACTIVITY_SCOPE_MISMATCH"
+  ],
+  "activity_id": "BUSINESS_OPENING_INAUGURATION",
+  "activity_scope": {
+    "excluded": [
+      "investment selection",
+      "stock trading",
+      "loans",
+      "major financing",
+      "incorporation deadlines",
+      "tax filings"
+    ],
+    "included": [
+      "opening or inaugurating a commercial establishment"
+    ],
+    "mode": "GENERAL_MUHURTA_ONLY"
+  },
+  "arbitrary_numeric_score": false,
+  "blocking_rule_ids": [
+    "MUH-BIZ-TITHI-KARANA-001"
+  ],
+  "caution_class": "MODERATE_CONSEQUENCE_BUSINESS_CONTEXT",
+  "conflict_policy": {
+    "policy_id": "MUH-POLICY-CONFLICT-CATEGORICAL-V1",
+    "resolution": "Do not average competing rules; isolate variants and abstain on unresolved material conflict.",
+    "unresolved_conflict_state": "SOURCE_CONFLICT_UNRESOLVED"
+  },
+  "consultation_class": "BUSINESS_PROFESSIONAL_CONTEXT_REQUIRED",
+  "contract_hash": "941E9ECB9960652C",
+  "contract_hash_full": "B2BFCC4CDCF20653E403EEEDD5CD2A6532009CFC44578995A9081D7DDB538075",
+  "contract_id": "VEDA-MUH-CONTRACT-BUSINESS-OPENING-V3",
+  "evaluator_version": "MUHURTA_PREDICATE_EVALUATOR_V1",
+  "hard_exclusions": [],
+  "hard_requirements": [],
+  "hidden_weights": false,
+  "machine_rule_ids": [
+    "MUH-BIZ-NAK-001",
+    "MUH-BIZ-KARANA-TRADE-001",
+    "MUH-BIZ-KARANA-ESTABLISHMENT-001",
+    "MUH-BIZ-PANCHANGA-INPUT-001"
+  ],
+  "machine_rule_summary": {
+    "conflict_blocked": 0,
+    "factor_missing": 0,
+    "machine_ready": 4,
+    "non_executable": 2,
+    "personal_deferred": 0,
+    "rules_total": 6,
+    "source_partial": 2,
+    "source_semantics_partial": 1
+  },
+  "personal_factors": [],
+  "precedence_policy": [
+    "HARD_EXCLUSION",
+    "HARD_REQUIREMENT",
+    "STRONG_NEGATIVE",
+    "CONTEXT_DEPENDENT",
+    "PREFERENCE_NEGATIVE",
+    "PREFERENCE_POSITIVE",
+    "STRONG_POSITIVE",
+    "NEUTRAL"
+  ],
+  "preference_negatives": [],
+  "preference_positives": [
+    "MUH-BIZ-NAK-001"
+  ],
+  "production_bound": false,
+  "recommendation_engine_state": "PARTIAL_MACHINE_CONTRACT",
+  "rule_coverage": {
+    "coverage_state": "SUFFICIENT_FOR_NARROW_CONDITIONAL_GENERAL_CONTRACT",
+    "dimensions": [
+      "VARA",
+      "TITHI",
+      "NAKSHATRA",
+      "YOGA",
+      "KARANA",
+      "TRANSITIONS",
+      "PERSONAL_FACTORS"
+    ],
+    "resolved": [
+      "P032_FACTS",
+      "NAKSHATRA_LAGHU_DIRECT_VALUES",
+      "KARANA_BUSINESS_DIRECT_VALUES"
+    ],
+    "unresolved": [
+      "TITHI_ACTIVITY_VALUE_SET",
+      "ACTIVITY_SPECIFIC_VARA",
+      "ACTIVITY_SPECIFIC_YOGA",
+      "PERSONAL_BALA"
+    ],
+    "variant_dependent": []
+  },
+  "rule_ids": [
+    "MUH-BIZ-NAK-001",
+    "MUH-BIZ-KARANA-TRADE-001",
+    "MUH-BIZ-KARANA-ESTABLISHMENT-001",
+    "MUH-BIZ-TITHI-KARANA-001",
+    "MUH-BIZ-PANCHANGA-INPUT-001",
+    "MUH-BIZ-VARA-YOGA-GAP-001"
+  ],
+  "rules": [
+    {
+      "activity_scope": "BUSINESS_OPENING_INAUGURATION",
+      "condition": "P032 Nakshatra index is one of the directly named light-class values Ashwini, Pushya or Hasta.",
+      "condition_mode": "SINGLE",
+      "evaluator_id": "ENUM_MEMBERSHIP",
+      "evaluator_state": "EXECUTABLE",
+      "executability_state": "MACHINE_READY",
+      "expected_set": [
+        0,
+        7,
+        12
+      ],
+      "explanation_label": "Source-scoped light Nakshatra compatibility; not a success claim.",
+      "factor_id": "NAKSHATRA",
+      "factor_source": "P032_FACTOR_ADAPTER_V2_SOURCE_SEMANTIC_DERIVATION",
+      "factor_type": "NAKSHATRA",
+      "missing_value_policy": "ABSTAIN",
+      "operator": "IN",
+      "precedence_class": "PREFERENCE_POSITIVE",
+      "recommendation_effect": "PREFERENCE_POSITIVE",
+      "rule_class": "PREFERENCE_POSITIVE",
+      "rule_id": "MUH-BIZ-NAK-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-BS-NAK-LAGHU-VALUES-001"
+      ],
+      "source_layer": "CLASSICAL_PRIMARY",
+      "value_type": "ENUM",
+      "variant_id": "BS_LAGHU_VALUES_V1"
+    },
+    {
+      "activity_scope": "BUSINESS_OPENING_INAUGURATION",
+      "condition": "Derived Karaṇa name is in the source-scoped trade/merchant action set.",
+      "condition_mode": "SINGLE",
+      "evaluator_id": "ENUM_MEMBERSHIP",
+      "evaluator_state": "EXECUTABLE",
+      "executability_state": "MACHINE_READY",
+      "expected_set": [
+        "VANIJA"
+      ],
+      "explanation_label": "Direct classical action class; does not imply universal auspiciousness.",
+      "factor_id": "KARANA_NAME",
+      "factor_source": "P032_FACTOR_ADAPTER_V2_SOURCE_SEMANTIC_DERIVATION",
+      "factor_type": "KARANA",
+      "missing_value_policy": "ABSTAIN",
+      "operator": "IN",
+      "precedence_class": "CONTEXT_DEPENDENT",
+      "recommendation_effect": "CONTEXT_DEPENDENT",
+      "rule_class": "CONTEXT_DEPENDENT",
+      "rule_id": "MUH-BIZ-KARANA-TRADE-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-BS-KARANA-ACTIONS-001"
+      ],
+      "source_layer": "CLASSICAL_PRIMARY",
+      "value_type": "ENUM",
+      "variant_id": "BS_KARANA_BUSINESS_VALUES_V1"
+    },
+    {
+      "activity_scope": "BUSINESS_OPENING_INAUGURATION",
+      "condition": "Derived Karaṇa name is in the source-scoped house/establishment action set.",
+      "condition_mode": "SINGLE",
+      "evaluator_id": "ENUM_MEMBERSHIP",
+      "evaluator_state": "EXECUTABLE",
+      "executability_state": "MACHINE_READY",
+      "expected_set": [
+        "GARA"
+      ],
+      "explanation_label": "Direct classical action class; does not imply universal auspiciousness.",
+      "factor_id": "KARANA_NAME",
+      "factor_source": "P032_FACTOR_ADAPTER_V2_SOURCE_SEMANTIC_DERIVATION",
+      "factor_type": "KARANA",
+      "missing_value_policy": "ABSTAIN",
+      "operator": "IN",
+      "precedence_class": "CONTEXT_DEPENDENT",
+      "recommendation_effect": "CONTEXT_DEPENDENT",
+      "rule_class": "CONTEXT_DEPENDENT",
+      "rule_id": "MUH-BIZ-KARANA-ESTABLISHMENT-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-BS-KARANA-ACTIONS-001"
+      ],
+      "source_layer": "CLASSICAL_PRIMARY",
+      "value_type": "ENUM",
+      "variant_id": "BS_KARANA_BUSINESS_VALUES_V1"
+    },
+    {
+      "activity_scope": "BUSINESS_OPENING_INAUGURATION",
+      "condition": "Tithi/Karana action correspondence applies to the stated commerce action.",
+      "evaluator_state": "NON_EXECUTABLE",
+      "exceptions": [
+        "Vishti is not treated as universal denial."
+      ],
+      "executability_state": "SOURCE_SEMANTICS_PARTIAL",
+      "explanation_label": "Event-specific correspondence remains conditional.",
+      "factor_state": "SOURCE_SEMANTICS_PARTIAL",
+      "factor_type": "TITHI_KARANA",
+      "hard_exclusion": false,
+      "hard_requirement": false,
+      "personal_required": false,
+      "precedence_class": "CONTEXT_DEPENDENT",
+      "production_activation": false,
+      "recommendation_effect": "CONTEXT_DEPENDENT",
+      "rule_class": "CONTEXT_DEPENDENT",
+      "rule_id": "MUH-BIZ-TITHI-KARANA-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-BS-TITHI-KARANA-ACTIONS-001"
+      ],
+      "source_layer": "CLASSICAL_PRIMARY",
+      "source_partial_reason": "TITHI_ACTIVITY_VALUE_SET_NOT_STATED",
+      "validation_state": "CONTRACT_FROZEN",
+      "variant_id": "BS_TITHI_KARANA_CORRESPONDENCE_V1"
+    },
+    {
+      "activity_scope": "BUSINESS_OPENING_INAUGURATION",
+      "condition": "P032 provides the requested local-date facts and transition boundaries.",
+      "condition_mode": "SINGLE",
+      "evaluator_id": "BOOLEAN_REQUIRED",
+      "exceptions": [],
+      "executability_state": "MACHINE_READY",
+      "expected_value": true,
+      "explanation_label": "Input dependency only; it does not select a Muhurta.",
+      "factor_id": "PANCHANGA_FACTS_AVAILABLE",
+      "factor_source": "P032_FACTOR_ADAPTER_V1",
+      "factor_type": "PANCHANGA_FACTS",
+      "hard_exclusion": false,
+      "hard_requirement": false,
+      "missing_value_policy": "FAIL_CLOSED",
+      "operator": "BOOLEAN_TRUE",
+      "personal_required": false,
+      "precedence_class": "NEUTRAL",
+      "production_activation": false,
+      "recommendation_effect": "NEUTRAL",
+      "rule_class": "NEUTRAL",
+      "rule_id": "MUH-BIZ-PANCHANGA-INPUT-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-P032-FACTS-001"
+      ],
+      "source_layer": "IMPLEMENTATION",
+      "validation_state": "INTERNALLY_VALIDATED",
+      "value_type": "BOOLEAN",
+      "variant_id": "P032_FACT_LAYER_V1"
+    },
+    {
+      "activity_scope": "BUSINESS_OPENING_INAUGURATION",
+      "condition": "No activity-specific governed Vara or Yoga preference is established.",
+      "evaluator_state": "NON_EXECUTABLE",
+      "exceptions": [],
+      "executability_state": "SOURCE_PARTIAL",
+      "explanation_label": "Facts exist, but no source-bound business rule is claimed.",
+      "factor_state": "ACTIVITY_SPECIFIC_SOURCE_RULE_UNRESOLVED",
+      "factor_type": "VARA_YOGA",
+      "hard_exclusion": false,
+      "hard_requirement": false,
+      "personal_required": false,
+      "precedence_class": "UNRESOLVED",
+      "production_activation": false,
+      "recommendation_effect": "ABSTAIN",
+      "rule_class": "UNRESOLVED",
+      "rule_id": "MUH-BIZ-VARA-YOGA-GAP-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-P032-FACTS-001"
+      ],
+      "source_layer": "IMPLEMENTATION",
+      "source_partial_reason": "ACTIVITY_SPECIFIC_SOURCE_RULE_UNRESOLVED",
+      "validation_state": "SOURCE_LIMITED",
+      "variant_id": "BS_SCOPED_ACTION_FAMILY_V1"
+    }
+  ],
+  "source_partial_rule_ids": [
+    "MUH-BIZ-TITHI-KARANA-001",
+    "MUH-BIZ-VARA-YOGA-GAP-001"
+  ],
+  "source_semantics_policy": "Source-bound value sets only; unresolved activity mappings remain explicit and cause abstention.",
+  "source_tradition": [
+    "BRIHAT_SAMHITA_SCOPED_ACTION_FAMILIES",
+    "VEDA_P032_FACT_CONTRACT"
+  ],
+  "source_variants": [
+    "BS_SCOPED_ACTION_FAMILY_V1"
+  ],
+  "strong_negatives": [],
+  "strong_positives": [],
+  "subscopes": [],
+  "supersedes": {
+    "contract_hash_full": "4953E65F2019B4AF0EC2B42CC685842CFE52199B5BEC10AD9641EDA2087DE36B",
+    "contract_id": "VEDA-MUH-CONTRACT-BUSINESS-OPENING-V2",
+    "legacy_v1_hash": "941E9ECB9960652C"
+  },
+  "unresolved_areas": [
+    "No complete activity-specific Vara/Yoga contract.",
+    "Personal Bala is not executable.",
+    "No ranking or universal score."
+  ],
+  "version": "3.0.0"
+}

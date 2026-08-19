@@ -1,0 +1,322 @@
+{
+  "assertions": [
+    {
+      "assertion_group": "BS_NAK_LAGHU_VALUES",
+      "assertion_hash": "594E00DF0F6B319085A0F8CFF0FD79FBDB97242104D9CDEB5A1E875C5D2ABBAF",
+      "assertion_id": "VEDA-SWW-ASSERTION-BS-NAK-LAGHU-VALUES-001",
+      "authority": {
+        "empirical_authority": "NOT_ASSESSED",
+        "implementation_authority": "MODERATE",
+        "notes": "Direct primary Sanskrit witness; modern activity scope is constrained.",
+        "scholarly_authority": "NOT_ASSESSED",
+        "textual_authority": "HIGH",
+        "traditional_authority": "VERY_HIGH"
+      },
+      "claim_type": "TEXTUAL_ASSERTION",
+      "normalization_method": "Bounded value extraction from passage; activity mapping remains separately scoped.",
+      "normalized_statement": "NAKSHATRA_CLASS=LAGHU has direct value set {ASHWINI,PUSHYA,HASTA}; source scope includes commerce and knowledge but does not establish universal auspiciousness.",
+      "parent_assertion_ids": [],
+      "passage_ids": [
+        "VEDA-SWW-PASSAGE-BS-NAK-LAGHU-001"
+      ],
+      "source_layer": "NORMALIZATION",
+      "statement": "The inspected Bṛhat Saṃhitā light-nakṣatra passage names Ashvini, Pushya and Hasta and associates the class with commerce/goods and knowledge among other action families.",
+      "validation": {
+        "approved_core_eligible": false,
+        "conditions": [
+          "no universal score",
+          "no success claim"
+        ],
+        "empirical_state": "UNTESTED",
+        "production_activation": false,
+        "review_state": "SOURCE_CHECKED",
+        "source_state": "NORMALIZED"
+      },
+      "variant_id": null
+    },
+    {
+      "assertion_group": "BS_TITHI_CLASS_AND_CORRESPONDENCE",
+      "assertion_hash": "EDAB179B872BF660C3D9715E1C46DAEB4689CAA53C4BC6F2D0D475C89EF843C8",
+      "assertion_id": "VEDA-SWW-ASSERTION-BS-TITHI-CLASS-001",
+      "authority": {
+        "empirical_authority": "NOT_ASSESSED",
+        "implementation_authority": "LOW",
+        "notes": null,
+        "scholarly_authority": "NOT_ASSESSED",
+        "textual_authority": "HIGH",
+        "traditional_authority": "VERY_HIGH"
+      },
+      "claim_type": "TEXTUAL_ASSERTION",
+      "normalization_method": "No modern activity mapping inferred from class names.",
+      "normalized_statement": "TITHI_CLASS values are source-identified; activity-specific machine value sets remain unresolved.",
+      "parent_assertion_ids": [],
+      "passage_ids": [
+        "VEDA-SWW-PASSAGE-BS-TITHI-CLASS-001"
+      ],
+      "source_layer": "NORMALIZATION",
+      "statement": "The inspected tithi passage gives named tithi classes and a correspondence principle, but no complete activity-specific business or education value set.",
+      "validation": {
+        "approved_core_eligible": false,
+        "conditions": [
+          "activity-specific values not stated"
+        ],
+        "empirical_state": "UNTESTED",
+        "production_activation": false,
+        "review_state": "SOURCE_CHECKED",
+        "source_state": "SOURCE_LIMITED"
+      },
+      "variant_id": null
+    },
+    {
+      "assertion_group": "BS_KARANA_ACTION_VALUES",
+      "assertion_hash": "300D53CB4DF60F773FDDDC4CC8852EE12B3DC32A8EBDEEAF9E6E4830E6E34CA3",
+      "assertion_id": "VEDA-SWW-ASSERTION-BS-KARANA-ACTIONS-001",
+      "authority": {
+        "empirical_authority": "NOT_ASSESSED",
+        "implementation_authority": "MODERATE",
+        "notes": null,
+        "scholarly_authority": "NOT_ASSESSED",
+        "textual_authority": "HIGH",
+        "traditional_authority": "VERY_HIGH"
+      },
+      "claim_type": "TEXTUAL_ASSERTION",
+      "normalization_method": "Direct action-class extraction; names are derived from existing P032 karaṇa sequence without changing its calculation.",
+      "normalized_statement": "KARANA_NAME=VANIJA supports trade/merchant action; KARANA_NAME=GARA supports house/establishment action; VISHTI is a negative caution, not a universal denial.",
+      "parent_assertion_ids": [],
+      "passage_ids": [
+        "VEDA-SWW-PASSAGE-BS-KARANA-ACTIONS-001"
+      ],
+      "source_layer": "NORMALIZATION",
+      "statement": "The inspected karaṇa passage directly associates Vanija with merchant/trade work and Gara with houses/shelters, while excluding auspicious work from Vishti.",
+      "validation": {
+        "approved_core_eligible": false,
+        "conditions": [
+          "business scope only",
+          "no education mapping claimed"
+        ],
+        "empirical_state": "UNTESTED",
+        "production_activation": false,
+        "review_state": "SOURCE_CHECKED",
+        "source_state": "NORMALIZED"
+      },
+      "variant_id": null
+    }
+  ],
+  "conflicts": [],
+  "contracts": [],
+  "editions": [
+    {
+      "bibliographic_identifier": null,
+      "completeness": "RELEVANT_CHAPTERS_INSPECTED",
+      "digital_locator": "https://sanskritdocuments.org/doc_z_misc_sociology_astrology/bRRihatsaMhitA.html",
+      "edition_hash": null,
+      "edition_id": "VEDA-SWW-EDITION-BRIHAT-SAMHITA-TRIPATHI-AV-001",
+      "edition_title": "Sarasvati Bhavan Granthamala edition witness",
+      "editor": "A.V. Tripathi (edition basis recorded by digitization metadata)",
+      "editorial_notes": "Chapter numbering 97/98/99 is preserved as this witness's locator convention.",
+      "language": "SANSKRIT",
+      "publication_year": null,
+      "publisher": null,
+      "rights": {
+        "basis": "bounded source metadata and paraphrase only; no source text redistributed",
+        "permissions": [
+          "VIEW_ALLOWED",
+          "DERIVED_METADATA_ALLOWED"
+        ],
+        "rights_state": "RESEARCH_ONLY"
+      },
+      "script": "Devanagari",
+      "source_type": "DIGITAL_TEXT_WITNESS",
+      "translator": null,
+      "witness_ids": [
+        "VEDA-SWW-WITNESS-BRIHAT-SAMHITA-SANSKRITDOCUMENTS-001"
+      ],
+      "work_id": "VEDA-SWW-WORK-BRIHAT-SAMHITA-001"
+    }
+  ],
+  "legacy_mappings": {
+    "VEDA-SRC-BS-MUHURTA-001": "VEDA-SWW-WORK-BRIHAT-SAMHITA-001"
+  },
+  "passages": [
+    {
+      "base_passage_id": null,
+      "chapter": "97",
+      "citation_label": "Bṛhat Saṃhitā 97.9 light-nakṣatra action class",
+      "derived_text": "Light nakṣatras named Ashvini, Pushya and Hasta are associated with commerce/goods, knowledge, ornaments, arts, medicines and vehicles.",
+      "edition_id": "VEDA-SWW-EDITION-BRIHAT-SAMHITA-TRIPATHI-AV-001",
+      "language": "SANSKRIT",
+      "line": null,
+      "original_text": null,
+      "page": null,
+      "passage_id": "VEDA-SWW-PASSAGE-BS-NAK-LAGHU-001",
+      "review_state": "SOURCE_CHECKED",
+      "rights": {
+        "basis": "bounded source metadata and paraphrase only; no source text redistributed",
+        "permissions": [
+          "VIEW_ALLOWED",
+          "DERIVED_METADATA_ALLOWED"
+        ],
+        "rights_state": "RESEARCH_ONLY"
+      },
+      "section": null,
+      "source_access": "AVAILABLE",
+      "source_layer": "ORIGINAL_TEXT",
+      "source_locator": "https://sanskritdocuments.org/doc_z_misc_sociology_astrology/bRRihatsaMhitA.html#chapter-97-verse-9",
+      "table": null,
+      "text_hash": null,
+      "verse": "9"
+    },
+    {
+      "base_passage_id": null,
+      "chapter": "98",
+      "citation_label": "Bṛhat Saṃhitā 98.2-3 tithi classes and correspondence",
+      "derived_text": "Tithis are grouped as Nanda, Bhadra, Vijaya, Rikta and Purna; the text gives a deity/action correspondence principle but not a complete modern business or education value set.",
+      "edition_id": "VEDA-SWW-EDITION-BRIHAT-SAMHITA-TRIPATHI-AV-001",
+      "language": "SANSKRIT",
+      "line": null,
+      "original_text": null,
+      "page": null,
+      "passage_id": "VEDA-SWW-PASSAGE-BS-TITHI-CLASS-001",
+      "review_state": "SOURCE_CHECKED",
+      "rights": {
+        "basis": "bounded source metadata and paraphrase only; no source text redistributed",
+        "permissions": [
+          "VIEW_ALLOWED",
+          "DERIVED_METADATA_ALLOWED"
+        ],
+        "rights_state": "RESEARCH_ONLY"
+      },
+      "section": null,
+      "source_access": "AVAILABLE",
+      "source_layer": "ORIGINAL_TEXT",
+      "source_locator": "https://sanskritdocuments.org/doc_z_misc_sociology_astrology/bRRihatsaMhitA.html#chapter-98-verse-2-3",
+      "table": null,
+      "text_hash": null,
+      "verse": "2-3"
+    },
+    {
+      "base_passage_id": null,
+      "chapter": "99",
+      "citation_label": "Bṛhat Saṃhitā 99.1-5 karaṇa action classes",
+      "derived_text": "Vanija is associated with merchant/trade work; Gara with cultivation, seeds, houses and shelters; Vishti is not for auspicious work. The source does not state an education-specific learning set.",
+      "edition_id": "VEDA-SWW-EDITION-BRIHAT-SAMHITA-TRIPATHI-AV-001",
+      "language": "SANSKRIT",
+      "line": null,
+      "original_text": null,
+      "page": null,
+      "passage_id": "VEDA-SWW-PASSAGE-BS-KARANA-ACTIONS-001",
+      "review_state": "SOURCE_CHECKED",
+      "rights": {
+        "basis": "bounded source metadata and paraphrase only; no source text redistributed",
+        "permissions": [
+          "VIEW_ALLOWED",
+          "DERIVED_METADATA_ALLOWED"
+        ],
+        "rights_state": "RESEARCH_ONLY"
+      },
+      "section": null,
+      "source_access": "AVAILABLE",
+      "source_layer": "ORIGINAL_TEXT",
+      "source_locator": "https://sanskritdocuments.org/doc_z_misc_sociology_astrology/bRRihatsaMhitA.html#chapter-99-verse-1-5",
+      "table": null,
+      "text_hash": null,
+      "verse": "1-5"
+    }
+  ],
+  "standard_id": "VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001",
+  "standard_version": "1.0.0",
+  "supersessions": [],
+  "variants": [
+    {
+      "assertion_group": "BRIHAT_SAMHITA_MUHURTA_LOCATORS",
+      "canonical_for_purpose": "Passage-level source locator with edition-aware chapter numbering",
+      "canonical_status": "CANONICAL",
+      "difference": "The inspected Tripathi/SanskritDocuments witness uses chapters 97/98/99 for these families; the Bhat/Siva witness uses 98/99/100.",
+      "mathematical_or_semantic_impact": "LOCATOR_ONLY; no semantic disagreement established.",
+      "normalization_attempted": true,
+      "resolution_state": "PRESERVED_SEPARATELY",
+      "source_family": "BRIHAT_SAMHITA_EDITION_NUMBERING",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BS-NAK-LAGHU-001",
+        "VEDA-SWW-PASSAGE-BS-TITHI-CLASS-001",
+        "VEDA-SWW-PASSAGE-BS-KARANA-ACTIONS-001"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-BS-CHAPTER-NUMBERING-001"
+    }
+  ],
+  "witnesses": [
+    {
+      "completeness": null,
+      "date_or_period": null,
+      "dependence_notes": null,
+      "dependence_state": "POTENTIALLY_INDEPENDENT",
+      "language": "SANSKRIT",
+      "legacy_source_id": null,
+      "locator": "https://sanskritdocuments.org/doc_z_misc_sociology_astrology/bRRihatsaMhitA.html",
+      "physical_or_digital": null,
+      "provenance": "SanskritDocuments metadata identifies the A.V. Tripathi Sarasvati Bhavan Granthamala edition basis, with Kern text/translation and Utpala commentary markers.",
+      "repository_or_library": null,
+      "review_state": "SOURCE_CHECKED",
+      "rights": {
+        "basis": "bounded source metadata and paraphrase only; no source text redistributed",
+        "permissions": [
+          "VIEW_ALLOWED",
+          "DERIVED_METADATA_ALLOWED"
+        ],
+        "rights_state": "RESEARCH_ONLY"
+      },
+      "script": "Devanagari",
+      "source_access": "AVAILABLE",
+      "witness_hash": null,
+      "witness_id": "VEDA-SWW-WITNESS-BRIHAT-SAMHITA-SANSKRITDOCUMENTS-001",
+      "witness_type": "DIGITAL_SANSKRIT_WITNESS",
+      "work_id": "VEDA-SWW-WORK-BRIHAT-SAMHITA-001"
+    },
+    {
+      "completeness": null,
+      "date_or_period": null,
+      "dependence_notes": null,
+      "dependence_state": "PARTIALLY_DEPENDENT",
+      "language": "ENGLISH/SANSKRIT",
+      "legacy_source_id": null,
+      "locator": "https://www.siva.sh/brihat-samhita/98/9",
+      "physical_or_digital": null,
+      "provenance": "Siva pages expose a chapter/verse translation witness using the M.R. Bhat-style chapter numbering; retained as corroboration and numbering variant, not an independent work.",
+      "repository_or_library": null,
+      "review_state": "SOURCE_CHECKED",
+      "rights": {
+        "basis": "bounded source metadata and paraphrase only; no source text redistributed",
+        "permissions": [
+          "VIEW_ALLOWED",
+          "DERIVED_METADATA_ALLOWED"
+        ],
+        "rights_state": "RESEARCH_ONLY"
+      },
+      "script": null,
+      "source_access": "AVAILABLE",
+      "witness_hash": null,
+      "witness_id": "VEDA-SWW-WITNESS-BRIHAT-SAMHITA-SIVA-TRANSLATION-001",
+      "witness_type": "DIGITAL_TRANSLATION_WITNESS",
+      "work_id": "VEDA-SWW-WORK-BRIHAT-SAMHITA-001"
+    }
+  ],
+  "works": [
+    {
+      "alternate_titles": [
+        "Brihat Samhita",
+        "Varāha Saṃhitā"
+      ],
+      "approximate_period": "6th century CE",
+      "canonical_title": "Bṛhat Saṃhitā",
+      "language_origin": null,
+      "legacy_source_ids": [],
+      "notes": null,
+      "period_confidence": null,
+      "tradition": "Classical Sanskrit Jyotiṣa / Saṃhitā",
+      "traditional_author": "Varāhamihira",
+      "work_id": "VEDA-SWW-WORK-BRIHAT-SAMHITA-001",
+      "work_type": "CLASSICAL_PRIMARY"
+    }
+  ]
+}

@@ -4613,3 +4613,16 @@ Completed the first governed source-ranked feature-level empirical study. A sing
 - Compared that contract with the frozen target-only BAV/SAV helpers. The mismatch is structural, not a safe constant correction; BAV/SAV remain `IMPLEMENTED_UNVALIDATED` / research-only and no production logic was changed.
 - Audited D20/Vimshamsha. The current 20-part category-start route matches the inspected BPHS start signs, while the complete destination-sign mapping remains unresolved. D20 interpretation remains gated as `NOT_VALIDATED`.
 - Focused source-resolution and inherited calculation tests passed. No prediction, ML, PRED-M4, RAG, Approved Core, raw ADB or empirical status changed. Evidence: `docs/current-state/calc-source-rx-001/`.
+# 2026-08-19 | VEDA-MUHURTA-MVP-SOURCE-SEMANTICS-HARDENING-001
+
+Completed the bounded Muhurta MVP source-semantics hardening activity. The
+inspected primary Bṛhat Saṃhitā witness directly supports the light Nakshatra
+set Ashwini/Pushya/Hasta and narrow Business Karaṇa mappings for Vanija
+(trade) and Gara (houses/establishment). The source does not provide a
+complete activity-specific Tithi value set or an education-specific Karaṇa
+set; those rules remain `SOURCE_SEMANTICS_PARTIAL`, with Vara/Yoga and
+personal Bala still unresolved. V1/V2 contracts are preserved and V3
+non-production evidence contracts are deterministic. No recommendation
+runtime, P032 calculation, API/UI, RAG, prediction, ML or Approved Core
+change occurred. Evidence is in
+`docs/current-state/muhurta-mvp-source-semantics-hardening-001/`.

@@ -1,0 +1,31 @@
+{
+  "class": "LAGHU",
+  "confidence": "HIGH_FOR_SOURCE_SET; CONDITIONAL_FOR_MODERN_ACTIVITY_MAPPING",
+  "machine_predicate": {
+    "expected_set": [
+      0,
+      7,
+      12
+    ],
+    "factor_id": "NAKSHATRA",
+    "operator": "IN"
+  },
+  "source_assertion": "VEDA-SWW-ASSERTION-BS-NAK-LAGHU-VALUES-001",
+  "values": [
+    {
+      "name": "ASHWINI",
+      "origin": "DIRECT_SOURCE_VALUE",
+      "p032_index": 0
+    },
+    {
+      "name": "PUSHYA",
+      "origin": "DIRECT_SOURCE_VALUE",
+      "p032_index": 7
+    },
+    {
+      "name": "HASTA",
+      "origin": "DIRECT_SOURCE_VALUE",
+      "p032_index": 12
+    }
+  ]
+}

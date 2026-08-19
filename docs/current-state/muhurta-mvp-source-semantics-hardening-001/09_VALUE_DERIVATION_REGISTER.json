@@ -1,0 +1,19 @@
+{
+  "derivations": [
+    {
+      "id": "DERIVE-KARANA-NAME-FROM-P032-SEQUENCE-001",
+      "input": "p032_facts.karana.number",
+      "method": "existing P032 sequence mapping",
+      "output": "KARANA_NAME",
+      "production_math_changed": false
+    },
+    {
+      "id": "DERIVE-TITHI-CLASS-FROM-P032-INDEX-001",
+      "input": "p032_facts.tithi.index",
+      "method": "five-class cyclic grouping recorded by source",
+      "output": "TITHI_CLASS",
+      "used_for_positive_activity_rule": false
+    }
+  ],
+  "hash": "1D2071829470637A61B8C8BAEE1CAE50F505CE92D2E96A21F075B1A0254E0997"
+}
