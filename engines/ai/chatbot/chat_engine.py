@@ -166,17 +166,58 @@ _ASTRO_FINANCE_TOOLS = {
     "get_stock_detail",
     "get_stocks_by_sector",
 }
+_MARKET_TOOLS = {
+    "get_market_regime",
+    "get_participant_history",
+    "get_institutional_deals",
+    "get_deal_tape",
+}
+_SECTOR_TOOLS = {
+    "get_all_sectors",
+    "get_sector_detail",
+    "get_sectors_by_signal",
+}
+_STOCK_TOOLS = {
+    "get_top_stocks",
+    "get_fno_stocks",
+    "get_stock_detail",
+    "get_stocks_by_sector",
+    "get_stock_fundamentals",
+    "get_shareholding_pattern",
+    "get_stock_announcements",
+    "get_price_history",
+    "get_technical_screener",
+    "get_conviction_picks",
+}
+_CORPORATE_TOOLS = {
+    "get_institutional_deals",
+    "get_top_corporate_confidence",
+    "get_corporate_catalysts",
+    "get_stock_fundamentals",
+    "get_shareholding_pattern",
+    "get_stock_announcements",
+    "get_management_sentiment",
+    "get_corporate_action_history",
+    "get_deal_tape",
+}
 _TOOL_NAMES_BY_INTENT: dict[str, set[str] | None] = {
     "GENERAL": set(),
     "GREETING": set(),
     "ASTRO": set(),
     "MUHURTA": set(),
     "KUNDLI": {"generate_personal_kundli"},
+    "MARKET": _MARKET_TOOLS,
+    "SECTOR": _SECTOR_TOOLS,
+    "STOCK": _STOCK_TOOLS,
+    "CORPORATE": _CORPORATE_TOOLS,
     "ASTRO_FINANCE": _ASTRO_FINANCE_TOOLS,
+    "RESEARCH": set(),
 }
 
 
-def _tool_names_for_intent(intent_type: str) -> set[str] | None:
+def _tool_names_for_intent(intent_type: str, subject_intent: str | None = None) -> set[str] | None:
+    if intent_type == "RESEARCH":
+        return set(_TOOL_NAMES_BY_INTENT.get(subject_intent or "GENERAL") or set())
     return _TOOL_NAMES_BY_INTENT.get(intent_type)
 
 
@@ -540,7 +581,10 @@ class ChatEngine:
         configured_primary_mode = "unified" if cfg.VEDA_UNIFIED_RETRIEVAL_ENABLED else "legacy"
         self.last_retrieval_audit = _empty_retrieval_audit(configured_primary_mode)
         intent       = detect_intent(user_message)
-        self._tool_names_for_turn = _tool_names_for_intent(intent.intent_type)
+        subject_intent = intent.subject_intent
+        if research_mode and intent.intent_type != "RESEARCH":
+            subject_intent = intent.intent_type
+        self._tool_names_for_turn = _tool_names_for_intent(intent.intent_type, subject_intent)
         try:
             conversational_context = analyze_conversation(user_message, history=self.history)
         except Exception as exc:
@@ -567,9 +611,36 @@ class ChatEngine:
             "error": None,
         }
         try:
-            from engines.ai.capabilities import disabled_reply, resolve_intent
+            from engines.ai.capabilities import disabled_reply, get_state, resolve_intent
+            for auxiliary_capability, requested in (("VOICE", voice_mode), ("ATTACHMENTS", bool(attachment_context))):
+                if requested:
+                    auxiliary_state = get_state(auxiliary_capability)
+                    if auxiliary_state.effective_access != "ENABLED":
+                        self.last_telemetry = {
+                            "event": "CONFIG_ACCESS_DENIED",
+                            "intent": intent.intent_type,
+                            "capability_id": auxiliary_state.capability_id,
+                        }
+                        self.last_generation["error"] = "auxiliary_configuration_access_denied"
+                        return disabled_reply(auxiliary_state)
             access_state = resolve_intent(intent.intent_type, research_mode=research_mode)
             self.last_access_decision = access_state.to_dict()
+            if (intent.intent_type == "RESEARCH" or research_mode) and subject_intent not in {None, "RESEARCH"}:
+                subject_state = get_state(subject_intent)
+                self.last_access_decision["subject_capability"] = subject_state.to_dict()
+                if subject_state.effective_access != "ENABLED":
+                    reply = disabled_reply(subject_state)
+                    self.last_telemetry = {
+                        "event": "CONFIG_ACCESS_DENIED",
+                        "intent": intent.intent_type,
+                        "capability_id": subject_state.capability_id,
+                        "subject_capability_id": subject_state.capability_id,
+                    }
+                    self.history.append({"role": "user", "content": user_message})
+                    self.history.append({"role": "assistant", "content": reply})
+                    self.history = self._bounded_history()
+                    self.last_generation["error"] = "subject_configuration_access_denied"
+                    return reply
             if access_state.effective_access != "ENABLED":
                 reply = disabled_reply(access_state)
                 self.last_telemetry = {
@@ -680,7 +751,8 @@ class ChatEngine:
                 "is partial, extracted imperfectly, or unavailable, say that clearly. "
                 "Do not say you cannot read uploaded files in general."
             )
-            if cfg.VEDA_SAVE_TO_KNOWLEDGE_ENABLED:
+            from engines.ai.capabilities import get_state
+            if get_state("REVIEWED_MEMORY").effective_access == "ENABLED":
                 system_prompt += (
                     " If the user wants durable memory from attachment-derived material, explain that "
                     "permanent knowledge storage happens through the reviewed save flow and requires "
@@ -945,6 +1017,15 @@ class ChatEngine:
             return {"status": "error", "error": str(e)}
 
     def _call_tool(self, tool_name: str, tool_input: dict):
+        allowed = self._tool_names_for_turn
+        if allowed is not None and tool_name not in allowed:
+            logger.warning("[ChatEngine] Out-of-scope tool call blocked: %s", tool_name)
+            self.last_telemetry = {
+                "event": "OUT_OF_SCOPE_TOOL_CALL",
+                "tool_name": tool_name,
+                "allowed_tools": sorted(allowed),
+            }
+            return {"error": f"Tool '{tool_name}' is not allowed for this conversation turn.", "code": "OUT_OF_SCOPE_TOOL_CALL"}
         fn = TOOL_FUNCTIONS.get(tool_name)
         if fn is None:
             logger.error("[ChatEngine] Unknown tool: %s", tool_name)
@@ -1014,10 +1095,32 @@ class ChatEngine:
     def _build_unified_bundle(self, query: str) -> dict[str, Any]:
         retriever = self._get_unified_retriever()
         top_k = max(int(cfg.VEDA_UNIFIED_RETRIEVAL_CONTEXT_TOP_K), 1)
+        from engines.ai.capabilities import get_state
+        blocked_source_types: set[str] = set()
+        if get_state("REVIEWED_MEMORY").effective_access != "ENABLED":
+            blocked_source_types.update({"user_reviewed", "attachment_chunk"})
+        if get_state("MIT_REPO_INTAKE").effective_access != "ENABLED":
+            blocked_source_types.add("mit_repo_capability")
         if hasattr(retriever, "build_context_bundle"):
-            return self._normalize_bundle(retriever.build_context_bundle(query, top_k=top_k))
+            try:
+                bundle = retriever.build_context_bundle(
+                    query, top_k=top_k, blocked_source_types=blocked_source_types,
+                )
+            except TypeError as exc:
+                if "blocked_source_types" not in str(exc):
+                    raise
+                bundle = retriever.build_context_bundle(query, top_k=top_k)
+            return self._normalize_bundle(bundle)
         if hasattr(retriever, "build_context"):
-            return self._normalize_bundle({"context": retriever.build_context(query, top_k=top_k)})
+            try:
+                context = retriever.build_context(
+                    query, top_k=top_k, blocked_source_types=blocked_source_types,
+                )
+            except TypeError as exc:
+                if "blocked_source_types" not in str(exc):
+                    raise
+                context = retriever.build_context(query, top_k=top_k)
+            return self._normalize_bundle({"context": context})
         raise AttributeError("Unified retriever does not support context bundle generation.")
 
     def _build_legacy_bundle(self, query: str) -> dict[str, Any]:
@@ -1028,15 +1131,19 @@ class ChatEngine:
 
         try:
             review_service = self._get_review_service()
-            reviewed_results = list(review_service.search(query, top_k=3) or [])
-            reviewed_context = str(review_service.build_context(query, top_k=2) or "")
+            from engines.ai.capabilities import get_state
+            if get_state("REVIEWED_MEMORY").effective_access == "ENABLED":
+                reviewed_results = list(review_service.search(query, top_k=3) or [])
+                reviewed_context = str(review_service.build_context(query, top_k=2) or "")
         except Exception as exc:
             logger.debug("[ChatEngine] Reviewed-memory retrieval skipped: %s", exc)
 
         try:
-            repo_service = self._get_repo_service()
-            repo_results = list(repo_service.search(query, top_k=3) or [])
-            repo_context = str(repo_service.build_context(query, top_k=2) or "")
+            from engines.ai.capabilities import get_state
+            if get_state("MIT_REPO_INTAKE").effective_access == "ENABLED":
+                repo_service = self._get_repo_service()
+                repo_results = list(repo_service.search(query, top_k=3) or [])
+                repo_context = str(repo_service.build_context(query, top_k=2) or "")
         except Exception as exc:
             logger.debug("[ChatEngine] MIT capability retrieval skipped: %s", exc)
 

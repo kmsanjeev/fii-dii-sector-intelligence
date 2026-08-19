@@ -1,0 +1,12 @@
+{
+  "predecessor": "VEDA-RUNTIME-CAPABILITY-EXPOSURE-AUDIT-001",
+  "decision": "VEDA_RUNTIME_EXPOSURE_MULTIPLE_WIRING_GAPS",
+  "baseline_commit": "856bf2a35b1af3512bb2c4ba2285885bf76aa219",
+  "blockers": [
+    {"id": "RB-001", "severity": "P1", "scope": "auxiliary capability policy", "status": "CLOSED"},
+    {"id": "RB-002", "severity": "P1", "scope": "research subject precedence", "status": "CLOSED"},
+    {"id": "RB-003", "severity": "P1", "scope": "Muhurta/Panchanga natural language", "status": "CLOSED"},
+    {"id": "RB-004", "severity": "P1", "scope": "domain tool exposure and execution", "status": "CLOSED"}
+  ],
+  "historical_counts": {"tools": 23, "api_paths": 145, "api_operations": 158, "behavior_cases": 50, "intent_pass": 42, "intent_gaps": 8, "tool_overbroad_cases": 21}
+}

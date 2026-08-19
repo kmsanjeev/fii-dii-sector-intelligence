@@ -2,15 +2,13 @@ from engines.ai.capabilities import access_policy
 from scripts.veda_runtime_capability_exposure_audit_001 import run_matrix
 
 
-def test_deterministic_behavior_matrix_records_current_gaps_without_hiding_them():
+def test_deterministic_behavior_matrix_records_remediated_runtime_routes():
     result = run_matrix()
     assert result["case_count"] == 50
     assert result["registered_tools"] == 23
-    assert result["intent_pass"] == 42
-    assert result["intent_gaps"] == 8
-    assert {row["case_id"] for row in result["rows"] if row["intent_status"] == "GAP"} == {
-        "B003", "B025", "B026", "B031", "B038", "B040", "B042", "B048",
-    }
+    assert result["intent_pass"] == 50
+    assert result["intent_gaps"] == 0
+    assert result["tool_overbroad"] == 0
 
 
 def test_configuration_surface_has_fifteen_entries_and_default_reset_contract(tmp_path, monkeypatch):

@@ -1,0 +1,15 @@
+{
+  "policy_source": "engines.ai.capabilities.access_policy.require_capability_access",
+  "routes": [
+    {"surface": "chat", "operation": "inline attachment use", "capability": "ATTACHMENTS", "enforced": true},
+    {"surface": "chat", "operation": "attachment upload", "capability": "ATTACHMENTS", "enforced": true},
+    {"surface": "chat", "operation": "knowledge draft/approve/discard", "capability": "REVIEWED_MEMORY", "enforced": true},
+    {"surface": "chat", "operation": "repo draft/approve", "capability": "MIT_REPO_INTAKE", "enforced": true},
+    {"surface": "research", "operation": "MCP fallback", "capability": "MCP", "enforced": true},
+    {"surface": "research", "operation": "direct MCP provider", "capability": "MCP", "enforced": true},
+    {"surface": "voice", "operation": "voice chat mode", "capability": "VOICE", "enforced": true},
+    {"surface": "voice", "operation": "TTS", "capability": "VOICE", "enforced": true},
+    {"surface": "engine", "operation": "direct attachment/voice context", "capability": "auxiliary policy", "enforced": true}
+  ],
+  "decorative_toggles_remaining": 0
+}

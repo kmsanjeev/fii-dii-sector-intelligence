@@ -31,7 +31,7 @@ GREETING_KEYWORDS = [
     "good morning", "good afternoon", "good evening", "good night", "gm", "gn",
     "kaise ho", "kaisi ho", "kaise hain", "kya haal", "kya haal hai",
     "how are you", "hows it going", "how's it going", "whats up", "what's up", "sup",
-    "kem cho", "vanakkam",
+    "kem cho", "vanakkam", "thanks", "thank you", "thx",
 ]
 
 
@@ -54,30 +54,52 @@ def _contains_keyword(text: str, keyword: str) -> bool:
 
 
 def _is_muhurta_request(text: str) -> bool:
-    if _contains_keyword(text, "muhurta"):
+    if any(_contains_keyword(text, term) for term in ("muhurta", "muhurat", "muhurt", "shubh samay", "auspicious time", "auspicious timing", "auspicious window")):
         return True
-    if _contains_keyword(text, "griha pravesha") or _contains_keyword(text, "house entry"):
+    if any(_contains_keyword(text, term) for term in ("griha pravesha", "griha pravesh", "house entry", "house-entry ceremony", "housewarming timing")):
         return True
     if _contains_keyword(text, "tithi") and any(
         _contains_keyword(text, term)
         for term in ("suitable", "auspicious", "education commencement", "business opening", "commencement")
     ):
         return True
+    if _contains_keyword(text, "panchanga") and any(
+        _contains_keyword(text, term)
+        for term in ("suitable", "auspicious", "window", "starting", "begin", "commencement", "opening")
+    ):
+        return True
+    if (_contains_keyword(text, "enter") or _contains_keyword(text, "entering")) and (
+        _contains_keyword(text, "new house") or _contains_keyword(text, "home")
+    ):
+        return True
+    if any(_contains_keyword(text, term) for term in ("good time to begin", "best time to begin", "commencement timing", "ceremony timing", "business opening timing", "education commencement timing", "vehicle commencement", "consecration timing")):
+        return True
     return bool(
         _contains_keyword(text, "search")
         and _contains_keyword(text, "window")
-        and any(_contains_keyword(text, term) for term in ("auspicious", "opening", "commencement"))
+        and any(_contains_keyword(text, term) for term in ("auspicious", "opening", "commencement", "business", "education"))
     )
 
 
-def _is_astro_finance_request(text: str) -> bool:
+def _is_astro_finance_request(text: str, original: str = "") -> bool:
     if any(_contains_keyword(text, term) for term in ("astrofinance", "financial astrology", "astro signal", "astrology signal")):
         return True
     astrology_terms = ("jupiter", "saturn", "mercury", "venus", "mars", "moon", "rahu", "ketu", "planetary", "transit", "astrology")
-    market_terms = ("market", "stock", "sector", "trading", "fii", "dii", "flow", "share", "portfolio")
-    return any(_contains_keyword(text, term) for term in astrology_terms) and any(
-        _contains_keyword(text, term) for term in market_terms
+    market_terms = ("market", "stock", "stocks", "sector", "trading", "fii", "dii", "flow", "share", "portfolio", "nifty", "sensex", "banking", "pharma")
+    symbol_context = bool(re.search(r"\b(?:NIFTY|BANKNIFTY|SENSEX|RELIANCE|TCS|INFY|INFOSYS|HDFCBANK|ICICIBANK)\b", original or ""))
+    return any(_contains_keyword(text, term) for term in astrology_terms) and (
+        any(_contains_keyword(text, term) for term in market_terms) or symbol_context
     )
+
+
+def _is_explicit_research_request(text: str) -> bool:
+    """Detect an imperative research request, not past-tense narration."""
+    if any(_contains_keyword(text, phrase) for phrase in (
+        "deep research", "compare sources", "source review", "literature review",
+        "fresh evidence", "latest evidence", "research report", "verify with sources",
+    )):
+        return True
+    return bool(_contains_keyword(text, "research") or _contains_keyword(text, "investigate"))
 
 
 INTENT_KEYWORDS = {
@@ -104,14 +126,14 @@ INTENT_KEYWORDS = {
         "mars", "moon", "rahu", "ketu", "retrograde", "eclipse", "zodiac",
         "cosmic", "celestial", "nakshatra", "hora", "transit", "aspect",
         "benefic", "malefic", "exalted", "debilitated", "cycle", "jyotish", "d9",
-        "navamsa", "d20", "vimshamsha", "vimshamsa", "tithi", "nakshatra", "shadbala",
+        "navamsa", "d20", "vimshamsha", "vimshamsa", "tithi", "nakshatra", "panchanga", "lagna", "ascendant", "rashi", "shadbala",
         "ashtakavarga", "vimshottari", "dasha", "astrology",
     ],
     "KUNDLI": [
         "kundli", "kundali", "janam kundli", "janam kundali", "birth chart",
         "natal chart", "horoscope", "date of birth", "dob", "born on",
-        "born in", "time of birth", "place of birth", "lagna", "ascendant",
-        "rashi", "my chart", "my kundli", "prepare kundli", "make kundli",
+        "born in", "time of birth", "place of birth", "my ascendant",
+        "my rashi", "my chart", "my kundli", "prepare kundli", "make kundli",
         "generate kundli", "check kundli", "read my chart", "birth time",
         "janma kundali", "janma rashi", "janampatrika", "jatakam",
         "dasha", "mahadasha", "antardasha", "vimshottari", "yoga in my chart",
@@ -129,6 +151,23 @@ class Intent:
     intent_type: str   # GENERAL | MARKET | SECTOR | STOCK | CORPORATE | ASTRO | KUNDLI | MUHURTA | ASTRO_FINANCE | RESEARCH
     entity: str | None  # specific symbol/sector if detected
     confidence: float   # 0-1
+    subject_intent: str | None = None  # subject context when primary mode is RESEARCH
+
+
+def _subject_intent(text: str, original: str) -> str:
+    if _is_muhurta_request(text):
+        return "MUHURTA"
+    if _is_astro_finance_request(text, original):
+        return "ASTRO_FINANCE"
+    scores = {intent: 0 for intent in INTENT_KEYWORDS if intent != "RESEARCH"}
+    for intent, keywords in INTENT_KEYWORDS.items():
+        if intent == "RESEARCH":
+            continue
+        for kw in keywords:
+            if _contains_keyword(text, kw):
+                scores[intent] += 1
+    best_intent = max(scores, key=lambda k: scores[k])
+    return best_intent if scores[best_intent] else "GENERAL"
 
 
 def detect_intent(user_message: str) -> Intent:
@@ -147,7 +186,10 @@ def detect_intent(user_message: str) -> Intent:
     if _is_greeting(text):
         return Intent("GREETING", entity, 0.9)
 
-    if _is_astro_finance_request(text):
+    if _is_explicit_research_request(text):
+        return Intent("RESEARCH", entity, 0.95, _subject_intent(text, user_message))
+
+    if _is_astro_finance_request(text, user_message):
         return Intent("ASTRO_FINANCE", entity, 0.95)
 
     if _is_muhurta_request(text):

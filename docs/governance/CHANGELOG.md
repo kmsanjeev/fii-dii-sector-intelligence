@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## 2026-08-20 | VEDA-RUNTIME-CAPABILITY-CONFIGURATION-AND-ROUTING-REMEDIATION-001
+
+- Completed the bounded runtime capability wiring remediation from the
+  predecessor exposure audit.
+- Bound auxiliary capability policy to attachment use/upload, reviewed-memory
+  write/retrieval, MIT repository intake, MCP provider fallback/direct access,
+  voice chat/TTS and direct engine execution.
+- Added explicit research subject precedence, natural-language
+  Muhurta/Panchanga and AstroFinance routing, per-domain tool allowlists and an
+  execution-time out-of-scope tool guard.
+- The deterministic behavior matrix is 50/50 with zero intent gaps and zero
+  overbroad tool cases; all 23 tools remain implemented. Full Python validation
+  is 1,298/1,298, frontend Vitest is 29/29 and the build passes.
+- MCP remains accurately unavailable because no provider/server is configured;
+  the policy gate is nevertheless enforced. No P032, source, RAG, maturity,
+  prediction, ML, Approved Core, EMP-001 or human-validation state changed.
+- Evidence: `docs/current-state/veda-runtime-capability-configuration-and-routing-remediation-001/`.
+
 ## 2026-08-20 | VEDA-RUNTIME-CAPABILITY-EXPOSURE-AUDIT-001
 
 - Completed the audit-only runtime capability exposure assessment from the

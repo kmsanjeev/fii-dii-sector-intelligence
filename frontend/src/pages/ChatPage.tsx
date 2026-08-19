@@ -648,6 +648,7 @@ export function ChatPage() {
   const saveToKnowledgeEnabled = useVedaStore(s => s.saveToKnowledgeEnabled)
   const mitRepoIntakeEnabled = useVedaStore(s => s.mitRepoIntakeEnabled)
   const mcpEnabled = useVedaStore(s => s.mcpEnabled)
+  const voiceEnabled = useVedaStore(s => s.voiceEnabled)
   const mcpServerNames = useVedaStore(s => s.mcpServerNames)
   const attachmentAccept = useVedaStore(s => s.attachmentAccept)
   const pendingAttachments = useVedaStore(s => s.pendingAttachments)
@@ -1169,14 +1170,14 @@ export function ChatPage() {
               {/* Mic: push-to-talk (Phase V1) */}
               <button
                 onClick={() => startListening()}
-                disabled={loading}
-                title={listening ? (followUpListening ? 'Listening for follow-up... click to stop' : 'Listening... click to stop') : `Speak to Veda (${VOICE_LANGS.find(l => l.code === voiceLang)?.label})`}
+                disabled={!voiceEnabled || loading}
+                title={!voiceEnabled ? 'Voice is disabled by administrator configuration' : (listening ? (followUpListening ? 'Listening for follow-up... click to stop' : 'Listening... click to stop') : `Speak to Veda (${VOICE_LANGS.find(l => l.code === voiceLang)?.label})`)}
                 style={{
                   width: 42, height: 42, borderRadius: '50%', flexShrink: 0,
                   border: `2px solid ${listening ? '#EF4444' : '#3B82F6'}`,
                   background: listening ? '#EF444422' : '#0D1117',
                   color: listening ? '#EF4444' : '#60A5FA',
-                  cursor: loading ? 'not-allowed' : 'pointer',
+                  cursor: !voiceEnabled || loading ? 'not-allowed' : 'pointer',
                   fontSize: listening ? 16 : 9, fontWeight: 700,
                   animation: listening ? 'pulse 1.2s infinite' : 'none',
                 }}

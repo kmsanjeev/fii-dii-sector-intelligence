@@ -334,6 +334,11 @@ def _spoken_text(text: str, lang: str = DEFAULT_LANG) -> str:
 @router.post("/tts")
 async def tts(req: TTSRequest):
     """Text -> MP3 via edge-tts. Cached responses return instantly."""
+    from engines.ai.capabilities import CapabilityAccessError, require_capability_access
+    try:
+        require_capability_access("VOICE")
+    except CapabilityAccessError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
     try:
         import edge_tts
     except ImportError:

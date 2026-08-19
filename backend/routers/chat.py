@@ -167,6 +167,7 @@ class ChatCapabilities(BaseModel):
     save_to_knowledge_enabled: bool
     mit_repo_intake_enabled: bool
     mcp_enabled: bool
+    voice_enabled: bool = False
     mcp_server_names: list[str] = Field(default_factory=list)
     supported_attachment_mime_prefixes: list[str] = Field(default_factory=list)
     policy_version: str = "2026-08-20"
@@ -389,12 +390,30 @@ def _resolve_history_owner(current_user: User, client_id: Optional[str]) -> str:
     return f"client::{cleaned or 'browser'}"
 
 
+def _require_runtime_capability(capability_id: str, runtime_detail: str):
+    """Apply the central capability policy while preserving API error text."""
+    from engines.ai.capabilities import CapabilityAccessError, require_capability_access
+
+    try:
+        return require_capability_access(capability_id)
+    except CapabilityAccessError as exc:
+        detail = runtime_detail if exc.code == "CAPABILITY_UNAVAILABLE" else exc.detail
+        raise HTTPException(status_code=exc.status_code, detail=detail) from exc
+
+
 @router.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest):
     """
     AI chat endpoint. Accepts a message and optional session_id.
     Returns the assistant reply and session_id for follow-up turns.
     """
+    from engines.ai.chatbot.intent_router import detect_intent
+    intent = detect_intent(req.message)
+    if req.mode == "voice":
+        _require_runtime_capability("VOICE", "Voice runtime is unavailable.")
+    if req.attachments:
+        _require_runtime_capability("ATTACHMENTS", "Veda attachments are disabled.")
+
     # Any one configured provider is enough -- the engine rotates through all
     _PROVIDER_KEYS = ("GROQ_API_KEY", "GEMINI_API_KEY", "MISTRAL_API_KEY",
                       "GITHUB_MODELS_TOKEN", "SAMBANOVA_API_KEY",
@@ -406,11 +425,6 @@ async def chat(req: ChatRequest):
                    "Add at least one of GROQ/GEMINI/MISTRAL/GITHUB_MODELS/"
                    "SAMBANOVA/OPENROUTER/CEREBRAS/OPENAI keys to .env"
         )
-
-    from engines.ai.chatbot.intent_router import detect_intent
-    intent = detect_intent(req.message)
-    if req.attachments and not cfg.VEDA_ATTACHMENTS_ENABLED:
-        raise HTTPException(status_code=503, detail="Veda attachments are disabled.")
 
     try:
         session_id, engine = _get_or_create_session(req.session_id)
@@ -496,18 +510,27 @@ async def chat_capabilities():
         capabilities = get_research_service().capabilities()
     except Exception as exc:
         logger.debug("[ChatRouter] Research capabilities fallback used: %s", exc)
-    from engines.ai.capabilities import configuration
+    from engines.ai.capabilities import configuration, get_state
     policy = configuration()
+    def policy_enabled(capability_id: str) -> bool:
+        return get_state(capability_id).effective_access == "ENABLED"
+
+    research_enabled = bool(capabilities.get("research_enabled", cfg.VEDA_RESEARCH_ENABLED)) and policy_enabled("RESEARCH")
+    attachments_enabled = bool(capabilities.get("attachments_enabled", cfg.VEDA_ATTACHMENTS_ENABLED)) and policy_enabled("ATTACHMENTS")
+    save_to_knowledge_enabled = bool(capabilities.get("save_to_knowledge_enabled", cfg.VEDA_SAVE_TO_KNOWLEDGE_ENABLED)) and policy_enabled("REVIEWED_MEMORY")
+    mit_repo_intake_enabled = bool(capabilities.get("mit_repo_intake_enabled", cfg.VEDA_MIT_REPO_INTAKE_ENABLED)) and policy_enabled("MIT_REPO_INTAKE")
+    mcp_enabled = bool(capabilities.get("mcp_enabled", cfg.VEDA_MCP_ENABLED)) and policy_enabled("MCP")
     return ChatCapabilities(
-        research_enabled=bool(capabilities.get("research_enabled", cfg.VEDA_RESEARCH_ENABLED)),
+        research_enabled=research_enabled,
         research_provider_available=bool(capabilities.get("provider_available", False)),
         research_runtime_ready=bool(capabilities.get("research_runtime_ready", False)),
         default_research_provider=str(capabilities.get("default_provider", cfg.VEDA_RESEARCH_PROVIDER)),
         auto_research_for_research_intent=cfg.VEDA_RESEARCH_AUTO_FOR_RESEARCH_INTENT,
-        attachments_enabled=bool(capabilities.get("attachments_enabled", cfg.VEDA_ATTACHMENTS_ENABLED)),
-        save_to_knowledge_enabled=bool(capabilities.get("save_to_knowledge_enabled", cfg.VEDA_SAVE_TO_KNOWLEDGE_ENABLED)),
-        mit_repo_intake_enabled=cfg.VEDA_MIT_REPO_INTAKE_ENABLED,
-        mcp_enabled=bool(capabilities.get("mcp_enabled", cfg.VEDA_MCP_ENABLED)),
+        attachments_enabled=attachments_enabled,
+        save_to_knowledge_enabled=save_to_knowledge_enabled,
+        mit_repo_intake_enabled=mit_repo_intake_enabled,
+        mcp_enabled=mcp_enabled,
+        voice_enabled=policy_enabled("VOICE"),
         mcp_server_names=[str(name) for name in capabilities.get("mcp_server_names", []) or []],
         supported_attachment_mime_prefixes=[
             "application/pdf",
@@ -552,8 +575,7 @@ async def reset_veda_configuration(current_user: User = Depends(require_admin)):
 
 @router.post("/chat/attachments", response_model=ChatAttachment)
 async def upload_chat_attachment(file: UploadFile = File(...)):
-    if not cfg.VEDA_ATTACHMENTS_ENABLED:
-        raise HTTPException(status_code=503, detail="Veda attachments are disabled.")
+    _require_runtime_capability("ATTACHMENTS", "Veda attachments are disabled.")
 
     raw = await file.read()
     try:
@@ -575,8 +597,7 @@ async def upload_chat_attachment(file: UploadFile = File(...)):
 
 @router.post("/chat/knowledge/draft", response_model=ChatKnowledgeDraft)
 async def create_chat_knowledge_draft(req: ChatKnowledgeDraftRequest):
-    if not cfg.VEDA_SAVE_TO_KNOWLEDGE_ENABLED:
-        raise HTTPException(status_code=503, detail="Save to knowledge is disabled.")
+    _require_runtime_capability("REVIEWED_MEMORY", "Save to knowledge is disabled.")
     try:
         from engines.ai.knowledge.review_service import get_knowledge_review_service
 
@@ -599,8 +620,7 @@ async def create_chat_knowledge_draft(req: ChatKnowledgeDraftRequest):
 
 @router.post("/chat/knowledge/draft/{draft_id}/approve", response_model=ChatKnowledgeSaved)
 async def approve_chat_knowledge_draft(draft_id: str, req: ChatKnowledgeApproveRequest):
-    if not cfg.VEDA_SAVE_TO_KNOWLEDGE_ENABLED:
-        raise HTTPException(status_code=503, detail="Save to knowledge is disabled.")
+    _require_runtime_capability("REVIEWED_MEMORY", "Save to knowledge is disabled.")
     try:
         from engines.ai.knowledge.review_service import get_knowledge_review_service
 
@@ -626,8 +646,7 @@ async def approve_chat_knowledge_draft(draft_id: str, req: ChatKnowledgeApproveR
 
 @router.delete("/chat/knowledge/draft/{draft_id}", response_model=ChatKnowledgeDiscarded)
 async def discard_chat_knowledge_draft(draft_id: str):
-    if not cfg.VEDA_SAVE_TO_KNOWLEDGE_ENABLED:
-        raise HTTPException(status_code=503, detail="Save to knowledge is disabled.")
+    _require_runtime_capability("REVIEWED_MEMORY", "Save to knowledge is disabled.")
     try:
         from engines.ai.knowledge.review_service import get_knowledge_review_service
 
@@ -643,8 +662,7 @@ async def discard_chat_knowledge_draft(draft_id: str):
 
 @router.post("/chat/capabilities/repo/draft", response_model=ChatRepoCapabilityDraft)
 async def create_repo_capability_draft(req: ChatRepoCapabilityDraftRequest):
-    if not cfg.VEDA_MIT_REPO_INTAKE_ENABLED:
-        raise HTTPException(status_code=503, detail="MIT repo capability intake is disabled.")
+    _require_runtime_capability("MIT_REPO_INTAKE", "MIT repo capability intake is disabled.")
     try:
         from engines.ai.capabilities import get_repo_capability_service
 
@@ -664,8 +682,7 @@ async def create_repo_capability_draft(req: ChatRepoCapabilityDraftRequest):
 
 @router.post("/chat/capabilities/repo/draft/{draft_id}/approve", response_model=ChatKnowledgeSaved)
 async def approve_repo_capability_draft(draft_id: str, req: ChatRepoCapabilityApproveRequest):
-    if not cfg.VEDA_MIT_REPO_INTAKE_ENABLED:
-        raise HTTPException(status_code=503, detail="MIT repo capability intake is disabled.")
+    _require_runtime_capability("MIT_REPO_INTAKE", "MIT repo capability intake is disabled.")
     try:
         from engines.ai.capabilities import get_repo_capability_service
 

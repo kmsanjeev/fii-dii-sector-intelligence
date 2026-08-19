@@ -43,13 +43,14 @@ export function VedaWakeController() {
   const wakeEnabled = useVedaStore(s => s.wakeEnabled)
   const listening   = useVedaStore(s => s.listening)
   const loading     = useVedaStore(s => s.loading)
+  const voiceEnabled = useVedaStore(s => s.voiceEnabled)
   const voiceLang   = useVedaStore(s => s.voiceLang)
   const [retryTick, setRetryTick] = useState(0)
 
   useEffect(() => {
     startWakeListener(() => setRetryTick(n => n + 1))
     return () => stopWakeListener()
-  }, [wakeEnabled, listening, loading, voiceLang, retryTick])
+  }, [wakeEnabled, listening, loading, voiceLang, voiceEnabled, retryTick])
 
   return null
 }
@@ -205,6 +206,7 @@ export function VedaWidget() {
   const saveToKnowledgeEnabled = useVedaStore(s => s.saveToKnowledgeEnabled)
   const mitRepoIntakeEnabled = useVedaStore(s => s.mitRepoIntakeEnabled)
   const mcpEnabled = useVedaStore(s => s.mcpEnabled)
+  const voiceEnabled = useVedaStore(s => s.voiceEnabled)
   const mcpServerNames = useVedaStore(s => s.mcpServerNames)
   const attachmentAccept = useVedaStore(s => s.attachmentAccept)
   const pendingAttachments = useVedaStore(s => s.pendingAttachments)
@@ -512,14 +514,14 @@ export function VedaWidget() {
             <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
               <button
                 onClick={() => startListening()}
-                disabled={loading}
-                title={listening ? 'Listening... click to stop' : 'Speak to Veda'}
+                disabled={!voiceEnabled || loading}
+                title={!voiceEnabled ? 'Voice is disabled by administrator configuration' : (listening ? 'Listening... click to stop' : 'Speak to Veda')}
                 style={{
                   width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
                   border: `2px solid ${listening ? '#EF4444' : '#3B82F6'}`,
                   background: listening ? '#EF444422' : '#0D1117',
                   color: listening ? '#EF4444' : '#60A5FA',
-                  cursor: loading ? 'not-allowed' : 'pointer',
+                  cursor: !voiceEnabled || loading ? 'not-allowed' : 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
               >

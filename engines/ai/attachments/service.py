@@ -10,6 +10,7 @@ import uuid
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from engines.ai.capabilities import CapabilityAccessError, require_capability_access
 from engines.common import config as cfg
 
 _TEXT_EXTENSIONS = {".txt", ".md", ".csv", ".json"}
@@ -48,8 +49,7 @@ class AttachmentService:
         self._rapidocr = None
 
     def save_upload(self, *, filename: str, content_type: str, content: bytes) -> PreparedAttachment:
-        if not cfg.VEDA_ATTACHMENTS_ENABLED:
-            raise ValueError("Attachment uploads are disabled.")
+        self._require_access()
         if not content:
             raise ValueError("Uploaded file is empty.")
 
@@ -99,6 +99,7 @@ class AttachmentService:
     def build_prompt_context(self, attachments: list) -> str:
         if not attachments:
             return ""
+        self._require_access()
         if len(attachments) > cfg.VEDA_ATTACHMENT_MAX_FILES:
             raise ValueError(f"Too many attachments. Max per message is {cfg.VEDA_ATTACHMENT_MAX_FILES}.")
 
@@ -125,6 +126,13 @@ class AttachmentService:
                 header += f" | warning={prepared.warning}"
             sections.append(f"{header}\n{snippet}")
         return "\n\n".join(sections).strip()
+
+    @staticmethod
+    def _require_access() -> None:
+        try:
+            require_capability_access("ATTACHMENTS")
+        except CapabilityAccessError as exc:
+            raise ValueError(exc.detail) from exc
 
     def _hydrate_stub(self, attachment) -> PreparedAttachment:
         storage_key = getattr(attachment, "storage_key", None)

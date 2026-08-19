@@ -13,6 +13,7 @@ from engines.ai.research.mcp_client import (
 )
 from engines.ai.research.providers.base import BaseResearchProvider
 from engines.ai.research.schemas import ResearchResult, ResearchSource
+from engines.ai.capabilities import get_state
 from engines.common import config as cfg
 from engines.common.logger import get_logger
 
@@ -45,13 +46,13 @@ class MCPResearchProvider(BaseResearchProvider):
         return [server.name for server in self._ordered_servers()]
 
     def is_available(self) -> bool:
-        if not cfg.VEDA_MCP_ENABLED:
+        if not cfg.VEDA_MCP_ENABLED or get_state("MCP").effective_access != "ENABLED":
             return False
         return any(command_exists(server.command) for server in self._ordered_servers())
 
     def search(self, query: str, *, reason: str) -> ResearchResult:
         result = ResearchResult(provider=self.name, query=query, reason=reason)
-        if not cfg.VEDA_MCP_ENABLED:
+        if not cfg.VEDA_MCP_ENABLED or get_state("MCP").effective_access != "ENABLED":
             result.error = "mcp_disabled"
             return result
 

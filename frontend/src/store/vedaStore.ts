@@ -356,6 +356,8 @@ interface VedaState {
   saveToKnowledgeEnabled: boolean
   mitRepoIntakeEnabled: boolean
   mcpEnabled: boolean
+  voiceEnabled: boolean
+  capabilityStates: NonNullable<ChatCapabilities['capability_states']>
   mcpServerNames: string[]
   supportedAttachmentMimePrefixes: string[]
   attachmentAccept: string
@@ -426,6 +428,11 @@ export const useVedaStore = create<VedaState>((set, get) => ({
   saveToKnowledgeEnabled: false,
   mitRepoIntakeEnabled: false,
   mcpEnabled: false,
+  // Optimistic until the backend capability snapshot arrives; a disabled
+  // backend still rejects TTS/chat execution and refreshCapabilities replaces
+  // this with the effective policy state.
+  voiceEnabled: true,
+  capabilityStates: [],
   mcpServerNames: [],
   supportedAttachmentMimePrefixes: [],
   attachmentAccept: DEFAULT_ATTACHMENT_ACCEPT,
@@ -574,6 +581,8 @@ export const useVedaStore = create<VedaState>((set, get) => ({
         saveToKnowledgeEnabled: caps.save_to_knowledge_enabled,
         mitRepoIntakeEnabled: caps.mit_repo_intake_enabled,
         mcpEnabled: caps.mcp_enabled,
+        voiceEnabled: caps.voice_enabled ?? true,
+        capabilityStates: caps.capability_states ?? [],
         mcpServerNames: caps.mcp_server_names,
         supportedAttachmentMimePrefixes: caps.supported_attachment_mime_prefixes,
         attachmentAccept: buildAttachmentAccept(caps.supported_attachment_mime_prefixes),
@@ -651,6 +660,7 @@ export const useVedaStore = create<VedaState>((set, get) => ({
   // follow-up listening) depend on this; before this rework the function
   // resolved as soon as playback started, which is too early to chain on.
   speak: (text) => new Promise<void>((resolve) => {
+    if (!get().voiceEnabled) { set({ apiError: 'Voice capability is disabled by administrator configuration.' }); resolve(); return }
     const gen = ++speakGen
     currentAudio?.pause()
     try { window.speechSynthesis?.cancel() } catch { /* ignore */ }
@@ -729,6 +739,10 @@ export const useVedaStore = create<VedaState>((set, get) => ({
     const trimmed = text.trim()
     const { loading, backendSid, currentId, speakReplies, _voiceChats, researchMode, pendingAttachments } = get()
     const hasAttachments = pendingAttachments.length > 0
+    if (mode === 'voice' && !get().voiceEnabled) {
+      set({ apiError: 'Voice capability is disabled by administrator configuration.' })
+      return
+    }
     const finalPrompt = trimmed || (hasAttachments ? 'Please study the attached file(s) and help me with them.' : '')
     if (!finalPrompt || loading) return
 
@@ -844,8 +858,12 @@ export const useVedaStore = create<VedaState>((set, get) => ({
 
   startListening: (opts) => {
     const isFollowUp = opts?.isFollowUp ?? false
-    const { listening, voiceLang } = get()
+    const { listening, voiceLang, voiceEnabled } = get()
     if (listening) { commandRecog?.stop(); return }
+    if (!voiceEnabled) {
+      if (!isFollowUp) set({ apiError: 'Voice capability is disabled by administrator configuration.' })
+      return
+    }
     const recog = getSpeechRecognition()
     if (!recog) {
       // A follow-up window opening in the background finding no Web Speech
@@ -953,7 +971,8 @@ export function stopWakeListener() {
 }
 
 export function startWakeListener(onRetry: () => void) {
-  const { wakeEnabled, listening, loading, voiceLang } = useVedaStore.getState()
+  const { wakeEnabled, listening, loading, voiceLang, voiceEnabled } = useVedaStore.getState()
+  if (!voiceEnabled) return
   if (!wakeEnabled || listening || loading) return
   const recog = getSpeechRecognition()
   if (!recog) return

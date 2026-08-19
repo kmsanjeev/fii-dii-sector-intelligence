@@ -20,6 +20,7 @@ def _make_client() -> TestClient:
 def test_chat_capabilities_reports_runtime_research_capabilities(monkeypatch):
     monkeypatch.setattr(cfg, "VEDA_RESEARCH_AUTO_FOR_RESEARCH_INTENT", True)
     monkeypatch.setattr(cfg, "VEDA_MIT_REPO_INTAKE_ENABLED", True)
+    monkeypatch.setattr(cfg, "VEDA_MCP_ENABLED", True)
 
     class FakeResearchService:
         def capabilities(self) -> dict:

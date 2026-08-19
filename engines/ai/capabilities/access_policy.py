@@ -24,6 +24,17 @@ DISABLED = "DISABLED"
 ADMIN_ONLY = "ADMIN_ONLY"
 
 
+class CapabilityAccessError(RuntimeError):
+    """Deterministic failure raised when a capability cannot be used."""
+
+    def __init__(self, capability_id: str, code: str, detail: str, status_code: int):
+        super().__init__(detail)
+        self.capability_id = capability_id
+        self.code = code
+        self.detail = detail
+        self.status_code = status_code
+
+
 @dataclass(frozen=True)
 class CapabilityDefinition:
     capability_id: str
@@ -199,6 +210,39 @@ def resolve_intent(intent_type: str, *, research_mode: bool = False) -> Capabili
     return get_state(capability_id)
 
 
+def require_capability_access(capability_id: str) -> CapabilityState:
+    """Return an enabled capability or raise a typed access/runtime error.
+
+    Administrator policy is evaluated before runtime availability so a disabled
+    capability cannot be revived by an environment flag.  The helper is kept
+    framework-neutral so routers, services and direct engine callers share the
+    same decision.
+    """
+    state = get_state(capability_id)
+    if state.effective_access == DISABLED:
+        raise CapabilityAccessError(
+            state.capability_id,
+            "CONFIG_ACCESS_DENIED",
+            f"{state.label} is disabled by administrator configuration.",
+            403,
+        )
+    if state.effective_access == ADMIN_ONLY:
+        raise CapabilityAccessError(
+            state.capability_id,
+            "ADMIN_ONLY",
+            f"{state.label} is available only to administrators.",
+            403,
+        )
+    if state.effective_access != ENABLED:
+        raise CapabilityAccessError(
+            state.capability_id,
+            "CAPABILITY_UNAVAILABLE",
+            f"{state.label} is configured on, but its runtime dependency is unavailable.",
+            503,
+        )
+    return state
+
+
 def set_access(capability_id: str, state: str) -> list[dict[str, Any]]:
     key = str(capability_id or "").upper()
     if key not in _BY_ID:
@@ -237,4 +281,4 @@ def disabled_reply(state: CapabilityState) -> str:
     return f"The {state.label} capability is currently disabled by configuration. An administrator can enable it in Veda Configuration. Other conversational assistance remains available."
 
 
-__all__ = ["ADMIN_ONLY", "DISABLED", "ENABLED", "POLICY_VERSION", "SCHEMA_VERSION", "configuration", "definitions", "disabled_reply", "get_state", "get_states", "reset_defaults", "resolve_intent", "set_access"]
+__all__ = ["ADMIN_ONLY", "CapabilityAccessError", "DISABLED", "ENABLED", "POLICY_VERSION", "SCHEMA_VERSION", "configuration", "definitions", "disabled_reply", "get_state", "get_states", "require_capability_access", "reset_defaults", "resolve_intent", "set_access"]

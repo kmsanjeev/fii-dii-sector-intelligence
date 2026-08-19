@@ -514,6 +514,7 @@ export type ChatCapabilities = {
   save_to_knowledge_enabled: boolean
   mit_repo_intake_enabled: boolean
   mcp_enabled: boolean
+  voice_enabled?: boolean
   mcp_server_names: string[]
   supported_attachment_mime_prefixes: string[]
   policy_version?: string

@@ -14,6 +14,18 @@
   routing/configuration remediation is recommended but not started. Evidence:
   `docs/current-state/veda-runtime-capability-exposure-audit-001/`.
 
+- `VEDA-RUNTIME-CAPABILITY-CONFIGURATION-AND-ROUTING-REMEDIATION-001`
+  completed with `VEDA_RUNTIME_CAPABILITY_WIRING_REMEDIATION_OPERATIONAL_WITH_CONDITION`.
+  The auxiliary ATTACHMENTS, REVIEWED_MEMORY, MIT_REPO_INTAKE, MCP and VOICE
+  paths now enforce effective policy; explicit research retains subject
+  context; Muhurta/Panchanga and AstroFinance routing is corrected; and
+  provider-visible/execution-time tool scope is bounded. The 50-case matrix is
+  50/50 with zero gaps and zero overbroad cases. Full Python is 1,298/1,298;
+  frontend is 29/29 and build passes. MCP remains correctly unavailable because
+  no provider/server is configured. No P032, source, RAG, maturity, prediction,
+  ML, Approved Core, EMP-001 or human-validation state changed. Evidence:
+  `docs/current-state/veda-runtime-capability-configuration-and-routing-remediation-001/`.
+
 - `VEDA-CONVERSATIONAL-ACCESS-CONFIGURATION-RX1-001` completed with decision
   `VEDA_CONVERSATIONAL_ACCESS_RX1_OPERATIONAL` from the clean predecessor
   baseline `2485ab13e24fd73ec74b0c8032082a84b55a2cec`. Protected

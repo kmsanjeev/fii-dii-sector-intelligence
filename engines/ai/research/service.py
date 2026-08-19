@@ -5,6 +5,7 @@ from time import time
 
 from engines.ai.research.providers import DDGSResearchProvider, MCPResearchProvider
 from engines.ai.research.schemas import ResearchResult
+from engines.ai.capabilities import get_state
 from engines.common import config as cfg
 
 
@@ -23,14 +24,25 @@ class ResearchService:
         provider = self._providers.get(cfg.VEDA_RESEARCH_PROVIDER)
         mcp_provider = self._providers.get("mcp")
         provider_available = bool(provider and provider.is_available())
-        mcp_available = bool(cfg.VEDA_MCP_ENABLED and mcp_provider and mcp_provider.is_available())
+        mcp_available = bool(
+            get_state("MCP").effective_access == "ENABLED"
+            and cfg.VEDA_MCP_ENABLED
+            and mcp_provider
+            and mcp_provider.is_available()
+        )
         return {
-            "research_enabled": cfg.VEDA_RESEARCH_ENABLED,
+            "research_enabled": bool(cfg.VEDA_RESEARCH_ENABLED and get_state("RESEARCH").effective_access == "ENABLED"),
             "default_provider": cfg.VEDA_RESEARCH_PROVIDER,
             "provider_available": provider_available,
             "research_runtime_ready": bool(cfg.VEDA_RESEARCH_ENABLED and (provider_available or mcp_available)),
-            "attachments_enabled": cfg.VEDA_ATTACHMENTS_ENABLED,
-            "save_to_knowledge_enabled": cfg.VEDA_SAVE_TO_KNOWLEDGE_ENABLED,
+            "attachments_enabled": bool(
+                cfg.VEDA_ATTACHMENTS_ENABLED
+                and get_state("ATTACHMENTS").effective_access == "ENABLED"
+            ),
+            "save_to_knowledge_enabled": bool(
+                cfg.VEDA_SAVE_TO_KNOWLEDGE_ENABLED
+                and get_state("REVIEWED_MEMORY").effective_access == "ENABLED"
+            ),
             "mcp_enabled": mcp_available,
             "mcp_server_names": mcp_provider.server_names() if mcp_provider else [],
         }
@@ -40,7 +52,7 @@ class ResearchService:
         provider_name = cfg.VEDA_RESEARCH_PROVIDER
         result = ResearchResult(provider=provider_name, query=normalized, reason=reason)
 
-        if not cfg.VEDA_RESEARCH_ENABLED:
+        if not cfg.VEDA_RESEARCH_ENABLED or get_state("RESEARCH").effective_access != "ENABLED":
             result.error = "research_disabled"
             return result
         if not normalized:
@@ -77,6 +89,7 @@ class ResearchService:
         should_try_mcp = (
             primary.provider != "mcp"
             and bool(mcp_provider)
+            and get_state("MCP").effective_access == "ENABLED"
             and cfg.VEDA_MCP_ENABLED
             and mcp_provider.is_available()
             and not primary.used

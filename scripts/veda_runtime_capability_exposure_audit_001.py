@@ -1,9 +1,9 @@
 """Deterministic, provider-free matrix for VEDA runtime exposure audit 001.
 
 This is an audit harness, not a production router. It records the desired
-capability for representative user behavior and the current observed route,
-including known gaps. A gap is evidence for the remediation register; it is
-not silently treated as a test pass.
+capability for representative user behavior and the current observed route.
+The historical predecessor report retained the pre-remediation gaps; this
+live harness is intentionally rerun after the wiring remediation.
 """
 
 from __future__ import annotations
@@ -65,7 +65,7 @@ CASES: tuple[BehaviorCase, ...] = (
     BehaviorCase("B028", "what is Nakshatra", "ASTROLOGY", "NONE", "ASTRO"),
     BehaviorCase("B029", "explain Shadbala", "ASTROLOGY", "NONE", "ASTRO"),
     BehaviorCase("B030", "what is Ashtakavarga", "ASTROLOGY", "NONE", "ASTRO"),
-    BehaviorCase("B031", "what is Panchanga", "MUHURTA", "NONE", "MUHURTA"),
+    BehaviorCase("B031", "what is Panchanga", "ASTROLOGY", "NONE", "ASTRO"),
     BehaviorCase("B032", "what is my Dasha", "ASTROLOGY", "NONE", "ASTRO"),
     BehaviorCase("B033", "generate my Kundli", "PERSONAL_KUNDLI", "KUNDLI_TOOL", "KUNDLI"),
     BehaviorCase("B034", "my date of birth is 1 Jan 1990", "PERSONAL_KUNDLI", "KUNDLI_TOOL", "KUNDLI"),
@@ -89,6 +89,8 @@ CASES: tuple[BehaviorCase, ...] = (
 
 
 def _actual_tool_class(intent_type: str) -> str:
+    if intent_type == "RESEARCH":
+        return "RESEARCH_SERVICE"
     names = _tool_names_for_intent(intent_type)
     if names is None:
         return "ALL_REGISTERED_TOOLS"

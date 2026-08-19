@@ -91,6 +91,7 @@ class UnifiedHybridRetriever:
         domain: Optional[str] = None,
         *,
         mode: RetrievalMode | str | None = None,
+        blocked_source_types: set[str] | None = None,
     ) -> list[dict[str, Any]]:
         mode = _mode_for_query(query) if mode is None else RetrievalMode(mode)
         if domain is None:
@@ -103,6 +104,7 @@ class UnifiedHybridRetriever:
         fused = _rrf_fuse(bm25_results, faiss_results, k=RRF_K)
         fused = _merge_ranked_results(fused, approved_core_results, rank_field="approved_core_rank", k=RRF_K)
         rescored = _apply_post_rank(fused, query=query, requested_domain=domain, mode=mode)
+        blocked = {str(item) for item in (blocked_source_types or set())}
         filtered = [
             doc
             for doc in rescored
@@ -110,6 +112,7 @@ class UnifiedHybridRetriever:
                 str(doc.get("source_type") or "") == "approved_core"
                 and str(doc.get("version_state") or "").upper() in {"SUPERSEDED", "DEPRECATED", "WITHDRAWN"}
             )
+            and str(doc.get("source_type") or "") not in blocked
         ]
         return [_decorate_doc(doc) for doc in _filter_by_mode(filtered, mode)[: self.top_k]]
 
@@ -119,9 +122,10 @@ class UnifiedHybridRetriever:
         *,
         top_k: int = 4,
         mode: RetrievalMode | str | None = None,
+        blocked_source_types: set[str] | None = None,
     ) -> dict[str, Any]:
         mode = RetrievalMode(mode) if mode else _mode_for_query(query)
-        results = self.retrieve(query, mode=mode)[:top_k]
+        results = self.retrieve(query, mode=mode, blocked_source_types=blocked_source_types)[:top_k]
         summary = _summarize_results(results)
         return {
             "context": _render_context(results, summary=summary),
@@ -131,13 +135,15 @@ class UnifiedHybridRetriever:
             "knowledge_usage_trace": {
                 "available_knowledge": "unified corpus inputs",
                 "retrieved_knowledge_count": len(results),
-                "filtered_knowledge": "trust zones excluded by retrieval mode",
+                "filtered_knowledge": "trust zones and capability-disabled source types excluded",
                 "selected_trust_zones": sorted({str(item.get("trust_zone") or "") for item in results}),
             },
         }
 
-    def build_context(self, query: str, *, top_k: int = 4, mode: RetrievalMode | str | None = None) -> str:
-        return str(self.build_context_bundle(query, top_k=top_k, mode=mode).get("context") or "")
+    def build_context(self, query: str, *, top_k: int = 4, mode: RetrievalMode | str | None = None,
+                      blocked_source_types: set[str] | None = None) -> str:
+        return str(self.build_context_bundle(query, top_k=top_k, mode=mode,
+                                             blocked_source_types=blocked_source_types).get("context") or "")
 
 
 def _rrf_fuse(list_a: list[dict[str, Any]], list_b: list[dict[str, Any]], k: int = RRF_K) -> list[dict[str, Any]]:

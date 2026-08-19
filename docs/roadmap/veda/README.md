@@ -1,6 +1,19 @@
 # VEDA Roadmap Entry Point
 
 Current synchronization (2026-08-20):
+`VEDA-RUNTIME-CAPABILITY-CONFIGURATION-AND-ROUTING-REMEDIATION-001` completed
+with `VEDA_RUNTIME_CAPABILITY_WIRING_REMEDIATION_OPERATIONAL_WITH_CONDITION`.
+The five auxiliary capability paths now use effective policy enforcement;
+explicit research retains subject context; Muhurta/Panchanga and AstroFinance
+routing is corrected; and provider-visible plus execution-time tool scopes are
+bounded. The deterministic matrix is 50/50 with zero intent gaps and zero
+overbroad tool cases. Full Python is 1,298/1,298, frontend is 29/29 and the
+build passes. MCP remains accurately `UNAVAILABLE` because no provider/server
+is configured. No P032, source, RAG, prediction, ML, maturity, Approved Core,
+EMP or human-validation state changed. Evidence:
+`docs/current-state/veda-runtime-capability-configuration-and-routing-remediation-001/`.
+
+Current synchronization (2026-08-20):
 `VEDA-RUNTIME-CAPABILITY-EXPOSURE-AUDIT-001` completed with
 `PASS_WITH_CONDITION` and decision
 `VEDA_RUNTIME_EXPOSURE_MULTIPLE_WIRING_GAPS`. The runtime audit found no P0
