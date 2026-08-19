@@ -1,0 +1,34 @@
+{
+  "api": "NO_DIRECT_BAV_SAV_API_CONSUMER_FOUND",
+  "audit_and_tests": [
+    {
+      "path": "tests/test_veda_shadbala_engine_p018_r2.py",
+      "status": "UPDATED_CANONICAL_AND_LEGACY_COVERAGE"
+    },
+    {
+      "path": "scripts/veda_calc_ashtakavarga_decision_001.py",
+      "status": "REFERENCE_AUDIT_ONLY"
+    },
+    {
+      "path": "scripts/veda_calc_jyotisha_core_001.py",
+      "status": "AUDIT_ONLY"
+    }
+  ],
+  "indirect_runtime": [
+    {
+      "path": "engines/intelligence/kundli_engine.py",
+      "status": "NO_BREAKAGE_OBSERVED",
+      "surface": "Shadbala import only; no direct BAV/SAV consumer"
+    }
+  ],
+  "ml": "NONE",
+  "prediction": "NONE",
+  "production_internal": [
+    {
+      "path": "engines/ai/knowledge/shadbala_engine.py",
+      "status": "V2_DEFAULT",
+      "surface": "BAV/SAV default runtime"
+    }
+  ],
+  "ui": "NO_DIRECT_BAV_SAV_UI_CONSUMER_FOUND"
+}

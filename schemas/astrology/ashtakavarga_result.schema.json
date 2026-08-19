@@ -13,6 +13,23 @@
     "calculation_version": {"type": "string"},
     "source_claim_ids": {"type": "array", "items": {"type": "string"}},
     "total_bindus": {"type": "integer"},
-    "bav_results": {"type": "object"}
+    "bav_results": {"type": "object"},
+    "method_id": {"type": "string"},
+    "contract_id": {"type": "string"},
+    "contract_version": {"type": "string"},
+    "contract_hash": {"type": "string"},
+    "source_matrix_hash": {"type": "string"},
+    "reductions": {"type": "string"},
+    "interpretation": {"type": "string"},
+    "complete_chart": {"type": "boolean"},
+    "missing_inputs": {"type": "array", "items": {"type": "string"}},
+    "target": {"type": "string"},
+    "contributors_used": {"type": "array", "items": {"type": "string"}},
+    "lagna_bav": {"type": "object"},
+    "ordinary_sav_excludes_lagna": {"type": "boolean"},
+    "raw_sav_with_lagna_combined": {"type": "array", "items": {"type": "object"}},
+    "combined_total_bindus": {"type": "integer"},
+    "combined_label": {"type": "string"},
+    "excluded": {"type": "boolean"}
   }
 }

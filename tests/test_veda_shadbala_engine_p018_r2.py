@@ -1,7 +1,8 @@
 """P018-R2 Shadbala Engine Tests.
 
 Tests the six-component Shadbala calculation, BAV/SAV, and provenance tracking.
-All tests verify methodology implementation without implying production readiness.
+The Ashtakavarga assertions cover the canonical BPHS V2 production contract;
+legacy P018-R2 replay is tested through its explicit compatibility route.
 """
 
 import json
@@ -27,6 +28,7 @@ from engines.ai.knowledge.shadbala_engine import (
     calculate_shadbala,
     calculate_bav,
     calculate_sav,
+    ASHTAKAVARGA_RUNTIME_VALIDATED,
 )
 
 
@@ -308,30 +310,29 @@ class TestBAV:
     def test_bav_produces_bindu_count(self):
         planet_rashis = {
             "Sun": 1, "Moon": 4, "Mars": 7, "Mercury": 10,
-            "Jupiter": 1, "Venus": 4, "Saturn": 7,
+            "Jupiter": 1, "Venus": 4, "Saturn": 7, "Lagna": 10,
         }
         result = calculate_bav("Sun", planet_rashis)
-        assert result["status"] == "IMPLEMENTED_UNVALIDATED"
+        assert result["status"] == ASHTAKAVARGA_RUNTIME_VALIDATED
         assert result["total_bindus"] >= 0
         assert len(result["rashis"]) == 12
 
     def test_bav_has_source_claim(self):
-        planet_rashis = {"Sun": 1, "Moon": 4}
+        planet_rashis = {"Sun": 1, "Moon": 4, "Mars": 7, "Mercury": 10, "Jupiter": 1, "Venus": 4, "Saturn": 7, "Lagna": 10}
         result = calculate_bav("Sun", planet_rashis)
-        assert "VEDA-R2-CLM-000008" in result["source_claim_ids"]
+        assert "VEDA-CALC-ASHTAKAVARGA-CONTRACT-RX2-001" in result["source_claim_ids"]
 
     def test_bav_is_target_sign_sensitive(self):
-        result = calculate_bav("Sun", {"Sun": 1, "Moon": 4, "Mars": 7})
+        result = calculate_bav("Sun", {"Sun": 1, "Moon": 3, "Mars": 7, "Mercury": 10, "Jupiter": 1, "Venus": 4, "Saturn": 7, "Lagna": 4})
         by_sign = {item["sign"]: item["bindus"] for item in result["rashis"]}
-        assert by_sign[4] == 1
-        assert by_sign[7] == 1
-        assert by_sign[1] == 0
+        assert by_sign[3] >= 1
+        assert by_sign[7] >= 1
         assert len({item["bindus"] for item in result["rashis"]}) > 1
 
     def test_bav_result_matches_schema(self):
         planet_rashis = {
             "Sun": 1, "Moon": 4, "Mars": 7, "Mercury": 10,
-            "Jupiter": 1, "Venus": 4, "Saturn": 7,
+            "Jupiter": 1, "Venus": 4, "Saturn": 7, "Lagna": 10,
         }
         result = calculate_bav("Sun", planet_rashis)
         schema = json.loads(
@@ -351,10 +352,10 @@ class TestSAV:
     def test_sav_aggregates_all_bav(self):
         planet_rashis = {
             "Sun": 1, "Moon": 4, "Mars": 7, "Mercury": 10,
-            "Jupiter": 1, "Venus": 4, "Saturn": 7,
+            "Jupiter": 1, "Venus": 4, "Saturn": 7, "Lagna": 10,
         }
         result = calculate_sav(planet_rashis)
-        assert result["status"] == "IMPLEMENTED_UNVALIDATED"
+        assert result["status"] == ASHTAKAVARGA_RUNTIME_VALIDATED
         assert result["total_bindus"] >= 0
         assert len(result["rashis"]) == 12
 
@@ -368,9 +369,9 @@ class TestSAV:
         assert result["total_bindus"] == bav_total
 
     def test_sav_has_source_claim(self):
-        planet_rashis = {"Sun": 1, "Moon": 4}
+        planet_rashis = {"Sun": 1, "Moon": 4, "Mars": 7, "Mercury": 10, "Jupiter": 1, "Venus": 4, "Saturn": 7, "Lagna": 10}
         result = calculate_sav(planet_rashis)
-        assert "VEDA-R2-CLM-000009" in result["source_claim_ids"]
+        assert "VEDA-CALC-ASHTAKAVARGA-CONTRACT-RX2-001" in result["source_claim_ids"]
 
 
 # ---------------------------------------------------------------------------

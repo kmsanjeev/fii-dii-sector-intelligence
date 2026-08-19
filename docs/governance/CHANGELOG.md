@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-REMEDIATION-RX2-001
+
+Completed the canonical BPHS V2 raw BAV/SAV production remediation with
+`ASHTAKAVARGA_V2_RAW_RUNTIME_REMEDIATED_WITH_LEGACY_COMPATIBILITY`.
+The production default is now `ASHTAKAVARGA_RAW_BPHS_PRIMARY_V2`, exposed as
+`P018-BAV-BPHS-V2` and `P018-SAV-BPHS-V2`, with explicit Lagna BAV and ordinary
+planetary SAV excluding Lagna. The source table conforms exactly across 768/768
+cells, and an independent source-derived oracle matches 99/99 deterministic
+charts for planetary BAV, planetary SAV, Lagna BAV and combined output. The
+legacy `P018-R2-BAV-001` / `P018-R2-SAV-001` route remains explicit for replay;
+it is not the default. Reductions remain deferred, external numerical oracle
+coverage is unavailable, and interpretation/prediction/ML/Approved Core remain
+gated. Evidence is in
+`docs/current-state/calc-ashtakavarga-remediation-rx2-001/`.
+
 ## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-CONTRACT-RX2-001
 
 Accepted the source-consistent Ashtakavarga V2 contract with condition.
@@ -11,10 +26,9 @@ It defines 336 planetary, 49 Lagna and 385 combined semantics; 337/386 remain
 modern implementation-witness values, not canonical BPHS invariants. V1 was
 not edited and remains historically superseded as an invalid hybrid.
 Phaladeepika's seven variant pairs and Varahamihira alternative remain
-isolated. Runtime remains `IMPLEMENTED_UNVALIDATED`, and the new
-`VEDA-CALC-ASHTAKAVARGA-REMEDIATION-RX2-001` is authorized but not started.
-No production code, reductions, RAG, prediction, ML or Approved Core state
-changed. Evidence is in
+isolated. Runtime binding was completed by the subsequent RX2 remediation;
+the contract remains the immutable source boundary. No reductions, RAG,
+prediction, ML or Approved Core state changed. Evidence is in
 `docs/current-state/calc-ashtakavarga-contract-rx2-001/`.
 
 ## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-INVARIANT-RX-001

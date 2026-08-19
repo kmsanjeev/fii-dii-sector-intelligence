@@ -22,6 +22,16 @@ import math
 from typing import Any
 
 from engines.ai.knowledge.strength_governance import canonical_strength_fact
+from engines.ai.knowledge.ashtakavarga_contract_v2 import (
+    CONTRACT_HASH as ASHTAKAVARGA_CONTRACT_HASH,
+    CONTRACT_ID as ASHTAKAVARGA_CONTRACT_ID,
+    CONTRACT_VERSION as ASHTAKAVARGA_CONTRACT_VERSION,
+    CONTRIBUTORS as ASHTAKAVARGA_CONTRIBUTORS,
+    PLANETARY_TARGETS as ASHTAKAVARGA_PLANETARY_TARGETS,
+    QUALIFYING_RELATIVE_POSITIONS,
+    SOURCE_MATRIX_HASH as ASHTAKAVARGA_SOURCE_MATRIX_HASH,
+    TARGETS as ASHTAKAVARGA_TARGETS,
+)
 
 # ---------------------------------------------------------------------------
 # Constants — all source-traceable to BPHS Chapter 29 / Jataka Parijata
@@ -93,9 +103,10 @@ KENDRA_POSITIONS = {1, 4, 7, 10}
 # Planet order for Ashtakavarga
 PLANET_ORDER = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
 
-# BAV (Bhinna Ashtakavarga) contribution table
-# Source: BPHS Ch.69, confirmed by B.V. Raman, K.N. Rao, Phaladeepika
-# BAV_SUN[relative_position] = 1 means this relative position gets a bindu from Sun
+# LEGACY BAV contribution table.  It remains exported for historical
+# reproducibility only; the production default uses the explicit V2
+# target/contributor table below.
+# Legacy method: P018-R2-BAV-001 / P018-R2-SAV-001.
 BAV_CONTRIBUTIONS: dict[str, list[int]] = {
     "Sun":     [1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0],  # signs 1-12
     "Moon":    [1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0],
@@ -563,7 +574,7 @@ def calculate_shadbala(
 # Ashtakavarga (BAV + SAV)
 # ---------------------------------------------------------------------------
 
-def calculate_bav(planet: str, planet_rashis: dict[str, int]) -> dict[str, Any]:
+def _legacy_bav(planet: str, planet_rashis: dict[str, int]) -> dict[str, Any]:
     """Calculate Bhinna Ashtakavarga (BAV) for a planet.
 
     For each sign position (1-12), count how many other planets receive
@@ -621,7 +632,7 @@ def calculate_bav(planet: str, planet_rashis: dict[str, int]) -> dict[str, Any]:
     }
 
 
-def calculate_sav(planet_rashis: dict[str, int]) -> dict[str, Any]:
+def _legacy_sav(planet_rashis: dict[str, int]) -> dict[str, Any]:
     """Calculate Sarvashtakavarga (SAV).
 
     SAV is the sum of all BAV columns for each sign position.
@@ -639,7 +650,7 @@ def calculate_sav(planet_rashis: dict[str, int]) -> dict[str, Any]:
     all_bav = {}
     for planet in PLANET_ORDER:
         if planet in planet_rashis:
-            all_bav[planet] = calculate_bav(planet, planet_rashis)
+            all_bav[planet] = _legacy_bav(planet, planet_rashis)
 
     # Aggregate SAV
     sav_rashis = []
@@ -673,6 +684,176 @@ def calculate_sav(planet_rashis: dict[str, int]) -> dict[str, Any]:
     }
 
 
+ASHTAKAVARGA_RUNTIME_VALIDATED = "RAW_SOURCE_CONTRACT_IMPLEMENTED_AND_VALIDATED"
+ASHTAKAVARGA_INSUFFICIENT_DATA = "INSUFFICIENT_DATA"
+LEGACY_BAV_METHOD_ID = "P018-R2-BAV-001"
+LEGACY_SAV_METHOD_ID = "P018-R2-SAV-001"
+CANONICAL_BAV_METHOD_ID = "P018-BAV-BPHS-V2"
+CANONICAL_SAV_METHOD_ID = "P018-SAV-BPHS-V2"
+
+
+def calculate_bav_legacy(planet: str, planet_rashis: dict[str, int]) -> dict[str, Any]:
+    """Explicit historical P018-R2 BAV route; never the canonical default."""
+    return _legacy_bav(planet, planet_rashis)
+
+
+def calculate_sav_legacy(planet_rashis: dict[str, int]) -> dict[str, Any]:
+    """Explicit historical P018-R2 SAV route; never the canonical default."""
+    return _legacy_sav(planet_rashis)
+
+
+def _canonical_positions(planet_rashis: dict[str, int], lagna_rashi: int | None = None) -> dict[str, int]:
+    """Resolve only governed chart facts; unknown nodes are never contributors."""
+    positions: dict[str, int] = {}
+    for contributor in ASHTAKAVARGA_CONTRIBUTORS:
+        value = lagna_rashi if contributor == "Lagna" and lagna_rashi is not None else planet_rashis.get(contributor)
+        if value is None:
+            continue
+        value = int(value)
+        if not 1 <= value <= 12:
+            raise ValueError(f"{contributor} rashi must be in the inclusive range 1..12")
+        positions[contributor] = value
+    return positions
+
+
+def _canonical_metadata(mode: str, method_id: str) -> dict[str, Any]:
+    return {
+        "system": "ASHTAKAVARGA",
+        "mode": mode,
+        "calculation_version": method_id,
+        "method_id": method_id,
+        "contract_id": ASHTAKAVARGA_CONTRACT_ID,
+        "contract_version": ASHTAKAVARGA_CONTRACT_VERSION,
+        "contract_hash": ASHTAKAVARGA_CONTRACT_HASH,
+        "source_matrix_hash": ASHTAKAVARGA_SOURCE_MATRIX_HASH,
+        "source_claim_ids": ["VEDA-CALC-ASHTAKAVARGA-CONTRACT-RX2-001"],
+        "reductions": "RAW_ONLY",
+        "interpretation": "RESEARCH_ONLY",
+    }
+
+
+def _canonical_bav(planet: str, planet_rashis: dict[str, int], lagna_rashi: int | None = None) -> dict[str, Any]:
+    metadata = _canonical_metadata("BAV", CANONICAL_BAV_METHOD_ID)
+    if planet not in ASHTAKAVARGA_TARGETS:
+        return {
+            **metadata,
+            "subject_entity": f"VEDA-GRAHA-{planet.upper()}",
+            "rashis": [],
+            "status": "UNSUPPORTED_TARGET",
+            "excluded": planet in {"Rahu", "Ketu"},
+        }
+    positions = _canonical_positions(planet_rashis, lagna_rashi)
+    missing = [name for name in ASHTAKAVARGA_CONTRIBUTORS if name not in positions]
+    target_rashi = positions.get(planet)
+    if target_rashi is None:
+        missing = list(dict.fromkeys([planet, *missing]))
+    bindus_by_sign = {sign: 0 for sign in range(1, 13)}
+    if target_rashi is not None:
+        for contributor, contributor_rashi in positions.items():
+            relative = _relative_position(target_rashi, contributor_rashi)
+            if relative in QUALIFYING_RELATIVE_POSITIONS[planet][contributor]:
+                bindus_by_sign[contributor_rashi] += 1
+    rashis = [{"sign": sign, "bindus": bindus_by_sign[sign]} for sign in range(1, 13)]
+    return {
+        **metadata,
+        "subject_entity": f"VEDA-GRAHA-{planet.upper()}",
+        "rashis": rashis,
+        "total_bindus": sum(item["bindus"] for item in rashis),
+        "status": ASHTAKAVARGA_RUNTIME_VALIDATED if not missing else ASHTAKAVARGA_INSUFFICIENT_DATA,
+        "complete_chart": not missing,
+        "missing_inputs": missing,
+        "target": planet,
+        "contributors_used": list(positions),
+    }
+
+
+def calculate_bav(
+    planet: str,
+    planet_rashis: dict[str, int],
+    *,
+    lagna_rashi: int | None = None,
+    method: str = ASHTAKAVARGA_CONTRACT_ID,
+) -> dict[str, Any]:
+    """Calculate canonical BPHS V2 raw BAV by target/contributor cells.
+
+    ``planet_rashis`` may contain the governed ``Lagna`` sign. Alternatively,
+    callers may pass an existing ascendant fact as ``lagna_rashi``. Missing
+    Lagna is reported explicitly and never fabricated.
+    """
+    if method in {LEGACY_BAV_METHOD_ID, "LEGACY_P018_R2"}:
+        return _legacy_bav(planet, planet_rashis)
+    if method != ASHTAKAVARGA_CONTRACT_ID:
+        raise ValueError(f"unsupported Ashtakavarga method: {method}")
+    return _canonical_bav(planet, planet_rashis, lagna_rashi)
+
+
+def calculate_lagna_bav(
+    planet_rashis: dict[str, int],
+    *,
+    lagna_rashi: int | None = None,
+    method: str = ASHTAKAVARGA_CONTRACT_ID,
+) -> dict[str, Any]:
+    """Return the separate raw Lagna BAV target vector."""
+    return calculate_bav("Lagna", planet_rashis, lagna_rashi=lagna_rashi, method=method)
+
+
+def _canonical_sav(
+    planet_rashis: dict[str, int],
+    *,
+    include_lagna: bool = False,
+    lagna_rashi: int | None = None,
+) -> dict[str, Any]:
+    metadata = _canonical_metadata("SAV", CANONICAL_SAV_METHOD_ID)
+    all_bav = {planet: _canonical_bav(planet, planet_rashis, lagna_rashi) for planet in ASHTAKAVARGA_PLANETARY_TARGETS}
+    rashis = [
+        {
+            "sign": sign,
+            "total_bindus": sum(result["rashis"][sign - 1]["bindus"] for result in all_bav.values()),
+        }
+        for sign in range(1, 13)
+    ]
+    lagna_result = _canonical_bav("Lagna", planet_rashis, lagna_rashi)
+    status = ASHTAKAVARGA_RUNTIME_VALIDATED if all(result["status"] == ASHTAKAVARGA_RUNTIME_VALIDATED for result in all_bav.values()) and lagna_result["status"] == ASHTAKAVARGA_RUNTIME_VALIDATED else ASHTAKAVARGA_INSUFFICIENT_DATA
+    result: dict[str, Any] = {
+        **metadata,
+        "subject_entity": "FULL_CHART",
+        "rashis": rashis,
+        "total_bindus": sum(item["total_bindus"] for item in rashis),
+        "status": status,
+        "complete_chart": status == ASHTAKAVARGA_RUNTIME_VALIDATED,
+        "missing_inputs": sorted({item for data in all_bav.values() for item in data.get("missing_inputs", [])}),
+        "bav_results": {planet: data["total_bindus"] for planet, data in all_bav.items()},
+        "lagna_bav": lagna_result,
+        "ordinary_sav_excludes_lagna": True,
+    }
+    if include_lagna:
+        result["raw_sav_with_lagna_combined"] = [
+            {
+                "sign": sign,
+                "total_bindus": rashis[sign - 1]["total_bindus"] + lagna_result["rashis"][sign - 1]["bindus"],
+            }
+            for sign in range(1, 13)
+        ]
+        result["combined_total_bindus"] = result["total_bindus"] + lagna_result["total_bindus"]
+        result["combined_label"] = "RAW_SAV_WITH_LAGNA_COMBINED"
+    return result
+
+
+def calculate_sav(
+    planet_rashis: dict[str, int],
+    *,
+    include_lagna: bool = False,
+    lagna_rashi: int | None = None,
+    method: str = ASHTAKAVARGA_CONTRACT_ID,
+) -> dict[str, Any]:
+    """Calculate canonical raw planetary SAV, with optional Lagna view."""
+    if method in {LEGACY_SAV_METHOD_ID, "LEGACY_P018_R2"}:
+        return _legacy_sav(planet_rashis)
+    if method != ASHTAKAVARGA_CONTRACT_ID:
+        raise ValueError(f"unsupported Ashtakavarga method: {method}")
+    return _canonical_sav(planet_rashis, include_lagna=include_lagna, lagna_rashi=lagna_rashi)
+
+
 __all__ = [
     "NAISARGIKA_BALA",
     "DIG_BALA_MAXIMUM_HOUSE",
@@ -680,6 +861,14 @@ __all__ = [
     "VIMSHOPAKA_WEIGHTS",
     "DRIK_BALA_CONTRIBUTIONS",
     "STANDARD_ASPECTS",
+    "ASHTAKAVARGA_CONTRACT_ID",
+    "ASHTAKAVARGA_CONTRACT_VERSION",
+    "ASHTAKAVARGA_CONTRACT_HASH",
+    "ASHTAKAVARGA_SOURCE_MATRIX_HASH",
+    "CANONICAL_BAV_METHOD_ID",
+    "CANONICAL_SAV_METHOD_ID",
+    "LEGACY_BAV_METHOD_ID",
+    "LEGACY_SAV_METHOD_ID",
     "calculate_naisargika_bala",
     "calculate_dig_bala",
     "calculate_sthana_bala",
@@ -688,5 +877,8 @@ __all__ = [
     "calculate_drik_bala",
     "calculate_shadbala",
     "calculate_bav",
+    "calculate_bav_legacy",
     "calculate_sav",
+    "calculate_sav_legacy",
+    "calculate_lagna_bav",
 ]

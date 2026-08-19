@@ -30,8 +30,8 @@ from engines.ai.knowledge.dasha_governance import (
 )
 from engines.ai.knowledge.shadbala_engine import (
     BAV_CONTRIBUTIONS,
-    calculate_bav,
-    calculate_sav,
+    calculate_bav_legacy,
+    calculate_sav_legacy,
 )
 from engines.ai.knowledge.varga_governance import VARGA_METHODS, varga_sign
 from engines.ai.knowledge.yoga_dosha_governance import RULES, evaluate_rule
@@ -174,13 +174,15 @@ def dasha_results() -> dict[str, Any]:
 
 def ashtakavarga_results() -> dict[str, Any]:
     chart = {"Sun": 1, "Moon": 4, "Mars": 7, "Mercury": 10, "Jupiter": 1, "Venus": 4, "Saturn": 7}
-    bav = calculate_bav("Sun", chart)
-    sav = calculate_sav(chart)
+    # This historical audit fixture intentionally replays P018-R2; the
+    # production default is now canonical BPHS V2 and is audited separately.
+    bav = calculate_bav_legacy("Sun", chart)
+    sav = calculate_sav_legacy(chart)
     bav_map = {row["sign"]: row["bindus"] for row in bav["rashis"]}
     sav_map = {row["sign"]: row["total_bindus"] for row in sav["rashis"]}
     expected_bav = {1: 1, 4: 2, 7: 2, 10: 1}
     expected_sav = {1: 12, 4: 10, 7: 10, 10: 6}
-    row = {"fixture_id": "P018-R2-TARGET-SIGN-INVARIANT", "chart": chart, "observed_sun_bav": bav_map, "observed_sav": sav_map, "expected_nonzero_sun_bav": expected_bav, "expected_nonzero_sav": expected_sav, "bav_total": bav["total_bindus"], "sav_total": sav["total_bindus"], "target_sign_sensitive": {str(k): bav_map.get(k, 0) == v for k, v in expected_bav.items()}, "sav_aggregates_bav": sav["total_bindus"] == sum(calculate_bav(p, chart)["total_bindus"] for p in chart if p in BAV_CONTRIBUTIONS), "method_status": "IMPLEMENTED_UNVALIDATED", "source_status": "RESEARCH_REQUIRED", "external_numerical_witness": False}
+    row = {"fixture_id": "P018-R2-TARGET-SIGN-INVARIANT", "chart": chart, "observed_sun_bav": bav_map, "observed_sav": sav_map, "expected_nonzero_sun_bav": expected_bav, "expected_nonzero_sav": expected_sav, "bav_total": bav["total_bindus"], "sav_total": sav["total_bindus"], "target_sign_sensitive": {str(k): bav_map.get(k, 0) == v for k, v in expected_bav.items()}, "sav_aggregates_bav": sav["total_bindus"] == sum(calculate_bav_legacy(p, chart)["total_bindus"] for p in chart if p in BAV_CONTRIBUTIONS), "method_status": "IMPLEMENTED_UNVALIDATED", "source_status": "HISTORICAL_LEGACY_ROUTE", "external_numerical_witness": False}
     row["pass"] = all(row["target_sign_sensitive"].values()) and row["sav_aggregates_bav"]
     return {"cases": 1, "passed": int(row["pass"]), "failed": int(not row["pass"]), "method_status": "UNVALIDATED", "interpretation_status": "NOT_AUTHORIZED", "rows": [row], "rows_hash": _sha([row])}
 
