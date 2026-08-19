@@ -1,0 +1,23 @@
+{
+  "api_ui": "Jyotisha runtime surfaces expose D1/Varga/Dasha/fact outputs; no direct Ashtakavarga UI/API consumer found",
+  "ml": "locked; no calculation consumer activation",
+  "orphans_or_research_only": [
+    "other_dasha_systems",
+    "jaimini_primitives",
+    "arudha_calculations",
+    "D20 interpretation",
+    "Muhurta recommendations"
+  ],
+  "prediction": "no direct activation; PRED-M4 unchanged",
+  "production_internal": [
+    "engines/intelligence/kundli_engine.py",
+    "engines/intelligence/jyotisha_runtime.py",
+    "engines/ai/knowledge/varga_governance.py",
+    "engines/ai/knowledge/dasha_governance.py",
+    "engines/ai/knowledge/muhurta_foundation.py",
+    "engines/transit_gochar.py",
+    "engines/ai/knowledge/shadbala_engine.py"
+  ],
+  "rag": "RAG stores governed records; no calculation result is promoted by this activity",
+  "research_audit": "calculation and governance scripts/tests consume explicit artifacts"
+}

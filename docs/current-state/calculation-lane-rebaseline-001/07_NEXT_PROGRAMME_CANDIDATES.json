@@ -1,0 +1,75 @@
+{
+  "candidate_count": 5,
+  "candidates": [
+    {
+      "autonomous": "YES",
+      "dependency": "existing knowledge/source registry and claim schemas",
+      "estimated_scope": "MEDIUM",
+      "evidence_readiness": "READY_FOR_BOUNDED_AUDIT",
+      "expected_value": "HIGH",
+      "id": "VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001",
+      "lane": "SOURCE GOVERNANCE",
+      "objective": "Generalize text/witness/edition/passage/layer/normalized-assertion/variant/authority metadata from Ashtakavarga to future source-heavy knowledge",
+      "rank": 1,
+      "risk": "MEDIUM",
+      "selected": true,
+      "why_now": "RX2 demonstrated that explicit witness lineage prevents invalid hybrid contracts"
+    },
+    {
+      "autonomous": "CONDITIONAL_NO",
+      "dependency": "legible primary witness and variant decision",
+      "estimated_scope": "MEDIUM",
+      "evidence_readiness": "PARTIAL",
+      "expected_value": "HIGH",
+      "id": "VEDA-CALC-D20-SOURCE-RECONCILIATION-001",
+      "lane": "CALCULATION / SOURCE GOVERNANCE",
+      "objective": "Resolve D20 destination/sign/deity mapping with a source-scoped witness",
+      "rank": 2,
+      "risk": "HIGH",
+      "selected": false,
+      "why_now": "D20 remains the clearest partial calculation family"
+    },
+    {
+      "autonomous": "YES_BOUNDED",
+      "dependency": "edition/passages and independent numerical witnesses",
+      "estimated_scope": "LARGE",
+      "evidence_readiness": "PARTIAL",
+      "expected_value": "HIGH",
+      "id": "VEDA-KNOW-STRENGTH-SOURCE-001",
+      "lane": "SOURCE GOVERNANCE",
+      "objective": "Harden Shadbala, Cheshta, Drik and related Bala source contracts",
+      "rank": 3,
+      "risk": "HIGH",
+      "selected": false,
+      "why_now": "Strength implementation exists but component provenance is uneven"
+    },
+    {
+      "autonomous": "NO",
+      "dependency": "legible edition-specific operative passages",
+      "estimated_scope": "MEDIUM",
+      "evidence_readiness": "BLOCKED_BY_SOURCE_WITNESS",
+      "expected_value": "MEDIUM",
+      "id": "VEDA-KNOW-MUHURTA-BALA-001",
+      "lane": "SOURCE GOVERNANCE",
+      "objective": "Audit operative Tara Bala and Chandra Bala formulas without activating recommendations",
+      "rank": 4,
+      "risk": "HIGH",
+      "selected": false,
+      "why_now": "P032 facts are frozen but personal Bala is the remaining foundation gap"
+    },
+    {
+      "autonomous": "YES_BOUNDED",
+      "dependency": "new independent reference scope",
+      "estimated_scope": "SMALL",
+      "evidence_readiness": "PARTIAL",
+      "expected_value": "MEDIUM",
+      "id": "VEDA-CALC-SIDEREAL-REFERENCE-POLICY-001",
+      "lane": "CALCULATION",
+      "objective": "Reconcile remaining sidereal/Ascendant boundary reference policy",
+      "rank": 5,
+      "risk": "MEDIUM",
+      "selected": false,
+      "why_now": "Known boundary differences remain explicit after Oracle/ASC work"
+    }
+  ]
+}

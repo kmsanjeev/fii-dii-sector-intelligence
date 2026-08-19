@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-CALCULATION-LANE-REBASELINE-001
+
+Completed the post-RX2 calculation-lane audit with `PASS_WITH_CONDITION`. The
+32-family inventory, maturity matrix, source-readiness matrix, consumer map,
+stop/defer register and bounded next-programme decision are deterministic and
+preserve the existing calculation, evidence and activation boundaries. The
+recommended `VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001` source-governance
+activity is evidence-ready but was not automatically started. No production
+calculation, RAG, prediction, ML or Approved Core state changed. Evidence is
+in `docs/current-state/calculation-lane-rebaseline-001/`.
+
 ## 2026-08-19 | VEDA-CALC-ASHTAKAVARGA-REMEDIATION-RX2-001
 
 Completed the canonical BPHS V2 raw BAV/SAV production remediation with
