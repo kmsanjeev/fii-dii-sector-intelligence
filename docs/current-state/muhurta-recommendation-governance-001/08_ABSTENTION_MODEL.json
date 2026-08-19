@@ -1,0 +1,19 @@
+{
+  "coverage": "Report applicable governed rules evaluated and unresolved source areas; never convert coverage to probability.",
+  "required_general_inputs": [
+    "activity",
+    "event location",
+    "candidate date/time range",
+    "timezone"
+  ],
+  "states": [
+    "UNSUPPORTED_ACTIVITY",
+    "INSUFFICIENT_RULE_COVERAGE",
+    "SOURCE_CONFLICT_UNRESOLVED",
+    "PERSONAL_DATA_INSUFFICIENT",
+    "PERSONAL_FACTORS_REQUIRED",
+    "LOCATION_OR_TIME_INSUFFICIENT",
+    "CALCULATION_CONFIDENCE_INSUFFICIENT",
+    "HIGH_RISK_OUTSIDE_SCOPE"
+  ]
+}

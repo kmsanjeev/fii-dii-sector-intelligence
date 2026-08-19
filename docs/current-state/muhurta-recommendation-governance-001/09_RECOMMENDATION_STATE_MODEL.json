@@ -1,0 +1,46 @@
+{
+  "abstention_states": [
+    "UNSUPPORTED_ACTIVITY",
+    "INSUFFICIENT_RULE_COVERAGE",
+    "SOURCE_CONFLICT_UNRESOLVED",
+    "PERSONAL_DATA_INSUFFICIENT",
+    "PERSONAL_FACTORS_REQUIRED",
+    "LOCATION_OR_TIME_INSUFFICIENT",
+    "CALCULATION_CONFIDENCE_INSUFFICIENT",
+    "HIGH_RISK_OUTSIDE_SCOPE"
+  ],
+  "arbitrary_weighted_score": false,
+  "comparison_states": [
+    "PREFERRED",
+    "ACCEPTABLE",
+    "ACCEPTABLE_WITH_CAUTION",
+    "MIXED",
+    "AVOID_UNDER_SELECTED_RULESET"
+  ],
+  "coverage": "Report applicable governed rules evaluated and unresolved source areas; never convert coverage to probability.",
+  "hard_exclusion_policy": "Valid activity/tradition-scoped exclusions block positive recommendations; preferences cannot cancel them.",
+  "positive_negative_policy": "Categorical precedence; no arbitrary points or hidden weights.",
+  "recommendation_states": [
+    "STRONGLY_SUPPORTED",
+    "SUPPORTED",
+    "SUPPORTED_WITH_CAUTION",
+    "MIXED_FACTORS",
+    "NOT_RECOMMENDED_UNDER_SELECTED_RULESET",
+    "INSUFFICIENT_RULE_COVERAGE",
+    "PERSONAL_FACTORS_REQUIRED",
+    "SOURCE_CONFLICT_UNRESOLVED",
+    "ABSTAIN"
+  ],
+  "resolver_order": [
+    "validate activity",
+    "hard exclusions",
+    "hard requirements",
+    "strong negatives",
+    "positive preferences",
+    "personal factors",
+    "variants/conflicts",
+    "classify",
+    "abstain if inadequate"
+  ],
+  "variant_policy": "Do not average incompatible traditions; expose tradition-specific results or abstain."
+}

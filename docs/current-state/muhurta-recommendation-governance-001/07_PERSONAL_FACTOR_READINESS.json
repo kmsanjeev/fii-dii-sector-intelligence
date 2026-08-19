@@ -1,0 +1,37 @@
+{
+  "birth_time_uncertainty": "PERSONAL_FACTORS_PARTIAL or PERSONAL_DATA_INSUFFICIENT; never silently neutral",
+  "chandra_bala": {
+    "calculation": "NOT_IMPLEMENTED",
+    "recommendation_use": "NO",
+    "source_contract": "REFERENCE_NOT_VERIFIED",
+    "status": "RESEARCH_ONLY"
+  },
+  "combined_context": {
+    "algorithm_ready": false,
+    "scope": "NARROW_SHANTI_CONTEXT_ONLY",
+    "source": "BPHS_CH89_02",
+    "status": "VALIDATED_KNOWLEDGE"
+  },
+  "general_inputs": [
+    "activity",
+    "event location",
+    "candidate date/time range",
+    "timezone"
+  ],
+  "general_recommendation_ready": "DESIGN_ONLY_WITH_CONDITIONS",
+  "other_personal_bala": "NOT_INVENTORIED_AS_EXECUTABLE",
+  "personal_inputs": [
+    "DOB",
+    "TOB",
+    "POB or validated birth facts",
+    "birth Nakshatra/Moon sign where governed",
+    "event location"
+  ],
+  "personalized_recommendation_ready": false,
+  "tara_bala": {
+    "calculation": "NOT_IMPLEMENTED",
+    "recommendation_use": "NO",
+    "source_contract": "REFERENCE_NOT_VERIFIED",
+    "status": "RESEARCH_ONLY"
+  }
+}

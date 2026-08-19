@@ -1,0 +1,117 @@
+{
+  "activities": [
+    {
+      "activity": "GENERAL_AUSPICIOUS_ACTIVITY",
+      "mvp": false,
+      "reason": "No single governed universal auspiciousness method.",
+      "risk": "LOW_RISK_TRADITIONAL",
+      "support": "RESEARCH_ONLY"
+    },
+    {
+      "activity": "BUSINESS_START_OR_INAUGURATION",
+      "mvp": true,
+      "reason": "Scoped action families exist; business-specific rules remain incomplete.",
+      "risk": "MODERATE_CONSEQUENCE",
+      "support": "SUPPORTED_WITH_CAUTION"
+    },
+    {
+      "activity": "NEW_VENTURE",
+      "mvp": false,
+      "reason": "Requires commercial, legal, tax, and financial context.",
+      "risk": "MODERATE_CONSEQUENCE",
+      "support": "RESEARCH_ONLY"
+    },
+    {
+      "activity": "PROPERTY_PURCHASE_OR_REGISTRATION",
+      "mvp": false,
+      "reason": "Legal title, valuation, financing, and property advice remain primary.",
+      "risk": "PROFESSIONAL_DOMAIN_DEPENDENT",
+      "support": "RESEARCH_ONLY"
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "mvp": false,
+      "reason": "Activity-specific source and practical readiness are incomplete.",
+      "risk": "MODERATE_CONSEQUENCE",
+      "support": "RESEARCH_ONLY"
+    },
+    {
+      "activity": "TRAVEL_OR_JOURNEY",
+      "mvp": false,
+      "reason": "No complete electional travel rule contract is active.",
+      "risk": "LOW_RISK_TRADITIONAL",
+      "support": "RESEARCH_ONLY"
+    },
+    {
+      "activity": "EDUCATION_COMMENCEMENT",
+      "mvp": true,
+      "reason": "Learning/action families are scoped; no outcome guarantee.",
+      "risk": "LOW_RISK_TRADITIONAL",
+      "support": "SUPPORTED_WITH_CAUTION"
+    },
+    {
+      "activity": "RELIGIOUS_OR_SPIRITUAL_CEREMONY",
+      "mvp": true,
+      "reason": "Ritual/action families are scoped; traditional consultation remains appropriate.",
+      "risk": "LOW_RISK_TRADITIONAL",
+      "support": "SUPPORTED_WITH_CAUTION"
+    },
+    {
+      "activity": "MARRIAGE_OR_ENGAGEMENT",
+      "mvp": false,
+      "reason": "Marriage conditions exist; no partner or outcome decision is permitted.",
+      "risk": "HIGH_CONSEQUENCE",
+      "support": "SUPPORTED_WITH_CAUTION"
+    },
+    {
+      "activity": "CONTRACT_OR_AGREEMENT",
+      "mvp": false,
+      "reason": "Legal review and deadlines remain primary.",
+      "risk": "PROFESSIONAL_DOMAIN_DEPENDENT",
+      "support": "RESEARCH_ONLY"
+    },
+    {
+      "activity": "VEHICLE_OR_ASSET_PURCHASE",
+      "mvp": false,
+      "reason": "Source and financial/practical dependencies are incomplete.",
+      "risk": "MODERATE_CONSEQUENCE",
+      "support": "RESEARCH_ONLY"
+    },
+    {
+      "activity": "MEDICAL_PROCEDURE",
+      "mvp": false,
+      "reason": "Never delay emergency or medically necessary care.",
+      "risk": "RESTRICTED",
+      "support": "RESTRICTED"
+    },
+    {
+      "activity": "LEGAL_ACTION_OR_FILING",
+      "mvp": false,
+      "reason": "Never miss legal or statutory deadlines.",
+      "risk": "RESTRICTED",
+      "support": "RESTRICTED"
+    },
+    {
+      "activity": "FINANCIAL_OR_INVESTMENT_DECISION",
+      "mvp": false,
+      "reason": "Cannot replace valuation, risk, liquidity, legal, tax, or financial analysis.",
+      "risk": "RESTRICTED",
+      "support": "RESTRICTED"
+    },
+    {
+      "activity": "OTHER",
+      "mvp": false,
+      "reason": "No governed activity contract.",
+      "risk": "RESTRICTED",
+      "support": "NOT_SUPPORTED"
+    }
+  ],
+  "initial_activities": [
+    "BUSINESS_START_OR_INAUGURATION",
+    "EDUCATION_COMMENCEMENT",
+    "RELIGIOUS_OR_SPIRITUAL_CEREMONY"
+  ],
+  "personalization": "DEFERRED",
+  "production_activation": false,
+  "recommended_launch_model": "GENERAL_MUHURTA_RECOMMENDATION"
+}

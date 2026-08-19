@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-RECOMMENDATION-GOVERNANCE-001
+
+Completed the governance-only Muhurta advisory design with
+`PASS_WITH_CONDITION` and decision
+`MUHURTA_RECOMMENDATION_GOVERNANCE_READY_WITH_CONDITION`. The activity
+taxonomy, risk model, categorical rule classes, precedence/conflict policy,
+abstention states, source-lineage requirement, caution and consultation
+standard, and future output contract are deterministic and non-production.
+Business opening, education commencement, and religious/spiritual ceremony
+are conditional general-mode candidates. Tara Bala, Chandrabala,
+personalization, universal scoring, and high-risk medical/legal/financial
+domains remain gated. P032 calculation, Shadbala, Ashtakavarga, D20, RAG,
+prediction, ML, and Approved Core were unchanged. Evidence is in
+`docs/current-state/muhurta-recommendation-governance-001/`.
+
 ## 2026-08-19 | VEDA-KNOWLEDGE-SHADBALA-STHANA-SOURCE-HARDENING-001
 
 Completed the bounded Sthana Bala source-witness reconciliation with

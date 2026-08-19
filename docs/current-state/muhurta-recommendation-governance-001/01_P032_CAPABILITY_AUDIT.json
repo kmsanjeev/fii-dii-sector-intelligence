@@ -1,0 +1,26 @@
+{
+  "atomic_rules": "Scoped fact and event-rule references exist; recommendation evaluation returns NOT_AUTHORIZED.",
+  "calculation_method": "MUHURTA_PANCHANGA_SIDEREAL_FACTS_V1",
+  "calculation_version": "1.0",
+  "facts": [
+    "Vara",
+    "Tithi",
+    "Nakshatra",
+    "Yoga",
+    "Karana",
+    "solar day",
+    "sunrise/sunset",
+    "timezone-aware location"
+  ],
+  "foundation_status": "IMPLEMENTED / FROZEN",
+  "personal_bala": {
+    "chandra": "RESEARCH_ONLY / NOT_IMPLEMENTED",
+    "tara": "RESEARCH_ONLY / NOT_IMPLEMENTED"
+  },
+  "prashna": "OUT_OF_SCOPE",
+  "production_code_changed": false,
+  "recommendation_status_after": "INACTIVE / NOT_IMPLEMENTED",
+  "recommendation_status_before": "INACTIVE / NOT_IMPLEMENTED",
+  "scoring": "DEFERRED; no arbitrary weighted score",
+  "transition_windows": "Deterministic boundary splitting exists; selection remains INACTIVE."
+}
