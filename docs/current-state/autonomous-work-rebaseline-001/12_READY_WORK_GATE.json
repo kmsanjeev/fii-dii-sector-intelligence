@@ -1,0 +1,19 @@
+{
+  "programme": "VEDA-AUTONOMOUS-WORK-REBASELINE-001",
+  "gate": "READY_WORK_GATE",
+  "criteria": ["autonomously executable","semantics sufficiently known","inputs available","no human/provider prerequisite","no governance lock","material value","bounded testable acceptance"],
+  "autonomous_ready_now": [],
+  "autonomous_ready_with_condition": [],
+  "failed_candidates": [
+    {"id":"VEDA-CALC-SHADBALA-COMPONENT-REMEDIATION-R2","cause":"NEW_EVIDENCE_REQUIRED"},
+    {"id":"VEDA-KNOW-D20-002","cause":"SOURCE_ACCESS_BLOCKED"},
+    {"id":"VEDA-P032-RECOMMENDATIONS","cause":"NEW_EVIDENCE_REQUIRED"},
+    {"id":"VEDA-EVIDENCE-ADB-FORMAL-ACCESS-001","cause":"EXTERNAL_PROVIDER_GATE"},
+    {"id":"VEDA-EVIDENCE-POSEND-ACQ-R2","cause":"EXTERNAL_PROVIDER_GATE"},
+    {"id":"VEDA-LANG-002+","cause":"HUMAN_REVIEW_GATE"},
+    {"id":"VEDA-COMM-002-GROUP-001-VALIDATION","cause":"HUMAN_REVIEW_GATE"},
+    {"id":"VEDA-JAIMINI-ARUDHA-FOUNDATION","cause":"DEFERRED_BY_GOVERNANCE"}
+  ],
+  "decision": "VEDA_NO_HIGH_VALUE_AUTONOMOUS_PROGRAMME_READY",
+  "reason": "All material candidates either completed, require new source evidence, require human/provider action, or are explicitly frozen/deferred. No bounded autonomous programme clears the gate."
+}

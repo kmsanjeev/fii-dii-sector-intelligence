@@ -1,0 +1,36 @@
+{
+  "programme": "VEDA-AUTONOMOUS-WORK-REBASELINE-001",
+  "observed_at": "2026-08-19",
+  "starting_commit": "84092ca0e6bb2c4b38a4ee13c1d2a63f80d9881c",
+  "branch": "main",
+  "working_tree_before": "CLEAN_TRACKED_TREE",
+  "parent": "VEDA-ENGINEERING-TEST-SUITE-PERFORMANCE-RX1-001",
+  "authoritative_state": {
+    "P032": "IMPLEMENTED_FROZEN_WITH_CONDITIONS",
+    "P031": "IMPLEMENTED_FROZEN",
+    "PREDICTIVE_MATURITY": "PRED-M3_OPERATIONAL_PLUS",
+    "PRED_M4": "INSUFFICIENT_SAMPLE_STOPPED_UNCHANGED",
+    "EMP_001": "ACTIVE_LONGITUDINAL",
+    "ML": "LOCKED_DEFERRED",
+    "APPROVED_CORE": 17,
+    "REGISTERED_SOURCES": 14,
+    "RAG_DOCUMENTS": 1205,
+    "RAG_PROVIDER_CALLS": 0,
+    "HINDI_PRODUCTION": "UNAUTHORIZED_HUMAN_REVIEW_PENDING",
+    "COMM_002": "HUMAN_VALIDATION_PENDING",
+    "GROUP_001": "HUMAN_VALIDATION_PENDING",
+    "ADB": "FORMAL_ACCESS_PREPARED_UNSENT",
+    "RAW_PROVIDER_DATA_COMMITTED": false
+  },
+  "superseded_priority_notes": [
+    {
+      "record": "docs/current-state/roadmap-rebaseline-001/04_AUTONOMOUS_READY_MATRIX.json",
+      "issue": "It predates the completed Ashtakavarga decision and RX2 remediation and therefore must not be used as the current next-work queue."
+    },
+    {
+      "record": "docs/current-state/roadmap-rebaseline-001/10_NEXT_WORK_RANKING.md",
+      "issue": "Its Ashtakavarga recommendation is historical; the programme is now completed/frozen in the current repository history."
+    }
+  ],
+  "historical_records_rewritten": false
+}

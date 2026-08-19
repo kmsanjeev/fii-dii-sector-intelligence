@@ -1,0 +1,23 @@
+{
+  "programme": "VEDA-AUTONOMOUS-WORK-REBASELINE-001",
+  "classification_legend": ["PRODUCTION_GRADE","COMPLETE_WITH_CONDITION","PARTIALLY_VALIDATED","IMPLEMENTED_UNVALIDATED","RESEARCH_ONLY","NOT_IMPLEMENTED","FROZEN_PENDING_SOURCE","EXTERNAL_ORACLE_REQUIRED"],
+  "families": [
+    {"family":"D1_rashi","classification":"PRODUCTION_GRADE","action":"FREEZE"},
+    {"family":"planetary_longitude","classification":"COMPLETE_WITH_CONDITION","action":"PRESERVE_REFERENCE_BOUNDARY"},
+    {"family":"sidereal_ayanamsha","classification":"PARTIALLY_VALIDATED","action":"NO_REOPEN_WITHOUT_REFERENCE_GAP"},
+    {"family":"lagna_ascendant","classification":"COMPLETE_WITH_CONDITION","action":"PRESERVE_BOUNDARY_POLICY"},
+    {"family":"timezone_dst_historical","classification":"COMPLETE_WITH_CONDITION","action":"PRESERVE_UNCERTAINTY"},
+    {"family":"nakshatra_pada","classification":"PRODUCTION_GRADE","action":"FREEZE"},
+    {"family":"panchanga_facts","classification":"COMPLETE_WITH_CONDITION","action":"FACT_ONLY"},
+    {"family":"varga_calculations","classification":"COMPLETE_WITH_CONDITION","action":"INTERPRETATION_GATED"},
+    {"family":"D20_vimshamsha","classification":"PARTIALLY_VALIDATED","action":"STOP_UNTIL_NEW_SOURCE_EVIDENCE"},
+    {"family":"vimshottari_antardasha","classification":"COMPLETE_WITH_CONDITION","action":"FREEZE_ARITHMETIC"},
+    {"family":"shadbala","classification":"PARTIALLY_VALIDATED","action":"SOURCE_DEPENDENT_COMPONENTS_WAIT"},
+    {"family":"ashtakavarga_raw_bav_sav","classification":"COMPLETE_WITH_CONDITION","action":"RX2_FROZEN_REDUCTIONS_DEFERRED"},
+    {"family":"transit_facts","classification":"COMPLETE_WITH_CONDITION","action":"NO_GENERIC_RECIPE"},
+    {"family":"Jaimini_primitives","classification":"NOT_IMPLEMENTED","action":"DEFERRED_CONTRACT_MISSING"},
+    {"family":"Arudha_calculations","classification":"NOT_IMPLEMENTED","action":"DEFERRED_CONTRACT_MISSING"}
+  ],
+  "autonomous_calculation_work_ready": false,
+  "reason": "Remaining material calculation gaps require new source evidence, an independent oracle, or a separately authorized remediation; no ready bounded lane remains after the completed Ashtakavarga and Shadbala work."
+}

@@ -1,5 +1,15 @@
 # VEDA Roadmap Entry Point
 
+Current authoritative rebaseline (2026-08-19):
+`VEDA-AUTONOMOUS-WORK-REBASELINE-001` completed with
+`PASS_WITH_CONDITION` and decision
+`VEDA_NO_HIGH_VALUE_AUTONOMOUS_PROGRAMME_READY`. The older Ashtakavarga
+priority note is historical: its decision and canonical RX2 remediation are
+already complete. No next programme was started. Human/provider/source gates,
+P032 freeze, PRED-M4 stop, ML lock, Hindi review, COMM/GROUP review and EMP-001
+longitudinal status are preserved. Evidence:
+`docs/current-state/autonomous-work-rebaseline-001/`.
+
 Current synchronization (2026-08-19): `VEDA-MUHURTA-REMAINING-CAPABILITY-REBASELINE-001`
 completed with `PASS_WITH_CONDITION` and decision
 `MUHURTA_REBASELINE_ACTIVITY_EXPANSION_FREEZE_NEW_EVIDENCE_REQUIRED`.

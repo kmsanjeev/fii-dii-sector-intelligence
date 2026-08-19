@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-AUTONOMOUS-WORK-REBASELINE-001
+
+- Reconciled whole-programme calculation, knowledge, Muhurta, evidence,
+  prediction, RAG, language, ML, human/external-gate and engineering state
+  after the full-suite performance activity.
+- Corrected the current next-work pointer: the older Ashtakavarga decision
+  recommendation is historical because the decision and canonical RX2 raw
+  remediation are already complete.
+- Recorded `VEDA_NO_HIGH_VALUE_AUTONOMOUS_PROGRAMME_READY`; no duplicate or
+  next programme was started, no production semantics changed, and all human,
+  provider, source and evidence gates remain explicit.
+- Evidence: `docs/current-state/autonomous-work-rebaseline-001/`.
+
 ## 2026-08-19 | VEDA-ENGINEERING-TEST-SUITE-PERFORMANCE-RX1-001
 
 - Isolated the full-suite timeout root cause to unbounded P024/P025/P026

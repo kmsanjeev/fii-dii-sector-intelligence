@@ -1,6 +1,17 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.79.0 | 2026-08-19
+# Version 4.80.0 | 2026-08-19
+
+- `VEDA-AUTONOMOUS-WORK-REBASELINE-001` completed with
+  `PASS_WITH_CONDITION` and decision
+  `VEDA_NO_HIGH_VALUE_AUTONOMOUS_PROGRAMME_READY`. The current repository was
+  rebaselined after the full-suite performance restoration. The older
+  Ashtakavarga next-work recommendation is historical because its decision and
+  canonical RX2 remediation are already complete. No duplicate programme was
+  proposed or started. P032, calculation maturity, D20/source stops,
+  prediction/PRED-M4, ML, RAG, language, human/provider gates, EMP-001 and
+  Approved Core 17 remain unchanged. Evidence:
+  `docs/current-state/autonomous-work-rebaseline-001/`.
 
 - `VEDA-ENGINEERING-TEST-SUITE-PERFORMANCE-RX1-001` completed with
   `VEDA_FULL_TEST_SUITE_RESTORED_WITH_CONDITIONS`. The authoritative suite

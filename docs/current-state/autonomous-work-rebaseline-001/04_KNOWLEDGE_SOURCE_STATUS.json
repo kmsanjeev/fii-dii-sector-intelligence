@@ -1,0 +1,22 @@
+{
+  "programme": "VEDA-AUTONOMOUS-WORK-REBASELINE-001",
+  "registered_sources": 14,
+  "approved_core": 17,
+  "source_witness_standard": "VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001_IMPLEMENTED_FROZEN_WITH_CONDITIONS",
+  "promotion_policy": "NO_AUTONOMOUS_APPROVED_CORE_PROMOTION",
+  "source_gaps": [
+    "D20 destination mapping and full interpretation",
+    "remaining Shadbala component/aggregate authority",
+    "Muhurta activity-specific semantics and Personal Bala advisory effects",
+    "independent calculation oracle coverage for selected families"
+  ],
+  "stop_rules": [
+    {"area":"D20 destination mapping","state":"STOP_UNTIL_NEW_EVIDENCE"},
+    {"area":"Muhurta expansion","state":"FREEZE_MUHURTA_ACTIVITY_EXPANSION_PENDING_NEW_EVIDENCE"},
+    {"area":"Personal Bala","state":"DIAGNOSTIC_ONLY_PENDING_NEW_PASSAGE_LEVEL_EVIDENCE"},
+    {"area":"generic free-sample ADB adjudication","state":"STOP_UNTIL_NEW_EVIDENCE"},
+    {"area":"broad astronomy stress expansion","state":"STOP_UNTIL_NEW_EVIDENCE"}
+  ],
+  "autonomous_knowledge_work_ready": false,
+  "reason": "The open knowledge items are source-limited or explicitly frozen; no new witness is available in the repository that would justify autonomous reopening."
+}

@@ -1,0 +1,13 @@
+{
+  "programme": "VEDA-AUTONOMOUS-WORK-REBASELINE-001",
+  "gates": [
+    {"area":"ADB formal access","class":"EXTERNAL_PROVIDER_GATE","state":"PREPARED_UNSENT","required_action":"Founder/provider/legal review and formal request/terms decision","aging":"CURRENT"},
+    {"area":"India evidence / consented corpus","class":"HUMAN_REVIEW_GATE","state":"LEGAL_PRIVACY_ETHICS_SECURITY_REQUIRED","required_action":"Organizational review before real collection","aging":"CURRENT"},
+    {"area":"Hindi","class":"HUMAN_REVIEW_GATE","state":"NATIVE_LINGUISTIC_REVIEW_PENDING","required_action":"Human linguistic/presentation review","aging":"CURRENT"},
+    {"area":"COMM-002 / GROUP-001","class":"HUMAN_REVIEW_GATE","state":"VALIDATION_PENDING","required_action":"Founder/group A-B or evaluation action","aging":"CURRENT"},
+    {"area":"D20 destination mapping","class":"SOURCE_ACCESS_GATE","state":"STOP_UNTIL_NEW_EVIDENCE","required_action":"New primary or reliable traditional witness","aging":"CURRENT"},
+    {"area":"Shadbala remaining components","class":"SOURCE_ACCESS_GATE","state":"SOURCE_PARTIAL","required_action":"Passage-level closure and dependency validation","aging":"CURRENT"}
+  ],
+  "highest_value_gate": "FORMAL_ADB_ACCESS_OR_LAWFUL_INDEPENDENT_TIMED_BIRTH_SOURCE",
+  "no_action_simulated": true
+}

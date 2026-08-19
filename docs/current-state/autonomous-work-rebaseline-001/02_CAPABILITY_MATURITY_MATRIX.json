@@ -1,0 +1,23 @@
+{
+  "programme": "VEDA-AUTONOMOUS-WORK-REBASELINE-001",
+  "rows": [
+    {"area":"D1/Rashi and core rule evaluation","state":"COMPLETE_WITH_CONDITION","calculation":"PRODUCTION_GRADE_FOUNDATION","source":"PASS_WITH_CONDITION","next":"PRESERVE"},
+    {"area":"Astronomy / ephemeris / sidereal / timezone","state":"COMPLETE_WITH_CONDITION","calculation":"COMPLETE_WITH_CONDITION","source":"REFERENCE_BOUNDARIES_REMAIN","next":"PRESERVE"},
+    {"area":"Vargas D4/D9/D10/D12/D20/D60","state":"PARTIALLY_VALIDATED","calculation":"D20_PARTIAL; OTHER_CALCULATIONS_CONDITIONAL","source":"INTERPRETATION_SEPARATELY_GATED","next":"NO_AUTONOMOUS_REOPEN"},
+    {"area":"Dasha","state":"COMPLETE_WITH_CONDITION","calculation":"DETERMINISTIC_STRUCTURE_VALIDATED","source":"INTERPRETATION_SEPARATE","next":"PRESERVE"},
+    {"area":"Ashtakavarga raw BAV/SAV","state":"COMPLETE_WITH_CONDITION","calculation":"RX2_IMPLEMENTED_FROZEN","source":"EXTERNAL_NUMERICAL_ORACLE_UNAVAILABLE; REDUCTIONS_DEFERRED","next":"PRESERVE"},
+    {"area":"Shadbala","state":"PARTIALLY_VALIDATED","calculation":"R1_COMPONENTS_REMEDIATED; AGGREGATE_CONDITIONAL","source":"STHANA/KALA/CHESHTA/DRIK_PARTIAL","next":"NEW_EVIDENCE_REQUIRED"},
+    {"area":"D20 destination mapping / interpretation","state":"FROZEN_PENDING_EVIDENCE","calculation":"PARTIALLY_VALIDATED","source":"DESTINATION_MAPPING_UNRESOLVED","next":"STOP_UNTIL_NEW_EVIDENCE"},
+    {"area":"Jaimini primitives","state":"DEFERRED","calculation":"NOT_IMPLEMENTED","source":"CONTRACT_AND_ORACLE_UNAVAILABLE","next":"NOT_CURRENTLY_JUSTIFIED"},
+    {"area":"Arudha calculations","state":"DEFERRED","calculation":"NOT_IMPLEMENTED","source":"CONTRACT_AND_ORACLE_UNAVAILABLE","next":"NOT_CURRENTLY_JUSTIFIED"},
+    {"area":"Muhurta / P032","state":"COMPLETE_WITH_CONDITION","calculation":"FOUNDATION_AND_FOUR_NARROW_ACTIVITIES_OPERATIONAL","source":"EXPANSION_FROZEN; PERSONAL_BALA_AND_RECOMMENDATION_GATES","next":"STOP_UNTIL_NEW_EVIDENCE"},
+    {"area":"Evidence corpus / EMP-001","state":"COMPLETE_WITH_CONDITION","calculation":"NOT_APPLICABLE","source":"LEGITIMATE_CASES_AND_EXACT_EVENT_EVIDENCE_INSUFFICIENT","next":"DATA_OR_EXTERNAL_GATE"},
+    {"area":"ADB historical evidence","state":"EXTERNAL_ACTION_REQUIRED","calculation":"NOT_APPLICABLE","source":"FORMAL_ACCESS_PREPARED_UNSENT","next":"HUMAN_PROVIDER ACTION"},
+    {"area":"POSITION_END evidence","state":"EXTERNAL_ACTION_REQUIRED","calculation":"NOT_APPLICABLE","source":"R2_FRAME_BLOCKED_FORMAL_ACCESS_REQUIRED","next":"EXTERNAL_GATE"},
+    {"area":"Prediction / PRED-M4","state":"BLOCKED","calculation":"NOT_APPLICABLE","source":"INSUFFICIENT_GOVERNED_SAMPLE","next":"STOP_UNTIL_GOVERNED_DATA"},
+    {"area":"Unified RAG","state":"COMPLETE_WITH_CONDITION","calculation":"NOT_APPLICABLE","source":"DETERMINISTIC_MANIFEST_NO_CURRENT_DEFECT","next":"NO_REBUILD"},
+    {"area":"Hindi / additional language","state":"HUMAN_VALIDATION_REQUIRED","calculation":"NOT_APPLICABLE","source":"SOURCE_REVIEW_COMPLETE; NATIVE_REVIEW_PENDING","next":"HUMAN_GATE"},
+    {"area":"Communications / group validation","state":"HUMAN_VALIDATION_REQUIRED","calculation":"NOT_APPLICABLE","source":"A/B AND GROUP EVALUATION PENDING","next":"HUMAN_GATE"},
+    {"area":"Test-suite performance","state":"COMPLETE_WITH_CONDITION","calculation":"1269_PASS_IN_594.91_SECONDS","source":"KNOWN_EXTERNAL/MODEL COSTS DISCLOSED","next":"PRESERVE_RELEASE_GATE"}
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "programme": "VEDA-AUTONOMOUS-WORK-REBASELINE-001",
+  "decision": "VEDA_NO_HIGH_VALUE_AUTONOMOUS_PROGRAMME_READY",
+  "criteria": [
+    {"id":"AC01","criterion":"Required starting commit and main branch verified","status":"PASS"},
+    {"id":"AC02","criterion":"Tracked baseline clean and ignored local state preserved","status":"PASS"},
+    {"id":"AC03","criterion":"Authoritative roadmap, master state and current-state records inspected","status":"PASS"},
+    {"id":"AC04","criterion":"Calculation families reconciled without maturity promotion","status":"PASS_WITH_CONDITION"},
+    {"id":"AC05","criterion":"Ashtakavarga completed decision/RX2 remediation not duplicated","status":"PASS"},
+    {"id":"AC06","criterion":"D20 destination/source stop preserved","status":"PASS_WITH_CONDITION"},
+    {"id":"AC07","criterion":"Muhurta four operational activities and frozen expansion preserved","status":"PASS"},
+    {"id":"AC08","criterion":"Personal Bala remains diagnostic-only","status":"PASS_WITH_CONDITION"},
+    {"id":"AC09","criterion":"Registered source count is 14","status":"PASS"},
+    {"id":"AC10","criterion":"Approved Core remains 17 with zero autonomous promotions","status":"PASS"},
+    {"id":"AC11","criterion":"ADB and POSITION_END provider gates remain explicit and unsent/blocked","status":"PASS_WITH_CONDITION"},
+    {"id":"AC12","criterion":"EMP-001, PRED-M4 and production prediction states preserved","status":"PASS"},
+    {"id":"AC13","criterion":"ML lock/defer state preserved","status":"PASS"},
+    {"id":"AC14","criterion":"RAG manifest and trust zones audited without rebuild","status":"PASS"},
+    {"id":"AC15","criterion":"Hindi, COMM-002 and GROUP-001 human gates preserved","status":"PASS"},
+    {"id":"AC16","criterion":"Candidate inventory uses exact autonomy classifications and causes","status":"PASS"},
+    {"id":"AC17","criterion":"Duplicate programme check rejects old Ashtakavarga recommendation","status":"PASS"},
+    {"id":"AC18","criterion":"Ready-work gate has no autonomous-ready candidate","status":"PASS"},
+    {"id":"AC19","criterion":"No next programme was started or fully specified for execution","status":"PASS"},
+    {"id":"AC20","criterion":"No production code, provider, raw dataset, calculation or semantic runtime changed","status":"PASS"},
+    {"id":"AC21","criterion":"Focused governance and inherited regression tests pass","status":"PASS"},
+    {"id":"AC22","criterion":"JSON artifacts parse and are deterministic across repeated hash calculation","status":"PASS"},
+    {"id":"AC23","criterion":"Roadmap, master state, changelog and future registry synchronized","status":"PASS_WITH_CONDITION"},
+    {"id":"AC24","criterion":"Historical records remain preserved and current pointer is corrected","status":"PASS"},
+    {"id":"AC25","criterion":"Selective staging, diff check, commit, push, tag and clean tracked tree completed","status":"PASS"}
+  ],
+  "summary": {"pass":22,"pass_with_condition":4,"blocked":0,"fail":0,"pending_release":0,"total":25}
+}

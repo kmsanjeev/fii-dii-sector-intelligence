@@ -1,0 +1,11 @@
+{
+  "programme": "VEDA-AUTONOMOUS-WORK-REBASELINE-001",
+  "full_suite": {"collected":1269,"passed":1269,"failed":0,"runtime_seconds":594.91,"status":"AUTHORITATIVE_RELEASE_GATE_PASS_WITH_CONDITION"},
+  "logical_gates": "PRESERVED_AS_DEVELOPMENT_ACCELERATORS",
+  "test_performance": "COMPLETE_WITH_CONDITION",
+  "known_costs": ["RAG/model initialization","empirical permutations","ADB/XML boundary tests"],
+  "new_blocker": false,
+  "production_code_changed": false,
+  "autonomous_engineering_work_ready": false,
+  "reason": "The parent performance remediation is complete; no new hang, leak, regression, or materially unacceptable growth was found by this rebaseline."
+}
