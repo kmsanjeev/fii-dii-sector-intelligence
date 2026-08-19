@@ -1,0 +1,21 @@
+{
+  "policy_version": "2026-08-20",
+  "primary_ownership": {
+    "GREETING": "CORE_INTERACTION",
+    "GENERAL": "GENERAL_CHAT",
+    "MARKET": "MARKET_INTELLIGENCE",
+    "SECTOR": "SECTOR_INTELLIGENCE",
+    "STOCK": "STOCK_INTELLIGENCE",
+    "CORPORATE": "CORPORATE_INTELLIGENCE",
+    "ASTRO": "ASTROLOGY",
+    "KUNDLI": "PERSONAL_KUNDLI",
+    "MUHURTA": "MUHURTA",
+    "ASTRO_FINANCE": "ASTRO_FINANCE",
+    "RESEARCH": "RESEARCH"
+  },
+  "related_intents": {
+    "MUHURTA": ["ASTRO", "GENERAL"]
+  },
+  "duplicate_policy": "FAIL_LOUDLY",
+  "protected_capability": "CORE_INTERACTION"
+}

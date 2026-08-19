@@ -376,7 +376,7 @@ function VedaConfigurationTab() {
               <div style={{ color: '#64748B', fontSize: 11, marginTop: 3 }}>{cap.description}</div>
             </div>
             <label style={{ color: '#94A3B8', fontSize: 11 }}>Access
-              <select value={cap.admin_access_state} disabled={cap.capability_id === 'GENERAL_CHAT' || update.isPending}
+              <select value={cap.admin_access_state} disabled={Boolean(cap.protected) || update.isPending}
                 onChange={e => update.mutate({ id: cap.capability_id, state: e.target.value as CapabilityAccessState['admin_access_state'] })}
                 style={{ display: 'block', marginTop: 4, background: '#1E2332', border: '1px solid #2D3348', color: stateColor(cap.admin_access_state), padding: '4px 6px', borderRadius: 4, fontSize: 11 }}>
                 <option value="ENABLED">ON</option><option value="DISABLED">OFF</option><option value="ADMIN_ONLY">ADMIN</option>

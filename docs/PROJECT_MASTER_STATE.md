@@ -1,6 +1,18 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.82.0 | 2026-08-20
+# Version 4.83.0 | 2026-08-20
+
+- `VEDA-CONVERSATIONAL-ACCESS-CONFIGURATION-RX1-001` completed with decision
+  `VEDA_CONVERSATIONAL_ACCESS_RX1_OPERATIONAL` from the clean predecessor
+  baseline `2485ab13e24fd73ec74b0c8032082a84b55a2cec`. Protected
+  `CORE_INTERACTION` is now separate from configurable `GENERAL_CHAT`; intent
+  ownership is unique and order-independent; Muhurta and Personal Kundli have
+  independent routes; ordinary Jyotish is separated from AstroFinance and its
+  market tools; and frontend full Vitest discovery excludes ignored dependency
+  backups durably. Full Python validation is 1,290/1,290; frontend discovery is
+  29/29 and build passes. No RAG, source registry, Approved Core, maturity,
+  prediction, ML, EMP-001 or human-validation state changed. Evidence:
+  `docs/current-state/veda-conversational-access-configuration-rx1-001/`.
 
 - `VEDA-CONVERSATIONAL-ACCESS-CONFIGURATION-001` completed with
   `PASS_WITH_CONDITION` and is implemented/frozen with conditions from baseline

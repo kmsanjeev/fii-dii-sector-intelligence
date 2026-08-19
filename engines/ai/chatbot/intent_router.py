@@ -12,6 +12,8 @@ Intents:
   SECTOR   -> sector rotation, rotation signals, sector comparison
   STOCK    -> specific stocks, labels, watchlist, bull run scores
   CORPORATE -> deals, buybacks, confidence, corporate events
+  ASTRO_FINANCE -> explicit market-plus-astrology requests
+  MUHURTA -> electional timing, Panchanga, and Muhurta requests
   RESEARCH -> explicit research, evidence, comparison, or fresh-information requests
 """
 
@@ -41,12 +43,41 @@ def _is_greeting(text: str) -> bool:
     if not t:
         return False
     words = re.findall(r"[\w']+", t)
-    if not any(
-        (kw in t if " " in kw else re.search(rf"\b{re.escape(kw)}\b", t))
-        for kw in GREETING_KEYWORDS
-    ):
+    if not any(_contains_keyword(t, kw) for kw in GREETING_KEYWORDS):
         return False
     return len(words) <= 6
+
+
+def _contains_keyword(text: str, keyword: str) -> bool:
+    """Match a word/phrase without allowing short terms to hit substrings."""
+    return bool(re.search(rf"(?<!\w){re.escape(keyword)}(?!\w)", text, re.IGNORECASE))
+
+
+def _is_muhurta_request(text: str) -> bool:
+    if _contains_keyword(text, "muhurta"):
+        return True
+    if _contains_keyword(text, "griha pravesha") or _contains_keyword(text, "house entry"):
+        return True
+    if _contains_keyword(text, "tithi") and any(
+        _contains_keyword(text, term)
+        for term in ("suitable", "auspicious", "education commencement", "business opening", "commencement")
+    ):
+        return True
+    return bool(
+        _contains_keyword(text, "search")
+        and _contains_keyword(text, "window")
+        and any(_contains_keyword(text, term) for term in ("auspicious", "opening", "commencement"))
+    )
+
+
+def _is_astro_finance_request(text: str) -> bool:
+    if any(_contains_keyword(text, term) for term in ("astrofinance", "financial astrology", "astro signal", "astrology signal")):
+        return True
+    astrology_terms = ("jupiter", "saturn", "mercury", "venus", "mars", "moon", "rahu", "ketu", "planetary", "transit", "astrology")
+    market_terms = ("market", "stock", "sector", "trading", "fii", "dii", "flow", "share", "portfolio")
+    return any(_contains_keyword(text, term) for term in astrology_terms) and any(
+        _contains_keyword(text, term) for term in market_terms
+    )
 
 
 INTENT_KEYWORDS = {
@@ -73,8 +104,8 @@ INTENT_KEYWORDS = {
         "mars", "moon", "rahu", "ketu", "retrograde", "eclipse", "zodiac",
         "cosmic", "celestial", "nakshatra", "hora", "transit", "aspect",
         "benefic", "malefic", "exalted", "debilitated", "cycle", "jyotish", "d9",
-        "navamsa", "d20", "vimshamsha", "vimshamsa", "muhurta", "tithi", "nakshatra",
-        "financial astrology", "astrology",
+        "navamsa", "d20", "vimshamsha", "vimshamsa", "tithi", "nakshatra", "shadbala",
+        "ashtakavarga", "vimshottari", "dasha", "astrology",
     ],
     "KUNDLI": [
         "kundli", "kundali", "janam kundli", "janam kundali", "birth chart",
@@ -95,7 +126,7 @@ INTENT_KEYWORDS = {
 
 @dataclass
 class Intent:
-    intent_type: str   # GENERAL | MARKET | SECTOR | STOCK | CORPORATE | ASTRO | KUNDLI | RESEARCH
+    intent_type: str   # GENERAL | MARKET | SECTOR | STOCK | CORPORATE | ASTRO | KUNDLI | MUHURTA | ASTRO_FINANCE | RESEARCH
     entity: str | None  # specific symbol/sector if detected
     confidence: float   # 0-1
 
@@ -116,10 +147,16 @@ def detect_intent(user_message: str) -> Intent:
     if _is_greeting(text):
         return Intent("GREETING", entity, 0.9)
 
+    if _is_astro_finance_request(text):
+        return Intent("ASTRO_FINANCE", entity, 0.95)
+
+    if _is_muhurta_request(text):
+        return Intent("MUHURTA", entity, 0.95)
+
     scores = {intent: 0 for intent in INTENT_KEYWORDS}
     for intent, keywords in INTENT_KEYWORDS.items():
         for kw in keywords:
-            if kw in text:
+            if _contains_keyword(text, kw):
                 scores[intent] += 1
 
     best_intent = max(scores, key=lambda k: scores[k])
@@ -217,7 +254,7 @@ def get_system_prompt(intent: Intent) -> str:
         "useful, and honest about uncertainty. Do not assume a financial context "
         "unless the user's message establishes one."
     )
-    if intent.intent_type in {"MARKET", "SECTOR", "STOCK", "CORPORATE", "ASTRO"}:
+    if intent.intent_type in {"MARKET", "SECTOR", "STOCK", "CORPORATE", "ASTRO_FINANCE"}:
         base += (
             " For specialist market requests, be concise, data-driven, and precise; "
             "cite available scores, labels, signals, dates, and source limitations. "
@@ -281,13 +318,25 @@ def get_system_prompt(intent: Intent) -> str:
             "clarifying question when the request is genuinely ambiguous."
         ),
         "ASTRO": (
-            " Focus on AstroFinance planetary intelligence. "
-            "Always call get_astro_signal() first -- it returns live planetary positions and sector signals. "
-            "Describe outputs as bounded AstroFinance heuristics, not deterministic trade instructions. "
-            "Mercury retrograde, debilitated Saturn, supportive Jupiter states, eclipse effects, "
-            "and retrograde ruling planets should be framed as heuristic context only. "
-            "Combine astro signals with technical and flow data for context, and explicitly avoid "
-            "buy, sell, exit, allocation, or guaranteed-outcome wording."
+            " Focus on general Vedic Jyotish and governed educational astrology. "
+            "Answer questions about concepts such as D9, D20, Shadbala, Ashtakavarga, "
+            "Nakshatra, and Dasha using the available governed knowledge and state "
+            "source maturity or uncertainty where relevant. Do not introduce market, "
+            "sector, capital-flow, technical-indicator, or AstroFinance context unless "
+            "the user explicitly asks for a financial-astrology connection."
+        ),
+        "MUHURTA": (
+            " Focus on governed Muhurta and electional-timing concepts. Explain the "
+            "available Panchanga and activity-contract scope with source-qualified "
+            "language. Do not fabricate a recommendation when required inputs or "
+            "validated semantics are unavailable, and do not introduce market context."
+        ),
+        "ASTRO_FINANCE": (
+            " Focus on explicit AstroFinance market-plus-astrology context. "
+            "Use get_astro_signal() only when relevant and describe outputs as bounded "
+            "AstroFinance heuristics, not deterministic trade instructions. Combine "
+            "planetary context with market data only when the user requested that "
+            "connection, and avoid buy, sell, exit, allocation, or guaranteed-outcome wording."
         ),
         "KUNDLI": (
             " You are an expert Vedic astrologer (Jyotishi). "

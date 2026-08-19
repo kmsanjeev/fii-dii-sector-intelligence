@@ -31,7 +31,8 @@ class CapabilityDefinition:
     description: str
     maturity: str
     answer_mode: str
-    intent_types: tuple[str, ...]
+    primary_intents: tuple[str, ...]
+    related_intents: tuple[str, ...] = ()
     runtime_config: str | None = None
     protected: bool = False
 
@@ -48,35 +49,58 @@ class CapabilityState:
     effective_answer_mode: str
     reason: str
     policy_version: str = POLICY_VERSION
+    protected: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 _DEFINITIONS: tuple[CapabilityDefinition, ...] = (
-    CapabilityDefinition("GENERAL_CHAT", "General Assistant", "Ordinary conversation and non-domain questions.", "IMPLEMENTED_VALIDATED", "FULL", ("GENERAL", "GREETING")),
+    CapabilityDefinition("GENERAL_CHAT", "General Assistant", "Ordinary conversation and non-domain questions.", "IMPLEMENTED_VALIDATED", "FULL", ("GENERAL",)),
     CapabilityDefinition("MARKET_INTELLIGENCE", "Market", "Market regime and institutional-flow analysis.", "IMPLEMENTED_VALIDATED", "FULL", ("MARKET",)),
     CapabilityDefinition("SECTOR_INTELLIGENCE", "Sector", "Sector rotation and sector-flow analysis.", "IMPLEMENTED_VALIDATED", "FULL", ("SECTOR",)),
     CapabilityDefinition("STOCK_INTELLIGENCE", "Stock", "Stock, technical, and F&O intelligence.", "IMPLEMENTED_VALIDATED", "FULL", ("STOCK",)),
     CapabilityDefinition("CORPORATE_INTELLIGENCE", "Corporate", "Corporate actions and company intelligence.", "IMPLEMENTED_VALIDATED", "FULL", ("CORPORATE",)),
-    CapabilityDefinition("ASTROLOGY", "Astrology", "Governed AstroFinance and Jyotisha discussion.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", ("ASTRO", "KUNDLI")),
-    CapabilityDefinition("RESEARCH", "Research", "Explicit research and governed evidence workflows.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", ("RESEARCH",), "VEDA_RESEARCH_ENABLED"),
-    CapabilityDefinition("MUHURTA", "Muhurta", "Muhurta discussion and available operational activities.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", ("GENERAL", "ASTRO")),
-    CapabilityDefinition("ATTACHMENTS", "Attachments", "User-provided file analysis.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", tuple(), "VEDA_ATTACHMENTS_ENABLED"),
-    CapabilityDefinition("REVIEWED_MEMORY", "Reviewed Memory", "Reviewed knowledge save and retrieval.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", tuple(), "VEDA_SAVE_TO_KNOWLEDGE_ENABLED"),
-    CapabilityDefinition("MIT_REPO_INTAKE", "Repository Intake", "Reviewed MIT repository capability intake.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", tuple(), "VEDA_MIT_REPO_INTAKE_ENABLED"),
-    CapabilityDefinition("MCP", "MCP", "Configured external MCP server access.", "IMPLEMENTED_WITH_CONDITIONS", "DIAGNOSTIC", tuple(), "VEDA_MCP_ENABLED"),
-    CapabilityDefinition("VOICE", "Voice / Interaction", "Voice input and response adaptation.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", tuple()),
+    CapabilityDefinition("ASTROLOGY", "Astrology / Jyotish", "Governed general Jyotish discussion.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", ("ASTRO",)),
+    CapabilityDefinition("PERSONAL_KUNDLI", "Personal Kundli", "Personal natal-chart calculation and governed reading.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", ("KUNDLI",)),
+    CapabilityDefinition("MUHURTA", "Muhurta", "Muhurta discussion and available operational activities.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", ("MUHURTA",), ("ASTRO", "GENERAL")),
+    CapabilityDefinition("ASTRO_FINANCE", "AstroFinance", "Explicit market-plus-astrology context and signal.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", ("ASTRO_FINANCE",)),
+    CapabilityDefinition("RESEARCH", "Research", "Explicit research and governed evidence workflows.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", ("RESEARCH",), (), "VEDA_RESEARCH_ENABLED"),
+    CapabilityDefinition("ATTACHMENTS", "Attachments", "User-provided file analysis.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", (), (), "VEDA_ATTACHMENTS_ENABLED"),
+    CapabilityDefinition("REVIEWED_MEMORY", "Reviewed Memory", "Reviewed knowledge save and retrieval.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", (), (), "VEDA_SAVE_TO_KNOWLEDGE_ENABLED"),
+    CapabilityDefinition("MIT_REPO_INTAKE", "Repository Intake", "Reviewed MIT repository capability intake.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", (), (), "VEDA_MIT_REPO_INTAKE_ENABLED"),
+    CapabilityDefinition("MCP", "MCP", "Configured external MCP server access.", "IMPLEMENTED_WITH_CONDITIONS", "DIAGNOSTIC", (), (), "VEDA_MCP_ENABLED"),
+    CapabilityDefinition("VOICE", "Voice / Interaction", "Voice input and response adaptation.", "IMPLEMENTED_WITH_CONDITIONS", "QUALIFIED", ()),
 )
 _BY_ID = {item.capability_id: item for item in _DEFINITIONS}
-# A capability can expose an intent as a related subdomain (for example,
-# MUHURTA also understands ASTRO/GENERAL context).  Core conversational
-# routes must remain authoritative; a later optional definition must not
-# silently replace GENERAL_CHAT or ASTROLOGY.
-_BY_INTENT: dict[str, str] = {}
-for _definition in _DEFINITIONS:
-    for _intent in _definition.intent_types:
-        _BY_INTENT.setdefault(_intent, _definition.capability_id)
+_CORE_DEFINITION = CapabilityDefinition(
+    "CORE_INTERACTION",
+    "Core Interaction",
+    "Non-configurable system, safety, configuration, and availability interaction.",
+    "PLATFORM_CORE",
+    "FULL",
+    (),
+    protected=True,
+)
+
+
+def _build_primary_ownership(
+    definitions: tuple[CapabilityDefinition, ...] | None = None,
+) -> dict[str, str]:
+    owners: dict[str, str] = {}
+    duplicates: dict[str, list[str]] = {}
+    for definition in definitions or _DEFINITIONS:
+        for intent in definition.primary_intents:
+            if intent in owners:
+                duplicates.setdefault(intent, [owners[intent]]).append(definition.capability_id)
+            else:
+                owners[intent] = definition.capability_id
+    if duplicates:
+        raise RuntimeError(f"Duplicate primary capability ownership: {duplicates}")
+    return owners
+
+
+_PRIMARY_INTENT_OWNER = _build_primary_ownership()
 _LOCK = RLock()
 
 
@@ -134,13 +158,20 @@ def _runtime_available(definition: CapabilityDefinition) -> bool:
 
 def _state(definition: CapabilityDefinition, access: str) -> CapabilityState:
     runtime = _runtime_available(definition)
+    if definition.capability_id == "CORE_INTERACTION":
+        return CapabilityState(
+            definition.capability_id, definition.label, definition.description,
+            "CORE", True, definition.maturity, ENABLED, definition.answer_mode,
+            "Core interaction remains available for safety, configuration, and runtime status.",
+            protected=True,
+        )
     if access == DISABLED:
-        return CapabilityState(definition.capability_id, definition.label, definition.description, access, runtime, definition.maturity, DISABLED, "UNAVAILABLE", "Disabled by administrator")
+        return CapabilityState(definition.capability_id, definition.label, definition.description, access, runtime, definition.maturity, DISABLED, "UNAVAILABLE", "Disabled by administrator", protected=definition.protected)
     if access == ADMIN_ONLY:
-        return CapabilityState(definition.capability_id, definition.label, definition.description, access, runtime, definition.maturity, ADMIN_ONLY, "DIAGNOSTIC", "Available only to administrators")
+        return CapabilityState(definition.capability_id, definition.label, definition.description, access, runtime, definition.maturity, ADMIN_ONLY, "DIAGNOSTIC", "Available only to administrators", protected=definition.protected)
     if not runtime:
-        return CapabilityState(definition.capability_id, definition.label, definition.description, access, False, definition.maturity, "UNAVAILABLE", "UNAVAILABLE", "Configured on, but runtime/provider is unavailable")
-    return CapabilityState(definition.capability_id, definition.label, definition.description, access, True, definition.maturity, ENABLED, definition.answer_mode, "Enabled; maturity remains read-only")
+        return CapabilityState(definition.capability_id, definition.label, definition.description, access, False, definition.maturity, "UNAVAILABLE", "UNAVAILABLE", "Configured on, but runtime/provider is unavailable", protected=definition.protected)
+    return CapabilityState(definition.capability_id, definition.label, definition.description, access, True, definition.maturity, ENABLED, definition.answer_mode, "Enabled; maturity remains read-only", protected=definition.protected)
 
 
 def get_states() -> list[dict[str, Any]]:
@@ -151,6 +182,8 @@ def get_states() -> list[dict[str, Any]]:
 
 def get_state(capability_id: str) -> CapabilityState:
     key = str(capability_id or "").upper()
+    if key == "CORE_INTERACTION":
+        return _state(_CORE_DEFINITION, ENABLED)
     definition = _BY_ID.get(key)
     if definition is None:
         raise KeyError(f"Unknown capability: {capability_id}")
@@ -160,7 +193,9 @@ def get_state(capability_id: str) -> CapabilityState:
 
 def resolve_intent(intent_type: str, *, research_mode: bool = False) -> CapabilityState:
     key = "RESEARCH" if research_mode else str(intent_type or "GENERAL").upper()
-    capability_id = _BY_INTENT.get(key, "GENERAL_CHAT")
+    if key == "GREETING":
+        return get_state("CORE_INTERACTION")
+    capability_id = _PRIMARY_INTENT_OWNER.get(key, "GENERAL_CHAT")
     return get_state(capability_id)
 
 
@@ -170,8 +205,6 @@ def set_access(capability_id: str, state: str) -> list[dict[str, Any]]:
         raise KeyError(f"Unknown capability: {capability_id}")
     if state not in {ENABLED, DISABLED, ADMIN_ONLY}:
         raise ValueError("state must be ENABLED, DISABLED, or ADMIN_ONLY")
-    if key == "GENERAL_CHAT" and state == DISABLED:
-        raise ValueError("GENERAL_CHAT cannot be disabled; protected conversational access remains available")
     with _LOCK:
         access = _read_access()
         access[key] = state
@@ -187,7 +220,17 @@ def reset_defaults() -> list[dict[str, Any]]:
 
 def configuration() -> dict[str, Any]:
     states = get_states()
-    return {"schema_version": SCHEMA_VERSION, "policy_version": POLICY_VERSION, "capabilities": states, "protected_safeguards": {"state": "ACTIVE", "configurable": False, "note": "Safety, privacy, prompt-leak, and high-stakes safeguards cannot be disabled."}}
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "policy_version": POLICY_VERSION,
+        "capabilities": states,
+        "protected_safeguards": {
+            "state": "ACTIVE",
+            "configurable": False,
+            "core_interaction": "CORE_INTERACTION",
+            "note": "Safety, privacy, prompt-leak, and high-stakes safeguards cannot be disabled.",
+        },
+    }
 
 
 def disabled_reply(state: CapabilityState) -> str:

@@ -1,6 +1,18 @@
 # VEDA Roadmap Entry Point
 
 Current synchronization (2026-08-20):
+`VEDA-CONVERSATIONAL-ACCESS-CONFIGURATION-RX1-001` completed with decision
+`VEDA_CONVERSATIONAL_ACCESS_RX1_OPERATIONAL`. The post-release remediation
+separates protected `CORE_INTERACTION` from configurable `GENERAL_CHAT`, makes
+primary intent ownership deterministic, adds independent Muhurta and Personal
+Kundli access, separates ordinary Jyotish from AstroFinance, scopes tools by
+intent, and closes the ignored-backup Vitest discovery condition. Full Python
+validation is 1,290/1,290; full frontend discovery is 29/29 and the build
+passes. No RAG, maturity, source registry, ML, prediction, Approved Core or
+human-validation state changed. Evidence:
+`docs/current-state/veda-conversational-access-configuration-rx1-001/`.
+
+Current synchronization (2026-08-20):
 `VEDA-CONVERSATIONAL-ACCESS-CONFIGURATION-001` completed with
 `PASS_WITH_CONDITION` and is implemented/frozen with conditions. It decouples
 broad conversational access from the market-origin product identity while

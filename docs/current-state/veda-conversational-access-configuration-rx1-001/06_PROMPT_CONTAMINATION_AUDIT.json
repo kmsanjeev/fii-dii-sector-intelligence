@@ -1,0 +1,17 @@
+{
+  "ordinary_jyotish": {
+    "route": "ASTROLOGY",
+    "market_prompt": false,
+    "get_astro_signal_forced": false,
+    "tools": []
+  },
+  "muhurta": {"route": "MUHURTA", "independent_access": true, "tools": []},
+  "personal_kundli": {"route": "PERSONAL_KUNDLI", "independent_access": true, "tools": ["generate_personal_kundli"]},
+  "astro_finance": {"route": "ASTRO_FINANCE", "signal_tools": true},
+  "general": {"route": "GENERAL_CHAT", "market_rag": false, "tools": []},
+  "critical_forbidden_claims": [
+    "ordinary Jyotish must call get_astro_signal",
+    "ordinary Jyotish is market intelligence",
+    "generic Nakshatra is Muhurta"
+  ]
+}

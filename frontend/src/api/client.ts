@@ -531,6 +531,7 @@ export type CapabilityAccessState = {
   effective_answer_mode: string
   reason: string
   policy_version: string
+  protected?: boolean
 }
 export type VedaConfiguration = {
   schema_version: number

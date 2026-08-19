@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-08-20 | VEDA-CONVERSATIONAL-ACCESS-CONFIGURATION-RX1-001
+
+- Completed the narrow post-release routing/access remediation.
+- Separated protected `CORE_INTERACTION` from configurable `GENERAL_CHAT` and
+  made primary intent ownership deterministic with loud duplicate detection.
+- Added independent `MUHURTA` and `PERSONAL_KUNDLI` routes, separated ordinary
+  `ASTROLOGY` from `ASTRO_FINANCE`, and scoped tools so general Jyotish does not
+  receive market signal behavior.
+- Closed the full Vitest discovery condition by excluding ignored dependency
+  backup trees while retaining source tests.
+- Full Python validation: 1,290/1,290. Full frontend discovery: 29/29;
+  production build passed. No RAG, source, maturity, prediction, ML,
+  Approved Core or human-validation state changed.
+- Evidence: `docs/current-state/veda-conversational-access-configuration-rx1-001/`.
+
 ## 2026-08-20 | VEDA-CONVERSATIONAL-ACCESS-CONFIGURATION-001
 
 Started the authorized conversational-access remediation from the clean

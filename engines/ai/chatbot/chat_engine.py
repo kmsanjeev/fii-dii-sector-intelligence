@@ -151,6 +151,34 @@ def _to_openai_tools(anthropic_tools: list[dict]) -> list[dict]:
 
 OPENAI_TOOLS = _to_openai_tools(TOOLS)
 
+# Tool exposure is part of domain routing.  General Jyotish and Muhurta
+# discussion must not receive the AstroFinance tool merely because the legacy
+# registry is shared.  ``None`` means the established specialist tool set is
+# retained; an empty set deliberately means text-only for that domain.
+_ASTRO_FINANCE_TOOLS = {
+    "get_astro_signal",
+    "get_market_regime",
+    "get_participant_history",
+    "get_all_sectors",
+    "get_sector_detail",
+    "get_top_stocks",
+    "get_fno_stocks",
+    "get_stock_detail",
+    "get_stocks_by_sector",
+}
+_TOOL_NAMES_BY_INTENT: dict[str, set[str] | None] = {
+    "GENERAL": set(),
+    "GREETING": set(),
+    "ASTRO": set(),
+    "MUHURTA": set(),
+    "KUNDLI": {"generate_personal_kundli"},
+    "ASTRO_FINANCE": _ASTRO_FINANCE_TOOLS,
+}
+
+
+def _tool_names_for_intent(intent_type: str) -> set[str] | None:
+    return _TOOL_NAMES_BY_INTENT.get(intent_type)
+
 
 _FUNC_ARTIFACT_RE = re.compile(r"<function[=\w\-]*>.*?</function>|<function[=\w\-]*/?>|</function>",
                                re.DOTALL)
@@ -363,6 +391,7 @@ class ChatEngine:
         self.last_generation: dict = {}
         self.last_access_decision: dict = {}
         self.last_telemetry: dict = {}
+        self._tool_names_for_turn: set[str] | None = None
         self._research_service = None
         self._knowledge_review_service = None
         self._repo_capability_service = None
@@ -511,6 +540,7 @@ class ChatEngine:
         configured_primary_mode = "unified" if cfg.VEDA_UNIFIED_RETRIEVAL_ENABLED else "legacy"
         self.last_retrieval_audit = _empty_retrieval_audit(configured_primary_mode)
         intent       = detect_intent(user_message)
+        self._tool_names_for_turn = _tool_names_for_intent(intent.intent_type)
         try:
             conversational_context = analyze_conversation(user_message, history=self.history)
         except Exception as exc:
@@ -808,7 +838,14 @@ class ChatEngine:
             try:
                 kwargs = dict(model=model, max_tokens=effective_max_tokens, messages=messages)
                 if use_tools:
-                    kwargs.update(tools=OPENAI_TOOLS, tool_choice="auto", parallel_tool_calls=False)
+                    tool_definitions = OPENAI_TOOLS
+                    if self._tool_names_for_turn is not None:
+                        tool_definitions = [
+                            item for item in OPENAI_TOOLS
+                            if item["function"]["name"] in self._tool_names_for_turn
+                        ]
+                    if tool_definitions:
+                        kwargs.update(tools=tool_definitions, tool_choice="auto", parallel_tool_calls=False)
                 response = client.chat.completions.create(**kwargs)
             except Exception as e:
                 if _is_rate_limit(e):

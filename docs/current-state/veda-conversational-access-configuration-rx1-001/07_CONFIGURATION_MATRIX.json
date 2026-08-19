@@ -1,0 +1,23 @@
+{
+  "default": "ENABLED",
+  "matrix": [
+    ["GENERAL_CHAT", "GENERAL", true],
+    ["CORE_INTERACTION", "GREETING/system/safety/configuration/error", true],
+    ["MARKET_INTELLIGENCE", "MARKET", true],
+    ["SECTOR_INTELLIGENCE", "SECTOR", true],
+    ["STOCK_INTELLIGENCE", "STOCK", true],
+    ["CORPORATE_INTELLIGENCE", "CORPORATE", true],
+    ["ASTROLOGY", "ASTRO", true],
+    ["PERSONAL_KUNDLI", "KUNDLI", true],
+    ["MUHURTA", "MUHURTA", true],
+    ["ASTRO_FINANCE", "ASTRO_FINANCE", true],
+    ["RESEARCH", "RESEARCH", true]
+  ],
+  "independence_checks": [
+    "GENERAL off does not disable CORE_INTERACTION or MARKET",
+    "ASTRO on and PERSONAL_KUNDLI off remain independent",
+    "ASTRO on and MUHURTA off remain independent",
+    "ASTRO off and MUHURTA on remain independent",
+    "ASTRO on and ASTRO_FINANCE off remain independent"
+  ]
+}
