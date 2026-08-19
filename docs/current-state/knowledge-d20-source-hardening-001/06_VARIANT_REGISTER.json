@@ -1,0 +1,171 @@
+{
+  "canonical_selection": "BPHS category-start partial contract only; destination inference and legacy mapping remain separate",
+  "cross_variant_mixing": false,
+  "variants": [
+    {
+      "assertion_group": "D20_VIMSHAMSHA_METHOD",
+      "canonical_for_purpose": null,
+      "canonical_status": "CANONICAL",
+      "difference": "Twenty 1.5-degree divisions and category starts Aries/Sagittarius/Leo are retained; destination mapping remains incomplete.",
+      "mathematical_or_semantic_impact": "Category-start calculation representation only",
+      "normalization_attempted": true,
+      "resolution_state": "PRESERVED_SEPARATELY",
+      "source_family": "D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-D20-VIMSHAMSHA-BPHS-CATEGORY-START-BD401F3A30B0"
+    },
+    {
+      "assertion_group": "D20_VIMSHAMSHA_METHOD",
+      "canonical_for_purpose": null,
+      "canonical_status": "LEGACY_VARIANT",
+      "difference": "Historical generic odd/even fallback is preserved for comparison only.",
+      "mathematical_or_semantic_impact": "Historical replay only",
+      "normalization_attempted": true,
+      "resolution_state": "PRESERVED_SEPARATELY",
+      "source_family": "D20_LEGACY_GENERIC_VARGA_V0",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-D20-LEGACY-GENERIC-VARGA-V0-B64C366F1DD6"
+    },
+    {
+      "assertion_group": "D20_DIVISION_COUNT",
+      "canonical_for_purpose": "D20 source contract decomposition",
+      "canonical_status": "CANONICAL",
+      "difference": "Explicit in the inspected BPHS witness.",
+      "mathematical_or_semantic_impact": "Twenty-part geometry",
+      "normalization_attempted": true,
+      "resolution_state": "SOURCE_BACKED",
+      "source_family": "BPHS_CH6_17_20",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-D20-D20-DIVISION-COUNT-BPHS-6195F7F74FD0"
+    },
+    {
+      "assertion_group": "D20_DIVISION_SIZE",
+      "canonical_for_purpose": "D20 source contract decomposition",
+      "canonical_status": "CANONICAL",
+      "difference": "Explicit in the inspected BPHS witness.",
+      "mathematical_or_semantic_impact": "Division size",
+      "normalization_attempted": true,
+      "resolution_state": "SOURCE_BACKED",
+      "source_family": "BPHS_CH6_17_20",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-D20-D20-DIVISION-SIZE-BPHS-F9A6C7BD3575"
+    },
+    {
+      "assertion_group": "D20_SIGN_CLASS_START",
+      "canonical_for_purpose": "D20 source contract decomposition",
+      "canonical_status": "CANONICAL",
+      "difference": "Explicit in the inspected BPHS witness.",
+      "mathematical_or_semantic_impact": "Category starts",
+      "normalization_attempted": true,
+      "resolution_state": "SOURCE_BACKED",
+      "source_family": "BPHS_CH6_17_20",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-D20-D20-SIGN-CLASS-START-BPHS-865E0D7D593B"
+    },
+    {
+      "assertion_group": "D20_DEITY_SEQUENCE",
+      "canonical_for_purpose": "D20 source contract decomposition",
+      "canonical_status": "CANONICAL",
+      "difference": "Explicit in the inspected BPHS witness.",
+      "mathematical_or_semantic_impact": "Deity sequence text only",
+      "normalization_attempted": true,
+      "resolution_state": "SOURCE_BACKED",
+      "source_family": "BPHS_CH6_17_20",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-D20-D20-DEITY-SEQUENCE-BPHS-985FAB2E68CD"
+    },
+    {
+      "assertion_group": "D20_DESTINATION_SEQUENCE",
+      "canonical_for_purpose": null,
+      "canonical_status": "UNRESOLVED",
+      "difference": "No complete rule is present in the inspected passage.",
+      "mathematical_or_semantic_impact": "Destination signs",
+      "normalization_attempted": true,
+      "resolution_state": "SOURCE_LIMITED",
+      "source_family": "BPHS_CH6_17_20",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-D20-D20-DESTINATION-SEQUENCE-UNRES-B5564FCD4FBC"
+    },
+    {
+      "assertion_group": "D20_COUNT_DIRECTION",
+      "canonical_for_purpose": null,
+      "canonical_status": "UNRESOLVED",
+      "difference": "No complete rule is present in the inspected passage.",
+      "mathematical_or_semantic_impact": "Counting direction",
+      "normalization_attempted": true,
+      "resolution_state": "SOURCE_LIMITED",
+      "source_family": "BPHS_CH6_17_20",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-D20-D20-COUNT-DIRECTION-UNRESOLVED-4460386ED8D4"
+    },
+    {
+      "assertion_group": "D20_DEITY_DESTINATION_LINK",
+      "canonical_for_purpose": null,
+      "canonical_status": "UNRESOLVED",
+      "difference": "No complete rule is present in the inspected passage.",
+      "mathematical_or_semantic_impact": "Deity-to-sign mapping",
+      "normalization_attempted": true,
+      "resolution_state": "SOURCE_LIMITED",
+      "source_family": "BPHS_CH6_17_20",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-D20-D20-DEITY-DESTINATION-LINK-UNR-1618463CF4DE"
+    },
+    {
+      "assertion_group": "D20_RUNTIME_DESTINATION_INFERENCE",
+      "canonical_for_purpose": "current implementation comparison only; not source canonical",
+      "canonical_status": "CANONICAL",
+      "difference": "Sequential modulo-12 progression from the source-supported category start.",
+      "mathematical_or_semantic_impact": "Current runtime destination output; textual authenticity unresolved.",
+      "normalization_attempted": true,
+      "resolution_state": "PRESERVED_SEPARATELY",
+      "source_family": "VEDA_IMPLEMENTATION_INFERENCE",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-D20-SEQUENTIAL-INFERENCE-B28D3A518A2A"
+    },
+    {
+      "assertion_group": "D20_SOURCE_CONTRACT",
+      "canonical_for_purpose": "non-production source contract candidate",
+      "canonical_status": "CANONICAL",
+      "difference": "Division geometry, size and category starts are source-backed; destination policy remains unresolved.",
+      "mathematical_or_semantic_impact": "Non-production partial contract candidate.",
+      "normalization_attempted": true,
+      "resolution_state": "PARTIAL_SOURCE_CONTRACT",
+      "source_family": "BPHS_CH6_17_20",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-D20-PARTIAL-CONTRACT-EE28145B60F6"
+    }
+  ]
+}

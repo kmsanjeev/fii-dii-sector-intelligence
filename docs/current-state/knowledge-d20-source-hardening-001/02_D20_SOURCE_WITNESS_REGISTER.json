@@ -1,0 +1,155 @@
+{
+  "edition": [
+    {
+      "bibliographic_identifier": null,
+      "completeness": "BOUNDED_PILOT_METADATA",
+      "digital_locator": "docs/current-state/calc-source-rx-001/07_D20_PRIMARY_SOURCES.md",
+      "edition_hash": "01C3FFAF42B48B7AA736D3C48E5C38563DCAD831BC5EC524C1B4673973CF198F",
+      "edition_id": "VEDA-SWW-EDITION-D20-PRIMARY-SOURCE-AUDIT-REFERENCE-765C4552D01E",
+      "edition_title": "D20 primary-source audit reference",
+      "editor": null,
+      "editorial_notes": "The existing audit records the inspected source and does not claim a complete destination mapping.",
+      "language": "METADATA",
+      "publication_year": null,
+      "publisher": null,
+      "rights": {
+        "basis": "Existing VEDA metadata; no bulk source text committed",
+        "permissions": [
+          "LOCAL_RESEARCH_ALLOWED",
+          "DERIVED_METADATA_ALLOWED"
+        ],
+        "rights_state": "RESEARCH_ONLY"
+      },
+      "script": null,
+      "source_type": "REFERENCE_EDITION_OR_GOVERNANCE_ARTIFACT",
+      "translator": null,
+      "witness_ids": [
+        "VEDA-SWW-WITNESS-BPHS-CH6-17-20-2EF58927518A"
+      ],
+      "work_id": "VEDA-SWW-WORK-BRIHAT-PARASHARA-HORA-SHASTRA-27F550E0C0C6"
+    }
+  ],
+  "lineage": "WORK -> WITNESS -> EDITION -> PASSAGE -> ASSERTION -> CONTRACT",
+  "original_layer_passage_id": "VEDA-SWW-PASSAGE-D20-BPHS-ORIGINAL-LAYER-E9CAC4FEA25E",
+  "passage": [
+    {
+      "base_passage_id": null,
+      "chapter": "6",
+      "citation_label": "BPHS Ch.6.17-20 Vimshamsha category-start passage",
+      "derived_text": null,
+      "edition_id": "VEDA-SWW-EDITION-D20-PRIMARY-SOURCE-AUDIT-REFERENCE-765C4552D01E",
+      "language": "EN_TRANSLATION",
+      "line": null,
+      "original_text": null,
+      "page": null,
+      "passage_id": "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B",
+      "review_state": "SOURCE_CHECKED",
+      "rights": {
+        "basis": "Existing VEDA metadata; no bulk source text committed",
+        "permissions": [
+          "LOCAL_RESEARCH_ALLOWED",
+          "DERIVED_METADATA_ALLOWED"
+        ],
+        "rights_state": "RESEARCH_ONLY"
+      },
+      "section": null,
+      "source_access": "PARTIAL_TEXT",
+      "source_layer": "TRANSLATION",
+      "source_locator": "docs/current-state/calc-source-rx-001/07_D20_PRIMARY_SOURCES.md; https://www.siva.sh/brihat-parashara-hora-shastra/6/16-20",
+      "table": null,
+      "text_hash": "C32EBC28BE5AEE7A897A80B437C5586D0D9F6303D3268988AE9A18FF0B64A156",
+      "verse": "17-20"
+    },
+    {
+      "base_passage_id": null,
+      "chapter": "6",
+      "citation_label": "BPHS Ch.6.17-20 Vimshamsha original-text layer",
+      "derived_text": null,
+      "edition_id": "VEDA-SWW-EDITION-D20-PRIMARY-SOURCE-AUDIT-REFERENCE-765C4552D01E",
+      "language": "SANSKRIT",
+      "line": null,
+      "original_text": null,
+      "page": null,
+      "passage_id": "VEDA-SWW-PASSAGE-D20-BPHS-ORIGINAL-LAYER-E9CAC4FEA25E",
+      "review_state": "SOURCE_CHECKED",
+      "rights": {
+        "basis": "Existing VEDA metadata; no bulk source text committed",
+        "permissions": [
+          "LOCAL_RESEARCH_ALLOWED",
+          "DERIVED_METADATA_ALLOWED"
+        ],
+        "rights_state": "RESEARCH_ONLY"
+      },
+      "section": null,
+      "source_access": "PARTIAL_TEXT",
+      "source_layer": "ORIGINAL_TEXT",
+      "source_locator": "https://www.siva.sh/brihat-parashara-hora-shastra/6/16-20",
+      "table": null,
+      "text_hash": null,
+      "verse": "17-20"
+    }
+  ],
+  "rights_state": {
+    "basis": "Existing VEDA metadata; no bulk source text committed",
+    "permissions": [
+      "LOCAL_RESEARCH_ALLOWED",
+      "DERIVED_METADATA_ALLOWED"
+    ],
+    "rights_state": "RESEARCH_ONLY"
+  },
+  "source_access": "PARTIAL_TEXT",
+  "standard_id": "VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001",
+  "targeted_secondary_access": "The existing practitioner URL was unavailable during bounded review; it is not used as classical authority.",
+  "translation_layer_passage_id": "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B",
+  "validation": {
+    "errors": [],
+    "is_valid": true,
+    "warnings": []
+  },
+  "witness": [
+    {
+      "completeness": "BOUNDED_PILOT_METADATA",
+      "date_or_period": null,
+      "dependence_notes": null,
+      "dependence_state": "POTENTIALLY_INDEPENDENT",
+      "language": "JSON / METADATA",
+      "legacy_source_id": "BPHS_CH6_17_20",
+      "locator": "docs/current-state/calc-source-rx-001/07_D20_PRIMARY_SOURCES.md",
+      "physical_or_digital": "DIGITAL",
+      "provenance": "Mapped from an existing governed VEDA artifact; no source text copied.",
+      "repository_or_library": "Existing VEDA source artifact register",
+      "review_state": "SOURCE_CHECKED",
+      "rights": {
+        "basis": "Existing VEDA metadata; no bulk source text committed",
+        "permissions": [
+          "LOCAL_RESEARCH_ALLOWED",
+          "DERIVED_METADATA_ALLOWED"
+        ],
+        "rights_state": "RESEARCH_ONLY"
+      },
+      "script": null,
+      "source_access": "PARTIAL_TEXT",
+      "witness_hash": null,
+      "witness_id": "VEDA-SWW-WITNESS-BPHS-CH6-17-20-2EF58927518A",
+      "witness_type": "SELECTED_PRIMARY_SOURCE_WITNESS",
+      "work_id": "VEDA-SWW-WORK-BRIHAT-PARASHARA-HORA-SHASTRA-27F550E0C0C6"
+    }
+  ],
+  "work": [
+    {
+      "alternate_titles": [],
+      "approximate_period": null,
+      "canonical_title": "Brihat Parashara Hora Shastra",
+      "language_origin": "SANSKRIT",
+      "legacy_source_ids": [
+        "BPHS"
+      ],
+      "notes": "Identity is bounded to existing VEDA metadata; uncertain chronology is not asserted.",
+      "period_confidence": null,
+      "tradition": "VEDA / JYOTISHA",
+      "traditional_author": "Parashara",
+      "work_id": "VEDA-SWW-WORK-BRIHAT-PARASHARA-HORA-SHASTRA-27F550E0C0C6",
+      "work_type": "CLASSICAL_TEXT"
+    }
+  ]
+}

@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-KNOWLEDGE-D20-SOURCE-HARDENING-001
+
+Completed the bounded D20/Vimshamsha source-hardening audit with
+`D20_SOURCE_CONTRACT_PARTIALLY_RESOLVED_FREEZE`. The BPHS Ch.6.17-20 witness
+resolves twenty 1°30′ divisions, movable/fixed/dual category starts and deity
+list scope. It does not state a complete destination-sign sequence, counting
+direction or deity-to-destination mapping. A deterministic non-production
+partial contract candidate and 240-row diagnostic matrix were recorded; the
+current sequential route remains an explicitly separated implementation
+inference, the generic route remains legacy-only, and no D20 runtime,
+interpretation, RAG, prediction, ML, Ashtakavarga or Approved Core change
+occurred. Evidence is in
+`docs/current-state/knowledge-d20-source-hardening-001/`.
+
 ## 2026-08-19 | VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001
 
 Operationalized the reusable source-witness governance standard with

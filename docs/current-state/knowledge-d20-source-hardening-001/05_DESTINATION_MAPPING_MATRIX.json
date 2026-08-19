@@ -1,0 +1,3862 @@
+{
+  "mathematical_coherence": {
+    "all_runtime_outputs_valid_signs": true,
+    "coverage": "12 sign classes x 20 divisions = 240 diagnostic rows",
+    "division_count": 20,
+    "division_size_degrees": "1.5",
+    "duplicate_or_missing_division_indexes": false,
+    "textual_authenticity_proven": false
+  },
+  "not_source_backed_fields": [
+    "source_destination",
+    "count_direction"
+  ],
+  "rows": [
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 0,
+      "division_range_degrees": [
+        0.0,
+        1.5
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 1,
+      "division_range_degrees": [
+        1.5,
+        3.0
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 2,
+      "division_range_degrees": [
+        3.0,
+        4.5
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 3,
+      "division_range_degrees": [
+        4.5,
+        6.0
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 4,
+      "division_range_degrees": [
+        6.0,
+        7.5
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 5,
+      "division_range_degrees": [
+        7.5,
+        9.0
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 6,
+      "division_range_degrees": [
+        9.0,
+        10.5
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 7,
+      "division_range_degrees": [
+        10.5,
+        12.0
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 8,
+      "division_range_degrees": [
+        12.0,
+        13.5
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 9,
+      "division_range_degrees": [
+        13.5,
+        15.0
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 10,
+      "division_range_degrees": [
+        15.0,
+        16.5
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 11,
+      "division_range_degrees": [
+        16.5,
+        18.0
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 12,
+      "division_range_degrees": [
+        18.0,
+        19.5
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 13,
+      "division_range_degrees": [
+        19.5,
+        21.0
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 14,
+      "division_range_degrees": [
+        21.0,
+        22.5
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 15,
+      "division_range_degrees": [
+        22.5,
+        24.0
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 16,
+      "division_range_degrees": [
+        24.0,
+        25.5
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 17,
+      "division_range_degrees": [
+        25.5,
+        27.0
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 18,
+      "division_range_degrees": [
+        27.0,
+        28.5
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 19,
+      "division_range_degrees": [
+        28.5,
+        30.0
+      ],
+      "input_sign": "Aries",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 0,
+      "division_range_degrees": [
+        0.0,
+        1.5
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 1,
+      "division_range_degrees": [
+        1.5,
+        3.0
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 2,
+      "division_range_degrees": [
+        3.0,
+        4.5
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 3,
+      "division_range_degrees": [
+        4.5,
+        6.0
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 4,
+      "division_range_degrees": [
+        6.0,
+        7.5
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 5,
+      "division_range_degrees": [
+        7.5,
+        9.0
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 6,
+      "division_range_degrees": [
+        9.0,
+        10.5
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 7,
+      "division_range_degrees": [
+        10.5,
+        12.0
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 8,
+      "division_range_degrees": [
+        12.0,
+        13.5
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 9,
+      "division_range_degrees": [
+        13.5,
+        15.0
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 10,
+      "division_range_degrees": [
+        15.0,
+        16.5
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 11,
+      "division_range_degrees": [
+        16.5,
+        18.0
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 12,
+      "division_range_degrees": [
+        18.0,
+        19.5
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 13,
+      "division_range_degrees": [
+        19.5,
+        21.0
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 14,
+      "division_range_degrees": [
+        21.0,
+        22.5
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 15,
+      "division_range_degrees": [
+        22.5,
+        24.0
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 16,
+      "division_range_degrees": [
+        24.0,
+        25.5
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 17,
+      "division_range_degrees": [
+        25.5,
+        27.0
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 18,
+      "division_range_degrees": [
+        27.0,
+        28.5
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 19,
+      "division_range_degrees": [
+        28.5,
+        30.0
+      ],
+      "input_sign": "Taurus",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 0,
+      "division_range_degrees": [
+        0.0,
+        1.5
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 1,
+      "division_range_degrees": [
+        1.5,
+        3.0
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 2,
+      "division_range_degrees": [
+        3.0,
+        4.5
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 3,
+      "division_range_degrees": [
+        4.5,
+        6.0
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 4,
+      "division_range_degrees": [
+        6.0,
+        7.5
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 5,
+      "division_range_degrees": [
+        7.5,
+        9.0
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 6,
+      "division_range_degrees": [
+        9.0,
+        10.5
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 7,
+      "division_range_degrees": [
+        10.5,
+        12.0
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 8,
+      "division_range_degrees": [
+        12.0,
+        13.5
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 9,
+      "division_range_degrees": [
+        13.5,
+        15.0
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 10,
+      "division_range_degrees": [
+        15.0,
+        16.5
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 11,
+      "division_range_degrees": [
+        16.5,
+        18.0
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 12,
+      "division_range_degrees": [
+        18.0,
+        19.5
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 13,
+      "division_range_degrees": [
+        19.5,
+        21.0
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 14,
+      "division_range_degrees": [
+        21.0,
+        22.5
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 15,
+      "division_range_degrees": [
+        22.5,
+        24.0
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 16,
+      "division_range_degrees": [
+        24.0,
+        25.5
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 17,
+      "division_range_degrees": [
+        25.5,
+        27.0
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 18,
+      "division_range_degrees": [
+        27.0,
+        28.5
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 19,
+      "division_range_degrees": [
+        28.5,
+        30.0
+      ],
+      "input_sign": "Gemini",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 0,
+      "division_range_degrees": [
+        0.0,
+        1.5
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 1,
+      "division_range_degrees": [
+        1.5,
+        3.0
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 2,
+      "division_range_degrees": [
+        3.0,
+        4.5
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 3,
+      "division_range_degrees": [
+        4.5,
+        6.0
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 4,
+      "division_range_degrees": [
+        6.0,
+        7.5
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 5,
+      "division_range_degrees": [
+        7.5,
+        9.0
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 6,
+      "division_range_degrees": [
+        9.0,
+        10.5
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 7,
+      "division_range_degrees": [
+        10.5,
+        12.0
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 8,
+      "division_range_degrees": [
+        12.0,
+        13.5
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 9,
+      "division_range_degrees": [
+        13.5,
+        15.0
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 10,
+      "division_range_degrees": [
+        15.0,
+        16.5
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 11,
+      "division_range_degrees": [
+        16.5,
+        18.0
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 12,
+      "division_range_degrees": [
+        18.0,
+        19.5
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 13,
+      "division_range_degrees": [
+        19.5,
+        21.0
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 14,
+      "division_range_degrees": [
+        21.0,
+        22.5
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 15,
+      "division_range_degrees": [
+        22.5,
+        24.0
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 16,
+      "division_range_degrees": [
+        24.0,
+        25.5
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 17,
+      "division_range_degrees": [
+        25.5,
+        27.0
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 18,
+      "division_range_degrees": [
+        27.0,
+        28.5
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 19,
+      "division_range_degrees": [
+        28.5,
+        30.0
+      ],
+      "input_sign": "Cancer",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 0,
+      "division_range_degrees": [
+        0.0,
+        1.5
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 1,
+      "division_range_degrees": [
+        1.5,
+        3.0
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 2,
+      "division_range_degrees": [
+        3.0,
+        4.5
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 3,
+      "division_range_degrees": [
+        4.5,
+        6.0
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 4,
+      "division_range_degrees": [
+        6.0,
+        7.5
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 5,
+      "division_range_degrees": [
+        7.5,
+        9.0
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 6,
+      "division_range_degrees": [
+        9.0,
+        10.5
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 7,
+      "division_range_degrees": [
+        10.5,
+        12.0
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 8,
+      "division_range_degrees": [
+        12.0,
+        13.5
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 9,
+      "division_range_degrees": [
+        13.5,
+        15.0
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 10,
+      "division_range_degrees": [
+        15.0,
+        16.5
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 11,
+      "division_range_degrees": [
+        16.5,
+        18.0
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 12,
+      "division_range_degrees": [
+        18.0,
+        19.5
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 13,
+      "division_range_degrees": [
+        19.5,
+        21.0
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 14,
+      "division_range_degrees": [
+        21.0,
+        22.5
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 15,
+      "division_range_degrees": [
+        22.5,
+        24.0
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 16,
+      "division_range_degrees": [
+        24.0,
+        25.5
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 17,
+      "division_range_degrees": [
+        25.5,
+        27.0
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 18,
+      "division_range_degrees": [
+        27.0,
+        28.5
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 19,
+      "division_range_degrees": [
+        28.5,
+        30.0
+      ],
+      "input_sign": "Leo",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 0,
+      "division_range_degrees": [
+        0.0,
+        1.5
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 1,
+      "division_range_degrees": [
+        1.5,
+        3.0
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 2,
+      "division_range_degrees": [
+        3.0,
+        4.5
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 3,
+      "division_range_degrees": [
+        4.5,
+        6.0
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 4,
+      "division_range_degrees": [
+        6.0,
+        7.5
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 5,
+      "division_range_degrees": [
+        7.5,
+        9.0
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 6,
+      "division_range_degrees": [
+        9.0,
+        10.5
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 7,
+      "division_range_degrees": [
+        10.5,
+        12.0
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 8,
+      "division_range_degrees": [
+        12.0,
+        13.5
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 9,
+      "division_range_degrees": [
+        13.5,
+        15.0
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 10,
+      "division_range_degrees": [
+        15.0,
+        16.5
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 11,
+      "division_range_degrees": [
+        16.5,
+        18.0
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 12,
+      "division_range_degrees": [
+        18.0,
+        19.5
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 13,
+      "division_range_degrees": [
+        19.5,
+        21.0
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 14,
+      "division_range_degrees": [
+        21.0,
+        22.5
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 15,
+      "division_range_degrees": [
+        22.5,
+        24.0
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 16,
+      "division_range_degrees": [
+        24.0,
+        25.5
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 17,
+      "division_range_degrees": [
+        25.5,
+        27.0
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 18,
+      "division_range_degrees": [
+        27.0,
+        28.5
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 19,
+      "division_range_degrees": [
+        28.5,
+        30.0
+      ],
+      "input_sign": "Virgo",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 0,
+      "division_range_degrees": [
+        0.0,
+        1.5
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 1,
+      "division_range_degrees": [
+        1.5,
+        3.0
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 2,
+      "division_range_degrees": [
+        3.0,
+        4.5
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 3,
+      "division_range_degrees": [
+        4.5,
+        6.0
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 4,
+      "division_range_degrees": [
+        6.0,
+        7.5
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 5,
+      "division_range_degrees": [
+        7.5,
+        9.0
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 6,
+      "division_range_degrees": [
+        9.0,
+        10.5
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 7,
+      "division_range_degrees": [
+        10.5,
+        12.0
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 8,
+      "division_range_degrees": [
+        12.0,
+        13.5
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 9,
+      "division_range_degrees": [
+        13.5,
+        15.0
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 10,
+      "division_range_degrees": [
+        15.0,
+        16.5
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 11,
+      "division_range_degrees": [
+        16.5,
+        18.0
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 12,
+      "division_range_degrees": [
+        18.0,
+        19.5
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 13,
+      "division_range_degrees": [
+        19.5,
+        21.0
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 14,
+      "division_range_degrees": [
+        21.0,
+        22.5
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 15,
+      "division_range_degrees": [
+        22.5,
+        24.0
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 16,
+      "division_range_degrees": [
+        24.0,
+        25.5
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 17,
+      "division_range_degrees": [
+        25.5,
+        27.0
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 18,
+      "division_range_degrees": [
+        27.0,
+        28.5
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 19,
+      "division_range_degrees": [
+        28.5,
+        30.0
+      ],
+      "input_sign": "Libra",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 0,
+      "division_range_degrees": [
+        0.0,
+        1.5
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 1,
+      "division_range_degrees": [
+        1.5,
+        3.0
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 2,
+      "division_range_degrees": [
+        3.0,
+        4.5
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 3,
+      "division_range_degrees": [
+        4.5,
+        6.0
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 4,
+      "division_range_degrees": [
+        6.0,
+        7.5
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 5,
+      "division_range_degrees": [
+        7.5,
+        9.0
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 6,
+      "division_range_degrees": [
+        9.0,
+        10.5
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 7,
+      "division_range_degrees": [
+        10.5,
+        12.0
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 8,
+      "division_range_degrees": [
+        12.0,
+        13.5
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 9,
+      "division_range_degrees": [
+        13.5,
+        15.0
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 10,
+      "division_range_degrees": [
+        15.0,
+        16.5
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 11,
+      "division_range_degrees": [
+        16.5,
+        18.0
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 12,
+      "division_range_degrees": [
+        18.0,
+        19.5
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 13,
+      "division_range_degrees": [
+        19.5,
+        21.0
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 14,
+      "division_range_degrees": [
+        21.0,
+        22.5
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 15,
+      "division_range_degrees": [
+        22.5,
+        24.0
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 16,
+      "division_range_degrees": [
+        24.0,
+        25.5
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 17,
+      "division_range_degrees": [
+        25.5,
+        27.0
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 18,
+      "division_range_degrees": [
+        27.0,
+        28.5
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 19,
+      "division_range_degrees": [
+        28.5,
+        30.0
+      ],
+      "input_sign": "Scorpio",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 0,
+      "division_range_degrees": [
+        0.0,
+        1.5
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 1,
+      "division_range_degrees": [
+        1.5,
+        3.0
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 2,
+      "division_range_degrees": [
+        3.0,
+        4.5
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 3,
+      "division_range_degrees": [
+        4.5,
+        6.0
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 4,
+      "division_range_degrees": [
+        6.0,
+        7.5
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 5,
+      "division_range_degrees": [
+        7.5,
+        9.0
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 6,
+      "division_range_degrees": [
+        9.0,
+        10.5
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 7,
+      "division_range_degrees": [
+        10.5,
+        12.0
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 8,
+      "division_range_degrees": [
+        12.0,
+        13.5
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 9,
+      "division_range_degrees": [
+        13.5,
+        15.0
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 10,
+      "division_range_degrees": [
+        15.0,
+        16.5
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 11,
+      "division_range_degrees": [
+        16.5,
+        18.0
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 12,
+      "division_range_degrees": [
+        18.0,
+        19.5
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 13,
+      "division_range_degrees": [
+        19.5,
+        21.0
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 14,
+      "division_range_degrees": [
+        21.0,
+        22.5
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 15,
+      "division_range_degrees": [
+        22.5,
+        24.0
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 16,
+      "division_range_degrees": [
+        24.0,
+        25.5
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 17,
+      "division_range_degrees": [
+        25.5,
+        27.0
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 18,
+      "division_range_degrees": [
+        27.0,
+        28.5
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 19,
+      "division_range_degrees": [
+        28.5,
+        30.0
+      ],
+      "input_sign": "Sagittarius",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 0,
+      "division_range_degrees": [
+        0.0,
+        1.5
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 1,
+      "division_range_degrees": [
+        1.5,
+        3.0
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 2,
+      "division_range_degrees": [
+        3.0,
+        4.5
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 3,
+      "division_range_degrees": [
+        4.5,
+        6.0
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 4,
+      "division_range_degrees": [
+        6.0,
+        7.5
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 5,
+      "division_range_degrees": [
+        7.5,
+        9.0
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 6,
+      "division_range_degrees": [
+        9.0,
+        10.5
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 7,
+      "division_range_degrees": [
+        10.5,
+        12.0
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 8,
+      "division_range_degrees": [
+        12.0,
+        13.5
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 9,
+      "division_range_degrees": [
+        13.5,
+        15.0
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 10,
+      "division_range_degrees": [
+        15.0,
+        16.5
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 11,
+      "division_range_degrees": [
+        16.5,
+        18.0
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 12,
+      "division_range_degrees": [
+        18.0,
+        19.5
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 13,
+      "division_range_degrees": [
+        19.5,
+        21.0
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 14,
+      "division_range_degrees": [
+        21.0,
+        22.5
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 15,
+      "division_range_degrees": [
+        22.5,
+        24.0
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 16,
+      "division_range_degrees": [
+        24.0,
+        25.5
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 17,
+      "division_range_degrees": [
+        25.5,
+        27.0
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 18,
+      "division_range_degrees": [
+        27.0,
+        28.5
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 19,
+      "division_range_degrees": [
+        28.5,
+        30.0
+      ],
+      "input_sign": "Capricorn",
+      "input_sign_class": "MOVABLE",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Aries"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 0,
+      "division_range_degrees": [
+        0.0,
+        1.5
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 1,
+      "division_range_degrees": [
+        1.5,
+        3.0
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 2,
+      "division_range_degrees": [
+        3.0,
+        4.5
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 3,
+      "division_range_degrees": [
+        4.5,
+        6.0
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 4,
+      "division_range_degrees": [
+        6.0,
+        7.5
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 5,
+      "division_range_degrees": [
+        7.5,
+        9.0
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 6,
+      "division_range_degrees": [
+        9.0,
+        10.5
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 7,
+      "division_range_degrees": [
+        10.5,
+        12.0
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 8,
+      "division_range_degrees": [
+        12.0,
+        13.5
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 9,
+      "division_range_degrees": [
+        13.5,
+        15.0
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 10,
+      "division_range_degrees": [
+        15.0,
+        16.5
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 11,
+      "division_range_degrees": [
+        16.5,
+        18.0
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 12,
+      "division_range_degrees": [
+        18.0,
+        19.5
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 13,
+      "division_range_degrees": [
+        19.5,
+        21.0
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 14,
+      "division_range_degrees": [
+        21.0,
+        22.5
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 15,
+      "division_range_degrees": [
+        22.5,
+        24.0
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 16,
+      "division_range_degrees": [
+        24.0,
+        25.5
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 17,
+      "division_range_degrees": [
+        25.5,
+        27.0
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 18,
+      "division_range_degrees": [
+        27.0,
+        28.5
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 19,
+      "division_range_degrees": [
+        28.5,
+        30.0
+      ],
+      "input_sign": "Aquarius",
+      "input_sign_class": "FIXED",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Sagittarius"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 0,
+      "division_range_degrees": [
+        0.0,
+        1.5
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 1,
+      "division_range_degrees": [
+        1.5,
+        3.0
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 2,
+      "division_range_degrees": [
+        3.0,
+        4.5
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 3,
+      "division_range_degrees": [
+        4.5,
+        6.0
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 4,
+      "division_range_degrees": [
+        6.0,
+        7.5
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 5,
+      "division_range_degrees": [
+        7.5,
+        9.0
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 6,
+      "division_range_degrees": [
+        9.0,
+        10.5
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 7,
+      "division_range_degrees": [
+        10.5,
+        12.0
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aries",
+      "division_index_zero_based": 8,
+      "division_range_degrees": [
+        12.0,
+        13.5
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Aries",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Taurus",
+      "division_index_zero_based": 9,
+      "division_range_degrees": [
+        13.5,
+        15.0
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Taurus",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Gemini",
+      "division_index_zero_based": 10,
+      "division_range_degrees": [
+        15.0,
+        16.5
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Gemini",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Cancer",
+      "division_index_zero_based": 11,
+      "division_range_degrees": [
+        16.5,
+        18.0
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Cancer",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Leo",
+      "division_index_zero_based": 12,
+      "division_range_degrees": [
+        18.0,
+        19.5
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Leo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Virgo",
+      "division_index_zero_based": 13,
+      "division_range_degrees": [
+        19.5,
+        21.0
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Virgo",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Libra",
+      "division_index_zero_based": 14,
+      "division_range_degrees": [
+        21.0,
+        22.5
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Libra",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Scorpio",
+      "division_index_zero_based": 15,
+      "division_range_degrees": [
+        22.5,
+        24.0
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Scorpio",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Sagittarius",
+      "division_index_zero_based": 16,
+      "division_range_degrees": [
+        24.0,
+        25.5
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Sagittarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Capricorn",
+      "division_index_zero_based": 17,
+      "division_range_degrees": [
+        25.5,
+        27.0
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Capricorn",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Aquarius",
+      "division_index_zero_based": 18,
+      "division_range_degrees": [
+        27.0,
+        28.5
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Aquarius",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    },
+    {
+      "current_runtime_destination": "Pisces",
+      "division_index_zero_based": 19,
+      "division_range_degrees": [
+        28.5,
+        30.0
+      ],
+      "input_sign": "Pisces",
+      "input_sign_class": "DUAL",
+      "runtime_inference_destination": "Pisces",
+      "runtime_matches_independent_inference": true,
+      "source_authenticity_status": "UNRESOLVED",
+      "source_destination": null,
+      "source_status": "NOT_STATED",
+      "source_supported_start": "Leo"
+    }
+  ],
+  "source_backed_fields": [
+    "input_sign_class",
+    "division_index_zero_based",
+    "source_supported_start"
+  ],
+  "status": "PARTIAL_SOURCE_CONTRACT"
+}

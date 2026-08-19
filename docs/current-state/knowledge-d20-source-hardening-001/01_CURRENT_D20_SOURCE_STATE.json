@@ -1,0 +1,23 @@
+{
+  "calculation_status": "PARTIALLY_VALIDATED",
+  "current_method": "d20_vimshamsha_bphs_category_start_v1",
+  "current_method_id": "D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1",
+  "current_method_version": "1.0",
+  "destination_mapping": "sequential start + amsa modulo 12; evidence-qualified inference",
+  "interpretation_status": "NOT_VALIDATED",
+  "legacy_method": "D20_LEGACY_GENERIC_VARGA_V0",
+  "mapping_status": "SOURCE_MAPPING_INCOMPLETE",
+  "runtime_files": [
+    "engines/ai/knowledge/varga_governance.py",
+    "engines/intelligence/kundli_engine.py"
+  ],
+  "source_refs": [
+    "BPHS_CH6_17_20",
+    "BPHS_CH7_4"
+  ],
+  "starting_signs": {
+    "DUAL": "Leo",
+    "FIXED": "Sagittarius",
+    "MOVABLE": "Aries"
+  }
+}

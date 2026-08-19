@@ -1,0 +1,36 @@
+{
+  "conflicts": [
+    {
+      "assertion_a": "VEDA-SWW-ASSERTION-D20-VIMSHAMSHA-METHOD-508F2064ADED",
+      "assertion_b": "VEDA-SWW-ASSERTION-D20-VIMSHAMSHA-METHOD-6B8BB50B023A",
+      "confidence": "HIGH",
+      "conflict_id": "VEDA-SWW-CONFLICT-D20-LEGACY-VARIANT-2EAD7A4D93B6",
+      "conflict_type": "IMPLEMENTATION_VARIANT",
+      "implementation_variant": true,
+      "indexing_issue": false,
+      "normalization_checked": true,
+      "numeric_impact": "METHOD_DIFFERENCE",
+      "resolution": "Source-selected category-start method retained; legacy fallback preserved for comparison only",
+      "semantic_impact": "CALCULATION_METHOD_VARIANT",
+      "textual_variant": false,
+      "translation_issue": false
+    },
+    {
+      "assertion_a": "VEDA-SWW-ASSERTION-D20-D20-SOURCE-CONTRACT-1B9BE6643ED0",
+      "assertion_b": "VEDA-SWW-ASSERTION-D20-D20-RUNTIME-DESTINATION-INFERE-7EE4F7CA57C3",
+      "confidence": "HIGH",
+      "conflict_id": "VEDA-SWW-CONFLICT-D20-SOURCE-INFERENCE-GAP-1787BAA5DFBD",
+      "conflict_type": "UNRESOLVED",
+      "implementation_variant": true,
+      "indexing_issue": false,
+      "normalization_checked": true,
+      "numeric_impact": "DESTINATION_OUTPUTS_ONLY",
+      "resolution": "Preserve runtime inference as a separate implementation variant; do not promote it to source-backed destination mapping.",
+      "semantic_impact": "SOURCE_GAP_NOT_CONTRADICTION",
+      "textual_variant": false,
+      "translation_issue": false
+    }
+  ],
+  "resolution": "No automatic reconciliation; preserve source-limited contract and implementation variants separately.",
+  "source_gap_is_contradiction": false
+}

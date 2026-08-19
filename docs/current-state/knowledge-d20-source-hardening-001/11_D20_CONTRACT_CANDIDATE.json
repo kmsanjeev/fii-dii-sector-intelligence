@@ -1,0 +1,25 @@
+{
+  "boundary_policy": "lower-inclusive, upper-exclusive; Decimal floor; 30° hands off to next sign",
+  "contract_hash": "20CF6C0BDAF29BF109243673E51EE377908402569EDF76096391D78B1EFE32A1",
+  "contract_id": "D20_RAW_BPHS_CATEGORY_START_V1",
+  "count_direction": "NOT_STATED",
+  "destination_policy": "NOT_STATED; no complete source mapping",
+  "division_count": 20,
+  "division_size_degrees": "1.5",
+  "input_domain": "normalized sidereal longitude [0, 360)",
+  "production_bound": false,
+  "sign_class_policy": "movable/fixed/dual",
+  "source_family": "BPHS_CH6_17_20",
+  "source_lineage_complete": true,
+  "source_passages": [
+    "Ch.6.17-20"
+  ],
+  "start_policy": {
+    "DUAL": "Leo",
+    "FIXED": "Sagittarius",
+    "MOVABLE": "Aries"
+  },
+  "status": "PARTIAL_SOURCE_CONTRACT",
+  "variant_policy": "preserve sequential runtime inference and generic legacy mapping separately",
+  "version": "1.0"
+}
