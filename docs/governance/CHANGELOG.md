@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001
+
+Operationalized the reusable source-witness governance standard with
+conditions. The implementation extends the existing P002 registry architecture
+with deterministic work/witness/edition/passage/layer/assertion/variant,
+contextual authority, rights, dependence, conflict, lineage and supersession
+metadata; a lightweight validator; a non-mutating legacy adapter; and bounded
+Ashtakavarga and D20 pilots. No source books, mass migration, RAG rebuild,
+calculation, prediction, ML or Approved Core change occurred. Evidence is in
+`docs/current-state/knowledge-source-witness-standard-001/`.
+
 ## 2026-08-19 | VEDA-CALCULATION-LANE-REBASELINE-001
 
 Completed the post-RX2 calculation-lane audit with `PASS_WITH_CONDITION`. The

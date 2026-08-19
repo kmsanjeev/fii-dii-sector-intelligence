@@ -3,6 +3,11 @@
 Status: P002 baseline  
 Contract version: `2026-08-10`
 
+Current extension: `VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001` adds linked
+work/witness/edition/passage/layer/assertion/variant/rights/lineage metadata
+without replacing this P002 registry. Its implementation and pilots are in
+`docs/current-state/knowledge-source-witness-standard-001/`.
+
 ## Purpose
 
 This standard defines how VEDA registers astrology sources as machine-readable artifacts before any source is allowed to influence future rule migration, RAG, or ML work.

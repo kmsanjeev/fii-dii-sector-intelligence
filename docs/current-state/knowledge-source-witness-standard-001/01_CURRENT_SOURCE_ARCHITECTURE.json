@@ -1,0 +1,21 @@
+{
+  "existing_authority_metadata": "P002 authority tiers and dimensional source authority; new standard adds independent contextual dimensions",
+  "existing_counts": {
+    "approval_count": 3,
+    "claim_count": 13,
+    "conflict_count": 2,
+    "errors": [],
+    "is_valid": true,
+    "legacy_register_count": 1,
+    "passage_count": 13,
+    "policy_count": 6,
+    "source_count": 13,
+    "warnings": []
+  },
+  "existing_knowledge_governance": "VEDA-STD-001 lifecycle/trust zones plus astrology_governance.py",
+  "existing_passage_support": "VEDA-PSG records with source_id and citation fields",
+  "existing_rights_metadata": "P002 legal_access_status plus source-specific rights registers; new standard adds permissions and basis",
+  "existing_source_registry": "P002 JSON registry at data/veda/research/astrology with Pydantic validator",
+  "existing_variant_support": "P002 conflicts plus source-specific Ashtakavarga variant registers",
+  "extension_strategy": "linked source-witness layer plus non-mutating legacy adapter"
+}

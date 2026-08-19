@@ -1,0 +1,29 @@
+{
+  "conditions": [
+    "historical records remain unmigrated unless touched",
+    "human/expert/source-rights gates remain explicit",
+    "D20 source mapping remains partial",
+    "no Approved Core promotion"
+  ],
+  "decision": "SOURCE_WITNESS_STANDARD_OPERATIONAL_WITH_CONDITION",
+  "governance": {
+    "approved_core_after": 17,
+    "approved_core_before": 17,
+    "calculation_changed": false,
+    "emp_001": "ACTIVE_LONGITUDINAL",
+    "external_evidence_changed": false,
+    "human_validation": "COMM-002/GROUP-001 PENDING",
+    "ml": "LOCKED",
+    "pred_m4": "UNCHANGED",
+    "prediction": "UNCHANGED",
+    "production_changed": false,
+    "provider_calls": 0,
+    "rag_changed": false,
+    "rag_documents_after": 1205,
+    "rag_documents_before": 1205,
+    "rag_rebuild": false
+  },
+  "programme": "VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001",
+  "snapshot_date": "2026-08-19",
+  "starting_commit": "bc02cd2aedc42247dd9d1f7612d6f8b3107d2057"
+}

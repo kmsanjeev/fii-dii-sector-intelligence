@@ -3,6 +3,11 @@
 Status: P002 baseline  
 Contract version: `2026-08-10`
 
+Current extension: source-heavy work may additionally cite the linked
+work/witness/edition/passage/source-layer/variant identity defined by
+`VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001`; the existing P002 citation chain
+remains backward compatible.
+
 ## Citation Chain
 
 VEDA must preserve the following chain:

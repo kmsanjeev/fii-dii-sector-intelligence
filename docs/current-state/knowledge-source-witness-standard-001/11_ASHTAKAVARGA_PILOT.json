@@ -1,0 +1,644 @@
+{
+  "bundle": {
+    "assertions": [
+      {
+        "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+        "assertion_hash": "86ECF13D65ECA38771E1F0AEB42ED3C190A71CEB1E693AE2DF00E8F511AE2FC0",
+        "assertion_id": "VEDA-SWW-ASSERTION-ASHTAKAVARGA-RAW-CONTRACT-662677E96D61",
+        "authority": {
+          "empirical_authority": "NOT_APPLICABLE",
+          "implementation_authority": "HIGH",
+          "notes": null,
+          "scholarly_authority": "NOT_ASSESSED",
+          "textual_authority": "HIGH",
+          "traditional_authority": "VERY_HIGH"
+        },
+        "claim_type": "CALCULATION_RULE",
+        "normalization_method": "Bounded pilot paraphrase; no source text copied",
+        "normalized_statement": "The canonical raw Ashtakavarga V2 contract is traced to the selected BPHS witness and preserves separate planetary, Lagna and combined semantics.",
+        "parent_assertion_ids": [],
+        "passage_ids": [
+          "VEDA-SWW-PASSAGE-BPHS-CH-66-43-68-AND-66-69-76-RAW-466FA2793B54"
+        ],
+        "source_layer": "NORMALIZATION",
+        "statement": "The canonical raw Ashtakavarga V2 contract is traced to the selected BPHS witness and preserves separate planetary, Lagna and combined semantics.",
+        "validation": {
+          "approved_core_eligible": false,
+          "conditions": [
+            "external numerical oracle unavailable",
+            "reductions deferred"
+          ],
+          "empirical_state": "UNTESTED",
+          "production_activation": false,
+          "review_state": "SOURCE_CHECKED",
+          "source_state": "CONTRACT_FROZEN"
+        },
+        "variant_id": "VEDA-SWW-VARIANT-BPHS-PRIMARY-V2-4F8E6CC7013A"
+      },
+      {
+        "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+        "assertion_hash": "43A1126F1CBDDDB3336FD83D63846477EBB79130D481CC300B7D7C7CF452D23C",
+        "assertion_id": "VEDA-SWW-ASSERTION-ASHTAKAVARGA-RAW-CONTRACT-EA1FFC723A63",
+        "authority": {
+          "empirical_authority": "NOT_APPLICABLE",
+          "implementation_authority": "MODERATE",
+          "notes": null,
+          "scholarly_authority": "NOT_ASSESSED",
+          "textual_authority": "MODERATE",
+          "traditional_authority": "HIGH"
+        },
+        "claim_type": "CALCULATION_RULE",
+        "normalization_method": "Bounded pilot paraphrase; no source text copied",
+        "normalized_statement": "Phaladeepika is represented as an explicit alternative witness with pair-level variants and is not merged into BPHS V2.",
+        "parent_assertion_ids": [],
+        "passage_ids": [
+          "VEDA-SWW-PASSAGE-PHALADEEPIKA-CH-23-1-22-EXPLICIT-A-90354D09075D"
+        ],
+        "source_layer": "NORMALIZATION",
+        "statement": "Phaladeepika is represented as an explicit alternative witness with pair-level variants and is not merged into BPHS V2.",
+        "validation": {
+          "approved_core_eligible": false,
+          "conditions": [
+            "translation and OCR uncertainty retained"
+          ],
+          "empirical_state": "UNTESTED",
+          "production_activation": false,
+          "review_state": "SOURCE_CHECKED",
+          "source_state": "VARIANTS_RECONCILED"
+        },
+        "variant_id": "VEDA-SWW-VARIANT-PHALADEEPIKA-MAIN-TEXT-1FFB3A00A710"
+      },
+      {
+        "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+        "assertion_hash": "B7C611C676D6703F3AE84D18BC5B711D19E80812DC2998BF743D0339ADD6C10D",
+        "assertion_id": "VEDA-SWW-ASSERTION-ASHTAKAVARGA-RAW-CONTRACT-9A74BE8E3C29",
+        "authority": {
+          "empirical_authority": "NOT_APPLICABLE",
+          "implementation_authority": "LOW",
+          "notes": null,
+          "scholarly_authority": "NOT_ASSESSED",
+          "textual_authority": "LOW",
+          "traditional_authority": "MODERATE"
+        },
+        "claim_type": "CALCULATION_RULE",
+        "normalization_method": "Bounded pilot paraphrase; no source text copied",
+        "normalized_statement": "The existing Varahamihira-attributed alternative is retained as a research variant; attribution and mathematical equivalence are not independently promoted.",
+        "parent_assertion_ids": [],
+        "passage_ids": [
+          "VEDA-SWW-PASSAGE-PHALADEEPIKA-CH-23-1-22-EXPLICIT-A-90354D09075D"
+        ],
+        "source_layer": "COMMENTARY",
+        "statement": "The existing Varahamihira-attributed alternative is retained as a research variant; attribution and mathematical equivalence are not independently promoted.",
+        "validation": {
+          "approved_core_eligible": false,
+          "conditions": [
+            "attribution is inherited from existing artifact"
+          ],
+          "empirical_state": "UNTESTED",
+          "production_activation": false,
+          "review_state": "SOURCE_CHECKED",
+          "source_state": "SOURCE_LIMITED"
+        },
+        "variant_id": "VEDA-SWW-VARIANT-VARAHAMIHIRA-ATTRIBUTED-VARIANT-8F27BD57CBD8"
+      },
+      {
+        "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+        "assertion_hash": "4B9CAED0E92BD8535E9E617926C9300C6D40199293CC793A14232EEB74FF66BB",
+        "assertion_id": "VEDA-SWW-ASSERTION-ASHTAKAVARGA-RAW-CONTRACT-9D6BB354B32B",
+        "authority": {
+          "empirical_authority": "NOT_APPLICABLE",
+          "implementation_authority": "HIGH",
+          "notes": null,
+          "scholarly_authority": "NOT_ASSESSED",
+          "textual_authority": "UNKNOWN",
+          "traditional_authority": "NOT_ASSESSED"
+        },
+        "claim_type": "CALCULATION_RULE",
+        "normalization_method": "Bounded pilot paraphrase; no source text copied",
+        "normalized_statement": "The modern 337/386 values are an implementation witness with unresolved lineage, not a classical invariant.",
+        "parent_assertion_ids": [],
+        "passage_ids": [
+          "VEDA-SWW-PASSAGE-MODERN-337-386-IMPLEMENTATION-WITN-33046FCD253C"
+        ],
+        "source_layer": "IMPLEMENTATION",
+        "statement": "The modern 337/386 values are an implementation witness with unresolved lineage, not a classical invariant.",
+        "validation": {
+          "approved_core_eligible": false,
+          "conditions": [
+            "lineage unresolved"
+          ],
+          "empirical_state": "UNTESTED",
+          "production_activation": false,
+          "review_state": "SOURCE_CHECKED",
+          "source_state": "SOURCE_LIMITED"
+        },
+        "variant_id": "VEDA-SWW-VARIANT-MODERN-337-386-IMPLEMENTATION-WITN-1B8628856C80"
+      },
+      {
+        "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+        "assertion_hash": "948E999AD9A5DB879DCD605BE22D94BDAF1A1C0C42A6AE9BD98FAB6DE2B458DA",
+        "assertion_id": "VEDA-SWW-ASSERTION-ASHTAKAVARGA-RAW-CONTRACT-4983335C7CEF",
+        "authority": {
+          "empirical_authority": "NOT_APPLICABLE",
+          "implementation_authority": "HIGH",
+          "notes": null,
+          "scholarly_authority": "NOT_ASSESSED",
+          "textual_authority": "NOT_ASSESSED",
+          "traditional_authority": "NOT_ASSESSED"
+        },
+        "claim_type": "SYSTEM_INFERENCE",
+        "normalization_method": "Bounded pilot paraphrase; no source text copied",
+        "normalized_statement": "Historical V1 is superseded because its source matrix and aggregate invariant came from incompatible or unverified traditions.",
+        "parent_assertion_ids": [],
+        "passage_ids": [
+          "VEDA-SWW-PASSAGE-BPHS-CH-66-43-68-AND-66-69-76-RAW-466FA2793B54",
+          "VEDA-SWW-PASSAGE-MODERN-337-386-IMPLEMENTATION-WITN-33046FCD253C"
+        ],
+        "source_layer": "IMPLEMENTATION",
+        "statement": "Historical V1 is superseded because its source matrix and aggregate invariant came from incompatible or unverified traditions.",
+        "validation": {
+          "approved_core_eligible": false,
+          "conditions": [
+            "historical compatibility only"
+          ],
+          "empirical_state": "UNTESTED",
+          "production_activation": false,
+          "review_state": "SOURCE_CHECKED",
+          "source_state": "SUPERSEDED"
+        },
+        "variant_id": "VEDA-SWW-VARIANT-BPHS-PRIMARY-KNR-GOVERNED-V1-BB731D970AB5"
+      }
+    ],
+    "conflicts": [
+      {
+        "assertion_a": "VEDA-SWW-ASSERTION-ASHTAKAVARGA-RAW-CONTRACT-662677E96D61",
+        "assertion_b": "VEDA-SWW-ASSERTION-ASHTAKAVARGA-RAW-CONTRACT-EA1FFC723A63",
+        "confidence": "HIGH",
+        "conflict_id": "VEDA-SWW-CONFLICT-PHALADEEPIKA-VARIANT-26C60F36CD91",
+        "conflict_type": "TEXTUAL_VARIANT",
+        "implementation_variant": false,
+        "indexing_issue": false,
+        "normalization_checked": true,
+        "numeric_impact": "PAIR_LEVEL_VARIANTS_RETAINED",
+        "resolution": "COEXIST; BPHS selected for V2 purpose; Phaladeepika remains explicit alternative",
+        "semantic_impact": "ALTERNATIVE_METHOD",
+        "textual_variant": true,
+        "translation_issue": false
+      },
+      {
+        "assertion_a": "VEDA-SWW-ASSERTION-ASHTAKAVARGA-RAW-CONTRACT-662677E96D61",
+        "assertion_b": "VEDA-SWW-ASSERTION-ASHTAKAVARGA-RAW-CONTRACT-9D6BB354B32B",
+        "confidence": "HIGH",
+        "conflict_id": "VEDA-SWW-CONFLICT-MODERN-WITNESS-24357BED545E",
+        "conflict_type": "IMPLEMENTATION_VARIANT",
+        "implementation_variant": true,
+        "indexing_issue": false,
+        "normalization_checked": true,
+        "numeric_impact": "336/385_VS_337/386",
+        "resolution": "BPHS V2 selected; modern witness retained without promotion",
+        "semantic_impact": "SOURCE_LINEAGE_DIFFERENCE",
+        "textual_variant": false,
+        "translation_issue": false
+      }
+    ],
+    "contracts": [
+      {
+        "contract_hash": "084E19B2D61880066A503E1CED38810CA9D51962354A9520DD2E5E5946279A62",
+        "contract_id": "VEDA-SWW-CONTRACT-ASHTAKAVARGA-V2-CE39240748B1",
+        "edition_id": "VEDA-SWW-EDITION-PARENT-PDF-TRANSLATION-EDITION-UNS-BD3AD4544EA4",
+        "legacy_contract_id": "ASHTAKAVARGA_RAW_BPHS_PRIMARY_V2",
+        "normalized_assertion_id": "VEDA-SWW-ASSERTION-ASHTAKAVARGA-RAW-CONTRACT-662677E96D61",
+        "passage_ids": [
+          "VEDA-SWW-PASSAGE-BPHS-CH-66-43-68-AND-66-69-76-RAW-466FA2793B54"
+        ],
+        "status": "CONTRACT_FROZEN",
+        "supersession_status": "ACTIVE",
+        "variant_id": "VEDA-SWW-VARIANT-BPHS-PRIMARY-V2-4F8E6CC7013A",
+        "witness_id": "VEDA-SWW-WITNESS-SRC-BPHS-PDF-CH66-69-E6DA797431D8",
+        "work_id": "VEDA-SWW-WORK-BRIHAT-PARASHARA-HORA-SHASTRA-27F550E0C0C6"
+      },
+      {
+        "contract_hash": "0E296628F989A9EE1AA14CF2F767ECEA8142042CD266DC9C98D0FF32A6771134",
+        "contract_id": "VEDA-SWW-CONTRACT-ASHTAKAVARGA-V1-C985BDF1D18A",
+        "edition_id": "VEDA-SWW-EDITION-PARENT-PDF-TRANSLATION-EDITION-UNS-BD3AD4544EA4",
+        "legacy_contract_id": "ASHTAKAVARGA_RAW_BPHS_PRIMARY_KNR_GOVERNED_V1",
+        "normalized_assertion_id": "VEDA-SWW-ASSERTION-ASHTAKAVARGA-RAW-CONTRACT-4983335C7CEF",
+        "passage_ids": [
+          "VEDA-SWW-PASSAGE-BPHS-CH-66-43-68-AND-66-69-76-RAW-466FA2793B54",
+          "VEDA-SWW-PASSAGE-MODERN-337-386-IMPLEMENTATION-WITN-33046FCD253C"
+        ],
+        "status": "SUPERSEDED",
+        "supersession_status": "SUPERSEDED",
+        "variant_id": "VEDA-SWW-VARIANT-BPHS-PRIMARY-KNR-GOVERNED-V1-BB731D970AB5",
+        "witness_id": "VEDA-SWW-WITNESS-SRC-BPHS-PDF-CH66-69-E6DA797431D8",
+        "work_id": "VEDA-SWW-WORK-BRIHAT-PARASHARA-HORA-SHASTRA-27F550E0C0C6"
+      }
+    ],
+    "editions": [
+      {
+        "bibliographic_identifier": null,
+        "completeness": "BOUNDED_PILOT_METADATA",
+        "digital_locator": "docs/current-state/calc-source-rx-001/04_ASHTAKAVARGA_SOURCE_RULE_MATRIX.json",
+        "edition_hash": "8358119CBD57EE72DA85EA22D72FB2EE21AB13E4DE072C3B7D93C59D85589354",
+        "edition_id": "VEDA-SWW-EDITION-PARENT-PDF-TRANSLATION-EDITION-UNS-BD3AD4544EA4",
+        "edition_title": "Parent PDF translation; edition unspecified",
+        "editor": null,
+        "editorial_notes": "Edition/editor/translator are not recorded in the parent artifact and remain explicit UNKNOWN metadata.",
+        "language": "EN_TRANSLATION",
+        "publication_year": null,
+        "publisher": null,
+        "rights": {
+          "basis": "Existing VEDA metadata; no bulk source text committed",
+          "permissions": [
+            "LOCAL_RESEARCH_ALLOWED",
+            "DERIVED_METADATA_ALLOWED"
+          ],
+          "rights_state": "RESEARCH_ONLY"
+        },
+        "script": null,
+        "source_type": "REFERENCE_EDITION_OR_GOVERNANCE_ARTIFACT",
+        "translator": null,
+        "witness_ids": [
+          "VEDA-SWW-WITNESS-SRC-BPHS-PDF-CH66-69-E6DA797431D8"
+        ],
+        "work_id": "VEDA-SWW-WORK-BRIHAT-PARASHARA-HORA-SHASTRA-27F550E0C0C6"
+      },
+      {
+        "bibliographic_identifier": null,
+        "completeness": "BOUNDED_PILOT_METADATA",
+        "digital_locator": "docs/current-state/calc-ashtakavarga-crosssource-rx-001/01_SOURCE_WITNESS_REGISTER.json",
+        "edition_hash": "DFB48A3AE6F53BC1EE2997EAEEC138528288019D14C9A92051ED97867689605A",
+        "edition_id": "VEDA-SWW-EDITION-PHALADEEPIKA-ACCESSED-TRANSLATION-1DBBC7AAA555",
+        "edition_title": "Phaladeepika accessed translation",
+        "editor": null,
+        "editorial_notes": null,
+        "language": "EN_TRANSLATION",
+        "publication_year": null,
+        "publisher": null,
+        "rights": {
+          "basis": "Existing VEDA metadata; no bulk source text committed",
+          "permissions": [
+            "LOCAL_RESEARCH_ALLOWED",
+            "DERIVED_METADATA_ALLOWED"
+          ],
+          "rights_state": "RESEARCH_ONLY"
+        },
+        "script": null,
+        "source_type": "REFERENCE_EDITION_OR_GOVERNANCE_ARTIFACT",
+        "translator": null,
+        "witness_ids": [
+          "VEDA-SWW-WITNESS-PHALADEEPIKA-7B01D4F740A4"
+        ],
+        "work_id": "VEDA-SWW-WORK-PHALADEEPIKA-5317C19A082E"
+      },
+      {
+        "bibliographic_identifier": null,
+        "completeness": "BOUNDED_PILOT_METADATA",
+        "digital_locator": "docs/current-state/calc-ashtakavarga-normalization-rx2-001/09_CLASSICAL_CROSS_SOURCE_MATRIX.json",
+        "edition_hash": "32BD42D2AB41D6A3F5124BA41EB3801BF13C6B9C904E0039660863FB41B6B0E1",
+        "edition_id": "VEDA-SWW-EDITION-VEDA-IMPLEMENTATION-WITNESS-RECORD-A5925686B3ED",
+        "edition_title": "VEDA implementation witness record",
+        "editor": null,
+        "editorial_notes": null,
+        "language": "METADATA",
+        "publication_year": null,
+        "publisher": null,
+        "rights": {
+          "basis": "Existing VEDA metadata; no bulk source text committed",
+          "permissions": [
+            "DERIVED_METADATA_ALLOWED"
+          ],
+          "rights_state": "RESEARCH_ONLY"
+        },
+        "script": null,
+        "source_type": "REFERENCE_EDITION_OR_GOVERNANCE_ARTIFACT",
+        "translator": null,
+        "witness_ids": [
+          "VEDA-SWW-WITNESS-VEDA-MODERN-337-386-8283673861E9"
+        ],
+        "work_id": "VEDA-SWW-WORK-VEDA-ASHTAKAVARGA-IMPLEMENTATION-W-ED187C5322F8"
+      }
+    ],
+    "legacy_mappings": {
+      "BPHS": "VEDA-SWW-WORK-BRIHAT-PARASHARA-HORA-SHASTRA-27F550E0C0C6",
+      "PHALADEEPIKA": "VEDA-SWW-WORK-PHALADEEPIKA-5317C19A082E",
+      "VEDA-MODERN-337-386": "VEDA-SWW-WORK-VEDA-ASHTAKAVARGA-IMPLEMENTATION-W-ED187C5322F8"
+    },
+    "passages": [
+      {
+        "base_passage_id": null,
+        "chapter": "66",
+        "citation_label": "BPHS Ch.66.43-68 and 66.69-76; raw contract source witness",
+        "derived_text": null,
+        "edition_id": "VEDA-SWW-EDITION-PARENT-PDF-TRANSLATION-EDITION-UNS-BD3AD4544EA4",
+        "language": "EN_TRANSLATION",
+        "line": null,
+        "original_text": null,
+        "page": "135-136",
+        "passage_id": "VEDA-SWW-PASSAGE-BPHS-CH-66-43-68-AND-66-69-76-RAW-466FA2793B54",
+        "review_state": "SOURCE_CHECKED",
+        "rights": {
+          "basis": "Existing VEDA metadata; no bulk source text committed",
+          "permissions": [
+            "LOCAL_RESEARCH_ALLOWED",
+            "DERIVED_METADATA_ALLOWED"
+          ],
+          "rights_state": "RESEARCH_ONLY"
+        },
+        "section": null,
+        "source_access": "PARTIAL_TEXT",
+        "source_layer": "TRANSLATION",
+        "source_locator": "docs/current-state/calc-ashtakavarga-contract-rx2-001/02_V2_SOURCE_BINDING.json",
+        "table": null,
+        "text_hash": "84A909972A8CBB89CFBADF3FDFF859AEA1868CC2975B84C5A10E2F2339B2DBFE",
+        "verse": "66.43-68; 66.69-76"
+      },
+      {
+        "base_passage_id": null,
+        "chapter": "23",
+        "citation_label": "Phaladeepika Ch.23.1-22; explicit alternative witness",
+        "derived_text": null,
+        "edition_id": "VEDA-SWW-EDITION-PHALADEEPIKA-ACCESSED-TRANSLATION-1DBBC7AAA555",
+        "language": "EN_TRANSLATION",
+        "line": null,
+        "original_text": null,
+        "page": "258-303",
+        "passage_id": "VEDA-SWW-PASSAGE-PHALADEEPIKA-CH-23-1-22-EXPLICIT-A-90354D09075D",
+        "review_state": "SOURCE_CHECKED",
+        "rights": {
+          "basis": "Existing VEDA metadata; no bulk source text committed",
+          "permissions": [
+            "LOCAL_RESEARCH_ALLOWED",
+            "DERIVED_METADATA_ALLOWED"
+          ],
+          "rights_state": "RESEARCH_ONLY"
+        },
+        "section": null,
+        "source_access": "PARTIAL_TEXT",
+        "source_layer": "TRANSLATION",
+        "source_locator": "docs/current-state/calc-ashtakavarga-crosssource-rx-001/01_SOURCE_WITNESS_REGISTER.json",
+        "table": null,
+        "text_hash": "A2D34393DBD29565BF70BF30C31A6894FBACCCB9466054CFE4DB23C7B23D1368",
+        "verse": "1-22"
+      },
+      {
+        "base_passage_id": null,
+        "chapter": null,
+        "citation_label": "Modern 337/386 implementation witness record",
+        "derived_text": null,
+        "edition_id": "VEDA-SWW-EDITION-VEDA-IMPLEMENTATION-WITNESS-RECORD-A5925686B3ED",
+        "language": "JSON",
+        "line": null,
+        "original_text": null,
+        "page": null,
+        "passage_id": "VEDA-SWW-PASSAGE-MODERN-337-386-IMPLEMENTATION-WITN-33046FCD253C",
+        "review_state": "SOURCE_CHECKED",
+        "rights": {
+          "basis": "Existing VEDA metadata; no bulk source text committed",
+          "permissions": [
+            "DERIVED_METADATA_ALLOWED"
+          ],
+          "rights_state": "RESEARCH_ONLY"
+        },
+        "section": null,
+        "source_access": "AVAILABLE",
+        "source_layer": "IMPLEMENTATION",
+        "source_locator": "docs/current-state/calc-ashtakavarga-normalization-rx2-001/02_KNR_SOURCE_REGISTER.json",
+        "table": null,
+        "text_hash": "A4F9DDC8F89330939B3EF8CFEEEFA4C8FFE75885F0B52E4DCC3C2A99A3E9FD3F",
+        "verse": null
+      }
+    ],
+    "standard_id": "VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001",
+    "standard_version": "1.0.0",
+    "supersessions": [
+      {
+        "date": "2026-08-19",
+        "programme": "VEDA-CALC-ASHTAKAVARGA-REMEDIATION-RX2-001",
+        "reason": "Invalid hybrid: BPHS matrix plus unverified 337/386 aggregate invariant",
+        "superseded_id": "VEDA-SWW-CONTRACT-ASHTAKAVARGA-V1-C985BDF1D18A",
+        "superseding_id": "VEDA-SWW-CONTRACT-ASHTAKAVARGA-V2-CE39240748B1"
+      }
+    ],
+    "variants": [
+      {
+        "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+        "canonical_for_purpose": "RAW_BAV_SAV_V2",
+        "canonical_status": "CANONICAL",
+        "difference": "Source-consistent 336/49/385 raw semantics are selected as the V2 contract.",
+        "mathematical_or_semantic_impact": "Canonical calculation contract for raw BAV/SAV; interpretation remains separate.",
+        "normalization_attempted": true,
+        "resolution_state": "PRESERVED_SEPARATELY",
+        "source_family": "BPHS_PRIMARY_V2",
+        "source_passage_ids": [
+          "VEDA-SWW-PASSAGE-BPHS-CH-66-43-68-AND-66-69-76-RAW-466FA2793B54"
+        ],
+        "supersedes_variant_id": null,
+        "variant_id": "VEDA-SWW-VARIANT-BPHS-PRIMARY-V2-4F8E6CC7013A"
+      },
+      {
+        "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+        "canonical_for_purpose": "RAW_BAV_SAV_ALTERNATIVE",
+        "canonical_status": "SUPPORTED_VARIANT",
+        "difference": "Seven pair-level variants and a separate 336-total witness are retained.",
+        "mathematical_or_semantic_impact": "Alternative calculation witness; never silently merged.",
+        "normalization_attempted": true,
+        "resolution_state": "PRESERVED_SEPARATELY",
+        "source_family": "PHALADEEPIKA_MAIN_TEXT",
+        "source_passage_ids": [
+          "VEDA-SWW-PASSAGE-PHALADEEPIKA-CH-23-1-22-EXPLICIT-A-90354D09075D"
+        ],
+        "supersedes_variant_id": null,
+        "variant_id": "VEDA-SWW-VARIANT-PHALADEEPIKA-MAIN-TEXT-1FFB3A00A710"
+      },
+      {
+        "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+        "canonical_for_purpose": "VARIANT_DISCOVERY",
+        "canonical_status": "RESEARCH_VARIANT",
+        "difference": "Existing artifact labels a Varahamihira-attributed alternative; independent work-level attribution is not asserted.",
+        "mathematical_or_semantic_impact": "Variant discovery and comparison only.",
+        "normalization_attempted": true,
+        "resolution_state": "PRESERVED_SEPARATELY",
+        "source_family": "VARAHAMIHIRA_ATTRIBUTED_VARIANT",
+        "source_passage_ids": [
+          "VEDA-SWW-PASSAGE-PHALADEEPIKA-CH-23-1-22-EXPLICIT-A-90354D09075D"
+        ],
+        "supersedes_variant_id": null,
+        "variant_id": "VEDA-SWW-VARIANT-VARAHAMIHIRA-ATTRIBUTED-VARIANT-8F27BD57CBD8"
+      },
+      {
+        "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+        "canonical_for_purpose": "IMPLEMENTATION_WITNESS",
+        "canonical_status": "RESEARCH_VARIANT",
+        "difference": "Modern 337/386 values are retained as an implementation witness with unresolved lineage.",
+        "mathematical_or_semantic_impact": "Not classical numerical proof.",
+        "normalization_attempted": true,
+        "resolution_state": "PRESERVED_SEPARATELY",
+        "source_family": "MODERN_337_386_IMPLEMENTATION_WITNESS",
+        "source_passage_ids": [
+          "VEDA-SWW-PASSAGE-MODERN-337-386-IMPLEMENTATION-WITN-33046FCD253C"
+        ],
+        "supersedes_variant_id": null,
+        "variant_id": "VEDA-SWW-VARIANT-MODERN-337-386-IMPLEMENTATION-WITN-1B8628856C80"
+      },
+      {
+        "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+        "canonical_for_purpose": "HISTORICAL_ONLY",
+        "canonical_status": "SUPERSEDED_INVALID_HYBRID",
+        "difference": "Historical V1 combined a BPHS matrix with an unverified modern 337/386 aggregate invariant.",
+        "mathematical_or_semantic_impact": "Superseded historical record; must not be reactivated.",
+        "normalization_attempted": true,
+        "resolution_state": "PRESERVED_SEPARATELY",
+        "source_family": "BPHS_PRIMARY_KNR_GOVERNED_V1",
+        "source_passage_ids": [
+          "VEDA-SWW-PASSAGE-BPHS-CH-66-43-68-AND-66-69-76-RAW-466FA2793B54",
+          "VEDA-SWW-PASSAGE-MODERN-337-386-IMPLEMENTATION-WITN-33046FCD253C"
+        ],
+        "supersedes_variant_id": null,
+        "variant_id": "VEDA-SWW-VARIANT-BPHS-PRIMARY-KNR-GOVERNED-V1-BB731D970AB5"
+      }
+    ],
+    "witnesses": [
+      {
+        "completeness": "BOUNDED_PILOT_METADATA",
+        "date_or_period": null,
+        "dependence_notes": null,
+        "dependence_state": "POTENTIALLY_INDEPENDENT",
+        "language": "JSON / METADATA",
+        "legacy_source_id": "SRC-BPHS-PDF-CH66-69",
+        "locator": "docs/current-state/calc-ashtakavarga-contract-rx2-001/02_V2_SOURCE_BINDING.json",
+        "physical_or_digital": "DIGITAL",
+        "provenance": "Mapped from an existing governed VEDA artifact; no source text copied.",
+        "repository_or_library": "Existing VEDA source artifact register",
+        "review_state": "SOURCE_CHECKED",
+        "rights": {
+          "basis": "Existing VEDA metadata; no bulk source text committed",
+          "permissions": [
+            "LOCAL_RESEARCH_ALLOWED",
+            "DERIVED_METADATA_ALLOWED"
+          ],
+          "rights_state": "RESEARCH_ONLY"
+        },
+        "script": null,
+        "source_access": "PARTIAL_TEXT",
+        "witness_hash": null,
+        "witness_id": "VEDA-SWW-WITNESS-SRC-BPHS-PDF-CH66-69-E6DA797431D8",
+        "witness_type": "SELECTED_TRANSLATED_WITNESS",
+        "work_id": "VEDA-SWW-WORK-BRIHAT-PARASHARA-HORA-SHASTRA-27F550E0C0C6"
+      },
+      {
+        "completeness": "BOUNDED_PILOT_METADATA",
+        "date_or_period": null,
+        "dependence_notes": null,
+        "dependence_state": "LATER_SYNTHESIS",
+        "language": "EN_TRANSLATION",
+        "legacy_source_id": "PHALADEEPIKA",
+        "locator": "docs/current-state/calc-ashtakavarga-crosssource-rx-001/01_SOURCE_WITNESS_REGISTER.json",
+        "physical_or_digital": "DIGITAL",
+        "provenance": "Mapped from an existing governed VEDA artifact; no source text copied.",
+        "repository_or_library": "Existing VEDA source artifact register",
+        "review_state": "SOURCE_CHECKED",
+        "rights": {
+          "basis": "Existing VEDA metadata; no bulk source text committed",
+          "permissions": [
+            "LOCAL_RESEARCH_ALLOWED",
+            "DERIVED_METADATA_ALLOWED"
+          ],
+          "rights_state": "RESEARCH_ONLY"
+        },
+        "script": null,
+        "source_access": "PARTIAL_TEXT",
+        "witness_hash": null,
+        "witness_id": "VEDA-SWW-WITNESS-PHALADEEPIKA-7B01D4F740A4",
+        "witness_type": "TRADITIONAL_TRANSLATION_WITNESS",
+        "work_id": "VEDA-SWW-WORK-PHALADEEPIKA-5317C19A082E"
+      },
+      {
+        "completeness": "BOUNDED_PILOT_METADATA",
+        "date_or_period": null,
+        "dependence_notes": null,
+        "dependence_state": "DERIVATIVE",
+        "language": "JSON / METADATA",
+        "legacy_source_id": "VEDA-MODERN-337-386",
+        "locator": "docs/current-state/calc-ashtakavarga-normalization-rx2-001/02_KNR_SOURCE_REGISTER.json",
+        "physical_or_digital": "DIGITAL",
+        "provenance": "Mapped from an existing governed VEDA artifact; no source text copied.",
+        "repository_or_library": "Existing VEDA source artifact register",
+        "review_state": "SOURCE_CHECKED",
+        "rights": {
+          "basis": "Existing VEDA metadata; no bulk source text committed",
+          "permissions": [
+            "DERIVED_METADATA_ALLOWED"
+          ],
+          "rights_state": "RESEARCH_ONLY"
+        },
+        "script": null,
+        "source_access": "AVAILABLE",
+        "witness_hash": null,
+        "witness_id": "VEDA-SWW-WITNESS-VEDA-MODERN-337-386-8283673861E9",
+        "witness_type": "IMPLEMENTATION_WITNESS",
+        "work_id": "VEDA-SWW-WORK-VEDA-ASHTAKAVARGA-IMPLEMENTATION-W-ED187C5322F8"
+      }
+    ],
+    "works": [
+      {
+        "alternate_titles": [],
+        "approximate_period": null,
+        "canonical_title": "Brihat Parashara Hora Shastra",
+        "language_origin": "SANSKRIT",
+        "legacy_source_ids": [
+          "BPHS"
+        ],
+        "notes": "Identity is bounded to existing VEDA metadata; uncertain chronology is not asserted.",
+        "period_confidence": null,
+        "tradition": "VEDA / JYOTISHA",
+        "traditional_author": "Parashara",
+        "work_id": "VEDA-SWW-WORK-BRIHAT-PARASHARA-HORA-SHASTRA-27F550E0C0C6",
+        "work_type": "CLASSICAL_TEXT"
+      },
+      {
+        "alternate_titles": [],
+        "approximate_period": null,
+        "canonical_title": "Phaladeepika",
+        "language_origin": "SANSKRIT",
+        "legacy_source_ids": [
+          "PHALADEEPIKA"
+        ],
+        "notes": "Identity is bounded to existing VEDA metadata; uncertain chronology is not asserted.",
+        "period_confidence": null,
+        "tradition": "VEDA / JYOTISHA",
+        "traditional_author": "Mantreswara",
+        "work_id": "VEDA-SWW-WORK-PHALADEEPIKA-5317C19A082E",
+        "work_type": "CLASSICAL_TEXT"
+      },
+      {
+        "alternate_titles": [],
+        "approximate_period": null,
+        "canonical_title": "VEDA Ashtakavarga Implementation Witness",
+        "language_origin": "PYTHON / JSON",
+        "legacy_source_ids": [
+          "VEDA-MODERN-337-386"
+        ],
+        "notes": "Identity is bounded to existing VEDA metadata; uncertain chronology is not asserted.",
+        "period_confidence": null,
+        "tradition": "VEDA DERIVED",
+        "traditional_author": null,
+        "work_id": "VEDA-SWW-WORK-VEDA-ASHTAKAVARGA-IMPLEMENTATION-W-ED187C5322F8",
+        "work_type": "DERIVED_INTERNAL"
+      }
+    ]
+  },
+  "mapped_records": {
+    "BPHS_V2": "CANONICAL",
+    "MODERN_337_386": "RESEARCH_VARIANT",
+    "PHALADEEPIKA": "SUPPORTED_VARIANT",
+    "V1_INVALID_HYBRID": "SUPERSEDED_INVALID_HYBRID",
+    "VARAHAMIHIRA_ATTRIBUTED": "RESEARCH_VARIANT"
+  },
+  "substantive_decision_changed": false,
+  "validation": {
+    "errors": [],
+    "is_valid": true,
+    "warnings": []
+  }
+}

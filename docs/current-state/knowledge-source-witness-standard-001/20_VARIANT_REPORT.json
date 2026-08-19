@@ -1,0 +1,113 @@
+{
+  "ashtakavarga": [
+    {
+      "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+      "canonical_for_purpose": "RAW_BAV_SAV_V2",
+      "canonical_status": "CANONICAL",
+      "difference": "Source-consistent 336/49/385 raw semantics are selected as the V2 contract.",
+      "mathematical_or_semantic_impact": "Canonical calculation contract for raw BAV/SAV; interpretation remains separate.",
+      "normalization_attempted": true,
+      "resolution_state": "PRESERVED_SEPARATELY",
+      "source_family": "BPHS_PRIMARY_V2",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-66-43-68-AND-66-69-76-RAW-466FA2793B54"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-BPHS-PRIMARY-V2-4F8E6CC7013A"
+    },
+    {
+      "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+      "canonical_for_purpose": "RAW_BAV_SAV_ALTERNATIVE",
+      "canonical_status": "SUPPORTED_VARIANT",
+      "difference": "Seven pair-level variants and a separate 336-total witness are retained.",
+      "mathematical_or_semantic_impact": "Alternative calculation witness; never silently merged.",
+      "normalization_attempted": true,
+      "resolution_state": "PRESERVED_SEPARATELY",
+      "source_family": "PHALADEEPIKA_MAIN_TEXT",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-PHALADEEPIKA-CH-23-1-22-EXPLICIT-A-90354D09075D"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-PHALADEEPIKA-MAIN-TEXT-1FFB3A00A710"
+    },
+    {
+      "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+      "canonical_for_purpose": "VARIANT_DISCOVERY",
+      "canonical_status": "RESEARCH_VARIANT",
+      "difference": "Existing artifact labels a Varahamihira-attributed alternative; independent work-level attribution is not asserted.",
+      "mathematical_or_semantic_impact": "Variant discovery and comparison only.",
+      "normalization_attempted": true,
+      "resolution_state": "PRESERVED_SEPARATELY",
+      "source_family": "VARAHAMIHIRA_ATTRIBUTED_VARIANT",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-PHALADEEPIKA-CH-23-1-22-EXPLICIT-A-90354D09075D"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-VARAHAMIHIRA-ATTRIBUTED-VARIANT-8F27BD57CBD8"
+    },
+    {
+      "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+      "canonical_for_purpose": "IMPLEMENTATION_WITNESS",
+      "canonical_status": "RESEARCH_VARIANT",
+      "difference": "Modern 337/386 values are retained as an implementation witness with unresolved lineage.",
+      "mathematical_or_semantic_impact": "Not classical numerical proof.",
+      "normalization_attempted": true,
+      "resolution_state": "PRESERVED_SEPARATELY",
+      "source_family": "MODERN_337_386_IMPLEMENTATION_WITNESS",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-MODERN-337-386-IMPLEMENTATION-WITN-33046FCD253C"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-MODERN-337-386-IMPLEMENTATION-WITN-1B8628856C80"
+    },
+    {
+      "assertion_group": "ASHTAKAVARGA_RAW_CONTRACT",
+      "canonical_for_purpose": "HISTORICAL_ONLY",
+      "canonical_status": "SUPERSEDED_INVALID_HYBRID",
+      "difference": "Historical V1 combined a BPHS matrix with an unverified modern 337/386 aggregate invariant.",
+      "mathematical_or_semantic_impact": "Superseded historical record; must not be reactivated.",
+      "normalization_attempted": true,
+      "resolution_state": "PRESERVED_SEPARATELY",
+      "source_family": "BPHS_PRIMARY_KNR_GOVERNED_V1",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-66-43-68-AND-66-69-76-RAW-466FA2793B54",
+        "VEDA-SWW-PASSAGE-MODERN-337-386-IMPLEMENTATION-WITN-33046FCD253C"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-BPHS-PRIMARY-KNR-GOVERNED-V1-BB731D970AB5"
+    }
+  ],
+  "automatic_reconciliation": false,
+  "d20": [
+    {
+      "assertion_group": "D20_VIMSHAMSHA_METHOD",
+      "canonical_for_purpose": null,
+      "canonical_status": "CANONICAL",
+      "difference": "Twenty 1.5-degree divisions and category starts Aries/Sagittarius/Leo are retained; destination mapping remains incomplete.",
+      "mathematical_or_semantic_impact": "Category-start calculation representation only",
+      "normalization_attempted": true,
+      "resolution_state": "PRESERVED_SEPARATELY",
+      "source_family": "D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-D20-VIMSHAMSHA-BPHS-CATEGORY-START-BD401F3A30B0"
+    },
+    {
+      "assertion_group": "D20_VIMSHAMSHA_METHOD",
+      "canonical_for_purpose": null,
+      "canonical_status": "LEGACY_VARIANT",
+      "difference": "Historical generic odd/even fallback is preserved for comparison only.",
+      "mathematical_or_semantic_impact": "Historical replay only",
+      "normalization_attempted": true,
+      "resolution_state": "PRESERVED_SEPARATELY",
+      "source_family": "D20_LEGACY_GENERIC_VARGA_V0",
+      "source_passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+      ],
+      "supersedes_variant_id": null,
+      "variant_id": "VEDA-SWW-VARIANT-D20-LEGACY-GENERIC-VARGA-V0-B64C366F1DD6"
+    }
+  ]
+}

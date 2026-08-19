@@ -1,0 +1,1358 @@
+{
+  "$defs": {
+    "Assertion": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_group": {
+          "title": "Assertion Group",
+          "type": "string"
+        },
+        "assertion_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Assertion Hash"
+        },
+        "assertion_id": {
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "authority": {
+          "$ref": "#/$defs/AuthorityProfile"
+        },
+        "claim_type": {
+          "$ref": "#/$defs/ClaimType"
+        },
+        "normalization_method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Normalization Method"
+        },
+        "normalized_statement": {
+          "title": "Normalized Statement",
+          "type": "string"
+        },
+        "parent_assertion_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Assertion Ids",
+          "type": "array"
+        },
+        "passage_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Passage Ids",
+          "type": "array"
+        },
+        "source_layer": {
+          "$ref": "#/$defs/SourceLayer"
+        },
+        "statement": {
+          "title": "Statement",
+          "type": "string"
+        },
+        "validation": {
+          "$ref": "#/$defs/ValidationProfile"
+        },
+        "variant_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Variant Id"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "assertion_group",
+        "claim_type",
+        "statement",
+        "normalized_statement",
+        "source_layer",
+        "authority",
+        "validation"
+      ],
+      "title": "Assertion",
+      "type": "object"
+    },
+    "AuthorityProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "empirical_authority": {
+          "$ref": "#/$defs/AuthorityValue",
+          "default": "NOT_ASSESSED"
+        },
+        "implementation_authority": {
+          "$ref": "#/$defs/AuthorityValue",
+          "default": "NOT_ASSESSED"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "scholarly_authority": {
+          "$ref": "#/$defs/AuthorityValue",
+          "default": "NOT_ASSESSED"
+        },
+        "textual_authority": {
+          "$ref": "#/$defs/AuthorityValue",
+          "default": "NOT_ASSESSED"
+        },
+        "traditional_authority": {
+          "$ref": "#/$defs/AuthorityValue",
+          "default": "NOT_ASSESSED"
+        }
+      },
+      "title": "AuthorityProfile",
+      "type": "object"
+    },
+    "AuthorityValue": {
+      "enum": [
+        "NOT_ASSESSED",
+        "NOT_APPLICABLE",
+        "UNKNOWN",
+        "LOW",
+        "MODERATE",
+        "HIGH",
+        "VERY_HIGH"
+      ],
+      "title": "AuthorityValue",
+      "type": "string"
+    },
+    "CalculationContractTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Contract Hash"
+        },
+        "contract_id": {
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "edition_id": {
+          "title": "Edition Id",
+          "type": "string"
+        },
+        "legacy_contract_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Legacy Contract Id"
+        },
+        "normalized_assertion_id": {
+          "title": "Normalized Assertion Id",
+          "type": "string"
+        },
+        "passage_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Passage Ids",
+          "type": "array"
+        },
+        "status": {
+          "$ref": "#/$defs/ValidationState"
+        },
+        "supersession_status": {
+          "$ref": "#/$defs/SupersessionStatus",
+          "default": "ACTIVE"
+        },
+        "variant_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Variant Id"
+        },
+        "witness_id": {
+          "title": "Witness Id",
+          "type": "string"
+        },
+        "work_id": {
+          "title": "Work Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract_id",
+        "normalized_assertion_id",
+        "edition_id",
+        "witness_id",
+        "work_id",
+        "status"
+      ],
+      "title": "CalculationContractTrace",
+      "type": "object"
+    },
+    "ClaimType": {
+      "enum": [
+        "TEXTUAL_ASSERTION",
+        "COMMENTARY_ASSERTION",
+        "PRACTITIONER_ASSERTION",
+        "SCHOLARLY_ASSERTION",
+        "CALCULATION_RULE",
+        "IMPLEMENTATION_NOTE",
+        "EMPIRICAL_FINDING",
+        "SYSTEM_INFERENCE"
+      ],
+      "title": "ClaimType",
+      "type": "string"
+    },
+    "Conflict": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_a": {
+          "title": "Assertion A",
+          "type": "string"
+        },
+        "assertion_b": {
+          "title": "Assertion B",
+          "type": "string"
+        },
+        "confidence": {
+          "$ref": "#/$defs/AuthorityValue",
+          "default": "NOT_ASSESSED"
+        },
+        "conflict_id": {
+          "title": "Conflict Id",
+          "type": "string"
+        },
+        "conflict_type": {
+          "$ref": "#/$defs/ConflictType"
+        },
+        "implementation_variant": {
+          "default": false,
+          "title": "Implementation Variant",
+          "type": "boolean"
+        },
+        "indexing_issue": {
+          "default": false,
+          "title": "Indexing Issue",
+          "type": "boolean"
+        },
+        "normalization_checked": {
+          "default": false,
+          "title": "Normalization Checked",
+          "type": "boolean"
+        },
+        "numeric_impact": {
+          "default": "NOT_STATED",
+          "title": "Numeric Impact",
+          "type": "string"
+        },
+        "resolution": {
+          "title": "Resolution",
+          "type": "string"
+        },
+        "semantic_impact": {
+          "default": "NOT_STATED",
+          "title": "Semantic Impact",
+          "type": "string"
+        },
+        "textual_variant": {
+          "default": false,
+          "title": "Textual Variant",
+          "type": "boolean"
+        },
+        "translation_issue": {
+          "default": false,
+          "title": "Translation Issue",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "conflict_id",
+        "assertion_a",
+        "assertion_b",
+        "conflict_type",
+        "resolution"
+      ],
+      "title": "Conflict",
+      "type": "object"
+    },
+    "ConflictType": {
+      "enum": [
+        "NOT_STATED",
+        "CONTRADICTION",
+        "TRANSLATION_VARIANCE",
+        "TEXTUAL_VARIANT",
+        "IMPLEMENTATION_VARIANT",
+        "DIFFERENT_SCOPE",
+        "UNRESOLVED"
+      ],
+      "title": "ConflictType",
+      "type": "string"
+    },
+    "DependenceState": {
+      "enum": [
+        "POTENTIALLY_INDEPENDENT",
+        "PARTIALLY_DEPENDENT",
+        "LATER_SYNTHESIS",
+        "DERIVATIVE",
+        "UNKNOWN"
+      ],
+      "title": "DependenceState",
+      "type": "string"
+    },
+    "Edition": {
+      "additionalProperties": false,
+      "properties": {
+        "bibliographic_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bibliographic Identifier"
+        },
+        "completeness": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Completeness"
+        },
+        "digital_locator": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Digital Locator"
+        },
+        "edition_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Edition Hash"
+        },
+        "edition_id": {
+          "title": "Edition Id",
+          "type": "string"
+        },
+        "edition_title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Edition Title"
+        },
+        "editor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Editor"
+        },
+        "editorial_notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Editorial Notes"
+        },
+        "language": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Language"
+        },
+        "publication_year": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Publication Year"
+        },
+        "publisher": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Publisher"
+        },
+        "rights": {
+          "$ref": "#/$defs/RightsProfile"
+        },
+        "script": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Script"
+        },
+        "source_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Type"
+        },
+        "translator": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Translator"
+        },
+        "witness_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Witness Ids",
+          "type": "array"
+        },
+        "work_id": {
+          "title": "Work Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "edition_id",
+        "work_id"
+      ],
+      "title": "Edition",
+      "type": "object"
+    },
+    "Passage": {
+      "additionalProperties": false,
+      "properties": {
+        "base_passage_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Base Passage Id"
+        },
+        "chapter": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Chapter"
+        },
+        "citation_label": {
+          "title": "Citation Label",
+          "type": "string"
+        },
+        "derived_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Derived Text"
+        },
+        "edition_id": {
+          "title": "Edition Id",
+          "type": "string"
+        },
+        "language": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Language"
+        },
+        "line": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line"
+        },
+        "original_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Original Text"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        },
+        "passage_id": {
+          "title": "Passage Id",
+          "type": "string"
+        },
+        "review_state": {
+          "$ref": "#/$defs/ReviewState",
+          "default": "NOT_REVIEWED"
+        },
+        "rights": {
+          "$ref": "#/$defs/RightsProfile"
+        },
+        "section": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Section"
+        },
+        "source_access": {
+          "$ref": "#/$defs/SourceAccessState",
+          "default": "AVAILABLE"
+        },
+        "source_layer": {
+          "$ref": "#/$defs/SourceLayer"
+        },
+        "source_locator": {
+          "title": "Source Locator",
+          "type": "string"
+        },
+        "table": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Table"
+        },
+        "text_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Text Hash"
+        },
+        "verse": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Verse"
+        }
+      },
+      "required": [
+        "passage_id",
+        "edition_id",
+        "source_locator",
+        "source_layer",
+        "citation_label"
+      ],
+      "title": "Passage",
+      "type": "object"
+    },
+    "ReviewState": {
+      "enum": [
+        "AUTOMATED_EXTRACTED",
+        "SOURCE_CHECKED",
+        "EXPERT_REVIEWED",
+        "HUMAN_APPROVED",
+        "NOT_REVIEWED"
+      ],
+      "title": "ReviewState",
+      "type": "string"
+    },
+    "RightsPermission": {
+      "enum": [
+        "VIEW_ALLOWED",
+        "LOCAL_RESEARCH_ALLOWED",
+        "QUOTATION_ALLOWED",
+        "DERIVED_METADATA_ALLOWED",
+        "REDISTRIBUTION_ALLOWED"
+      ],
+      "title": "RightsPermission",
+      "type": "string"
+    },
+    "RightsProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Basis"
+        },
+        "permissions": {
+          "items": {
+            "$ref": "#/$defs/RightsPermission"
+          },
+          "title": "Permissions",
+          "type": "array"
+        },
+        "rights_state": {
+          "$ref": "#/$defs/RightsState",
+          "default": "UNKNOWN"
+        }
+      },
+      "title": "RightsProfile",
+      "type": "object"
+    },
+    "RightsState": {
+      "enum": [
+        "PUBLIC_DOMAIN",
+        "OPEN_LICENSE",
+        "LICENSED",
+        "RESEARCH_ONLY",
+        "RESTRICTED",
+        "UNKNOWN",
+        "EXCLUDED"
+      ],
+      "title": "RightsState",
+      "type": "string"
+    },
+    "SourceAccessState": {
+      "enum": [
+        "AVAILABLE",
+        "SOURCE_UNAVAILABLE",
+        "FULL_TEXT_UNAVAILABLE",
+        "BIBLIOGRAPHIC_ONLY",
+        "PARTIAL_TEXT",
+        "RIGHTS_RESTRICTED"
+      ],
+      "title": "SourceAccessState",
+      "type": "string"
+    },
+    "SourceLayer": {
+      "enum": [
+        "ORIGINAL_TEXT",
+        "DIPLOMATIC_TRANSCRIPTION",
+        "NORMALIZED_TEXT",
+        "TRANSLITERATION",
+        "TRANSLATION",
+        "COMMENTARY",
+        "NORMALIZATION",
+        "PRACTITIONER",
+        "SCHOLARLY",
+        "IMPLEMENTATION",
+        "EMPIRICAL"
+      ],
+      "title": "SourceLayer",
+      "type": "string"
+    },
+    "Supersession": {
+      "additionalProperties": false,
+      "properties": {
+        "date": {
+          "title": "Date",
+          "type": "string"
+        },
+        "programme": {
+          "title": "Programme",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "superseded_id": {
+          "title": "Superseded Id",
+          "type": "string"
+        },
+        "superseding_id": {
+          "title": "Superseding Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "superseded_id",
+        "superseding_id",
+        "reason",
+        "date",
+        "programme"
+      ],
+      "title": "Supersession",
+      "type": "object"
+    },
+    "SupersessionStatus": {
+      "enum": [
+        "ACTIVE",
+        "SUPERSEDED"
+      ],
+      "title": "SupersessionStatus",
+      "type": "string"
+    },
+    "ValidationProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "approved_core_eligible": {
+          "default": false,
+          "title": "Approved Core Eligible",
+          "type": "boolean"
+        },
+        "conditions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Conditions",
+          "type": "array"
+        },
+        "empirical_state": {
+          "default": "UNTESTED",
+          "title": "Empirical State",
+          "type": "string"
+        },
+        "production_activation": {
+          "default": false,
+          "title": "Production Activation",
+          "type": "boolean"
+        },
+        "review_state": {
+          "$ref": "#/$defs/ReviewState",
+          "default": "NOT_REVIEWED"
+        },
+        "source_state": {
+          "$ref": "#/$defs/ValidationState"
+        }
+      },
+      "required": [
+        "source_state"
+      ],
+      "title": "ValidationProfile",
+      "type": "object"
+    },
+    "ValidationState": {
+      "enum": [
+        "SOURCE_LOCATED",
+        "SOURCE_IDENTIFIED",
+        "WITNESS_IDENTIFIED",
+        "PASSAGE_MAPPED",
+        "NORMALIZED",
+        "VARIANTS_RECONCILED",
+        "CONTRACT_FROZEN",
+        "IMPLEMENTED",
+        "INTERNALLY_VALIDATED",
+        "EXTERNALLY_NUMERICALLY_VALIDATED",
+        "SOURCE_LIMITED",
+        "SOURCE_UNAVAILABLE",
+        "SUPERSEDED"
+      ],
+      "title": "ValidationState",
+      "type": "string"
+    },
+    "Variant": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_group": {
+          "title": "Assertion Group",
+          "type": "string"
+        },
+        "canonical_for_purpose": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Canonical For Purpose"
+        },
+        "canonical_status": {
+          "$ref": "#/$defs/VariantStatus"
+        },
+        "difference": {
+          "title": "Difference",
+          "type": "string"
+        },
+        "mathematical_or_semantic_impact": {
+          "title": "Mathematical Or Semantic Impact",
+          "type": "string"
+        },
+        "normalization_attempted": {
+          "default": false,
+          "title": "Normalization Attempted",
+          "type": "boolean"
+        },
+        "resolution_state": {
+          "title": "Resolution State",
+          "type": "string"
+        },
+        "source_family": {
+          "title": "Source Family",
+          "type": "string"
+        },
+        "source_passage_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Passage Ids",
+          "type": "array"
+        },
+        "supersedes_variant_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Supersedes Variant Id"
+        },
+        "variant_id": {
+          "title": "Variant Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "variant_id",
+        "assertion_group",
+        "source_family",
+        "difference",
+        "mathematical_or_semantic_impact",
+        "resolution_state",
+        "canonical_status"
+      ],
+      "title": "Variant",
+      "type": "object"
+    },
+    "VariantStatus": {
+      "enum": [
+        "CANONICAL",
+        "SUPPORTED_VARIANT",
+        "RESEARCH_VARIANT",
+        "LEGACY_VARIANT",
+        "UNRESOLVED",
+        "SUPERSEDED_INVALID_HYBRID"
+      ],
+      "title": "VariantStatus",
+      "type": "string"
+    },
+    "Witness": {
+      "additionalProperties": false,
+      "properties": {
+        "completeness": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Completeness"
+        },
+        "date_or_period": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Date Or Period"
+        },
+        "dependence_notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dependence Notes"
+        },
+        "dependence_state": {
+          "$ref": "#/$defs/DependenceState",
+          "default": "UNKNOWN"
+        },
+        "language": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Language"
+        },
+        "legacy_source_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Legacy Source Id"
+        },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Locator"
+        },
+        "physical_or_digital": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Physical Or Digital"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provenance"
+        },
+        "repository_or_library": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Repository Or Library"
+        },
+        "review_state": {
+          "$ref": "#/$defs/ReviewState",
+          "default": "NOT_REVIEWED"
+        },
+        "rights": {
+          "$ref": "#/$defs/RightsProfile"
+        },
+        "script": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Script"
+        },
+        "source_access": {
+          "$ref": "#/$defs/SourceAccessState",
+          "default": "AVAILABLE"
+        },
+        "witness_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Witness Hash"
+        },
+        "witness_id": {
+          "title": "Witness Id",
+          "type": "string"
+        },
+        "witness_type": {
+          "title": "Witness Type",
+          "type": "string"
+        },
+        "work_id": {
+          "title": "Work Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "witness_id",
+        "work_id",
+        "witness_type"
+      ],
+      "title": "Witness",
+      "type": "object"
+    },
+    "Work": {
+      "additionalProperties": false,
+      "properties": {
+        "alternate_titles": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Alternate Titles",
+          "type": "array"
+        },
+        "approximate_period": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approximate Period"
+        },
+        "canonical_title": {
+          "title": "Canonical Title",
+          "type": "string"
+        },
+        "language_origin": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Language Origin"
+        },
+        "legacy_source_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Legacy Source Ids",
+          "type": "array"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "period_confidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Period Confidence"
+        },
+        "tradition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tradition"
+        },
+        "traditional_author": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Traditional Author"
+        },
+        "work_id": {
+          "title": "Work Id",
+          "type": "string"
+        },
+        "work_type": {
+          "title": "Work Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "work_id",
+        "canonical_title",
+        "work_type"
+      ],
+      "title": "Work",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "assertions": {
+      "items": {
+        "$ref": "#/$defs/Assertion"
+      },
+      "title": "Assertions",
+      "type": "array"
+    },
+    "conflicts": {
+      "items": {
+        "$ref": "#/$defs/Conflict"
+      },
+      "title": "Conflicts",
+      "type": "array"
+    },
+    "contracts": {
+      "items": {
+        "$ref": "#/$defs/CalculationContractTrace"
+      },
+      "title": "Contracts",
+      "type": "array"
+    },
+    "editions": {
+      "items": {
+        "$ref": "#/$defs/Edition"
+      },
+      "title": "Editions",
+      "type": "array"
+    },
+    "legacy_mappings": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Legacy Mappings",
+      "type": "object"
+    },
+    "passages": {
+      "items": {
+        "$ref": "#/$defs/Passage"
+      },
+      "title": "Passages",
+      "type": "array"
+    },
+    "standard_id": {
+      "default": "VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001",
+      "title": "Standard Id",
+      "type": "string"
+    },
+    "standard_version": {
+      "default": "1.0.0",
+      "title": "Standard Version",
+      "type": "string"
+    },
+    "supersessions": {
+      "items": {
+        "$ref": "#/$defs/Supersession"
+      },
+      "title": "Supersessions",
+      "type": "array"
+    },
+    "variants": {
+      "items": {
+        "$ref": "#/$defs/Variant"
+      },
+      "title": "Variants",
+      "type": "array"
+    },
+    "witnesses": {
+      "items": {
+        "$ref": "#/$defs/Witness"
+      },
+      "title": "Witnesses",
+      "type": "array"
+    },
+    "works": {
+      "items": {
+        "$ref": "#/$defs/Work"
+      },
+      "title": "Works",
+      "type": "array"
+    }
+  },
+  "title": "SourceWitnessBundle",
+  "type": "object"
+}

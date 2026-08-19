@@ -1,0 +1,260 @@
+{
+  "bundle": {
+    "assertions": [
+      {
+        "assertion_group": "D20_VIMSHAMSHA_METHOD",
+        "assertion_hash": "4A3A43853DB8148732911944B666FED13EA2DBE74937C1E9A21B4E877FDA2AEF",
+        "assertion_id": "VEDA-SWW-ASSERTION-D20-VIMSHAMSHA-METHOD-508F2064ADED",
+        "authority": {
+          "empirical_authority": "NOT_APPLICABLE",
+          "implementation_authority": "MODERATE",
+          "notes": null,
+          "scholarly_authority": "NOT_ASSESSED",
+          "textual_authority": "HIGH",
+          "traditional_authority": "VERY_HIGH"
+        },
+        "claim_type": "CALCULATION_RULE",
+        "normalization_method": "Bounded pilot paraphrase; no source text copied",
+        "normalized_statement": "The inspected D20 source supports twenty divisions and category starts Aries, Sagittarius and Leo; complete destination-sign mapping remains unresolved.",
+        "parent_assertion_ids": [],
+        "passage_ids": [
+          "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+        ],
+        "source_layer": "NORMALIZATION",
+        "statement": "The inspected D20 source supports twenty divisions and category starts Aries, Sagittarius and Leo; complete destination-sign mapping remains unresolved.",
+        "validation": {
+          "approved_core_eligible": false,
+          "conditions": [
+            "destination mapping incomplete",
+            "interpretation not validated"
+          ],
+          "empirical_state": "UNTESTED",
+          "production_activation": false,
+          "review_state": "SOURCE_CHECKED",
+          "source_state": "SOURCE_LIMITED"
+        },
+        "variant_id": "VEDA-SWW-VARIANT-D20-VIMSHAMSHA-BPHS-CATEGORY-START-BD401F3A30B0"
+      },
+      {
+        "assertion_group": "D20_VIMSHAMSHA_METHOD",
+        "assertion_hash": "4EC552E7C5F6B1552B6D0027952033134D3F696049A23E5EBCFCCB85E65772F9",
+        "assertion_id": "VEDA-SWW-ASSERTION-D20-VIMSHAMSHA-METHOD-6B8BB50B023A",
+        "authority": {
+          "empirical_authority": "NOT_APPLICABLE",
+          "implementation_authority": "MODERATE",
+          "notes": null,
+          "scholarly_authority": "NOT_ASSESSED",
+          "textual_authority": "NOT_ASSESSED",
+          "traditional_authority": "NOT_ASSESSED"
+        },
+        "claim_type": "IMPLEMENTATION_NOTE",
+        "normalization_method": "Bounded pilot paraphrase; no source text copied",
+        "normalized_statement": "The historical generic D20 fallback remains a legacy comparison method and is not the source-selected route.",
+        "parent_assertion_ids": [],
+        "passage_ids": [
+          "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+        ],
+        "source_layer": "IMPLEMENTATION",
+        "statement": "The historical generic D20 fallback remains a legacy comparison method and is not the source-selected route.",
+        "validation": {
+          "approved_core_eligible": false,
+          "conditions": [
+            "legacy comparison only"
+          ],
+          "empirical_state": "UNTESTED",
+          "production_activation": false,
+          "review_state": "SOURCE_CHECKED",
+          "source_state": "SOURCE_LIMITED"
+        },
+        "variant_id": "VEDA-SWW-VARIANT-D20-LEGACY-GENERIC-VARGA-V0-B64C366F1DD6"
+      }
+    ],
+    "conflicts": [
+      {
+        "assertion_a": "VEDA-SWW-ASSERTION-D20-VIMSHAMSHA-METHOD-508F2064ADED",
+        "assertion_b": "VEDA-SWW-ASSERTION-D20-VIMSHAMSHA-METHOD-6B8BB50B023A",
+        "confidence": "HIGH",
+        "conflict_id": "VEDA-SWW-CONFLICT-D20-LEGACY-VARIANT-2EAD7A4D93B6",
+        "conflict_type": "IMPLEMENTATION_VARIANT",
+        "implementation_variant": true,
+        "indexing_issue": false,
+        "normalization_checked": true,
+        "numeric_impact": "METHOD_DIFFERENCE",
+        "resolution": "Source-selected category-start method retained; legacy fallback preserved for comparison only",
+        "semantic_impact": "CALCULATION_METHOD_VARIANT",
+        "textual_variant": false,
+        "translation_issue": false
+      }
+    ],
+    "contracts": [
+      {
+        "contract_hash": "B33AF92D2E54CABC65CD46D74CED355034D92B2C67E46F7E819CE8C94739AFD2",
+        "contract_id": "VEDA-SWW-CONTRACT-D20-BPHS-CATEGORY-START-BBEB4F31DF56",
+        "edition_id": "VEDA-SWW-EDITION-D20-PRIMARY-SOURCE-AUDIT-REFERENCE-765C4552D01E",
+        "legacy_contract_id": "D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1",
+        "normalized_assertion_id": "VEDA-SWW-ASSERTION-D20-VIMSHAMSHA-METHOD-508F2064ADED",
+        "passage_ids": [
+          "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+        ],
+        "status": "SOURCE_LIMITED",
+        "supersession_status": "ACTIVE",
+        "variant_id": "VEDA-SWW-VARIANT-D20-VIMSHAMSHA-BPHS-CATEGORY-START-BD401F3A30B0",
+        "witness_id": "VEDA-SWW-WITNESS-BPHS-CH6-17-20-2EF58927518A",
+        "work_id": "VEDA-SWW-WORK-BRIHAT-PARASHARA-HORA-SHASTRA-27F550E0C0C6"
+      }
+    ],
+    "editions": [
+      {
+        "bibliographic_identifier": null,
+        "completeness": "BOUNDED_PILOT_METADATA",
+        "digital_locator": "docs/current-state/calc-source-rx-001/07_D20_PRIMARY_SOURCES.md",
+        "edition_hash": "01C3FFAF42B48B7AA736D3C48E5C38563DCAD831BC5EC524C1B4673973CF198F",
+        "edition_id": "VEDA-SWW-EDITION-D20-PRIMARY-SOURCE-AUDIT-REFERENCE-765C4552D01E",
+        "edition_title": "D20 primary-source audit reference",
+        "editor": null,
+        "editorial_notes": "The existing audit records the inspected source and does not claim a complete destination mapping.",
+        "language": "METADATA",
+        "publication_year": null,
+        "publisher": null,
+        "rights": {
+          "basis": "Existing VEDA metadata; no bulk source text committed",
+          "permissions": [
+            "LOCAL_RESEARCH_ALLOWED",
+            "DERIVED_METADATA_ALLOWED"
+          ],
+          "rights_state": "RESEARCH_ONLY"
+        },
+        "script": null,
+        "source_type": "REFERENCE_EDITION_OR_GOVERNANCE_ARTIFACT",
+        "translator": null,
+        "witness_ids": [
+          "VEDA-SWW-WITNESS-BPHS-CH6-17-20-2EF58927518A"
+        ],
+        "work_id": "VEDA-SWW-WORK-BRIHAT-PARASHARA-HORA-SHASTRA-27F550E0C0C6"
+      }
+    ],
+    "legacy_mappings": {
+      "D20_LEGACY_GENERIC_VARGA_V0": "VEDA-SWW-ASSERTION-D20-VIMSHAMSHA-METHOD-6B8BB50B023A",
+      "D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1": "VEDA-SWW-ASSERTION-D20-VIMSHAMSHA-METHOD-508F2064ADED"
+    },
+    "passages": [
+      {
+        "base_passage_id": null,
+        "chapter": "6",
+        "citation_label": "BPHS Ch.6.17-20 Vimshamsha category-start passage",
+        "derived_text": null,
+        "edition_id": "VEDA-SWW-EDITION-D20-PRIMARY-SOURCE-AUDIT-REFERENCE-765C4552D01E",
+        "language": "EN_TRANSLATION",
+        "line": null,
+        "original_text": null,
+        "page": null,
+        "passage_id": "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B",
+        "review_state": "SOURCE_CHECKED",
+        "rights": {
+          "basis": "Existing VEDA metadata; no bulk source text committed",
+          "permissions": [
+            "LOCAL_RESEARCH_ALLOWED",
+            "DERIVED_METADATA_ALLOWED"
+          ],
+          "rights_state": "RESEARCH_ONLY"
+        },
+        "section": null,
+        "source_access": "PARTIAL_TEXT",
+        "source_layer": "TRANSLATION",
+        "source_locator": "docs/current-state/calc-source-rx-001/07_D20_PRIMARY_SOURCES.md; https://www.siva.sh/brihat-parashara-hora-shastra/6/16-20",
+        "table": null,
+        "text_hash": "C32EBC28BE5AEE7A897A80B437C5586D0D9F6303D3268988AE9A18FF0B64A156",
+        "verse": "17-20"
+      }
+    ],
+    "standard_id": "VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001",
+    "standard_version": "1.0.0",
+    "supersessions": [],
+    "variants": [
+      {
+        "assertion_group": "D20_VIMSHAMSHA_METHOD",
+        "canonical_for_purpose": null,
+        "canonical_status": "CANONICAL",
+        "difference": "Twenty 1.5-degree divisions and category starts Aries/Sagittarius/Leo are retained; destination mapping remains incomplete.",
+        "mathematical_or_semantic_impact": "Category-start calculation representation only",
+        "normalization_attempted": true,
+        "resolution_state": "PRESERVED_SEPARATELY",
+        "source_family": "D20_VIMSHAMSHA_BPHS_CATEGORY_START_V1",
+        "source_passage_ids": [
+          "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+        ],
+        "supersedes_variant_id": null,
+        "variant_id": "VEDA-SWW-VARIANT-D20-VIMSHAMSHA-BPHS-CATEGORY-START-BD401F3A30B0"
+      },
+      {
+        "assertion_group": "D20_VIMSHAMSHA_METHOD",
+        "canonical_for_purpose": null,
+        "canonical_status": "LEGACY_VARIANT",
+        "difference": "Historical generic odd/even fallback is preserved for comparison only.",
+        "mathematical_or_semantic_impact": "Historical replay only",
+        "normalization_attempted": true,
+        "resolution_state": "PRESERVED_SEPARATELY",
+        "source_family": "D20_LEGACY_GENERIC_VARGA_V0",
+        "source_passage_ids": [
+          "VEDA-SWW-PASSAGE-BPHS-CH-6-17-20-VIMSHAMSHA-CATEGOR-FEC4C345D63B"
+        ],
+        "supersedes_variant_id": null,
+        "variant_id": "VEDA-SWW-VARIANT-D20-LEGACY-GENERIC-VARGA-V0-B64C366F1DD6"
+      }
+    ],
+    "witnesses": [
+      {
+        "completeness": "BOUNDED_PILOT_METADATA",
+        "date_or_period": null,
+        "dependence_notes": null,
+        "dependence_state": "POTENTIALLY_INDEPENDENT",
+        "language": "JSON / METADATA",
+        "legacy_source_id": "BPHS_CH6_17_20",
+        "locator": "docs/current-state/calc-source-rx-001/07_D20_PRIMARY_SOURCES.md",
+        "physical_or_digital": "DIGITAL",
+        "provenance": "Mapped from an existing governed VEDA artifact; no source text copied.",
+        "repository_or_library": "Existing VEDA source artifact register",
+        "review_state": "SOURCE_CHECKED",
+        "rights": {
+          "basis": "Existing VEDA metadata; no bulk source text committed",
+          "permissions": [
+            "LOCAL_RESEARCH_ALLOWED",
+            "DERIVED_METADATA_ALLOWED"
+          ],
+          "rights_state": "RESEARCH_ONLY"
+        },
+        "script": null,
+        "source_access": "PARTIAL_TEXT",
+        "witness_hash": null,
+        "witness_id": "VEDA-SWW-WITNESS-BPHS-CH6-17-20-2EF58927518A",
+        "witness_type": "SELECTED_PRIMARY_SOURCE_WITNESS",
+        "work_id": "VEDA-SWW-WORK-BRIHAT-PARASHARA-HORA-SHASTRA-27F550E0C0C6"
+      }
+    ],
+    "works": [
+      {
+        "alternate_titles": [],
+        "approximate_period": null,
+        "canonical_title": "Brihat Parashara Hora Shastra",
+        "language_origin": "SANSKRIT",
+        "legacy_source_ids": [
+          "BPHS"
+        ],
+        "notes": "Identity is bounded to existing VEDA metadata; uncertain chronology is not asserted.",
+        "period_confidence": null,
+        "tradition": "VEDA / JYOTISHA",
+        "traditional_author": "Parashara",
+        "work_id": "VEDA-SWW-WORK-BRIHAT-PARASHARA-HORA-SHASTRA-27F550E0C0C6",
+        "work_type": "CLASSICAL_TEXT"
+      }
+    ]
+  },
+  "family": "D20_VIMSHAMSHA",
+  "production_changed": false,
+  "reason": "Existing BPHS source audit, explicit method variant and bounded unresolved mapping; no calculation repair required.",
+  "validation": {
+    "errors": [],
+    "is_valid": true,
+    "warnings": []
+  }
+}
