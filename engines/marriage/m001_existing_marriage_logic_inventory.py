@@ -14,6 +14,8 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+from engines.common.repository_inventory import iter_inventory_files
+
 ROOT = Path(__file__).resolve().parents[3]
 OUTPUT_PATH = ROOT / "docs" / "current-state" / "p024" / "m001_inventory.json"
 
@@ -28,19 +30,6 @@ SEARCH_PATTERNS: dict[str, re.Pattern[str]] = {
     "manglik": re.compile(r"\bmanglik\b|\bkuja\s+dosha\b|\bmangal\s+dosha\b", re.IGNORECASE),
     "timing": re.compile(r"\btiming\b|\bwindow\b", re.IGNORECASE),
     "divorce_separation": re.compile(r"\bdivorce\b|\bseparation\b", re.IGNORECASE),
-}
-
-SKIP_DIRS = {
-    ".git",
-    "__pycache__",
-    ".pytest_cache",
-    "node_modules",
-    ".venv",
-    "venv",
-    "dist",
-    "build",
-    ".idea",
-    ".vscode",
 }
 
 SOURCE_HINTS = {
@@ -135,15 +124,7 @@ def inventory_repository(root: Path | None = None) -> dict[str, Any]:
     records: list[MarriageInventoryRecord] = []
     files_scanned = 0
 
-    for path in sorted(root.rglob("*")):
-        if path.is_dir():
-            if any(part in SKIP_DIRS for part in path.parts):
-                continue
-            continue
-        if any(part in SKIP_DIRS for part in path.parts):
-            continue
-        if path.suffix.lower() not in {".py", ".json", ".md", ".ts", ".tsx", ".txt"}:
-            continue
+    for path in iter_inventory_files(root):
         files_scanned += 1
         try:
             content = path.read_text(encoding="utf-8", errors="ignore")

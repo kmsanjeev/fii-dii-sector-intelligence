@@ -1,0 +1,11 @@
+{
+  "command": "py -3.11 -m pytest --collect-only -q",
+  "python": "3.11.9",
+  "pytest": "9.1.1",
+  "test_files_before_activity": 199,
+  "collected_tests_before_activity": 1266,
+  "collection_seconds": 8.48,
+  "exit_code": 0,
+  "warnings": ["Starlette TestClient/httpx deprecation warning"],
+  "status": "PASS"
+}

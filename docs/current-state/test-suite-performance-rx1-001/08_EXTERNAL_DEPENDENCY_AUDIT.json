@@ -1,0 +1,12 @@
+{
+  "network_or_provider_surfaces": [
+    {"surface": "Hugging Face sentence-transformers model resolution", "tests": ["test_veda_std_001.py", "unified corpus/retrieval tests"], "classification": "EXTERNAL_INTEGRATION", "default_gate": "EXTERNAL_INTEGRATION", "offline_behavior": "must use local cache or be reported blocked"},
+    {"surface": "ADB/XML evidence fixtures", "tests": ["test_veda_evidence_adb_*.py"], "classification": "LOCAL_FIXTURE", "default_gate": "FULL_DETERMINISTIC"},
+    {"surface": "API smoke polling/subprocess", "tests": ["scripts/run_p001_smoke.py"], "classification": "SMOKE_EXTERNAL", "default_gate": "EXTERNAL_INTEGRATION"},
+    {"surface": "LLM/provider contracts", "tests": ["test_veda_chat_*.py", "test_veda_comm001.py", "test_veda_pred_001.py"], "classification": "MOCKED_PROVIDER", "default_gate": "DOMAIN_REGRESSION"}
+  ],
+  "raw_provider_data_committed": false,
+  "raw_adb_data_touched_by_remediation": false,
+  "production_provider_calls_added": 0,
+  "policy": "external access is explicit; a provider timeout is BLOCKED/NOT PASS"
+}

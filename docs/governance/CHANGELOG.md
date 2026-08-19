@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-ENGINEERING-TEST-SUITE-PERFORMANCE-RX1-001
+
+- Isolated the full-suite timeout root cause to unbounded P024/P025/P026
+  repository inventory scans plus known RAG/model, empirical permutation and
+  ADB/XML processing costs.
+- Added a shared governed inventory scope with temporary-root fallback and a
+  deterministic disjoint gate/profile runner. The focused inventory path
+  improved from 295.49s to 39.75s; the final authoritative suite completed
+  with 1,269 passed and one warning in 594.91s.
+- No tests were removed, skipped, weakened or parallelized. No P032,
+  calculation, prediction, PRED-M4, ML, RAG semantic, EMP-001, Approved Core,
+  provider or product behavior changed. Evidence is in
+  `docs/current-state/test-suite-performance-rx1-001/`.
+
 ## 2026-08-19 | VEDA-MUHURTA-REMAINING-CAPABILITY-REBASELINE-001
 
 Completed the remaining Muhurta inventory reconciliation with

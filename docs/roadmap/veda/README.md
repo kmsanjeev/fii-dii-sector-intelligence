@@ -173,6 +173,12 @@ evidence redesign is complete with conditions in
 is complete with conditions, and `VEDA-EVIDENCE-POSEND-R2-FRAME-001` has
 completed with a formal-access stop; `VEDA-EVIDENCE-POSEND-ACQ-R2` remains
 not started and is blocked until a new lawful independent frame is available.
+`VEDA-ENGINEERING-TEST-SUITE-PERFORMANCE-RX1-001` is complete with
+`VEDA_FULL_TEST_SUITE_RESTORED_WITH_CONDITIONS`. The full deterministic suite
+is authoritative and passes; logical gates are supplementary. Known slow
+empirical, evidence/XML and RAG model-init paths remain explicit, and no
+parallel runner or test weakening was introduced. Evidence is in
+`docs/current-state/test-suite-performance-rx1-001/`.
 Do not use
 the historical P000/P013 roadmap files or the
 governance-audit P027 pathway to infer current scope.

@@ -1,6 +1,17 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.78.0 | 2026-08-19
+# Version 4.79.0 | 2026-08-19
+
+- `VEDA-ENGINEERING-TEST-SUITE-PERFORMANCE-RX1-001` completed with
+  `VEDA_FULL_TEST_SUITE_RESTORED_WITH_CONDITIONS`. The authoritative suite
+  now completes at 1,269 passed in 594.91 seconds after bounded existing-logic
+  inventory scans removed irrelevant operational bulk-file I/O. A disjoint
+  logical-gate catalog and explicit external/integration boundary were added;
+  known empirical permutation, ADB/XML and RAG model-init costs remain
+  reported rather than weakened or skipped. No P032, calculation, prediction,
+  PRED-M4, ML, RAG semantic, EMP-001, Approved Core or product behavior
+  changed. Evidence:
+  `docs/current-state/test-suite-performance-rx1-001/`.
 
 - `VEDA-MUHURTA-REMAINING-CAPABILITY-REBASELINE-001` completed with
   `PASS_WITH_CONDITION` and decision

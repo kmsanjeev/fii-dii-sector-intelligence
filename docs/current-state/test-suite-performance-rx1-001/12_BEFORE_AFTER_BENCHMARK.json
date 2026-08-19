@@ -1,0 +1,20 @@
+{
+  "focused_inventory_path": {
+    "before_seconds": {"p024": 117.18, "p025": 91.21, "p026": 87.10},
+    "after_seconds": {"p024": 15.01, "p025": 11.57, "p026": 13.17},
+    "before_sum_seconds": 295.49,
+    "after_sum_seconds": 39.75,
+    "improvement_percent": 86.55,
+    "focused_regression_after_seconds": 42.21,
+    "focused_result": "26 passed"
+  },
+  "full_authoritative_path": {
+    "before": "TIMEOUT at 900s, approximately 95% observed",
+    "after_seconds": 618.56,
+    "after_result": "1266 passed, 1 warning before infrastructure tests",
+    "final_seconds": 594.91,
+    "final_result": "1269 passed, 1 warning",
+    "decision": "FULL_SUITE_RESTORED_WITH_KNOWN_SLOW_TESTS"
+  },
+  "quiet_diagnostic_after_seconds": 595.02
+}

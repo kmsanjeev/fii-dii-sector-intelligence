@@ -1,0 +1,17 @@
+{
+  "source": "post-remediation full run",
+  "suite": "1266 passed",
+  "slowest_seconds": [
+    [57.13, "tests/test_veda_emp_feature_001.py::test_feature_registry_contracts_and_reachability_are_deterministic"],
+    [49.65, "tests/test_veda_emp_feature_002.py::test_feature_hashes_and_independence_are_frozen"],
+    [27.28, "tests/test_veda_std_001.py::test_document_learning_compares_before_candidate_creation"],
+    [25.48, "tests/test_veda_emp_feature_003.py::test_new_event_family_and_feature_family_are_frozen"],
+    [22.78, "tests/test_veda_research_runtime_p009.py::test_p009_restart_recovery_and_24_hour_simulation_enrich_candidates"],
+    [21.83, "tests/test_veda_evidence_adb_source_diversity_001.py::test_source_diversity_is_deterministic"],
+    [21.25, "tests/test_veda_transit_fnd_001.py::test_foundation_build_locks_population_and_reference_validation"],
+    [17.79, "tests/test_veda_p026_health.py::test_phase_bundle_is_valid_and_medically_bounded"],
+    [15.46, "tests/test_veda_p024_marriage.py::test_phase_bundle_is_valid"],
+    [13.28, "tests/test_veda_p025_progeny.py::test_phase_bundle_is_valid_and_high_stakes_safe"]
+  ],
+  "interpretation": "bounded deterministic loops, source/XML processing, model initialization, and repository inventory setup; no single unbounded production loop was found"
+}

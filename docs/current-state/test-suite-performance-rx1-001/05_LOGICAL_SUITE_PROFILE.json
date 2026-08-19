@@ -1,0 +1,16 @@
+{
+  "classification": "PATH_BASED_DISJOINT_PROFILE_ONLY",
+  "catalog_script": "scripts/veda_engineering_test_suite_performance_rx1_001.py",
+  "test_files_after_infrastructure_tests": 200,
+  "groups": {
+    "MUHURTA": {"test_files": 24, "status": "PASS", "observed_tests": 153, "elapsed_seconds": 13.28},
+    "CALCULATION": {"test_files": 37, "status": "PASS", "observed_tests": 303, "elapsed_seconds": 48.10},
+    "ACQUISITION_EVIDENCE": {"test_files": 21, "status": "CATALOGUED"},
+    "RAG_KNOWLEDGE": {"test_files": 23, "status": "CATALOGUED"},
+    "EMPIRICAL_PREDICTION": {"test_files": 31, "status": "CATALOGUED"},
+    "LANGUAGE_CONVERSATION": {"test_files": 11, "status": "CATALOGUED"},
+    "API_BACKEND": {"test_files": 8, "status": "CATALOGUED"},
+    "FOUNDATION_OTHER": {"test_files": 45, "status": "PASS", "observed_tests": 389, "elapsed_seconds": 98.19, "warnings": 1}
+  },
+  "gate_policy": "logical groups supplement, never replace, the full deterministic suite"
+}

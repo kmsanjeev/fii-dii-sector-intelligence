@@ -9,6 +9,8 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+from engines.common.repository_inventory import iter_inventory_files
+
 ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_PATH = ROOT / "docs" / "current-state" / "p026" / "m001_inventory.json"
 PATTERNS = {
@@ -21,7 +23,6 @@ PATTERNS = {
     "varga": re.compile(r"\bD6\b|\bD30\b|\bshashtamsha\b|\btrimsamsha\b|\btrimshamsa\b", re.I),
     "longevity": re.compile(r"\blongevity\b|\blifespan\b|\bayur\b|\barogya\b|\broga\b", re.I),
 }
-SKIP_DIRS = {".git", "__pycache__", ".pytest_cache", "node_modules", ".venv", "venv", "dist", "build", ".idea", ".vscode"}
 HINTS = {
     "engines/ai/knowledge/astrology_capability_framework.py": "GOVERNED",
     "engines/ai/knowledge/varga_governance.py": "GOVERNED",
@@ -72,9 +73,7 @@ def inventory_repository(root: Path | None = None) -> dict[str, Any]:
     root = root or ROOT
     records: list[HealthInventoryRecord] = []
     scanned = 0
-    for path in sorted(root.rglob("*")):
-        if path.is_dir() or any(part in SKIP_DIRS for part in path.parts) or path.suffix.lower() not in {".py", ".json", ".md", ".ts", ".tsx", ".txt"}:
-            continue
+    for path in iter_inventory_files(root):
         scanned += 1
         try:
             content = path.read_text(encoding="utf-8", errors="ignore")

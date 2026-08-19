@@ -1,0 +1,10 @@
+{
+  "status": "KNOWN_SLOW_TESTS_PRESERVED",
+  "items": [
+    {"family": "EMPIRICAL_PERMUTATIONS", "tests": ["test_veda_emp_feature_001.py", "test_veda_emp_feature_002.py", "test_veda_emp_feature_003.py"], "reason": "fixed deterministic feature/permutation work; do not weaken iteration contract", "next_owner": "future EMP performance activity"},
+    {"family": "RAG_MODEL_INIT", "tests": ["test_veda_std_001.py", "unified corpus/retrieval tests"], "reason": "local-cache/provider resolution and FAISS initialization", "next_owner": "RAG/external integration isolation"},
+    {"family": "ADB_XML_PROCESSING", "tests": ["test_veda_evidence_adb_source_diversity_001.py", "test_veda_evidence_adb_scale_001.py"], "reason": "feature-blind deterministic XML parsing and source audit", "next_owner": "evidence lane"},
+    {"family": "P009_SIMULATION", "tests": ["test_veda_research_runtime_p009.py"], "reason": "24-hour restart/recovery simulation", "next_owner": "research runtime gate"}
+  ],
+  "no_unbounded_production_loop_found": true
+}

@@ -1,0 +1,12 @@
+{
+  "findings": [
+    {"class": "LARGE_FILE_IO", "severity": "HIGH", "evidence": "P024/P025/P026 inventory functions recursively scanned the 21.2 GB checkout, including operational data and logs", "status": "REMEDIATED"},
+    {"class": "PROVIDER/NETWORK WAIT", "severity": "HIGH", "evidence": "Hugging Face HEAD/GET traffic during the isolated unified-corpus learning test", "status": "EXPLICIT_RAG_EXTERNAL_GATE"},
+    {"class": "LARGE_LOOP", "severity": "MEDIUM", "evidence": "EMP-FEATURE-002 uses 2,000 fixed permutations for five features and two comparisons", "status": "PRESERVED_SCIENTIFIC_CONTRACT"},
+    {"class": "SUBPROCESS", "severity": "MEDIUM", "evidence": "25 test/script subprocess references; deterministic registry and timing tests use child commands", "status": "AUDITED_NOT_CHANGED"},
+    {"class": "RAG_REBUILD", "severity": "MEDIUM", "evidence": "Unified corpus/FAISS tests touch tracked semantic artifacts during the suite", "status": "AUDITED_NOT_CHANGED"},
+    {"class": "REPEATED_FIXTURE_SETUP", "severity": "LOW", "evidence": "P024/P025/P026 phase bundle setup repeats inventory construction per domain", "status": "IMPROVED_BY_SCOPE_REMEDIATION"},
+    {"class": "SLEEP/POLLING", "severity": "LOW", "evidence": "8 test/script references, principally explicit API smoke polling", "status": "EXTERNAL_OR_SMOKE_ONLY"},
+    {"class": "DEADLOCK/HANG", "severity": "NOT_FOUND", "evidence": "all 1,266 tests completed after remediation", "status": "CLEAR"}
+  ]
+}
