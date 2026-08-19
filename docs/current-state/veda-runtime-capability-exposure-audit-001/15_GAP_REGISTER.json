@@ -1,0 +1,12 @@
+{
+  "gap_policy": "Missing feature is not automatically a wiring defect.",
+  "gaps": [
+    {"id":"RB-001","type":"CONFIGURATION","severity":"P1","decision":"DEFER_TO_SINGLE_REMEDIATION_PROGRAMME"},
+    {"id":"RB-002","type":"CODE_WIRING","severity":"P1","decision":"DEFER_TO_SINGLE_REMEDIATION_PROGRAMME"},
+    {"id":"RB-003","type":"CODE_WIRING","severity":"P1","decision":"DEFER_TO_SINGLE_REMEDIATION_PROGRAMME"},
+    {"id":"RB-004","type":"MISSING_TOOL","severity":"P1","decision":"DEFER_TO_SINGLE_REMEDIATION_PROGRAMME"},
+    {"id":"RB-005","type":"MISSING_UI","severity":"P2","decision":"NOT_JUSTIFIED_CHAT_API_SUFFICIENT"},
+    {"id":"RB-006","type":"TEST_GAP","severity":"P2","decision":"DEFER_TO_SINGLE_REMEDIATION_PROGRAMME"}
+  ],
+  "production_changes_in_audit": 0
+}

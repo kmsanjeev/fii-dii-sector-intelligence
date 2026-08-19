@@ -1,0 +1,16 @@
+{
+  "chat_surfaces": ["frontend/src/pages/ChatPage.tsx", "frontend/src/components/veda/VedaWidget.tsx"],
+  "admin_configuration": "frontend/src/pages/AdminPage.tsx",
+  "operational_surfaces": {
+    "market_sector_stock_corporate": ["Dashboard", "SectorsPage", "StocksPage", "CorporatePage"],
+    "portfolio_risk_execution_broker_backtest": ["PortfolioPage", "ExecutionPage", "BrokerPage", "BacktestPage"],
+    "research": ["ResearchPage", "ChatPage", "VedaWidget"],
+    "personal_kundli": ["ChatPage", "ReportPage", "StocksPage", "KundliCard"],
+    "muhurta": ["ChatPage"],
+    "ordinary_jyotish": ["ChatPage", "VedaWidget", "Kundli surfaces"],
+    "voice": ["ChatPage", "VedaWidget", "SettingsPage"]
+  },
+  "dedicated_ui_absence": ["Muhurta has no dedicated page; Chat/API exposure is sufficient under current architecture."],
+  "hidden_operational_capabilities": ["Portfolio/risk/execution/backtest are UI/API exposed but not conversationally tool-bound by design."],
+  "finding": "No P0 invisible implemented capability was established. The main UI gap is configuration policy state not being the runtime enforcement source for five auxiliary surfaces."
+}

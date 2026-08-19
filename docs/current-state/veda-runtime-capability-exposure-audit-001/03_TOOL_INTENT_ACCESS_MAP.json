@@ -1,0 +1,15 @@
+{
+  "tool_registry": "engines/ai/chatbot/tools/tool_registry.py",
+  "engine_registry": "engines/ai/chatbot/tools/data_tools.py",
+  "registered": 23,
+  "reachable": 23,
+  "orphan": 0,
+  "missing_bindings": [],
+  "wrong_exposure": [
+    "Market/sector/stock/corporate/research turns retain all registered tools, including unrelated AstroFinance and Personal-Kundli tools.",
+    "The current ASTRO_FINANCE nine-tool scope includes market tools by design.",
+    "ASTRO, MUHURTA and GENERAL correctly receive no tools; KUNDLI correctly receives only generate_personal_kundli."
+  ],
+  "market_leakage_into_general_or_jyotish": false,
+  "jyotish_tool_access": "Personal Kundli is reachable; general Jyotish is intentionally text/evidence-based and has no dedicated calculation tool binding."
+}

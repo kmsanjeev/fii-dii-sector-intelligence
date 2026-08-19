@@ -1,0 +1,16 @@
+{
+  "registered_tool_schema_count": 23,
+  "mapped_function_count": 23,
+  "missing_implementations": [],
+  "orphan_tools": [],
+  "scope_policy": {
+    "GENERAL": "NONE",
+    "GREETING": "NONE",
+    "ASTRO": "NONE",
+    "MUHURTA": "NONE",
+    "KUNDLI": ["generate_personal_kundli"],
+    "ASTRO_FINANCE": "9 explicitly scoped tools including get_astro_signal",
+    "MARKET_SECTOR_STOCK_CORPORATE_RESEARCH": "ALL_REGISTERED_TOOLS"
+  },
+  "finding": "The last group inherits all 23 tools. This is overbroad exposure even where the current specialist prompt can guide selection. It is a remediation candidate, not a missing implementation."
+}

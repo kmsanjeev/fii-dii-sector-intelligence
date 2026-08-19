@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-08-20 | VEDA-RUNTIME-CAPABILITY-EXPOSURE-AUDIT-001
+
+- Completed the audit-only runtime capability exposure assessment from the
+  clean RX1 baseline.
+- Recorded 23 registered/implemented tools, 145 API paths / 158 operations,
+  and a 50-case deterministic matrix with 42 correct routes and 8 routing
+  gaps. No P0 refusal or missing-tool blocker was found.
+- Recorded P1 gaps for five functionally unbound access-policy entries,
+  research-vs-Jyotish precedence, natural-language Muhurta/Kundli routing,
+  and overbroad specialist tool inheritance.
+- No production logic, RAG, source, maturity, prediction, ML, EMP-001 or
+  human-validation state changed. Proposed remediation remains not started.
+- Evidence: `docs/current-state/veda-runtime-capability-exposure-audit-001/`.
+
 ## 2026-08-20 | VEDA-CONVERSATIONAL-ACCESS-CONFIGURATION-RX1-001
 
 - Completed the narrow post-release routing/access remediation.

@@ -1,6 +1,17 @@
 # VEDA Roadmap Entry Point
 
 Current synchronization (2026-08-20):
+`VEDA-RUNTIME-CAPABILITY-EXPOSURE-AUDIT-001` completed with
+`PASS_WITH_CONDITION` and decision
+`VEDA_RUNTIME_EXPOSURE_MULTIPLE_WIRING_GAPS`. The runtime audit found no P0
+refusal or missing-tool blocker, but identified P1 configuration-binding,
+intent-precedence, route-coverage and specialist-tool-scope gaps. The 50-case
+matrix records 42 correct routes and 8 gaps; 23 tools and 145/158 API
+operations are present. No production feature or access policy was changed;
+the bounded remediation recommendation is not started. Evidence:
+`docs/current-state/veda-runtime-capability-exposure-audit-001/`.
+
+Current synchronization (2026-08-20):
 `VEDA-CONVERSATIONAL-ACCESS-CONFIGURATION-RX1-001` completed with decision
 `VEDA_CONVERSATIONAL_ACCESS_RX1_OPERATIONAL`. The post-release remediation
 separates protected `CORE_INTERACTION` from configurable `GENERAL_CHAT`, makes

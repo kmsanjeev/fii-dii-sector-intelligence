@@ -1,0 +1,11 @@
+{
+  "runner": "scripts/veda_runtime_capability_exposure_audit_001.py",
+  "test": "tests/test_veda_runtime_capability_exposure_audit_001.py",
+  "cases": 50,
+  "recorded_fields": ["prompt", "expected_capability", "expected_tools", "expected_rag_domain", "expected_access", "expected_answer_mode", "actual_intent", "actual_capability", "actual_tools", "actual_access", "actual_answer_mode", "intent_status", "tool_status"],
+  "intent_correct": 42,
+  "intent_gaps": 8,
+  "intent_gap_cases": ["B003", "B025", "B026", "B031", "B038", "B040", "B042", "B048"],
+  "tool_overbroad_cases": 21,
+  "interpretation": "The matrix deliberately records gaps instead of converting them into passes. Tool overbreadth is independent of primary intent correctness."
+}

@@ -1,0 +1,16 @@
+{
+  "paths": [
+    {"code":"CONFIG_ACCESS_DENIED","scope":"one configured capability","fallback":"other conversational assistance remains available"},
+    {"code":"SAFETY_REFUSAL","scope":"unsafe request/output","fallback":"safe refusal or bounded answer"},
+    {"code":"SOURCE_ABSTENTION","scope":"unsupported interpretation","fallback":"source-qualified explanation"},
+    {"code":"CAPABILITY_UNAVAILABLE","scope":"configured runtime unavailable","fallback":"state exact unavailable capability"},
+    {"code":"PROVIDER_UNAVAILABLE","scope":"LLM/research provider","fallback":"provider-unavailable response or local path"},
+    {"code":"MISSING_REQUIRED_INPUT","scope":"Kundli/endpoint input","fallback":"request missing birth or activity facts"},
+    {"code":"PROMPT_LEAK_BLOCKED","scope":"leaked system content","fallback":"sanitized response"},
+    {"code":"ATTACHMENT_DISABLED","scope":"attachment upload/use","fallback":"503 with explicit attachment state"},
+    {"code":"RESEARCH_DISABLED","scope":"explicit research","fallback":"local-first answer when possible"},
+    {"code":"MCP_DISABLED","scope":"MCP fallback","fallback":"other research provider or unavailable state"},
+    {"code":"AUTH_REQUIRED","scope":"admin/configuration/restricted APIs","fallback":"authentication response"}
+  ],
+  "finding": "The refusal paths are explicit. The audit found under-routing and policy-binding gaps, not a new blanket refusal path."
+}

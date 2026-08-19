@@ -1,0 +1,21 @@
+{
+  "path_count": 145,
+  "operation_count": 158,
+  "critical_routes_present": [
+    "/api/chat",
+    "/api/chat/capabilities",
+    "/api/veda/configuration",
+    "/api/veda/configuration/access/{capability_id}",
+    "/api/veda/configuration/reset",
+    "/api/kundli/human",
+    "/api/stocks/{symbol}/kundli",
+    "/api/muhurta/recommend",
+    "/api/muhurta/search",
+    "/api/research/dashboard",
+    "/api/voice/tts"
+  ],
+  "orphan_endpoints": "No major audited endpoint proved orphaned. Many internal/admin endpoints intentionally have no Chat binding.",
+  "missing_capability_apis": "No P0 missing route found. Generic ASTRO has no separate API because Chat is the intended exposure; Muhurta and Kundli have APIs.",
+  "frontend_api_drift": "No contract drift found; canonical API snapshot remains 145 paths/158 operations and its test passes.",
+  "generator": "scripts/generate_p001_api_baseline.py"
+}

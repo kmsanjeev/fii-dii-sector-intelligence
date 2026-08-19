@@ -1,0 +1,12 @@
+{
+  "configured_entries": 15,
+  "default_admin_state": "ENABLED",
+  "effective_runtime_states": "14 available in the local environment; MCP is UNAVAILABLE because no provider/server is available.",
+  "functional_policy_bindings": ["GENERAL_CHAT", "MARKET_INTELLIGENCE", "SECTOR_INTELLIGENCE", "STOCK_INTELLIGENCE", "CORPORATE_INTELLIGENCE", "ASTROLOGY", "PERSONAL_KUNDLI", "MUHURTA", "ASTRO_FINANCE", "RESEARCH"],
+  "policy_entries_not_used_by_runtime_enforcement": ["ATTACHMENTS", "REVIEWED_MEMORY", "MIT_REPO_INTAKE", "MCP", "VOICE"],
+  "reset": "Policy reset restores defaults in the access store; it does not correct the five binding gaps.",
+  "decorative_or_nonfunctional_toggles": 5,
+  "maturity_read_only": true,
+  "safety_protected": true,
+  "admin_protection": "Configuration read/write routes remain admin-protected under the established auth model."
+}

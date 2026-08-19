@@ -1,0 +1,21 @@
+{
+  "activity": "VEDA-RUNTIME-CAPABILITY-EXPOSURE-AUDIT-001",
+  "implementation_states": [
+    {"id":"GENERAL_CHAT","state":"FULLY_EXPOSED_OPERATIONAL","paths":["engines/ai/chatbot/chat_engine.py","backend/routers/chat.py","frontend/src/pages/ChatPage.tsx"],"config":"GENERAL_CHAT","notes":"Core routing is separate."},
+    {"id":"MARKET_INTELLIGENCE","state":"FULLY_EXPOSED_OPERATIONAL","paths":["engines/market","backend/routers/market.py","frontend/src/pages/Dashboard.tsx"],"config":"MARKET_INTELLIGENCE"},
+    {"id":"SECTOR_INTELLIGENCE","state":"FULLY_EXPOSED_OPERATIONAL","paths":["engines/sector","backend/routers/sectors.py","frontend/src/pages/SectorsPage.tsx"],"config":"SECTOR_INTELLIGENCE"},
+    {"id":"STOCK_INTELLIGENCE","state":"FULLY_EXPOSED_OPERATIONAL","paths":["engines/stock","backend/routers/stocks.py","frontend/src/pages/StocksPage.tsx"],"config":"STOCK_INTELLIGENCE"},
+    {"id":"CORPORATE_INTELLIGENCE","state":"FULLY_EXPOSED_OPERATIONAL","paths":["engines/corporate","backend/routers/corporate.py","frontend/src/pages/CorporatePage.tsx"],"config":"CORPORATE_INTELLIGENCE"},
+    {"id":"ASTROLOGY","state":"AVAILABLE_WITH_QUALIFICATION","paths":["engines/ai/chatbot/intent_router.py","engines/ai/chatbot/tools/kundli_calculator.py","backend/routers/chat.py"],"config":"ASTROLOGY","notes":"D20/Shadbala source limitations remain qualified; ordinary Jyotish is Chat-reachable."},
+    {"id":"PERSONAL_KUNDLI","state":"FULLY_EXPOSED_OPERATIONAL","paths":["engines/ai/chatbot/tools/data_tools.py","engines/ai/chatbot/tools/kundli_calculator.py","backend/routers/kundli.py","frontend/src/pages/ReportPage.tsx"],"config":"PERSONAL_KUNDLI"},
+    {"id":"MUHURTA","state":"AVAILABLE_WITH_QUALIFICATION","paths":["backend/routers/muhurta.py","engines/ai/chatbot/intent_router.py","frontend/src/pages/ChatPage.tsx"],"config":"MUHURTA","notes":"API and Chat exist; several natural-language routes are underexposed."},
+    {"id":"ASTRO_FINANCE","state":"AVAILABLE_WITH_QUALIFICATION","paths":["engines/intelligence/astro_engine.py","engines/ai/chatbot/tools/data_tools.py","backend/routers/stocks.py","frontend/src/components/platform/AstroSignalCard.tsx"],"config":"ASTRO_FINANCE","notes":"Heuristic/source qualification preserved."},
+    {"id":"RESEARCH","state":"AVAILABLE_WITH_QUALIFICATION","paths":["engines/ai/research","backend/routers/research.py","frontend/src/pages/ResearchPage.tsx"],"config":"RESEARCH","notes":"External provider/MCP readiness is runtime-dependent."},
+    {"id":"ATTACHMENTS","state":"IMPLEMENTED_CONFIG_MISSING","paths":["engines/ai/attachments","backend/routers/chat.py","frontend/src/pages/ChatPage.tsx"],"config":"ATTACHMENTS","notes":"Environment gate is enforced; central access-policy toggle is not."},
+    {"id":"REVIEWED_MEMORY","state":"IMPLEMENTED_CONFIG_MISSING","paths":["engines/ai/knowledge/review_service.py","backend/routers/chat.py","frontend/src/components/veda/KnowledgeReviewPanel.tsx"],"config":"REVIEWED_MEMORY","notes":"Environment gate is enforced; central access-policy toggle is not."},
+    {"id":"MIT_REPO_INTAKE","state":"IMPLEMENTED_CONFIG_MISSING","paths":["engines/ai/capabilities/repo_capability_service.py","backend/routers/chat.py","frontend/src/components/veda/VedaWidget.tsx"],"config":"MIT_REPO_INTAKE","notes":"Environment gate is enforced; central access-policy toggle is not."},
+    {"id":"MCP","state":"EXTERNAL_PROVIDER_GATE","paths":["engines/ai/research/providers/mcp_provider.py","engines/ai/research/mcp_client.py"],"config":"MCP","notes":"Policy reports runtime unavailable because no MCP provider/server is available."},
+    {"id":"VOICE","state":"IMPLEMENTED_CONFIG_MISSING","paths":["backend/routers/voice.py","frontend/src/store/vedaStore.ts","engines/ai/chatbot/chat_engine.py"],"config":"VOICE","notes":"Voice uses ChatEngine safety/intent flow, but VOICE policy state is not enforced at the voice surface."},
+    {"id":"PORTFOLIO_RISK_EXECUTION_BACKTEST","state":"IMPLEMENTED_NOT_CHAT_EXPOSED","paths":["backend/routers/portfolio.py","backend/routers/risk.py","backend/routers/execution.py","backend/routers/backtest.py","frontend/src/pages/PortfolioPage.tsx","frontend/src/pages/ExecutionPage.tsx","frontend/src/pages/BacktestPage.tsx"],"notes":"Dedicated API/UI surfaces exist; no Chat tool binding was presumed necessary."}
+  ]
+}
