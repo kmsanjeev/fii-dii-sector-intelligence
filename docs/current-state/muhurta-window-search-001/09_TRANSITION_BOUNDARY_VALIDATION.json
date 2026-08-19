@@ -1,0 +1,13 @@
+{
+  "tests": [
+    "Tithi boundary changes P032 factor",
+    "Nakshatra boundary changes P032 factor",
+    "Karana boundary is discovered",
+    "multiple factors at one instant are grouped",
+    "range start/end boundaries are excluded from interior split",
+    "timezone-aware local boundaries are preserved"
+  ],
+  "result": "PASS",
+  "classification": "CALCULATED_TRANSITION",
+  "sampling": "NONE"
+}

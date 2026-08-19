@@ -1,0 +1,21 @@
+{
+  "programme": "VEDA-MUHURTA-WINDOW-SEARCH-001",
+  "existing_transition_api": false,
+  "reused_components": [
+    "engines.intelligence.kundli_engine.KundliEngine._planet_positions_extended",
+    "engines.ai.knowledge.muhurta_foundation.compute_panchanga_facts",
+    "engines.ai.knowledge.muhurta_foundation.build_candidate_windows"
+  ],
+  "source": "VEDA_CANONICAL_KUNDLI_P032_TRANSITION_ADAPTER",
+  "source_version": "1.0.0",
+  "classification": "CALCULATED_TRANSITION",
+  "exact_external_event_oracle": false,
+  "boundary_policy": "P032_HALF_OPEN_NEXT_SEGMENT;360_WRAP_TO_ZERO",
+  "factors": {
+    "TITHI": "relative Moon-Sun elongation, 12 degree P032 boundary",
+    "KARANA": "relative Moon-Sun elongation, 6 degree P032 boundary",
+    "NAKSHATRA": "Moon sidereal longitude, 360/27 P032 boundary"
+  },
+  "fallback_sampling": "NONE",
+  "limitations": ["The adapter is calculated from the existing canonical position engine; it is not a separately validated astronomical event table.", "Personal Bala and unresolved Vara/Yoga semantics remain outside search."]
+}

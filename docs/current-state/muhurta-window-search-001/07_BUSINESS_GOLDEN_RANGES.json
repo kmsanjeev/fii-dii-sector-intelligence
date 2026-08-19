@@ -1,0 +1,11 @@
+{
+  "activity_id": "BUSINESS_OPENING_INAUGURATION",
+  "contract_id": "VEDA-MUH-CONTRACT-BUSINESS-OPENING-V4",
+  "cases": [
+    {"id": "BUSINESS_SINGLE_DAY", "input": "synthetic exact P032 fact segments", "expected": "MIXED_FACTORS or SUPPORTED_WITH_CAUTION from RX1; no score"},
+    {"id": "BUSINESS_MULTI_DAY", "input": "bounded calculated transition range", "expected": "real segments, source gaps retained"},
+    {"id": "BUSINESS_SCOPE_MISMATCH", "input": "investment selection", "expected": "ABSTAIN / ACTIVITY_SCOPE_MISMATCH"},
+    {"id": "BUSINESS_CONTRACT_TRACE", "input": "valid V4 contract", "expected": "exact contract id and full hash"}
+  ],
+  "source_gaps_preserved": true
+}

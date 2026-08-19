@@ -1,0 +1,7 @@
+{
+  "semantic_determinism": "PASS",
+  "same_input": "same transition boundaries, segmentation, RX1 states, ordering, source gaps and contract trace",
+  "telemetry": "wall_ms is intentionally runtime-dependent and excluded from semantic equality",
+  "canonical_contract_hashes": "unchanged",
+  "two_run_fixture_validation": "PASS"
+}

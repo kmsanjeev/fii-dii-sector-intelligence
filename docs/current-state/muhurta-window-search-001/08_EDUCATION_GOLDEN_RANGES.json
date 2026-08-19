@@ -1,0 +1,11 @@
+{
+  "activity_id": "EDUCATION_COMMENCEMENT",
+  "contract_id": "VEDA-MUH-CONTRACT-EDUCATION-COMMENCEMENT-V4",
+  "cases": [
+    {"id": "EDUCATION_SINGLE_DAY", "scope": "FORMAL_COURSE_COMMENCEMENT", "expected": "SUPPORTED_WITH_CAUTION when RX1 predicates support"},
+    {"id": "EDUCATION_MULTI_DAY", "scope": "FORMAL_PROGRAMME_COMMENCEMENT", "expected": "bounded categorical result"},
+    {"id": "EDUCATION_ROUTINE_SCOPE", "scope": "ROUTINE_DAILY_STUDY", "expected": "ABSTAIN / ACTIVITY_SCOPE_MISMATCH"},
+    {"id": "EDUCATION_SOURCE_GAP", "scope": "FORMAL_COURSE_COMMENCEMENT", "expected": "Karana gap disclosed"}
+  ],
+  "personal_bala": "NOT_EVALUATED"
+}

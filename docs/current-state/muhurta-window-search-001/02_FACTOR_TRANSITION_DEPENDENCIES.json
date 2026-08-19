@@ -1,0 +1,14 @@
+{
+  "programme": "VEDA-MUHURTA-WINDOW-SEARCH-001",
+  "engine_version": "1.0.0",
+  "dependencies": [
+    {"rule": "MUH-BIZ-NAK-001", "factor": "NAKSHATRA", "transition_source": "VEDA_CANONICAL_KUNDLI_P032_TRANSITION_ADAPTER", "classification": "CALCULATED_TRANSITION"},
+    {"rule": "MUH-BIZ-KARANA-TRADE-001", "factor": "KARANA_NAME", "transition_source": "VEDA_CANONICAL_KUNDLI_P032_TRANSITION_ADAPTER", "classification": "CALCULATED_TRANSITION"},
+    {"rule": "MUH-BIZ-KARANA-ESTABLISHMENT-001", "factor": "KARANA_NAME", "transition_source": "VEDA_CANONICAL_KUNDLI_P032_TRANSITION_ADAPTER", "classification": "CALCULATED_TRANSITION"},
+    {"rule": "MUH-EDU-NAK-001", "factor": "NAKSHATRA", "transition_source": "VEDA_CANONICAL_KUNDLI_P032_TRANSITION_ADAPTER", "classification": "CALCULATED_TRANSITION"},
+    {"rule": "MUH-EDU-TITHI-VIDYARAMBHA-001", "factor": "TITHI", "transition_source": "VEDA_CANONICAL_KUNDLI_P032_TRANSITION_ADAPTER", "classification": "CALCULATED_TRANSITION"},
+    {"rule": "P032_FACTS", "factor": "PANCHANGA_FACTS_AVAILABLE", "transition_source": "EXISTING_P032_ADAPTER", "classification": "CALCULATION_DEPENDENCY"}
+  ],
+  "not_segmented": ["VARA", "YOGA", "SUNRISE", "TARABALA", "CHANDRABALA"],
+  "reason": "Current V4 executable predicates do not change on those unresolved or personal factors; source gaps remain disclosed by RX1."
+}

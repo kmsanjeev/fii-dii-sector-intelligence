@@ -1,6 +1,8 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.73.4 | 2026-08-19
+# Version 4.73.5 | 2026-08-19
+
+- `VEDA-MUHURTA-WINDOW-SEARCH-001` completed with `MUHURTA_WINDOW_SEARCH_OPERATIONAL_WITH_LIMITATIONS`: bounded Business-opening and Education-commencement date-range search is available at `POST /api/muhurta/search`. It reuses RX1, canonical Kundli/Swiss Ephemeris positions, P032 facts and the existing candidate splitter; calculated Tithi/Karana/Nakshatra transitions, deterministic representatives, semantic merges, categorical equivalents, alternatives, source gaps and abstention are explicit. No new rules, numeric score, personal Bala, RAG, prediction, ML, Shadbala, Ashtakavarga, D20 or Approved Core change occurred. Evidence: `docs/current-state/muhurta-window-search-001/`.
 
 - `VEDA-MUHURTA-RECOMMENDATION-ENGINE-001-RX1` completed with `PASS_WITH_CONDITION`: the existing RX2 Business and Education V4 contracts are hash-verified and consumed by a single-candidate categorical general recommendation boundary at `POST /api/muhurta/recommend`. P032 calculation and its factor adapter are reused. Default access is enabled for the validated capability; source gaps, calculation-dependency abstention, scope abstention, caution, consultation, personal Bala gating and source trace are explicit. No scoring, ranking, prediction, ML, RAG, Approved Core or provider-call change occurred. Religious and other unactivated activities remain abstaining. Evidence: `docs/current-state/muhurta-recommendation-engine-rx1-001/`.
 

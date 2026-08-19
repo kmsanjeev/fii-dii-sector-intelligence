@@ -2,8 +2,8 @@
   "meta": {
     "baseline_id": "VEDA-P001-M003",
     "generated_on": "2026-08-10",
-    "openapi_path_count": 140,
-    "operation_count": 153
+    "openapi_path_count": 142,
+    "operation_count": 155
   },
   "critical_endpoints": [
     {
@@ -2415,6 +2415,52 @@
       "query_params": [],
       "response_codes": [
         "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/muhurta/recommend",
+      "owner": "muhurta",
+      "operation_id": "recommend_muhurta_api_muhurta_recommend_post",
+      "tags": [
+        "muhurta"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/muhurta/search",
+      "owner": "muhurta",
+      "operation_id": "search_muhurta_windows_api_muhurta_search_post",
+      "tags": [
+        "muhurta"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
       ],
       "response_content_types": [
         "application/json"

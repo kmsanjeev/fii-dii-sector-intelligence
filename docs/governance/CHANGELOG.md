@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-WINDOW-SEARCH-001
+
+Completed the bounded transition-aware Muhurta window search with
+`MUHURTA_WINDOW_SEARCH_OPERATIONAL_WITH_LIMITATIONS`. The new search endpoint
+composes the frozen RX1 single-candidate engine and existing P032 splitter,
+using the canonical Kundli/Swiss Ephemeris position path to calculate relevant
+Tithi, Karana and Nakshatra transitions. It validates ranges and timezone
+bounds, uses deterministic representatives, merges only complete semantic
+equivalents, preserves source gaps and caution, returns categorical primary,
+equivalent and alternative windows, and abstains for unsupported activities or
+missing requirements. No scoring, personal Bala, new activity contract,
+P032-math, RAG, prediction, ML, provider call or Approved Core change occurred.
+Evidence: `docs/current-state/muhurta-window-search-001/`.
+
 ## 2026-08-19 | VEDA-MUHURTA-RECOMMENDATION-ENGINE-001-RX1
 
 Completed the authorized contract-bound restart with `PASS_WITH_CONDITION`.
