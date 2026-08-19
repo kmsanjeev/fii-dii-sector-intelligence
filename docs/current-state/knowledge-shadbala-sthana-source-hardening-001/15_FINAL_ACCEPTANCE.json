@@ -1,0 +1,111 @@
+{
+  "activity": "VEDA-KNOWLEDGE-SHADBALA-STHANA-SOURCE-HARDENING-001",
+  "blocked": 0,
+  "criteria": [
+    {
+      "criterion": "Starting commit verified",
+      "id": "AC01",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Existing source-witness framework reused",
+      "id": "AC02",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Production Sthana code unchanged",
+      "id": "AC03",
+      "status": "PASS"
+    },
+    {
+      "criterion": "All five Sthana components inventoried",
+      "id": "AC04",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Uchcha source and input boundary recorded",
+      "id": "AC05",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Saptavargaja dependency gap explicit",
+      "id": "AC06",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Ojhayugma simplification explicit",
+      "id": "AC07",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Kendradi contract readiness explicit",
+      "id": "AC08",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Drekkana absence separated from D3 availability",
+      "id": "AC09",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Units recorded as Virupa with Rupa boundary",
+      "id": "AC10",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Dependencies classified",
+      "id": "AC11",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No incomplete independent oracle created",
+      "id": "AC12",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Aggregate gated to component level",
+      "id": "AC13",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Source gaps are not fabricated as contradictions",
+      "id": "AC14",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No Approved Core promotion",
+      "id": "AC15",
+      "status": "PASS"
+    },
+    {
+      "criterion": "RAG unchanged",
+      "id": "AC16",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Parallel Shadbala families unchanged",
+      "id": "AC17",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Interpretation/prediction/ML unchanged",
+      "id": "AC18",
+      "status": "PASS"
+    },
+    {
+      "criterion": "Decision is an allowed freeze decision",
+      "id": "AC19",
+      "status": "PASS"
+    },
+    {
+      "criterion": "No automatic next programme",
+      "id": "AC20",
+      "status": "PASS"
+    }
+  ],
+  "fail": 0,
+  "overall": "PASS_WITH_CONDITION",
+  "pass": 20,
+  "pass_with_condition": 20,
+  "total": 20
+}

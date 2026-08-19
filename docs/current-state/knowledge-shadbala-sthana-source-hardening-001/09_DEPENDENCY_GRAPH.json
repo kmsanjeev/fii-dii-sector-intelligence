@@ -1,0 +1,62 @@
+{
+  "activity": "VEDA-KNOWLEDGE-SHADBALA-STHANA-SOURCE-HARDENING-001",
+  "aggregate_gate": {
+    "production_aggregate_changed": false,
+    "reason": "Aggregate Sthana contract cannot be closed while mandatory subcomponent and dependency contracts remain partial.",
+    "status": "COMPONENT_LEVEL_ONLY"
+  },
+  "dependencies": {
+    "D3": {
+      "condition": "D3 calculation availability does not establish the Sthana-Drekkana interpretation/formula",
+      "consumers": [
+        "DREKKANA"
+      ],
+      "status": "IMPLEMENTED_WITH_CONDITIONS"
+    },
+    "EXALTATION_POINTS": {
+      "condition": "bounded BPHS witness does not expose the complete exact point table",
+      "consumers": [
+        "UCHCHA"
+      ],
+      "status": "SOURCE_LIMITED"
+    },
+    "FRIENDSHIP": {
+      "condition": "full temporary/permanent friendship and dispositor policy not source-complete",
+      "consumers": [
+        "SAPTAVARGAJA"
+      ],
+      "status": "PARTIAL"
+    },
+    "HOUSES": {
+      "condition": "current production uses whole-sign houses; cusp policy is not part of this contract",
+      "consumers": [
+        "KENDRADI"
+      ],
+      "status": "AVAILABLE_WITH_METHOD_CONDITION"
+    },
+    "LAGNA": {
+      "condition": "whole-sign house route is explicit",
+      "consumers": [
+        "KENDRADI"
+      ],
+      "status": "AVAILABLE"
+    },
+    "PLANETARY_LONGITUDES": {
+      "condition": "sidereal longitude method and exact source point table",
+      "consumers": [
+        "UCHCHA",
+        "OJHAYUGMA"
+      ],
+      "status": "AVAILABLE_WITH_CONDITIONS"
+    },
+    "VARGAS": {
+      "condition": "the required seven-varga dignity contract is not closed",
+      "consumers": [
+        "SAPTAVARGAJA",
+        "OJHAYUGMA"
+      ],
+      "status": "AVAILABLE_WITH_CONDITIONS"
+    }
+  },
+  "weakest_dependency": "FRIENDSHIP_TABLES_AND_SEVEN_VARGA_CONTRACT"
+}

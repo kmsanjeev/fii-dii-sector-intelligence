@@ -1,0 +1,40 @@
+{
+  "activity": "VEDA-KNOWLEDGE-SHADBALA-STHANA-SOURCE-HARDENING-001",
+  "contract": {
+    "boundaries": "Quarter Rupa = 15 Virupas; exact planet-group and Navamsa condition must be retained.",
+    "component": "OJHAYUGMA",
+    "inputs": [
+      "planet identity/class",
+      "Rashi parity",
+      "Navamsa parity",
+      "source planet-group rule"
+    ],
+    "oracle": "NOT_BUILT: source rule is not complete enough for independent fixtures",
+    "passage_ids": [
+      "VEDA-SWW-PASSAGE-BPHS-STHANA-D7FADEFCA49D"
+    ],
+    "production_bound": false,
+    "readiness": "SOURCE_PARTIAL",
+    "runtime": "Simplified to odd-Rashi membership only; Navamsa and planet-specific grouping are not evaluated.",
+    "runtime_classification": "SIMPLIFIED_IMPLEMENTATION",
+    "source_access_condition": "PARTIAL_TEXT; exact source text is not redistributed; chapter numbering 27/repository 29 retained",
+    "source_assertion_id": "VEDA-SWW-ASSERTION-SHADBALA-OJHAYUGMA-FORMULA-A4E221C1AC44",
+    "source_authority": {
+      "empirical_authority": "NOT_APPLICABLE",
+      "implementation_authority": "MODERATE",
+      "notes": "Classical witness is passage-mapped through an accessible translation mirror; edition text remains rights-limited.",
+      "scholarly_authority": "NOT_ASSESSED",
+      "textual_authority": "HIGH",
+      "traditional_authority": "VERY_HIGH"
+    },
+    "source_formula": "Planet-specific odd/even Rashi and Navamsa placement contributes one quarter Rupa (15 Virupas) when the source condition is met.",
+    "source_group": "OJHAYUGMA_FORMULA",
+    "source_lineage": "BPHS translation mirror -> existing VEDA source-witness register; Saravali only bounded variant discovery",
+    "source_state": "SOURCE_PARTIAL",
+    "source_variant_id": "VEDA-SWW-VARIANT-SHADBALA-OJHAYUGMA-FORMULA-BPHS-429A57A5B5E4",
+    "unit": "VIRUPA",
+    "weakest_dependency": "PLANET_GROUP_AND_NAVAMSA_RULE_TABLE"
+  },
+  "contract_hash": "3906419530E6FE3BFE6FA39D80BBB062DB91A86424DDEE56AA557AF17A47D172",
+  "production_bound": false
+}

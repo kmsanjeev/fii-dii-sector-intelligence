@@ -1,0 +1,76 @@
+{
+  "activity": "VEDA-KNOWLEDGE-SHADBALA-STHANA-SOURCE-HARDENING-001",
+  "aggregate_classification": "SOURCE_GAP",
+  "components": [
+    {
+      "classification": "NORMALIZATION_EQUIVALENT",
+      "component": "UCHCHA",
+      "notes": "Implemented; distance scaling is normalization-equivalent, but the bounded witness does not close the exact point-table dependency.",
+      "production_change": false,
+      "source_state": "SOURCE_PARTIAL"
+    },
+    {
+      "classification": "ABSENT",
+      "component": "SAPTAVARGAJA",
+      "notes": "Absent from calculate_sthana_bala; no production contribution is inferred.",
+      "production_change": false,
+      "source_state": "SOURCE_PARTIAL"
+    },
+    {
+      "classification": "SIMPLIFIED_IMPLEMENTATION",
+      "component": "OJHAYUGMA",
+      "notes": "Simplified to odd-Rashi membership only; Navamsa and planet-specific grouping are not evaluated.",
+      "production_change": false,
+      "source_state": "SOURCE_PARTIAL"
+    },
+    {
+      "classification": "NORMALIZATION_EQUIVALENT",
+      "component": "KENDRADI",
+      "notes": "Implemented with the same 60/30/15 weights using whole-sign houses from Ascendant Rashi.",
+      "production_change": false,
+      "source_state": "PASSAGE_MAPPED"
+    },
+    {
+      "classification": "ABSENT",
+      "component": "DREKKANA",
+      "notes": "Absent as a Sthana subcomponent. D3 calculation is available elsewhere with conditions, which does not validate this Shadbala use.",
+      "production_change": false,
+      "source_state": "SOURCE_PARTIAL"
+    }
+  ],
+  "production_module_hash": "B679AC92D0E9A4B7513CFA602DD60D08E05BE8B5EAF83C51F0FA5704ABD7EE39",
+  "runtime": {
+    "algorithm": [
+      "derive Rashi from longitude and whole-sign house from Ascendant Rashi",
+      "derive Uchcha by shortest angular distance from the runtime exaltation point and scale 60*(1-distance/180)",
+      "derive Ojhayugma from odd Rashi only and assign 15 or 0",
+      "derive Kendradi as 60/30/15 for Kendra/Panaphara/Apoklima",
+      "sum only Uchcha + Ojhayugma + Kendradi"
+    ],
+    "constants": {
+      "KENDRA_POSITIONS": "1,4,7,10",
+      "ODD_RASHIS": "1,3,5,7,9,11",
+      "UCCHA_MAXIMUM": 60.0,
+      "UCCHA_POSITIONS": "Sun/Moon/Mars/Mercury exact literals; Jupiter/Venus/Saturn offsets"
+    },
+    "function": "calculate_sthana_bala",
+    "line_end": 478,
+    "line_start": 410,
+    "module": "engines/ai/knowledge/shadbala_engine.py",
+    "production_change_in_activity": false,
+    "sha256": "B679AC92D0E9A4B7513CFA602DD60D08E05BE8B5EAF83C51F0FA5704ABD7EE39",
+    "source_lines": {
+      "aggregate": 464,
+      "kendradi_formula": 458,
+      "ojhayugma_formula": 453,
+      "uccha_formula": 447
+    },
+    "subcomponents_present": {
+      "DREKKANA": false,
+      "KENDRADI": true,
+      "OJHAYUGMA": true,
+      "SAPTAVARGAJA": false,
+      "UCHCHA": true
+    }
+  }
+}

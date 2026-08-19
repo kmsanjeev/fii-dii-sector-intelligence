@@ -1,0 +1,38 @@
+{
+  "activity": "VEDA-KNOWLEDGE-SHADBALA-STHANA-SOURCE-HARDENING-001",
+  "contract": {
+    "boundaries": "0-60 Virupas; 60 Virupas = 1 Rupa",
+    "component": "UCHCHA",
+    "inputs": [
+      "planetary longitude",
+      "source-defined exact exaltation/debilitation point table"
+    ],
+    "oracle": "NOT_BUILT: exact source point input is not independently closed",
+    "passage_ids": [
+      "VEDA-SWW-PASSAGE-BPHS-STHANA-D7FADEFCA49D"
+    ],
+    "production_bound": false,
+    "readiness": "SOURCE_READY_DEPENDENCY_PARTIAL",
+    "runtime": "Implemented; distance scaling is normalization-equivalent, but the bounded witness does not close the exact point-table dependency.",
+    "runtime_classification": "NORMALIZATION_EQUIVALENT",
+    "source_access_condition": "PARTIAL_TEXT; exact source text is not redistributed; chapter numbering 27/repository 29 retained",
+    "source_assertion_id": "VEDA-SWW-ASSERTION-SHADBALA-UCHCHA-FORMULA-7F589C7CC695",
+    "source_authority": {
+      "empirical_authority": "NOT_APPLICABLE",
+      "implementation_authority": "MODERATE",
+      "notes": "Classical witness is passage-mapped through an accessible translation mirror; edition text remains rights-limited.",
+      "scholarly_authority": "NOT_ASSESSED",
+      "textual_authority": "HIGH",
+      "traditional_authority": "VERY_HIGH"
+    },
+    "source_formula": "Normalized angular distance from the source-defined exaltation/debilitation point divided by three, expressed in Virupas.",
+    "source_group": "UCHCHA_FORMULA",
+    "source_lineage": "BPHS translation mirror -> existing VEDA source-witness register; Saravali only bounded variant discovery",
+    "source_state": "SOURCE_PARTIAL",
+    "source_variant_id": "VEDA-SWW-VARIANT-SHADBALA-UCHCHA-FORMULA-BPHS-04642A99B864",
+    "unit": "VIRUPA",
+    "weakest_dependency": "BPHS_EXACT_UCCHA_POINT_TABLE"
+  },
+  "contract_hash": "577A7117BC91DD9C38D39B21ADB867F1009683ABC3A2D8FD686B913D64E304B4",
+  "production_bound": false
+}

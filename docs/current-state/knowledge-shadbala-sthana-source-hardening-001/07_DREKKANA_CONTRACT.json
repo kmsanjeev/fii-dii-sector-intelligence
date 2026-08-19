@@ -1,0 +1,39 @@
+{
+  "activity": "VEDA-KNOWLEDGE-SHADBALA-STHANA-SOURCE-HARDENING-001",
+  "contract": {
+    "boundaries": "Quarter Rupa = 15 Virupas; exact segment/classification table remains source-dependent.",
+    "component": "DREKKANA",
+    "inputs": [
+      "D3 segment",
+      "Drekkana ruler/classification",
+      "planet identity/class"
+    ],
+    "oracle": "NOT_BUILT: no source-complete Sthana-Drekkana fixture contract",
+    "passage_ids": [
+      "VEDA-SWW-PASSAGE-BPHS-STHANA-D7FADEFCA49D"
+    ],
+    "production_bound": false,
+    "readiness": "NOT_IMPLEMENTED_NOT_JUSTIFIED",
+    "runtime": "Absent as a Sthana subcomponent. D3 calculation is available elsewhere with conditions, which does not validate this Shadbala use.",
+    "runtime_classification": "ABSENT",
+    "source_access_condition": "PARTIAL_TEXT; exact source text is not redistributed; chapter numbering 27/repository 29 retained",
+    "source_assertion_id": "VEDA-SWW-ASSERTION-SHADBALA-DREKKANA-FORMULA-D1059CEFDAFA",
+    "source_authority": {
+      "empirical_authority": "NOT_APPLICABLE",
+      "implementation_authority": "MODERATE",
+      "notes": "Classical witness is passage-mapped through an accessible translation mirror; edition text remains rights-limited.",
+      "scholarly_authority": "NOT_ASSESSED",
+      "textual_authority": "HIGH",
+      "traditional_authority": "VERY_HIGH"
+    },
+    "source_formula": "Three decanate positions and graha classification determine a quarter-Rupa contribution.",
+    "source_group": "DREKKANA_FORMULA",
+    "source_lineage": "BPHS translation mirror -> existing VEDA source-witness register; Saravali only bounded variant discovery",
+    "source_state": "SOURCE_PARTIAL",
+    "source_variant_id": "VEDA-SWW-VARIANT-SHADBALA-DREKKANA-FORMULA-BPHS-C64BBC2B1DA7",
+    "unit": "VIRUPA",
+    "weakest_dependency": "D3_SOURCE_SCOPE_AND_GRAHA_CLASSIFICATION"
+  },
+  "contract_hash": "5D10A55371A02BC217B27D411D7906E4513084F76249B6EADBA3D104ED61E2E8",
+  "production_bound": false
+}

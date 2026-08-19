@@ -1,0 +1,38 @@
+{
+  "activity": "VEDA-KNOWLEDGE-SHADBALA-STHANA-SOURCE-HARDENING-001",
+  "contract": {
+    "boundaries": "Kendra 60; Panaphara 30; Apoklima 15 Virupas.",
+    "component": "KENDRADI",
+    "inputs": [
+      "house number",
+      "house classification"
+    ],
+    "oracle": "NOT_BUILT: no separate numerical oracle was required for a bounded category contract",
+    "passage_ids": [
+      "VEDA-SWW-PASSAGE-BPHS-STHANA-D7FADEFCA49D"
+    ],
+    "production_bound": false,
+    "readiness": "REMEDIATION_READY",
+    "runtime": "Implemented with the same 60/30/15 weights using whole-sign houses from Ascendant Rashi.",
+    "runtime_classification": "NORMALIZATION_EQUIVALENT",
+    "source_access_condition": "PARTIAL_TEXT; exact source text is not redistributed; chapter numbering 27/repository 29 retained",
+    "source_assertion_id": "VEDA-SWW-ASSERTION-SHADBALA-KENDRADI-FORMULA-652F15AB7206",
+    "source_authority": {
+      "empirical_authority": "NOT_APPLICABLE",
+      "implementation_authority": "MODERATE",
+      "notes": "Classical witness is passage-mapped through an accessible translation mirror; edition text remains rights-limited.",
+      "scholarly_authority": "NOT_ASSESSED",
+      "textual_authority": "HIGH",
+      "traditional_authority": "VERY_HIGH"
+    },
+    "source_formula": "Kendra, Panaphara and Apoklima receive full, half and quarter strength: 60/30/15 Virupas.",
+    "source_group": "KENDRADI_FORMULA",
+    "source_lineage": "BPHS translation mirror -> existing VEDA source-witness register; Saravali only bounded variant discovery",
+    "source_state": "PASSAGE_MAPPED",
+    "source_variant_id": "VEDA-SWW-VARIANT-SHADBALA-KENDRADI-FORMULA-BPHS-ECCC14C625E3",
+    "unit": "VIRUPA",
+    "weakest_dependency": "WHOLE_SIGN_HOUSE_POLICY"
+  },
+  "contract_hash": "BADB0BF02D0FC14D765EFA2A6B17B46FA204DEC0DDA50D2E61935F1C414B23B0",
+  "production_bound": false
+}

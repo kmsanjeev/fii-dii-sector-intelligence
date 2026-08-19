@@ -1,0 +1,215 @@
+{
+  "activity": "VEDA-KNOWLEDGE-SHADBALA-STHANA-SOURCE-HARDENING-001",
+  "aggregate": {
+    "production_aggregate_changed": false,
+    "reason": "Aggregate Sthana contract cannot be closed while mandatory subcomponent and dependency contracts remain partial.",
+    "status": "COMPONENT_LEVEL_ONLY"
+  },
+  "components": [
+    {
+      "boundaries": "0-60 Virupas; 60 Virupas = 1 Rupa",
+      "component": "UCHCHA",
+      "inputs": [
+        "planetary longitude",
+        "source-defined exact exaltation/debilitation point table"
+      ],
+      "oracle": "NOT_BUILT: exact source point input is not independently closed",
+      "passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-STHANA-D7FADEFCA49D"
+      ],
+      "production_bound": false,
+      "readiness": "SOURCE_READY_DEPENDENCY_PARTIAL",
+      "runtime": "Implemented; distance scaling is normalization-equivalent, but the bounded witness does not close the exact point-table dependency.",
+      "runtime_classification": "NORMALIZATION_EQUIVALENT",
+      "source_access_condition": "PARTIAL_TEXT; exact source text is not redistributed; chapter numbering 27/repository 29 retained",
+      "source_assertion_id": "VEDA-SWW-ASSERTION-SHADBALA-UCHCHA-FORMULA-7F589C7CC695",
+      "source_authority": {
+        "empirical_authority": "NOT_APPLICABLE",
+        "implementation_authority": "MODERATE",
+        "notes": "Classical witness is passage-mapped through an accessible translation mirror; edition text remains rights-limited.",
+        "scholarly_authority": "NOT_ASSESSED",
+        "textual_authority": "HIGH",
+        "traditional_authority": "VERY_HIGH"
+      },
+      "source_formula": "Normalized angular distance from the source-defined exaltation/debilitation point divided by three, expressed in Virupas.",
+      "source_group": "UCHCHA_FORMULA",
+      "source_lineage": "BPHS translation mirror -> existing VEDA source-witness register; Saravali only bounded variant discovery",
+      "source_state": "SOURCE_PARTIAL",
+      "source_variant_id": "VEDA-SWW-VARIANT-SHADBALA-UCHCHA-FORMULA-BPHS-04642A99B864",
+      "unit": "VIRUPA",
+      "weakest_dependency": "BPHS_EXACT_UCCHA_POINT_TABLE"
+    },
+    {
+      "boundaries": "Source witness confirms aggregation, but exact per-varga weights and full friendship/dispositor input table are not available in the bounded witness.",
+      "component": "SAPTAVARGAJA",
+      "inputs": [
+        "seven-varga set",
+        "varga placements",
+        "dignity model",
+        "friendship/dispositor tables",
+        "component weights"
+      ],
+      "oracle": "NOT_BUILT: no independent dignity oracle without source-complete tables",
+      "passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-STHANA-D7FADEFCA49D"
+      ],
+      "production_bound": false,
+      "readiness": "SOURCE_PARTIAL",
+      "runtime": "Absent from calculate_sthana_bala; no production contribution is inferred.",
+      "runtime_classification": "ABSENT",
+      "source_access_condition": "PARTIAL_TEXT; exact source text is not redistributed; chapter numbering 27/repository 29 retained",
+      "source_assertion_id": "VEDA-SWW-ASSERTION-SHADBALA-SAPTAVARGAJA-FORMULA-A60492070231",
+      "source_authority": {
+        "empirical_authority": "NOT_APPLICABLE",
+        "implementation_authority": "MODERATE",
+        "notes": "Classical witness is passage-mapped through an accessible translation mirror; edition text remains rights-limited.",
+        "scholarly_authority": "NOT_ASSESSED",
+        "textual_authority": "HIGH",
+        "traditional_authority": "VERY_HIGH"
+      },
+      "source_formula": "Aggregate dignity contributions across seven source-defined Vargas.",
+      "source_group": "SAPTAVARGAJA_FORMULA",
+      "source_lineage": "BPHS translation mirror -> existing VEDA source-witness register; Saravali only bounded variant discovery",
+      "source_state": "SOURCE_PARTIAL",
+      "source_variant_id": "VEDA-SWW-VARIANT-SHADBALA-SAPTAVARGAJA-FORMULA-BPHS-564F294A3C36",
+      "unit": "VIRUPA",
+      "weakest_dependency": "FRIENDSHIP_TABLES_AND_SEVEN_VARGA_CONTRACT"
+    },
+    {
+      "boundaries": "Quarter Rupa = 15 Virupas; exact planet-group and Navamsa condition must be retained.",
+      "component": "OJHAYUGMA",
+      "inputs": [
+        "planet identity/class",
+        "Rashi parity",
+        "Navamsa parity",
+        "source planet-group rule"
+      ],
+      "oracle": "NOT_BUILT: source rule is not complete enough for independent fixtures",
+      "passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-STHANA-D7FADEFCA49D"
+      ],
+      "production_bound": false,
+      "readiness": "SOURCE_PARTIAL",
+      "runtime": "Simplified to odd-Rashi membership only; Navamsa and planet-specific grouping are not evaluated.",
+      "runtime_classification": "SIMPLIFIED_IMPLEMENTATION",
+      "source_access_condition": "PARTIAL_TEXT; exact source text is not redistributed; chapter numbering 27/repository 29 retained",
+      "source_assertion_id": "VEDA-SWW-ASSERTION-SHADBALA-OJHAYUGMA-FORMULA-A4E221C1AC44",
+      "source_authority": {
+        "empirical_authority": "NOT_APPLICABLE",
+        "implementation_authority": "MODERATE",
+        "notes": "Classical witness is passage-mapped through an accessible translation mirror; edition text remains rights-limited.",
+        "scholarly_authority": "NOT_ASSESSED",
+        "textual_authority": "HIGH",
+        "traditional_authority": "VERY_HIGH"
+      },
+      "source_formula": "Planet-specific odd/even Rashi and Navamsa placement contributes one quarter Rupa (15 Virupas) when the source condition is met.",
+      "source_group": "OJHAYUGMA_FORMULA",
+      "source_lineage": "BPHS translation mirror -> existing VEDA source-witness register; Saravali only bounded variant discovery",
+      "source_state": "SOURCE_PARTIAL",
+      "source_variant_id": "VEDA-SWW-VARIANT-SHADBALA-OJHAYUGMA-FORMULA-BPHS-429A57A5B5E4",
+      "unit": "VIRUPA",
+      "weakest_dependency": "PLANET_GROUP_AND_NAVAMSA_RULE_TABLE"
+    },
+    {
+      "boundaries": "Kendra 60; Panaphara 30; Apoklima 15 Virupas.",
+      "component": "KENDRADI",
+      "inputs": [
+        "house number",
+        "house classification"
+      ],
+      "oracle": "NOT_BUILT: no separate numerical oracle was required for a bounded category contract",
+      "passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-STHANA-D7FADEFCA49D"
+      ],
+      "production_bound": false,
+      "readiness": "REMEDIATION_READY",
+      "runtime": "Implemented with the same 60/30/15 weights using whole-sign houses from Ascendant Rashi.",
+      "runtime_classification": "NORMALIZATION_EQUIVALENT",
+      "source_access_condition": "PARTIAL_TEXT; exact source text is not redistributed; chapter numbering 27/repository 29 retained",
+      "source_assertion_id": "VEDA-SWW-ASSERTION-SHADBALA-KENDRADI-FORMULA-652F15AB7206",
+      "source_authority": {
+        "empirical_authority": "NOT_APPLICABLE",
+        "implementation_authority": "MODERATE",
+        "notes": "Classical witness is passage-mapped through an accessible translation mirror; edition text remains rights-limited.",
+        "scholarly_authority": "NOT_ASSESSED",
+        "textual_authority": "HIGH",
+        "traditional_authority": "VERY_HIGH"
+      },
+      "source_formula": "Kendra, Panaphara and Apoklima receive full, half and quarter strength: 60/30/15 Virupas.",
+      "source_group": "KENDRADI_FORMULA",
+      "source_lineage": "BPHS translation mirror -> existing VEDA source-witness register; Saravali only bounded variant discovery",
+      "source_state": "PASSAGE_MAPPED",
+      "source_variant_id": "VEDA-SWW-VARIANT-SHADBALA-KENDRADI-FORMULA-BPHS-ECCC14C625E3",
+      "unit": "VIRUPA",
+      "weakest_dependency": "WHOLE_SIGN_HOUSE_POLICY"
+    },
+    {
+      "boundaries": "Quarter Rupa = 15 Virupas; exact segment/classification table remains source-dependent.",
+      "component": "DREKKANA",
+      "inputs": [
+        "D3 segment",
+        "Drekkana ruler/classification",
+        "planet identity/class"
+      ],
+      "oracle": "NOT_BUILT: no source-complete Sthana-Drekkana fixture contract",
+      "passage_ids": [
+        "VEDA-SWW-PASSAGE-BPHS-STHANA-D7FADEFCA49D"
+      ],
+      "production_bound": false,
+      "readiness": "NOT_IMPLEMENTED_NOT_JUSTIFIED",
+      "runtime": "Absent as a Sthana subcomponent. D3 calculation is available elsewhere with conditions, which does not validate this Shadbala use.",
+      "runtime_classification": "ABSENT",
+      "source_access_condition": "PARTIAL_TEXT; exact source text is not redistributed; chapter numbering 27/repository 29 retained",
+      "source_assertion_id": "VEDA-SWW-ASSERTION-SHADBALA-DREKKANA-FORMULA-D1059CEFDAFA",
+      "source_authority": {
+        "empirical_authority": "NOT_APPLICABLE",
+        "implementation_authority": "MODERATE",
+        "notes": "Classical witness is passage-mapped through an accessible translation mirror; edition text remains rights-limited.",
+        "scholarly_authority": "NOT_ASSESSED",
+        "textual_authority": "HIGH",
+        "traditional_authority": "VERY_HIGH"
+      },
+      "source_formula": "Three decanate positions and graha classification determine a quarter-Rupa contribution.",
+      "source_group": "DREKKANA_FORMULA",
+      "source_lineage": "BPHS translation mirror -> existing VEDA source-witness register; Saravali only bounded variant discovery",
+      "source_state": "SOURCE_PARTIAL",
+      "source_variant_id": "VEDA-SWW-VARIANT-SHADBALA-DREKKANA-FORMULA-BPHS-C64BBC2B1DA7",
+      "unit": "VIRUPA",
+      "weakest_dependency": "D3_SOURCE_SCOPE_AND_GRAHA_CLASSIFICATION"
+    }
+  ],
+  "runtime": {
+    "algorithm": [
+      "derive Rashi from longitude and whole-sign house from Ascendant Rashi",
+      "derive Uchcha by shortest angular distance from the runtime exaltation point and scale 60*(1-distance/180)",
+      "derive Ojhayugma from odd Rashi only and assign 15 or 0",
+      "derive Kendradi as 60/30/15 for Kendra/Panaphara/Apoklima",
+      "sum only Uchcha + Ojhayugma + Kendradi"
+    ],
+    "constants": {
+      "KENDRA_POSITIONS": "1,4,7,10",
+      "ODD_RASHIS": "1,3,5,7,9,11",
+      "UCCHA_MAXIMUM": 60.0,
+      "UCCHA_POSITIONS": "Sun/Moon/Mars/Mercury exact literals; Jupiter/Venus/Saturn offsets"
+    },
+    "function": "calculate_sthana_bala",
+    "line_end": 478,
+    "line_start": 410,
+    "module": "engines/ai/knowledge/shadbala_engine.py",
+    "production_change_in_activity": false,
+    "sha256": "B679AC92D0E9A4B7513CFA602DD60D08E05BE8B5EAF83C51F0FA5704ABD7EE39",
+    "source_lines": {
+      "aggregate": 464,
+      "kendradi_formula": 458,
+      "ojhayugma_formula": 453,
+      "uccha_formula": 447
+    },
+    "subcomponents_present": {
+      "DREKKANA": false,
+      "KENDRADI": true,
+      "OJHAYUGMA": true,
+      "SAPTAVARGAJA": false,
+      "UCHCHA": true
+    }
+  }
+}

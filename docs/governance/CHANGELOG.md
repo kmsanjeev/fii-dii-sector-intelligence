@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-KNOWLEDGE-SHADBALA-STHANA-SOURCE-HARDENING-001
+
+Completed the bounded Sthana Bala source-witness reconciliation with
+`PASS_WITH_CONDITION` and decision
+`STHANA_SOURCE_CONTRACT_PARTIALLY_RESOLVED_FREEZE`. The existing BPHS
+source-witness register was reused and the five Sthana components were split
+into claim-level contracts. Kendradi is remediation-ready; exact Uccha inputs,
+seven-varga dignity/friendship inputs, full Ojhayugma conditions and
+Sthana-Drekkana classification remain partial. Production Shadbala, the
+aggregate, parallel Bala families, interpretation, prediction, ML, RAG and
+Approved Core were not changed. Evidence is in
+`docs/current-state/knowledge-shadbala-sthana-source-hardening-001/`.
+
 ## 2026-08-19 | VEDA-CALC-SHADBALA-COMPONENT-REMEDIATION-R1-001
 
 Completed the contained Naisargika Bala and Dig Bala remediation with

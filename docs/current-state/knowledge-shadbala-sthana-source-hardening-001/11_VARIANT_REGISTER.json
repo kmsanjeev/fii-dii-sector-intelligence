@@ -1,0 +1,29 @@
+{
+  "activity": "VEDA-KNOWLEDGE-SHADBALA-STHANA-SOURCE-HARDENING-001",
+  "variants": [
+    {
+      "detail": "Accessible witness labels the chapter 27; repository metadata labels it 29.",
+      "id": "BPHS_CHAPTER_NUMBER_VARIANCE",
+      "status": "DOCUMENTED",
+      "type": "TRANSLATION_DIFFERENCE"
+    },
+    {
+      "detail": "Passage-level paraphrases are retained without redistributing source text or inventing missing tables.",
+      "id": "BPHS_PARTIAL_TEXT",
+      "status": "ACTIVE_CONDITION",
+      "type": "SOURCE_ACCESS_LIMITED"
+    },
+    {
+      "detail": "Runtime uses odd Rashi only; source assertion includes planet-specific Rashi and Navamsa conditions.",
+      "id": "OJHAYUGMA_RUNTIME_SIMPLIFICATION",
+      "status": "MATERIAL_COMPONENT_GAP",
+      "type": "IMPLEMENTATION_VARIANT"
+    },
+    {
+      "detail": "D3 calculation availability does not validate the Sthana-Drekkana contribution rule.",
+      "id": "D3_VARGA_VS_STHANA_DREKKANA",
+      "status": "SEPARATE",
+      "type": "SCOPE_VARIANT"
+    }
+  ]
+}

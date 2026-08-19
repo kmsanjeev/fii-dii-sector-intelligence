@@ -1,0 +1,41 @@
+{
+  "activity": "VEDA-KNOWLEDGE-SHADBALA-STHANA-SOURCE-HARDENING-001",
+  "contract": {
+    "boundaries": "Source witness confirms aggregation, but exact per-varga weights and full friendship/dispositor input table are not available in the bounded witness.",
+    "component": "SAPTAVARGAJA",
+    "inputs": [
+      "seven-varga set",
+      "varga placements",
+      "dignity model",
+      "friendship/dispositor tables",
+      "component weights"
+    ],
+    "oracle": "NOT_BUILT: no independent dignity oracle without source-complete tables",
+    "passage_ids": [
+      "VEDA-SWW-PASSAGE-BPHS-STHANA-D7FADEFCA49D"
+    ],
+    "production_bound": false,
+    "readiness": "SOURCE_PARTIAL",
+    "runtime": "Absent from calculate_sthana_bala; no production contribution is inferred.",
+    "runtime_classification": "ABSENT",
+    "source_access_condition": "PARTIAL_TEXT; exact source text is not redistributed; chapter numbering 27/repository 29 retained",
+    "source_assertion_id": "VEDA-SWW-ASSERTION-SHADBALA-SAPTAVARGAJA-FORMULA-A60492070231",
+    "source_authority": {
+      "empirical_authority": "NOT_APPLICABLE",
+      "implementation_authority": "MODERATE",
+      "notes": "Classical witness is passage-mapped through an accessible translation mirror; edition text remains rights-limited.",
+      "scholarly_authority": "NOT_ASSESSED",
+      "textual_authority": "HIGH",
+      "traditional_authority": "VERY_HIGH"
+    },
+    "source_formula": "Aggregate dignity contributions across seven source-defined Vargas.",
+    "source_group": "SAPTAVARGAJA_FORMULA",
+    "source_lineage": "BPHS translation mirror -> existing VEDA source-witness register; Saravali only bounded variant discovery",
+    "source_state": "SOURCE_PARTIAL",
+    "source_variant_id": "VEDA-SWW-VARIANT-SHADBALA-SAPTAVARGAJA-FORMULA-BPHS-564F294A3C36",
+    "unit": "VIRUPA",
+    "weakest_dependency": "FRIENDSHIP_TABLES_AND_SEVEN_VARGA_CONTRACT"
+  },
+  "contract_hash": "7F99DD6C9F8EFAED9B447DCCC89BC3CEFD549FCFFB0D94AD1CBF33017BFD21FB",
+  "production_bound": false
+}
