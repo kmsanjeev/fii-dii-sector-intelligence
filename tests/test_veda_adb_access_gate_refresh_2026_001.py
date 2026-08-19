@@ -18,6 +18,7 @@ def test_official_policy_snapshot_preserves_provider_boundaries():
     assert policy["contract_status"] == "REMOVED_FOR_DURATION_OF_2026"
     assert policy["public_sample_status"]["status"] == "CURRENT_C_SAMPLE_REMAINS_AVAILABLE"
     assert policy["public_sample_status"]["download_performed_by_this_activity"] is False
+    assert policy["public_sample_count_reconciliation"]["status"] == "OFFICIAL_PAGE_INTERNAL_COUNT_VARIANT"
     assert policy["research_tool_route"]["bulk_or_export_capability"] == "NOT_ESTABLISHED"
     assert policy["policy_page"].startswith("https://www.astro.com/")
 
