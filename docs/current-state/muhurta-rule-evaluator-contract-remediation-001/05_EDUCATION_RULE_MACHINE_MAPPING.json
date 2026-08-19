@@ -1,0 +1,79 @@
+{
+  "activity_id": "EDUCATION_COMMENCEMENT",
+  "contract_hash_full": "7A117C0AC629EB3E94A5B01EBAC8532AC1BCE1858AFBD7669CFF78D683A41CD7",
+  "contract_id": "VEDA-MUH-CONTRACT-EDUCATION-COMMENCEMENT-V2",
+  "rules": [
+    {
+      "evaluator_id": null,
+      "executability_state": "SOURCE_PARTIAL",
+      "expected_set": null,
+      "expected_value": null,
+      "factor_id": null,
+      "missing_value_policy": null,
+      "operator": null,
+      "rule_id": "MUH-EDU-NAK-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-BS-NAK-LEARNING-001"
+      ],
+      "variant_id": "BS_SCOPED_ACTION_FAMILY_V1"
+    },
+    {
+      "evaluator_id": null,
+      "executability_state": "SOURCE_PARTIAL",
+      "expected_set": null,
+      "expected_value": null,
+      "factor_id": null,
+      "missing_value_policy": null,
+      "operator": null,
+      "rule_id": "MUH-EDU-TITHI-KARANA-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-BS-TITHI-KARANA-ACTIONS-001"
+      ],
+      "variant_id": "BS_SCOPED_ACTION_FAMILY_V1"
+    },
+    {
+      "evaluator_id": "BOOLEAN_REQUIRED",
+      "executability_state": "MACHINE_READY",
+      "expected_set": null,
+      "expected_value": true,
+      "factor_id": "PANCHANGA_FACTS_AVAILABLE",
+      "missing_value_policy": "FAIL_CLOSED",
+      "operator": "BOOLEAN_TRUE",
+      "rule_id": "MUH-EDU-PANCHANGA-INPUT-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-P032-FACTS-001"
+      ],
+      "variant_id": "P032_FACT_LAYER_V1"
+    },
+    {
+      "evaluator_id": "ENUM_EXCLUSION",
+      "executability_state": "MACHINE_READY",
+      "expected_set": [
+        "ROUTINE_DAILY_STUDY"
+      ],
+      "expected_value": null,
+      "factor_id": "ACTIVITY_SUBSCOPE",
+      "missing_value_policy": "ABSTAIN",
+      "operator": "NOT_IN",
+      "rule_id": "MUH-EDU-ROUTINE-SCOPE-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-P032-FACTS-001"
+      ],
+      "variant_id": "ACTIVITY_SCOPE_GUARD_V1"
+    },
+    {
+      "evaluator_id": null,
+      "executability_state": "SOURCE_PARTIAL",
+      "expected_set": null,
+      "expected_value": null,
+      "factor_id": null,
+      "missing_value_policy": null,
+      "operator": null,
+      "rule_id": "MUH-EDU-VARA-YOGA-GAP-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-P032-FACTS-001"
+      ],
+      "variant_id": "BS_SCOPED_ACTION_FAMILY_V1"
+    }
+  ]
+}

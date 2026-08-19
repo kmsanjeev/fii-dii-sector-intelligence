@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-RULE-EVALUATOR-CONTRACT-REMEDIATION-001
+
+Completed the source-bound evaluator-contract remediation with decision
+`MUHURTA_MACHINE_CONTRACTS_PARTIAL`. V1 contracts remain preserved and
+versioned V2 artifacts bind trusted P032 fact availability plus the Education
+formal-commencement scope guard to declarative predicates. Six classical
+Nakshatra/Tithi-Karana action-family rules remain `SOURCE_PARTIAL` because the
+governed records do not provide executable activity-specific value sets. A
+small no-eval/no-exec evaluator was validated for contract dry-runs only; no
+recommendation runtime, P032 mathematics, API/UI, RAG, prediction, ML or
+Approved Core changed. Capability state and future configuration access state
+are explicitly separated. Evidence is in
+`docs/current-state/muhurta-rule-evaluator-contract-remediation-001/`.
+
 ## 2026-08-19 | VEDA-MUHURTA-RECOMMENDATION-ENGINE-001
 
 Completed the bounded recommendation-engine conformance audit with decision

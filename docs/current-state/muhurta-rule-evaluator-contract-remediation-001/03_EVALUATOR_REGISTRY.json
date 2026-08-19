@@ -1,0 +1,56 @@
+{
+  "arbitrary_python": false,
+  "compound_logic": [
+    "ALL_OF",
+    "ANY_OF",
+    "NOT"
+  ],
+  "dynamic_eval": false,
+  "dynamic_exec": false,
+  "evaluators": [
+    {
+      "evaluator_id": "BOOLEAN_REQUIRED",
+      "operator": "BOOLEAN_TRUE"
+    },
+    {
+      "evaluator_id": "ENUM_EXCLUSION",
+      "operator": "NOT_IN"
+    },
+    {
+      "evaluator_id": "ENUM_MEMBERSHIP",
+      "operator": "IN"
+    },
+    {
+      "evaluator_id": "EQUALITY",
+      "operator": "EQ"
+    },
+    {
+      "evaluator_id": "TRANSITION_PRESENCE",
+      "operator": "EXISTS"
+    },
+    {
+      "evaluator_id": "CONTEXT_GUARD",
+      "operator": "ALL_OF"
+    }
+  ],
+  "operators": [
+    "ALL_OF",
+    "ANY_OF",
+    "BETWEEN",
+    "BOOLEAN_FALSE",
+    "BOOLEAN_TRUE",
+    "EQ",
+    "EXISTS",
+    "GT",
+    "GTE",
+    "IN",
+    "LT",
+    "LTE",
+    "NEQ",
+    "NOT",
+    "NOT_EXISTS",
+    "NOT_IN"
+  ],
+  "purpose": "Contract validation and synthetic dry-run only; not production recommendation runtime.",
+  "version": "MUHURTA_PREDICATE_EVALUATOR_V1"
+}

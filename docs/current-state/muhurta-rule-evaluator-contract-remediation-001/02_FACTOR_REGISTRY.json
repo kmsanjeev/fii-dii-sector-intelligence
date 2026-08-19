@@ -1,0 +1,65 @@
+{
+  "calculation_logic_changed": false,
+  "canonical_enums": {
+    "ACTIVITY_SUBSCOPE": [
+      "FORMAL_COURSE_COMMENCEMENT",
+      "FORMAL_PROGRAMME_COMMENCEMENT",
+      "FIRST_LESSON",
+      "CEREMONIAL_COMMENCEMENT",
+      "ROUTINE_DAILY_STUDY"
+    ],
+    "P032_ENUMS": "Use existing integer indexes/numbers; presentation names remain outside predicates."
+  },
+  "factors": [
+    {
+      "factor_id": "PANCHANGA_FACTS_AVAILABLE",
+      "missing_state": "FAIL_CLOSED",
+      "source_path": "adapter.panchanga_facts_available",
+      "value_type": "BOOLEAN"
+    },
+    {
+      "factor_id": "ACTIVITY_SUBSCOPE",
+      "missing_state": "ABSTAIN",
+      "source_path": "request.activity_subscope_if_required",
+      "value_type": "ENUM"
+    },
+    {
+      "factor_id": "VARA",
+      "missing_state": "NOT_EVALUABLE",
+      "source_path": "p032_facts.vara.index",
+      "value_type": "ENUM_ID"
+    },
+    {
+      "factor_id": "TITHI",
+      "missing_state": "NOT_EVALUABLE",
+      "source_path": "p032_facts.tithi.index",
+      "value_type": "ENUM_ID"
+    },
+    {
+      "factor_id": "NAKSHATRA",
+      "missing_state": "NOT_EVALUABLE",
+      "source_path": "p032_facts.nakshatra.index",
+      "value_type": "ENUM_ID"
+    },
+    {
+      "factor_id": "YOGA",
+      "missing_state": "NOT_EVALUABLE",
+      "source_path": "p032_facts.yoga.index",
+      "value_type": "ENUM_ID"
+    },
+    {
+      "factor_id": "KARANA",
+      "missing_state": "NOT_EVALUABLE",
+      "source_path": "p032_facts.karana.number",
+      "value_type": "ENUM_ID"
+    },
+    {
+      "factor_id": "TRANSITION_BOUNDARIES",
+      "missing_state": "NOT_EVALUABLE",
+      "source_path": "p032_windows.transition_boundaries",
+      "value_type": "LIST"
+    }
+  ],
+  "source": "P032_FACTOR_ADAPTER_V1",
+  "version": "1.0.0"
+}

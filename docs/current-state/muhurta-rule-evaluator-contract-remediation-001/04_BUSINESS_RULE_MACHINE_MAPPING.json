@@ -1,0 +1,63 @@
+{
+  "activity_id": "BUSINESS_OPENING_INAUGURATION",
+  "contract_hash_full": "4953E65F2019B4AF0EC2B42CC685842CFE52199B5BEC10AD9641EDA2087DE36B",
+  "contract_id": "VEDA-MUH-CONTRACT-BUSINESS-OPENING-V2",
+  "rules": [
+    {
+      "evaluator_id": null,
+      "executability_state": "SOURCE_PARTIAL",
+      "expected_set": null,
+      "expected_value": null,
+      "factor_id": null,
+      "missing_value_policy": null,
+      "operator": null,
+      "rule_id": "MUH-BIZ-NAK-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-BS-NAK-COMMERCE-001"
+      ],
+      "variant_id": "BS_SCOPED_ACTION_FAMILY_V1"
+    },
+    {
+      "evaluator_id": null,
+      "executability_state": "SOURCE_PARTIAL",
+      "expected_set": null,
+      "expected_value": null,
+      "factor_id": null,
+      "missing_value_policy": null,
+      "operator": null,
+      "rule_id": "MUH-BIZ-TITHI-KARANA-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-BS-TITHI-KARANA-ACTIONS-001"
+      ],
+      "variant_id": "BS_SCOPED_ACTION_FAMILY_V1"
+    },
+    {
+      "evaluator_id": "BOOLEAN_REQUIRED",
+      "executability_state": "MACHINE_READY",
+      "expected_set": null,
+      "expected_value": true,
+      "factor_id": "PANCHANGA_FACTS_AVAILABLE",
+      "missing_value_policy": "FAIL_CLOSED",
+      "operator": "BOOLEAN_TRUE",
+      "rule_id": "MUH-BIZ-PANCHANGA-INPUT-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-P032-FACTS-001"
+      ],
+      "variant_id": "P032_FACT_LAYER_V1"
+    },
+    {
+      "evaluator_id": null,
+      "executability_state": "SOURCE_PARTIAL",
+      "expected_set": null,
+      "expected_value": null,
+      "factor_id": null,
+      "missing_value_policy": null,
+      "operator": null,
+      "rule_id": "MUH-BIZ-VARA-YOGA-GAP-001",
+      "source_assertions": [
+        "VEDA-SWW-ASSERTION-P032-FACTS-001"
+      ],
+      "variant_id": "BS_SCOPED_ACTION_FAMILY_V1"
+    }
+  ]
+}

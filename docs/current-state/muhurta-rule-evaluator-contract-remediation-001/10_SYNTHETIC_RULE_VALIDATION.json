@@ -1,0 +1,41 @@
+{
+  "cases": [
+    {
+      "case_id": "BUSINESS_P032_TRUE",
+      "false_result": "FALSE",
+      "missing_result": "NOT_EVALUABLE",
+      "rule_id": "MUH-BIZ-PANCHANGA-INPUT-001",
+      "source_independent_expected": true,
+      "true_result": "TRUE"
+    },
+    {
+      "case_id": "EDUCATION_P032_TRUE",
+      "false_result": "FALSE",
+      "missing_result": "NOT_EVALUABLE",
+      "rule_id": "MUH-EDU-PANCHANGA-INPUT-001",
+      "source_independent_expected": true,
+      "true_result": "TRUE"
+    },
+    {
+      "case_id": "EDUCATION_FORMAL_SCOPE_TRUE",
+      "false_result": "FALSE",
+      "missing_result": "NOT_EVALUABLE",
+      "rule_id": "MUH-EDU-ROUTINE-SCOPE-001",
+      "source_independent_expected": true,
+      "true_result": "TRUE"
+    },
+    {
+      "case_id": "EDUCATION_SCOPE_MISSING",
+      "false_result": "FALSE",
+      "missing_result": "NOT_EVALUABLE",
+      "rule_id": "MUH-EDU-ROUTINE-SCOPE-001",
+      "source_independent_expected": true,
+      "true_result": "TRUE"
+    }
+  ],
+  "false_cases": 4,
+  "missing_factor_cases": 4,
+  "production_runtime_invoked": false,
+  "true_cases": 4,
+  "unexpected_results": []
+}

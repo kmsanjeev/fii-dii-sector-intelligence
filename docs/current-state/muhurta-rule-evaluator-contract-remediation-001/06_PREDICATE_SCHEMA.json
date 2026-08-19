@@ -1,0 +1,48 @@
+{
+  "arbitrary_expression_allowed": false,
+  "missing_value_policy": [
+    "ABSTAIN",
+    "RULE_NOT_EVALUATED",
+    "FAIL_CLOSED",
+    "NOT_APPLICABLE"
+  ],
+  "operators": [
+    "ALL_OF",
+    "ANY_OF",
+    "BETWEEN",
+    "BOOLEAN_FALSE",
+    "BOOLEAN_TRUE",
+    "EQ",
+    "EXISTS",
+    "GT",
+    "GTE",
+    "IN",
+    "LT",
+    "LTE",
+    "NEQ",
+    "NOT",
+    "NOT_EXISTS",
+    "NOT_IN"
+  ],
+  "python_code_allowed": false,
+  "required_rule_fields": [
+    "rule_id",
+    "evaluator_id",
+    "factor_id",
+    "factor_source",
+    "value_type",
+    "operator",
+    "condition_mode",
+    "missing_value_policy",
+    "variant_id",
+    "executability_state"
+  ],
+  "value_fields": [
+    "expected_value",
+    "expected_set",
+    "range",
+    "children",
+    "child"
+  ],
+  "version": "1.0.0"
+}
