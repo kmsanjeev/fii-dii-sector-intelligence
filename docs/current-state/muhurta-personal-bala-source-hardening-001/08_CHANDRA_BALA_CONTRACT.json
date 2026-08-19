@@ -1,0 +1,16 @@
+{
+  "contract_id": "VEDA-MUH-CHANDRA-DIAGNOSTIC-V1",
+  "version": "1.0.0",
+  "status": "NON_PRODUCTION_DIAGNOSTIC_ONLY",
+  "source_state": "SOURCE_SEMANTICS_PARTIAL",
+  "source": "VEDA-SWW-ASSERTION-CHANDRA-BALA-RASHI-RELATION-CANDID-F0444C48D251",
+  "inputs": {"janma_moon_sign": "integer 1..12", "event_moon_sign": "integer 1..12", "paksha": "optional SHUKLA or KRISHNA"},
+  "count_rule": "inclusive forward sign count over 12 positions",
+  "standard_positions": {"supportive": [1, 3, 6, 7, 10, 11], "neutral": [2, 5, 9], "caution": [4, 8, 12]},
+  "paksha_variant": "PAKSHA_CONDITIONAL is isolated and unresolved",
+  "advisory_effect": "supportive/neutral/caution candidate only; no hard exclusion",
+  "missing_data_policy": "NOT_EVALUABLE; general Muhurta remains available",
+  "production_activation": false,
+  "hash_algorithm": "SHA-256 over canonical contract excluding hash",
+  "hash": "7505F2C6920355E0C6FE2184631E08D13F094E4B8D9128AA50A54B4F67FB8DF4"
+}

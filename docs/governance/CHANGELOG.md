@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-PERSONAL-BALA-SOURCE-HARDENING-001
+
+Completed the bounded Tara Bala and Chandra Bala source-hardening activity with
+`PERSONAL_MUHURTA_SOURCE_PARTIAL`. Added source-witness mappings, explicit
+non-production diagnostic contracts, independent 729/144-case oracles, variant
+isolation, birth-data uncertainty and privacy contracts. Existing general
+Muhurta, window search and P032 behavior remain unchanged; no personalized API,
+storage, score, RAG, prediction, ML or Approved Core change occurred.
+
 ## 2026-08-19 | VEDA-MUHURTA-WINDOW-SEARCH-001
 
 Completed the bounded transition-aware Muhurta window search with

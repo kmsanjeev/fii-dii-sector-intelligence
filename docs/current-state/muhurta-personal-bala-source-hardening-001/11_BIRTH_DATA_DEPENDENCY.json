@@ -1,0 +1,9 @@
+{
+  "janma_nakshatra": {"direct_input": "integer/name accepted in future design", "derived_input": "birth Moon sidereal longitude through existing Kundli/P032-compatible path", "required_for_derivation": ["DOB", "TOB", "POB", "timezone"]},
+  "janma_moon_sign": {"direct_input": "reliably supplied Moon sign may be sufficient", "derived_input": "birth Moon sidereal longitude through existing Kundli path", "required_for_derivation": ["DOB", "TOB", "POB", "timezone"]},
+  "event_nakshatra": "existing P032 event Moon fact",
+  "event_moon_sign": "existing P032/Kundli event Moon sign fact; no new astronomy",
+  "birth_time_states": ["JANMA_NAKSHATRA_STABLE", "JANMA_NAKSHATRA_UNCERTAIN", "BIRTH_TIME_UNKNOWN", "BIRTH_DATA_INSUFFICIENT"],
+  "minimum_data": "Use the supplied derived fact when reliable; do not retain full natal data merely for a personal-Bala lookup",
+  "storage_added": false
+}

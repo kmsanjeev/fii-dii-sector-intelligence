@@ -1,0 +1,17 @@
+{
+  "contract_id": "VEDA-MUH-TARA-DIAGNOSTIC-V1",
+  "version": "1.0.0",
+  "status": "NON_PRODUCTION_DIAGNOSTIC_ONLY",
+  "source_state": "SOURCE_SEMANTICS_PARTIAL",
+  "source": "VEDA-SWW-ASSERTION-TARA-BALA-NAVATARA-CALCULATION-CAN-C68152B86EE6",
+  "inputs": {"janma_nakshatra": "integer 1..27", "event_nakshatra": "integer 1..27"},
+  "count_rule": "inclusive forward count over 27 positions",
+  "modulo_rule": "count mod 9; zero maps to category 9",
+  "category_table": "05_TARA_CATEGORY_TABLE.json",
+  "advisory_effect": "supportive/caution candidate only; no hard exclusion",
+  "variants": ["NAIDHANA_VADHA_NAME", "PRATYARI_PRATYAK_NAME", "PARAMA_MITRA_ATI_MITRA_NAME", "JANMA_CYCLE_NUANCE"],
+  "missing_data_policy": "NOT_EVALUABLE; general Muhurta remains available",
+  "production_activation": false,
+  "hash_algorithm": "SHA-256 over canonical contract excluding hash",
+  "hash": "0170731B33CA1C4E9149995C1D7BDDE039C476ECE5B1E1134DB1435FEFDCF5AC"
+}

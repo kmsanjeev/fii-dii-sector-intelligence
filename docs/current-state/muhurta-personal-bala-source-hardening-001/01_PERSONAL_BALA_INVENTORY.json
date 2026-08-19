@@ -1,0 +1,15 @@
+{
+  "activity": "VEDA-MUHURTA-PERSONAL-BALA-SOURCE-HARDENING-001",
+  "existing_assets": [
+    {"asset": "engines/ai/knowledge/muhurta_foundation.py", "state": "IMPLEMENTED", "use": "P032 facts only; preserve"},
+    {"asset": "engines/ai/knowledge/muhurta_recommendation_engine_rx1.py", "state": "IMPLEMENTED_FROZEN", "use": "General recommendation authority; unchanged"},
+    {"asset": "engines/ai/knowledge/muhurta_window_search.py", "state": "IMPLEMENTED_FROZEN_WITH_LIMITATIONS", "use": "General windows; unchanged"},
+    {"asset": "engines/ai/knowledge/muhurta_bala_governance.py", "state": "RESEARCH_ONLY", "use": "Existing source registry; preserved and extended by evidence"},
+    {"asset": "Tara Bala production evaluator", "state": "NOT_IMPLEMENTED", "use": "No production activation"},
+    {"asset": "Chandra Bala production evaluator", "state": "NOT_IMPLEMENTED", "use": "No production activation"},
+    {"asset": "scripts/veda_muhurta_personal_bala_oracle.py", "state": "DIAGNOSTIC_ONLY", "use": "Independent matrix evaluator; not imported by runtime"}
+  ],
+  "birth_dependencies": {"janma_nakshatra": "existing Moon sidereal longitude path", "janma_moon_sign": "existing Moon sign path", "timezone_location": "required when deriving from DOB/TOB/POB", "direct_inputs": "reliably supplied Janma Nakshatra or Moon sign may avoid retaining full birth data"},
+  "production_activation": "NO",
+  "storage_added": "NO"
+}

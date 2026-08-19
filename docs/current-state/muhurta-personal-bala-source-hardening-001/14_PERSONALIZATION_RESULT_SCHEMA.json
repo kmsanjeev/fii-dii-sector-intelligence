@@ -1,0 +1,20 @@
+{
+  "status": "DESIGN_ONLY",
+  "fields": {
+    "personalization_mode": "GENERAL_ONLY | PERSONALIZED | NOT_EVALUABLE",
+    "birth_data_state": "BIRTH_DATA_CONFIRMED | BIRTH_TIME_APPROXIMATE | BIRTH_TIME_UNKNOWN | USER_SUPPLIED_FACT | DERIVED_BY_VEDA",
+    "janma_nakshatra": "optional fact; confidence required",
+    "event_nakshatra": "optional event fact",
+    "tara_bala_category": "optional diagnostic result",
+    "tara_bala_effect": "optional qualitative result",
+    "janma_moon_sign": "optional fact; confidence required",
+    "event_moon_sign": "optional event fact",
+    "chandra_bala_relation": "optional position 1..12",
+    "chandra_bala_effect": "optional qualitative result",
+    "personal_factor_state": "explicit state",
+    "personal_uncertainties": "list"
+  },
+  "storage": "no natal-data persistence introduced",
+  "public_api": "not implemented",
+  "production_activation": false
+}

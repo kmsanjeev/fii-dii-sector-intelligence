@@ -1,6 +1,8 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.73.5 | 2026-08-19
+# Version 4.73.6 | 2026-08-19
+
+- `VEDA-MUHURTA-PERSONAL-BALA-SOURCE-HARDENING-001` completed with `PERSONAL_MUHURTA_SOURCE_PARTIAL`: Tara Bala and Chandra Bala candidate calculations are independently evaluated in non-production 729-case and 144-case matrices, with explicit source-witness gaps, variants, birth-data uncertainty and qualitative composition contracts. Personalized recommendations remain unimplemented; general Muhurta/window search, P032, Business/Education contracts, RAG, Approved Core (`17`), prediction, ML, Shadbala, Ashtakavarga and D20 remain unchanged. Evidence: `docs/current-state/muhurta-personal-bala-source-hardening-001/`.
 
 - `VEDA-MUHURTA-WINDOW-SEARCH-001` completed with `MUHURTA_WINDOW_SEARCH_OPERATIONAL_WITH_LIMITATIONS`: bounded Business-opening and Education-commencement date-range search is available at `POST /api/muhurta/search`. It reuses RX1, canonical Kundli/Swiss Ephemeris positions, P032 facts and the existing candidate splitter; calculated Tithi/Karana/Nakshatra transitions, deterministic representatives, semantic merges, categorical equivalents, alternatives, source gaps and abstention are explicit. No new rules, numeric score, personal Bala, RAG, prediction, ML, Shadbala, Ashtakavarga, D20 or Approved Core change occurred. Evidence: `docs/current-state/muhurta-window-search-001/`.
 

@@ -1,0 +1,16 @@
+{
+  "contract_id": "VEDA-MUH-TARA-DIAGNOSTIC-V1",
+  "categories": [
+    {"remainder": 1, "canonical": "JANMA", "aliases": ["JANMA"], "effect": "CAUTION"},
+    {"remainder": 2, "canonical": "SAMPAT", "aliases": ["SAMPAT"], "effect": "SUPPORTIVE"},
+    {"remainder": 3, "canonical": "VIPAT", "aliases": ["VIPAT"], "effect": "CAUTION"},
+    {"remainder": 4, "canonical": "KSHEMA", "aliases": ["KSHEMA"], "effect": "SUPPORTIVE"},
+    {"remainder": 5, "canonical": "PRATYARI", "aliases": ["PRATYARI", "PRATYAK", "PRATYARA"], "effect": "CAUTION"},
+    {"remainder": 6, "canonical": "SADHAKA", "aliases": ["SADHAKA", "SADHANA"], "effect": "SUPPORTIVE"},
+    {"remainder": 7, "canonical": "NAIDHANA", "aliases": ["NAIDHANA", "VADHA", "NIDHANA"], "effect": "CAUTION"},
+    {"remainder": 8, "canonical": "MITRA", "aliases": ["MITRA", "MAITRA"], "effect": "SUPPORTIVE"},
+    {"remainder": 0, "canonical": "PARAMA_MITRA", "aliases": ["PARAMA_MITRA", "ATI_MITRA", "ADHI_MITRA"], "effect": "SUPPORTIVE"}
+  ],
+  "hard_exclusions": [],
+  "semantic_status": "SOURCE_SEMANTICS_PARTIAL"
+}

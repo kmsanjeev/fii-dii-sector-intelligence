@@ -1,0 +1,14 @@
+{
+  "oracle": "scripts/veda_muhurta_personal_bala_oracle.py::build_chandra_oracle_matrix",
+  "independent_from_production": true,
+  "standard_cases": 144,
+  "dimensions": "12 natal Moon signs x 12 event Moon signs",
+  "positions": 12,
+  "paksha_variant_cases": "evaluated by explicit variant only; not merged with standard",
+  "identity_case": "sign 1 -> sign 1 = position 1 / SUPPORTIVE",
+  "wrap_case": "sign 12 -> sign 1 = position 2 / NEUTRAL",
+  "canonical_matrix_sha256": "0D51D1D12677082C244BB7838B9B5DD443F261F7F05A941803FD6B99729CCE95",
+  "deterministic": true,
+  "production_activation": false,
+  "source_state": "SOURCE_SEMANTICS_PARTIAL"
+}

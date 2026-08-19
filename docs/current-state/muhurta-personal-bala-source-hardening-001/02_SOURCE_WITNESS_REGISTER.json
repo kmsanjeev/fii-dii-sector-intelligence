@@ -1,0 +1,38 @@
+{
+  "standard": "VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001",
+  "register_state": "SOURCE_SEMANTICS_PARTIAL",
+  "works": [
+    {"work_id": "VEDA-SWW-WORK-MUHURTA-CHINTAMANI-B9B7DA630977", "title": "Muhurtacintamani", "author": "Rama Daivajna", "role": "candidate traditional source", "access": "PARTIAL_TEXT"},
+    {"work_id": "VEDA-SWW-WORK-BRIHAT-SAMHITA-AF17F9683F74", "title": "Brihat Samhita", "author": "Varahamihira", "role": "candidate classical source", "access": "BIBLIOGRAPHIC_ONLY_FOR_THIS_CLAIM"},
+    {"work_id": "VEDA-SWW-WORK-OPEN-PENN-MUHURTACINTAMANI-MANUSCR-404CB57CFC5B", "title": "Muhurtacintamani manuscript", "author": "Rama Daivajna", "role": "institutional manuscript record", "access": "BIBLIOGRAPHIC_ONLY"},
+    {"work_id": "VEDA-SWW-WORK-PANCHANGBODH-TARA-BALA-PAGE-53930D0AA1AF", "title": "PanchangBodh Tara Bala page", "role": "modern implementation witness", "access": "AVAILABLE"},
+    {"work_id": "VEDA-SWW-WORK-ASKSOMA-CHANDRABALAM-PAGE-96870B3CEBC5", "title": "AskSoma Chandrabalam page", "role": "modern implementation witness", "access": "AVAILABLE"},
+    {"work_id": "VEDA-SWW-WORK-VEDASTRO-MUHURTHA-CHAPTER-3-4EDC2460F6C4", "title": "VedAstro Muhurtha Chapter 3", "role": "modern explanatory witness", "access": "AVAILABLE"}
+  ],
+  "witnesses": [
+    {"witness_id": "VEDA-SWW-WITNESS-WIKIMEDIA-COMMONS-1902-SCAN-27C98E5B0455", "work_id": "VEDA-SWW-WORK-MUHURTA-CHINTAMANI-B9B7DA630977", "locator": "https://commons.wikimedia.org/wiki/File:%E0%A4%AE%E0%A5%81%E0%A4%B9%E0%A5%82%E0%A4%B0%E0%A5%8D%E0%A4%A4_%E0%A4%9A%E0%A4%BF%E0%A4%A8%E0%A5%8D%E0%A4%A4%E0%A4%BE%E0%A4%AE%E0%A4%A3%E0%A4%BF-%E0%A4%AE%E0%A4%B0%E0%A4%BE%E0%A4%A0%E0%A5%80_%E0%A4%AD%E0%A4%BE%E0%A4%B7%E0%A4%BE%E0%A4%82%E0%A4%A4%E0%A4%B0%E0%A4%BE%E0%A4%B8%E0%A4%B9%E0%A4%BF%E0%A4%A4.pdf", "source_access": "PARTIAL_TEXT", "rights": "PUBLIC_DOMAIN_METADATA_ONLY"},
+    {"witness_id": "VEDA-SWW-WITNESS-OPEN-PENN-RECORD-6F6023517082", "work_id": "VEDA-SWW-WORK-OPEN-PENN-MUHURTACINTAMANI-MANUSCR-404CB57CFC5B", "locator": "https://openn.library.upenn.edu/Data/0002/html/mscoll390_item1858.html", "source_access": "BIBLIOGRAPHIC_ONLY", "rights": "PUBLIC_DOMAIN_RECORD"},
+    {"witness_id": "VEDA-SWW-WITNESS-MODERN-DISCOVERY-WITNESS-8FDDBA8CCBB8", "work_id": "VEDA-SWW-WORK-PANCHANGBODH-TARA-BALA-PAGE-53930D0AA1AF", "locator": "https://panchangbodh.com/tara-bala", "source_access": "AVAILABLE", "rights": "DERIVED_METADATA_ONLY"},
+    {"witness_id": "VEDA-SWW-WITNESS-MODERN-CHANDRA-WITNESS-318F55D0EB33", "work_id": "VEDA-SWW-WORK-ASKSOMA-CHANDRABALAM-PAGE-96870B3CEBC5", "locator": "https://asksoma.ai/panchang/learn/chandrabalam", "source_access": "AVAILABLE", "rights": "DERIVED_METADATA_ONLY"}
+  ],
+  "editions": [
+    {"edition_id": "VEDA-SWW-EDITION-RAM-DAIVAJNA-1902-MARATHI-EDITION-329DBD843CC2", "work_id": "VEDA-SWW-WORK-MUHURTA-CHINTAMANI-B9B7DA630977", "witness_ids": ["VEDA-SWW-WITNESS-WIKIMEDIA-COMMONS-1902-SCAN-27C98E5B0455"], "edition": "1902 Marathi translation/scan", "status": "SOURCE_PARTIAL"}
+  ],
+  "passages": [
+    {"passage_id": "VEDA-SWW-PASSAGE-MUHURTA-CHINTAMANI-PERSONAL-BALA-P-840A2308D754", "status": "REFERENCE_NOT_VERIFIED", "locator": "1902 scan; relevant personal-Bala page not reliably transcribed", "note": "The scan and OCR were inspected as a source lead; no exact Tara/Chandra passage is accepted into a contract."}
+  ],
+  "assertions": [
+    {"assertion_id": "VEDA-SWW-ASSERTION-TARA-BALA-NAVATARA-CALCULATION-CAN-C68152B86EE6", "kind": "CALCULATION_RULE", "status": "SOURCE_LIMITED", "passage_ids": ["VEDA-SWW-PASSAGE-MUHURTA-CHINTAMANI-PERSONAL-BALA-P-840A2308D754"], "statement": "A repeated later Muhurta implementation counts inclusively from Janma Nakshatra to event Nakshatra over a 27-star cycle and reduces by nine; primary passage verification remains unresolved."},
+    {"assertion_id": "VEDA-SWW-ASSERTION-CHANDRA-BALA-RASHI-RELATION-CANDID-F0444C48D251", "kind": "CALCULATION_RULE", "status": "SOURCE_LIMITED", "passage_ids": ["VEDA-SWW-PASSAGE-MUHURTA-CHINTAMANI-PERSONAL-BALA-P-840A2308D754"], "statement": "A repeated later Muhurta implementation counts the event Moon sign from the natal Moon sign; the accepted/adverse positions and Paksha exceptions lack a verified primary passage in the accessible corpus."}
+  ],
+  "contracts": [
+    {"contract_id": "VEDA-SWW-CONTRACT-TARA-BALA-DIAGNOSTIC-CONTRACT-DF679317C193", "normalized_assertion_id": "VEDA-SWW-ASSERTION-TARA-BALA-NAVATARA-CALCULATION-CAN-C68152B86EE6", "passage_ids": ["VEDA-SWW-PASSAGE-MUHURTA-CHINTAMANI-PERSONAL-BALA-P-840A2308D754"], "edition_id": "VEDA-SWW-EDITION-RAM-DAIVAJNA-1902-MARATHI-EDITION-329DBD843CC2", "witness_id": "VEDA-SWW-WITNESS-WIKIMEDIA-COMMONS-1902-SCAN-27C98E5B0455", "work_id": "VEDA-SWW-WORK-MUHURTA-CHINTAMANI-B9B7DA630977", "status": "SOURCE_LIMITED"},
+    {"contract_id": "VEDA-SWW-CONTRACT-CHANDRA-BALA-DIAGNOSTIC-CONTRACT-78DAFB4E7823", "normalized_assertion_id": "VEDA-SWW-ASSERTION-CHANDRA-BALA-RASHI-RELATION-CANDID-F0444C48D251", "passage_ids": ["VEDA-SWW-PASSAGE-MUHURTA-CHINTAMANI-PERSONAL-BALA-P-840A2308D754"], "edition_id": "VEDA-SWW-EDITION-RAM-DAIVAJNA-1902-MARATHI-EDITION-329DBD843CC2", "witness_id": "VEDA-SWW-WITNESS-WIKIMEDIA-COMMONS-1902-SCAN-27C98E5B0455", "work_id": "VEDA-SWW-WORK-MUHURTA-CHINTAMANI-B9B7DA630977", "status": "SOURCE_LIMITED"}
+  ],
+  "rejected_or_downgraded": [
+    {"source": "PanchangBodh page", "reason": "modern discovery witness; no passage-level primary linkage verified; no Sanskrit quotation accepted"},
+    {"source": "AskSoma page", "reason": "modern implementation witness; house-set semantics not primary-verified"},
+    {"source": "generic SEO tables and repeated calculators", "reason": "not independent evidence; no lineage or exact source passage"}
+  ],
+  "contract_lineage": "calculation/advisory candidate -> assertion -> candidate passage -> scan/edition metadata -> witness -> work; source-limited status is intentional"
+}

@@ -1,0 +1,14 @@
+{
+  "oracle": "scripts/veda_muhurta_personal_bala_oracle.py::build_tara_oracle_matrix",
+  "independent_from_production": true,
+  "cases": 729,
+  "dimensions": "27 janma Nakshatras x 27 event Nakshatras",
+  "categories": 9,
+  "identity_case": "Janma 1 -> event 1 = count 1 / JANMA",
+  "wrap_case": "Janma 27 -> event 1 = count 2 / SAMPAT",
+  "terminal_case": "Janma 1 -> event 27 = count 27 / PARAMA_MITRA",
+  "canonical_matrix_sha256": "A6E7068AD2FB82842C4B39FF49F254C1088863BA4852022FB8CE4A06ECE1ECB7",
+  "deterministic": true,
+  "production_activation": false,
+  "source_state": "SOURCE_SEMANTICS_PARTIAL"
+}
