@@ -1,0 +1,34 @@
+{
+  "factor_id": "MUHURTA_LAGNA_SIGN",
+  "machine_semantics_decision": "SOURCE_PARTIAL",
+  "reason": "A reusable Lagna calculation exists, but the selected primary witness does not establish a complete canonical sign predicate and the detailed planetary combinations located are practitioner-level rather than independently verified primary semantics.",
+  "source_assertions": [
+    {
+      "assertion_id": "VEDA-SWW-ASSERTION-BS-HOUSE-COMMENCEMENT-001",
+      "authority": "CLASSICAL_PRIMARY_SCOPED",
+      "decision": "SOURCE_PARTIAL",
+      "exact_sign_set": "NOT_VERIFIED",
+      "passages": [
+        "Chapter 53, verses 98-112",
+        "Chapter 98, verse 18 witness retained by predecessor"
+      ],
+      "planetary_predicate_set": "NOT_VERIFIED",
+      "supported_scope": "House-ground preparation, construction commencement, foundation and house-entry-related action context; the consulted translation links stable Lagna context with house work.",
+      "work": "Brihat Samhita"
+    },
+    {
+      "assertion_id": "VEDA-REF-PRACTITIONER-RAMAN-HOUSEBUILDING-001",
+      "authority": "PRACTITIONER_REFERENCE_ONLY",
+      "decision": "REFERENCE_ONLY_NOT_MACHINE_AUTHORITY",
+      "exact_sign_set": "PRACTITIONER_STATED_FIXED_SIGNS",
+      "passages": [
+        "web edition lines 1030-1052",
+        "PDF edition pp. 51-52"
+      ],
+      "planetary_predicate_set": "PRACTITIONER_STATED_COMBINATIONS",
+      "supported_scope": "Provides explicit fixed-rising-sign and several planet-in-house combinations for house foundation/entry contexts.",
+      "work": "B. V. Raman, Muhurtha, chapter XII Housebuilding"
+    }
+  ],
+  "translation_uncertainty": true
+}

@@ -1,0 +1,313 @@
+{
+  "all_nonproduction": true,
+  "case_count": 34,
+  "lagna_sign_cases_per_activity": 12,
+  "rows": [
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "lagna_sign_0",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 0
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "lagna_sign_1",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 1
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "lagna_sign_2",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 2
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "lagna_sign_3",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 3
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "lagna_sign_4",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 4
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "lagna_sign_5",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 5
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "lagna_sign_6",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 6
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "lagna_sign_7",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 7
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "lagna_sign_8",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 8
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "lagna_sign_9",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 9
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "lagna_sign_10",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 10
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "lagna_sign_11",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 11
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "missing_lagna",
+      "expected": "ABSTAIN",
+      "factors": {},
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "missing_planetary_context",
+      "expected": "ABSTAIN",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 1
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "boundary_ambiguous",
+      "expected": "ABSTAIN",
+      "factors": {
+        "LAGNA_BOUNDARY_STATUS": "AMBIGUOUS",
+        "MUHURTA_LAGNA_SIGN": 1
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "scope_mismatch",
+      "expected": "ABSTAIN",
+      "factors": {
+        "activity_scope": "PROPERTY_PURCHASE_OR_REGISTRATION"
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "case": "missing_entry_context",
+      "expected": "ABSTAIN",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 1,
+        "MUHURTA_PLANETARY_ELECTION_CONTEXT": {}
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "lagna_sign_0",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 0
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "lagna_sign_1",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 1
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "lagna_sign_2",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 2
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "lagna_sign_3",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 3
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "lagna_sign_4",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 4
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "lagna_sign_5",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 5
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "lagna_sign_6",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 6
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "lagna_sign_7",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 7
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "lagna_sign_8",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 8
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "lagna_sign_9",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 9
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "lagna_sign_10",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 10
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "lagna_sign_11",
+      "expected": "ABSTAIN_SOURCE_SEMANTICS_UNRESOLVED",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 11
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "missing_lagna",
+      "expected": "ABSTAIN",
+      "factors": {},
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "missing_planetary_context",
+      "expected": "ABSTAIN",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 1
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "boundary_ambiguous",
+      "expected": "ABSTAIN",
+      "factors": {
+        "LAGNA_BOUNDARY_STATUS": "AMBIGUOUS",
+        "MUHURTA_LAGNA_SIGN": 1
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "scope_mismatch",
+      "expected": "ABSTAIN",
+      "factors": {
+        "activity_scope": "PROPERTY_PURCHASE_OR_REGISTRATION"
+      },
+      "production": false
+    },
+    {
+      "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "case": "missing_entry_context",
+      "expected": "ABSTAIN",
+      "factors": {
+        "MUHURTA_LAGNA_SIGN": 1,
+        "MUHURTA_PLANETARY_ELECTION_CONTEXT": {}
+      },
+      "production": false
+    }
+  ]
+}

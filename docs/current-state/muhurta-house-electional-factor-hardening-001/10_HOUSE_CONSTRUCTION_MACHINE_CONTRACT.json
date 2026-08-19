@@ -1,0 +1,39 @@
+{
+  "activity_id": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+  "blocking_gaps": [
+    "SOURCE_PRIMARY_LAGNA_SIGN_PREDICATE_UNRESOLVED",
+    "SOURCE_PRIMARY_PLANETARY_CONTEXT_UNRESOLVED"
+  ],
+  "candidate_version": null,
+  "contract_id": "VEDA-MUH-T2-CONTRACT-HOUSE_CONSTRUCTION_COMMENCEMENT-V1",
+  "declarative_predicates": [
+    {
+      "effect": "BLOCKING",
+      "expected_set": "UNRESOLVED_SOURCE_SIGN_SET",
+      "factor_id": "MUHURTA_LAGNA_SIGN",
+      "missing_value_policy": "ABSTAIN",
+      "operator": "IN",
+      "state": "NOT_BOUND"
+    },
+    {
+      "effect": "BLOCKING",
+      "expected_set": "UNRESOLVED_PRIMARY_SOURCE_PREDICATES",
+      "factor_id": "MUHURTA_PLANETARY_ELECTION_CONTEXT",
+      "missing_value_policy": "ABSTAIN",
+      "operator": "ALL_OF",
+      "state": "NOT_BOUND"
+    }
+  ],
+  "machine_state": "MACHINE_PARTIAL",
+  "no_numeric_score": true,
+  "no_runtime_registration": true,
+  "nonblocking_gaps": [
+    "Activity-specific Tithi/Karana composition remains partial.",
+    "Tradition and translation variants remain disclosed."
+  ],
+  "production_activation": false,
+  "source_assertion_ids": [
+    "VEDA-SWW-ASSERTION-BS-HOUSE-COMMENCEMENT-001"
+  ],
+  "supersedes": null
+}

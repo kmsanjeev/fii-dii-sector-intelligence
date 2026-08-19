@@ -1,0 +1,70 @@
+{
+  "blocking_reason": "The detailed planetary combinations are only practitioner-reference evidence; no primary, lineage-complete normalized predicate contract was verified for production Muhurta binding.",
+  "dependency_states": {
+    "aspect": "AVAILABLE_BUT_NOT_GOVERNED_FOR_MUHURTA",
+    "benefic_malefic_classification": "SOURCE_SEMANTICS_UNRESOLVED",
+    "dignity": "AVAILABLE_BUT_NOT_GOVERNED_FOR_MUHURTA",
+    "lordship": "AVAILABLE_BUT_NOT_GOVERNED_FOR_MUHURTA",
+    "planet_longitude": "AVAILABLE_WITH_CONDITION",
+    "rashi": "AVAILABLE_WITH_CONDITION",
+    "whole_sign_house_from_lagna": "AVAILABLE_WITH_CONDITION"
+  },
+  "existing_calculations_reused": {
+    "planet_longitudes": "engines/intelligence/kundli_engine.py::_planet_positions; Swiss Ephemeris, sidereal Lahiri, governed MOSEPH flags",
+    "rashi": "canonical sign index from sidereal longitude",
+    "whole_sign_houses": "existing downstream formula from Lagna sign"
+  },
+  "machine_state": "PLANETARY_DEPENDENCY_PARTIAL",
+  "planets": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Venus",
+    "Saturn"
+  ],
+  "reference_frames": [
+    "HOUSE_FROM_ELECTIONAL_LAGNA",
+    "SIGN_FROM_CANONICAL_RASHI"
+  ],
+  "source_rule_inventory": [
+    {
+      "condition": "Moon 10th; Jupiter 4th; Mars and Saturn 11th",
+      "frame": "HOUSE_FROM_ELECTIONAL_LAGNA",
+      "id": "RAMAN-HOUSE-001"
+    },
+    {
+      "condition": "Jupiter Lagna; Mercury 7th; Saturn 3rd; Sun 6th; Venus 4th",
+      "frame": "HOUSE_FROM_ELECTIONAL_LAGNA",
+      "id": "RAMAN-HOUSE-002"
+    },
+    {
+      "condition": "Venus Lagna; Mercury 10th; Jupiter in a Kendra; Sun 11th",
+      "frame": "HOUSE_FROM_ELECTIONAL_LAGNA",
+      "id": "RAMAN-HOUSE-003"
+    },
+    {
+      "condition": "Moon Lagna; Jupiter 7th; Mercury 10th",
+      "frame": "HOUSE_FROM_ELECTIONAL_LAGNA",
+      "id": "RAMAN-HOUSE-004"
+    },
+    {
+      "condition": "Venus 10th; Jupiter 7th; Mercury Lagna; fixed Lagna",
+      "frame": "HOUSE_FROM_ELECTIONAL_LAGNA",
+      "id": "RAMAN-HOUSE-005"
+    },
+    {
+      "condition": "Jupiter fixed Lagna; Mercury 7th; Moon 10th",
+      "frame": "HOUSE_FROM_ELECTIONAL_LAGNA",
+      "id": "RAMAN-HOUSE-006"
+    }
+  ],
+  "unsupported_assumptions_rejected": [
+    "generic planetary strength",
+    "universal benefic/malefic list",
+    "unqualified dignity",
+    "unqualified aspect system",
+    "numeric planetary score"
+  ]
+}

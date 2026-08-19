@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-HOUSE-ELECTIONAL-FACTOR-HARDENING-001
+
+Completed the bounded electional-factor hardening activity with
+`PASS_WITH_CONDITION` and decision
+`MUHURTA_HOUSE_ELECTIONAL_FACTORS_MACHINE_PARTIAL`. The existing Swiss
+Ephemeris/Lahiri Ascendant and planetary paths were audited and reused only as
+diagnostic calculation dependencies. The source audit did not justify a
+primary, lineage-complete electional Lagna/planetary predicate contract;
+Griha Pravesha construction-stage context is explicit, while first-occupancy
+semantics remain a source variant. No new machine-ready contract, engine
+handoff, production activation, P032, Personal Bala, RAG, prediction, ML or
+Approved Core change occurred. Evidence:
+`docs/current-state/muhurta-house-electional-factor-hardening-001/`.
+
 ## 2026-08-19 | VEDA-MUHURTA-ACTIVITY-EXPANSION-T2-001
 
 Completed the bounded Muhurta activity-expansion T2 source-governance

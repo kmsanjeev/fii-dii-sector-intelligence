@@ -1,6 +1,18 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.73.9 | 2026-08-19
+# Version 4.74.0 | 2026-08-19
+
+- `VEDA-MUHURTA-HOUSE-ELECTIONAL-FACTOR-HARDENING-001` completed with
+  `PASS_WITH_CONDITION` and decision
+  `MUHURTA_HOUSE_ELECTIONAL_FACTORS_MACHINE_PARTIAL`. Existing canonical
+  Ascendant and planetary calculation paths were audited and reused
+  diagnostically with conditions. Primary electional Lagna/planetary semantics
+  remain incomplete for machine binding, while Griha Pravesha construction
+  stage and post-puja context are explicit and first-occupancy remains a
+  source variant. Both activities remain inactive; no new contract version,
+  engine handoff, production runtime, P032, Personal Bala, RAG, prediction,
+  ML or Approved Core change occurred. Evidence:
+  `docs/current-state/muhurta-house-electional-factor-hardening-001/`.
 
 - `VEDA-MUHURTA-ACTIVITY-EXPANSION-T2-001` completed with `PASS_WITH_CONDITION`
   and decision `MUHURTA_T2_ACTIVITY_EXPANSION_SOURCE_CONTRACTS_MACHINE_PARTIAL`.

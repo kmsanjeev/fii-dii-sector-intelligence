@@ -1,0 +1,75 @@
+{
+  "boundary_policy": {
+    "classification": "BOUNDARY_POLICY_REQUIRED",
+    "exact_boundary": "Half-open sign intervals; 360 degrees wraps to zero",
+    "false_precision": "Do not infer an electional sign from rounded display degree alone.",
+    "hard_rule_policy": "ABSTAIN_IF_GOVERNING_RUNTIME_AND_REFERENCE_SIGN_DIFFER"
+  },
+  "calculation_location": "engines/intelligence/kundli_engine.py::KundliEngine._ascendant",
+  "canonical_enum": [
+    {
+      "id": 0,
+      "name": "Mesha"
+    },
+    {
+      "id": 1,
+      "name": "Vrishabha"
+    },
+    {
+      "id": 2,
+      "name": "Mithuna"
+    },
+    {
+      "id": 3,
+      "name": "Karka"
+    },
+    {
+      "id": 4,
+      "name": "Simha"
+    },
+    {
+      "id": 5,
+      "name": "Kanya"
+    },
+    {
+      "id": 6,
+      "name": "Tula"
+    },
+    {
+      "id": 7,
+      "name": "Vrischika"
+    },
+    {
+      "id": 8,
+      "name": "Dhanu"
+    },
+    {
+      "id": 9,
+      "name": "Makara"
+    },
+    {
+      "id": 10,
+      "name": "Kumbha"
+    },
+    {
+      "id": 11,
+      "name": "Meena"
+    }
+  ],
+  "contract_version": "1.0.0-diagnostic",
+  "factor_id": "MUHURTA_LAGNA_SIGN",
+  "inputs": [
+    "local date/time",
+    "timezone conversion",
+    "latitude",
+    "longitude"
+  ],
+  "new_calculation_created": false,
+  "output_type": "CANONICAL_RASHI_ENUM",
+  "production_bound": false,
+  "promotion_state": "DIAGNOSTIC_ONLY",
+  "source_calculation": "KUNDLI_SWISSEPH_W_MINUS_LAHIRI_V1",
+  "source_semantics_state": "SOURCE_PARTIAL",
+  "uncertainty": "AVAILABLE_WITH_CONDITION",
+  "validation_state": "INTERNAL_CALCULATION_VALIDATED_WITH_CONDITIONS"
+}

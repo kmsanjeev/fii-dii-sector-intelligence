@@ -1,0 +1,41 @@
+{
+  "activity": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+  "invalid_or_unknown_policy": "FAIL_CLOSED",
+  "machine_state": "CONTEXT_DEPENDENCY_PARTIAL",
+  "missing_required_policy": "ABSTAIN",
+  "oversized_questionnaire": false,
+  "practical_context": {
+    "habitable": {
+      "effect": "DISCLOSE_ONLY",
+      "status": "OPTIONAL",
+      "type": "BOOLEAN"
+    },
+    "legal_possession": {
+      "effect": "PRACTICAL_CAUTION_ONLY",
+      "status": "OPTIONAL",
+      "type": "BOOLEAN"
+    }
+  },
+  "reason": "Construction-stage and post-puja context can be represented declaratively, but first-occupancy semantics are not source-complete and no production request field exists.",
+  "source_context": {
+    "construction_state": {
+      "allowed": [
+        "HALF_BUILT",
+        "WHOLLY_BUILT"
+      ],
+      "source_basis": "Brihat Samhita Ch53.105 witness describes entry into a half-built or wholly built house.",
+      "status": "REQUIRED",
+      "type": "ENUM"
+    },
+    "first_occupancy": {
+      "source_basis": "The inspected primary passage does not clearly establish modern first-residence semantics.",
+      "status": "SOURCE_VARIANT",
+      "type": "BOOLEAN_OR_UNKNOWN"
+    },
+    "puja_completed": {
+      "source_basis": "Brihat Samhita Ch53.125 places house entry after puja in the consulted translation.",
+      "status": "REQUIRED",
+      "type": "BOOLEAN"
+    }
+  }
+}
