@@ -1,6 +1,19 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.77.0 | 2026-08-19
+# Version 4.78.0 | 2026-08-19
+
+- `VEDA-MUHURTA-REMAINING-CAPABILITY-REBASELINE-001` completed with
+  `PASS_WITH_CONDITION` and decision
+  `MUHURTA_REBASELINE_ACTIVITY_EXPANSION_FREEZE_NEW_EVIDENCE_REQUIRED`.
+  The canonical T1/T2/T3 inventories reconcile four remaining candidates:
+  Travel/Journey, Puja/Japa/Vrata, Property Purchase/Registration and Medical
+  Procedure. None has executable mandatory source semantics using the frozen
+  factor base, so no new contract, empty engine handoff or production runtime
+  was created. Business, Education, Vehicle and Consecration remain
+  operational; House Construction, Griha Pravesha and Marriage remain frozen.
+  P032, Electional Core, Personal Bala, RAG, prediction, ML and Approved Core
+  remain unchanged. Evidence:
+  `docs/current-state/muhurta-remaining-capability-rebaseline-001/`.
 
 - `VEDA-MUHURTA-ELECTIONAL-CONTRACT-REMEDIATION-RX1-001` completed with
   `PASS_WITH_CONDITION` and decision

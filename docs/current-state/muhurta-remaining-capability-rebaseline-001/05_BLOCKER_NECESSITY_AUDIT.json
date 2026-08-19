@@ -1,0 +1,150 @@
+{
+  "policy": "no engineering-only blockers",
+  "remaining": {
+    "TRAVEL_JOURNEY_COMMENCEMENT": {
+      "source_activity_class": "GAMANA_OR_JOURNEY",
+      "source_readiness": "SOURCE_SCOPE_AMBIGUOUS",
+      "contract_state": "NOT_STARTED",
+      "machine_state": "PARTIAL",
+      "runtime_state": "INACTIVE",
+      "window_search_state": "NOT_READY",
+      "required_factors": [
+        "P032-CALC-NAKSHATRA-001"
+      ],
+      "required_context": [
+        "journey_subtype",
+        "direction_or_route_context",
+        "practical_safety_context"
+      ],
+      "blockers": [
+        "SOURCE_ACTIVITY_SCOPE",
+        "SOURCE_ADVISORY_SEMANTICS",
+        "CONTEXT",
+        "VARIANT"
+      ],
+      "source_gaps": [
+        "journey subtype and direction semantics remain unresolved"
+      ],
+      "calculation_gaps": [],
+      "next_evidence_need": "bounded primary passage defining the journey subtype and executable action semantics",
+      "executability": {
+        "source_rule": "NOT_CLOSED",
+        "normalized_rule": "NOT_AVAILABLE",
+        "machine_predicate": "NOT_AVAILABLE",
+        "existing_factor": "PARTIAL_OR_EMPTY",
+        "governed_result_effect": "NOT_AUTHORIZED",
+        "gate": "FAIL"
+      },
+      "reopen_trigger": "new qualifying evidence or validated dependency; no repeat generic search"
+    },
+    "PUJA_JAPA_VRATA_COMMENCEMENT": {
+      "source_activity_class": "RITUAL_SUBTYPE_REQUIRED",
+      "source_readiness": "SOURCE_VARIANT_COMPLEX",
+      "contract_state": "NOT_STARTED",
+      "machine_state": "PARTIAL",
+      "runtime_state": "INACTIVE",
+      "window_search_state": "NOT_READY",
+      "required_factors": [
+        "P032-CALC-NAKSHATRA-001",
+        "P032-CALC-TITHI-001",
+        "P032-CALC-KARANA-001"
+      ],
+      "required_context": [
+        "ritual_subtype",
+        "tradition_or_lineage_context"
+      ],
+      "blockers": [
+        "SOURCE_ACTIVITY_SCOPE",
+        "SOURCE_ADVISORY_SEMANTICS",
+        "CONTEXT",
+        "VARIANT"
+      ],
+      "source_gaps": [
+        "separate ceremony-specific primary passages and lineage variants are required"
+      ],
+      "calculation_gaps": [],
+      "next_evidence_need": "separate primary passage set for Puja, Japa and Vrata rather than a generic ritual union",
+      "executability": {
+        "source_rule": "NOT_CLOSED",
+        "normalized_rule": "NOT_AVAILABLE",
+        "machine_predicate": "NOT_AVAILABLE",
+        "existing_factor": "PARTIAL_OR_EMPTY",
+        "governed_result_effect": "NOT_AUTHORIZED",
+        "gate": "FAIL"
+      },
+      "reopen_trigger": "new qualifying evidence or validated dependency; no repeat generic search"
+    },
+    "PROPERTY_PURCHASE_OR_REGISTRATION": {
+      "source_activity_class": "PROPERTY_TRANSACTION",
+      "source_readiness": "SOURCE_SCOPE_AMBIGUOUS",
+      "contract_state": "NOT_STARTED",
+      "machine_state": "PRACTICAL_AND_LEGAL_DEPENDENCIES",
+      "runtime_state": "INACTIVE",
+      "window_search_state": "NOT_READY",
+      "required_factors": [],
+      "required_context": [
+        "transaction_subtype",
+        "title_registration_finance_context"
+      ],
+      "blockers": [
+        "SOURCE_ACTIVITY_SCOPE",
+        "SOURCE_ADVISORY_SEMANTICS",
+        "CONTEXT"
+      ],
+      "source_gaps": [
+        "purchase, title, registration, financing and legal scope must remain separate"
+      ],
+      "calculation_gaps": [],
+      "next_evidence_need": "source-backed transaction subtype with practical/legal scope separation",
+      "executability": {
+        "source_rule": "NOT_CLOSED",
+        "normalized_rule": "NOT_AVAILABLE",
+        "machine_predicate": "NOT_AVAILABLE",
+        "existing_factor": "PARTIAL_OR_EMPTY",
+        "governed_result_effect": "NOT_AUTHORIZED",
+        "gate": "FAIL"
+      },
+      "reopen_trigger": "new qualifying evidence or validated dependency; no repeat generic search"
+    },
+    "MEDICAL_PROCEDURE": {
+      "source_activity_class": "TREATMENT_OR_PROCEDURE",
+      "source_readiness": "SOURCE_ACCESS_LIMITED",
+      "contract_state": "NOT_STARTED",
+      "machine_state": "RESTRICTED_CONTEXT",
+      "runtime_state": "INACTIVE",
+      "window_search_state": "NOT_READY",
+      "required_factors": [],
+      "required_context": [
+        "procedure_context",
+        "qualified_medical_priority_context"
+      ],
+      "blockers": [
+        "SOURCE_ACTIVITY_SCOPE",
+        "SOURCE_ADVISORY_SEMANTICS",
+        "CONTEXT",
+        "RIGHTS_ACCESS"
+      ],
+      "source_gaps": [
+        "specialist source audit is unavailable; necessary care always takes priority"
+      ],
+      "calculation_gaps": [],
+      "next_evidence_need": "lawful specialist source review with medical-safety governance before any timing contract",
+      "executability": {
+        "source_rule": "NOT_CLOSED",
+        "normalized_rule": "NOT_AVAILABLE",
+        "machine_predicate": "NOT_AVAILABLE",
+        "existing_factor": "PARTIAL_OR_EMPTY",
+        "governed_result_effect": "NOT_AUTHORIZED",
+        "gate": "FAIL"
+      },
+      "reopen_trigger": "new qualifying evidence or validated dependency; no repeat generic search"
+    }
+  },
+  "downgraded_to_nonblocking": [],
+  "unresolved": [
+    "TRAVEL_JOURNEY_COMMENCEMENT",
+    "PUJA_JAPA_VRATA_COMMENCEMENT",
+    "PROPERTY_PURCHASE_OR_REGISTRATION",
+    "MEDICAL_PROCEDURE"
+  ]
+}

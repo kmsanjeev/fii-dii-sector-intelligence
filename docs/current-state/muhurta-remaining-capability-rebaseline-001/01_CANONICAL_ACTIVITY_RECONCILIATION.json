@@ -1,0 +1,400 @@
+{
+  "operational": {
+    "activities": [
+      {
+        "activity_id": "BUSINESS_OPENING_INAUGURATION",
+        "contract_state": "IMPLEMENTED_VALIDATED",
+        "machine_state": "IMPLEMENTED_VALIDATED",
+        "runtime_state": "OPERATIONAL",
+        "window_search_state": "OPERATIONAL_WITH_LIMITATIONS",
+        "access_state": "ENABLED",
+        "regression_only_for_this_programme": true,
+        "window_factor_dependency": [
+          "TITHI",
+          "KARANA",
+          "NAKSHATRA"
+        ]
+      },
+      {
+        "activity_id": "EDUCATION_COMMENCEMENT",
+        "contract_state": "IMPLEMENTED_VALIDATED",
+        "machine_state": "IMPLEMENTED_VALIDATED",
+        "runtime_state": "OPERATIONAL",
+        "window_search_state": "OPERATIONAL_WITH_LIMITATIONS",
+        "access_state": "ENABLED",
+        "regression_only_for_this_programme": true,
+        "window_factor_dependency": [
+          "TITHI",
+          "KARANA",
+          "NAKSHATRA"
+        ]
+      },
+      {
+        "activity_id": "VEHICLE_CONVEYANCE_COMMENCEMENT",
+        "contract_state": "IMPLEMENTED_VALIDATED",
+        "machine_state": "IMPLEMENTED_VALIDATED",
+        "runtime_state": "OPERATIONAL",
+        "window_search_state": "OPERATIONAL_WITH_LIMITATIONS",
+        "access_state": "ENABLED",
+        "regression_only_for_this_programme": true,
+        "window_factor_dependency": [
+          "NAKSHATRA"
+        ]
+      },
+      {
+        "activity_id": "CONSECRATION_INSTALLATION_COMMENCEMENT",
+        "contract_state": "IMPLEMENTED_VALIDATED",
+        "machine_state": "IMPLEMENTED_VALIDATED",
+        "runtime_state": "OPERATIONAL",
+        "window_search_state": "OPERATIONAL_WITH_LIMITATIONS",
+        "access_state": "ENABLED",
+        "regression_only_for_this_programme": true,
+        "window_factor_dependency": [
+          "NAKSHATRA"
+        ]
+      }
+    ],
+    "count": 4,
+    "engine": "VEDA_MUHURTA_RECOMMENDATION_ENGINE_RX1 + VEDA_MUHURTA_TRANSITION_AWARE_WINDOW_SEARCH"
+  },
+  "frozen": {
+    "activities": [
+      {
+        "activity_id": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+        "contract_state": "CONTRACT_BLOCKED",
+        "machine_state": "SOURCE_SEMANTICS_PARTIAL",
+        "runtime_state": "INACTIVE",
+        "reopen": "new primary/lineage-complete evidence or validated dependency"
+      },
+      {
+        "activity_id": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+        "contract_state": "CONTRACT_BLOCKED",
+        "machine_state": "CONTEXT_PARTIAL",
+        "runtime_state": "INACTIVE",
+        "reopen": "new primary/lineage-complete evidence or validated context"
+      },
+      {
+        "activity_id": "MARRIAGE_CEREMONY_TIMING",
+        "contract_state": "CONTRACT_BLOCKED",
+        "machine_state": "SOURCE_SEMANTICS_PARTIAL",
+        "runtime_state": "INACTIVE",
+        "reopen": "new primary/lineage-complete evidence or validated dependency"
+      }
+    ],
+    "electional_core": {
+      "lagna_hash": "BC50AC95518D4B30250013F7051BDFA85202342FE21EFADB5C8D026B8146ADCC",
+      "godhuli_hash": "225F4577E57CF72A1282C6EB0F31DB835CBC9EB84FEBC10227D5516AD97FC535",
+      "state": "PRESERVED"
+    },
+    "rx1_engine_handoff": {
+      "programme": "VEDA-MUHURTA-ELECTIONAL-CONTRACT-REMEDIATION-RX1-001",
+      "engine_handoff": "NOT_AUTHORIZED",
+      "machine_ready_activities": [],
+      "production_registration": false,
+      "P032_changed": false,
+      "recommended_follow_on": "VEDA-MUHURTA-ENGINE-ELECTIONAL-ACTIVITY-RX1-001",
+      "recommendation_status": "RECOMMEND_ONLY_NOT_STARTED"
+    },
+    "reopen_conditions": [
+      "new primary passage",
+      "new lineage-complete classical edition/witness",
+      "authoritative commentary resolving a recorded ambiguity",
+      "new governed context semantics",
+      "previously unavailable calculation dependency validated"
+    ]
+  },
+  "remaining": {
+    "programme": "VEDA-MUHURTA-REMAINING-CAPABILITY-REBASELINE-001",
+    "source": "reconciled T1/T2/T3 canonical inventories; no duplicate permanent registry",
+    "activities": [
+      {
+        "activity_id": "BUSINESS_OPENING_INAUGURATION",
+        "source_readiness": "VALIDATED_WITH_CONDITIONS",
+        "machine_state": "EXISTING_ENGINE_CONTRACT",
+        "runtime_state": "OPERATIONAL",
+        "required_factors": [],
+        "required_context": [],
+        "window_search_state": "OPERATIONAL_WITH_LIMITATIONS",
+        "contract_state": "OPERATIONAL_FROZEN"
+      },
+      {
+        "activity_id": "EDUCATION_COMMENCEMENT",
+        "source_readiness": "VALIDATED_WITH_CONDITIONS",
+        "machine_state": "EXISTING_ENGINE_CONTRACT",
+        "runtime_state": "OPERATIONAL",
+        "required_factors": [],
+        "required_context": [],
+        "window_search_state": "OPERATIONAL_WITH_LIMITATIONS",
+        "contract_state": "OPERATIONAL_FROZEN"
+      },
+      {
+        "activity_id": "VEHICLE_CONVEYANCE_COMMENCEMENT",
+        "source_activity_class": "SHILPA_AUSHADHA_YANA_ACTION_FAMILY",
+        "source_readiness": "SOURCE_STRONG_MACHINE_FEASIBLE",
+        "machine_state": "FEASIBLE_NAKSHATRA_PREDICATE",
+        "runtime_state": "INACTIVE",
+        "next_evidence_need": "activity-specific tithi/vara/yoga and practical scope refinement",
+        "required_factors": [],
+        "required_context": [],
+        "window_search_state": "OPERATIONAL_WITH_LIMITATIONS",
+        "contract_state": "OPERATIONAL_FROZEN"
+      },
+      {
+        "activity_id": "CONSECRATION_INSTALLATION_COMMENCEMENT",
+        "source_activity_class": "ABHISHEKA_SHANTI_DHRUVA_ESTABLISHMENT_ACTION_FAMILY",
+        "source_readiness": "SOURCE_STRONG_MACHINE_FEASIBLE",
+        "machine_state": "FEASIBLE_NAKSHATRA_PREDICATE",
+        "runtime_state": "INACTIVE",
+        "next_evidence_need": "activity-specific tithi/vara/yoga and lineage rules",
+        "required_factors": [],
+        "required_context": [],
+        "window_search_state": "OPERATIONAL_WITH_LIMITATIONS",
+        "contract_state": "OPERATIONAL_FROZEN"
+      },
+      {
+        "activity_id": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+        "source_activity_class": "BHAVANA_ARAMBHA",
+        "source_readiness": "SOURCE_CONTRACT_READY_MACHINE_PARTIAL",
+        "machine_state": "LAGNA_AND_GRAHA_DEPENDENCY",
+        "runtime_state": "INACTIVE",
+        "next_evidence_need": "trusted lagna/planetary election contract",
+        "machine_feasibility": "LAGNA_AND_GRAHA_DEPENDENCY",
+        "p032_dependencies": [
+          "P032-CALC-NAKSHATRA-001",
+          "P032-CALC-TITHI-001",
+          "P032-CALC-KARANA-001"
+        ],
+        "blocking_gap": "Validated electional Lagna and planetary context are not exposed by the trusted production factor contract.",
+        "personal_dependency": "Tara/Chandra diagnostic only",
+        "caution_class": "PROPERTY_CONSTRUCTION_PRACTICAL_AND_LEGAL_CONTEXT",
+        "required_factors": [
+          "P032-CALC-NAKSHATRA-001",
+          "P032-CALC-TITHI-001",
+          "P032-CALC-KARANA-001"
+        ],
+        "required_context": [],
+        "window_search_state": "NOT_READY",
+        "contract_state": "FROZEN_BLOCKED"
+      },
+      {
+        "activity_id": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+        "source_activity_class": "BHAVANA_PRAVESHA",
+        "source_readiness": "SOURCE_CONTRACT_READY_MACHINE_PARTIAL",
+        "machine_state": "LAGNA_AND_GRAHA_DEPENDENCY",
+        "runtime_state": "INACTIVE",
+        "next_evidence_need": "trusted lagna/planetary and practical property contract",
+        "machine_feasibility": "LAGNA_GRAHA_AND_OCCUPANCY_DEPENDENCY",
+        "p032_dependencies": [
+          "P032-CALC-NAKSHATRA-001",
+          "P032-CALC-TITHI-001",
+          "P032-CALC-KARANA-001"
+        ],
+        "blocking_gap": "Validated electional Lagna, planetary context and explicit completion/occupancy context are unavailable.",
+        "personal_dependency": "Tara/Chandra diagnostic only",
+        "caution_class": "PROPERTY_OCCUPANCY_PRACTICAL_AND_TRADITIONAL_CONTEXT",
+        "required_factors": [
+          "P032-CALC-NAKSHATRA-001",
+          "P032-CALC-TITHI-001",
+          "P032-CALC-KARANA-001"
+        ],
+        "required_context": [],
+        "window_search_state": "NOT_READY",
+        "contract_state": "FROZEN_BLOCKED"
+      },
+      {
+        "activity_id": "MARRIAGE_CEREMONY_TIMING",
+        "source_activity_class": "PANIGRAHANA",
+        "source_readiness": "SOURCE_STRONG_MACHINE_PARTIAL",
+        "machine_state": "LAGNA_AND_GRAHA_DEPENDENCY",
+        "runtime_state": "INACTIVE",
+        "next_evidence_need": "marriage-specific lagna/graha and tradition variant contract",
+        "machine_feasibility": "PARTIAL_LAGNA_PLANETARY_AND_CONTEXT_DEPENDENCY",
+        "p032_dependencies": [
+          "P032-CALC-NAKSHATRA-001",
+          "P032-CALC-TITHI-001",
+          "P032-CALC-KARANA-001"
+        ],
+        "blocking_gap": "High-consequence marriage-specific election and tradition variants are not resolved.",
+        "personal_dependency": "Personal Bala remains diagnostic only",
+        "caution_class": "HIGH_CONSEQUENCE_HUMAN_DECISION",
+        "assertions": [
+          "VEDA-SWW-ASSERTION-BS-MARRIAGE-GODHULI-001",
+          "VEDA-SWW-ASSERTION-MC-MARRIAGE-BALA-LAGNA-001"
+        ],
+        "blocking_gaps": [
+          "Validated electional Lagna and planetary predicates are not exposed by the trusted P032 contract.",
+          "The source-specific Godhuli/sunset context is not a governed P032 factor.",
+          "A high-consequence marriage activity requires explicit human-choice and practical-context boundaries."
+        ],
+        "consultation_class": "QUALIFIED_TRADITIONAL_AND_PRACTICAL_CONTEXT_AS_APPLICABLE",
+        "existing_factors": [
+          "P032-CALC-NAKSHATRA-001",
+          "P032-CALC-TITHI-001",
+          "P032-CALC-KARANA-001",
+          "P032-CALC-VARA-001",
+          "P032-CALC-YOGA-001"
+        ],
+        "hard_exclusions": [
+          "PARTNER_SELECTION_OR_COMPATIBILITY",
+          "SHOULD_MARRY_OR_SHOULD_NOT_MARRY_DECISION",
+          "MARRIAGE_OUTCOME_OR_DURATION_GUARANTEE",
+          "LEGAL_REGISTRATION_OR_DEADLINE_DECISION"
+        ],
+        "missing_dependencies": [
+          "VALIDATED_ELECTIONAL_LAGNA_FACTOR",
+          "VALIDATED_ELECTIONAL_PLANETARY_CONTEXT",
+          "GODHULI_SUNSET_CONTEXT_FACTOR"
+        ],
+        "nonblocking_gaps": [
+          "No complete VEDA activity-specific Tithi/Karana/Vara/Yoga value contract was established.",
+          "Local ritual, family and lineage practice is not universalized.",
+          "The source outcome language is historical and is not used as a modern outcome claim."
+        ],
+        "normalized_scope": "Timing of a human-chosen marriage ceremony or panigrahana event",
+        "passages": [
+          "VEDA-SWW-PASSAGE-BRIHAT-SAMHITA-103-13-001",
+          "VEDA-SWW-PASSAGE-MUHURTACINTAMANI-6-P249-001",
+          "VEDA-SWW-PASSAGE-MUHURTACINTAMANI-6-76-001"
+        ],
+        "personal_dependencies": [
+          "TARA_CHANDRA_DIAGNOSTIC_ONLY",
+          "BRIDE_GROOM_PERSONAL_FACTORS_SOURCE_PARTIAL"
+        ],
+        "rule_ids": [
+          "MUH-T3-MARRIAGE-SCOPE-001",
+          "MUH-T3-MARRIAGE-GODHULI-001",
+          "MUH-T3-MARRIAGE-LAGNA-001",
+          "MUH-T3-MARRIAGE-GRAHA-001"
+        ],
+        "variants": [
+          "GODHULI_OVERRIDE_SCOPE_VARIANT",
+          "MARRIAGE_LAGNA_AND_PLANETARY_PRIORITY_VARIANT",
+          "HISTORICAL_GENDERED_OUTCOME_LANGUAGE_LIMITATION"
+        ],
+        "works": [
+          "VEDA-SWW-WORK-BRIHAT-SAMHITA-001",
+          "VEDA-SWW-WORK-MUHURTACINTAMANI-001"
+        ],
+        "required_factors": [
+          "P032-CALC-NAKSHATRA-001",
+          "P032-CALC-TITHI-001",
+          "P032-CALC-KARANA-001"
+        ],
+        "required_context": [],
+        "window_search_state": "NOT_READY",
+        "contract_state": "FROZEN_BLOCKED"
+      },
+      {
+        "activity_id": "TRAVEL_JOURNEY_COMMENCEMENT",
+        "source_activity_class": "GAMANA_OR_JOURNEY",
+        "source_readiness": "SOURCE_SCOPE_AMBIGUOUS",
+        "machine_state": "PARTIAL",
+        "runtime_state": "INACTIVE",
+        "next_evidence_need": "journey subtype and direction/source contract",
+        "machine_feasibility": "PARTIAL",
+        "p032_dependencies": [
+          "P032-CALC-NAKSHATRA-001"
+        ],
+        "blocking_gap": "Journey subtype and direction semantics remain unresolved.",
+        "personal_dependency": "Diagnostic only",
+        "caution_class": "TRAVEL_SAFETY_AND_PRACTICAL_CONTEXT",
+        "required_factors": [
+          "P032-CALC-NAKSHATRA-001"
+        ],
+        "required_context": [
+          "journey_subtype",
+          "direction_or_route_context",
+          "practical_safety_context"
+        ],
+        "window_search_state": "NOT_READY",
+        "contract_state": "NOT_STARTED"
+      },
+      {
+        "activity_id": "PUJA_JAPA_VRATA_COMMENCEMENT",
+        "source_activity_class": "RITUAL_SUBTYPE_REQUIRED",
+        "source_readiness": "SOURCE_VARIANT_COMPLEX",
+        "machine_state": "PARTIAL",
+        "runtime_state": "INACTIVE",
+        "next_evidence_need": "separate ceremony-specific primary passages",
+        "machine_feasibility": "PARTIAL",
+        "p032_dependencies": [
+          "P032-CALC-NAKSHATRA-001",
+          "P032-CALC-TITHI-001",
+          "P032-CALC-KARANA-001"
+        ],
+        "blocking_gap": "Separate ceremony-specific primary passages and lineage variants are required.",
+        "personal_dependency": "Diagnostic only",
+        "caution_class": "TRADITION_SPECIFIC_CONSULTATION",
+        "required_factors": [
+          "P032-CALC-NAKSHATRA-001",
+          "P032-CALC-TITHI-001",
+          "P032-CALC-KARANA-001"
+        ],
+        "required_context": [
+          "ritual_subtype",
+          "tradition_or_lineage_context"
+        ],
+        "window_search_state": "NOT_READY",
+        "contract_state": "NOT_STARTED"
+      },
+      {
+        "activity_id": "PROPERTY_PURCHASE_OR_REGISTRATION",
+        "source_activity_class": "PROPERTY_TRANSACTION",
+        "source_readiness": "SOURCE_SCOPE_AMBIGUOUS",
+        "machine_state": "PRACTICAL_AND_LEGAL_DEPENDENCIES",
+        "runtime_state": "INACTIVE",
+        "next_evidence_need": "title/registration/finance separation",
+        "machine_feasibility": "PRACTICAL_AND_LEGAL_DEPENDENCIES",
+        "p032_dependencies": [],
+        "blocking_gap": "Purchase, title, registration, financing and legal scope must remain separate.",
+        "personal_dependency": "None",
+        "caution_class": "LEGAL_AND_FINANCIAL_CONTEXT",
+        "required_factors": [],
+        "required_context": [
+          "transaction_subtype",
+          "title_registration_finance_context"
+        ],
+        "window_search_state": "NOT_READY",
+        "contract_state": "NOT_STARTED"
+      },
+      {
+        "activity_id": "MEDICAL_PROCEDURE",
+        "source_activity_class": "TREATMENT_OR_PROCEDURE",
+        "source_readiness": "SOURCE_ACCESS_LIMITED",
+        "machine_state": "RESTRICTED_CONTEXT",
+        "runtime_state": "INACTIVE",
+        "next_evidence_need": "specialist source audit; necessary care always takes priority",
+        "machine_feasibility": "RESTRICTED_CONTEXT",
+        "p032_dependencies": [],
+        "blocking_gap": "Specialist source audit; necessary care always takes priority.",
+        "personal_dependency": "None",
+        "caution_class": "MEDICAL_SAFETY",
+        "required_factors": [],
+        "required_context": [
+          "procedure_context",
+          "qualified_medical_priority_context"
+        ],
+        "window_search_state": "NOT_READY",
+        "contract_state": "NOT_STARTED"
+      }
+    ],
+    "operational_excluded_from_selection": [
+      "BUSINESS_OPENING_INAUGURATION",
+      "EDUCATION_COMMENCEMENT",
+      "VEHICLE_CONVEYANCE_COMMENCEMENT",
+      "CONSECRATION_INSTALLATION_COMMENCEMENT"
+    ],
+    "frozen_excluded_from_selection": [
+      "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "MARRIAGE_CEREMONY_TIMING"
+    ],
+    "remaining_candidates": [
+      "TRAVEL_JOURNEY_COMMENCEMENT",
+      "PUJA_JAPA_VRATA_COMMENCEMENT",
+      "PROPERTY_PURCHASE_OR_REGISTRATION",
+      "MEDICAL_PROCEDURE"
+    ],
+    "remaining_count": 4
+  }
+}

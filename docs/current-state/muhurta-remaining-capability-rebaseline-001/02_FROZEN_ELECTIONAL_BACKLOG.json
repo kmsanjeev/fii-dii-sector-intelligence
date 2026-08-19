@@ -1,0 +1,46 @@
+{
+  "activities": [
+    {
+      "activity_id": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "contract_state": "CONTRACT_BLOCKED",
+      "machine_state": "SOURCE_SEMANTICS_PARTIAL",
+      "runtime_state": "INACTIVE",
+      "reopen": "new primary/lineage-complete evidence or validated dependency"
+    },
+    {
+      "activity_id": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "contract_state": "CONTRACT_BLOCKED",
+      "machine_state": "CONTEXT_PARTIAL",
+      "runtime_state": "INACTIVE",
+      "reopen": "new primary/lineage-complete evidence or validated context"
+    },
+    {
+      "activity_id": "MARRIAGE_CEREMONY_TIMING",
+      "contract_state": "CONTRACT_BLOCKED",
+      "machine_state": "SOURCE_SEMANTICS_PARTIAL",
+      "runtime_state": "INACTIVE",
+      "reopen": "new primary/lineage-complete evidence or validated dependency"
+    }
+  ],
+  "electional_core": {
+    "lagna_hash": "BC50AC95518D4B30250013F7051BDFA85202342FE21EFADB5C8D026B8146ADCC",
+    "godhuli_hash": "225F4577E57CF72A1282C6EB0F31DB835CBC9EB84FEBC10227D5516AD97FC535",
+    "state": "PRESERVED"
+  },
+  "rx1_engine_handoff": {
+    "programme": "VEDA-MUHURTA-ELECTIONAL-CONTRACT-REMEDIATION-RX1-001",
+    "engine_handoff": "NOT_AUTHORIZED",
+    "machine_ready_activities": [],
+    "production_registration": false,
+    "P032_changed": false,
+    "recommended_follow_on": "VEDA-MUHURTA-ENGINE-ELECTIONAL-ACTIVITY-RX1-001",
+    "recommendation_status": "RECOMMEND_ONLY_NOT_STARTED"
+  },
+  "reopen_conditions": [
+    "new primary passage",
+    "new lineage-complete classical edition/witness",
+    "authoritative commentary resolving a recorded ambiguity",
+    "new governed context semantics",
+    "previously unavailable calculation dependency validated"
+  ]
+}

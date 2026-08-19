@@ -1,0 +1,272 @@
+{
+  "operational": {
+    "activities": [
+      {
+        "activity_id": "BUSINESS_OPENING_INAUGURATION",
+        "contract_state": "IMPLEMENTED_VALIDATED",
+        "machine_state": "IMPLEMENTED_VALIDATED",
+        "runtime_state": "OPERATIONAL",
+        "window_search_state": "OPERATIONAL_WITH_LIMITATIONS",
+        "access_state": "ENABLED",
+        "regression_only_for_this_programme": true,
+        "window_factor_dependency": [
+          "TITHI",
+          "KARANA",
+          "NAKSHATRA"
+        ]
+      },
+      {
+        "activity_id": "EDUCATION_COMMENCEMENT",
+        "contract_state": "IMPLEMENTED_VALIDATED",
+        "machine_state": "IMPLEMENTED_VALIDATED",
+        "runtime_state": "OPERATIONAL",
+        "window_search_state": "OPERATIONAL_WITH_LIMITATIONS",
+        "access_state": "ENABLED",
+        "regression_only_for_this_programme": true,
+        "window_factor_dependency": [
+          "TITHI",
+          "KARANA",
+          "NAKSHATRA"
+        ]
+      },
+      {
+        "activity_id": "VEHICLE_CONVEYANCE_COMMENCEMENT",
+        "contract_state": "IMPLEMENTED_VALIDATED",
+        "machine_state": "IMPLEMENTED_VALIDATED",
+        "runtime_state": "OPERATIONAL",
+        "window_search_state": "OPERATIONAL_WITH_LIMITATIONS",
+        "access_state": "ENABLED",
+        "regression_only_for_this_programme": true,
+        "window_factor_dependency": [
+          "NAKSHATRA"
+        ]
+      },
+      {
+        "activity_id": "CONSECRATION_INSTALLATION_COMMENCEMENT",
+        "contract_state": "IMPLEMENTED_VALIDATED",
+        "machine_state": "IMPLEMENTED_VALIDATED",
+        "runtime_state": "OPERATIONAL",
+        "window_search_state": "OPERATIONAL_WITH_LIMITATIONS",
+        "access_state": "ENABLED",
+        "regression_only_for_this_programme": true,
+        "window_factor_dependency": [
+          "NAKSHATRA"
+        ]
+      }
+    ],
+    "count": 4,
+    "engine": "VEDA_MUHURTA_RECOMMENDATION_ENGINE_RX1 + VEDA_MUHURTA_TRANSITION_AWARE_WINDOW_SEARCH"
+  },
+  "frozen_electional": {
+    "activities": [
+      {
+        "activity_id": "HOUSE_CONSTRUCTION_COMMENCEMENT",
+        "contract_state": "CONTRACT_BLOCKED",
+        "machine_state": "SOURCE_SEMANTICS_PARTIAL",
+        "runtime_state": "INACTIVE",
+        "reopen": "new primary/lineage-complete evidence or validated dependency"
+      },
+      {
+        "activity_id": "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+        "contract_state": "CONTRACT_BLOCKED",
+        "machine_state": "CONTEXT_PARTIAL",
+        "runtime_state": "INACTIVE",
+        "reopen": "new primary/lineage-complete evidence or validated context"
+      },
+      {
+        "activity_id": "MARRIAGE_CEREMONY_TIMING",
+        "contract_state": "CONTRACT_BLOCKED",
+        "machine_state": "SOURCE_SEMANTICS_PARTIAL",
+        "runtime_state": "INACTIVE",
+        "reopen": "new primary/lineage-complete evidence or validated dependency"
+      }
+    ],
+    "electional_core": {
+      "lagna_hash": "BC50AC95518D4B30250013F7051BDFA85202342FE21EFADB5C8D026B8146ADCC",
+      "godhuli_hash": "225F4577E57CF72A1282C6EB0F31DB835CBC9EB84FEBC10227D5516AD97FC535",
+      "state": "PRESERVED"
+    },
+    "rx1_engine_handoff": {
+      "programme": "VEDA-MUHURTA-ELECTIONAL-CONTRACT-REMEDIATION-RX1-001",
+      "engine_handoff": "NOT_AUTHORIZED",
+      "machine_ready_activities": [],
+      "production_registration": false,
+      "P032_changed": false,
+      "recommended_follow_on": "VEDA-MUHURTA-ENGINE-ELECTIONAL-ACTIVITY-RX1-001",
+      "recommendation_status": "RECOMMEND_ONLY_NOT_STARTED"
+    },
+    "reopen_conditions": [
+      "new primary passage",
+      "new lineage-complete classical edition/witness",
+      "authoritative commentary resolving a recorded ambiguity",
+      "new governed context semantics",
+      "previously unavailable calculation dependency validated"
+    ]
+  },
+  "remaining": {
+    "TRAVEL_JOURNEY_COMMENCEMENT": {
+      "source_activity_class": "GAMANA_OR_JOURNEY",
+      "source_readiness": "SOURCE_SCOPE_AMBIGUOUS",
+      "contract_state": "NOT_STARTED",
+      "machine_state": "PARTIAL",
+      "runtime_state": "INACTIVE",
+      "window_search_state": "NOT_READY",
+      "required_factors": [
+        "P032-CALC-NAKSHATRA-001"
+      ],
+      "required_context": [
+        "journey_subtype",
+        "direction_or_route_context",
+        "practical_safety_context"
+      ],
+      "blockers": [
+        "SOURCE_ACTIVITY_SCOPE",
+        "SOURCE_ADVISORY_SEMANTICS",
+        "CONTEXT",
+        "VARIANT"
+      ],
+      "source_gaps": [
+        "journey subtype and direction semantics remain unresolved"
+      ],
+      "calculation_gaps": [],
+      "next_evidence_need": "bounded primary passage defining the journey subtype and executable action semantics",
+      "executability": {
+        "source_rule": "NOT_CLOSED",
+        "normalized_rule": "NOT_AVAILABLE",
+        "machine_predicate": "NOT_AVAILABLE",
+        "existing_factor": "PARTIAL_OR_EMPTY",
+        "governed_result_effect": "NOT_AUTHORIZED",
+        "gate": "FAIL"
+      },
+      "reopen_trigger": "new qualifying evidence or validated dependency; no repeat generic search"
+    },
+    "PUJA_JAPA_VRATA_COMMENCEMENT": {
+      "source_activity_class": "RITUAL_SUBTYPE_REQUIRED",
+      "source_readiness": "SOURCE_VARIANT_COMPLEX",
+      "contract_state": "NOT_STARTED",
+      "machine_state": "PARTIAL",
+      "runtime_state": "INACTIVE",
+      "window_search_state": "NOT_READY",
+      "required_factors": [
+        "P032-CALC-NAKSHATRA-001",
+        "P032-CALC-TITHI-001",
+        "P032-CALC-KARANA-001"
+      ],
+      "required_context": [
+        "ritual_subtype",
+        "tradition_or_lineage_context"
+      ],
+      "blockers": [
+        "SOURCE_ACTIVITY_SCOPE",
+        "SOURCE_ADVISORY_SEMANTICS",
+        "CONTEXT",
+        "VARIANT"
+      ],
+      "source_gaps": [
+        "separate ceremony-specific primary passages and lineage variants are required"
+      ],
+      "calculation_gaps": [],
+      "next_evidence_need": "separate primary passage set for Puja, Japa and Vrata rather than a generic ritual union",
+      "executability": {
+        "source_rule": "NOT_CLOSED",
+        "normalized_rule": "NOT_AVAILABLE",
+        "machine_predicate": "NOT_AVAILABLE",
+        "existing_factor": "PARTIAL_OR_EMPTY",
+        "governed_result_effect": "NOT_AUTHORIZED",
+        "gate": "FAIL"
+      },
+      "reopen_trigger": "new qualifying evidence or validated dependency; no repeat generic search"
+    },
+    "PROPERTY_PURCHASE_OR_REGISTRATION": {
+      "source_activity_class": "PROPERTY_TRANSACTION",
+      "source_readiness": "SOURCE_SCOPE_AMBIGUOUS",
+      "contract_state": "NOT_STARTED",
+      "machine_state": "PRACTICAL_AND_LEGAL_DEPENDENCIES",
+      "runtime_state": "INACTIVE",
+      "window_search_state": "NOT_READY",
+      "required_factors": [],
+      "required_context": [
+        "transaction_subtype",
+        "title_registration_finance_context"
+      ],
+      "blockers": [
+        "SOURCE_ACTIVITY_SCOPE",
+        "SOURCE_ADVISORY_SEMANTICS",
+        "CONTEXT"
+      ],
+      "source_gaps": [
+        "purchase, title, registration, financing and legal scope must remain separate"
+      ],
+      "calculation_gaps": [],
+      "next_evidence_need": "source-backed transaction subtype with practical/legal scope separation",
+      "executability": {
+        "source_rule": "NOT_CLOSED",
+        "normalized_rule": "NOT_AVAILABLE",
+        "machine_predicate": "NOT_AVAILABLE",
+        "existing_factor": "PARTIAL_OR_EMPTY",
+        "governed_result_effect": "NOT_AUTHORIZED",
+        "gate": "FAIL"
+      },
+      "reopen_trigger": "new qualifying evidence or validated dependency; no repeat generic search"
+    },
+    "MEDICAL_PROCEDURE": {
+      "source_activity_class": "TREATMENT_OR_PROCEDURE",
+      "source_readiness": "SOURCE_ACCESS_LIMITED",
+      "contract_state": "NOT_STARTED",
+      "machine_state": "RESTRICTED_CONTEXT",
+      "runtime_state": "INACTIVE",
+      "window_search_state": "NOT_READY",
+      "required_factors": [],
+      "required_context": [
+        "procedure_context",
+        "qualified_medical_priority_context"
+      ],
+      "blockers": [
+        "SOURCE_ACTIVITY_SCOPE",
+        "SOURCE_ADVISORY_SEMANTICS",
+        "CONTEXT",
+        "RIGHTS_ACCESS"
+      ],
+      "source_gaps": [
+        "specialist source audit is unavailable; necessary care always takes priority"
+      ],
+      "calculation_gaps": [],
+      "next_evidence_need": "lawful specialist source review with medical-safety governance before any timing contract",
+      "executability": {
+        "source_rule": "NOT_CLOSED",
+        "normalized_rule": "NOT_AVAILABLE",
+        "machine_predicate": "NOT_AVAILABLE",
+        "existing_factor": "PARTIAL_OR_EMPTY",
+        "governed_result_effect": "NOT_AUTHORIZED",
+        "gate": "FAIL"
+      },
+      "reopen_trigger": "new qualifying evidence or validated dependency; no repeat generic search"
+    }
+  },
+  "expansion": {
+    "decision": "FREEZE_MUHURTA_ACTIVITY_EXPANSION_PENDING_NEW_EVIDENCE",
+    "condition_met": true,
+    "reason": "No remaining activity has executable mandatory semantics; further progress would repeat exhausted source research or require unsupported advisory logic.",
+    "does_not_mean": "Muhurta is complete",
+    "operational_capability_preserved": true,
+    "source_partial_backlog_preserved": [
+      "TRAVEL_JOURNEY_COMMENCEMENT",
+      "PUJA_JAPA_VRATA_COMMENCEMENT",
+      "PROPERTY_PURCHASE_OR_REGISTRATION",
+      "MEDICAL_PROCEDURE",
+      "HOUSE_CONSTRUCTION_COMMENCEMENT",
+      "HOUSE_ENTRY_OR_GRIHA_PRAVESHA",
+      "MARRIAGE_CEREMONY_TIMING"
+    ]
+  },
+  "selection": {
+    "programme": "VEDA-MUHURTA-REMAINING-CAPABILITY-REBASELINE-001",
+    "selected": [],
+    "maximum_allowed": 2,
+    "forced_selection": false,
+    "decision": "ZERO_ACTIVITY_SELECTION",
+    "rationale": "All four remaining candidates fail the executability gate; creating another machine-partial source contract would not materially advance the governed capability.",
+    "new_contracts_created": [],
+    "no_empty_engine_programme": true
+  }
+}

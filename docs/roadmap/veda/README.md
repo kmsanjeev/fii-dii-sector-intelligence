@@ -1,5 +1,15 @@
 # VEDA Roadmap Entry Point
 
+Current synchronization (2026-08-19): `VEDA-MUHURTA-REMAINING-CAPABILITY-REBASELINE-001`
+completed with `PASS_WITH_CONDITION` and decision
+`MUHURTA_REBASELINE_ACTIVITY_EXPANSION_FREEZE_NEW_EVIDENCE_REQUIRED`.
+Four remaining candidates were reconciled from T1/T2/T3; none passed the
+executability gate, so Muhurta activity expansion is frozen pending genuinely
+new evidence. Existing operational activities and the frozen electional
+backlog are unchanged. No contract, engine handoff, P032, RAG, prediction, ML
+or Approved Core change occurred. Evidence:
+`docs/current-state/muhurta-remaining-capability-rebaseline-001/`.
+
 Current synchronization (2026-08-19): `VEDA-MUHURTA-ELECTIONAL-CONTRACT-REMEDIATION-RX1-001`
 completed with `PASS_WITH_CONDITION` and decision
 `MUHURTA_ELECTIONAL_CONTRACTS_MACHINE_PARTIAL`. The frozen Electional Core

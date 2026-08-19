@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-REMAINING-CAPABILITY-REBASELINE-001
+
+Completed the remaining Muhurta inventory reconciliation with
+`PASS_WITH_CONDITION` and decision
+`MUHURTA_REBASELINE_ACTIVITY_EXPANSION_FREEZE_NEW_EVIDENCE_REQUIRED`.
+Four non-frozen candidates remain: Travel/Journey, Puja/Japa/Vrata, Property
+Purchase/Registration and Medical Procedure. None passed the source-rule to
+machine-predicate executability gate, so no new activity contract or empty
+engine programme was created. Operational Business, Education, Vehicle and
+Consecration capabilities, the frozen electional backlog, P032, Electional
+Core, Personal Bala, RAG, prediction, ML and Approved Core remain unchanged.
+Evidence: `docs/current-state/muhurta-remaining-capability-rebaseline-001/`.
+
 ## 2026-08-19 | VEDA-MUHURTA-ELECTIONAL-CONTRACT-REMEDIATION-RX1-001
 
 Completed the bounded electional contract remediation with
