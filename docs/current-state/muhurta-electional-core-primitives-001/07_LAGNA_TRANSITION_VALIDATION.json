@@ -1,0 +1,123 @@
+{
+  "transition_id": "MUHURTA_LAGNA_TRANSITIONS_DIAGNOSTIC_V1",
+  "implemented": true,
+  "production_registered": false,
+  "method": "deterministic bisection refinement over an injected monotonic angle function",
+  "fixed_grid_final_boundaries": false,
+  "tolerance": 1e-09,
+  "coverage": "all 12 Rashi boundaries using synthetic governed fixtures",
+  "boundary_status": "BOUNDARY_EVENT_NOT_AUSPICIOUSNESS_DECISION",
+  "rows": [
+    {
+      "transition_id": "SYNTHETIC_LAGNA_RASHI_01",
+      "from_sign": "PISCES",
+      "to_sign": "ARIES",
+      "boundary_longitude": 0.0,
+      "transition_value": -4.656612873077393e-10,
+      "error": 4.656612873077393e-10,
+      "status": "PASS"
+    },
+    {
+      "transition_id": "SYNTHETIC_LAGNA_RASHI_02",
+      "from_sign": "ARIES",
+      "to_sign": "TAURUS",
+      "boundary_longitude": 30.0,
+      "transition_value": 29.99999999953434,
+      "error": 4.656612873077393e-10,
+      "status": "PASS"
+    },
+    {
+      "transition_id": "SYNTHETIC_LAGNA_RASHI_03",
+      "from_sign": "TAURUS",
+      "to_sign": "GEMINI",
+      "boundary_longitude": 60.0,
+      "transition_value": 59.99999999953434,
+      "error": 4.656612873077393e-10,
+      "status": "PASS"
+    },
+    {
+      "transition_id": "SYNTHETIC_LAGNA_RASHI_04",
+      "from_sign": "GEMINI",
+      "to_sign": "CANCER",
+      "boundary_longitude": 90.0,
+      "transition_value": 89.99999999953434,
+      "error": 4.656612873077393e-10,
+      "status": "PASS"
+    },
+    {
+      "transition_id": "SYNTHETIC_LAGNA_RASHI_05",
+      "from_sign": "CANCER",
+      "to_sign": "LEO",
+      "boundary_longitude": 120.0,
+      "transition_value": 119.99999999953434,
+      "error": 4.656612873077393e-10,
+      "status": "PASS"
+    },
+    {
+      "transition_id": "SYNTHETIC_LAGNA_RASHI_06",
+      "from_sign": "LEO",
+      "to_sign": "VIRGO",
+      "boundary_longitude": 150.0,
+      "transition_value": 149.99999999953434,
+      "error": 4.656612873077393e-10,
+      "status": "PASS"
+    },
+    {
+      "transition_id": "SYNTHETIC_LAGNA_RASHI_07",
+      "from_sign": "VIRGO",
+      "to_sign": "LIBRA",
+      "boundary_longitude": 180.0,
+      "transition_value": 179.99999999953434,
+      "error": 4.656612873077393e-10,
+      "status": "PASS"
+    },
+    {
+      "transition_id": "SYNTHETIC_LAGNA_RASHI_08",
+      "from_sign": "LIBRA",
+      "to_sign": "SCORPIO",
+      "boundary_longitude": 210.0,
+      "transition_value": 209.99999999953434,
+      "error": 4.656612873077393e-10,
+      "status": "PASS"
+    },
+    {
+      "transition_id": "SYNTHETIC_LAGNA_RASHI_09",
+      "from_sign": "SCORPIO",
+      "to_sign": "SAGITTARIUS",
+      "boundary_longitude": 240.0,
+      "transition_value": 239.99999999953434,
+      "error": 4.656612873077393e-10,
+      "status": "PASS"
+    },
+    {
+      "transition_id": "SYNTHETIC_LAGNA_RASHI_10",
+      "from_sign": "SAGITTARIUS",
+      "to_sign": "CAPRICORN",
+      "boundary_longitude": 270.0,
+      "transition_value": 269.99999999953434,
+      "error": 4.656612873077393e-10,
+      "status": "PASS"
+    },
+    {
+      "transition_id": "SYNTHETIC_LAGNA_RASHI_11",
+      "from_sign": "CAPRICORN",
+      "to_sign": "AQUARIUS",
+      "boundary_longitude": 300.0,
+      "transition_value": 299.99999999953434,
+      "error": 4.656612873077393e-10,
+      "status": "PASS"
+    },
+    {
+      "transition_id": "SYNTHETIC_LAGNA_RASHI_12",
+      "from_sign": "AQUARIUS",
+      "to_sign": "PISCES",
+      "boundary_longitude": 330.0,
+      "transition_value": 329.99999999953434,
+      "error": 4.656612873077393e-10,
+      "status": "PASS"
+    }
+  ],
+  "determinism_hash": "5D18531F69C93FAE1A8F12501E3652AE7580EC408E3E56E3C7564D01070A1B77",
+  "state": "LAGNA_TRANSITIONS_READY_WITH_TOLERANCE",
+  "limitation": "The fixture validates refinement/order; production binding still requires a governed event adapter and activity contract."
+}

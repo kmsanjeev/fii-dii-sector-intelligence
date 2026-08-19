@@ -1,5 +1,15 @@
 # VEDA Roadmap Entry Point
 
+Current synchronization (2026-08-19): `VEDA-MUHURTA-ELECTIONAL-CORE-PRIMITIVES-001`
+completed with `PASS_WITH_CONDITION` and decision
+`MUHURTA_ELECTIONAL_CORE_MACHINE_PARTIAL`. The canonical Lagna and planetary
+calculation facts are now explicit reusable contracts with boundary and source
+conditions; a deterministic Lagna transition refinement harness is diagnostic
+only. Godhuli reuses the existing sunset dependency, but its interval/source
+semantics remain partial. No T2/T3 contract, activity runtime, P032,
+Personal Bala, RAG, prediction, ML or Approved Core state changed. Evidence:
+`docs/current-state/muhurta-electional-core-primitives-001/`.
+
 Current synchronization (2026-08-19): `VEDA-MUHURTA-ACTIVITY-EXPANSION-T3-001`
 completed with `PASS_WITH_CONDITION` and decision
 `MUHURTA_T3_ACTIVITY_EXPANSION_SOURCE_CONTRACTS_MACHINE_PARTIAL`. The

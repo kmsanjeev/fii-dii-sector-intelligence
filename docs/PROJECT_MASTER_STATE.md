@@ -1,6 +1,17 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.75.0 | 2026-08-19
+# Version 4.76.0 | 2026-08-19
+
+- `VEDA-MUHURTA-ELECTIONAL-CORE-PRIMITIVES-001` completed with
+  `PASS_WITH_CONDITION` and decision
+  `MUHURTA_ELECTIONAL_CORE_MACHINE_PARTIAL`. Reusable canonical Lagna and
+  planetary calculation facts now have explicit non-production contracts,
+  boundary/missing-value policy and deterministic diagnostic transition
+  coverage. Godhuli sunset dependency is reused, while interval/source
+  semantics remain partial. T2/T3 contracts remain hash-preserved; no new
+  activity runtime, P032, Personal Bala, RAG, prediction, ML or Approved Core
+  change occurred. Evidence:
+  `docs/current-state/muhurta-electional-core-primitives-001/`.
 
 - `VEDA-MUHURTA-ACTIVITY-EXPANSION-T3-001` completed with
   `PASS_WITH_CONDITION` and decision

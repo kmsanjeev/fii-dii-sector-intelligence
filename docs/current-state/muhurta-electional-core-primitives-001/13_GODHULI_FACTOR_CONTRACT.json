@@ -1,0 +1,16 @@
+{
+  "factor_id": "MUHURTA_GODHULI_INTERVAL",
+  "factor_type": "SHARED_SOURCE_CLASSIFICATION",
+  "calculation_status": "SUNSET_DEPENDENCY_AVAILABLE_WITH_CONDITION",
+  "interval_status": "NOT_VALIDATED",
+  "start_rule": "NOT_DEFINED_BY_GOVERNED_CONTRACT",
+  "end_rule": "NOT_DEFINED_BY_GOVERNED_CONTRACT",
+  "inclusion_policy": "NOT_DEFINED",
+  "candidate_evaluation": "ABSTAIN_SOURCE_INTERVAL_UNRESOLVED",
+  "location_date_timezone": "required if an interval source contract is later validated",
+  "solar_event_source": "engines.ai.knowledge.muhurta_foundation.compute_solar_day",
+  "high_latitude": "UNAVAILABLE_IF_NO_SUNSET",
+  "advisory_effect": "NONE_IN_FACTOR_LAYER",
+  "production_registration": false,
+  "hash": "225F4577E57CF72A1282C6EB0F31DB835CBC9EB84FEBC10227D5516AD97FC535"
+}

@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-ELECTIONAL-CORE-PRIMITIVES-001
+
+Completed the shared electional Muhurta core-primitives activity with
+`PASS_WITH_CONDITION` and decision
+`MUHURTA_ELECTIONAL_CORE_MACHINE_PARTIAL`. The canonical Swiss
+Ephemeris/Lahiri Lagna and planetary calculation paths are represented as
+reusable, non-production factor contracts with explicit boundary and source
+conditions. A deterministic Lagna transition refinement harness covers all
+12 Rashi boundaries diagnostically without fixed-grid final boundaries.
+Godhuli reuses the existing solar-day sunset dependency, but its interval and
+source semantics remain partial and are fail-closed. T2 House and T3 Marriage
+contracts and hashes were preserved. No activity runtime, P032, Personal
+Bala, RAG, prediction, ML or Approved Core state changed. Evidence:
+`docs/current-state/muhurta-electional-core-primitives-001/`.
+
 ## 2026-08-19 | VEDA-MUHURTA-ACTIVITY-EXPANSION-T3-001
 
 Completed the bounded Muhurta activity-expansion T3 source-governance

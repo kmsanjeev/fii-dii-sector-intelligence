@@ -1,0 +1,63 @@
+{
+  "calculation_source": "engines/intelligence/kundli_engine.py::_planet_positions and existing downstream whole-sign mapping",
+  "method": "Swiss Ephemeris sidereal Lahiri with governed MOSEPH position flags",
+  "supported_grahas": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Venus",
+    "Saturn",
+    "Rahu",
+    "Ketu"
+  ],
+  "facts": [
+    {
+      "factor_id": "PLANET_LONGITUDE_SIDEREAL",
+      "class": "SHARED_CALCULATION_PRIMITIVE",
+      "state": "AVAILABLE_WITH_CONDITION",
+      "dependency": "canonical ephemeris"
+    },
+    {
+      "factor_id": "PLANET_RASHI",
+      "class": "SHARED_CALCULATION_PRIMITIVE",
+      "state": "AVAILABLE_WITH_CONDITION",
+      "dependency": "sidereal longitude"
+    },
+    {
+      "factor_id": "PLANET_HOUSE_FROM_LAGNA",
+      "class": "SHARED_CALCULATION_PRIMITIVE",
+      "state": "AVAILABLE_WITH_CONDITION",
+      "dependency": "canonical Lagna sign"
+    },
+    {
+      "factor_id": "PLANET_RELATIVE_SIGN_DISTANCE",
+      "class": "SHARED_CALCULATION_PRIMITIVE",
+      "state": "CALCULABLE_DIAGNOSTIC_ONLY",
+      "dependency": "two canonical Rashi values"
+    },
+    {
+      "factor_id": "LAGNA_LORD_IDENTITY",
+      "class": "SHARED_CALCULATION_PRIMITIVE",
+      "state": "CALCULABLE_ADVISORY_PARTIAL",
+      "dependency": "canonical sign-lord table"
+    },
+    {
+      "factor_id": "SIGN_LORD_IDENTITY",
+      "class": "SHARED_CALCULATION_PRIMITIVE",
+      "state": "CALCULABLE_ADVISORY_PARTIAL",
+      "dependency": "canonical sign-lord table"
+    }
+  ],
+  "not_bound": [
+    "GOOD_PLANETS",
+    "BAD_PLANETS",
+    "BENEFIC_MALEFIC",
+    "ELECTIONAL_STRENGTH_SCORE",
+    "GENERIC_DIGNITY",
+    "GENERIC_ASPECT"
+  ],
+  "whole_sign_caution": "A source rule must explicitly support whole-sign house framing before binding a house predicate.",
+  "new_ephemeris": false
+}

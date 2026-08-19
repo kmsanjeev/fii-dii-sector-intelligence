@@ -1,0 +1,38 @@
+{
+  "factor_rows": [
+    {
+      "factor": "MUHURTA_LAGNA_SIGN",
+      "state_before": "calculation reusable; semantic partial",
+      "state_after": "ready with boundary abstention; semantic partial",
+      "house_construction": "common dependency clarified",
+      "griha_pravesha": "common dependency clarified",
+      "marriage": "common dependency clarified",
+      "other": "available for future audit only",
+      "contract_remediation": "YES",
+      "engine_ready_directly": "NO"
+    },
+    {
+      "factor": "PLANET_RASHI / PLANET_HOUSE_FROM_LAGNA",
+      "state_before": "available with condition; advisory partial",
+      "state_after": "explicit contracts; advisory partial",
+      "house_construction": "dependency inventory clarified",
+      "griha_pravesha": "dependency inventory clarified",
+      "marriage": "dependency inventory clarified",
+      "other": "not generalized",
+      "contract_remediation": "YES",
+      "engine_ready_directly": "NO"
+    },
+    {
+      "factor": "MUHURTA_GODHULI_INTERVAL",
+      "state_before": "contextual witness only",
+      "state_after": "sunset dependency reusable; interval source partial",
+      "house_construction": "none",
+      "griha_pravesha": "none",
+      "marriage": "blocking source gap remains",
+      "other": "not generalized",
+      "contract_remediation": "YES",
+      "engine_ready_directly": "NO"
+    }
+  ],
+  "contracts_automatically_mutated": false
+}

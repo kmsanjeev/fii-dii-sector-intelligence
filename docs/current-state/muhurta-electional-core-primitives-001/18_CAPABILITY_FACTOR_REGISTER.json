@@ -1,0 +1,38 @@
+{
+  "programme": "VEDA-MUHURTA-ELECTIONAL-CORE-PRIMITIVES-001",
+  "factors": [
+    {
+      "factor_id": "MUHURTA_LAGNA_SIGN",
+      "maturity": "VALIDATED_WITH_CONDITION",
+      "state": "LAGNA_FACTOR_READY_WITH_BOUNDARY_ABSTENTION",
+      "production": false
+    },
+    {
+      "factor_id": "MUHURTA_LAGNA_TRANSITION_V1",
+      "maturity": "DIAGNOSTIC",
+      "state": "LAGNA_TRANSITIONS_READY_WITH_TOLERANCE",
+      "production": false
+    },
+    {
+      "factor_id": "PLANET_RASHI",
+      "maturity": "VALIDATED_WITH_CONDITION",
+      "state": "PLANETARY_PLACEMENT_FACTS_READY_ADVISORY_PARTIAL",
+      "production": false
+    },
+    {
+      "factor_id": "PLANET_HOUSE_FROM_LAGNA",
+      "maturity": "VALIDATED_WITH_CONDITION",
+      "state": "PLANETARY_PLACEMENT_FACTS_READY_ADVISORY_PARTIAL",
+      "production": false
+    },
+    {
+      "factor_id": "MUHURTA_GODHULI_INTERVAL",
+      "maturity": "SOURCE_PARTIAL",
+      "state": "GODHULI_CALCULATION_READY_SOURCE_PARTIAL",
+      "production": false
+    }
+  ],
+  "no_generic_goodness": true,
+  "no_numeric_score": true,
+  "no_production_activity_registration": true
+}

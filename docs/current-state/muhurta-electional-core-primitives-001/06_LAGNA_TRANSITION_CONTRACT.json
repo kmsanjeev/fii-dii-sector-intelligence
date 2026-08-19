@@ -1,0 +1,12 @@
+{
+  "transition_id": "MUHURTA_LAGNA_TRANSITION_V1",
+  "input_location": "explicit latitude/longitude and timezone-aware start/end",
+  "from_to": "canonical Rashi sign identity before/after boundary",
+  "transition_time": "deterministic root-refined event, not fixed-grid sample",
+  "tolerance": 1e-09,
+  "method": "reuse canonical Ascendant calculation with deterministic bisection adapter",
+  "calculation_version": "KundliEngine._ascendant; inherited VEDA-CALC-SIDEREAL-ASC-TZ-001",
+  "boundary_status": "BOUNDARY_AMBIGUOUS_IF_REFERENCE_METHOD_CROSSES_SIGN",
+  "production_registration": false,
+  "hash": "C94BFE989AE6CEAFEDC5CC6F96675404934BA3202418A8F1355B91D75005CBFB"
+}

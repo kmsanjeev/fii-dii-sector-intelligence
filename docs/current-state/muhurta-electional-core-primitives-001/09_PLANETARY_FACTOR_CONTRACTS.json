@@ -1,0 +1,87 @@
+{
+  "PLANET_RASHI": {
+    "factor_id": "PLANET_RASHI",
+    "factor_type": "SHARED_CALCULATION_PRIMITIVE",
+    "output_type": "CANONICAL_RASHI_ENUM",
+    "calculation_source": "canonical Kundli/Swiss Ephemeris path and existing sign/house mapping",
+    "dependency": "planet sidereal longitude",
+    "validation_state": "CALCULATION_VALIDATED_WITH_CONDITIONS",
+    "advisory_semantics": "SOURCE_PARTIAL; ACTIVITY_SPECIFIC_RULE_REQUIRED",
+    "missing_value_states": [
+      "UNAVAILABLE",
+      "CALCULATION_ERROR",
+      "BOUNDARY_AMBIGUOUS",
+      "NOT_APPLICABLE"
+    ],
+    "production_registration": false,
+    "hash": "393DC2F8B778C4380E709DF0F563B9187889D7A8CB00908B4729D3DA76E78E77"
+  },
+  "PLANET_HOUSE_FROM_LAGNA": {
+    "factor_id": "PLANET_HOUSE_FROM_LAGNA",
+    "factor_type": "SHARED_CALCULATION_PRIMITIVE",
+    "output_type": "WHOLE_SIGN_HOUSE_1_TO_12",
+    "calculation_source": "canonical Kundli/Swiss Ephemeris path and existing sign/house mapping",
+    "dependency": "planet Rashi plus Lagna Rashi",
+    "validation_state": "CALCULATION_VALIDATED_WITH_CONDITIONS",
+    "advisory_semantics": "SOURCE_PARTIAL; ACTIVITY_SPECIFIC_RULE_REQUIRED",
+    "missing_value_states": [
+      "UNAVAILABLE",
+      "CALCULATION_ERROR",
+      "BOUNDARY_AMBIGUOUS",
+      "NOT_APPLICABLE"
+    ],
+    "production_registration": false,
+    "hash": "CBA5872812DF4D7203E4D2B5F81F9FE63561ECEB0CDF8496B68A7AC98DF1AD94"
+  },
+  "PLANET_RELATIVE_SIGN_DISTANCE": {
+    "factor_id": "PLANET_RELATIVE_SIGN_DISTANCE",
+    "factor_type": "SHARED_CALCULATION_PRIMITIVE",
+    "output_type": "RASHI_DISTANCE_1_TO_12",
+    "calculation_source": "canonical Kundli/Swiss Ephemeris path and existing sign/house mapping",
+    "dependency": "two Rashi facts",
+    "validation_state": "CALCULATION_VALIDATED_WITH_CONDITIONS",
+    "advisory_semantics": "SOURCE_PARTIAL; ACTIVITY_SPECIFIC_RULE_REQUIRED",
+    "missing_value_states": [
+      "UNAVAILABLE",
+      "CALCULATION_ERROR",
+      "BOUNDARY_AMBIGUOUS",
+      "NOT_APPLICABLE"
+    ],
+    "production_registration": false,
+    "hash": "41E125B95A293D307C263D30C117DFADDF02471ED2AED243122632D9582E62A0"
+  },
+  "LAGNA_LORD_IDENTITY": {
+    "factor_id": "LAGNA_LORD_IDENTITY",
+    "factor_type": "SHARED_CALCULATION_PRIMITIVE",
+    "output_type": "GRAHA_ENUM",
+    "calculation_source": "canonical Kundli/Swiss Ephemeris path and existing sign/house mapping",
+    "dependency": "Lagna Rashi",
+    "validation_state": "CALCULATION_VALIDATED_WITH_CONDITIONS",
+    "advisory_semantics": "SOURCE_PARTIAL; ACTIVITY_SPECIFIC_RULE_REQUIRED",
+    "missing_value_states": [
+      "UNAVAILABLE",
+      "CALCULATION_ERROR",
+      "BOUNDARY_AMBIGUOUS",
+      "NOT_APPLICABLE"
+    ],
+    "production_registration": false,
+    "hash": "91B3FC4896FE9D42253450C8A91CA3495BCCBCBF4DE2CA5E10BF9E86DD883BB1"
+  },
+  "SIGN_LORD_IDENTITY": {
+    "factor_id": "SIGN_LORD_IDENTITY",
+    "factor_type": "SHARED_CALCULATION_PRIMITIVE",
+    "output_type": "GRAHA_ENUM",
+    "calculation_source": "canonical Kundli/Swiss Ephemeris path and existing sign/house mapping",
+    "dependency": "target Rashi",
+    "validation_state": "CALCULATION_VALIDATED_WITH_CONDITIONS",
+    "advisory_semantics": "SOURCE_PARTIAL; ACTIVITY_SPECIFIC_RULE_REQUIRED",
+    "missing_value_states": [
+      "UNAVAILABLE",
+      "CALCULATION_ERROR",
+      "BOUNDARY_AMBIGUOUS",
+      "NOT_APPLICABLE"
+    ],
+    "production_registration": false,
+    "hash": "45A33ABDB700B31F1F746B3A0B02D73487AFA429DC405D66CBBFE7A44FBE065B"
+  }
+}

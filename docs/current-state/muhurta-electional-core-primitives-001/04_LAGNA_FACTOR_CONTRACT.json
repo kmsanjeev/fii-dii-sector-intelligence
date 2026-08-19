@@ -1,0 +1,40 @@
+{
+  "factor_id": "MUHURTA_LAGNA_SIGN",
+  "factor_type": "SHARED_CALCULATION_PRIMITIVE",
+  "output_type": "CANONICAL_RASHI_ENUM",
+  "canonical_enum": [
+    "ARIES",
+    "TAURUS",
+    "GEMINI",
+    "CANCER",
+    "LEO",
+    "VIRGO",
+    "LIBRA",
+    "SCORPIO",
+    "SAGITTARIUS",
+    "CAPRICORN",
+    "AQUARIUS",
+    "PISCES"
+  ],
+  "calculation_source": "KundliEngine._ascendant",
+  "method": "SWISS_HOUSES_W_PLUS_EXPLICIT_LAHIRI_SUBTRACTION",
+  "ayanamsha": "SIDM_LAHIRI",
+  "source_of_calculation_authority": "VEDA-CALC-SIDEREAL-ASC-TZ-001; inherited VEDA-P015 calculation path",
+  "validation_state": "INTERNAL_CALCULATION_VALIDATED_WITH_CONDITIONS",
+  "maturity": "LAGNA_FACTOR_READY_WITH_BOUNDARY_ABSTENTION",
+  "boundary_policy": {
+    "classification": "LAGNA_BOUNDARY_AMBIGUOUS",
+    "trigger": "independent/reference method changes the canonical Rashi across a 0/30-degree sign boundary",
+    "dependent_rule_policy": "ABSTAIN_UNTIL_SIGN_UNCERTAINTY_RESOLVED",
+    "away_from_boundary": "FACT_AVAILABLE_WITH_CONDITION"
+  },
+  "missing_value_states": [
+    "AVAILABLE",
+    "UNAVAILABLE",
+    "BOUNDARY_AMBIGUOUS",
+    "CALCULATION_ERROR"
+  ],
+  "semantic_limit": "This factor is a calculated sign fact, not GOOD_LAGNA or an electional score.",
+  "production_activity_binding": "NOT_REGISTERED",
+  "hash": "BC50AC95518D4B30250013F7051BDFA85202342FE21EFADB5C8D026B8146ADCC"
+}

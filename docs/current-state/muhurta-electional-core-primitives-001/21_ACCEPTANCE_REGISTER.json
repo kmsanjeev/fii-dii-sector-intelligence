@@ -1,0 +1,132 @@
+[
+  {
+    "id": "AC01",
+    "criterion": "authorized T3 starting commit verified",
+    "status": "PASS"
+  },
+  {
+    "id": "AC02",
+    "criterion": "existing canonical calculation paths reused",
+    "status": "PASS"
+  },
+  {
+    "id": "AC03",
+    "criterion": "no duplicate Ascendant or ephemeris engine",
+    "status": "PASS"
+  },
+  {
+    "id": "AC04",
+    "criterion": "Lagna factor contract has deterministic hash",
+    "status": "PASS"
+  },
+  {
+    "id": "AC05",
+    "criterion": "all 12 Rashi mapping cases covered",
+    "status": "PASS"
+  },
+  {
+    "id": "AC06",
+    "criterion": "Lagna boundary ambiguity is explicit and fail-closed",
+    "status": "PASS"
+  },
+  {
+    "id": "AC07",
+    "criterion": "Lagna transitions use deterministic refinement, not fixed-grid final boundaries",
+    "status": "PASS"
+  },
+  {
+    "id": "AC08",
+    "criterion": "planetary primitive inventory and hashes are deterministic",
+    "status": "PASS"
+  },
+  {
+    "id": "AC09",
+    "criterion": "planetary facts are separated from advisory semantics",
+    "status": "PASS"
+  },
+  {
+    "id": "AC10",
+    "criterion": "benefic/malefic, dignity, aspect and score shortcuts remain unbound",
+    "status": "PASS"
+  },
+  {
+    "id": "AC11",
+    "criterion": "Godhuli source witnesses and translation limitation recorded",
+    "status": "PASS_WITH_CONDITION"
+  },
+  {
+    "id": "AC12",
+    "criterion": "Godhuli is not collapsed to a sunset timestamp",
+    "status": "PASS"
+  },
+  {
+    "id": "AC13",
+    "criterion": "no-sunset/high-latitude abstention is explicit",
+    "status": "PASS"
+  },
+  {
+    "id": "AC14",
+    "criterion": "cross-activity dependency convergence matrix produced",
+    "status": "PASS"
+  },
+  {
+    "id": "AC15",
+    "criterion": "shared versus activity-specific classification produced",
+    "status": "PASS"
+  },
+  {
+    "id": "AC16",
+    "criterion": "T2 House contracts remain immutable and hash-verified",
+    "status": "PASS"
+  },
+  {
+    "id": "AC17",
+    "criterion": "T3 Marriage contract and machine hashes remain immutable",
+    "status": "PASS"
+  },
+  {
+    "id": "AC18",
+    "criterion": "machine evaluator remains declarative and no production bindings added",
+    "status": "PASS"
+  },
+  {
+    "id": "AC19",
+    "criterion": "no numeric scoring, Personal Bala or personal data added",
+    "status": "PASS"
+  },
+  {
+    "id": "AC20",
+    "criterion": "P032 and existing operational activities remain unchanged",
+    "status": "PASS"
+  },
+  {
+    "id": "AC21",
+    "criterion": "RAG, prediction, ML and Approved Core remain unchanged",
+    "status": "PASS"
+  },
+  {
+    "id": "AC22",
+    "criterion": "conditional contract remediation is recorded but not started",
+    "status": "PASS"
+  },
+  {
+    "id": "AC23",
+    "criterion": "focused and logical regression suites pass with known unrelated condition recorded",
+    "status": "PASS_WITH_CONDITION"
+  },
+  {
+    "id": "AC24",
+    "criterion": "two-run artifact determinism passes",
+    "status": "PASS"
+  },
+  {
+    "id": "AC25",
+    "criterion": "JSON, compilation and diff checks pass",
+    "status": "PASS"
+  },
+  {
+    "id": "AC26",
+    "criterion": "selective staging and clean tracked tree required",
+    "status": "PASS"
+  }
+]

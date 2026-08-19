@@ -1,0 +1,13 @@
+{
+  "factor_id": "MUHURTA_GODHULI_INTERVAL",
+  "status": "NOT_RUN_AS_SOURCE_INTERVAL_IS_UNRESOLVED",
+  "sunset_reuse_check": "EXISTING_SOLAR_DAY_PATH_ONLY",
+  "boundary_cases": [
+    "before",
+    "within",
+    "after",
+    "no sunset"
+  ],
+  "expected_policy": "ABSTAIN_SOURCE_INTERVAL_UNRESOLVED_OR_UNAVAILABLE",
+  "deterministic": true
+}

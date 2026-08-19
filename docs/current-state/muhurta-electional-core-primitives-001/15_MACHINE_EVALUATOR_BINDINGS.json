@@ -1,0 +1,28 @@
+{
+  "evaluator": "existing declarative evaluator architecture",
+  "allowed_generic_operators": [
+    "SIGN_IN",
+    "HOUSE_FROM_LAGNA_IN",
+    "RELATIVE_SIGN_DISTANCE_IN",
+    "WITHIN_INTERVAL",
+    "CONTEXT_EQ"
+  ],
+  "new_operator_implementation": false,
+  "production_bindings": [],
+  "forbidden": [
+    "eval",
+    "exec",
+    "free-form Python predicates",
+    "LLM rule interpretation",
+    "dynamic code injection",
+    "numeric electional score"
+  ],
+  "missing_states": [
+    "AVAILABLE",
+    "UNAVAILABLE",
+    "BOUNDARY_AMBIGUOUS",
+    "CALCULATION_ERROR",
+    "NOT_APPLICABLE"
+  ],
+  "decision": "No activity-specific binding is authorized until contracts are regenerated/hash-bound against this factor layer."
+}
