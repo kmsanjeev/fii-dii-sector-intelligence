@@ -1,0 +1,22 @@
+{
+  "evaluator": "EXISTING_DECLARATIVE_EVALUATOR_ONLY",
+  "production_activation": false,
+  "new_generic_engine": false,
+  "v2_created": false,
+  "v2_hash": null,
+  "unresolved_source_predicates": [
+    "ACTIVITY_SPECIFIC_LAGNA_SEMANTICS",
+    "ACTIVITY_SPECIFIC_PLANETARY_SEMANTICS"
+  ],
+  "contract_state": "CONTEXT_PARTIAL",
+  "machine_state": "MACHINE_PARTIAL",
+  "blocking": [
+    "BLOCKING_CONTEXT_DEPENDENCY: construction_state",
+    "BLOCKING_CONTEXT_DEPENDENCY: puja_completed",
+    "BLOCKING_SOURCE_MANDATORY: Lagna and planetary semantics"
+  ],
+  "nonblocking": [
+    "first_occupancy is disclosed as source-variant/context gap, not a universal blocker"
+  ],
+  "next_action": "DO_NOT_BUILD_ACTIVITY_ENGINE; preserve context schema and await source resolution"
+}

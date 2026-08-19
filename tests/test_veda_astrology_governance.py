@@ -36,7 +36,10 @@ def test_astrology_governance_registry_validates_tracked_pilot_data():
     report = validate_registry_directory(REGISTRY_ROOT)
 
     assert report.is_valid is True
-    assert report.source_count == 13
+    # VEDA-SRC-000014 is the tracked Bṛhat Saṃhitā witness registered by
+    # Muhurta source-semantics hardening.  Keep this invariant explicit so a
+    # future source addition requires a deliberate governance update.
+    assert report.source_count == 14
     assert report.passage_count == 13
     assert report.claim_count == 13
     assert report.conflict_count == 2

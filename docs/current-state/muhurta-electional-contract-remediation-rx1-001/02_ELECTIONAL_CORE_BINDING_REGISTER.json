@@ -1,0 +1,40 @@
+{
+  "lagna": {
+    "factor_id": "MUHURTA_LAGNA_SIGN",
+    "hash": "BC50AC95518D4B30250013F7051BDFA85202342FE21EFADB5C8D026B8146ADCC",
+    "state": "LAGNA_FACTOR_READY_WITH_BOUNDARY_ABSTENTION",
+    "binding": "FACT_AVAILABLE_WITH_CONDITION; no auspicious sign set supplied",
+    "boundary_policy": "ABSTAIN_SIGN_DEPENDENT_RULE"
+  },
+  "transitions": {
+    "factor_id": "MUHURTA_LAGNA_TRANSITIONS",
+    "state": "LAGNA_TRANSITIONS_READY_WITH_TOLERANCE",
+    "binding": "DIAGNOSTIC_ONLY; not an activity search or auspiciousness rule"
+  },
+  "planetary": {
+    "factor_ids": [
+      "LAGNA_LORD_IDENTITY",
+      "PLANET_HOUSE_FROM_LAGNA",
+      "PLANET_RASHI",
+      "PLANET_RELATIVE_SIGN_DISTANCE",
+      "SIGN_LORD_IDENTITY"
+    ],
+    "state": "PLANETARY_PLACEMENT_FACTS_READY_ADVISORY_PARTIAL",
+    "binding": "FACTS_AVAILABLE; activity semantics remain source-bound and unresolved",
+    "not_bound": [
+      "GOOD_PLANETS",
+      "BAD_PLANETS",
+      "BENEFIC_MALEFIC",
+      "ELECTIONAL_STRENGTH_SCORE",
+      "GENERIC_DIGNITY",
+      "GENERIC_ASPECT"
+    ]
+  },
+  "godhuli": {
+    "factor_id": "GODHULI_CONTEXT",
+    "hash": "225F4577E57CF72A1282C6EB0F31DB835CBC9EB84FEBC10227D5516AD97FC535",
+    "state": "GODHULI_CALCULATION_READY_SOURCE_PARTIAL",
+    "binding": "SOURCE_CONTEXT_ONLY; no interval invention and no sunset equivalence"
+  },
+  "lineage": "MACHINE PREDICATE -> RULE -> ASSERTION -> PASSAGE -> EDITION -> WITNESS -> WORK"
+}

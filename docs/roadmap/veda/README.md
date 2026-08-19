@@ -1,5 +1,16 @@
 # VEDA Roadmap Entry Point
 
+Current synchronization (2026-08-19): `VEDA-MUHURTA-ELECTIONAL-CONTRACT-REMEDIATION-RX1-001`
+completed with `PASS_WITH_CONDITION` and decision
+`MUHURTA_ELECTIONAL_CONTRACTS_MACHINE_PARTIAL`. The frozen Electional Core
+was rebound diagnostically to all three predecessor contracts. Unsupported
+activity-specific Lagna/planetary semantics remain source-mandatory blockers;
+Griha first-occupancy is a disclosed context gap and Marriage Godhuli is an
+optional source variant. No V2, engine handoff or production activation
+occurred. The source registry is correctly at 14 after the stale test
+invariant was corrected. Evidence:
+`docs/current-state/muhurta-electional-contract-remediation-rx1-001/`.
+
 Current synchronization (2026-08-19): `VEDA-MUHURTA-ELECTIONAL-CORE-PRIMITIVES-001`
 completed with `PASS_WITH_CONDITION` and decision
 `MUHURTA_ELECTIONAL_CORE_MACHINE_PARTIAL`. The canonical Lagna and planetary

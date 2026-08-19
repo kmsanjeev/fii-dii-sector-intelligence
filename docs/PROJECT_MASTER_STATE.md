@@ -1,6 +1,20 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.76.0 | 2026-08-19
+# Version 4.77.0 | 2026-08-19
+
+- `VEDA-MUHURTA-ELECTIONAL-CONTRACT-REMEDIATION-RX1-001` completed with
+  `PASS_WITH_CONDITION` and decision
+  `MUHURTA_ELECTIONAL_CONTRACTS_MACHINE_PARTIAL`. The frozen Electional Core
+  is bound to the House Construction, Griha Pravesha and Marriage timing
+  predecessor contracts without inventing executable Lagna or planetary
+  semantics. Griha first-occupancy is a disclosed context gap and Marriage
+  Godhuli is an optional source-variant path, not a universal blocker. All
+  three activities remain inactive; no V2 contract or engine handoff was
+  justified. The tracked astrology source registry count is 14; the stale
+  test expectation of 13 was corrected after confirming
+  `VEDA-SRC-000014` is legitimate. P032, prediction, ML, RAG and Approved
+  Core remain unchanged. Evidence:
+  `docs/current-state/muhurta-electional-contract-remediation-rx1-001/`.
 
 - `VEDA-MUHURTA-ELECTIONAL-CORE-PRIMITIVES-001` completed with
   `PASS_WITH_CONDITION` and decision

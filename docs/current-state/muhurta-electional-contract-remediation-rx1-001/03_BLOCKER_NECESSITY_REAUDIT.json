@@ -1,0 +1,90 @@
+{
+  "method": "necessity_reaudit; prior required/ blocking flags are not authority by themselves",
+  "activities": {
+    "HOUSE_CONSTRUCTION_COMMENCEMENT": {
+      "lagna_semantics": {
+        "prior": "BLOCKING_CALCULATION_DEPENDENCY",
+        "current": "BLOCKING_SOURCE_MANDATORY",
+        "status": "SOURCE_SEMANTICS_UNRESOLVED",
+        "reason": "The core calculates canonical Rashi identity, but no accepted source gives a complete executable sign set or normalized predicate for this activity.",
+        "engineering_only_blocker": false
+      },
+      "planetary_semantics": {
+        "prior": "BLOCKING_CALCULATION_DEPENDENCY",
+        "current": "BLOCKING_SOURCE_MANDATORY",
+        "status": "SOURCE_SEMANTICS_UNRESOLVED",
+        "reason": "Placement facts exist, but source-specific planetary relations are not normalized into a lineage-complete predicate.",
+        "engineering_only_blocker": false
+      },
+      "context": {
+        "current": "NONBLOCKING_ADDITIONAL_COVERAGE",
+        "status": "SOURCE_PARTIAL",
+        "reason": "Construction commencement has no separate unresolved occupancy context."
+      },
+      "result": "CONTRACT_BLOCKED"
+    },
+    "HOUSE_ENTRY_OR_GRIHA_PRAVESHA": {
+      "lagna_semantics": {
+        "prior": "BLOCKING_CALCULATION_DEPENDENCY",
+        "current": "BLOCKING_SOURCE_MANDATORY",
+        "status": "SOURCE_SEMANTICS_UNRESOLVED",
+        "reason": "The core calculates canonical Rashi identity, but no accepted source gives a complete executable sign set or normalized predicate for this activity.",
+        "engineering_only_blocker": false
+      },
+      "planetary_semantics": {
+        "prior": "BLOCKING_CALCULATION_DEPENDENCY",
+        "current": "BLOCKING_SOURCE_MANDATORY",
+        "status": "SOURCE_SEMANTICS_UNRESOLVED",
+        "reason": "Placement facts exist, but source-specific planetary relations are not normalized into a lineage-complete predicate.",
+        "engineering_only_blocker": false
+      },
+      "context": {
+        "construction_state": {
+          "state": "BLOCKING_CONTEXT_DEPENDENCY",
+          "required": true,
+          "allowed": [
+            "HALF_BUILT",
+            "WHOLLY_BUILT"
+          ]
+        },
+        "puja_completed": {
+          "state": "BLOCKING_CONTEXT_DEPENDENCY",
+          "required": true,
+          "type": "boolean"
+        },
+        "first_occupancy": {
+          "state": "NONBLOCKING_CONTEXT_GAP",
+          "classification": "SOURCE_UNRESOLVED_OR_VARIANT",
+          "reason": "The source supports house-entry framing but does not establish the modern first-ever-occupancy distinction; disclose rather than block the scoped house-entry activity."
+        }
+      },
+      "result": "CONTRACT_BLOCKED"
+    },
+    "MARRIAGE_CEREMONY_TIMING": {
+      "lagna_semantics": {
+        "prior": "BLOCKING_CALCULATION_DEPENDENCY",
+        "current": "BLOCKING_SOURCE_MANDATORY",
+        "status": "SOURCE_SEMANTICS_UNRESOLVED",
+        "reason": "The core calculates canonical Rashi identity, but no accepted source gives a complete executable sign set or normalized predicate for this activity.",
+        "engineering_only_blocker": false
+      },
+      "planetary_semantics": {
+        "prior": "BLOCKING_CALCULATION_DEPENDENCY",
+        "current": "BLOCKING_SOURCE_MANDATORY",
+        "status": "SOURCE_SEMANTICS_UNRESOLVED",
+        "reason": "Placement facts exist, but source-specific planetary relations are not normalized into a lineage-complete predicate.",
+        "engineering_only_blocker": false
+      },
+      "godhuli": {
+        "prior": "BLOCKING_CALCULATION_DEPENDENCY",
+        "current": "NONBLOCKING_ADDITIONAL_COVERAGE",
+        "classification": "SOURCE_VARIANT_OPTIONAL_PATH",
+        "status": "SOURCE_PARTIAL",
+        "reason": "The accepted Bṛhat Saṃhitā witness describes a distinct Godhuli context; it does not establish Godhuli as mandatory for every marriage ceremony."
+      },
+      "scope": "TIMING_ONLY_PANIGRAHANA; no compatibility, partner choice, marriage outcome, legal or should-marry decision",
+      "result": "CONTRACT_BLOCKED"
+    }
+  },
+  "principle": "A calculation dependency is blocking only when the activity's source-backed rule cannot be evaluated without it; no engineering-only blocker is promoted."
+}

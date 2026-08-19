@@ -1,0 +1,35 @@
+{
+  "HOUSE_ENTRY_OR_GRIHA_PRAVESHA": {
+    "construction_state": {
+      "type": "enum",
+      "values": [
+        "HALF_BUILT",
+        "WHOLLY_BUILT"
+      ],
+      "missing": "ABSTAIN",
+      "state": "BLOCKING_CONTEXT_DEPENDENCY"
+    },
+    "puja_completed": {
+      "type": "boolean",
+      "missing": "ABSTAIN",
+      "state": "BLOCKING_CONTEXT_DEPENDENCY"
+    },
+    "first_occupancy": {
+      "type": "boolean_or_unknown",
+      "missing": "DISCLOSE_CONTEXT_GAP",
+      "state": "NONBLOCKING_CONTEXT_GAP"
+    }
+  },
+  "MARRIAGE_CEREMONY_TIMING": {
+    "human_chosen_ceremony": {
+      "type": "boolean",
+      "required": true,
+      "state": "BLOCKING_CONTEXT_DEPENDENCY"
+    },
+    "godhuli_context": {
+      "type": "explicit_source_context",
+      "required": false,
+      "state": "OPTIONAL_SOURCE_VARIANT"
+    }
+  }
+}

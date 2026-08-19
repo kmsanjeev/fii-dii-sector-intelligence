@@ -1,0 +1,22 @@
+{
+  "evaluator": "EXISTING_DECLARATIVE_EVALUATOR_ONLY",
+  "production_activation": false,
+  "new_generic_engine": false,
+  "v2_created": false,
+  "v2_hash": null,
+  "unresolved_source_predicates": [
+    "ACTIVITY_SPECIFIC_LAGNA_SEMANTICS",
+    "ACTIVITY_SPECIFIC_PLANETARY_SEMANTICS"
+  ],
+  "contract_state": "SOURCE_SEMANTICS_PARTIAL",
+  "machine_state": "MACHINE_PARTIAL",
+  "blocking": [
+    "BLOCKING_SOURCE_MANDATORY: Lagna semantics",
+    "BLOCKING_SOURCE_MANDATORY: planetary semantics"
+  ],
+  "nonblocking": [
+    "Godhuli is an optional source-variant path, not a universal mandatory blocker",
+    "personal Bala/Tara/Chandra factors remain diagnostic-only"
+  ],
+  "next_action": "DO_NOT_BUILD_ACTIVITY_ENGINE; preserve timing-only scope"
+}

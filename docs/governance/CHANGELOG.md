@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-ELECTIONAL-CONTRACT-REMEDIATION-RX1-001
+
+Completed the bounded electional contract remediation with
+`PASS_WITH_CONDITION` and decision
+`MUHURTA_ELECTIONAL_CONTRACTS_MACHINE_PARTIAL`. The frozen Lagna,
+planetary-placement and Godhuli core facts are reused without creating a
+generic engine, score or production registration. T2/T3 V1 hashes remain
+unchanged. House Construction, Griha Pravesha and Marriage remain blocked by
+genuinely source-mandatory activity semantics; Griha first-occupancy is a
+disclosed context gap and Marriage Godhuli is an optional source variant.
+The stale source-count test was corrected from 13 to the authoritative 14
+after confirming the legitimate tracked `VEDA-SRC-000014` witness. P032,
+RAG, prediction, ML and Approved Core remain unchanged. Evidence:
+`docs/current-state/muhurta-electional-contract-remediation-rx1-001/`.
+
 ## 2026-08-19 | VEDA-MUHURTA-ELECTIONAL-CORE-PRIMITIVES-001
 
 Completed the shared electional Muhurta core-primitives activity with

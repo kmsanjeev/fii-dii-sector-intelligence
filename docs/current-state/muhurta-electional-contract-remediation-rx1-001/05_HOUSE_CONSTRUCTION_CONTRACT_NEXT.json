@@ -1,0 +1,21 @@
+{
+  "evaluator": "EXISTING_DECLARATIVE_EVALUATOR_ONLY",
+  "production_activation": false,
+  "new_generic_engine": false,
+  "v2_created": false,
+  "v2_hash": null,
+  "unresolved_source_predicates": [
+    "ACTIVITY_SPECIFIC_LAGNA_SEMANTICS",
+    "ACTIVITY_SPECIFIC_PLANETARY_SEMANTICS"
+  ],
+  "contract_state": "SOURCE_SEMANTICS_PARTIAL",
+  "machine_state": "MACHINE_PARTIAL",
+  "blocking": [
+    "BLOCKING_SOURCE_MANDATORY: executable Lagna predicate absent",
+    "BLOCKING_SOURCE_MANDATORY: executable planetary predicate absent"
+  ],
+  "nonblocking": [
+    "Nakshatra and other P032 facts remain preference/context only"
+  ],
+  "next_action": "DO_NOT_BUILD_ACTIVITY_ENGINE; await bounded source resolution"
+}
