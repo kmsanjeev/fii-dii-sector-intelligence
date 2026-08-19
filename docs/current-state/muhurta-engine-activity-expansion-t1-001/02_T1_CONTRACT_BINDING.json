@@ -1,0 +1,27 @@
+{
+  "programme": "VEDA-MUHURTA-ENGINE-ACTIVITY-EXPANSION-T1-001",
+  "starting_commit": "596e2d393940c5d27381fc71a1affe200a6aa18e",
+  "bindings": [
+    {
+      "activity_id": "VEHICLE_CONVEYANCE_COMMENCEMENT",
+      "contract_id": "VEDA-MUH-T1-CONTRACT-VEHICLE-CONVEYANCE-COMMENCEMENT-V1",
+      "contract_hash": "D5967EA716874DA9ABB0FC8D4D25691A46F0EEC4446F3C987459942D8FCEAA41",
+      "machine_contract": "07_SELECTED_ACTIVITY_A_MACHINE_CONTRACT.json",
+      "factor": "P032-CALC-NAKSHATRA-001",
+      "evaluator": "MUH-T1-EVAL-NAKSHATRA-LIGHT-001",
+      "activation": "IMPLEMENTED_ACTIVE"
+    },
+    {
+      "activity_id": "CONSECRATION_INSTALLATION_COMMENCEMENT",
+      "contract_id": "VEDA-MUH-T1-CONTRACT-CONSECRATION-INSTALLATION-COMMENCEMENT-V1",
+      "contract_hash": "F4EC72B91060F965E30D826A1EA44E39F994AA6A1D78C537654FD2E7064AF52C",
+      "machine_contract": "10_SELECTED_ACTIVITY_B_MACHINE_CONTRACT.json",
+      "factor": "P032-CALC-NAKSHATRA-001",
+      "evaluator": "MUH-T1-EVAL-NAKSHATRA-FIXED-001",
+      "activation": "IMPLEMENTED_ACTIVE"
+    }
+  ],
+  "contract_semantics_mutated": false,
+  "numeric_scoring": false,
+  "personal_bala": false
+}

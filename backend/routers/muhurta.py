@@ -21,6 +21,7 @@ class MuhurtaRecommendationRequest(BaseModel):
     candidate_start: str
     location: dict[str, Any]
     activity_subscope: str | None = None
+    ceremony_subtype: str | None = None
     sun_sidereal_longitude: float | None = Field(default=None, ge=0, lt=360)
     moon_sidereal_longitude: float | None = Field(default=None, ge=0, lt=360)
     p032_facts: dict[str, Any] | None = None
@@ -38,6 +39,7 @@ class MuhurtaWindowSearchRequest(BaseModel):
     daily_latest_time: str | None = None
     max_results: int = Field(default=5, ge=1, le=20)
     activity_subscope: str | None = None
+    ceremony_subtype: str | None = None
     transition_boundaries: list[Any] | None = None
     p032_fact_segments: list[dict[str, Any]] | None = None
     p032_facts: dict[str, Any] | None = None

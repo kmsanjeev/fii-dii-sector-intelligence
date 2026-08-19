@@ -1,0 +1,14 @@
+{
+  "vehicle": {
+    "accepted_scope": "first use/acquisition commencement",
+    "abstained_scopes": ["vehicle purchase", "financing", "loan execution", "insurance purchase", "registration", "sale", "investment"],
+    "broad_alias_rejected": "VEHICLE"
+  },
+  "consecration": {
+    "accepted_scope": "consecration/deity or temple installation commencement",
+    "abstained_broad_scopes": ["puja", "homa", "japa", "vrata", "initiation", "religious gathering", "spiritual practice", "house ceremony", "religious ceremony"],
+    "subtype_rule": "explicit non-empty ceremony_subtype required"
+  },
+  "negative_recommendations": false,
+  "unrelated_modern_scope_inference": false
+}

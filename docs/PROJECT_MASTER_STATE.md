@@ -1,6 +1,17 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.73.7 | 2026-08-19
+# Version 4.73.8 | 2026-08-19
+
+- `VEDA-MUHURTA-ENGINE-ACTIVITY-EXPANSION-T1-001` completed with
+  `MUHURTA_T1_ENGINE_OPERATIONAL_VEHICLE_CONSECRATION_WITH_CONDITIONS`.
+  Existing RX1 and transition-aware window-search machinery now default-enables
+  the narrow Vehicle/Conveyance and Consecration/Installation T1 contracts.
+  Hash guards, P032 Nakshatra factor binding, source trace, scope-safe
+  abstention, Consecration subtype enforcement, caution and consultation pass
+  focused and inherited regression validation. Business/Education behavior,
+  P032 math, Personal Bala freeze, RAG, prediction, ML and Approved Core (`17`)
+  remain unchanged. Evidence:
+  `docs/current-state/muhurta-engine-activity-expansion-t1-001/`.
 
 - `VEDA-MUHURTA-ACTIVITY-EXPANSION-T1-001` completed with
   `MUHURTA_ACTIVITY_EXPANSION_TWO_CONTRACTS_READY`: narrow non-production

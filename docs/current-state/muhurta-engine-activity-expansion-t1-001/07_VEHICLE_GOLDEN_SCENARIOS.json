@@ -1,0 +1,14 @@
+{
+  "activity_id": "VEHICLE_CONVEYANCE_COMMENCEMENT",
+  "cases": [
+    {"nakshatra": "Ashwini", "expected": "SUPPORTED_WITH_CAUTION"},
+    {"nakshatra": "Pushya", "expected": "SUPPORTED_WITH_CAUTION"},
+    {"nakshatra": "Hasta", "expected": "SUPPORTED_WITH_CAUTION"},
+    {"nakshatra": "Bharani", "expected": "ABSTAIN"},
+    {"nakshatra": "missing", "expected": "ABSTAIN"},
+    {"scope": "VEHICLE_PURCHASE", "expected": "ABSTAIN / ACTIVITY_SCOPE_MISMATCH"},
+    {"contract_hash": "tampered", "expected": "FAIL_CLOSED"}
+  ],
+  "score": false,
+  "prediction": false
+}

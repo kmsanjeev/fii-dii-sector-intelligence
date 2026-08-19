@@ -1,0 +1,14 @@
+{
+  "engine_reused": "VEDA_MUHURTA_TRANSITION_AWARE_WINDOW_SEARCH",
+  "fixed_sampling": false,
+  "transition_dependency": {
+    "vehicle": ["NAKSHATRA"],
+    "consecration": ["NAKSHATRA"],
+    "business_education_unchanged": ["TITHI", "KARANA", "NAKSHATRA"]
+  },
+  "vehicle": {"7_day": {"windows_examined": 1, "state": "NO_RESULT", "ms_observed": 163.407}, "31_day": {"windows_examined": 7, "state": "EQUIVALENT_TOP_WINDOWS", "ms_observed": 822.532}},
+  "consecration": {"7_day": {"windows_examined": 3, "state": "WINDOWS_FOUND", "ms_observed": 203.497}, "31_day": {"windows_examined": 9, "state": "EQUIVALENT_TOP_WINDOWS", "ms_observed": 742.895}},
+  "merge": "existing semantic equivalence only",
+  "comparator": "existing categorical state comparator",
+  "numeric_score": false
+}

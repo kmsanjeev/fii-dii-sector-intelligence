@@ -1,0 +1,14 @@
+{
+  "activity_id": "CONSECRATION_INSTALLATION_COMMENCEMENT",
+  "cases": [
+    {"nakshatra": "Rohini", "subtype": "DEITY_INSTALLATION", "expected": "SUPPORTED_WITH_CAUTION"},
+    {"nakshatra": "Uttara Phalguni", "subtype": "DEITY_INSTALLATION", "expected": "SUPPORTED_WITH_CAUTION"},
+    {"nakshatra": "Uttara Ashadha", "subtype": "DEITY_INSTALLATION", "expected": "SUPPORTED_WITH_CAUTION"},
+    {"nakshatra": "Uttara Bhadrapada", "subtype": "DEITY_INSTALLATION", "expected": "SUPPORTED_WITH_CAUTION"},
+    {"nakshatra": "Bharani", "subtype": "DEITY_INSTALLATION", "expected": "ABSTAIN"},
+    {"nakshatra": "Rohini", "subtype": "missing", "expected": "ABSTAIN / CEREMONY_SUBTYPE_MISSING"},
+    {"scope": "PUJA", "subtype": "DEITY_INSTALLATION", "expected": "ABSTAIN / ACTIVITY_SCOPE_MISMATCH"}
+  ],
+  "traditional_consultation": true,
+  "score": false
+}

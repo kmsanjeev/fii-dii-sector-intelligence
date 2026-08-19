@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-08-19 | VEDA-MUHURTA-ENGINE-ACTIVITY-EXPANSION-T1-001
+
+Completed the authorized production Muhurta engine expansion with
+`MUHURTA_T1_ENGINE_OPERATIONAL_VEHICLE_CONSECRATION_WITH_CONDITIONS`. The
+existing RX1 recommendation engine and transition-aware window search now
+consume the predecessor Vehicle/Conveyance and Consecration/Installation
+contracts through hash-guarded Nakshatra predicates. Consecration requires an
+explicit subtype; nonmatches and missing factors abstain. Source trace,
+caution, consultation, categorical comparison and default capability/access
+states are preserved. Business/Education behavior, P032, Personal Bala, RAG,
+prediction, ML and Approved Core remain unchanged.
+
 ## 2026-08-19 | VEDA-MUHURTA-ACTIVITY-EXPANSION-T1-001
 
 Completed the first Muhurta activity-expansion tranche with

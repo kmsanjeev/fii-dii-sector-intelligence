@@ -1,0 +1,14 @@
+{
+  "capabilities": [
+    {"activity_id": "BUSINESS_OPENING_INAUGURATION", "capability_state": "IMPLEMENTED_VALIDATED", "access_state": "ENABLED"},
+    {"activity_id": "EDUCATION_COMMENCEMENT", "capability_state": "IMPLEMENTED_VALIDATED", "access_state": "ENABLED"},
+    {"activity_id": "VEHICLE_CONVEYANCE_COMMENCEMENT", "capability_state": "IMPLEMENTED_VALIDATED", "access_state": "ENABLED"},
+    {"activity_id": "CONSECRATION_INSTALLATION_COMMENCEMENT", "capability_state": "IMPLEMENTED_VALIDATED", "access_state": "ENABLED"},
+    {"activity_id": "RELIGIOUS_SPIRITUAL_CEREMONY", "capability_state": "SOURCE_HARDENING_REQUIRED", "access_state": "GATED"},
+    {"activity_id": "PERSONALIZED_MUHURTA", "capability_state": "SOURCE_PARTIAL", "access_state": "GATED"}
+  ],
+  "capability_access_separated": true,
+  "permanent_topic_restrictions": false,
+  "approved_core_before": 17,
+  "approved_core_after": 17
+}

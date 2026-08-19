@@ -1,8 +1,8 @@
-"""Non-production machine contracts for Muhurta Activity Expansion T1.
+"""Source-governed handoff contracts for Muhurta Activity Expansion T1.
 
-This module is a diagnostic/contract fixture only.  It deliberately does not
-register activities with the production recommendation or window-search
-engines.
+The production engine consumes these predecessor metadata structures only
+after validating the immutable JSON handoff artifacts and their hashes.  This
+module contains no recommendation path, scoring, ranking, or calculation.
 """
 
 from __future__ import annotations

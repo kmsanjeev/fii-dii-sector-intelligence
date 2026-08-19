@@ -1,0 +1,9 @@
+{
+  "field": "ceremony_subtype",
+  "required_for": "CONSECRATION_INSTALLATION_COMMENCEMENT",
+  "accepted": "non-empty string supplied by the caller as explicit context",
+  "missing_or_blank": "ABSTAIN / CEREMONY_SUBTYPE_MISSING",
+  "wrong_type": "request validation error",
+  "arbitrary_taxonomy": false,
+  "generic_religious_ceremony_inference": false
+}

@@ -118,6 +118,9 @@ def _normalise_request(request: Mapping[str, Any]) -> dict[str, Any]:
     scope = request.get("activity_subscope")
     if scope is not None and not isinstance(scope, str):
         raise MuhurtaWindowSearchError("activity_subscope must be a string")
+    ceremony_subtype = request.get("ceremony_subtype")
+    if ceremony_subtype is not None and not isinstance(ceremony_subtype, str):
+        raise MuhurtaWindowSearchError("ceremony_subtype must be a string")
     return {
         "activity_id": activity_id,
         "location": location,
@@ -127,6 +130,7 @@ def _normalise_request(request: Mapping[str, Any]) -> dict[str, Any]:
         "latest": latest,
         "max_results": max_results,
         "activity_subscope": scope,
+        "ceremony_subtype": ceremony_subtype,
         "transition_boundaries": request.get("transition_boundaries"),
         "p032_fact_segments": request.get("p032_fact_segments"),
         "p032_facts": request.get("p032_facts"),
@@ -348,7 +352,11 @@ def _transition_inputs(req: Mapping[str, Any], intervals: list[tuple[datetime, d
     if explicit_items or fact_segments:
         calculated = []
     else:
-        calculated = discover_transitions(req["start"], req["end"])
+        factors = ("NAKSHATRA",) if req["activity_id"] in {
+            "VEHICLE_CONVEYANCE_COMMENCEMENT",
+            "CONSECRATION_INSTALLATION_COMMENCEMENT",
+        } else ("TITHI", "KARANA", "NAKSHATRA")
+        calculated = discover_transitions(req["start"], req["end"], factors=factors)
     all_items = explicit_items + [{**item, "at": _parse_datetime(item["at"], "calculated transition") } for item in calculated]
     # Keep only boundaries that can split at least one requested daily interval.
     all_items = [item for item in all_items if any(left < item["at"] < right for left, right in intervals)]
@@ -400,6 +408,7 @@ def search(request: Mapping[str, Any]) -> dict[str, Any]:
                     "candidate_start": representative,
                     "location": req["location"],
                     "activity_subscope": req["activity_subscope"],
+                    "ceremony_subtype": req["ceremony_subtype"],
                     "p032_facts": facts,
                     "transition_boundaries": points,
                 }

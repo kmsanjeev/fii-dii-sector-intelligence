@@ -18,7 +18,8 @@ from typing import Any, Mapping
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from engines.common.logger import get_logger
-from engines.ai.knowledge.muhurta_foundation import compute_panchanga_facts
+from engines.ai.knowledge.muhurta_foundation import NAKSHATRA_NAMES, compute_panchanga_facts
+from scripts.veda_muhurta_activity_expansion_t1 import ACTIVITIES
 from scripts.veda_muhurta_predicate_evaluator import (
     PredicateResult,
     SUPPORTED_OPERATORS,
@@ -30,9 +31,10 @@ from scripts.veda_muhurta_rule_evaluator_contract_remediation_001 import adapt_p
 
 PROGRAMME = "VEDA-MUHURTA-RECOMMENDATION-ENGINE-001-RX1"
 ENGINE_ID = "VEDA_MUHURTA_GENERAL_RECOMMENDATION_ENGINE"
-ENGINE_VERSION = "1.0.0"
+ENGINE_VERSION = "1.1.0"
 MODE = "GENERAL_MUHURTA"
 CONTRACT_ROOT = Path(__file__).resolve().parents[3] / "docs/current-state/muhurta-dedicated-classical-source-rx2-001"
+T1_CONTRACT_ROOT = Path(__file__).resolve().parents[3] / "docs/current-state/muhurta-activity-expansion-t1-001"
 
 CONTRACTS = {
     "BUSINESS_OPENING_INAUGURATION": {
@@ -48,6 +50,26 @@ CONTRACTS = {
         "hash": "7A17DB6B6256D9BD1C6F1F6737FACC4A6F2AAF9B8A74C56FD0FA05A3B6805F35",
         "caution": "Education commencement guidance does not guarantee academic outcomes and does not override institutional requirements, deadlines, or mandatory dates.",
         "consultation": "Treat institutional schedules, enrolment rules, attendance requirements, and practical educational obligations as primary.",
+    },
+    "VEHICLE_CONVEYANCE_COMMENCEMENT": {
+        "schema": "T1_HANDOFF",
+        "file": "06_SELECTED_ACTIVITY_A_RULE_CONTRACT.json",
+        "machine_file": "07_SELECTED_ACTIVITY_A_MACHINE_CONTRACT.json",
+        "machine_hash": "7A7DC6D64364B78ACDB8E52CBBAC7B5C1DDE12920981EE66E09A02671C9ABD79",
+        "contract_id": "VEDA-MUH-T1-CONTRACT-VEHICLE-CONVEYANCE-COMMENCEMENT-V1",
+        "hash": "D5967EA716874DA9ABB0FC8D4D25691A46F0EEC4446F3C987459942D8FCEAA41",
+        "caution": "Vehicle or conveyance timing guidance does not replace road safety, mechanical inspection, legal registration, insurance, licensing, or practical travel requirements.",
+        "consultation": "Confirm vehicle condition, road safety, licensing, registration, insurance, financing, and other practical requirements independently.",
+    },
+    "CONSECRATION_INSTALLATION_COMMENCEMENT": {
+        "schema": "T1_HANDOFF",
+        "file": "09_SELECTED_ACTIVITY_B_RULE_CONTRACT.json",
+        "machine_file": "10_SELECTED_ACTIVITY_B_MACHINE_CONTRACT.json",
+        "machine_hash": "76191A315FEA184A628E228B042ED7CCBE5E2C250D8895F83B3CAF4B19B3D065",
+        "contract_id": "VEDA-MUH-T1-CONTRACT-CONSECRATION-INSTALLATION-COMMENCEMENT-V1",
+        "hash": "F4EC72B91060F965E30D826A1EA44E39F994AA6A1D78C537654FD2E7064AF52C",
+        "caution": "Consecration or installation timing is supplementary traditional guidance; it does not establish ritual validity or guarantee an outcome.",
+        "consultation": "Confirm tradition, lineage, deity, institution, and ritual-procedure requirements with a qualified traditional authority.",
     },
 }
 
@@ -91,10 +113,88 @@ def _contract_hash(contract: Mapping[str, Any]) -> str:
     return hashlib.sha256(_canonical(value).encode("utf-8")).hexdigest().upper()
 
 
+def _raw_hash(value: Mapping[str, Any]) -> str:
+    return hashlib.sha256(_canonical(value).encode("utf-8")).hexdigest().upper()
+
+
+def _load_t1_contract(activity_id: str, binding: Mapping[str, Any]) -> dict[str, Any]:
+    """Load the predecessor T1 handoff without rewriting its source artifact."""
+    try:
+        source_contract = json.loads((T1_CONTRACT_ROOT / binding["file"]).read_text(encoding="utf-8"))
+        machine_contract = json.loads((T1_CONTRACT_ROOT / binding["machine_file"]).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, KeyError) as exc:
+        raise ContractValidationError(f"T1 contract unavailable: {activity_id}") from exc
+    if not isinstance(source_contract, dict) or not isinstance(machine_contract, dict):
+        raise ContractValidationError("T1 contract artifacts must be objects")
+    if source_contract.get("contract_hash") != binding["hash"]:
+        raise ContractValidationError("T1 contract hash mismatch")
+    if source_contract.get("contract_id") != binding["contract_id"] or source_contract.get("activity_id") != activity_id:
+        raise ContractValidationError("T1 contract identity mismatch")
+    payload = {key: value for key, value in source_contract.items() if key != "contract_hash"}
+    if _raw_hash(machine_contract) != binding["machine_hash"] or machine_contract.get("activity_id") != activity_id:
+        raise ContractValidationError("T1 machine contract hash mismatch")
+    activity = ACTIVITIES.get(activity_id)
+    if not activity or machine_contract.get("evaluator_id") != activity["evaluator_ids"][0]:
+        raise ContractValidationError("T1 evaluator binding mismatch")
+    if machine_contract.get("factor_id") != "P032-CALC-NAKSHATRA-001" or machine_contract.get("operator") != "IN_SET":
+        raise ContractValidationError("T1 factor binding mismatch")
+    if machine_contract.get("recommendation_effect") != "PREFERENCE_POSITIVE_ONLY":
+        raise ContractValidationError("T1 recommendation effect mismatch")
+    if machine_contract.get("source_assertion_ids") != activity["source_assertions"]:
+        raise ContractValidationError("T1 source assertion binding mismatch")
+    rule = {
+        "activity_scope": activity_id,
+        "condition": f"P032 Nakshatra name is in the source-bound {activity['expected_nakshatra_class'].lower()} set.",
+        "condition_mode": "SINGLE",
+        "evaluator_id": machine_contract["evaluator_id"],
+        "evaluator_state": "EXECUTABLE",
+        "executability_state": "MACHINE_READY",
+        "expected_set": list(machine_contract["expected_set"]),
+        "explanation_label": "Source-scoped Nakshatra compatibility; not a success claim.",
+        "factor_id": "NAKSHATRA_NAME",
+        "factor_source": "P032-CALC-NAKSHATRA-001",
+        "factor_type": "NAKSHATRA",
+        "hard_exclusion": False,
+        "hard_requirement": False,
+        "missing_value_policy": "ABSTAIN",
+        "operator": "IN",
+        "precedence_class": "PREFERENCE_POSITIVE",
+        "recommendation_effect": "PREFERENCE_POSITIVE",
+        "rule_class": "PREFERENCE_POSITIVE",
+        "rule_id": activity["rule_ids"][0],
+        "source_assertions": list(activity["source_assertions"]),
+        "source_passages": list(activity["source_passages"]),
+        "source_layer": "CLASSICAL_PRIMARY",
+        "value_type": "ENUM",
+        "variant_id": "BRIHAT_SAMHITA_NUMBERING_VARIANT_RETAINED",
+        "abstain_on_false": True,
+        "missing_abstention_reason": "MISSING_NAKSHATRA",
+        "nonmatch_abstention_reason": "NO_SOURCE_BOUND_CLASS_MATCH",
+    }
+    normalized = copy.deepcopy(payload)
+    normalized.update({
+        "contract_hash_full": binding["hash"],
+        "rules": [rule],
+        "machine_rule_ids": list(activity["rule_ids"]),
+        "source_lineage": {
+            "assertions": list(activity["source_assertions"]),
+            "passages": list(activity["source_passages"]),
+            "source_standard": "VEDA-KNOWLEDGE-SOURCE-WITNESS-STANDARD-001",
+        },
+        "source_activity_class": activity["source_activity_class"],
+        "source_contract_readiness": source_contract["readiness"],
+        "runtime_schema": "T1_PREDECESSOR_HANDOFF_V1",
+    })
+    _validate_rule(rule, activity_id)
+    return normalized
+
+
 def _load_contract(activity_id: str) -> dict[str, Any]:
     binding = CONTRACTS.get(activity_id)
     if binding is None:
         raise ContractValidationError(f"unsupported activity contract: {activity_id}")
+    if binding.get("schema") == "T1_HANDOFF":
+        return _load_t1_contract(activity_id, binding)
     path = CONTRACT_ROOT / binding["file"]
     try:
         contract = json.loads(path.read_text(encoding="utf-8"))
@@ -216,6 +316,14 @@ def _normalise_factors(
     if not isinstance(boundaries, list):
         raise MuhurtaEngineError("transition_boundaries must be a list")
     factors = adapt_p032_facts(facts, boundaries, activity_subscope=activity_subscope)
+    nakshatra = facts.get("nakshatra")
+    if isinstance(nakshatra, Mapping):
+        name = nakshatra.get("name")
+        index = nakshatra.get("index")
+        if name is None and isinstance(index, int) and 0 <= index < len(NAKSHATRA_NAMES):
+            name = NAKSHATRA_NAMES[index]
+        if name is not None:
+            factors["NAKSHATRA_NAME"] = str(name)
     if factors.get("PANCHANGA_FACTS_AVAILABLE") and isinstance(facts.get("karana"), Mapping):
         name = facts["karana"].get("name")
         if name is not None:
@@ -261,8 +369,25 @@ def recommend(request: Mapping[str, Any]) -> dict[str, Any]:
     explicit_scope = request.get("activity_subscope")
     if explicit_scope is not None and not isinstance(explicit_scope, str):
         raise MuhurtaEngineError("activity_subscope must be a string")
+    scope_key = explicit_scope.strip().upper().replace(" ", "_") if isinstance(explicit_scope, str) else None
     if activity_id == "BUSINESS_OPENING_INAUGURATION" and explicit_scope in set(contract["activity_scope"]["excluded"]):
         return _result_abstention(contract, location, candidate_start, "ACTIVITY_SCOPE_MISMATCH", "The requested business activity is excluded from this narrow contract.", [], {}, {})
+    if activity_id == "VEHICLE_CONVEYANCE_COMMENCEMENT" and scope_key in {
+        "VEHICLE", "VEHICLE_PURCHASE", "VEHICLE_FINANCING", "LOAN_EXECUTION", "INSURANCE_PURCHASE",
+        "VEHICLE_REGISTRATION", "VEHICLE_SALE", "INVESTMENT_IN_VEHICLE",
+    }:
+        return _result_abstention(contract, location, candidate_start, "ACTIVITY_SCOPE_MISMATCH", "The T1 contract covers commencement of first use/acquisition, not the supplied vehicle transaction scope.", [], {}, {})
+    if activity_id == "CONSECRATION_INSTALLATION_COMMENCEMENT" and scope_key in {
+        "RELIGIOUS_CEREMONY", "PUJA", "HOMA", "JAPA", "VRATA", "INITIATION", "RELIGIOUS_GATHERING", "SPIRITUAL_PRACTICE", "HOUSE_CEREMONY",
+    }:
+        return _result_abstention(contract, location, candidate_start, "ACTIVITY_SCOPE_MISMATCH", "The T1 contract is limited to consecration/installation commencement, not the supplied broader ceremony scope.", [], {}, {})
+    ceremony_subtype = request.get("ceremony_subtype")
+    if activity_id == "CONSECRATION_INSTALLATION_COMMENCEMENT":
+        if not isinstance(ceremony_subtype, str) or not ceremony_subtype.strip():
+            return _result_abstention(contract, location, candidate_start, "CEREMONY_SUBTYPE_MISSING", "The selected T1 contract requires an explicit ceremony subtype; no generic ceremony was assumed.", [], {}, {})
+        ceremony_subtype = ceremony_subtype.strip()
+    elif ceremony_subtype is not None and (not isinstance(ceremony_subtype, str) or not ceremony_subtype.strip()):
+        raise MuhurtaEngineError("ceremony_subtype must be a non-empty string when supplied")
     if activity_id == "EDUCATION_COMMENCEMENT" and explicit_scope is None:
         explicit_scope = "FORMAL_COURSE_COMMENCEMENT"
     factors, calculation_metadata = _normalise_factors(
@@ -273,7 +398,11 @@ def recommend(request: Mapping[str, Any]) -> dict[str, Any]:
         transition_boundaries=request.get("transition_boundaries"),
         activity_subscope=explicit_scope,
     )
-    if not factors.get("PANCHANGA_FACTS_AVAILABLE"):
+    partial_t1_facts_are_usable = activity_id in {
+        "VEHICLE_CONVEYANCE_COMMENCEMENT",
+        "CONSECRATION_INSTALLATION_COMMENCEMENT",
+    } and request.get("p032_facts") is not None
+    if not factors.get("PANCHANGA_FACTS_AVAILABLE") and not partial_t1_facts_are_usable:
         return _result_abstention(contract, location, candidate_start, "CALCULATION_DEPENDENCY_UNAVAILABLE", "P032 Panchanga facts and transition boundaries were not available; the candidate was not evaluated.", [], factors, calculation_metadata)
 
     evaluated: list[dict[str, Any]] = []
@@ -296,11 +425,14 @@ def recommend(request: Mapping[str, Any]) -> dict[str, Any]:
             "rule_class": rule.get("rule_class"),
             "variant_id": rule.get("variant_id"),
             "source_assertions": list(rule.get("source_assertions", [])),
+            "source_passages": list(rule.get("source_passages", [])),
         }
         evaluated.append(evaluated_item)
         if result in {PredicateResult.NOT_EVALUABLE, PredicateResult.ERROR}:
             if rule.get("hard_requirement") or rule.get("hard_exclusion"):
                 blocking_reason = "REQUIRED_FACTOR_UNAVAILABLE"
+            elif rule.get("missing_abstention_reason"):
+                blocking_reason = rule["missing_abstention_reason"]
             continue
         if result == PredicateResult.TRUE:
             effect = rule.get("recommendation_effect")
@@ -311,6 +443,8 @@ def recommend(request: Mapping[str, Any]) -> dict[str, Any]:
             elif effect in CONTEXT_EFFECTS:
                 supporting.append(rule["rule_id"])
         else:
+            if rule.get("abstain_on_false"):
+                blocking_reason = rule.get("nonmatch_abstention_reason", "INSUFFICIENT_RULE_COVERAGE")
             if rule.get("hard_requirement"):
                 blocking_reason = "ACTIVITY_SCOPE_MISMATCH" if rule["rule_id"].endswith("ROUTINE-SCOPE-001") else "REQUIRED_FACTOR_UNAVAILABLE"
             if rule.get("hard_exclusion"):
@@ -318,7 +452,11 @@ def recommend(request: Mapping[str, Any]) -> dict[str, Any]:
             if rule.get("recommendation_effect") in POSITIVE_EFFECTS | CONTEXT_EFFECTS:
                 adverse.append(rule["rule_id"])
     if blocking_reason:
-        return _result_abstention(contract, location, candidate_start, blocking_reason, "A contract-bound required condition was not satisfied.", evaluated, factors, calculation_metadata, supporting, adverse, nonblocking_gaps)
+        explanation = {
+            "MISSING_NAKSHATRA": "P032 did not provide the Nakshatra factor required by the selected contract.",
+            "NO_SOURCE_BOUND_CLASS_MATCH": "The supplied Nakshatra is outside the selected contract's positive source-bound set; the engine abstains rather than treating it as a prohibition.",
+        }.get(blocking_reason, "A contract-bound required condition was not satisfied.")
+        return _result_abstention(contract, location, candidate_start, blocking_reason, explanation, evaluated, factors, calculation_metadata, supporting, adverse, nonblocking_gaps)
     if hard_exclusion:
         state = "NOT_RECOMMENDED_UNDER_SELECTED_RULESET"
     elif supporting and adverse:
@@ -356,6 +494,10 @@ def _coverage(contract: Mapping[str, Any], evaluated: list[Mapping[str, Any]], g
 
 def _result_base(contract: Mapping[str, Any], location: Mapping[str, Any], candidate_start: datetime, factors: Mapping[str, Any], calculation_metadata: Mapping[str, Any]) -> dict[str, Any]:
     binding = CONTRACTS[contract["activity_id"]]
+    contract_rules = contract.get("rules", [])
+    source_lineage = contract.get("source_lineage", {})
+    source_assertions = list(source_lineage.get("assertions", [])) or sorted({item for rule in contract_rules for item in rule.get("source_assertions", [])})
+    source_passages = list(source_lineage.get("passages", [])) or sorted({item for rule in contract_rules for item in rule.get("source_passages", [])})
     return {
         "activity_id": contract["activity_id"],
         "mode": MODE,
@@ -366,7 +508,7 @@ def _result_base(contract: Mapping[str, Any], location: Mapping[str, Any], candi
         "personal_factors": {"tara_bala": "NOT_EVALUATED", "chandra_bala": "NOT_EVALUATED"},
         "contract_metadata": {"contract_id": contract["contract_id"], "contract_hash_full": contract["contract_hash_full"], "version": contract["version"]},
         "engine_metadata": {"programme": PROGRAMME, "engine_id": ENGINE_ID, "engine_version": ENGINE_VERSION, "calculation": dict(calculation_metadata)},
-        "source_trace": {"contract_id": contract["contract_id"], "contract_hash_full": contract["contract_hash_full"], "engine_id": ENGINE_ID, "engine_version": ENGINE_VERSION, "rules_evaluated": [], "source_assertion_ids": [], "variant_ids": []},
+        "source_trace": {"contract_id": contract["contract_id"], "contract_hash_full": contract["contract_hash_full"], "engine_id": ENGINE_ID, "engine_version": ENGINE_VERSION, "rules_evaluated": [], "source_assertion_ids": source_assertions, "source_passage_ids": source_passages, "variant_ids": [], "source_activity_class": contract.get("source_activity_class")},
         "caution": _caution(contract["activity_id"], binding),
         "consultation_guidance": binding["consultation"],
         "capability_state": "IMPLEMENTED_VALIDATED",
@@ -396,8 +538,10 @@ def _refresh_trace(result: dict[str, Any]) -> dict[str, Any]:
     trace = result["source_trace"]
     rules = result.get("rules_evaluated", [])
     trace["rules_evaluated"] = [item["rule_id"] for item in rules]
-    trace["source_assertion_ids"] = sorted({assertion for item in rules for assertion in item.get("source_assertions", [])})
-    trace["variant_ids"] = sorted({item["variant_id"] for item in rules if item.get("variant_id")})
+    if rules:
+        trace["source_assertion_ids"] = sorted({assertion for item in rules for assertion in item.get("source_assertions", [])})
+        trace["source_passage_ids"] = sorted({passage for item in rules for passage in item.get("source_passages", [])})
+        trace["variant_ids"] = sorted({item["variant_id"] for item in rules if item.get("variant_id")})
     return result
 
 

@@ -1,0 +1,17 @@
+{
+  "activity_id": "VEHICLE_CONVEYANCE_COMMENCEMENT",
+  "source_activity_class": "SHILPA_AUSHADHA_YANA_ACTION_FAMILY",
+  "rule_id": "MUH-T1-VEHICLE-NAK-001",
+  "factor": "NAKSHATRA_NAME from P032-CALC-NAKSHATRA-001",
+  "evaluator": "MUH-T1-EVAL-NAKSHATRA-LIGHT-001",
+  "operator": "IN",
+  "expected_values": ["Ashwini", "Pushya", "Hasta"],
+  "positive_result": "SUPPORTED_WITH_CAUTION",
+  "nonmatch": "ABSTAIN / NO_SOURCE_BOUND_CLASS_MATCH",
+  "missing_factor": "ABSTAIN / MISSING_NAKSHATRA",
+  "hard_exclusions": [],
+  "scope": "Vehicle or conveyance first use/acquisition commencement only",
+  "source_assertion": "VEDA-SWW-ASSERTION-BS-NAK-VEHICLE-001",
+  "source_passage": "VEDA-SWW-PASSAGE-BRIHAT-SAMHITA-97-09-001",
+  "source_variant": "BRIHAT_SAMHITA_NUMBERING_VARIANT_RETAINED"
+}

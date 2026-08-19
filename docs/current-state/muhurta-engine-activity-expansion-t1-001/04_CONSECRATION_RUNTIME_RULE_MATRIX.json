@@ -1,0 +1,18 @@
+{
+  "activity_id": "CONSECRATION_INSTALLATION_COMMENCEMENT",
+  "source_activity_class": "ABHISHEKA_SHANTI_DHRUVA_ESTABLISHMENT_ACTION_FAMILY",
+  "rule_id": "MUH-T1-INSTALLATION-NAK-001",
+  "factor": "NAKSHATRA_NAME from P032-CALC-NAKSHATRA-001",
+  "evaluator": "MUH-T1-EVAL-NAKSHATRA-FIXED-001",
+  "operator": "IN",
+  "expected_values": ["Rohini", "Uttara Phalguni", "Uttara Ashadha", "Uttara Bhadrapada"],
+  "positive_result": "SUPPORTED_WITH_CAUTION",
+  "nonmatch": "ABSTAIN / NO_SOURCE_BOUND_CLASS_MATCH",
+  "missing_factor": "ABSTAIN / MISSING_NAKSHATRA",
+  "ceremony_subtype": "MANDATORY_NONEMPTY_CONTEXT; no ungoverned subtype enum invented",
+  "hard_exclusions": [],
+  "scope": "Consecration or deity/temple installation commencement only",
+  "source_assertion": "VEDA-SWW-ASSERTION-BS-NAK-CONSECRATION-001",
+  "source_passage": "VEDA-SWW-PASSAGE-BRIHAT-SAMHITA-97-06-001",
+  "source_variant": "BRIHAT_SAMHITA_NUMBERING_VARIANT_RETAINED"
+}
