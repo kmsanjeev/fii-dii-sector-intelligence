@@ -2,6 +2,20 @@
 # MASTER PROJECT STATE
 # Version 4.84.0 | 2026-08-20
 
+## Current VEDA sector rotation hardening (2026-08-21)
+
+`VEDA-MARKET-SECTOR-ROTATION-HARDENING-001` is operational with conditions.
+The authoritative Phase 6C engine now publishes additive
+`sector-rotation-1.1` fields for bounded constituent returns, NIFTY 50
+equal-weight relative strength, breadth coverage, leadership/persistence,
+rotation, acceleration, date alignment and evidence quality. The existing
+weighted participant values remain market-level context only and are not
+sector-specific FII/DII attribution. Historical membership snapshots remain
+unavailable, so breadth is explicitly `CURRENT_CONSTITUENT_UNIVERSE` and
+survivorship-limited. No ML, prediction, EMP, RAG, astrology or BEBOS state
+changed. Evidence is recorded in
+`docs/current-state/veda-market-sector-rotation-hardening-001/`.
+
 ## Current VEDA market participant derivatives hardening (2026-08-21)
 
 `VEDA-MARKET-PARTICIPANT-DERIVATIVES-HARDENING-001` is operational with
@@ -740,7 +754,7 @@ Phase goals:
 | File | Rows | Key Columns | Freshness |
 |------|------|-------------|-----------|
 | participant_intelligence.csv | 2581 | Market_Regime, Smart_Money_Score, conviction | 2026-07-01 |
-| sector_rotation_intelligence.csv | 29 | rotation_signal, FII_flow_score, combined_score | 2026-07-01 |
+| sector_rotation_intelligence.csv | 27 | sector-rotation-1.1, leadership, breadth, date_alignment | 2026-08-20 |
 | bull_run_probability.csv | 2441 | bull_run_score, label, 4 component scores | 2026-07-01 |
 | bull_run_watchlist.csv | 225 | EMERGING symbols sorted by score | 2026-07-01 |
 | technical_indicators.csv | 2718 | 52W H/L, 20/50/200 DMA, RSI, MACD, ATR, BB, OBV, ADX, trend_signal | 2026-07-01 |

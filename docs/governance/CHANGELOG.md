@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-21 | VEDA-MARKET-SECTOR-ROTATION-HARDENING-001
+
+- Extended the authoritative Phase 6C sector rotation engine additively to
+  `sector-rotation-1.1` with bounded constituent returns, NIFTY 50 equal-weight
+  relative strength, coverage-aware 1D/5D/20D breadth, leadership/persistence,
+  improvement/weakening, acceleration and explicit date alignment.
+- Preserved the legacy endpoint and fields while adding facts/signals,
+  leaders/laggards, limitations and evidence-quality metadata.
+- Governed weighted participant allocation as `MARKET_LEVEL_CONTEXT_ONLY`; no
+  unsupported sector-specific FII/DII attribution is claimed.
+- No ML, prediction, EMP, RAG, Jyotish, BEBOS or Market-data ownership moved;
+  evidence: `docs/current-state/veda-market-sector-rotation-hardening-001/`.
+
 ## 2026-08-21 | VEDA-MARKET-PARTICIPANT-DERIVATIVES-HARDENING-001
 
 - Audited the installed NSE participant source schemas and preserved the
