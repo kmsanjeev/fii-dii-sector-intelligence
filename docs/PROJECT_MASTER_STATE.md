@@ -2,6 +2,18 @@
 # MASTER PROJECT STATE
 # Version 4.84.0 | 2026-08-20
 
+## Current VEDA Market intelligence improvement (2026-08-21)
+
+`VEDA-MARKET-INTELLIGENCE-IMPROVEMENT-001` is in implementation. The
+provider-local Market runtime now exposes structured freshness/provenance
+metadata and preserves missing numeric values as missing on formal Market,
+participant, sector, stock and corporate responses. VEDA consumes the added
+`data_status` contract while retaining the legacy date-valued `freshness`
+field. No source/data extraction, RAG, prediction, ML, EMP, identity,
+scheduler or BEBOS state changed. Evidence is recorded in
+`docs/current-state/veda-market-intelligence-improvement-001/`; final status
+is conditional on validation and selective Git synchronization.
+
 ## Strategic VEDA documentation transition (2026-08-20)
 
 The current market-intelligence runtime and its provider-local records remain

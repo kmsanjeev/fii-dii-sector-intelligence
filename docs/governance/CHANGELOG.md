@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-21 | VEDA-MARKET-INTELLIGENCE-IMPROVEMENT-001
+
+- Added provider-local freshness/provenance metadata to formal Market,
+  participant, sector, stock and corporate responses.
+- Preserved missing numeric values as missing rather than silently converting
+  them to zero; scheduled event dates are not treated as freshness dates.
+- VEDA consumes the normalized `data_status` contract while retaining the
+  legacy date-valued `freshness` field. No source/data extraction, RAG, ML,
+  prediction, EMP, identity or BEBOS state changed.
+
 ## 2026-08-20 | VEDA-DOCUMENTATION-REBASELINE-001
 
 - Recorded the transition of universal VEDA product/ecosystem documentation to

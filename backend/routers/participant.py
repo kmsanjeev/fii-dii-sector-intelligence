@@ -4,7 +4,10 @@ GET /api/participant/latest    — latest scores, flow scores, cash market flows
 GET /api/participant/history   — time-series flow scores (last N days)
 """
 
+import math
+
 from fastapi import APIRouter, HTTPException, Query
+
 from backend.services import data_loader
 
 router = APIRouter(prefix="/api/participant", tags=["participant"])
@@ -12,9 +15,12 @@ router = APIRouter(prefix="/api/participant", tags=["participant"])
 
 def _f(v, decimals=2):
     try:
-        return round(float(v or 0), decimals)
+        value = float(v)
+        if not math.isfinite(value):
+            return None
+        return round(value, decimals)
     except (TypeError, ValueError):
-        return 0.0
+        return None
 
 
 @router.get("/latest")
@@ -64,6 +70,10 @@ def get_participant_latest():
         "Ensemble_Score":         _f(latest.get("Ensemble_Score")),
         # Cash market net flows (Cr)
         "cash_flows":             cash,
+        "data_status": data_loader.freshness_for(
+            ("participant_intel",),
+            ("participant_flows",),
+        ),
     }
 
 
@@ -84,4 +94,5 @@ def get_participant_history(limit: int = Query(252, le=2600)):
     return {
         "rows":  df[available].to_dict(orient="records"),
         "count": len(df),
+        "data_status": data_loader.freshness_for(("participant_flows",)),
     }

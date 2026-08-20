@@ -4,10 +4,23 @@ GET /api/market/regime  — current market regime + participant flow scores
 GET /api/market/freshness — data load timestamps for all datasets
 """
 
+import math
+
 from fastapi import APIRouter, HTTPException
+
 from backend.services import data_loader
 
 router = APIRouter(prefix="/api/market", tags=["market"])
+
+
+def _nullable_float(value, decimals: int = 2):
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(number):
+        return None
+    return round(number, decimals)
 
 
 @router.get("/regime")
@@ -20,8 +33,8 @@ def get_market_regime():
     latest = df_sorted.iloc[-1]
 
     regime = str(latest.get("Market_Regime", "UNKNOWN"))
-    smart_money = float(latest.get("Smart_Money_Score", 0) or 0)
-    fii_conviction = float(latest.get("FII_conviction", 0) or 0)
+    smart_money = _nullable_float(latest.get("Smart_Money_Score"))
+    fii_conviction = _nullable_float(latest.get("FII_conviction"), 1)
     data_date = str(latest.get("date", ""))
 
     flows_df = data_loader.get("participant_flows")
@@ -29,18 +42,24 @@ def get_market_regime():
     if flows_df is not None and not flows_df.empty:
         flatest = flows_df.sort_values("date").iloc[-1]
         flow_snapshot = {
-            "FII":    round(float(flatest.get("FII_flow_score",    0) or 0), 2),
-            "DII":    round(float(flatest.get("DII_flow_score",    0) or 0), 2),
-            "PRO":    round(float(flatest.get("PRO_flow_score",    0) or 0), 2),
-            "CLIENT": round(float(flatest.get("CLIENT_flow_score", 0) or 0), 2),
+            "FII":    _nullable_float(flatest.get("FII_flow_score")),
+            "DII":    _nullable_float(flatest.get("DII_flow_score")),
+            "PRO":    _nullable_float(flatest.get("PRO_flow_score")),
+            "CLIENT": _nullable_float(flatest.get("CLIENT_flow_score")),
         }
+
+    data_status = data_loader.freshness_for(
+        ("participant_intel",),
+        ("participant_flows", "bull_run"),
+    )
 
     return {
         "regime": regime,
-        "smart_money_score": round(smart_money, 2),
-        "fii_conviction_pct": round(fii_conviction, 1),
+        "smart_money_score": smart_money,
+        "fii_conviction_pct": fii_conviction,
         "flow_scores": flow_snapshot,
         "data_date": data_date,
+        "data_status": data_status,
     }
 
 
@@ -61,10 +80,7 @@ def get_market_context():
     if flows_df is not None and not flows_df.empty:
         fl = flows_df.sort_values("date").iloc[-1]
         def _f(v, d=0):
-            try:
-                return round(float(v or 0), d)
-            except (TypeError, ValueError):
-                return 0.0
+            return _nullable_float(v, d)
         cash = {
             "fpi_5d_cr":       _f(fl.get("FPI_flow_5D")),
             "mf_5d_cr":        _f(fl.get("MF_flow_5D")),
@@ -94,6 +110,10 @@ def get_market_context():
         "pcr_date":   ctx.get("trade_date", ""),
         "cash_flows": cash,
         "breadth":    breadth,
+        "data_status": data_loader.freshness_for(
+            ("participant_intel",),
+            ("participant_flows", "bull_run"),
+        ),
     }
 
 
@@ -129,4 +149,9 @@ def get_indices_ticker():
 
 @router.get("/freshness")
 def get_freshness():
-    return data_loader.freshness()
+    # Preserve the legacy load-timestamp keys while adding the governed
+    # dataset-level freshness/provenance contract.
+    return {
+        **data_loader.freshness(),
+        "metadata": data_loader.freshness_metadata(),
+    }

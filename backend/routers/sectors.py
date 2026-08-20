@@ -85,7 +85,7 @@ def get_sectors():
             "FII_flow_score":    _nullable_float(row.get("FII_flow_score")),
             "DII_flow_score":    _nullable_float(row.get("DII_flow_score")),
             "Smart_Money_Score": _nullable_float(row.get("Smart_Money_Score")),
-            "fpi_score":         _safe_float(row.get("fpi_score")),   # 0.0 is correct default
+            "fpi_score":         _nullable_float(row.get("fpi_score")),
             "last_date":         str(row.get("last_date", "")),
             # FPI ownership fields
             "fpi_signal":        fpi_data.get("fpi_signal", ""),
@@ -123,6 +123,9 @@ def get_sectors():
         "fpi_date":    list(fpi.values())[0]["fpi_date"] if fpi else None,
         "fii_regime":  fii_regime,
         "fii_neg_pct": fii_neg_pct,
+        "data_status": data_loader.freshness_for(
+            ("sector_rotation",), ("fpi_signals",)
+        ),
     }
 
 
@@ -158,6 +161,7 @@ def get_fpi_snapshot():
         "sectors": _clean_records(records),
         "count":   len(records),
         "date":    str(latest),
+        "data_status": data_loader.freshness_for(("fpi_signals",)),
     }
 
 
@@ -177,6 +181,7 @@ def get_sector_history(sector: str = None, limit: int = 252):
         "sector": sector or "ALL",
         "rows":   _clean_records(df.to_dict(orient="records")),
         "count":  len(df),
+        "data_status": data_loader.freshness_for(("sector_flows",)),
     }
 
 
@@ -211,6 +216,7 @@ def get_sector_fpi_history(sector: str, limit: int = 52):
         "sector": sector.upper(),
         "rows":   _clean_records(records),
         "count":  len(records),
+        "data_status": data_loader.freshness_for(("fpi_signals",)),
     }
 
 
@@ -243,7 +249,7 @@ def get_sector_detail(sector: str):
         "FII_flow_score":    _nullable_float(row.get("FII_flow_score")),
         "DII_flow_score":    _nullable_float(row.get("DII_flow_score")),
         "Smart_Money_Score": _nullable_float(row.get("Smart_Money_Score")),
-        "fpi_score":         _safe_float(row.get("fpi_score")),
+        "fpi_score":         _nullable_float(row.get("fpi_score")),
         "price_momentum_score": _nullable_float(row.get("price_momentum_score")),
         "last_date":         str(row.get("last_date", "")),
         # FPI ownership block
@@ -255,4 +261,7 @@ def get_sector_detail(sector: str):
         "net_z":             fpi.get("net_z"),
         "qoq_auc_delta_pct": fpi.get("qoq_auc_delta_pct"),
         "top_stocks":        top_stocks,
+        "data_status": data_loader.freshness_for(
+            ("sector_rotation",), ("bull_run", "fpi_signals")
+        ),
     }

@@ -151,9 +151,11 @@ def get_corporate_summary():
     deals = data_loader.get("deal_signals")
     if deals is not None and not deals.empty:
         net = pd.to_numeric(deals["inst_net_value_cr"], errors="coerce")
-        out["inst_net_30d_cr"]  = round(float(net.sum()), 0)
-        out["accumulating_30d"] = int((net > 0).sum())
-        out["distributing_30d"] = int((net < 0).sum())
+        valid_net = net.dropna()
+        if not valid_net.empty:
+            out["inst_net_30d_cr"]  = round(float(valid_net.sum()), 0)
+            out["accumulating_30d"] = int((valid_net > 0).sum())
+            out["distributing_30d"] = int((valid_net < 0).sum())
 
     ca = data_loader.get("corp_actions")
     if ca is not None and not ca.empty:
@@ -167,6 +169,10 @@ def get_corporate_summary():
         out["results_7d"] = int(((d7f <= 7) & (cat["purpose_type"] == "FINANCIAL_RESULTS")).sum())
         out["catalysts_60d"] = int(len(cat))
 
+    out["data_status"] = data_loader.freshness_for(
+        (),
+        ("announcements", "deal_signals", "corp_actions", "upcoming_catalysts"),
+    )
     return out
 
 

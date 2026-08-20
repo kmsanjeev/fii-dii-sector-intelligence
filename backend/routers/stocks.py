@@ -1447,18 +1447,18 @@ def get_stock_detail(symbol: str):
         "symbol":             str(row.get("symbol", "")),
         "sector":             str(row.get("sector", "")),
         "close_now":          _safe(row.get("close_now")),
-        "bull_run_score":     round(float(row.get("bull_run_score", 0) or 0), 2),
+        "bull_run_score":     _safe(row.get("bull_run_score")),
         "label":              str(row.get("label", "")),
         "market_regime":      str(row.get("market_regime", "")),
-        "regime_multiplier":  float(row.get("regime_multiplier", 1.0) or 1.0),
-        "driving_participant": str(row.get("driving_participant", "NONE") or "NONE"),
-        "ath_proximity_score": round(float(row.get("ath_proximity_score", 0) or 0), 2),
+        "regime_multiplier":  _safe(row.get("regime_multiplier")),
+        "driving_participant": str(row.get("driving_participant", "UNKNOWN") or "UNKNOWN"),
+        "ath_proximity_score": _safe(row.get("ath_proximity_score")),
         "components": {
-            "price_score":         round(float(row.get("price_score",         0) or 0), 2),
-            "ath_proximity_score": round(float(row.get("ath_proximity_score", 0) or 0), 2),
-            "sector_flow_score":   round(float(row.get("sector_flow_score",   0) or 0), 2),
-            "deal_score":          round(float(row.get("deal_score",          0) or 0), 2),
-            "corporate_score":     round(float(row.get("corporate_score",     0) or 0), 2),
+            "price_score":         _safe(row.get("price_score")),
+            "ath_proximity_score": _safe(row.get("ath_proximity_score")),
+            "sector_flow_score":   _safe(row.get("sector_flow_score")),
+            "deal_score":          _safe(row.get("deal_score")),
+            "corporate_score":     _safe(row.get("corporate_score")),
         },
         "price": {
             "ret_30d":        _safe(row.get("ret_30d")),
@@ -1495,6 +1495,17 @@ def get_stock_detail(symbol: str):
         "consensus": consensus,
         # Phase AF — AstroFinance
         "astro":    astro_signal,
+        "data_status": data_loader.freshness_for(
+            ("bull_run",),
+            (
+                "deal_signals",
+                "corporate_confidence",
+                "technical",
+                "fno_intel",
+                "sector_rotation",
+                "announcements",
+            ),
+        ),
     }
 
 
