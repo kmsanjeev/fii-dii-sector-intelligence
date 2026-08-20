@@ -2,6 +2,14 @@
 # MASTER PROJECT STATE
 # Version 4.84.0 | 2026-08-20
 
+## Strategic VEDA documentation transition (2026-08-20)
+
+The current market-intelligence runtime and its provider-local records remain
+authoritative in this repository. The universal VEDA product and ecosystem
+documentation authority is now `D:\Projects\VEDA`. No source, data, RAG, ML,
+prediction or runtime migration is implied; the historical ledger below is
+preserved as evidence. Universal architecture is authorized but not started.
+
 - `VEDA-RUNTIME-CAPABILITY-EXPOSURE-AUDIT-001` completed with
   `PASS_WITH_CONDITION` and decision
   `VEDA_RUNTIME_EXPOSURE_MULTIPLE_WIRING_GAPS`. The audit confirms 23

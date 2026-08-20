@@ -1,5 +1,15 @@
 # VEDA Roadmap Entry Point
 
+## Legacy / implementation roadmap for VEDA while resident in this repository
+
+The universal VEDA product and ecosystem documentation authority is now
+`D:\Projects\VEDA`. This file remains the historical and current
+implementation roadmap for VEDA-related work resident in the FII-DII
+market-intelligence provider. Existing entries below are preserved as evidence;
+they do not assert that source, data or runtime has migrated. The next universal
+platform activity is tracked in the VEDA root as
+`VEDA-UNIVERSAL-PLATFORM-ARCHITECTURE-001` and is not started here.
+
 Current synchronization (2026-08-20):
 `VEDA-RUNTIME-CAPABILITY-CONFIGURATION-AND-ROUTING-REMEDIATION-001` completed
 with `VEDA_RUNTIME_CAPABILITY_WIRING_REMEDIATION_OPERATIONAL_WITH_CONDITION`.

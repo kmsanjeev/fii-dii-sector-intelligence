@@ -11,6 +11,13 @@ This is development-agent guidance only; it does not restrict the Veda runtime.
 At runtime, Veda is a broad conversational assistant with market, Jyotish,
 research, and other specialist capabilities available as additive domains.
 
+## VEDA provider boundary (2026-08-20)
+
+The universal VEDA documentation authority is `D:\Projects\VEDA`. This
+repository remains the authoritative market-intelligence provider and current
+runtime host. This transition does not authorize source migration, a
+monolith, or changes to provider-local runtime ownership.
+
 ## MANDATORY CODING RULES (NON-NEGOTIABLE)
 1. Deliver COMPLETE copy-paste-ready files — never partial snippets or patches
 2. Provide `git add / git commit / git push` commands after every code change

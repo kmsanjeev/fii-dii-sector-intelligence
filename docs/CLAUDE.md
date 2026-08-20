@@ -1,5 +1,13 @@
 # DOCS DIRECTORY — CLAUDE CONTEXT
 
+## VEDA transition boundary (2026-08-20)
+
+The universal VEDA documentation kernel is authoritative at
+`D:\Projects\VEDA\docs`. This repository's documentation remains authoritative
+for the current market-intelligence implementation, current-state evidence and
+historical implementation roadmap. Do not interpret the VEDA target as a
+claim that source, data or runtime has moved here or away from here.
+
 ## DOCUMENTATION GOVERNANCE (ADR-015)
 Documentation is MANDATORY before release of any module.
 The update sequence after every code change:

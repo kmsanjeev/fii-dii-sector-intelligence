@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2026-08-20 | VEDA-DOCUMENTATION-REBASELINE-001
+
+- Recorded the transition of universal VEDA product/ecosystem documentation to
+  `D:\Projects\VEDA`.
+- Preserved this repository as the authoritative market-intelligence provider
+  and current runtime host; no source, data or runtime migration occurred.
+
 ## 2026-08-20 | VEDA-RUNTIME-CAPABILITY-CONFIGURATION-AND-ROUTING-REMEDIATION-001
 
 - Completed the bounded runtime capability wiring remediation from the

@@ -1,4 +1,11 @@
 # AI PLATFORM
+
+## VEDA relationship (current transition)
+
+This module documents the current Capital Flow Intelligence implementation and
+remains provider-local. VEDA is the parent product/ecosystem documentation
+authority at `D:\Projects\VEDA`; future federation is architecture work, not a
+current migration or universal production claim.
 ## Capital Flow Intelligence Platform | Updated 2026-08-04
 
 ---
