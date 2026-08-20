@@ -1,5 +1,15 @@
 # VEDA Roadmap Entry Point
 
+## 2026-08-21 — Stock intelligence hardening
+
+`VEDA-MARKET-STOCK-INTELLIGENCE-HARDENING-001` is implemented and operational
+with conditions. The
+existing stock route is being extended additively with the bounded
+`stock-intelligence-1.1` contract and a formal provider allowlist; no ML,
+prediction, RAG, recommendation or stock-specific FII/DII attribution is
+introduced. Evidence is in
+`docs/current-state/veda-market-stock-intelligence-hardening-001/`.
+
 ## Legacy / implementation roadmap for VEDA while resident in this repository
 
 The universal VEDA product and ecosystem documentation authority is now

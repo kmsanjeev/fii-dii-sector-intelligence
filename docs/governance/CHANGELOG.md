@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-08-21 - VEDA-MARKET-STOCK-INTELLIGENCE-HARDENING-001
+
+Completed the governed stock-intelligence hardening activity with operational
+conditions. The existing
+stock endpoint is extended additively with the bounded `stock-intelligence-1.1`
+contract; no ML, prediction, PRED-M4, EMP-001, RAG semantic, Approved Core,
+astrology or BEBOS state changed. Evidence is recorded in
+`docs/current-state/veda-market-stock-intelligence-hardening-001/`.
+
 ## 2026-08-21 | VEDA-MARKET-SECTOR-ROTATION-HARDENING-001
 
 - Extended the authoritative Phase 6C sector rotation engine additively to

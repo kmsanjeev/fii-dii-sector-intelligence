@@ -11,11 +11,14 @@ import math
 import threading
 import time
 from pathlib import Path
+
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import HTMLResponse
-from backend.services import data_loader
+
 from backend.routers.report_generator import generate_report_html
+from backend.services import data_loader
+from backend.services.stock_intelligence import build_stock_intelligence_contract
 from engines.common.astrology_safety import present_astrofinance_signal
 
 # ── Announcement summary cache (seq_id → summary text) ───────────────────────
@@ -907,15 +910,44 @@ def get_all_stocks(
 @router.get("/{symbol}")
 def get_stock_detail(symbol: str):
     bull_df = data_loader.get("bull_run")
-    if bull_df is None or bull_df.empty:
-        raise HTTPException(status_code=503, detail="bull_run_probability not loaded")
-
     sym = symbol.upper()
-    matched = bull_df[bull_df["symbol"].str.upper() == sym]
+    matched = (
+        bull_df[bull_df["symbol"].str.upper() == sym]
+        if bull_df is not None and not bull_df.empty
+        else pd.DataFrame()
+    )
     if matched.empty:
-        raise HTTPException(status_code=404, detail=f"Symbol '{sym}' not found")
-
-    row = matched.iloc[0]
+        # The equity master is the identity/universe authority.  A missing
+        # legacy bull-run row must not make otherwise available price or
+        # technical intelligence look like an unknown symbol.
+        master_path = Path("data/NSE/equity_master/equity_master.csv")
+        try:
+            master = pd.read_csv(master_path, dtype=str, usecols=["SYMBOL"])
+            known = master[master["SYMBOL"].astype(str).str.upper() == sym]
+        except (OSError, ValueError, KeyError):
+            known = pd.DataFrame()
+        if known.empty:
+            if bull_df is None or bull_df.empty:
+                raise HTTPException(status_code=503, detail="stock identity sources not loaded")
+            raise HTTPException(status_code=404, detail=f"Symbol '{sym}' not found")
+        technical_master = data_loader.get("technical")
+        technical_row = (
+            technical_master[technical_master["symbol"].str.upper() == sym].iloc[0]
+            if technical_master is not None
+            and not technical_master.empty
+            and not technical_master[technical_master["symbol"].str.upper() == sym].empty
+            else pd.Series(dtype=object)
+        )
+        row = pd.Series(
+            {
+                "symbol": sym,
+                "sector": "UNKNOWN",
+                "close_now": technical_row.get("close_now"),
+                "as_of_date": technical_row.get("as_of_date", ""),
+            }
+        )
+    else:
+        row = matched.iloc[0]
 
     # Deal signals
     deal_df = data_loader.get("deal_signals")
@@ -1443,8 +1475,20 @@ def get_stock_detail(symbol: str):
                     "bm_desc":      str(er.get("bm_desc", ""))[:300],
                 })
 
+    stock_intelligence = build_stock_intelligence_contract(
+        sym,
+        row,
+        fundamentals=fundamentals,
+        technical=technical,
+        shareholding=shareholding,
+        holding_trends=holding_trends,
+        deal_info=deal_info,
+        upcoming_events=upcoming_events,
+    )
+
     return {
         "symbol":             str(row.get("symbol", "")),
+        "contract_version":   stock_intelligence["contract_version"],
         "sector":             str(row.get("sector", "")),
         "close_now":          _safe(row.get("close_now")),
         "bull_run_score":     _safe(row.get("bull_run_score")),
@@ -1493,6 +1537,7 @@ def get_stock_detail(symbol: str):
         "agm":     agm_signal,
         # Phase G consensus
         "consensus": consensus,
+        "stock_intelligence": stock_intelligence,
         # Phase AF — AstroFinance
         "astro":    astro_signal,
         "data_status": data_loader.freshness_for(

@@ -2,6 +2,20 @@
 # MASTER PROJECT STATE
 # Version 4.84.0 | 2026-08-20
 
+## Current VEDA stock intelligence hardening (2026-08-21)
+
+`VEDA-MARKET-STOCK-INTELLIGENCE-HARDENING-001` is implemented and operational
+with conditions. The existing `/api/stocks/{symbol}`
+surface now adds the deterministic `stock-intelligence-1.1` contract for
+identity, 1D/3D/5D/10D/20D price windows, trend/momentum, volume confirmation,
+market and sector relative strength, sector cross-layer context, bounded
+institutional scope, dated fundamentals/corporate context, evidence quality,
+and limitations. The VEDA provider allowlist exposes only the approved
+contract and non-predictive supporting fields. No ML, prediction, PRED-M4,
+EMP-001, RAG semantic, Approved Core, astrology or BEBOS state changed.
+Evidence is recorded in
+`docs/current-state/veda-market-stock-intelligence-hardening-001/`.
+
 ## Current VEDA sector rotation hardening (2026-08-21)
 
 `VEDA-MARKET-SECTOR-ROTATION-HARDENING-001` is operational with conditions.
