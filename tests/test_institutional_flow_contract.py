@@ -58,4 +58,27 @@ def test_legacy_latest_response_keeps_existing_contract(monkeypatch):
     result = participant.get_participant_latest()
     assert result["date"].startswith("2026-08-21")
     assert "FII_flow_score" in result
-    assert result["institutional_contract"]["contract_version"] == "institutional-flow-1.0"
+    assert result["institutional_contract"]["contract_version"] == "institutional-flow-1.1"
+
+
+def test_derivatives_contract_separates_level_change_and_source_granularity():
+    flows, intelligence = _frames()
+    result = build_institutional_contract(flows, intelligence, {"state": "EOD"})
+    participant = result["participants"]["FII"]
+    assert participant["position_level"]["semantic"] == "aggregate_futures_net_open_interest"
+    assert participant["position_change"]["semantic"] == "day_over_day_change_in_aggregate_futures_net_open_interest"
+    assert participant["positive_persistence_20d"] is not None
+    assert participant["negative_persistence_20d"] is not None
+    assert result["derivatives"]["instrument_capabilities"]["index_futures"] == "SOURCE_AVAILABLE_NOT_PERSISTED"
+    assert result["derivatives"]["instrument_capabilities"]["long_short_ratio"] == "NOT_SUPPORTED"
+
+
+def test_derivatives_divergence_is_like_for_like_and_date_alignment_is_explicit():
+    flows, intelligence = _frames()
+    result = build_institutional_contract(flows, intelligence, {"state": "EOD"})
+    divergence = result["derived_signals"]["divergence"]["participant_derivatives"]
+    assert divergence["basis"] == "same_participant_aggregate_futures_oi_change_window"
+    assert divergence["pairs"]["fii_vs_pro"]["state"] == "AVAILABLE"
+    alignment = result["derivatives"]["date_alignment"]
+    assert alignment["state"] == "ALIGNED"
+    assert alignment["comparison_allowed"] is False

@@ -85,8 +85,23 @@ def _participant_snapshot(flows: pd.DataFrame, participant: str) -> dict[str, An
         "oi_delta_1d": _number(row.get(f"{participant}_OI_Delta")) if row is not None else None,
         "windows": {},
         "persistence_20d": None,
+        "positive_persistence_20d": None,
+        "negative_persistence_20d": None,
+        "delta_direction_20d": "UNAVAILABLE",
         "acceleration_5d": None,
         "reversal_5d": None,
+        "position_level": {
+            "field": f"{participant}_OI_Net",
+            "value": _number(row.get(f"{participant}_OI_Net")) if row is not None else None,
+            "unit": "contracts",
+            "semantic": "aggregate_futures_net_open_interest",
+        },
+        "position_change": {
+            "field": f"{participant}_OI_Delta",
+            "value": _number(row.get(f"{participant}_OI_Delta")) if row is not None else None,
+            "unit": "contracts",
+            "semantic": "day_over_day_change_in_aggregate_futures_net_open_interest",
+        },
     }
     if flows.empty:
         return result
@@ -99,7 +114,18 @@ def _participant_snapshot(flows: pd.DataFrame, participant: str) -> dict[str, An
     result["windows"] = _window_snapshot(delta)
     usable = delta.dropna()
     if not usable.empty:
-        result["persistence_20d"] = _number((usable.tail(20) > 0).mean() * 100, 1)
+        recent = usable.tail(20)
+        result["positive_persistence_20d"] = _number((recent > 0).mean() * 100, 1)
+        result["negative_persistence_20d"] = _number((recent < 0).mean() * 100, 1)
+        result["persistence_20d"] = result["positive_persistence_20d"]
+        positive = int((recent > 0).sum())
+        negative = int((recent < 0).sum())
+        if positive > negative:
+            result["delta_direction_20d"] = "POSITIVE"
+        elif negative > positive:
+            result["delta_direction_20d"] = "NEGATIVE"
+        else:
+            result["delta_direction_20d"] = "MIXED"
     five = result["windows"].get("5D", {})
     current = five.get("value")
     if len(delta.dropna()) >= 2:
@@ -125,6 +151,143 @@ def _cash_snapshot(flows: pd.DataFrame, participant: str) -> dict[str, Any]:
             if "date" in flows.columns and series.notna().any()
             else None
         ),
+    }
+
+
+def _latest_source_date(flows: pd.DataFrame, columns: tuple[str, ...]) -> str | None:
+    if flows.empty or "date" not in flows.columns:
+        return None
+    available = [column for column in columns if column in flows.columns]
+    if not available:
+        return None
+    mask = flows[available].apply(pd.to_numeric, errors="coerce").notna().any(axis=1)
+    dates = pd.to_datetime(flows.loc[mask, "date"], errors="coerce").dropna()
+    return str(dates.max().date()) if not dates.empty else None
+
+
+def _date_alignment(flows: pd.DataFrame) -> dict[str, Any]:
+    """Describe F&O/cash date alignment without silently joining unlike sessions."""
+    fno_date = _latest_source_date(
+        flows,
+        tuple(f"{p}_OI_Net" for p in FNO_PARTICIPANTS),
+    )
+    cash_date = _latest_source_date(
+        flows,
+        tuple(f"{p}_net_cr" for p in CASH_PARTICIPANTS),
+    )
+    if not fno_date or not cash_date:
+        return {
+            "state": "UNAVAILABLE",
+            "fno_as_of": fno_date,
+            "cash_as_of": cash_date,
+            "calendar_lag_days": None,
+            "comparison_allowed": False,
+            "reason": "One or both source families have no usable as-of date.",
+        }
+    lag = (pd.Timestamp(fno_date) - pd.Timestamp(cash_date)).days
+    if lag == 0:
+        state = "ALIGNED"
+        reason = "F&O and cash source dates are equal; units remain non-comparable without normalization."
+    elif lag > 0:
+        state = "CASH_LAGGING"
+        reason = "Cash is older than F&O; no same-session cash-versus-derivatives comparison is emitted."
+    else:
+        state = "FNO_LAGGING"
+        reason = "F&O is older than cash; no same-session cash-versus-derivatives comparison is emitted."
+    return {
+        "state": state,
+        "fno_as_of": fno_date,
+        "cash_as_of": cash_date,
+        "calendar_lag_days": lag,
+        "comparison_allowed": False,
+        "reason": reason,
+    }
+
+
+def _derivatives_divergence(flows: pd.DataFrame, window: str = "5D") -> dict[str, Any]:
+    """Compare participants on the same aggregate futures OI-change basis."""
+    snapshots = {p: _participant_snapshot(flows, p) for p in FNO_PARTICIPANTS}
+    pairs = (("FII", "DII"), ("FII", "PRO"), ("FII", "CLIENT"), ("PRO", "CLIENT"))
+    result: dict[str, Any] = {
+        "basis": "same_participant_aggregate_futures_oi_change_window",
+        "window": window,
+        "unit": "contracts",
+        "source_date": _latest_source_date(flows, tuple(f"{p}_OI_Net" for p in FNO_PARTICIPANTS)),
+        "pairs": {},
+    }
+    for left, right in pairs:
+        left_window = snapshots[left]["windows"].get(window, {})
+        right_window = snapshots[right]["windows"].get(window, {})
+        left_value = left_window.get("value")
+        right_value = right_window.get("value")
+        key = f"{left.lower()}_vs_{right.lower()}"
+        if left_value is None or right_value is None:
+            result["pairs"][key] = {
+                "state": "UNAVAILABLE",
+                "value": None,
+                "left": left,
+                "right": right,
+                "reason": "Both participant windows are required for like-for-like comparison.",
+            }
+            continue
+        difference = _number(left_value - right_value)
+        result["pairs"][key] = {
+            "state": "AVAILABLE",
+            "value": difference,
+            "left": left,
+            "right": right,
+            "left_window_value": left_value,
+            "right_window_value": right_value,
+            "left_window_state": left_window.get("state"),
+            "right_window_state": right_window.get("state"),
+            "interpretation": "positive means left participant has the higher aggregate net OI change over the window; this is not a price forecast.",
+        }
+    return result
+
+
+def _derivatives_metadata(flows: pd.DataFrame) -> dict[str, Any]:
+    """Expose source granularity and the deliberate options boundary."""
+    return {
+        "source_family": "NSE_NSELIB_DERIVATIVES",
+        "source_functions": [
+            "participant_wise_open_interest",
+            "participant_wise_trading_volume",
+            "fii_derivatives_statistics",
+        ],
+        "source_granularity": "PARTICIPANT_AGGREGATE_BY_INSTRUMENT_BUCKET",
+        "persisted_contract_scope": "AGGREGATE_FUTURES_PARTICIPANT_OI_AND_VOLUME",
+        "participants": list(FNO_PARTICIPANTS),
+        "instrument_capabilities": {
+            "futures_aggregate": "SUPPORTED",
+            "index_futures": "SOURCE_AVAILABLE_NOT_PERSISTED",
+            "stock_futures": "SOURCE_AVAILABLE_NOT_PERSISTED",
+            "index_options": "SOURCE_AVAILABLE_NOT_PERSISTED",
+            "stock_options": "SOURCE_AVAILABLE_NOT_PERSISTED",
+            "gross_long_short_breakdown": "SOURCE_AVAILABLE_NOT_PERSISTED",
+            "long_short_ratio": "NOT_SUPPORTED",
+        },
+        "position_level": {
+            "field": "{PARTICIPANT}_OI_Net",
+            "unit": "contracts",
+            "formula": "future_index_long + future_stock_long - future_index_short - future_stock_short",
+            "meaning": "aggregate futures net open interest; not a gross long/short ledger",
+        },
+        "position_change": {
+            "field": "{PARTICIPANT}_OI_Delta",
+            "unit": "contracts",
+            "formula": "current aggregate futures net OI minus prior stored observation",
+            "windows": [f"{window}D" for window in WINDOWS],
+        },
+        "fii_statistics_boundary": {
+            "field": "FII_Derivatives_Net",
+            "meaning": "daily FII futures buy-contracts minus sell-contracts from the separate FII statistics source",
+            "not_equivalent_to": "participant OI level or participant OI change",
+        },
+        "date_alignment": _date_alignment(flows),
+        "options_decision": {
+            "state": "NOT_SUPPORTED",
+            "reason": "The source exposes option buckets, but the persisted history and governed contract do not retain participant-wise option fields.",
+        },
     }
 
 
@@ -201,7 +364,12 @@ def build_institutional_contract(
         },
     }
     return {
-        "contract_version": "institutional-flow-1.0",
+        "contract_version": "institutional-flow-1.1",
+        "compatibility": {
+            "change_type": "ADDITIVE_MINOR",
+            "backward_compatible_with": "institutional-flow-1.0",
+            "legacy_endpoint_preserved": True,
+        },
         "as_of": str(latest_flow["date"].date()) if latest_flow is not None else None,
         "participants": fno,
         "cash_participants": cash,
@@ -210,8 +378,12 @@ def build_institutional_contract(
             "smart_money_score": _number(latest_intel.get("Smart_Money_Score")) if latest_intel is not None else None,
             "cash_institutional_score": _number(latest_intel.get("Cash_Institutional_Score")) if latest_intel is not None else None,
             "ensemble_score": _number(latest_intel.get("Ensemble_Score")) if latest_intel is not None else None,
-            "divergence": divergence,
+            "divergence": {
+                **divergence,
+                "participant_derivatives": _derivatives_divergence(flows),
+            },
         },
+        "derivatives": _derivatives_metadata(flows),
         "instrument_scope": {
             "futures_participant_oi_and_volume": "SUPPORTED",
             "fii_futures_statistics": "SUPPORTED_WHEN_PRESENT",

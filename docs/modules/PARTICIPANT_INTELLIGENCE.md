@@ -150,3 +150,15 @@ derivatives normalization are explicitly unsupported by the current source
 contract.
 
 Evidence: `docs/current-state/veda-market-institutional-flow-hardening-001/`.
+
+## Participant derivatives hardening
+
+The follow-on `institutional-flow-1.1` contract retains that boundary while
+making source granularity explicit. It distinguishes aggregate futures
+position level from daily/rolling position change, adds positive/negative
+persistence direction, same-basis FII/DII/PRO/CLIENT divergence and reports
+F&O/cash date lag without comparing unlike units. NSE option and instrument
+bucket fields are source-observed but not persisted or exposed as a participant
+options capability.
+
+Evidence: `docs/current-state/veda-market-participant-derivatives-hardening-001/`.

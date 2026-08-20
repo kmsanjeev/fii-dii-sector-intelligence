@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-08-21 | VEDA-MARKET-PARTICIPANT-DERIVATIVES-HARDENING-001
+
+- Audited the installed NSE participant source schemas and preserved the
+  source-versus-persisted distinction: the provider exposes instrument
+  buckets, while the governed runtime retains aggregate futures participant
+  OI/volume only.
+- Extended the institutional-flow contract additively to `institutional-flow-1.1`
+  with explicit level/change semantics, persistence direction, acceleration,
+  reversal, like-for-like participant divergence and F&O/cash date alignment.
+- Kept options, long/short ratios and cash-versus-derivatives normalization
+  unsupported; no ML, prediction, EMP, RAG, astrology, VEDA calculation or
+  BEBOS state changed.
+- Evidence: `docs/current-state/veda-market-participant-derivatives-hardening-001/`.
+
 ## 2026-08-21 | VEDA-MARKET-INSTITUTIONAL-FLOW-HARDENING-001
 
 - Extended the existing participant flow layer with explicit 1D/3D/5D/10D/20D

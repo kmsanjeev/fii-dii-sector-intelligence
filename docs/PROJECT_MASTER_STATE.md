@@ -2,6 +2,20 @@
 # MASTER PROJECT STATE
 # Version 4.84.0 | 2026-08-20
 
+## Current VEDA market participant derivatives hardening (2026-08-21)
+
+`VEDA-MARKET-PARTICIPANT-DERIVATIVES-HARDENING-001` is operational with
+conditions. The existing participant engines and provider-local datasets now
+publish additive `institutional-flow-1.1` metadata separating aggregate
+futures position level from position change, bounded persistence/acceleration/
+reversal, like-for-like participant divergence and explicit F&O/cash date
+alignment. NSE source options/index-stock futures buckets were audited but are
+not persisted into the governed contract; options, long/short ratios and
+cash-versus-derivatives normalization remain unsupported. The VEDA adapter and
+`market.institutional-flow` capability remain read-only/pass-through. No ML,
+prediction, EMP, RAG, astrology or BEBOS state changed. Evidence is recorded in
+`docs/current-state/veda-market-participant-derivatives-hardening-001/`.
+
 ## Current VEDA Market intelligence improvement (2026-08-21)
 
 `VEDA-MARKET-INTELLIGENCE-IMPROVEMENT-001` is in implementation. The
