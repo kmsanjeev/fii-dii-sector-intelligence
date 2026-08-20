@@ -2,8 +2,8 @@
   "meta": {
     "baseline_id": "VEDA-P001-M003",
     "generated_on": "2026-08-10",
-    "openapi_path_count": 145,
-    "operation_count": 158
+    "openapi_path_count": 146,
+    "operation_count": 159
   },
   "critical_endpoints": [
     {
@@ -2504,6 +2504,26 @@
       "response_codes": [
         "200",
         "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/participant/institutional",
+      "owner": "participant",
+      "operation_id": "get_institutional_contract_api_participant_institutional_get",
+      "tags": [
+        "participant"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
       ],
       "response_content_types": [
         "application/json"

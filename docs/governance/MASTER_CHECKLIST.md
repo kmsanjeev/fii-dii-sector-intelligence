@@ -109,6 +109,10 @@ Legend:  [x] Completed  [-] In Progress  [ ] Not Started
     Output: participant_intelligence.csv (2581 rows, 21 cols)
     Latest regime: NEUTRAL | Smart Money: -4.7 | FII conviction: 40%
 
+[x] Institutional flow hardening contract (2026-08-21)
+    1D/3D/5D/10D/20D windows, explicit missingness, persistence, acceleration,
+    reversal, evidence quality, source dates and unsupported instrument states.
+
 ---
 
 # SECTION 6 — Sector Intelligence [COMPLETE]

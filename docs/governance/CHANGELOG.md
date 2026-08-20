@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2026-08-21 | VEDA-MARKET-INSTITUTIONAL-FLOW-HARDENING-001
+
+- Extended the existing participant flow layer with explicit 1D/3D/5D/10D/20D
+  windows, persistence, acceleration and reversal descriptors.
+- Added a backward-compatible institutional contract and
+  `/api/participant/institutional` with per-source dates, window completeness,
+  evidence quality and explicit unsupported options/cash-vs-derivatives states.
+- Missing cash history is no longer converted to zero in flow-score derivation;
+  available ensemble components are renormalized.
+- No ML, prediction, EMP, RAG, astrology or VEDA data migration changed.
+
 ## 2026-08-21 | VEDA-MARKET-INTELLIGENCE-IMPROVEMENT-001
 
 - Added provider-local freshness/provenance metadata to formal Market,

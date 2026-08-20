@@ -9,6 +9,7 @@ import math
 from fastapi import APIRouter, HTTPException, Query
 
 from backend.services import data_loader
+from engines.participant.institutional_contract import build_institutional_contract
 
 router = APIRouter(prefix="/api/participant", tags=["participant"])
 
@@ -45,7 +46,7 @@ def get_participant_latest():
             "mf_20d_cr":        _f(fl.get("MF_flow_20D"),    0),
         }
 
-    return {
+    response = {
         "date":                   str(latest.get("date", "")),
         "Market_Regime":          str(latest.get("Market_Regime", "")),
         # Flow scores (fixes score=0 bug — these are the actual z-scores)
@@ -75,6 +76,26 @@ def get_participant_latest():
             ("participant_flows",),
         ),
     }
+    response["institutional_contract"] = build_institutional_contract(
+        flows_df,
+        df,
+        data_loader.freshness_for(("participant_flows", "participant_intel")),
+    )
+    return response
+
+
+@router.get("/institutional")
+def get_institutional_contract():
+    """Governed institutional-flow snapshot with explicit evidence quality."""
+    intelligence = data_loader.get("participant_intel")
+    flows = data_loader.get("participant_flows")
+    if intelligence is None or intelligence.empty or flows is None or flows.empty:
+        raise HTTPException(status_code=503, detail="institutional flow datasets not loaded")
+    return build_institutional_contract(
+        flows,
+        intelligence,
+        data_loader.freshness_for(("participant_flows", "participant_intel")),
+    )
 
 
 @router.get("/history")

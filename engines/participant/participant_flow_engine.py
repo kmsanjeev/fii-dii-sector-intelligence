@@ -46,7 +46,7 @@ OUTPUT_FILE    = INTELLIGENCE_DIR / "participant_flow_scores.csv"
 
 PARTICIPANTS      = ["FII", "DII", "PRO", "CLIENT"]
 CASH_PARTICIPANTS = ["FPI", "MF", "INSURANCE", "RETAIL"]
-WINDOWS           = [5, 20, 60]
+WINDOWS           = [1, 3, 5, 10, 20, 60]
 Z_WINDOW          = 252   # 1-year lookback for z-score normalisation
 SCORE_SCALE       = 100   # z-score clip at ±3 → scale to ±100
 
@@ -186,7 +186,8 @@ class ParticipantFlowEngine:
         # Cash participants: use 20D rolling net cr
         for p in CASH_PARTICIPANTS:
             base = result.get(f"{p}_flow_20D", pd.Series(np.nan, index=result.index))
-            result[f"{p}_flow_score"] = _zscore_norm(base.fillna(0), Z_WINDOW)
+            # Missing cash history is unavailable evidence, not a zero-flow observation.
+            result[f"{p}_flow_score"] = _zscore_norm(base, Z_WINDOW)
 
         return result
 

@@ -11,7 +11,7 @@ Provides market regime detection, smart money signals, and conviction scoring fo
 
 ---
 
-# Status: 100% COMPLETE (Phase 5, completed 2026-06-30)
+# Status: COMPLETE + HARDENED CONTRACT (Phase 5; operational with conditions 2026-08-21)
 
 ---
 
@@ -138,3 +138,15 @@ Market regime thresholds:
 - bull_run_probability_engine.py (8B) — reads Market_Regime for regime multiplier
 - alert_engine.py (Phase 9) — monitors regime changes for alerts
 - MarketAgent (Phase 14) — get_market_regime() tool
+
+## Institutional flow hardening
+
+`backend/routers/participant.py` retains the legacy latest response and adds
+an explicit `institutional_contract` plus `GET /api/participant/institutional`.
+The contract exposes 1D/3D/5D/10D/20D windows, coverage states, persistence,
+acceleration, reversal, source dates, evidence quality and instrument
+boundaries. Missing cash evidence remains missing. Options and cash-vs-
+derivatives normalization are explicitly unsupported by the current source
+contract.
+
+Evidence: `docs/current-state/veda-market-institutional-flow-hardening-001/`.

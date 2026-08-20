@@ -129,6 +129,12 @@ Participant Flow Scores (data/intelligence/participant_flow_scores.csv)
 
 Participant Intelligence (data/intelligence/participant_intelligence.csv)
 
+Institutional Flow Contract (`backend/routers/participant.py`)
+
+`GET /api/participant/institutional` — provider-local participant/cash windows,
+descriptive flow state, freshness and evidence-quality contract. Options and
+cash-vs-derivatives normalization remain explicitly unsupported.
+
 Cash Market Flows History (data/historical/institutional/cash_market_flows_history.csv)
 
 ---

@@ -760,6 +760,18 @@ Phase goals:
 - Telegram bot: live (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` in .env)
 - Auth: disabled by default; enable via `POST /api/auth/setup` or Admin -> Auth Config
 
+## VEDA-MARKET-INSTITUTIONAL-FLOW-HARDENING-001 — 2026-08-21
+
+The existing participant layer is operational with bounded conditions. F&O
+participant history is complete for its observed dates through 2026-08-19;
+cash category history is available through 2026-08-18 with explicit
+null/partial coverage. The additive institutional contract is provider-local
+and preserves the legacy participant endpoint. Options and cash-vs-
+derivatives comparisons are not supported without an independently governed
+source/normalization method. Focused and full FII regression, VEDA validation,
+live HTTP/provider and local performance checks passed. No ML, prediction,
+EMP, RAG, astrology or VEDA data migration is part of this activity.
+
 ---
 
 # GOVERNANCE

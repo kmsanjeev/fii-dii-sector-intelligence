@@ -54,6 +54,8 @@ CONVICTION_WINDOW = 20
 
 
 def _classify_regime(score: float) -> str:
+    if pd.isna(score):
+        return "UNAVAILABLE"
     if score >= 40:
         return "STRONG_ACCUMULATION"
     if score >= 15:
@@ -153,11 +155,17 @@ class ParticipantIntelligenceEngine:
         result["Cash_Institutional_Score"] = ((fpi_score + mf_score) / 2).round(2)
 
         # ---- Ensemble Market Regime ----------------------------------
-        # Weighted: Smart Money 50%, DII 25%, Cash Institutional 25%
-        smart_w = result["Smart_Money_Score"] * 0.50
-        dii_w   = dii_score * 0.25
-        cash_w  = result["Cash_Institutional_Score"].fillna(0) * 0.25
-        ensemble = (smart_w + dii_w + cash_w).round(2)
+        # Weighted: Smart Money 50%, DII 25%, Cash Institutional 25%.
+        # Renormalize only over available components; missing cash is not zero.
+        components = pd.DataFrame({
+            "smart": result["Smart_Money_Score"],
+            "dii": dii_score,
+            "cash": result["Cash_Institutional_Score"],
+        })
+        weights = pd.Series({"smart": 0.50, "dii": 0.25, "cash": 0.25})
+        available_weight = components.notna().mul(weights, axis=1).sum(axis=1)
+        weighted_sum = components.mul(weights, axis=1).sum(axis=1, min_count=1)
+        ensemble = weighted_sum.div(available_weight.where(available_weight > 0)).round(2)
         result["Ensemble_Score"] = ensemble
         result["Market_Regime"]  = ensemble.apply(_classify_regime)
 
