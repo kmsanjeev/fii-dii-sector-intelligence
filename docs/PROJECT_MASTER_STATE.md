@@ -2,6 +2,22 @@
 # MASTER PROJECT STATE
 # Version 4.84.0 | 2026-08-20
 
+## VEDA market cross-layer performance RX1 (2026-08-21)
+
+`VEDA-MARKET-CROSS-LAYER-PERFORMANCE-RX1-001` is operational with
+conditions. The provider-owned cross-layer path was profiled cold and warm,
+including its institutional, stock, fundamental, multi-symbol and VEDA HTTP
+routes. The primary defect was repeated request-scoped institutional snapshot
+and rolling-window work; the contained remediation reuses those snapshots and
+bounds rolling computation to the largest requested window. Canonical response
+semantics are byte-equivalent to the pre-change implementation. Controlled
+FII direct cross-layer warm latency improved from p50 1581.37 ms / p90 1830.65
+ms to p50 443.61 ms / p90 546.99 ms. The VEDA formal route measured p50 431.13
+ms / p90 615.28 ms under the same local provider setup. No process cache,
+invalidation change, RAG change, prediction, ML, EMP, Jyotish, BEBOS,
+identity, source-ownership or Corporate Intelligence change occurred.
+Evidence: `docs/current-state/veda-market-cross-layer-performance-rx1-001/`.
+
 ## VEDA market fundamentals provenance hardening (2026-08-21)
 
 `VEDA-MARKET-FUNDAMENTALS-PROVENANCE-HARDENING-001` is operational with

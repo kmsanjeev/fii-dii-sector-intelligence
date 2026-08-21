@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-21 - VEDA-MARKET-CROSS-LAYER-PERFORMANCE-RX1-001
+
+Reduced duplicated request-scoped work in the provider-owned cross-layer
+intelligence path. Institutional participant snapshots and quality inputs are
+now reused within a request, and rolling-window computation is bounded to the
+largest requested window. The response contract remains semantically
+equivalent to the pre-change implementation. Controlled warm direct FII
+cross-layer latency improved from p50 1581.37 ms / p90 1830.65 ms to p50
+443.61 ms / p90 546.99 ms. No process cache, RAG, prediction, ML, EMP,
+Jyotish, BEBOS, identity, source-ownership or Corporate Intelligence change
+was made. Evidence:
+`docs/current-state/veda-market-cross-layer-performance-rx1-001/`.
+
 ## 2026-08-21 - VEDA-MARKET-FUNDAMENTALS-ACQUISITION-RX1-001
 
 Repaired the provider-local quarterly financial-results acquisition path:
