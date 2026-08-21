@@ -1457,9 +1457,14 @@
       "request_body_required": false,
       "request_body_content_types": [],
       "path_params": [],
-      "query_params": [],
+      "query_params": [
+        "days",
+        "limit",
+        "symbol"
+      ],
       "response_codes": [
-        "200"
+        "200",
+        "422"
       ],
       "response_content_types": [
         "application/json"

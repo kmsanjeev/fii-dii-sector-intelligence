@@ -235,6 +235,7 @@ def build_stock_intelligence_contract(
     deal_info: dict[str, Any],
     upcoming_events: list[dict[str, Any]],
     fundamental_evidence: dict[str, Any] | None = None,
+    corporate_evidence: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build the governed additive stock contract from existing datasets."""
     symbol = symbol.upper()
@@ -308,12 +309,21 @@ def build_stock_intelligence_contract(
         or fundamental_fields.get("as_of_date")
         or identity.get("fundamentals_master_as_of")
     )
+    if corporate_evidence is None:
+        from backend.services.corporate_intelligence import build_corporate_intelligence
+
+        corporate_evidence = build_corporate_intelligence(symbol, days=90, limit=10)
+    corporate_status = corporate_evidence.get("data_status", {})
     corporate = {
-        "announcement_state": "AVAILABLE" if data_loader.get("announcements") is not None else "NOT_AVAILABLE",
-        "upcoming_events": upcoming_events,
-        "event_role": "Event dates are context; they are not automatically catalysts.",
-        "source_update": data_loader.freshness_for(("announcements",), ()).get("as_of")
-        if data_loader.get("announcements") is not None else None,
+        "contract_version": corporate_evidence.get("contract_version", "corporate-intelligence-1.0"),
+        "announcement_state": corporate_status.get("state", "UNAVAILABLE"),
+        "recent_events": corporate_evidence.get("recent_events", []),
+        "scheduled_events": upcoming_events,
+        "event_role": "Corporate events are descriptive context; they are not automatically catalysts.",
+        "source_update": corporate_status.get("as_of"),
+        "evidence_quality": corporate_evidence.get("evidence_quality", "INSUFFICIENT"),
+        "next_watch_items": corporate_evidence.get("next_watch_items", []),
+        "limitations": corporate_evidence.get("limitations", []),
     }
     dates = {
         "price": history_meta.get("as_of"),

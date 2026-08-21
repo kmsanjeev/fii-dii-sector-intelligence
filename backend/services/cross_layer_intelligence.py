@@ -270,6 +270,13 @@ def _stock_summary(symbol: str, contract: dict[str, Any], sector: dict[str, Any]
         "institutional_scope": contract.get("signals", {}).get("institutional_context", {}).get("scope"),
         "institutional_evidence": contract.get("signals", {}).get("institutional_evidence", {}),
         "fundamental_evidence": contract.get("facts", {}).get("fundamental_evidence", {}),
+        "corporate_event_context": {
+            "contract_version": facts.get("corporate", {}).get("contract_version"),
+            "recent_events": facts.get("corporate", {}).get("recent_events", []),
+            "evidence_quality": facts.get("corporate", {}).get("evidence_quality", "UNAVAILABLE"),
+            "next_watch_items": facts.get("corporate", {}).get("next_watch_items", []),
+            "limitations": facts.get("corporate", {}).get("limitations", []),
+        },
         "evidence_quality": _quality(contract.get("evidence_quality")),
         "date_alignment": contract.get("date_alignment", {}),
         "reason": f"{symbol} is {alignment.lower().replace('_', ' ')} based on existing stock trend, relative-strength, sector leadership and breadth outputs.",

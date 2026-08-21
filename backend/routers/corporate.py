@@ -10,8 +10,11 @@ GET /api/corporate/announcement-signals     — Phase 18: per-symbol 30d signal 
 """
 
 import math
+
 from fastapi import APIRouter, HTTPException, Query
+
 from backend.services import data_loader
+from backend.services.corporate_intelligence import build_corporate_intelligence
 
 
 def _clean(records):
@@ -135,18 +138,24 @@ def get_upcoming_actions(days: int = Query(45, description="Forward window"), li
 
 
 @router.get("/summary")
-def get_corporate_summary():
-    """KPI strip for the Corporate Intelligence hub."""
+def get_corporate_summary(
+    symbol: str | None = Query(None, description="Optional canonical NSE symbol"),
+    days: int = Query(90, ge=1, le=3650, description="Recent event window"),
+    limit: int = Query(25, ge=1, le=100, description="Maximum normalized events"),
+):
+    """Authoritative Corporate evidence contract plus legacy KPI compatibility."""
     import pandas as pd
+
+    contract = build_corporate_intelligence(symbol, days=days, limit=limit)
     now = pd.Timestamp.now()
-    out: dict = {}
+    out: dict = dict(contract)
 
     ann = data_loader.get("announcements")
     if ann is not None and not ann.empty:
         d7 = (now - pd.Timedelta(days=7)).strftime("%Y-%m-%d")
         recent = ann[ann["date"] >= d7]
-        out["announcements_7d"]      = int(len(recent))
-        out["high_signal_7d"]        = int((recent["signal_score"].astype(float) >= 70).sum())
+        out["announcements_7d"]      = len(recent)
+        out["high_signal_7d"]        = (recent["signal_score"].astype(float) >= 70).sum().item()
 
     deals = data_loader.get("deal_signals")
     if deals is not None and not deals.empty:
@@ -154,25 +163,32 @@ def get_corporate_summary():
         valid_net = net.dropna()
         if not valid_net.empty:
             out["inst_net_30d_cr"]  = round(float(valid_net.sum()), 0)
-            out["accumulating_30d"] = int((valid_net > 0).sum())
-            out["distributing_30d"] = int((valid_net < 0).sum())
+            out["accumulating_30d"] = (valid_net > 0).sum().item()
+            out["distributing_30d"] = (valid_net < 0).sum().item()
 
     ca = data_loader.get("corp_actions")
     if ca is not None and not ca.empty:
         h14 = (now + pd.Timedelta(days=14)).strftime("%Y-%m-%d")
         t   = now.strftime("%Y-%m-%d")
-        out["ex_dates_14d"] = int(((ca["ex_date_dt"] >= t) & (ca["ex_date_dt"] <= h14)).sum())
+        out["ex_dates_14d"] = ((ca["ex_date_dt"] >= t) & (ca["ex_date_dt"] <= h14)).sum().item()
 
     cat = data_loader.get("upcoming_catalysts")
     if cat is not None and not cat.empty:
         d7f = pd.to_numeric(cat.get("days_until"), errors="coerce")
-        out["results_7d"] = int(((d7f <= 7) & (cat["purpose_type"] == "FINANCIAL_RESULTS")).sum())
-        out["catalysts_60d"] = int(len(cat))
+        out["results_7d"] = ((d7f <= 7) & (cat["purpose_type"] == "FINANCIAL_RESULTS")).sum().item()
+        out["catalysts_60d"] = len(cat)
 
-    out["data_status"] = data_loader.freshness_for(
+    out["legacy_data_status"] = data_loader.freshness_for(
         (),
         ("announcements", "deal_signals", "corp_actions", "upcoming_catalysts"),
     )
+    # Preserve the existing summary KPI surface while the governed contract
+    # becomes authoritative for symbol/event semantics.
+    out["legacy_summary"] = {
+        key: value
+        for key, value in out.items()
+        if key in {"announcements_7d", "high_signal_7d", "inst_net_30d_cr", "accumulating_30d", "distributing_30d", "ex_dates_14d", "results_7d", "catalysts_60d"}
+    }
     return out
 
 

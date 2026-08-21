@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-08-21 - VEDA-MARKET-CORPORATE-INTELLIGENCE-HARDENING-001
+
+Hardened the existing Corporate Intelligence surface with the deterministic
+`corporate-intelligence-1.0` contract. Structured NSE disclosure, event
+calendar, corporate-action and financial-results lineage is explicit; lifecycle
+dates and freshness remain separate; scheduled events are not treated as
+completed; unknown categories and identity uncertainty remain visible. Stock
+and cross-layer consumers receive Corporate only as bounded context. No RAG,
+prediction, ML, EMP, Jyotish, BEBOS, identity architecture or raw provider
+data changed. Evidence is in
+`docs/current-state/veda-market-corporate-intelligence-hardening-001/`.
+
 ## 2026-08-21 - VEDA-MARKET-CROSS-LAYER-PERFORMANCE-RX1-001
 
 Reduced duplicated request-scoped work in the provider-owned cross-layer

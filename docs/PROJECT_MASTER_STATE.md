@@ -2,6 +2,20 @@
 # MASTER PROJECT STATE
 # Version 4.84.0 | 2026-08-20
 
+## VEDA market corporate intelligence hardening (2026-08-21)
+
+`VEDA-MARKET-CORPORATE-INTELLIGENCE-HARDENING-001` is operational with
+conditions. The provider-owned Corporate surface now exposes the bounded
+`corporate-intelligence-1.0` contract with source authority, canonical identity
+gating, deterministic event IDs, explicit event taxonomy, announcement/
+effective/record/completion/freshness separation, scheduled-versus-completed
+semantics, non-predictive materiality and fundamental/institutional ownership
+boundaries. Global normalization is bounded before event construction. The
+formal `/api/corporate/summary` compatibility surface remains in place and
+the VEDA adapter validates the new contract. No RAG, prediction, ML, EMP,
+Jyotish, BEBOS, identity architecture or raw provider data changed. Evidence
+is in `docs/current-state/veda-market-corporate-intelligence-hardening-001/`.
+
 ## VEDA market cross-layer performance RX1 (2026-08-21)
 
 `VEDA-MARKET-CROSS-LAYER-PERFORMANCE-RX1-001` is operational with
