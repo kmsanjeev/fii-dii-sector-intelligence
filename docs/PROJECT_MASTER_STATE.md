@@ -16,6 +16,21 @@ direct institutional gates, RAG, ML, PRED-M4, EMP-001, Jyotish and BEBOS remain
 unchanged. Evidence is recorded in
 `docs/current-state/veda-market-fundamentals-provenance-hardening-001/`.
 
+## VEDA market fundamentals acquisition remediation (2026-08-21)
+
+`VEDA-MARKET-FUNDAMENTALS-ACQUISITION-RX1-001` is operational with
+conditions. The quarterly results path now derives current completed filing
+windows, repairs the official NSE transport's Brotli failure with bounded
+identity encoding, preserves full filing dates and statement/restatement
+variants, avoids global window-label suppression, and skips unchanged CSV
+rewrites. The official source currently exposes delayed/re-filed older periods
+and no representative 2026-06-30 filing for the audited sample, so freshness
+remains source-conditioned. Quarterly results remain a separate existing
+manual/backfill operation rather than a new daily scheduler stage. No RAG,
+ML, prediction, EMP, Jyotish, BEBOS, Corporate Intelligence, or Market
+ownership state changed. Evidence is recorded in
+`docs/current-state/veda-market-fundamentals-acquisition-rx1-001/`.
+
 ## Current VEDA direct institutional stock evidence (2026-08-21)
 
 `VEDA-MARKET-DIRECT-INSTITUTIONAL-STOCK-EVIDENCE-002` is operational with

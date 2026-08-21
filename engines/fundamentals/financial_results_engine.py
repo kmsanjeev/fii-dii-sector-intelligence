@@ -3,8 +3,8 @@ Financial Results Engine -- Phase 15A
 Fetches quarterly financial results from NSE XBRL filings for all EQ-series companies.
 
 Strategy:
-  nselib.capital_market.get_func.get_financial_results_master(from_date, to_date)
-  returns the list of all quarterly result filings submitted to NSE in that window.
+  The official NSE corporate financial-results endpoint returns the list of
+  quarterly result filings submitted to NSE in that window.
   We use "filing season" windows (45-60 days after each quarter-end) which capture
   near-complete universe coverage (~3,500-3,900 companies per quarter).
 
@@ -18,7 +18,7 @@ Filing season windows (confirmed coverage via live tests):
   Apr-Jul 2024  -> Q4 FY24 (Jan-Mar 2024)  ~4,474 records, all valid XBRL
 
 Data source priority:
-  1. NSE XBRL (via nselib get_financial_results_master) -- primary
+  1. NSE XBRL (official endpoint, identity-encoded transport) -- primary
   2. yfinance per-symbol quarterly_income_stmt -- last resort (capped)
 
 Output: data/NSE/results/quarterly_results.csv
@@ -30,18 +30,21 @@ Guardrails:
   - No empty DataFrame writes (G-D-03)
   - Rate limiting between NSE calls (G-A-01)
   - Failed entries -> recovery_queue.csv (G-A-03)
-  - Incremental: skips already-fetched window labels
+  - Incremental: rechecks recent windows and skips unchanged normalized output
 """
 
+import hashlib
+import json
+import shutil
 import sys
 import time
-import shutil
-import requests
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import Optional
+
 import pandas as pd
+import requests
 
 _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
@@ -49,6 +52,7 @@ if str(_ROOT) not in sys.path:
 
 from engines.common import config as cfg
 from engines.common.logger import get_logger
+from engines.common.nse_client import create_session
 from engines.common.progress import progress
 
 logger = get_logger(__name__)
@@ -58,7 +62,8 @@ OUTPUT_PATH = RESULTS_DIR / "quarterly_results.csv"
 EQUITY_MASTER = cfg.EQUITY_MASTER_DIR / "equity_master.csv"
 RECOVERY_QUEUE = cfg.NSE_DIR / "recovery_queue.csv"
 
-# Recent windows used when --windows N is passed (most recent first)
+# Kept as a compatibility reference for callers that import this constant.
+# Routine acquisition now derives recent filing windows from the current date.
 FILING_WINDOWS = [
     ("01-01-2025", "31-03-2025", "Q3FY25"),
     ("01-10-2024", "31-12-2024", "Q2FY25"),
@@ -66,6 +71,12 @@ FILING_WINDOWS = [
     ("01-04-2024", "31-07-2024", "Q4FY24"),
     ("01-01-2024", "31-03-2024", "Q3FY24"),
     ("01-10-2023", "31-12-2023", "Q2FY24"),
+]
+
+RESULTS_ORIGIN = "https://www.nseindia.com/companies-listing/corporate-filings-financial-results"
+RESULTS_API = "https://www.nseindia.com/api/corporates-financial-results"
+_RECORD_KEY = [
+    "symbol", "date_start", "date_end", "standalone_or_consolidated", "source", "filing_date",
 ]
 
 
@@ -79,8 +90,7 @@ def _generate_all_filing_windows() -> list[tuple[str, str, str]]:
       Q3 (Oct-Dec) → filed Jan-Mar   next cal year
       Q4 (Jan-Mar) → filed Apr-Jul   next cal year (extended: annuals take longer)
     """
-    from datetime import date as _date
-    today = _date.today()
+    today = datetime.now(timezone.utc).date()
     windows = []
 
     for fy in range(18, 100):           # FY18 = Apr2017-Mar2018, FY99 is far future
@@ -95,7 +105,7 @@ def _generate_all_filing_windows() -> list[tuple[str, str, str]]:
         for label, fm, fd, tm, td, yr_off in quarters:
             filing_year = base_cal + yr_off
             try:
-                window_end = _date(filing_year, tm, td)
+                window_end = date(filing_year, tm, td)
             except ValueError:
                 continue
             if window_end > today:
@@ -105,6 +115,25 @@ def _generate_all_filing_windows() -> list[tuple[str, str, str]]:
             windows.append((from_str, to_str, label))
 
     return windows
+
+
+def _recent_filing_windows(count: int = 2) -> list[tuple[str, str, str]]:
+    """Return the most recent completed filing windows, newest first."""
+    windows = _generate_all_filing_windows()
+    return list(reversed(windows[-max(1, count):]))
+
+
+def _parse_filing_date(value) -> str:
+    """Normalize NSE filing timestamps without truncating the year."""
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    for fmt in ("%d-%b-%Y %H:%M:%S", "%d-%b-%Y %H:%M", "%d-%b-%Y", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(raw, fmt).replace(tzinfo=timezone.utc).date().isoformat()
+        except (ValueError, TypeError):
+            continue
+    return ""
 
 # XBRL namespace map
 _NS = {
@@ -140,7 +169,7 @@ class FinancialResultsEngine:
 
     def __init__(
         self,
-        max_windows: Optional[int] = None,
+        max_windows: int | None = None,
         backfill: bool = False,
         use_yfinance: bool = True,
         yfinance_cap: int = YFINANCE_BATCH_CAP,
@@ -151,18 +180,17 @@ class FinancialResultsEngine:
         self.use_yfinance = use_yfinance
         self.yfinance_cap = yfinance_cap
         self.recovery: list[dict] = []
+        self._nse_session = None
 
     def run(self) -> bool:
         logger.info("[FinancialResults] Starting quarterly results fetch")
 
         existing = self._load_existing()
-        done_labels: set = set()
-        if not existing.empty and "window_label" in existing.columns:
-            done_labels = set(existing["window_label"].dropna().unique())
-        if done_labels:
-            logger.info(f"[FinancialResults] Already stored: {done_labels}")
-
-        rows = self._fetch_bulk_nselib(skip_labels=done_labels)
+        # A window label is not a completeness proof: one yfinance row or one
+        # issuer filing must not suppress missing filings for every other
+        # issuer in that window. The source master is therefore rechecked for
+        # each recent window and exact records are deduplicated at merge time.
+        rows = self._fetch_bulk_nselib(skip_labels=set())
 
         if not rows and self.use_yfinance:
             logger.info(
@@ -178,19 +206,19 @@ class FinancialResultsEngine:
             )
             return False
 
-        df = pd.DataFrame(rows)
-        df = df.drop_duplicates(subset=["symbol", "date_start", "date_end", "source"])
-        df = df.sort_values(["symbol", "date_end"])
+        existing_signature = self._canonical_signature(existing)
+        df = self._deduplicate(pd.DataFrame(rows))
 
         if not existing.empty:
             combined = pd.concat([existing, df], ignore_index=True)
-            combined = combined.drop_duplicates(
-                subset=["symbol", "date_start", "date_end", "source"]
-            )
-            df = combined.sort_values(["symbol", "date_end"])
+            df = self._deduplicate(combined)
 
         if df.empty:
             return False
+
+        if existing_signature == self._canonical_signature(df):
+            logger.info("[FinancialResults] No normalized changes; existing file retained")
+            return True
 
         self._save(df)
         logger.info(
@@ -203,36 +231,22 @@ class FinancialResultsEngine:
     # ------------------------------------------------------------------
 
     def _fetch_bulk_nselib(self, skip_labels: set) -> list:
-        try:
-            from nselib.capital_market.get_func import get_financial_results_master
-        except ImportError:
-            logger.warning("[FinancialResults] nselib not installed")
-            return []
-
         if self.backfill:
             # Dynamic: all quarters from Q1FY18 to today, oldest first (incremental)
             windows = _generate_all_filing_windows()
         else:
-            windows = FILING_WINDOWS
-        if self.max_windows:
+            windows = _recent_filing_windows(self.max_windows or 2)
+        if self.backfill and self.max_windows:
             windows = windows[: self.max_windows]
 
         all_rows: list = []
 
         for from_date, to_date, label in windows:
-            if label in skip_labels:
-                logger.info(f"[FinancialResults] Skipping {label} (already stored)")
-                continue
-
             logger.info(
                 f"[FinancialResults] Fetching master list: {label} ({from_date} to {to_date})"
             )
             try:
-                master_df, headers, ns, _ = get_financial_results_master(
-                    from_date=from_date,
-                    to_date=to_date,
-                    fin_period="Quarterly",
-                )
+                master_df, headers, _ns = self._fetch_master(from_date, to_date)
                 time.sleep(cfg.API_DELAY)
             except Exception as e:
                 logger.warning(f"[FinancialResults] Master list failed for {label}: {e}")
@@ -263,6 +277,46 @@ class FinancialResultsEngine:
 
         return all_rows
 
+    def _fetch_master(self, from_date: str, to_date: str):
+        """Fetch the official NSE results master with bounded identity encoding."""
+        if self._nse_session is None:
+            self._nse_session = create_session(RESULTS_ORIGIN)
+        url = (
+            f"{RESULTS_API}?index=equities&from_date={from_date}"
+            f"&to_date={to_date}&period=Quarterly"
+        )
+        headers = {
+            "Accept": "application/json,text/plain,*/*",
+            "Accept-Encoding": "identity",
+            "Referer": "https://www.nseindia.com/",
+        }
+        last_error = None
+        for attempt in range(cfg.MAX_RETRIES):
+            try:
+                response = self._nse_session.get(url, headers=headers, timeout=cfg.API_TIMEOUT)
+                response.raise_for_status()
+                data = response.json()
+                frame = pd.DataFrame(data)
+                if not frame.empty:
+                    frame.columns = [str(name).replace(" ", "") for name in frame.columns]
+                xbrl_headers = {
+                    "User-Agent": headers.get("User-Agent", "Mozilla/5.0"),
+                    "Accept": "*/*",
+                    "Accept-Encoding": "identity",
+                    "Referer": "https://www.nseindia.com/",
+                }
+                return frame, xbrl_headers, _NS
+            except (requests.RequestException, ValueError, json.JSONDecodeError) as exc:
+                last_error = exc
+                wait = cfg.RETRY_DELAY * (2 ** attempt)
+                logger.warning(
+                    "[FinancialResults] Master fetch attempt %s failed for %s: %s. Retrying in %.1fs",
+                    attempt + 1, from_date, exc, wait,
+                )
+                if attempt + 1 < cfg.MAX_RETRIES:
+                    time.sleep(wait)
+        raise RuntimeError(f"NSE financial-results master unavailable: {last_error}")
+
     def _parse_xbrl_batch(self, df, headers, window_label):
         n_workers = min(cfg.MAX_CONCURRENCY, max(cfg.MIN_CONCURRENCY, len(df)))
         rows = []
@@ -282,7 +336,7 @@ class FinancialResultsEngine:
                     elem = root.find(f".//in-bse-fin:{xbrl_tag}", _NS)
                     extracted[our_key] = elem.text if elem is not None else None
 
-                extracted["filing_date"] = str(filing_dates.get(idx, ""))[:10]
+                extracted["filing_date"] = _parse_filing_date(filing_dates.get(idx, ""))
 
                 if not extracted.get("symbol") and idx in symbols_map:
                     extracted["symbol"] = symbols_map[idx]
@@ -350,7 +404,7 @@ class FinancialResultsEngine:
             "date_end":                   date_end,
             "quarter_label":              str(raw.get("quarter_label") or ""),
             "window_label":               str(raw.get("window_label") or ""),
-            "filing_date":                str(raw.get("filing_date") or "")[:10],
+            "filing_date":                _parse_filing_date(raw.get("filing_date")),
             "revenue_cr":                 _to_cr(raw.get("revenue_raw")),
             "net_profit_cr":              _to_cr(raw.get("profit_raw")),
             "eps":                        _to_float(raw.get("eps")),
@@ -358,6 +412,22 @@ class FinancialResultsEngine:
             "standalone_or_consolidated": str(raw.get("nature") or ""),
             "source":                     "nselib_xbrl",
         }
+
+    @staticmethod
+    def _deduplicate(df: pd.DataFrame) -> pd.DataFrame:
+        """Deduplicate exact filing versions while retaining restatement candidates."""
+        if df.empty:
+            return df
+        for column in _RECORD_KEY:
+            if column not in df.columns:
+                df[column] = ""
+        return (
+            df.fillna("")
+            .sort_values(_RECORD_KEY, kind="mergesort")
+            .drop_duplicates(subset=_RECORD_KEY, keep="last")
+            .sort_values(["symbol", "date_end", "filing_date", "standalone_or_consolidated"], kind="mergesort")
+            .reset_index(drop=True)
+        )
 
     # ------------------------------------------------------------------
     # Fallback: yfinance per-symbol
@@ -461,6 +531,18 @@ class FinancialResultsEngine:
             except Exception:
                 return pd.DataFrame()
         return pd.DataFrame()
+
+    @staticmethod
+    def _canonical_signature(df: pd.DataFrame) -> str:
+        """Return a stable signature for logical normalized rows."""
+        if df.empty:
+            return ""
+        normalized = df.copy().fillna("")
+        columns = sorted(normalized.columns)
+        normalized = normalized.loc[:, columns].astype(str)
+        normalized = normalized.sort_values(columns, kind="mergesort").reset_index(drop=True)
+        payload = normalized.to_csv(index=False, lineterminator="\n").encode("utf-8")
+        return hashlib.sha256(payload).hexdigest()
 
     def _save(self, df):
         tmp = OUTPUT_PATH.with_suffix(".tmp.csv")

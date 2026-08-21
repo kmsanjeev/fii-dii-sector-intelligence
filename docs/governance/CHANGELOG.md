@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-21 - VEDA-MARKET-FUNDAMENTALS-ACQUISITION-RX1-001
+
+Repaired the provider-local quarterly financial-results acquisition path:
+dynamic recent filing windows replace the stale routine window list, official
+NSE transport uses bounded identity encoding, missing issuers are no longer
+suppressed by a populated window label, filing dates retain the full year,
+statement/restatement variants are retained, and unchanged normalized output
+is not rewritten. A controlled run increased the store from 32395 to 32403
+records without adding a newer reporting period; the official source did not
+expose a representative 2026-06-30 filing in the audited window. No RAG, ML,
+prediction, EMP, Jyotish, BEBOS, Corporate Intelligence or scheduler redesign
+occurred. Evidence: `docs/current-state/veda-market-fundamentals-acquisition-rx1-001/`.
+
 ## 2026-08-21 - VEDA-MARKET-FUNDAMENTALS-PROVENANCE-HARDENING-001
 
 Added the provider-local `fundamental-evidence-1.0` projection to the existing
