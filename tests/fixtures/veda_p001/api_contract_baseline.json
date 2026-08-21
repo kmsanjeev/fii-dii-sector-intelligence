@@ -2,8 +2,8 @@
   "meta": {
     "baseline_id": "VEDA-P001-M003",
     "generated_on": "2026-08-10",
-    "openapi_path_count": 156,
-    "operation_count": 169
+    "openapi_path_count": 158,
+    "operation_count": 171
   },
   "critical_endpoints": [
     {
@@ -3866,6 +3866,56 @@
       ],
       "query_params": [
         "limit"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/trade-setups/screen",
+      "owner": "trade-setup-intelligence",
+      "operation_id": "get_setup_screen_api_trade_setups_screen_get",
+      "tags": [
+        "trade-setup-intelligence"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "fno_only",
+        "horizon",
+        "limit"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/trade-setups/{symbol}",
+      "owner": "trade-setup-intelligence",
+      "operation_id": "get_trade_setup_api_trade_setups__symbol__get",
+      "tags": [
+        "trade-setup-intelligence"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [
+        "horizon"
       ],
       "response_codes": [
         "200",

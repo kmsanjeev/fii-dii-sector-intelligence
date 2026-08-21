@@ -1,5 +1,16 @@
 # VEDA Roadmap Entry Point
 
+## 2026-08-21 — Positional and Swing Intelligence
+
+`VEDA-MARKET-POSITIONAL-AND-SWING-INTELLIGENCE-001` is operational with
+conditions. The provider now exposes a read-only `trade-setup-intelligence-1.0`
+contract for EOD SWING and POSITIONAL horizons, reusing governed technical,
+F&O and cross-domain evidence with bounded screening. No recommendation,
+target, order, intraday, ML or prediction behavior was added. Evidence is in
+`docs/current-state/veda-market-positional-and-swing-intelligence-001/`.
+The next authorized activity is
+`VEDA-MARKET-INTRADAY-DATA-FOUNDATION-001`, not started here.
+
 ## 2026-08-21 - Corporate Intelligence freshness and lifecycle RX1
 
 `VEDA-MARKET-CORPORATE-INTELLIGENCE-FRESHNESS-AND-LIFECYCLE-RX1-001` is

@@ -17,11 +17,39 @@ _ROOT = Path(__file__).resolve().parent.parent
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from backend.services import data_loader
-from backend.routers import market, fno, sectors, stocks, participant, corporate, chat, data_ops, charts, pipeline, portfolio, backtest, broker, research, empirical, execution, themes, governed_themes, kundli, gochar, news, social_pulse, risk, voice, career_validation, muhurta
 from backend.auth import router as auth_router
 from backend.auth.middleware import AuthMiddleware
-from backend.auth.store import init_db, bootstrap_admin, validate_runtime_auth_policy
+from backend.auth.store import bootstrap_admin, init_db, validate_runtime_auth_policy
+from backend.routers import (
+    backtest,
+    broker,
+    career_validation,
+    charts,
+    chat,
+    corporate,
+    data_ops,
+    empirical,
+    execution,
+    fno,
+    gochar,
+    governed_themes,
+    kundli,
+    market,
+    muhurta,
+    news,
+    participant,
+    pipeline,
+    portfolio,
+    research,
+    risk,
+    sectors,
+    social_pulse,
+    stocks,
+    themes,
+    trade_setups,
+    voice,
+)
+from backend.services import data_loader
 from backend.ws.live_ticker import live_ticker_endpoint
 from engines.common import config as cfg
 
@@ -92,6 +120,7 @@ app.include_router(empirical.router)
 app.include_router(execution.router)
 app.include_router(governed_themes.router)
 app.include_router(themes.router)
+app.include_router(trade_setups.router)
 app.include_router(kundli.router)
 app.include_router(gochar.router)
 app.include_router(news.router)
@@ -106,6 +135,7 @@ app.include_router(auth_router.router)
 # ── WebSocket ─────────────────────────────────────────────────────────────────
 
 from fastapi import WebSocket
+
 
 @app.websocket("/ws/live")
 async def ws_live(websocket: WebSocket):

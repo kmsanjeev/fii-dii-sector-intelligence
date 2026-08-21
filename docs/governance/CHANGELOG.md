@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-21 - VEDA-MARKET-POSITIONAL-AND-SWING-INTELLIGENCE-001 (operational with conditions)
+
+- Added the read-only EOD `trade-setup-intelligence-1.0` contract for SWING and
+  POSITIONAL horizons and bounded symbol screening.
+- Reused existing governed Market evidence without importing legacy conviction,
+  ML or recommender outputs; no BUY/SELL, target, order, intraday or prediction
+  semantics were added.
+- VEDA now exposes `market.trade-setup.intelligence` as a provider-owned,
+  read-only capability. FII-DII remains the Market data/calculation owner.
+- Focused FII/veda validation passed; full regression and release evidence are
+  recorded in `docs/current-state/veda-market-positional-and-swing-intelligence-001/`.
+- Next authorized activity: `VEDA-MARKET-INTRADAY-DATA-FOUNDATION-001`; not started.
+
 ## 2026-08-21 - VEDA-MARKET-FNO-INTELLIGENCE-HARDENING-001 (implemented / frozen with conditions)
 
 Hardened the existing NSE F&O intelligence stage with explicit current and

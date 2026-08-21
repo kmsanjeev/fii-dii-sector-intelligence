@@ -1,6 +1,23 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.84.0 | 2026-08-20
+# Version 4.85.0 | 2026-08-21
+
+## VEDA-MARKET-POSITIONAL-AND-SWING-INTELLIGENCE-001 — 2026-08-21
+
+The governed EOD `trade-setup-intelligence-1.0` composition is operational
+with conditions for explicit SWING and POSITIONAL horizons. It reuses existing
+technical, momentum, F&O, market, sector, Theme, institutional, fundamental
+and corporate evidence; FII-DII remains the data/calculation owner and VEDA
+adds a read-only `market.trade-setup.intelligence` capability. Bounded screens
+cheap-prefilter and cap deep analysis. Legacy conviction/ML/recommender data,
+intraday, targets, order paths, ML, prediction, EMP, RAG, Jyotish and BEBOS
+remain outside scope. Evidence is in
+`docs/current-state/veda-market-positional-and-swing-intelligence-001/`.
+
+The release decision is
+`VEDA_MARKET_POSITIONAL_AND_SWING_INTELLIGENCE_OPERATIONAL_WITH_CONDITIONS`;
+the next authorized activity is
+`VEDA-MARKET-INTRADAY-DATA-FOUNDATION-001`, not started here.
 
 ## VEDA-MARKET-FNO-INTELLIGENCE-HARDENING-001 — 2026-08-21
 
