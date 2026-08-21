@@ -2,6 +2,19 @@
 # MASTER PROJECT STATE
 # Version 4.84.0 | 2026-08-20
 
+## Current VEDA direct institutional stock evidence (2026-08-21)
+
+`VEDA-MARKET-DIRECT-INSTITUTIONAL-STOCK-EVIDENCE-001` is implemented with
+conditions. The existing stock-intelligence and cross-layer surfaces now
+consume the additive `stock-institutional-evidence-1.0` contract. It separates
+NSE-disclosed bulk/block activity, quarterly ownership snapshots and derived
+client-name heuristics. The direct daily stock-level FII/DII gate remains
+`NO_GOVERNED_DIRECT_DAILY_STOCK_FLOW_SOURCE`; the direct sector-level gate
+remains `NO_GOVERNED_DIRECT_SECTOR_FLOW_SOURCE`. Market-level participant data
+is not attributed to a stock or sector. No ML, prediction, PRED-M4, EMP, RAG,
+Jyotish, identity, subscription or BEBOS state changed. Evidence is recorded
+in `docs/current-state/veda-market-direct-institutional-stock-evidence-001/`.
+
 ## Current VEDA cross-layer Market intelligence (2026-08-21)
 
 `VEDA-MARKET-CROSS-LAYER-INTELLIGENCE-001` is operational with conditions.

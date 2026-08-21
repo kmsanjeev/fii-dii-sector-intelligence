@@ -268,6 +268,7 @@ def _stock_summary(symbol: str, contract: dict[str, Any], sector: dict[str, Any]
             "evidence_quality": sector.get("evidence_quality"),
         },
         "institutional_scope": contract.get("signals", {}).get("institutional_context", {}).get("scope"),
+        "institutional_evidence": contract.get("signals", {}).get("institutional_evidence", {}),
         "evidence_quality": _quality(contract.get("evidence_quality")),
         "date_alignment": contract.get("date_alignment", {}),
         "reason": f"{symbol} is {alignment.lower().replace('_', ' ')} based on existing stock trend, relative-strength, sector leadership and breadth outputs.",

@@ -15,6 +15,9 @@ from typing import Any
 import pandas as pd
 
 from backend.services import data_loader
+from backend.services.stock_institutional_evidence import (
+    build_stock_institutional_evidence,
+)
 
 try:
     from engines.common.config import STOCK_HISTORY_CACHE as _CACHE_DIR
@@ -30,6 +33,7 @@ INSTITUTIONAL_SCOPES = {
     "DEAL_ACTIVITY_CONTEXT",
     "MARKET_LEVEL_CONTEXT_ONLY",
     "NOT_SUPPORTED",
+    "IDENTITY_REVIEW_REQUIRED",
 }
 
 
@@ -216,41 +220,7 @@ def _state_from_price(trend: Any, windows: dict[str, dict[str, Any]]) -> str:
 
 
 def _institutional_context(symbol: str) -> dict[str, Any]:
-    deals = _frame_row(data_loader.get("deal_signals"), symbol)
-    holdings = _frame_row(data_loader.get("holding_trends"), symbol)
-    flows = data_loader.get("participant_flows")
-    latest_flow = flows.iloc[-1] if flows is not None and not flows.empty else None
-    if deals is not None:
-        scope = "DEAL_ACTIVITY_CONTEXT"
-        evidence = {
-            "total_deals": _number(deals.get("total_deals")),
-            "institutional_deals": _number(deals.get("inst_deals")),
-            "source_signal": _value(deals.get("deal_signal")),
-            "last_deal_date": _value(deals.get("last_deal_date")),
-            "as_of": _value(deals.get("as_of_date")),
-        }
-    elif holdings is not None:
-        scope = "DERIVED_OWNERSHIP_CONFIRMATION"
-        evidence = {"quarter_end_date": _value(holdings.get("quarter_end_date")),
-                    "conviction_signal": _value(holdings.get("conviction_signal")),
-                    "as_of": _value(holdings.get("as_of_date"))}
-    elif latest_flow is not None:
-        scope = "MARKET_LEVEL_CONTEXT_ONLY"
-        evidence = {"as_of": _value(latest_flow.get("date")),
-                    "fii_flow_score": _round(latest_flow.get("FII_flow_score")),
-                    "dii_flow_score": _round(latest_flow.get("DII_flow_score"))}
-    else:
-        scope = "NOT_SUPPORTED"
-        evidence = {}
-    assert scope in INSTITUTIONAL_SCOPES
-    return {
-        "scope": scope,
-        "evidence": evidence,
-        "limitations": [
-            "Market-level participant data is context only and is not attributed to this stock.",
-            "Deal activity and ownership are descriptive evidence, not a prediction or recommendation.",
-        ],
-    }
+    return build_stock_institutional_evidence(symbol, identity=_load_identity(symbol))
 
 
 def build_stock_intelligence_contract(
@@ -326,7 +296,7 @@ def build_stock_intelligence_contract(
         cross_layer = "WEAK_STOCK_WEAK_SECTOR"
     else:
         cross_layer = "MIXED_OR_INSUFFICIENT"
-    institutional = _institutional_context(symbol)
+    institutional = build_stock_institutional_evidence(symbol, identity=identity)
     fundamental_fields = {key: value for key, value in fundamentals.items() if not key.startswith("_")}
     fundamental_as_of = fundamental_fields.get("as_of_date") or identity.get("fundamentals_master_as_of")
     corporate = {
@@ -341,7 +311,9 @@ def build_stock_intelligence_contract(
         "technical": technical.get("as_of_date"),
         "sector": sector_context.get("as_of"),
         "benchmark": sector_row.get("benchmark_price_as_of") if sector_row is not None else None,
-        "institutional": institutional.get("evidence", {}).get("as_of"),
+        "institutional": (institutional.get("as_of", {}).get("latest_deal_source_date")
+                          or institutional.get("as_of", {}).get("latest_ownership_submission")
+                          or institutional.get("as_of", {}).get("latest_ownership_quarter_end")),
         "fundamentals": fundamental_as_of,
         "corporate_source_update": corporate.get("source_update"),
     }
@@ -367,7 +339,7 @@ def build_stock_intelligence_contract(
         limitations.append("Component dates are not fully aligned; interpret cross-layer comparisons conditionally.")
     if sector_context.get("state") != "AVAILABLE":
         limitations.append("Sector intelligence is unavailable for this symbol's mapped sector.")
-    if institutional["scope"] == "MARKET_LEVEL_CONTEXT_ONLY":
+    if institutional["scope"] in {"MARKET_LEVEL_CONTEXT_ONLY", "IDENTITY_REVIEW_REQUIRED"}:
         limitations.append("Broad FII/DII positioning is market context only and cannot be attributed to this stock.")
     next_watch = []
     if price_windows["20"]["state"] != "AVAILABLE":
@@ -376,7 +348,7 @@ def build_stock_intelligence_contract(
         next_watch.append("component-date alignment")
     if not fundamental_fields:
         next_watch.append("fundamental coverage")
-    if institutional["scope"] in {"MARKET_LEVEL_CONTEXT_ONLY", "NOT_SUPPORTED"}:
+    if institutional["scope"] in {"MARKET_LEVEL_CONTEXT_ONLY", "NOT_SUPPORTED", "IDENTITY_REVIEW_REQUIRED"}:
         next_watch.append("stock-specific ownership/deal evidence")
     return {
         "contract_version": CONTRACT_VERSION,
@@ -409,6 +381,7 @@ def build_stock_intelligence_contract(
             "sector_context": sector_context,
             "cross_layer_state": cross_layer,
             "institutional_context": institutional,
+            "institutional_evidence": institutional,
             "technical_accumulation_distribution": {
                 "state": str(technical.get("obv_signal") or "NOT_AVAILABLE"),
                 "volume_confirmation": volume.get("state"),

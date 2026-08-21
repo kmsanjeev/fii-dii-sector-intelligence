@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2026-08-21 - VEDA-MARKET-DIRECT-INSTITUTIONAL-STOCK-EVIDENCE-001
+
+Added the provider-owned `stock-institutional-evidence-1.0` contract over the
+existing NSE-disclosed bulk/block deal tape and quarterly ownership datasets.
+The stock and cross-layer contracts now preserve source dates, ownership
+periods, participant-classification lineage, identity status and explicit
+limitations. The direct daily stock-level FII/DII gate remains
+`NO_GOVERNED_DIRECT_DAILY_STOCK_FLOW_SOURCE`; direct sector attribution remains
+unsupported. No prediction, ML, LLM, RAG, EMP, Jyotish, identity or subscription
+state changed.
+
 ## 2026-08-21 - VEDA-MARKET-CROSS-LAYER-INTELLIGENCE-001
 
 Established the bounded `cross-layer-1.0` Market composition over the existing
