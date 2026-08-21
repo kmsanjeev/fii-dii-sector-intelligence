@@ -94,6 +94,8 @@ _dataset_metadata: dict[str, dict] = {}
 _DATE_COLUMNS = (
     "as_of_date",
     "date",
+    "filing_date",
+    "date_end",
     "last_date",
     "latest_date",
     "trade_date",
@@ -121,14 +123,14 @@ def _utc_iso(path: Path) -> str | None:
         return None
 
 
-def _date_summary(df: pd.DataFrame) -> tuple[str | None, str | None, int, int]:
-    date_column = next(
-        (column for column in _DATE_COLUMNS if column in df.columns),
-        None,
-    )
-    if date_column is None:
-        return None, None, 0, 0
-    parsed = pd.to_datetime(df[date_column], errors="coerce")
+def _date_summary_for_column(
+    df: pd.DataFrame, date_column: str
+) -> tuple[str, str | None, int, int]:
+    parsed = pd.to_datetime(df[date_column], errors="coerce", format="mixed")
+    # Reject truncated legacy years such as ``10-Nov-202`` instead of
+    # allowing pandas to interpret them as year 0202.
+    valid_year = parsed.dt.year.between(1900, 2100)
+    parsed.loc[~valid_year] = pd.NaT
     valid = parsed.dropna()
     if valid.empty:
         return date_column, None, int(parsed.isna().sum()), 0
@@ -138,6 +140,13 @@ def _date_summary(df: pd.DataFrame) -> tuple[str | None, str | None, int, int]:
         int(parsed.isna().sum()),
         int(valid.nunique()),
     )
+
+
+def _date_summary(df: pd.DataFrame) -> tuple[str | None, str | None, int, int]:
+    date_column = next((column for column in _DATE_COLUMNS if column in df.columns), None)
+    if date_column is None:
+        return None, None, 0, 0
+    return _date_summary_for_column(df, date_column)
 
 
 def _business_day_lag(as_of: str, today: pd.Timestamp) -> int | None:
@@ -175,8 +184,12 @@ def _build_metadata(
             "as_of": None,
             "freshness": "UNAVAILABLE",
             "last_successful_update": updated,
+            "dataset_build_at": updated,
             "row_count": 0 if df is None else len(df),
             "date_column": None,
+            "retrieval_column": None,
+            "retrieved_rows": 0,
+            "retrieval_coverage": "UNAVAILABLE",
             "null_date_rows": 0,
             "limitations": [
                 "Dataset is unavailable or empty; no current evidence is claimed."
@@ -185,6 +198,19 @@ def _build_metadata(
 
     date_column, as_of, null_date_rows, distinct_dates = _date_summary(df)
     limitations: list[str] = []
+    if (
+        key == "quarterly_results"
+        and date_column == "filing_date"
+        and null_date_rows > len(df) // 2
+        and "date_end" in df.columns
+    ):
+        date_column, as_of, null_date_rows, distinct_dates = _date_summary_for_column(
+            df, "date_end"
+        )
+        limitations.append(
+            "quarterly_results: filing_date coverage is insufficient; freshness is "
+            "based on valid period-end date_end values."
+        )
     if key in _SCHEDULED_DATE_DATASETS:
         freshness = _freshness_from_lag(
             _business_day_lag(
@@ -225,14 +251,29 @@ def _build_metadata(
             f"{date_column or 'date'} value."
         )
 
+    retrieval_column = "retrieved_at" if "retrieved_at" in df.columns else None
+    retrieved_rows = 0
+    retrieval_coverage = "LEGACY_RETRIEVAL_TIMESTAMP_UNAVAILABLE"
+    if retrieval_column:
+        retrieved_rows = int(df[retrieval_column].notna().sum())
+        retrieval_coverage = (
+            "COMPLETE" if retrieved_rows == len(df)
+            else "PARTIAL" if retrieved_rows
+            else "NO_RETRIEVAL_TIMESTAMPS"
+        )
+
     return {
         "dataset": key,
         "source": source,
         "as_of": as_of,
         "freshness": freshness,
         "last_successful_update": updated,
+        "dataset_build_at": updated,
         "row_count": len(df),
         "date_column": date_column,
+        "retrieval_column": retrieval_column,
+        "retrieved_rows": retrieved_rows,
+        "retrieval_coverage": retrieval_coverage,
         "distinct_dates": distinct_dates,
         "null_date_rows": null_date_rows,
         "limitations": limitations,

@@ -1,5 +1,18 @@
 # VEDA Roadmap Entry Point
 
+## 2026-08-21 - Corporate Intelligence freshness and lifecycle RX1
+
+`VEDA-MARKET-CORPORATE-INTELLIGENCE-FRESHNESS-AND-LIFECYCLE-RX1-001` is
+operational with conditions. The provider-owned Corporate contract remains
+`corporate-intelligence-1.0`; official event-calendar acquisition now has
+bounded identity-encoding transport, explicit source-failure state, last-valid
+dataset preservation, row retrieval metadata, dataset build timestamps and
+source-language lifecycle/lineage fields. Quarterly result freshness uses a
+disclosed valid period-end fallback where legacy filing dates are malformed.
+No VEDA capability, source ownership, RAG, prediction, ML, EMP, Jyotish or
+BEBOS change occurred. Evidence is in
+`docs/current-state/veda-market-corporate-intelligence-freshness-and-lifecycle-rx1-001/`.
+
 ## 2026-08-21 — Cross-layer Market intelligence
 
 `VEDA-MARKET-CROSS-LAYER-INTELLIGENCE-001` is implemented and operational

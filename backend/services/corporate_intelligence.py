@@ -135,6 +135,39 @@ def _number(value: Any) -> float | None:
     return number if pd.notna(number) and abs(number) != float("inf") else None
 
 
+def _lifecycle_state(text: Any, default: str) -> tuple[str, str]:
+    """Map only explicit source language to a lifecycle state."""
+    value = str(_clean(text) or "").lower()
+    if re.search(r"\b(cancelled|canceled|withdrawn|terminated|abandoned)\b", value):
+        return ("CANCELLED" if "cancel" in value else "WITHDRAWN" if "withdrawn" in value else "TERMINATED", "SOURCE_REPORTED")
+    if re.search(r"\b(rescheduled|postponed|deferred)\b", value):
+        return "RESCHEDULED", "SOURCE_REPORTED"
+    if re.search(r"\b(amended|amendment|revised|revision)\b", value):
+        return "AMENDED", "SOURCE_REPORTED"
+    explicit_completion = re.search(
+        r"\b(completed|commissioned|allotted|paid|acquired)\b|"
+        r"\bcompletion\s+(?:was|has been|is)\s+(?:achieved|completed|concluded)\b",
+        value,
+    )
+    if explicit_completion and not re.search(
+        r"\b(not completed|yet to be completed|pending completion|subject to approval|to be acquired)\b",
+        value,
+    ):
+        return "COMPLETED", "EXPLICIT_SOURCE_LANGUAGE"
+    return default, "UNKNOWN"
+
+
+def _lineage_fields(event_id: str) -> dict[str, Any]:
+    return {
+        "parent_event_id": None,
+        "related_event_ids": [],
+        "lifecycle_group_id": event_id,
+        "version": 1,
+        "lineage_method": "UNKNOWN",
+        "lineage_confidence": "UNKNOWN",
+    }
+
+
 def _event_id(source_id: str, values: list[Any]) -> str:
     raw = "|".join("" if value is None else str(value).strip() for value in values)
     digest = hashlib.sha256(f"{source_id}|{raw}".encode()).hexdigest()[:24]
@@ -173,11 +206,18 @@ def _source_summary(key: str, frame: pd.DataFrame | None) -> dict[str, Any]:
     if cached is not None:
         return cached
     definition = SOURCE_DEFINITIONS[key]
-    date_values = frame.get(definition["date_column"], pd.Series(dtype="object"))
+    freshness = data_loader.freshness_for((), (key,))
+    try:
+        dataset_meta = data_loader.freshness_metadata().get("datasets", {}).get(key, {})
+    except AttributeError:
+        dataset_meta = {}
+    date_column = dataset_meta.get("date_column") or definition["date_column"]
+    date_values = frame.get(date_column, pd.Series(dtype="object"))
     dates = _dates(date_values)
     valid = dates.dropna()
     symbols = frame.get(definition["symbol_column"], pd.Series(dtype=str)).astype(str).str.upper().nunique()
-    freshness = data_loader.freshness_for((), (key,))
+    retrieved_rows = int(dataset_meta.get("retrieved_rows", 0) or 0)
+    retrieval_column = dataset_meta.get("retrieval_column")
     result = {
         "source_id": definition["source_id"],
         "authority": definition["authority"],
@@ -192,11 +232,32 @@ def _source_summary(key: str, frame: pd.DataFrame | None) -> dict[str, Any]:
         "frequency": "EVENT_DRIVEN",
         "reproducibility": definition["reproducibility"],
         "freshness": freshness.get("state", "UNKNOWN"),
+        "last_successful_update": dataset_meta.get("last_successful_update"),
+        "dataset_build_at": dataset_meta.get("dataset_build_at"),
+        "date_column": date_column,
+        "retrieval_metadata": {
+            "row_retrieval_column": retrieval_column,
+            "retrieved_rows": retrieved_rows,
+            "row_count": len(frame),
+            "coverage": dataset_meta.get(
+                "retrieval_coverage",
+                "LEGACY_RETRIEVAL_TIMESTAMP_UNAVAILABLE",
+            ),
+        },
         "access_state": "AVAILABLE",
         "limitations": list(definition["limitations"]),
     }
     _SUMMARY_CACHE[id(frame)] = result
     return result
+
+
+def _dataset_build_at(key: str) -> str | None:
+    """Return the file/build timestamp for event-level provenance."""
+    try:
+        metadata = data_loader.freshness_metadata().get("datasets", {}).get(key, {})
+    except AttributeError:
+        return None
+    return _text(metadata.get("dataset_build_at"), 64)
 
 
 def _identity(symbol: str | None) -> dict[str, Any]:
@@ -239,23 +300,49 @@ def _classify_announcement(row: pd.Series) -> tuple[str, str, str]:
 
 
 def _result_linkage(symbol: str, results: pd.DataFrame | None) -> dict[str, Any]:
+    try:
+        dataset_meta = data_loader.freshness_metadata().get("datasets", {}).get(
+            "quarterly_results", {}
+        )
+    except AttributeError:
+        dataset_meta = {}
     rows = _frame_rows(results, symbol, "symbol")
     if rows.empty:
         return {
-            "state": "NOT_AVAILABLE",
+            "state": "RESULT_EVENT_SOURCE_UNKNOWN",
+            "announcement_source_status": "SOURCE_AVAILABLE" if results is not None else "SOURCE_UNAVAILABLE",
+            "latest_announcement_date": None,
             "contract": "fundamental-evidence-1.0",
             "latest_period_end": None,
             "latest_filing_date": None,
+            "fundamental_evidence_available": False,
+            "fundamental_evidence_freshness": dataset_meta.get("freshness", "UNKNOWN"),
+            "fundamental_freshness_basis": dataset_meta.get("date_column"),
+            "filing_date_coverage": "UNAVAILABLE",
+            "metrics_inlined": False,
         }
     period_values = rows.get("date_end", pd.Series(dtype="object"))
     filing_values = rows.get("filing_date", pd.Series(dtype="object"))
     period = _dates(period_values).dropna()
     filing = _dates(filing_values).dropna()
+    filing_coverage = (
+        "COMPLETE"
+        if len(rows) and len(filing) == len(rows)
+        else "PARTIAL"
+        if len(filing)
+        else "UNAVAILABLE"
+    )
     return {
-        "state": "AVAILABLE",
+        "state": "FUNDAMENTAL_EVIDENCE_AVAILABLE",
+        "announcement_source_status": "SOURCE_AVAILABLE",
+        "latest_announcement_date": filing.max().date().isoformat() if not filing.empty else None,
         "contract": "fundamental-evidence-1.0",
         "latest_period_end": period.max().date().isoformat() if not period.empty else None,
         "latest_filing_date": filing.max().date().isoformat() if not filing.empty else None,
+        "fundamental_evidence_available": True,
+        "fundamental_evidence_freshness": dataset_meta.get("freshness", "UNKNOWN"),
+        "fundamental_freshness_basis": dataset_meta.get("date_column"),
+        "filing_date_coverage": filing_coverage,
         "metrics_inlined": False,
     }
 
@@ -264,12 +351,15 @@ def _announcement_event(row: pd.Series, results: pd.DataFrame | None) -> dict[st
     symbol = str(row.get("symbol", "")).upper()
     category, method, confidence = _classify_announcement(row)
     announced = _date(row.get("date"))
+    source_text = f"{row.get('desc_raw', '')} {row.get('title_snippet', '')}"
     source_id = SOURCE_DEFINITIONS["announcements"]["source_id"]
     source_reference = _text(row.get("seq_id"), 100)
+    status, lifecycle_method = _lifecycle_state(source_text, "ANNOUNCED")
+    event_id = _event_id(source_id, [symbol, announced, category, source_reference, row.get("title_snippet")])
     event = {
-        "event_id": _event_id(source_id, [symbol, announced, category, source_reference, row.get("title_snippet")]),
+        "event_id": event_id,
         "category": category,
-        "status": "ANNOUNCED",
+        "status": status,
         "symbol": symbol,
         "announcement_date": announced,
         "effective_date": None,
@@ -288,7 +378,12 @@ def _announcement_event(row: pd.Series, results: pd.DataFrame | None) -> dict[st
             "source_id": source_id,
             "authority": SOURCE_DEFINITIONS["announcements"]["authority"],
             "source_record": source_reference,
-            "retrieved_at": None,
+            "retrieved_at": _text(row.get("retrieved_at"), 64),
+            "dataset_build_at": _dataset_build_at("announcements"),
+        },
+        "lifecycle": {
+            **_lineage_fields(event_id),
+            "state_method": lifecycle_method,
         },
         "materiality_context": {"state": "UNKNOWN_MATERIALITY", "predictive": False},
         "limitations": [
@@ -306,10 +401,12 @@ def _calendar_event(row: pd.Series) -> dict[str, Any]:
     event_date = _date(row.get("event_date"))
     today = datetime.now().astimezone().date().isoformat()
     status = "SCHEDULED" if event_date and event_date >= today else "UNKNOWN"
+    status, lifecycle_method = _lifecycle_state(row.get("bm_desc"), status)
     source_id = SOURCE_DEFINITIONS["event_calendar"]["source_id"]
     purpose = _text(row.get("purpose_type"), 120) or "UNKNOWN"
+    event_id = _event_id(source_id, [symbol, event_date, purpose, row.get("bm_desc")])
     return {
-        "event_id": _event_id(source_id, [symbol, event_date, purpose, row.get("bm_desc")]),
+        "event_id": event_id,
         "category": {"FINANCIAL_RESULTS": "FINANCIAL_RESULTS", "BOARD_MEETING": "BOARD_MEETING"}.get(purpose, "UNKNOWN"),
         "status": status,
         "symbol": symbol,
@@ -325,7 +422,12 @@ def _calendar_event(row: pd.Series) -> dict[str, Any]:
             "source_id": source_id,
             "authority": SOURCE_DEFINITIONS["event_calendar"]["authority"],
             "source_record": None,
-            "retrieved_at": None,
+            "retrieved_at": _text(row.get("retrieved_at"), 64),
+            "dataset_build_at": _dataset_build_at("event_calendar"),
+        },
+        "lifecycle": {
+            **_lineage_fields(event_id),
+            "state_method": lifecycle_method,
         },
         "materiality_context": {"state": "UNKNOWN_MATERIALITY", "predictive": False},
         "limitations": ["Calendar date is scheduled/contextual evidence and does not prove completion."],
@@ -338,11 +440,13 @@ def _action_event(row: pd.Series) -> dict[str, Any]:
     record_date = _date(row.get("rec_date"))
     today = datetime.now().astimezone().date().isoformat()
     status = "SCHEDULED" if event_date and event_date >= today else "UNKNOWN"
+    status, lifecycle_method = _lifecycle_state(row.get("subject"), status)
     source_id = SOURCE_DEFINITIONS["corp_actions"]["source_id"]
     category = str(row.get("action_type", "UNKNOWN")).upper()
     category = {"AGM_EGM": "BOARD_MEETING", "MERGER": "MERGER_DEMERGER"}.get(category, category)
+    event_id = _event_id(source_id, [symbol, event_date, record_date, category, row.get("subject")])
     return {
-        "event_id": _event_id(source_id, [symbol, event_date, record_date, category, row.get("subject")]),
+        "event_id": event_id,
         "category": category if category else "UNKNOWN",
         "status": status,
         "symbol": symbol,
@@ -363,7 +467,12 @@ def _action_event(row: pd.Series) -> dict[str, Any]:
             "source_id": source_id,
             "authority": SOURCE_DEFINITIONS["corp_actions"]["authority"],
             "source_record": None,
-            "retrieved_at": None,
+            "retrieved_at": _text(row.get("retrieved_at"), 64),
+            "dataset_build_at": _dataset_build_at("corp_actions"),
+        },
+        "lifecycle": {
+            **_lineage_fields(event_id),
+            "state_method": lifecycle_method,
         },
         "materiality_context": {"state": "UNKNOWN_MATERIALITY", "predictive": False},
         "limitations": ["Corporate action is a dated fact, not an automatic bullish or bearish signal."],
@@ -384,6 +493,59 @@ def _next_watch(events: list[dict[str, Any]]) -> list[str]:
         elif status == "ANNOUNCED" and category in {"ACQUISITION", "MERGER_DEMERGER"}:
             watches.append("transaction approval or completion evidence")
     return list(dict.fromkeys(watches))[:8]
+
+
+def _retrieval_metadata(frames: dict[str, pd.DataFrame | None]) -> dict[str, Any]:
+    datasets: dict[str, dict[str, Any]] = {}
+    for key, frame in frames.items():
+        row_count = len(frame) if frame is not None else 0
+        retrieved_rows = 0
+        if frame is not None and "retrieved_at" in frame.columns:
+            retrieved_rows = int(frame["retrieved_at"].notna().sum())
+        datasets[key] = {
+            "row_retrieval_column": "retrieved_at" if frame is not None and "retrieved_at" in frame.columns else None,
+            "retrieved_rows": retrieved_rows,
+            "row_count": row_count,
+            "coverage": (
+                "COMPLETE" if row_count and retrieved_rows == row_count
+                else "PARTIAL" if retrieved_rows
+                else "LEGACY_RETRIEVAL_TIMESTAMP_UNAVAILABLE"
+            ),
+        }
+    try:
+        metadata = data_loader.freshness_metadata().get("datasets", {})
+    except AttributeError:
+        metadata = {}
+    for key, value in datasets.items():
+        value["dataset_build_at"] = metadata.get(key, {}).get("dataset_build_at")
+        value["last_successful_update"] = metadata.get(key, {}).get("last_successful_update")
+    return {
+        "row_timestamp_field": "retrieved_at",
+        "dataset_timestamp_field": "dataset_build_at",
+        "datasets": datasets,
+        "limitations": [
+            "retrieved_at is populated for newly acquired calendar rows only.",
+            "Legacy rows retain null retrieved_at; no historical timestamp is fabricated.",
+            "dataset_build_at is file/build metadata, not source publication or event time.",
+        ],
+    }
+
+
+def _lifecycle_coverage(events: list[dict[str, Any]]) -> dict[str, Any]:
+    states: dict[str, int] = {}
+    lineage_methods: dict[str, int] = {}
+    for event in events:
+        state = str(event.get("status", "UNKNOWN"))
+        states[state] = states.get(state, 0) + 1
+        method = str(event.get("lifecycle", {}).get("lineage_method", "UNKNOWN"))
+        lineage_methods[method] = lineage_methods.get(method, 0) + 1
+    return {
+        "events": len(events),
+        "states": states,
+        "linked_events": sum(count for method, count in lineage_methods.items() if method != "UNKNOWN"),
+        "lineage_methods": lineage_methods,
+        "limitation": "Only explicit source references are eligible for linkage; fuzzy lifecycle joins are not performed.",
+    }
 
 
 def build_corporate_intelligence(
@@ -412,6 +574,8 @@ def build_corporate_intelligence(
             "recent_events": [],
             "events_by_category": {},
             "results_context": {"state": "IDENTITY_REVIEW_REQUIRED"},
+            "retrieval_metadata": _retrieval_metadata(frames),
+            "lifecycle_coverage": _lifecycle_coverage([]),
             "evidence_quality": "INSUFFICIENT",
             "facts": [],
             "interpretation": "Corporate evidence is unavailable until canonical security identity is resolved.",
@@ -454,7 +618,7 @@ def build_corporate_intelligence(
         by_category[event["category"]] = by_category.get(event["category"], 0) + 1
     resolved = identity.get("identity_state") in {"IDENTIFIED", "NOT_REQUESTED"}
     quality = "HIGH" if resolved and events and all(event["provenance"].get("source_id") for event in events) else "MEDIUM" if resolved else "INSUFFICIENT"
-    results_context = _result_linkage(symbol, frames["quarterly_results"]) if symbol else {"state": "AVAILABLE", "contract": "fundamental-evidence-1.0", "metrics_inlined": False}
+    results_context = _result_linkage(symbol, frames["quarterly_results"]) if symbol else {"state": "RESULT_EVENT_SOURCE_UNKNOWN", "contract": "fundamental-evidence-1.0", "metrics_inlined": False}
     return {
         "contract_version": CONTRACT_VERSION,
         "symbol": symbol,
@@ -466,6 +630,8 @@ def build_corporate_intelligence(
         "recent_events": events,
         "events_by_category": by_category,
         "results_context": results_context,
+        "retrieval_metadata": _retrieval_metadata(frames),
+        "lifecycle_coverage": _lifecycle_coverage(events),
         "evidence_quality": quality,
         "facts": [event["facts"] for event in events],
         "interpretation": "Corporate evidence describes disclosed facts and dates; it is not a recommendation, forecast, or price signal.",

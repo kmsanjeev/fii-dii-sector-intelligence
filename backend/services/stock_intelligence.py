@@ -324,6 +324,9 @@ def build_stock_intelligence_contract(
         "evidence_quality": corporate_evidence.get("evidence_quality", "INSUFFICIENT"),
         "next_watch_items": corporate_evidence.get("next_watch_items", []),
         "limitations": corporate_evidence.get("limitations", []),
+        "results_context": corporate_evidence.get("results_context", {}),
+        "retrieval_metadata": corporate_evidence.get("retrieval_metadata", {}),
+        "lifecycle_coverage": corporate_evidence.get("lifecycle_coverage", {}),
     }
     dates = {
         "price": history_meta.get("as_of"),

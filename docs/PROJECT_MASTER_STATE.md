@@ -2,6 +2,21 @@
 # MASTER PROJECT STATE
 # Version 4.84.0 | 2026-08-20
 
+## VEDA market Corporate Intelligence freshness and lifecycle RX1 (2026-08-21)
+
+`VEDA-MARKET-CORPORATE-INTELLIGENCE-FRESHNESS-AND-LIFECYCLE-RX1-001` is
+operational with conditions. The existing Corporate scheduler stage 7B is
+preserved, while NSE event-calendar acquisition now uses the shared
+identity-encoding client and official endpoint. Source failures retain the
+last valid dataset, write explicit refresh diagnostics and return a truthful
+failure status. New event-calendar rows carry `retrieved_at`; legacy rows
+remain null. Dataset build timestamps, lifecycle state/lineage fields,
+result-event versus fundamental freshness and malformed quarterly-date
+limitations are explicit. The provider contract remains
+`corporate-intelligence-1.0`; no RAG, prediction, ML, EMP, Jyotish, BEBOS or
+source-ownership change occurred. Evidence is in
+`docs/current-state/veda-market-corporate-intelligence-freshness-and-lifecycle-rx1-001/`.
+
 ## VEDA market corporate intelligence hardening (2026-08-21)
 
 `VEDA-MARKET-CORPORATE-INTELLIGENCE-HARDENING-001` is operational with

@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-08-21 - VEDA-MARKET-CORPORATE-INTELLIGENCE-FRESHNESS-AND-LIFECYCLE-RX1-001
+
+Repaired provider-local Corporate event-calendar freshness acquisition using
+the existing NSE client and official endpoint after confirming the prior nselib
+Brotli decoding failure. Source failures now preserve the last valid dataset,
+write explicit refresh state and return a truthful module failure status. New
+event-calendar rows carry retrieval timestamps; legacy rows remain null.
+Corporate responses add bounded retrieval metadata and explicit lifecycle
+lineage/state fields, while quarterly result freshness discloses valid
+period-end fallback and filing-date coverage. Existing contract, scheduler,
+source ownership, RAG, prediction, ML, EMP, Jyotish and BEBOS boundaries
+remain unchanged. Evidence is in
+`docs/current-state/veda-market-corporate-intelligence-freshness-and-lifecycle-rx1-001/`.
+
 ## 2026-08-21 - VEDA-MARKET-CORPORATE-INTELLIGENCE-HARDENING-001
 
 Hardened the existing Corporate Intelligence surface with the deterministic
