@@ -6,7 +6,7 @@ The additive `stock_intelligence` object contains:
 
 - `identity`;
 - `facts.price_windows`, `history`, `volume`, `technical`, `fundamentals`, `corporate`;
-- `signals.trend_state`, momentum, market/sector relative strength, sector context, cross-layer state, institutional context, the additive `stock-institutional-evidence-1.0` contract, and technical accumulation/distribution context;
+- `signals.trend_state`, momentum, market/sector relative strength, sector context, cross-layer state, institutional context, the additive `stock-institutional-evidence-1.1` contract, and technical accumulation/distribution context;
 - `evidence_quality`, `date_alignment`, `limitations`, `next_watch_items`, and descriptive `interpretation`.
 
 The result is a signal/context contract, not advice or prediction. A price/volume signal is explicitly technical. A deal or ownership record is descriptive and scoped. Broad participant flow is `MARKET_LEVEL_CONTEXT_ONLY`. No complete daily stock-level FII/DII flow source is claimed.

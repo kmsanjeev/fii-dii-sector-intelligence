@@ -72,6 +72,15 @@ def test_contract_separates_disclosed_deals_from_daily_fii_dii_flow(monkeypatch)
     assert result["ownership"]["change"]["fii_pct"] == 1.0
     assert result["ownership"]["latest"]["submission_date"] == "2026-07-15"
     assert result["direct_transactions"]["records"][0]["date_fields"]["disclosure_date"] is None
+    assert result["contract_version"] == "stock-institutional-evidence-1.1"
+    assert result["direct_transactions"]["records"][0]["source_record_id"]
+    assert result["direct_transactions"]["records"][0]["participant"]["participant_raw_name"] == "Unknown Client"
+    assert result["direct_transactions"]["records"][0]["participant"]["classification_method"] == "UNKNOWN"
+    assert result["identity"]["security_resolution"]["state"] == "EXACT_IDENTITY"
+    assert result["frequency"]["ownership"] == "QUARTERLY"
+    assert result["data_status"]["freshness_for_frequency"]["ownership"]["frequency"] == "QUARTERLY"
+    assert result["provenance"]["direct_record_lineage"]
+    assert result["coverage"]["both"] is True
 
 
 def test_unknown_symbol_requires_identity_review(monkeypatch) -> None:
@@ -95,3 +104,42 @@ def test_market_context_is_not_attributed_to_stock(monkeypatch) -> None:
     assert result["scope"] == "MARKET_LEVEL_CONTEXT_ONLY"
     assert result["market_level_context"]["as_of"] == "2026-08-20"
     assert result["signals"]["daily_fii_dii_flow"] == "NOT_AVAILABLE"
+
+
+def test_duplicate_deals_are_deduplicated_with_stable_source_ids(monkeypatch) -> None:
+    duplicate = {
+        "date": "2026-08-20",
+        "symbol": "ALPHA",
+        "company": "Alpha Limited",
+        "deal_type": "BLOCK",
+        "client_name": "Unknown Client",
+        "participant": "RETAIL",
+        "direction": "BUY",
+        "qty": 100000,
+        "price": 100.0,
+        "value_cr": 1.0,
+        "seq_id": 1,
+    }
+    frames = {
+        "block_deals": pd.DataFrame([duplicate, duplicate]),
+        "shareholding": pd.DataFrame(),
+        "holding_trends": pd.DataFrame(),
+        "deal_signals": pd.DataFrame(),
+        "participant_flows": pd.DataFrame(),
+    }
+    monkeypatch.setattr(evidence.data_loader, "get", lambda key: frames.get(key))
+
+    result = evidence.build_stock_institutional_evidence("ALPHA", identity=_identity())
+
+    assert result["facts"]["deal_activity"]["duplicate_count_removed"] == 1
+    assert len(result["direct_transactions"]["records"]) == 1
+    assert result["direct_transactions"]["records"][0]["record_id"] == result["direct_transactions"]["records"][0]["source_record_id"]
+
+
+def test_frequency_freshness_is_cadence_aware() -> None:
+    reference = pd.Timestamp("2026-08-21").date()
+
+    assert evidence._freshness_for_frequency("2026-08-20", "DAILY", reference_date=reference)["state"] == "CURRENT_FOR_FREQUENCY"
+    assert evidence._freshness_for_frequency("2026-06-30", "QUARTERLY", reference_date=reference)["state"] == "CURRENT_FOR_FREQUENCY"
+    assert evidence._freshness_for_frequency("2025-01-01", "QUARTERLY", reference_date=reference)["state"] == "STALE_FOR_FREQUENCY"
+    assert evidence._freshness_for_frequency(None, "IRREGULAR", reference_date=reference)["state"] == "UNKNOWN_FREQUENCY"

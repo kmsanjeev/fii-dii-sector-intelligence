@@ -4,9 +4,22 @@
 
 ## Current VEDA direct institutional stock evidence (2026-08-21)
 
+`VEDA-MARKET-DIRECT-INSTITUTIONAL-STOCK-EVIDENCE-002` is operational with
+conditions. The provider-owned contract is now `stock-institutional-evidence-1.1`:
+security identity resolution, source/participant lineage, deterministic record
+identifiers, cadence-aware freshness, date semantics, deduplication and
+coverage metrics are explicit. Official source access was reassessed. NSE
+disclosed bulk/block reports, NSE shareholding filings and SEBI's historical
+trade-wise FPI equity archive are useful bounded sources, but none is a
+governed complete current daily FII/DII stock-flow tape; the direct daily and
+sector gates therefore remain unchanged. No raw provider data, prediction,
+ML, PRED-M4, EMP, RAG semantic, Jyotish, identity, subscription or BEBOS
+state changed. Evidence is recorded in
+`docs/current-state/veda-market-direct-institutional-stock-evidence-002/`.
+
 `VEDA-MARKET-DIRECT-INSTITUTIONAL-STOCK-EVIDENCE-001` is implemented with
 conditions. The existing stock-intelligence and cross-layer surfaces now
-consume the additive `stock-institutional-evidence-1.0` contract. It separates
+consume the additive `stock-institutional-evidence-1.1` contract. It separates
 NSE-disclosed bulk/block activity, quarterly ownership snapshots and derived
 client-name heuristics. The direct daily stock-level FII/DII gate remains
 `NO_GOVERNED_DIRECT_DAILY_STOCK_FLOW_SOURCE`; the direct sector-level gate

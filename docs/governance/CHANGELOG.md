@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-08-21 - VEDA-MARKET-DIRECT-INSTITUTIONAL-STOCK-EVIDENCE-002
+
+Completed the direct-source and identity/provenance hardening activity. The
+provider-owned `stock-institutional-evidence-1.1` contract now preserves
+security identity resolution, deterministic source record IDs, participant raw
+names and classification lineage, cadence-aware freshness, date semantics,
+deduplication and evidence coverage metrics. Official NSE and SEBI source
+families were assessed without scraping or adding raw provider data. The
+direct daily stock-level and sector-level FII/DII gates remain explicitly
+ungoverned because the available official sources do not provide a complete,
+current, all-participant stock-flow tape. No prediction, ML, PRED-M4, EMP,
+RAG semantic, Jyotish, subscription or BEBOS state changed.
+
 ## 2026-08-21 - VEDA-MARKET-DIRECT-INSTITUTIONAL-STOCK-EVIDENCE-001
 
 Added the provider-owned `stock-institutional-evidence-1.0` contract over the
