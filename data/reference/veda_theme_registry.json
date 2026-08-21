@@ -1,0 +1,28 @@
+{
+  "schema_version": "theme-registry-1.0",
+  "authority": "APPROVED_STRUCTURED_CLASSIFICATION",
+  "source": "data/reference/company_classification_v4.csv + data/reference/theme_tagging.csv",
+  "last_verified": "2026-06-30",
+  "limitations": [
+    "Theme membership is a current-universe classification snapshot; historical membership snapshots are unavailable.",
+    "The catalogue is a bounded initial universe and is not an official exchange theme index.",
+    "Corporate and fundamental evidence can support context but is not recomputed by this registry."
+  ],
+  "themes": [
+    {"theme_id":"theme.capex-cycle","code":"CAPEX_CYCLE","display_name":"Capital Expenditure Cycle","category":"MACRO","aliases":["capex","capital expenditure","capex cycle"],"description":"Industrial capacity, equipment and investment-cycle exposure."},
+    {"theme_id":"theme.china-plus-one","code":"CHINA_PLUS_ONE","display_name":"China Plus One","category":"MACRO","aliases":["china plus one","supply chain diversification","manufacturing shift"],"description":"Supply-chain diversification and export-manufacturing exposure."},
+    {"theme_id":"theme.defence-electronics","code":"DEFENCE_ELECTRONICS","display_name":"Defence Electronics","category":"STRATEGIC","aliases":["defence electronics","defense electronics"],"description":"Electronic, systems and technology exposure within defence manufacturing."},
+    {"theme_id":"theme.digital-india","code":"DIGITAL_INDIA","display_name":"Digital India","category":"TECHNOLOGY","aliases":["digital india","digitalisation","technology adoption"],"description":"Digital infrastructure, software and technology-adoption exposure."},
+    {"theme_id":"theme.ev-transition","code":"EV_TRANSITION","display_name":"EV Transition","category":"TRANSITION","aliases":["ev","electric vehicles","ev transition"],"description":"Electric mobility, components and transition-enabling exposure."},
+    {"theme_id":"theme.export-growth","code":"EXPORT_GROWTH","display_name":"Export Growth","category":"MACRO","aliases":["exports","export growth","exporters"],"description":"Companies with classification evidence for export-oriented growth exposure."},
+    {"theme_id":"theme.financialisation","code":"FINANCIALISATION","display_name":"Financialisation","category":"FINANCE","aliases":["financialisation","financialization","savings formalisation"],"description":"Formalisation and expansion of financial savings, credit and market intermediation."},
+    {"theme_id":"theme.green-energy","code":"GREEN_ENERGY","display_name":"Green Energy","category":"TRANSITION","aliases":["green energy","renewables","clean energy"],"description":"Renewable, clean-energy and energy-transition exposure."},
+    {"theme_id":"theme.healthcare-expansion","code":"HEALTHCARE_EXPANSION","display_name":"Healthcare Expansion","category":"HEALTHCARE","aliases":["healthcare expansion","healthcare","medical services"],"description":"Healthcare services, products and capacity-expansion exposure."},
+    {"theme_id":"theme.infrastructure-build","code":"INFRASTRUCTURE_BUILD","display_name":"Infrastructure Build","category":"MACRO","aliases":["infrastructure build","infrastructure","infra"],"description":"Construction, infrastructure and public/private capacity-building exposure."},
+    {"theme_id":"theme.logistics-modernisation","code":"LOGISTICS_MODERNISATION","display_name":"Logistics Modernisation","category":"MACRO","aliases":["logistics modernisation","logistics modernization","logistics"],"description":"Ports, transport and logistics-system modernisation exposure."},
+    {"theme_id":"theme.premiumisation","code":"PREMIUMISATION","display_name":"Premiumisation","category":"CONSUMER","aliases":["premiumisation","premiumization","premium consumption"],"description":"Premium consumption, brands and discretionary upgrading exposure."},
+    {"theme_id":"theme.psu-revival","code":"PSU_REVIVAL","display_name":"PSU Revival","category":"POLICY","aliases":["psu revival","public sector revival","psu"],"description":"Public-sector and policy-linked revival exposure where classification evidence exists."},
+    {"theme_id":"theme.real-estate-recovery","code":"REAL_ESTATE_RECOVERY","display_name":"Real Estate Recovery","category":"REAL_ESTATE","aliases":["real estate recovery","realty recovery","real estate"],"description":"Real-estate, housing and property-cycle recovery exposure."},
+    {"theme_id":"theme.rural-consumption","code":"RURAL_CONSUMPTION","display_name":"Rural Consumption","category":"CONSUMER","aliases":["rural consumption","rural demand","rural india"],"description":"Rural demand, agriculture-linked and mass-consumption exposure."}
+  ]
+}

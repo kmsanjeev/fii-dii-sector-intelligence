@@ -2,8 +2,8 @@
   "meta": {
     "baseline_id": "VEDA-P001-M003",
     "generated_on": "2026-08-10",
-    "openapi_path_count": 147,
-    "operation_count": 160
+    "openapi_path_count": 152,
+    "operation_count": 165
   },
   "critical_endpoints": [
     {
@@ -3619,6 +3619,120 @@
       "query_params": [],
       "response_codes": [
         "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/themes/governed",
+      "owner": "governed-theme-intelligence",
+      "operation_id": "get_theme_registry_api_themes_governed_get",
+      "tags": [
+        "governed-theme-intelligence"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/themes/governed/stocks/{symbol}",
+      "owner": "governed-theme-intelligence",
+      "operation_id": "get_stock_themes_api_themes_governed_stocks__symbol__get",
+      "tags": [
+        "governed-theme-intelligence"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/themes/governed/summary",
+      "owner": "governed-theme-intelligence",
+      "operation_id": "get_theme_summary_api_themes_governed_summary_get",
+      "tags": [
+        "governed-theme-intelligence"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/themes/governed/{theme_id}",
+      "owner": "governed-theme-intelligence",
+      "operation_id": "get_theme_api_themes_governed__theme_id__get",
+      "tags": [
+        "governed-theme-intelligence"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "theme_id"
+      ],
+      "query_params": [
+        "include_members",
+        "member_limit"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/themes/governed/{theme_id}/intelligence",
+      "owner": "governed-theme-intelligence",
+      "operation_id": "get_theme_intelligence_api_themes_governed__theme_id__intelligence_get",
+      "tags": [
+        "governed-theme-intelligence"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "theme_id"
+      ],
+      "query_params": [
+        "member_limit"
+      ],
+      "response_codes": [
+        "200",
+        "422"
       ],
       "response_content_types": [
         "application/json"

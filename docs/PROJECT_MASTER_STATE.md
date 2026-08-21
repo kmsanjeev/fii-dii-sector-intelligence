@@ -948,3 +948,19 @@ EMP, RAG, astrology or VEDA data migration is part of this activity.
 - `VEDA-CALC-ASHTAKAVARGA-DECISION-001` completed with `PASS_WITH_CONDITION`: the independent source evaluator covered all 768 governed source cells and compared 96 deterministic synthetic charts. It found 268 numeric/self-policy mismatches among 595 physically comparable cells and zero exact SAV matches. Decision: `ASHTAKAVARGA_REMEDIATION_SPEC_READY`; the future remediation is separately authorized but not started, and production, prediction, ML, RAG, D20 and Approved Core remain unchanged. Evidence is in `docs/current-state/calc-ashtakavarga-decision-001/`.
 - `VEDA-EVIDENCE-OGDB-SUBCOHORT-RX-001` completed with `PASS_WITH_CONDITION`: official OGDB counts and source-family lineage were reconciled against the existing outcome-free 1,000-record pilot. LERRCP and Müller/AFD are potentially useful upstream families, but the local pilot lacks family labels, documentary source chains and a canonical ADB overlap map. Decision: `OGDB_SOURCE_DIVERSITY_USEFUL_BUT_SCALE_LIMITED`; no empirical frame was created, and no POSITION_END lookup, astrology, scoring, ML, prediction, RAG, production, Approved Core or raw-data change occurred. Evidence is in `docs/current-state/evidence-ogdb-subcohort-rx-001/`.
 - `VEDA-MUHURTA-MVP-SOURCE-SEMANTICS-HARDENING-001` completed with `MUHURTA_MVP_SOURCE_SEMANTICS_PARTIAL`: the source-witness chain now records direct Bṛhat Saṃhitā light-Nakshatra values and narrow Business Karaṇa trade/establishment values. Activity-specific Tithi semantics, Education Karaṇa semantics, Vara/Yoga and personal Bala remain partial; Business and Education V3 contracts remain non-production and no engine handoff was created. V1/V2 hashes, P032 calculation, RAG, prediction, ML, and Approved Core (`17`) remain unchanged. Evidence is in `docs/current-state/muhurta-mvp-source-semantics-hardening-001/`.
+## VEDA market Theme Intelligence (2026-08-21)
+
+`VEDA-MARKET-THEME-INTELLIGENCE-001` is operational with conditions. FII-DII
+now owns a governed read-only Theme contract at `/api/themes/governed` using a
+bounded 15-theme registry, deterministic current membership from existing
+classification/tagging evidence, equal-weight 1D/3D/5D/10D/20D performance,
+coverage-aware breadth and cautious leadership states. VEDA exposes the formal
+`market.theme.intelligence` capability through the existing
+`veda-market-intelligence` provider; it does not calculate Theme data.
+
+The legacy Phase-E `/api/themes` route and 50-theme scorer remain unchanged for
+compatibility. Current membership is not historical membership, Theme-level
+FII/DII attribution is not claimed, and persistence remains
+`INSUFFICIENT_HISTORY` until governed multi-date Theme history exists. No
+Corporate, Fundamentals, prediction, ML, RAG or EMP state changed. Evidence is
+in `docs/current-state/veda-market-theme-intelligence-001/`.
