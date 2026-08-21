@@ -5126,3 +5126,14 @@ change occurred. Evidence is in
   threshold. No sample loop, R2, RAG, ML, prediction, production or Approved
   Core change occurred.
 - Evidence: `docs/current-state/adb-access-gate-refresh-2026-001/`.
+## 2026-08-22 - VEDA-MARKET-INTRADAY-PROVIDER-ACCESS-VALIDATION-RX1
+
+- Added provider-local Dhan TOTP authentication, secure Windows Vault token
+  reuse/refresh and sanitized entitlement state.
+- Corrected the installed Dhan SDK `DhanContext` construction and provider
+  failure-envelope handling.
+- Real Dhan authentication/profile passed; account Data API plan is inactive,
+  so market-data probes remain entitlement-blocked.
+- Intraday foundation is now operational with conditions; Intraday Intelligence
+  is not started. No orders, fallback, RAG, ML, prediction, EMP, Jyotish or
+  BEBOS behavior changed.

@@ -18,6 +18,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 from engines.common import config as cfg
+from engines.providers.dhan_auth import DhanAuthError, DhanAuthManager
 
 CONTRACT_VERSION = "intraday-market-data-1.0"
 PROVIDER_ID = "dhanhq"
@@ -34,6 +35,18 @@ MANIFEST_PATH = DATA_ROOT / "manifest.json"
 
 class IntradaySourceError(RuntimeError):
     """Typed source or entitlement failure."""
+
+
+def _require_provider_success(payload: dict[str, Any], *, auth_manager: DhanAuthManager | None = None) -> None:
+    """Convert provider failure envelopes into stable, non-secret errors."""
+    if str(payload.get("status", "")).lower() in {"success", "ok"}:
+        return
+    remarks = payload.get("remarks") if isinstance(payload.get("remarks"), dict) else {}
+    code = str(remarks.get("error_code") or "PROVIDER_REQUEST_FAILED")
+    validation = auth_manager.read_validation_state() if auth_manager else {}
+    if code == "DH-902" or str(validation.get("data_plan", "")).upper() not in {"", "ACTIVE"}:
+        raise IntradaySourceError("DATA_ENTITLEMENT_REQUIRED")
+    raise IntradaySourceError(code)
 
 
 @dataclass(frozen=True, slots=True)
@@ -294,22 +307,33 @@ class IntradayProvider(Protocol):
 class DhanIntradayProvider:
     """Dhan market-data seam; account credentials are never logged or returned."""
 
-    def __init__(self, *, client_id: str | None = None, access_token: str | None = None, client: Any = None):
+    def __init__(self, *, client_id: str | None = None, access_token: str | None = None, client: Any = None, auth_manager: DhanAuthManager | None = None):
         self.client_id = client_id or os.getenv("DHAN_CLIENT_ID")
         self.access_token = access_token or os.getenv("DHAN_ACCESS_TOKEN")
         self._client = client
+        self._auth_manager = auth_manager or DhanAuthManager()
 
     @property
     def configured(self) -> bool:
-        return bool(self.client_id and self.access_token)
+        return bool(self.client_id and self.access_token) or self._auth_manager.has_credentials()
 
     def status(self) -> dict[str, Any]:
+        validation: dict[str, Any] = {}
         if not self.configured:
             state = "CREDENTIALS_UNAVAILABLE"
             entitlement = "UNVERIFIED"
         else:
-            state = "AUTHORIZED_WITH_LIMITS"
-            entitlement = "REQUIRES_PROVIDER_VALIDATION"
+            state = "AUTHORIZED_WITH_LIMITS" if self.access_token else "AUTHENTICATION_CONFIGURED"
+            validation = self._auth_manager.read_validation_state()
+            entitlement = "ENTITLED" if str(validation.get("data_plan", "")).upper() == "ACTIVE" else "REQUIRES_PROVIDER_VALIDATION"
+            if str(validation.get("data_plan", "")).upper() not in {"", "UNKNOWN", "ACTIVE"}:
+                entitlement = "ENTITLEMENT_REQUIRED"
+        limitations = [
+            "Data API entitlement and account access are not verified in this runtime.",
+            "No provider fallback to yfinance is permitted for governed intraday reads.",
+        ]
+        if str(validation.get("data_plan", "")).upper() not in {"", "UNKNOWN", "ACTIVE"}:
+            limitations[0] = "Dhan profile reports Data API plan inactive; real market-data requests are entitlement-blocked."
         return {
             "provider": PROVIDER_ID,
             "provider_version": "dhanhq-2.2.0",
@@ -319,10 +343,7 @@ class DhanIntradayProvider:
             "historical": {"available_intervals": [1, 5, 15, 25, 60], "range": "PROVIDER_DOCUMENTED_LAST_5_YEARS_UNTESTED"},
             "live": {"available": "PROVIDER_DOCUMENTED_UNTESTED", "connection": "NOT_STARTED"},
             "options": {"available": "PROVIDER_DOCUMENTED_UNTESTED", "rate_limit": "ONE_UNIQUE_REQUEST_PER_3_SECONDS"},
-            "limitations": [
-                "Data API entitlement and account access are not verified in this runtime.",
-                "No provider fallback to yfinance is permitted for governed intraday reads.",
-            ],
+            "limitations": limitations,
         }
 
     def _require_client(self) -> Any:
@@ -330,9 +351,17 @@ class DhanIntradayProvider:
             return self._client
         if not self.configured:
             raise IntradaySourceError("CREDENTIALS_UNAVAILABLE")
+        if not self.access_token:
+            try:
+                token = self._auth_manager.ensure_valid_token()
+            except DhanAuthError as exc:
+                raise IntradaySourceError(exc.code) from exc
+            self.access_token = token.access_token
+            if not self.client_id:
+                self.client_id = os.getenv("DHAN_CLIENT_ID")
         try:
-            from dhanhq import dhanhq as DhanHQ
-            self._client = DhanHQ(str(self.client_id), str(self.access_token))
+            from dhanhq import DhanContext, dhanhq as DhanHQ
+            self._client = DhanHQ(DhanContext(str(self.client_id), str(self.access_token)))
             return self._client
         except Exception as exc:
             raise IntradaySourceError(f"SOURCE_UNAVAILABLE:{type(exc).__name__}") from exc
@@ -351,6 +380,7 @@ class DhanIntradayProvider:
         )
         if not isinstance(payload, dict):
             raise IntradaySourceError("MALFORMED_PROVIDER_RESPONSE")
+        _require_provider_success(payload, auth_manager=self._auth_manager)
         return normalize_dhan_candles(payload, identity, interval)
 
     def quote(self, identities: list[InstrumentIdentity]) -> dict[str, Any]:
@@ -362,19 +392,24 @@ class DhanIntradayProvider:
         payload = self._require_client().quote_data(securities)
         if not isinstance(payload, dict):
             raise IntradaySourceError("MALFORMED_PROVIDER_RESPONSE")
+        _require_provider_success(payload, auth_manager=self._auth_manager)
         return {"status": "AVAILABLE", "source": PROVIDER_ID, "data": payload}
 
     def option_chain(self, underlying: InstrumentIdentity, expiry: str) -> dict[str, Any]:
         payload = self._require_client().option_chain(int(underlying.provider_security_id), underlying.segment, expiry)
         if not isinstance(payload, dict):
             raise IntradaySourceError("MALFORMED_PROVIDER_RESPONSE")
+        _require_provider_success(payload, auth_manager=self._auth_manager)
         return {"status": "AVAILABLE", "source": PROVIDER_ID, "expiry": expiry, "data": payload}
 
 
 def build_status(provider: IntradayProvider | None = None) -> dict[str, Any]:
     provider = provider or DhanIntradayProvider()
     provider_status = provider.status()
+    validation = provider._auth_manager.read_validation_state() if isinstance(provider, DhanIntradayProvider) else {}
     configured = provider_status.get("authorization_state") not in {"CREDENTIALS_UNAVAILABLE", "SOURCE_UNAVAILABLE"}
+    entitled = str(validation.get("data_plan", "")).upper() == "ACTIVE"
+    runtime_health = str(validation.get("runtime_health", "")).upper()
     return {
         "contract_version": CONTRACT_VERSION,
         "instrument": {"state": "IDENTITY_REVIEW_REQUIRED", "provider_master": "Dhan official instrument list", "fuzzy_matching": False},
@@ -382,14 +417,14 @@ def build_status(provider: IntradayProvider | None = None) -> dict[str, Any]:
         "source": provider_status,
         "entitlement_state": provider_status.get("entitlement_state"),
         "data_status": {
-            "state": "AVAILABLE_WITH_CONDITIONS" if configured else provider_status.get("authorization_state", "SOURCE_UNAVAILABLE"),
+            "state": "HEALTHY" if entitled and runtime_health == "HEALTHY" else "ENTITLEMENT_BLOCKED" if configured and not entitled else provider_status.get("authorization_state", "SOURCE_UNAVAILABLE"),
             "as_of": None,
             "source": [PROVIDER_ID],
             "last_successful_update": None,
             "limitations": provider_status.get("limitations", []),
         },
         "historical": {"supported_intervals": sorted(SUPPORTED_INTERVALS), "candles": [], "coverage": "NOT_VALIDATED"},
-        "live": {"available": False, "connection": "NOT_CONFIGURED", "quote": None, "freshness": "UNKNOWN"},
+        "live": {"available": bool(entitled and runtime_health == "HEALTHY"), "connection": "CONNECTED" if entitled and runtime_health == "HEALTHY" else "ENTITLEMENT_BLOCKED", "quote": None, "freshness": "UNKNOWN"},
         "derivatives": {"live_oi": "PROVIDER_DOCUMENTED_UNTESTED"},
         "options": {"chain_available": "PROVIDER_DOCUMENTED_UNTESTED", "snapshot": None},
         "quality": {"rules": ["OHLC", "volume", "OI", "duplicate", "ordering", "session", "identity"]},

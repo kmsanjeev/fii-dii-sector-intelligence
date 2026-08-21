@@ -52,8 +52,8 @@ def _i(val, default: int = 0) -> int:
 class DhanAdapter(BrokerAdapter):
 
     def __init__(self, client_id: str, access_token: str):
-        from dhanhq import dhanhq as DhanHQ
-        self._client = DhanHQ(str(client_id), str(access_token))
+        from dhanhq import DhanContext, dhanhq as DhanHQ
+        self._client = DhanHQ(DhanContext(str(client_id), str(access_token)))
         logger.info("[Dhan] Adapter initialised for client %s", client_id[:4] + "****")
 
     def ping(self) -> bool:

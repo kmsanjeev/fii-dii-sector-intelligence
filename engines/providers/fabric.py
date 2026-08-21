@@ -65,6 +65,7 @@ class ProviderManifest:
     adapter_version: str = "0.1.0"
     documentation_url: str = ""
     limitations: tuple[str, ...] = ()
+    capability_states: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -153,7 +154,16 @@ class ProviderFabric:
                 candidates.append((score, manifest, connection))
         candidates.sort(key=lambda item: (-item[0], item[1].provider_id))
         if not candidates:
-            live = capability in {Capability.LIVE_LTP, Capability.LIVE_QUOTE, Capability.LIVE_WEBSOCKET, Capability.MARKET_DEPTH}
+            live = capability in {
+                Capability.INTRADAY_HISTORY,
+                Capability.LIVE_LTP,
+                Capability.LIVE_QUOTE,
+                Capability.LIVE_WEBSOCKET,
+                Capability.MARKET_DEPTH,
+                Capability.FUTURES_OI,
+                Capability.OPTION_CHAIN,
+                Capability.OPTION_GREEKS_SOURCE,
+            }
             return Resolution(
                 capability=capability,
                 selected_provider=None,
@@ -179,12 +189,15 @@ class ProviderFabric:
 def default_provider_fabric() -> ProviderFabric:
     """Return policy metadata for the current FII providers."""
     local = frozenset({Capability.EOD_EQUITY_HISTORY, Capability.EOD_FNO_HISTORY, Capability.PORTFOLIO_IMPORT})
-    broker = frozenset({Capability.INTRADAY_HISTORY, Capability.LIVE_LTP, Capability.LIVE_QUOTE, Capability.LIVE_WEBSOCKET, Capability.MARKET_DEPTH, Capability.FUTURES_OI, Capability.OPTION_CHAIN, Capability.HOLDINGS, Capability.POSITIONS, Capability.FUNDS, Capability.TRADES, Capability.ORDER_HISTORY})
+    dhan_market = frozenset({Capability.INTRADAY_HISTORY, Capability.LIVE_LTP, Capability.LIVE_QUOTE, Capability.LIVE_WEBSOCKET, Capability.MARKET_DEPTH, Capability.FUTURES_OI, Capability.OPTION_CHAIN, Capability.OPTION_GREEKS_SOURCE})
+    dhan_portfolio = frozenset({Capability.HOLDINGS, Capability.POSITIONS, Capability.FUNDS, Capability.TRADES, Capability.ORDER_HISTORY})
+    zerodha_market = frozenset({Capability.INTRADAY_HISTORY, Capability.LIVE_LTP, Capability.LIVE_QUOTE, Capability.LIVE_WEBSOCKET, Capability.MARKET_DEPTH, Capability.FUTURES_OI})
+    zerodha_portfolio = frozenset({Capability.HOLDINGS, Capability.POSITIONS, Capability.FUNDS, Capability.TRADES, Capability.ORDER_HISTORY})
     fabric = ProviderFabric([
         ProviderManifest("local-governed", "FII governed local stores", ProviderType.LOCAL_GOVERNED, "FII-DII-Sector-Intelligence", local, historical_support=True, licensing_state="INTERNAL", health_probe="local-files", limitations=("No live market data.",)),
-        ProviderManifest("dhan", "DhanHQ", ProviderType.BROKER, "DhanHQ API", broker, ("ACCESS_TOKEN", "API_KEY_OAUTH"), True, True, "PROVIDER_REVIEWED", ("NSE", "BSE", "NFO", "BFO"), ("1", "5", "15", "25", "60"), True, True, True, False, "provider-defined", "authenticated API health probe", "2.2.0", "https://dhanhq.co/docs/v2/", ("Data API entitlement may be required.", "Execution is intentionally disabled by FII.")),
-        ProviderManifest("zerodha-kite", "Zerodha Kite Connect", ProviderType.BROKER, "Kite Connect API", broker, ("REDIRECT_REQUEST_TOKEN",), True, True, "PROVIDER_REVIEWED", ("NSE", "BSE", "NFO", "BFO", "MCX"), ("minute", "3minute", "5minute", "10minute", "15minute", "30minute", "60minute", "day"), True, True, True, False, "provider-defined", "authenticated API health probe", "unvalidated", "https://kite.trade/docs/connect/v3/", ("OAuth-style redirect/request-token exchange required.", "Execution is intentionally disabled by FII.")),
-        ProviderManifest("hdfc-sky", "HDFC Sky Open API", ProviderType.BROKER, "HDFC Sky developer portal", broker, ("REDIRECT_REQUEST_TOKEN",), True, True, "POLICY_REVIEW_REQUIRED", ("NSE", "BSE", "NFO"), (), True, True, True, False, "UNVERIFIED", "not configured", "unvalidated", "https://developer.hdfcsky.com/", ("Current API scope and entitlement require validation before activation.",)),
+        ProviderManifest("dhan", "DhanHQ", ProviderType.BROKER, "DhanHQ API", dhan_market | dhan_portfolio, ("TOTP_ACCESS_TOKEN", "ACCESS_TOKEN", "API_KEY_OAUTH"), True, True, "PROVIDER_REVIEWED", ("NSE", "BSE", "NFO", "BFO"), ("1", "5", "15", "25", "60"), True, True, True, False, "provider-defined", "authenticated API health probe", "2.2.0", "https://dhanhq.co/docs/v2/", ("Data API entitlement may be required.", "Execution is intentionally disabled by FII."), (("INTRADAY_HISTORY", "DOCUMENTED_UNVALIDATED"), ("LIVE_LTP", "DOCUMENTED_UNVALIDATED"), ("LIVE_QUOTE", "DOCUMENTED_UNVALIDATED"), ("LIVE_WEBSOCKET", "DOCUMENTED_UNVALIDATED"), ("MARKET_DEPTH", "DOCUMENTED_UNVALIDATED"), ("FUTURES_OI", "DOCUMENTED_UNVALIDATED"), ("OPTION_CHAIN", "DOCUMENTED_UNVALIDATED"), ("OPTION_GREEKS_SOURCE", "DOCUMENTED_UNVALIDATED"))),
+        ProviderManifest("zerodha-kite", "Zerodha Kite Connect", ProviderType.BROKER, "Kite Connect API", zerodha_market | zerodha_portfolio, ("REDIRECT_REQUEST_TOKEN",), True, True, "PROVIDER_REVIEWED", ("NSE", "BSE", "NFO", "BFO", "MCX"), ("minute", "3minute", "5minute", "10minute", "15minute", "30minute", "60minute", "day"), True, True, True, False, "provider-defined", "authenticated API health probe", "unvalidated", "https://kite.trade/docs/connect/v3/", ("Official docs reviewed for candles, quotes and WebSocket; option-chain/Greeks API not identified.", "Execution is intentionally disabled by FII."), (("INTRADAY_HISTORY", "DOCUMENTED_UNVALIDATED"), ("LIVE_LTP", "DOCUMENTED_UNVALIDATED"), ("LIVE_QUOTE", "DOCUMENTED_UNVALIDATED"), ("LIVE_WEBSOCKET", "DOCUMENTED_UNVALIDATED"), ("MARKET_DEPTH", "DOCUMENTED_UNVALIDATED"), ("FUTURES_OI", "DOCUMENTED_UNVALIDATED"))),
+        ProviderManifest("hdfc-sky", "HDFC Sky Open API", ProviderType.BROKER, "HDFC Sky developer portal", frozenset(), ("REDIRECT_REQUEST_TOKEN",), True, True, "POLICY_REVIEW_REQUIRED", ("NSE", "BSE", "NFO"), (), False, False, False, False, "UNVERIFIED", "not configured", "unvalidated", "https://developer.hdfcsky.com/", ("Current official API scope and entitlement require validation before any capability is advertised.",)),
         ProviderManifest("csv-import", "Broker CSV import", ProviderType.FILE_IMPORT, "User-provided broker export", frozenset({Capability.PORTFOLIO_IMPORT}), licensing_state="USER_PROVIDED", portfolio_support=True, health_probe="file-presence", limitations=("Snapshot import only; no live or historical market feed.",)),
         ProviderManifest("yfinance", "yfinance compatibility", ProviderType.PUBLIC_COMPATIBILITY, "Yahoo Finance compatibility layer", frozenset({Capability.EOD_EQUITY_HISTORY}), historical_support=True, licensing_state="LOCAL_RESEARCH", health_probe="optional", limitations=("Not production authority; terms and availability require policy review.",)),
         ProviderManifest("nselib", "nselib compatibility", ProviderType.RESEARCH_CANDIDATE, "Community package", frozenset({Capability.EOD_EQUITY_HISTORY, Capability.EOD_FNO_HISTORY}), historical_support=True, licensing_state="POLICY_REVIEW_REQUIRED", health_probe="optional", limitations=("Research candidate; do not use as production authority without review.",)),

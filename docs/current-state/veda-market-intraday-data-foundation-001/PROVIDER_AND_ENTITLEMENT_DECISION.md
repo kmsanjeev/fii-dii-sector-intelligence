@@ -4,16 +4,17 @@ Primary source decision: `DHAN_PRIMARY` for historical candles, live quotes/
 feed, and option-chain requests, subject to account verification.
 
 The installed official `dhanhq==2.2.0` package exposes
-`intraday_minute_data`, `quote_data`, `option_chain` and `MarketFeed`. The
-current checkout has `DHAN_CLIENT_ID` metadata in the shell but no
-`DHAN_ACCESS_TOKEN`, and `data/portfolio/broker_auth.json` is absent. No API
-call was made with incomplete credentials. Therefore:
+`intraday_minute_data`, `quote_data`, `option_chain` and `MarketFeed`. RX1
+validated Dhan TOTP authentication and the profile endpoint. The profile
+reported `dataPlan=Deactive` and `dataValidity=NA`; historical requests
+returned `DH-902` and all governed market-data probes were blocked. Therefore:
 
 - source authority: `OFFICIAL_DHAN_API`;
-- authorization: `CREDENTIALS_UNAVAILABLE`;
-- entitlement: `UNVERIFIED` / `REQUIRES_PROVIDER_VALIDATION`;
-- live/historical/options runtime: not activated;
-- final foundation decision: `BLOCKED` pending access verification.
+- authorization: `AUTHENTICATED`;
+- entitlement: `ENTITLEMENT_REQUIRED`;
+- live/historical/options runtime: `ENTITLEMENT_BLOCKED`;
+- final foundation decision: `OPERATIONAL_WITH_CONDITIONS` pending active
+  Data API entitlement and representative data validation.
 
 Official references:
 

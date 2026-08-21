@@ -33,6 +33,7 @@ from engines.common import config as cfg
 from engines.common.logger import get_logger
 from engines.broker.base import BrokerAdapter, Holding, Trade
 from engines.providers.fabric import Capability, ProviderFabric, default_provider_fabric
+from engines.providers.dhan_auth import DhanAuthManager
 
 logger = get_logger(__name__)
 
@@ -57,26 +58,36 @@ def get_provider_fabric() -> ProviderFabric:
     """Return policy metadata without reading or exposing provider secrets."""
     fabric = default_provider_fabric()
     creds = load_credentials()
-    if creds:
-        provider_id = str(creds.get("broker", "dhan")).lower()
+    auth_manager = DhanAuthManager()
+    dhan_configured = auth_manager.has_credentials()
+    if creds or dhan_configured:
+        provider_id = str((creds or {}).get("broker", "dhan")).lower()
+        state = auth_manager.read_validation_state() if provider_id == "dhan" else {}
+        state_caps = set()
+        for value in state.get("validated_capabilities", []):
+            try:
+                state_caps.add(Capability(str(value)))
+            except ValueError:
+                continue
         capabilities = frozenset({
             Capability.HOLDINGS, Capability.POSITIONS, Capability.FUNDS,
-            Capability.TRADES, Capability.ORDER_HISTORY, Capability.INTRADAY_HISTORY,
-            Capability.LIVE_LTP, Capability.LIVE_QUOTE, Capability.LIVE_WEBSOCKET,
-            Capability.MARKET_DEPTH, Capability.FUTURES_OI, Capability.OPTION_CHAIN,
-        })
+            Capability.TRADES, Capability.ORDER_HISTORY,
+        } | state_caps)
+        data_plan = str(state.get("data_plan", "UNKNOWN")).upper()
+        authenticated = bool(state.get("authenticated"))
+        validated = bool(authenticated and state.get("runtime_health") == "HEALTHY")
         try:
             from engines.providers.fabric import ProviderConnection
             fabric.upsert_connection(ProviderConnection(
                 connection_id=f"local-{provider_id}",
                 provider_id=provider_id,
                 display_name=f"Configured {provider_id}",
-                auth_state="CONFIGURED",
-                connection_state="AVAILABLE",
+                auth_state="VALID" if authenticated else "CONFIGURED",
+                connection_state="CONNECTED" if authenticated else "AVAILABLE",
                 credential_reference="local-encrypted-broker-auth",
                 authorized_capabilities=capabilities,
-                entitlement_state="UNKNOWN",
-                health="UNKNOWN",
+                entitlement_state="ENTITLED" if data_plan == "ACTIVE" else "ENTITLEMENT_REQUIRED" if data_plan not in {"", "UNKNOWN"} else "UNKNOWN",
+                health="HEALTHY" if validated else "ENTITLEMENT_BLOCKED" if data_plan not in {"", "UNKNOWN", "ACTIVE"} else "UNKNOWN",
                 limitations=("Health and data entitlement are provider-specific and must be validated by the adapter.",),
             ))
         except ValueError:

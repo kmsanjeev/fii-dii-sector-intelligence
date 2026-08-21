@@ -12,6 +12,7 @@ from backend.services.intraday_foundation import (
     session_state,
     validate_candle,
 )
+from engines.providers.dhan_auth import DhanAuthManager
 
 
 def _identity() -> InstrumentIdentity:
@@ -116,9 +117,14 @@ def test_store_is_idempotent_and_deduplicates(tmp_path) -> None:
 
 
 def test_missing_credentials_are_explicit_and_do_not_fallback(monkeypatch) -> None:
+    class EmptyStore:
+        def get(self, name):
+            return None
+
+    monkeypatch.setattr(DhanAuthManager, "has_credentials", lambda self: False)
     monkeypatch.delenv("DHAN_CLIENT_ID", raising=False)
     monkeypatch.delenv("DHAN_ACCESS_TOKEN", raising=False)
-    status = build_status(DhanIntradayProvider())
+    status = build_status(DhanIntradayProvider(auth_manager=DhanAuthManager(store=EmptyStore())))
     assert status["source"]["authorization_state"] == "CREDENTIALS_UNAVAILABLE"
     assert status["data_status"]["state"] == "CREDENTIALS_UNAVAILABLE"
     assert "yfinance" in " ".join(status["source"]["limitations"])

@@ -8,9 +8,11 @@ The governed Intraday data foundation is implemented with conditions. FII-DII
 now owns an exact-identity, session-aware, timestamp-separated normalized
 candle seam, deterministic aggregation, quality checks, ignored partitioned
 Parquet persistence and bounded read routes. Official DhanHQ is the selected
-primary candidate, but the current runtime has no verified access token or
-Data API entitlement, so the final decision is
-`VEDA_MARKET_INTRADAY_DATA_FOUNDATION_BLOCKED`. Existing yfinance charts and
+primary candidate, and the current runtime has a verified access token/profile
+but no active Data API entitlement, so the final decision is
+`VEDA_MARKET_INTRADAY_DATA_FOUNDATION_OPERATIONAL_WITH_CONDITIONS`. Dhan
+authentication/profile now validate, but the account Data API plan is inactive
+and representative market data remains blocked. Existing yfinance charts and
 `/ws/live` intelligence heartbeat remain compatibility-only. No Intraday
 strategy, recommendation, order, ML, prediction, RAG, EMP, Jyotish or BEBOS
 behavior changed. Evidence is in

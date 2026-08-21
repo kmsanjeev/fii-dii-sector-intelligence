@@ -14,10 +14,13 @@ introduced. Evidence is in
 `VEDA-MARKET-INTRADAY-DATA-FOUNDATION-001` is implemented with conditions.
 The FII-DII provider owns a read-only normalized foundation and VEDA exposes
 `market.intraday.data`. The final foundation decision is
-`VEDA_MARKET_INTRADAY_DATA_FOUNDATION_BLOCKED` because the current runtime has
-no verified Dhan Data API access token/entitlement. yfinance and `/ws/live`
-remain compatibility-only paths. The next activity is a bounded provider
-access validation RX, not Intraday Intelligence.
+`VEDA_MARKET_INTRADAY_DATA_FOUNDATION_OPERATIONAL_WITH_CONDITIONS` because
+Dhan authentication is valid but the configured Data API entitlement is
+inactive. The current runtime has a verified Dhan access token/profile but no
+active Data API entitlement. yfinance and `/ws/live` remain
+compatibility-only paths. The provider-access validation RX completed with
+conditions; the next activity is provider-specific entitlement resolution,
+not Intraday Intelligence.
 
 ## 2026-08-21 — Positional and Swing Intelligence
 

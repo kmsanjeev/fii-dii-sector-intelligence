@@ -71,6 +71,8 @@ nselib
 yfinance
 # Official DhanHQ client for the separately governed Intraday market-data seam
 dhanhq==2.2.0
+pyotp>=2.9.0
+keyring>=25.0.0
 
 # Astrology Engines (astro_engine, kundli_engine, gann_engine)
 pyswisseph==2.10.3.2
