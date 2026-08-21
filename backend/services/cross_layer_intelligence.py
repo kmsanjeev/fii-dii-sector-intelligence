@@ -100,6 +100,16 @@ def _market_snapshot() -> tuple[dict[str, Any], dict[str, Any]]:
     intelligence = data_loader.get("participant_intel")
     latest = intelligence.sort_values("date").iloc[-1] if intelligence is not None and not intelligence.empty else None
     context = data_loader.get_market_context()
+    fno_available = context.get("fno_contract_version") == "fno-intelligence-1.0"
+    fno_context = {
+        "state": "AVAILABLE" if fno_available else "UNAVAILABLE",
+        "contract_version": context.get("fno_contract_version"),
+        "as_of": context.get("trade_date"),
+        "pcr_semantics": context.get("pcr_semantics"),
+        "pcr": context.get("pcr"),
+        "pcr_signal": context.get("pcr_signal", "UNINTERPRETED"),
+        "limitations": context.get("limitations", []),
+    }
     bull = data_loader.get("bull_run")
     breadth: dict[str, int] = {}
     if bull is not None and not bull.empty and "label" in bull.columns:
@@ -117,6 +127,7 @@ def _market_snapshot() -> tuple[dict[str, Any], dict[str, Any]]:
         "regime": regime,
         "trend": context.get("regime", regime),
         "risk_state": context.get("pcr_signal"),
+        "fno": fno_context,
         "breadth": breadth,
         "as_of": str(latest.get("date")) if latest is not None else None,
         "freshness": status,
@@ -420,6 +431,7 @@ def build_cross_layer_intelligence(
     )
     dates = {
         "market": market.get("as_of"),
+        "fno": market.get("fno", {}).get("as_of"),
         "institutional_cash": institutional.get("cash_as_of"),
         "institutional_fno": institutional.get("fno_as_of"),
         "sector": selected_sector.get("as_of") if selected_sector else (sectors[0].get("as_of") if sectors else None),
@@ -438,6 +450,7 @@ def build_cross_layer_intelligence(
         date_alignment = "PARTIALLY_ALIGNED"
     freshness_components = {
         "market": market_status.get("state", "UNAVAILABLE"),
+        "fno": "EOD" if market.get("fno", {}).get("state") == "AVAILABLE" else "UNAVAILABLE",
         "institutional": institutional_status.get("state", "UNAVAILABLE"),
         "sector": sector_status.get("state", "UNAVAILABLE"),
         "stock": _status(("technical",), ()).get("state", "UNAVAILABLE") if symbol else "NOT_REQUESTED",
@@ -449,6 +462,8 @@ def build_cross_layer_intelligence(
     }
     material_freshness = [value for value in freshness_components.values() if value != "NOT_REQUESTED"]
     quality_components = [market.get("evidence_quality", "UNAVAILABLE"), institutional.get("evidence_quality", "UNAVAILABLE")]
+    if market.get("fno", {}).get("state") == "AVAILABLE":
+        quality_components.append("MEDIUM")
     if market.get("state") == "INSUFFICIENT" or institutional.get("state") == "INSUFFICIENT":
         quality_components.append("UNAVAILABLE")
     quality_components.extend(item.get("evidence_quality", "UNAVAILABLE") for item in selected_sectors)
@@ -481,6 +496,7 @@ def build_cross_layer_intelligence(
         "freshness": {"components": freshness_components, "overall": overall_freshness, "rule": "Overall freshness is the weakest material component; requested-only stock components are excluded from overview freshness."},
         "evidence_quality": {"components": {"market": market.get("evidence_quality"), "institutional": institutional.get("evidence_quality"), "sector": [_quality(item.get("evidence_quality")) for item in selected_sectors], "stock": stock_summary.get("evidence_quality") if stock_summary else "NOT_REQUESTED"}, "overall": overall_quality, "type": "EVIDENCE_QUALITY_NOT_PREDICTIVE_CONFIDENCE"},
         "market": market,
+        "fno": market.get("fno", {"state": "UNAVAILABLE"}),
         "institutional": institutional,
         "sectors": {"leaders": groups["leaders"][:top_sectors], "improving": groups["improving"][:top_sectors], "weakening": groups["weakening"][:top_sectors], "laggards": groups["laggards"][:top_sectors], "evaluated": len(sectors), "contract_version": "sector-rotation-1.1"},
         "candidates": candidates,

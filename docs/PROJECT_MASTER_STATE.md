@@ -2,6 +2,19 @@
 # MASTER PROJECT STATE
 # Version 4.84.0 | 2026-08-20
 
+## VEDA-MARKET-FNO-INTELLIGENCE-HARDENING-001 — 2026-08-21
+
+The existing F&O stage is being hardened in place. Current NSE bhavcopy
+schemas are mapped into the read-only `fno-intelligence-1.0` contract with
+explicit stock/index identity, nearest versus most-active expiry semantics,
+roll suppression, same-contract OI windows, separate stock/index PCR and
+source-conditioned EOD status. FII routes are `/api/fno/summary`,
+`/api/fno/stocks/{symbol}` and `/api/fno/indices/{index}`; VEDA proxies the
+summary as `market.fno.intelligence`. Focused validation is green; full suite,
+performance, final governance and Git acceptance remain pending. No VEDA-side
+calculation, participant options attribution, recommendation, execution,
+intraday, ML, PRED, EMP, RAG, Jyotish or BEBOS behavior changed.
+
 ## VEDA market Corporate Intelligence freshness and lifecycle RX1 (2026-08-21)
 
 `VEDA-MARKET-CORPORATE-INTELLIGENCE-FRESHNESS-AND-LIFECYCLE-RX1-001` is

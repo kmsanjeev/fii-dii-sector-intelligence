@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-08-21 - VEDA-MARKET-FNO-INTELLIGENCE-HARDENING-001 (implemented / frozen with conditions)
+
+Hardened the existing NSE F&O intelligence stage with explicit current and
+legacy schema mapping, stock/index and future/option separation, nearest and
+most-active contract policies, expiry/roll semantics, same-contract OI
+windows, scoped stock/index PCR, basis alignment and source-conditioned EOD
+status. Added bounded read-only F&O routes and a VEDA pass-through capability.
+Focused and full F&O, stock, cross-layer, portfolio and VEDA provider checks
+pass. Four canonical F&O routes are recorded in the API baseline. No raw F&O
+download, participant-option attribution, trading, intraday, ML, PRED, EMP,
+RAG, Jyotish or BEBOS change occurred.
+
 ## 2026-08-21 - VEDA-MARKET-PORTFOLIO-INTELLIGENCE-REBASELINE-001
 
 Added the governed read-only Portfolio intelligence projection and API

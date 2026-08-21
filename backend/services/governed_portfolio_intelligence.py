@@ -239,6 +239,7 @@ def build_governed_portfolio_intelligence() -> dict[str, Any]:
                 "sector": evidence.get("sectors", {}),
                 "fundamental": evidence.get("stock_confirmation", {}).get("fundamental_evidence"),
                 "corporate": evidence.get("stock_confirmation", {}).get("corporate_event_context"),
+                "fno": evidence.get("stock_confirmation", {}).get("fno"),
                 "cross_layer": {
                     "alignment": evidence.get("alignment"),
                     "conflicts": evidence.get("conflicts", []),

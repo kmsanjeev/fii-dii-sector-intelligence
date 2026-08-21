@@ -518,13 +518,13 @@ def _generate_insights(sym: str, row, fundamentals: dict, technical: dict,
     # ════════════════════════════════════════════════════════════════════════════
     fno_mgmt_parts = []
     if oi_signal == "LONG_BUILDUP":
-        fno_mgmt_parts.append("F&O: Long Buildup — smart money adding fresh longs (bullish near-term)")
+        fno_mgmt_parts.append("F&O: Long Buildup — descriptive price/OI direction on the selected contract")
     elif oi_signal == "SHORT_BUILDUP":
-        fno_mgmt_parts.append("F&O: Short Buildup — fresh shorts being added (bearish near-term)")
+        fno_mgmt_parts.append("F&O: Short Buildup — descriptive price/OI direction on the selected contract")
     elif oi_signal == "SHORT_COVERING":
-        fno_mgmt_parts.append("F&O: Short Covering — bears exiting, can cause sharp bounces")
+        fno_mgmt_parts.append("F&O: Short Covering — descriptive price/OI direction on the selected contract")
     elif oi_signal == "LONG_UNWINDING":
-        fno_mgmt_parts.append("F&O: Long Unwinding — bulls exiting positions (bearish)")
+        fno_mgmt_parts.append("F&O: Long Unwinding — descriptive price/OI direction on the selected contract")
 
     if mgmt_label:
         mgmt_map = {
@@ -1172,6 +1172,10 @@ def get_stock_detail(symbol: str):
                 "fut_close":   _safe(r.get("fut_close")),
                 "expiry":      str(r.get("expiry", "")),
                 "as_of_date":  str(r.get("as_of_date", "")),
+                "underlying_id": str(r.get("underlying_id", "")),
+                "roll_detected": bool(r.get("roll_detected", False)),
+                "evidence_quality": str(r.get("evidence_quality", "")),
+                "data_status": str(r.get("data_status", "EOD")),
             }
 
     # Quarterly results (last 4 quarters)

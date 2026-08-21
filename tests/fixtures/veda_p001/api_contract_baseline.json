@@ -2,8 +2,8 @@
   "meta": {
     "baseline_id": "VEDA-P001-M003",
     "generated_on": "2026-08-10",
-    "openapi_path_count": 153,
-    "operation_count": 166
+    "openapi_path_count": 156,
+    "operation_count": 169
   },
   "critical_endpoints": [
     {
@@ -2126,6 +2126,75 @@
       "query_params": [],
       "response_codes": [
         "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/fno/indices/{index}",
+      "owner": "fno",
+      "operation_id": "get_index_fno_api_fno_indices__index__get",
+      "tags": [
+        "fno"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "index"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/fno/stocks/{symbol}",
+      "owner": "fno",
+      "operation_id": "get_stock_fno_api_fno_stocks__symbol__get",
+      "tags": [
+        "fno"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/fno/summary",
+      "owner": "fno",
+      "operation_id": "get_fno_summary_api_fno_summary_get",
+      "tags": [
+        "fno"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "symbol"
+      ],
+      "response_codes": [
+        "200",
+        "422"
       ],
       "response_content_types": [
         "application/json"
