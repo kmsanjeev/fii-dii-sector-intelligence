@@ -1,6 +1,6 @@
 # Validation record
 
-Focused FII F&O and integration tests: PASS. Focused VEDA market-provider and F&O capability tests: PASS. FII full suite: 1,359 passed initially; the only failure was the expected API baseline snapshot after adding four governed F&O operations. The baseline was regenerated and the affected 3-test contract suite then passed. VEDA platform full suite: PASS (all collected tests passed; two dependency deprecation warnings).
+Focused FII F&O and integration tests: PASS. Focused VEDA market-provider and F&O capability tests: PASS. FII full suite: 1,359 passed initially; the only failure was the expected API baseline snapshot after adding three canonical governed F&O routes. The baseline was regenerated to 156 paths / 169 operations and the affected 3-test contract suite then passed. VEDA platform full suite: PASS (all collected tests passed; two dependency deprecation warnings).
 
 Live source checks: 6,452 files; latest 2026-08-19; current schema instrument counts include `STO`, `IDO`, `STF`, `IDF`; representative legacy schemas use `FUTIDX`, `FUTSTK`, `OPTIDX`, `OPTSTK`. The live output produced 214 selected futures records, separate stock/index PCR, explicit source status, and no participant-option attribution.
 

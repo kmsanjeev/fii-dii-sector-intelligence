@@ -13,7 +13,7 @@
 
 Full validation evidence:
 
-- FII full suite: 1,359 passed before the expected API baseline synchronization; the affected 3-test contract suite passed after the four new governed F&O operations were recorded.
+- FII full suite: 1,359 passed before the expected API baseline synchronization; the affected 3-test contract suite passed after the three canonical governed F&O routes were recorded (156 paths / 169 operations).
 - VEDA platform full suite: all collected tests passed, with dependency deprecation warnings only.
 - New F&O service, routes, engine and tests: Ruff clean.
 - Direct-service deterministic digest: `2b6f562d15ca447732c0701c1ef2ec6ec3edee80257149f17f9c4ef61573279f` on repeated builds.

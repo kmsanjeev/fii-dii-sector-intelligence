@@ -16,8 +16,8 @@ Observed validation:
 - Governed output: 214 selected futures records, separate stock/index PCR,
   source status and explicit unsupported-feature states.
 - FII full suite: 1,359 passed; the initial API snapshot mismatch was resolved
-  by recording the four new governed F&O operations (157 paths / 170 operations)
-  and the affected contract test then passed 3/3.
+  by recording the three canonical governed F&O routes (156 paths / 169
+  operations) and the affected contract test then passed 3/3.
 - VEDA platform full suite: passed; only dependency deprecation warnings.
 - Real HTTP: FII F&O routes and the VEDA provider query returned valid
   `fno-intelligence-1.0` data.
