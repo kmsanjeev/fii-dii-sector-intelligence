@@ -38,7 +38,9 @@ def _latest_row(df: pd.DataFrame | None) -> pd.Series | None:
     return work.iloc[-1] if not work.empty else None
 
 
-def _window_snapshot(series: pd.Series, windows: tuple[int, ...] = WINDOWS) -> dict[str, dict[str, Any]]:
+def _window_snapshot(
+    series: pd.Series, windows: tuple[int, ...] = WINDOWS
+) -> dict[str, dict[str, Any]]:
     """Return rolling sums and completeness without converting missing to zero."""
     # Only the largest requested window can affect the current snapshot.  The
     # previous implementation rebuilt rolling arrays across the full history
@@ -68,7 +70,9 @@ def _window_snapshot(series: pd.Series, windows: tuple[int, ...] = WINDOWS) -> d
             "value": _number(current_sum),
             "observations": current_observed,
             "expected_observations": current_expected,
-            "coverage": round(current_observed / current_expected, 3) if current_expected else 0.0,
+            "coverage": round(current_observed / current_expected, 3)
+            if current_expected
+            else 0.0,
             "state": state,
         }
     return result
@@ -88,10 +92,18 @@ def _participant_snapshot(
 ) -> dict[str, Any]:
     row = latest_row if latest_row is not None else _latest_row(flows)
     result: dict[str, Any] = {
-        "oi_net": _number(row.get(f"{participant}_OI_Net")) if row is not None else None,
-        "volume_net": _number(row.get(f"{participant}_Volume_Net")) if row is not None else None,
-        "flow_score": _number(row.get(f"{participant}_flow_score")) if row is not None else None,
-        "oi_delta_1d": _number(row.get(f"{participant}_OI_Delta")) if row is not None else None,
+        "oi_net": _number(row.get(f"{participant}_OI_Net"))
+        if row is not None
+        else None,
+        "volume_net": _number(row.get(f"{participant}_Volume_Net"))
+        if row is not None
+        else None,
+        "flow_score": _number(row.get(f"{participant}_flow_score"))
+        if row is not None
+        else None,
+        "oi_delta_1d": _number(row.get(f"{participant}_OI_Delta"))
+        if row is not None
+        else None,
         "windows": {},
         "persistence_20d": None,
         "positive_persistence_20d": None,
@@ -101,13 +113,17 @@ def _participant_snapshot(
         "reversal_5d": None,
         "position_level": {
             "field": f"{participant}_OI_Net",
-            "value": _number(row.get(f"{participant}_OI_Net")) if row is not None else None,
+            "value": _number(row.get(f"{participant}_OI_Net"))
+            if row is not None
+            else None,
             "unit": "contracts",
             "semantic": "aggregate_futures_net_open_interest",
         },
         "position_change": {
             "field": f"{participant}_OI_Delta",
-            "value": _number(row.get(f"{participant}_OI_Delta")) if row is not None else None,
+            "value": _number(row.get(f"{participant}_OI_Delta"))
+            if row is not None
+            else None,
             "unit": "contracts",
             "semantic": "day_over_day_change_in_aggregate_futures_net_open_interest",
         },
@@ -119,7 +135,9 @@ def _participant_snapshot(
         delta = pd.to_numeric(flows[delta_col], errors="coerce")
     else:
         # Keep the contract usable with the raw history alone.
-        delta = pd.to_numeric(flows.get(f"{participant}_OI_Net", pd.Series(dtype=float)), errors="coerce").diff()
+        delta = pd.to_numeric(
+            flows.get(f"{participant}_OI_Net", pd.Series(dtype=float)), errors="coerce"
+        ).diff()
     result["windows"] = _window_snapshot(delta)
     usable = delta.dropna()
     if not usable.empty:
@@ -144,7 +162,9 @@ def _participant_snapshot(
             result["acceleration_5d"] = _number(current - prior)
             current_sign = _sign(current)
             prior_sign = _sign(prior)
-            result["reversal_5d"] = bool(current_sign and prior_sign and current_sign != prior_sign)
+            result["reversal_5d"] = bool(
+                current_sign and prior_sign and current_sign != prior_sign
+            )
     return result
 
 
@@ -160,7 +180,11 @@ def _cash_snapshot(
         "net_cr": _number(row.get(net_col), 2) if row is not None else None,
         "windows": _window_snapshot(series),
         "source_date": (
-            str(pd.to_datetime(flows.loc[series.notna(), "date"], errors="coerce").max().date())
+            str(
+                pd.to_datetime(flows.loc[series.notna(), "date"], errors="coerce")
+                .max()
+                .date()
+            )
             if "date" in flows.columns and series.notna().any()
             else None
         ),
@@ -223,13 +247,17 @@ def _derivatives_divergence(
     snapshots: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Compare participants on the same aggregate futures OI-change basis."""
-    snapshots = snapshots or {p: _participant_snapshot(flows, p) for p in FNO_PARTICIPANTS}
+    snapshots = snapshots or {
+        p: _participant_snapshot(flows, p) for p in FNO_PARTICIPANTS
+    }
     pairs = (("FII", "DII"), ("FII", "PRO"), ("FII", "CLIENT"), ("PRO", "CLIENT"))
     result: dict[str, Any] = {
         "basis": "same_participant_aggregate_futures_oi_change_window",
         "window": window,
         "unit": "contracts",
-        "source_date": _latest_source_date(flows, tuple(f"{p}_OI_Net" for p in FNO_PARTICIPANTS)),
+        "source_date": _latest_source_date(
+            flows, tuple(f"{p}_OI_Net" for p in FNO_PARTICIPANTS)
+        ),
         "pairs": {},
     }
     for left, right in pairs:
@@ -318,18 +346,27 @@ def _quality(
     latest_intelligence: pd.Series | None = None,
 ) -> dict[str, Any]:
     flow_date = latest_flow if latest_flow is not None else _latest_row(flows)
-    intel_date = latest_intelligence if latest_intelligence is not None else _latest_row(intelligence)
+    intel_date = (
+        latest_intelligence
+        if latest_intelligence is not None
+        else _latest_row(intelligence)
+    )
     cash_dates = []
     for participant in CASH_PARTICIPANTS:
         col = f"{participant}_net_cr"
         if col in flows.columns:
-            dates = pd.to_datetime(flows.loc[pd.to_numeric(flows[col], errors="coerce").notna(), "date"], errors="coerce")
+            dates = pd.to_datetime(
+                flows.loc[pd.to_numeric(flows[col], errors="coerce").notna(), "date"],
+                errors="coerce",
+            )
             if not dates.dropna().empty:
                 cash_dates.append(dates.max())
     source_dates = {
         "fno": str(flow_date["date"].date()) if flow_date is not None else None,
         "cash": str(max(cash_dates).date()) if cash_dates else None,
-        "intelligence": str(intel_date["date"].date()) if intel_date is not None else None,
+        "intelligence": str(intel_date["date"].date())
+        if intel_date is not None
+        else None,
     }
     partial_windows = 0
     unavailable_windows = 0
@@ -395,8 +432,12 @@ def build_institutional_contract(
         for participant in CASH_PARTICIPANTS
     }
     divergence = {
-        "fii_dii": _number(latest_intel.get("FII_DII_Divergence"), 3) if latest_intel is not None else None,
-        "smart_retail": _number(latest_intel.get("Smart_Retail_Divergence"), 3) if latest_intel is not None else None,
+        "fii_dii": _number(latest_intel.get("FII_DII_Divergence"), 3)
+        if latest_intel is not None
+        else None,
+        "smart_retail": _number(latest_intel.get("Smart_Retail_Divergence"), 3)
+        if latest_intel is not None
+        else None,
         "cash_vs_derivatives": {
             "state": "NOT_SUPPORTED",
             "reason": "Cash values are rupee-crore net turnover while F&O values are participant futures/OI units; no governed normalization is present.",
@@ -413,13 +454,25 @@ def build_institutional_contract(
         "participants": fno,
         "cash_participants": cash,
         "derived_signals": {
-            "market_regime": str(latest_intel.get("Market_Regime")) if latest_intel is not None else None,
-            "smart_money_score": _number(latest_intel.get("Smart_Money_Score")) if latest_intel is not None else None,
-            "cash_institutional_score": _number(latest_intel.get("Cash_Institutional_Score")) if latest_intel is not None else None,
-            "ensemble_score": _number(latest_intel.get("Ensemble_Score")) if latest_intel is not None else None,
+            "market_regime": str(latest_intel.get("Market_Regime"))
+            if latest_intel is not None
+            else None,
+            "smart_money_score": _number(latest_intel.get("Smart_Money_Score"))
+            if latest_intel is not None
+            else None,
+            "cash_institutional_score": _number(
+                latest_intel.get("Cash_Institutional_Score")
+            )
+            if latest_intel is not None
+            else None,
+            "ensemble_score": _number(latest_intel.get("Ensemble_Score"))
+            if latest_intel is not None
+            else None,
             "divergence": {
                 **divergence,
-                "participant_derivatives": _derivatives_divergence(flows, snapshots=fno),
+                "participant_derivatives": _derivatives_divergence(
+                    flows, snapshots=fno
+                ),
             },
         },
         "derivatives": _derivatives_metadata(flows),

@@ -44,10 +44,15 @@ def test_institutional_contract_reuses_request_scoped_snapshots(monkeypatch) -> 
     monkeypatch.setattr(contract, "_participant_snapshot", counted_fno)
     monkeypatch.setattr(contract, "_cash_snapshot", counted_cash)
 
-    result = contract.build_institutional_contract(flows, intelligence, {"state": "EOD"})
+    result = contract.build_institutional_contract(
+        flows, intelligence, {"state": "EOD"}
+    )
 
     assert result["contract_version"] == "institutional-flow-1.1"
-    assert calls == {"fno": len(contract.FNO_PARTICIPANTS), "cash": len(contract.CASH_PARTICIPANTS)}
+    assert calls == {
+        "fno": len(contract.FNO_PARTICIPANTS),
+        "cash": len(contract.CASH_PARTICIPANTS),
+    }
 
 
 def test_window_snapshot_is_equivalent_to_full_history_for_current_windows() -> None:
