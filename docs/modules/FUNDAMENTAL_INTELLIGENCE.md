@@ -1,5 +1,18 @@
 # FUNDAMENTAL INTELLIGENCE
 
+## Current governed evidence boundary (2026-08-21)
+
+The additive `fundamental-evidence-1.0` projection is the current provenance
+boundary for stock and cross-layer fundamental context. It keeps quarterly,
+TTM, YOY and aggregate periods distinct; separates period end, filing date and
+local retrieval time; refuses incomplete TTM annualisation; preserves negative
+and missing values; and marks financial-sector metric limitations. Legacy
+valuation scores remain compatibility context only. PE/PB do not establish a
+fair-value conclusion, and the legacy `roe_pct` column is not treated as ROE.
+
+Fundamental evidence is descriptive and source-qualified. It is not a
+recommendation, prediction, ML feature authorization or PRED-M4 output.
+
 ## Project
 
 FII/DII Capital Flow Intelligence Platform

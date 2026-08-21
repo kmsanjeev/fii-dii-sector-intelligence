@@ -269,6 +269,7 @@ def _stock_summary(symbol: str, contract: dict[str, Any], sector: dict[str, Any]
         },
         "institutional_scope": contract.get("signals", {}).get("institutional_context", {}).get("scope"),
         "institutional_evidence": contract.get("signals", {}).get("institutional_evidence", {}),
+        "fundamental_evidence": contract.get("facts", {}).get("fundamental_evidence", {}),
         "evidence_quality": _quality(contract.get("evidence_quality")),
         "date_alignment": contract.get("date_alignment", {}),
         "reason": f"{symbol} is {alignment.lower().replace('_', ' ')} based on existing stock trend, relative-strength, sector leadership and breadth outputs.",
@@ -430,7 +431,10 @@ def build_cross_layer_intelligence(
         "institutional": institutional_status.get("state", "UNAVAILABLE"),
         "sector": sector_status.get("state", "UNAVAILABLE"),
         "stock": _status(("technical",), ()).get("state", "UNAVAILABLE") if symbol else "NOT_REQUESTED",
-        "fundamental": _status(("valuation_scores",), ()).get("state", "UNAVAILABLE") if symbol else "NOT_REQUESTED",
+        "fundamental": (
+            stock_summary.get("fundamental_evidence", {}).get("freshness", {}).get("state", "UNAVAILABLE")
+            if stock_summary else "NOT_REQUESTED"
+        ),
         "corporate": _status(("announcements",), ()).get("state", "UNAVAILABLE") if symbol else "NOT_REQUESTED",
     }
     material_freshness = [value for value in freshness_components.values() if value != "NOT_REQUESTED"]

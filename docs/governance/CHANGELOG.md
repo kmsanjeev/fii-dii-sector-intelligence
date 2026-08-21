@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-08-21 - VEDA-MARKET-FUNDAMENTALS-PROVENANCE-HARDENING-001
+
+Added the provider-local `fundamental-evidence-1.0` projection to the existing
+stock-intelligence and cross-layer contracts. Field-level source authority,
+direct/derived status, reporting frequency, period-end/filing/retrieval date
+semantics, frequency-aware freshness, complete-period TTM rules,
+financial-sector limitations and legacy valuation safety are now explicit.
+The existing `roe_pct` semantic defect is isolated as untrusted legacy output;
+PE/PB remain ratios and valuation labels are not fair-value conclusions. No raw
+data rebuild, RAG, ML, prediction, EMP, Jyotish, identity or institutional-flow
+source decision changed.
+
 ## 2026-08-21 - VEDA-MARKET-DIRECT-INSTITUTIONAL-STOCK-EVIDENCE-002
 
 Completed the direct-source and identity/provenance hardening activity. The

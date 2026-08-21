@@ -15,6 +15,7 @@ from typing import Any
 import pandas as pd
 
 from backend.services import data_loader
+from backend.services.fundamental_evidence import build_fundamental_evidence
 from backend.services.stock_institutional_evidence import (
     build_stock_institutional_evidence,
 )
@@ -233,6 +234,7 @@ def build_stock_intelligence_contract(
     holding_trends: list[dict[str, Any]],
     deal_info: dict[str, Any],
     upcoming_events: list[dict[str, Any]],
+    fundamental_evidence: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build the governed additive stock contract from existing datasets."""
     symbol = symbol.upper()
@@ -298,7 +300,14 @@ def build_stock_intelligence_contract(
         cross_layer = "MIXED_OR_INSUFFICIENT"
     institutional = build_stock_institutional_evidence(symbol, identity=identity)
     fundamental_fields = {key: value for key, value in fundamentals.items() if not key.startswith("_")}
-    fundamental_as_of = fundamental_fields.get("as_of_date") or identity.get("fundamentals_master_as_of")
+    fundamental_evidence = fundamental_evidence or build_fundamental_evidence(
+        symbol, fundamentals=fundamentals, sector=sector
+    )
+    fundamental_as_of = (
+        fundamental_evidence.get("dates", {}).get("latest_period_end")
+        or fundamental_fields.get("as_of_date")
+        or identity.get("fundamentals_master_as_of")
+    )
     corporate = {
         "announcement_state": "AVAILABLE" if data_loader.get("announcements") is not None else "NOT_AVAILABLE",
         "upcoming_events": upcoming_events,
@@ -327,7 +336,8 @@ def build_stock_intelligence_contract(
     available = sum(
         bool(item)
         for item in (identity.get("identity_state") == "IDENTIFIED", history_meta.get("state") == "AVAILABLE",
-                     bool(technical), sector_context.get("state") == "AVAILABLE", bool(fundamental_fields),
+                     bool(technical), sector_context.get("state") == "AVAILABLE",
+                     fundamental_evidence.get("coverage", {}).get("usable_fields", 0) > 0,
                      corporate.get("announcement_state") == "AVAILABLE")
     )
     evidence_quality = "HIGH" if available >= 6 and alignment_state == "ALIGNED" else "MEDIUM" if available >= 4 else "LIMITED" if available >= 2 else "INSUFFICIENT"
@@ -348,6 +358,9 @@ def build_stock_intelligence_contract(
         next_watch.append("component-date alignment")
     if not fundamental_fields:
         next_watch.append("fundamental coverage")
+    if fundamental_evidence.get("coverage", {}).get("quality") in {"LIMITED", "INSUFFICIENT"}:
+        next_watch.append("field-level fundamental evidence coverage")
+    limitations.extend(fundamental_evidence.get("limitations", []))
     if institutional["scope"] in {"MARKET_LEVEL_CONTEXT_ONLY", "NOT_SUPPORTED", "IDENTITY_REVIEW_REQUIRED"}:
         next_watch.append("stock-specific ownership/deal evidence")
     return {
@@ -371,6 +384,7 @@ def build_stock_intelligence_contract(
             },
             "technical": {key: technical.get(key) for key in ("trend_signal", "vs_dma_20", "vs_dma_50", "vs_dma_200", "rsi", "macd_cross", "obv_signal", "as_of_date")},
             "fundamentals": fundamental_fields,
+            "fundamental_evidence": fundamental_evidence,
             "corporate": corporate,
         },
         "signals": {

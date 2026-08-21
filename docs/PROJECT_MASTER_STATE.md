@@ -2,6 +2,20 @@
 # MASTER PROJECT STATE
 # Version 4.84.0 | 2026-08-20
 
+## VEDA market fundamentals provenance hardening (2026-08-21)
+
+`VEDA-MARKET-FUNDAMENTALS-PROVENANCE-HARDENING-001` is operational with
+conditions. The provider-local `fundamental-evidence-1.0` projection adds
+field-level source authority, direct/derived semantics, quarterly/TTM/YOY
+period rules, period-end/filing/retrieval separation, frequency-aware
+freshness, financial-sector applicability and legacy valuation safety to the
+existing stock-intelligence and cross-layer surfaces. TTM never annualizes an
+incomplete component set; missing and negative values remain explicit; the
+legacy `roe_pct` field is not treated as ROE. Existing contracts, identity,
+direct institutional gates, RAG, ML, PRED-M4, EMP-001, Jyotish and BEBOS remain
+unchanged. Evidence is recorded in
+`docs/current-state/veda-market-fundamentals-provenance-hardening-001/`.
+
 ## Current VEDA direct institutional stock evidence (2026-08-21)
 
 `VEDA-MARKET-DIRECT-INSTITUTIONAL-STOCK-EVIDENCE-002` is operational with
