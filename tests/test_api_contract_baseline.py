@@ -19,8 +19,8 @@ def test_api_contract_baseline_snapshot():
 
 def test_api_contract_baseline_matches_current_canonical_endpoint_count():
     payload = _load_fixture()
-    assert payload["meta"]["openapi_path_count"] == 162
-    assert payload["meta"]["operation_count"] == 175
+    assert payload["meta"]["openapi_path_count"] == 164
+    assert payload["meta"]["operation_count"] == 177
 
 
 def test_api_contract_critical_endpoints_are_present():
@@ -42,4 +42,5 @@ def test_api_contract_critical_endpoints_are_present():
     assert ("GET", "/api/gochar/country/{name}") in critical
     assert ("GET", "/api/research/universe/stats") in critical
     assert ("GET", "/api/broker/status") in critical
+    assert ("GET", "/api/broker/providers") in critical
     assert ("GET", "/api/pipeline/status") in critical

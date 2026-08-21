@@ -26,6 +26,8 @@ from engines.broker.sync_engine import (
     overlay_intelligence,
     PORTFOLIO_DIR,
     BROKER_AUTH,
+    get_provider_fabric,
+    resolve_provider,
 )
 
 router = APIRouter(prefix="/api/broker", tags=["broker"])
@@ -44,11 +46,30 @@ class SyncTradesRequest(BaseModel):
     to_date:   Optional[str] = None
 
 
+class ProviderResolutionRequest(BaseModel):
+    capability: str
+
+
 # ── Endpoints ──────────────────────────────────────────────────────────────────
 
 @router.get("/status")
 def broker_status():
     return get_status()
+
+
+@router.get("/providers")
+def providers():
+    """Return broker-agnostic manifests; credentials are never returned."""
+    return {
+        "providers": [manifest.__dict__ for manifest in get_provider_fabric().manifests()],
+        "connections": [connection.__dict__ for connection in get_provider_fabric().connections()],
+        "execution": {"enabled": False, "reason": "ORDER_EXECUTE is prohibited by the current platform scope."},
+    }
+
+
+@router.post("/providers/resolve")
+def resolve_market_provider(req: ProviderResolutionRequest):
+    return resolve_provider(req.capability)
 
 
 @router.post("/auth")

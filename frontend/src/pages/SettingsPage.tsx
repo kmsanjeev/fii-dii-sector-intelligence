@@ -15,10 +15,21 @@ type BrokerStatus = {
   last_synced:         string | null
 }
 
+type ProviderManifest = {
+  provider_id: string
+  display_name: string
+  provider_type: string
+  licensing_state: string
+  capabilities: string[]
+  limitations: string[]
+}
+
 // ── API ───────────────────────────────────────────────────────────────────────
 
 const fetchBrokerStatus = (): Promise<BrokerStatus> =>
   fetch(`${API}/api/broker/status`).then(r => r.json())
+const fetchProviderManifests = (): Promise<{ providers: ProviderManifest[] }> =>
+  fetch(`${API}/api/broker/providers`).then(r => r.json())
 
 async function saveAuth(broker: string, client_id: string, access_token: string) {
   const r = await fetch(`${API}/api/broker/auth`, {
@@ -268,6 +279,9 @@ export function SettingsPage() {
   const { data: brokerStatus } = useQuery<BrokerStatus>({
     queryKey: ['broker-status'], queryFn: fetchBrokerStatus, refetchInterval: 30000,
   })
+  const { data: providerData } = useQuery<{ providers: ProviderManifest[] }>({
+    queryKey: ['provider-manifests'], queryFn: fetchProviderManifests, refetchInterval: 60000,
+  })
 
   return (
     <div style={{ maxWidth: 720, display: 'flex', flexDirection: 'column', gap: 28 }}>
@@ -306,6 +320,33 @@ export function SettingsPage() {
             </div>
             <CsvNote />
           </div>
+        </div>
+      </section>
+
+      <section>
+        <SectionHead title="MARKET DATA PROVIDER FABRIC" />
+        <div style={{ ...CARD, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ color: '#64748B', fontSize: 10 }}>
+            Capability metadata is broker-agnostic. Live access and entitlement
+            are checked per capability; no provider secret is displayed here.
+          </div>
+          {(providerData?.providers ?? []).map(provider => (
+            <div key={provider.provider_id} style={{
+              display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0',
+              borderTop: '1px solid #1E2332',
+            }}>
+              <StatusDot ok={provider.provider_id === brokerStatus?.broker && !!brokerStatus?.connected} />
+              <div style={{ flex: 1 }}>
+                <div style={{ color: '#E2E8F0', fontSize: 11, fontWeight: 700 }}>{provider.display_name}</div>
+                <div style={{ color: '#475569', fontSize: 9 }}>
+                  {provider.provider_type} · {provider.licensing_state} · {provider.capabilities.length} capabilities
+                </div>
+              </div>
+              <span style={{ color: '#64748B', fontSize: 9 }}>
+                {provider.provider_id === brokerStatus?.broker && brokerStatus.connected ? 'CONNECTED' : 'AVAILABLE / GATED'}
+              </span>
+            </div>
+          ))}
         </div>
       </section>
 

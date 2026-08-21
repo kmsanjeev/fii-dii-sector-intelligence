@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2026-08-22 - VEDA-MARKET-DATA-PROVIDER-FABRIC-001
+
+- Added broker-agnostic provider manifests, sanitized connection metadata and
+  capability-specific fail-closed resolution. Existing Dhan/CSV adapters
+  remain compatible; live access, licensing and execution remain gated.
+
 ## 2026-08-22 - VEDA-MARKET-INTRADAY-DATA-FOUNDATION-001 (blocked by access validation)
 
 - Added the bounded `intraday-market-data-1.0` foundation: exact provider

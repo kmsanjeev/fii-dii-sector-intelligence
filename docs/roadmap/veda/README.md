@@ -1,5 +1,14 @@
 # VEDA Roadmap Entry Point
 
+## 2026-08-22 — Provider fabric synchronization
+
+`VEDA-MARKET-DATA-PROVIDER-FABRIC-001` is operational with conditions. The
+FII-DII provider now exposes generic provider metadata and capability-specific
+resolution while retaining the existing Dhan/CSV adapter boundary. VEDA Core
+consumes the sanitized fabric boundary; no provider secrets or execution are
+introduced. Evidence is in
+`docs/current-state/veda-market-data-provider-fabric-001/`.
+
 ## 2026-08-22 — Intraday data foundation
 
 `VEDA-MARKET-INTRADAY-DATA-FOUNDATION-001` is implemented with conditions.

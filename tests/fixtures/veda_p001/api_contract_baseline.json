@@ -2,8 +2,8 @@
   "meta": {
     "baseline_id": "VEDA-P001-M003",
     "generated_on": "2026-08-10",
-    "openapi_path_count": 162,
-    "operation_count": 175
+    "openapi_path_count": 164,
+    "operation_count": 177
   },
   "critical_endpoints": [
     {
@@ -269,6 +269,49 @@
       "query_params": [],
       "response_codes": [
         "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/broker/providers",
+      "owner": "broker",
+      "operation_id": "providers_api_broker_providers_get",
+      "tags": [
+        "broker"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/broker/providers/resolve",
+      "owner": "broker",
+      "operation_id": "resolve_market_provider_api_broker_providers_resolve_post",
+      "tags": [
+        "broker"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
       ],
       "response_content_types": [
         "application/json"
@@ -784,6 +827,49 @@
       "request_body_required": false,
       "request_body_content_types": [
         "multipart/form-data"
+      ],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/broker/providers",
+      "owner": "broker",
+      "operation_id": "providers_api_broker_providers_get",
+      "tags": [
+        "broker"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/broker/providers/resolve",
+      "owner": "broker",
+      "operation_id": "resolve_market_provider_api_broker_providers_resolve_post",
+      "tags": [
+        "broker"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": true,
+      "request_body_content_types": [
+        "application/json"
       ],
       "path_params": [],
       "query_params": [],

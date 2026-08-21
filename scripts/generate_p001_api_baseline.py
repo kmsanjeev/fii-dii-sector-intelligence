@@ -28,6 +28,8 @@ CRITICAL_ENDPOINTS = [
     ("GET", "/api/gochar/country/{name}"),
     ("GET", "/api/research/universe/stats"),
     ("GET", "/api/broker/status"),
+    ("GET", "/api/broker/providers"),
+    ("POST", "/api/broker/providers/resolve"),
     ("GET", "/api/pipeline/status"),
 ]
 P001_EXCLUDED_TAGS = {"research-admin"}

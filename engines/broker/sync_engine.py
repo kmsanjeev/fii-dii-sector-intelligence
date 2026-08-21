@@ -2,7 +2,7 @@
 Broker Sync Engine -- Phase 22
 
 Orchestrates:
-  1. Load adapter (Dhan API or CSV fallback)
+  1. Load a selected provider adapter (Dhan API or CSV fallback)
   2. Fetch holdings + optional trade history
   3. Persist to broker_holdings.csv
   4. Merge trade history into portfolio transactions.csv (with dedup)
@@ -32,6 +32,7 @@ if str(_ROOT) not in sys.path:
 from engines.common import config as cfg
 from engines.common.logger import get_logger
 from engines.broker.base import BrokerAdapter, Holding, Trade
+from engines.providers.fabric import Capability, ProviderFabric, default_provider_fabric
 
 logger = get_logger(__name__)
 
@@ -50,6 +51,46 @@ HOLDINGS_COLS = [
 ]
 
 TRANSACTION_COLS = ["date", "symbol", "action", "qty", "price", "notes"]
+
+
+def get_provider_fabric() -> ProviderFabric:
+    """Return policy metadata without reading or exposing provider secrets."""
+    fabric = default_provider_fabric()
+    creds = load_credentials()
+    if creds:
+        provider_id = str(creds.get("broker", "dhan")).lower()
+        capabilities = frozenset({
+            Capability.HOLDINGS, Capability.POSITIONS, Capability.FUNDS,
+            Capability.TRADES, Capability.ORDER_HISTORY, Capability.INTRADAY_HISTORY,
+            Capability.LIVE_LTP, Capability.LIVE_QUOTE, Capability.LIVE_WEBSOCKET,
+            Capability.MARKET_DEPTH, Capability.FUTURES_OI, Capability.OPTION_CHAIN,
+        })
+        try:
+            from engines.providers.fabric import ProviderConnection
+            fabric.upsert_connection(ProviderConnection(
+                connection_id=f"local-{provider_id}",
+                provider_id=provider_id,
+                display_name=f"Configured {provider_id}",
+                auth_state="CONFIGURED",
+                connection_state="AVAILABLE",
+                credential_reference="local-encrypted-broker-auth",
+                authorized_capabilities=capabilities,
+                entitlement_state="UNKNOWN",
+                health="UNKNOWN",
+                limitations=("Health and data entitlement are provider-specific and must be validated by the adapter.",),
+            ))
+        except ValueError:
+            logger.warning("[ProviderFabric] Stored provider is not registered: %s", provider_id)
+    return fabric
+
+
+def resolve_provider(capability: str) -> dict:
+    """Resolve a capability into a safe, serializable policy result."""
+    try:
+        requested = Capability(str(capability).upper())
+    except ValueError:
+        return {"capability": capability, "selected_provider": None, "reason": "UNKNOWN_CAPABILITY"}
+    return get_provider_fabric().resolve(requested).__dict__
 
 
 # ── Auth helpers ───────────────────────────────────────────────────────────────
@@ -322,6 +363,11 @@ def get_status() -> dict:
         "credentials_set_at": creds.get("set_at") if creds else None,
         "holdings_count": holdings_count,
         "last_synced":    last_synced,
+        "provider_fabric": {
+            "mode": "BROKER_CONNECTED" if creds else "NO_BROKER",
+            "providers": [manifest.provider_id for manifest in get_provider_fabric().manifests()],
+            "portfolio_import_available": True,
+        },
     }
 
 
