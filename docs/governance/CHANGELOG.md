@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-08-21 - VEDA-MARKET-CROSS-LAYER-INTELLIGENCE-001
+
+Established the bounded `cross-layer-1.0` Market composition over the existing
+Market, institutional-flow-1.1, sector-rotation-1.1 and stock-intelligence-1.1
+contracts. Alignment, conflicts, dates, freshness, evidence quality and
+institutional scope remain explicit. VEDA now exposes the formal read-only
+capability and bounded natural routing. No prediction, ML, EMP, RAG, Jyotish,
+portfolio or Market-data ownership change occurred.
+
 ## 2026-08-21 - VEDA-MARKET-STOCK-INTELLIGENCE-HARDENING-001
 
 Completed the governed stock-intelligence hardening activity with operational

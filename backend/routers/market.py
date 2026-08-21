@@ -6,9 +6,10 @@ GET /api/market/freshness — data load timestamps for all datasets
 
 import math
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 
 from backend.services import data_loader
+from backend.services.cross_layer_intelligence import build_cross_layer_intelligence
 
 router = APIRouter(prefix="/api/market", tags=["market"])
 
@@ -155,3 +156,24 @@ def get_freshness():
         **data_loader.freshness(),
         "metadata": data_loader.freshness_metadata(),
     }
+
+
+@router.get("/intelligence/cross-layer")
+def get_cross_layer_intelligence(
+    mode: str = Query("MARKET_OVERVIEW", max_length=32),
+    symbol: str | None = Query(None, max_length=32),
+    sector: str | None = Query(None, max_length=64),
+    top_sectors: int = Query(5, ge=1, le=10),
+    stocks_per_sector: int = Query(3, ge=1, le=5),
+):
+    """Bounded Market-domain composition over hardened provider contracts."""
+    try:
+        return build_cross_layer_intelligence(
+            mode=mode,
+            symbol=symbol,
+            sector=sector,
+            top_sectors=top_sectors,
+            stocks_per_sector=stocks_per_sector,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc

@@ -1,5 +1,12 @@
 # VEDA Roadmap Entry Point
 
+## 2026-08-21 — Cross-layer Market intelligence
+
+`VEDA-MARKET-CROSS-LAYER-INTELLIGENCE-001` is implemented and operational
+with conditions. The FII-DII provider composes existing Market, institutional,
+sector and stock contracts; VEDA exposes routing and the formal capability.
+Evidence is in `docs/current-state/veda-market-cross-layer-intelligence-001/`.
+
 ## 2026-08-21 — Stock intelligence hardening
 
 `VEDA-MARKET-STOCK-INTELLIGENCE-HARDENING-001` is implemented and operational

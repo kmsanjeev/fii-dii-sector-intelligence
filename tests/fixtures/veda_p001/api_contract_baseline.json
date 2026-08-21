@@ -2,8 +2,8 @@
   "meta": {
     "baseline_id": "VEDA-P001-M003",
     "generated_on": "2026-08-10",
-    "openapi_path_count": 146,
-    "operation_count": 159
+    "openapi_path_count": 147,
+    "operation_count": 160
   },
   "critical_endpoints": [
     {
@@ -2395,6 +2395,33 @@
       "query_params": [],
       "response_codes": [
         "200"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/market/intelligence/cross-layer",
+      "owner": "market",
+      "operation_id": "get_cross_layer_intelligence_api_market_intelligence_cross_layer_get",
+      "tags": [
+        "market"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "mode",
+        "sector",
+        "stocks_per_sector",
+        "symbol",
+        "top_sectors"
+      ],
+      "response_codes": [
+        "200",
+        "422"
       ],
       "response_content_types": [
         "application/json"

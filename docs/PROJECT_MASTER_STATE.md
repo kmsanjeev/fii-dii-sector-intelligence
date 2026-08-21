@@ -2,6 +2,18 @@
 # MASTER PROJECT STATE
 # Version 4.84.0 | 2026-08-20
 
+## Current VEDA cross-layer Market intelligence (2026-08-21)
+
+`VEDA-MARKET-CROSS-LAYER-INTELLIGENCE-001` is operational with conditions.
+The FII-DII provider composes Market, `institutional-flow-1.1`,
+`sector-rotation-1.1` and `stock-intelligence-1.1` through the bounded
+`cross-layer-1.0` endpoint. VEDA exposes the formal read-only capability and
+routes bounded natural-language Market queries; it does not calculate or own
+Market data. Alignment, conflicts, dates, freshness, evidence quality and
+institutional scope remain explicit. No prediction, ML, EMP, RAG, Jyotish,
+portfolio or identity state changed. Evidence is in
+`docs/current-state/veda-market-cross-layer-intelligence-001/`.
+
 ## Current VEDA stock intelligence hardening (2026-08-21)
 
 `VEDA-MARKET-STOCK-INTELLIGENCE-HARDENING-001` is implemented and operational
