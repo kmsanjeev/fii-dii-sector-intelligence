@@ -974,3 +974,17 @@ canonical preparation command is `py -3.11
 scripts/build_governed_theme_snapshot.py --write-cache`. Theme semantics and
 all current-membership survivorship limitations are unchanged. Evidence is in
 `docs/current-state/veda-market-theme-cold-start-performance-rx1-001/`.
+
+## VEDA-MARKET-PORTFOLIO-INTELLIGENCE-REBASELINE-001 — 2026-08-21
+
+The existing Phase-20 Portfolio engine is now projected through the governed
+read-only `/api/portfolio/governed` contract and consumed by VEDA's
+authenticated `market.portfolio.intelligence` capability. Position valuation,
+sector exposure, many-to-many Theme overlap, provider evidence, freshness and
+limitations are explicit. Existing risk artifacts are reused; an empty local
+portfolio reports unavailable risk rather than fabricated zeros. Theme history
+is deferred, F&O freshness remains source-conditioned through 2026-08-19,
+intraday remains unready, and formal multi-user portfolio persistence remains a
+future dependency. No trade execution, broker mutation, ML, prediction, RAG,
+EMP, Jyotish, Theme-history or BEBOS state changed. Evidence is in
+`docs/current-state/veda-market-portfolio-intelligence-rebaseline-001/`.

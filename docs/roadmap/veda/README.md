@@ -289,3 +289,5 @@ parallel runner or test weakening was introduced. Evidence is in
 Do not use
 the historical P000/P013 roadmap files or the
 governance-audit P027 pathway to infer current scope.
+
+Current synchronization (2026-08-21): `VEDA-MARKET-PORTFOLIO-INTELLIGENCE-REBASELINE-001` is operational with conditions. The existing FII-DII Phase-20 Portfolio engine is reused through a read-only `portfolio-intelligence-1.0` provider contract; VEDA exposes `market.portfolio.intelligence` with authentication and the `portfolio` entitlement. Current many-to-many Theme exposure is consumed with explicit overlap semantics; Theme membership history remains deferred. Equity/stock-history freshness reaches 2026-08-20 and audited F&O freshness reaches 2026-08-19. No trading, broker mutation, ML, prediction, RAG, EMP, Jyotish, intraday or BEBOS surface changed. Evidence is recorded in the FII and VEDA `veda-market-portfolio-intelligence-rebaseline-001` current-state directories. The preferred next activity is `VEDA-MARKET-FNO-INTELLIGENCE-HARDENING-001`, not started by this record.

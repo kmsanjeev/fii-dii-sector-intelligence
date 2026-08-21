@@ -5,7 +5,6 @@ from pathlib import Path
 
 from scripts.generate_p001_api_baseline import build_api_contract_payload
 
-
 FIXTURE_PATH = Path(__file__).resolve().parent / "fixtures" / "veda_p001" / "api_contract_baseline.json"
 
 
@@ -20,8 +19,8 @@ def test_api_contract_baseline_snapshot():
 
 def test_api_contract_baseline_matches_current_canonical_endpoint_count():
     payload = _load_fixture()
-    assert payload["meta"]["openapi_path_count"] == 152
-    assert payload["meta"]["operation_count"] == 165
+    assert payload["meta"]["openapi_path_count"] == 153
+    assert payload["meta"]["operation_count"] == 166
 
 
 def test_api_contract_critical_endpoints_are_present():

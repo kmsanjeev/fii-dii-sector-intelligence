@@ -12,13 +12,16 @@ POST   /api/portfolio/import            -- Phase PF-1: bulk-import transactions 
 """
 
 import io
-from typing import Optional
+from typing import Annotated
 
 import pandas as pd
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
+from backend.services.governed_portfolio_intelligence import (
+    build_governed_portfolio_intelligence,
+)
 from engines.portfolio.portfolio_engine import (
     add_transaction,
     compute_analytics,
@@ -44,8 +47,8 @@ class TransactionRequest(BaseModel):
     symbol: str
     qty:    float = Field(gt=0)
     price:  float = Field(gt=0)
-    date:   Optional[str] = None
-    notes:  Optional[str] = ""
+    date:   str | None = None
+    notes:  str | None = ""
 
 
 class ActionResponse(BaseModel):
@@ -64,6 +67,17 @@ def get_portfolio():
         if not intel.empty else []
     )
     return {"analytics": analytics, "positions": positions}
+
+
+@router.get("/governed")
+def get_governed_portfolio():
+    """Read-only Portfolio Intelligence 1.0 provider contract.
+
+    The existing mutation endpoints remain local Phase-20 functionality.  This
+    endpoint composes their factual positions with the governed Market stack;
+    it never places orders, changes broker state, or emits BUY/SELL advice.
+    """
+    return build_governed_portfolio_intelligence()
 
 
 @router.post("/buy", response_model=ActionResponse)
@@ -117,7 +131,7 @@ def download_import_template():
 
 
 @router.post("/import")
-async def import_csv(file: UploadFile = File(...)):
+async def import_csv(file: Annotated[UploadFile, File(...)]):
     if not (file.filename or "").lower().endswith(".csv"):
         raise HTTPException(status_code=400, detail="Please upload a .csv file")
     raw = await file.read()
@@ -125,7 +139,7 @@ async def import_csv(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Uploaded file is empty")
     try:
         df = pd.read_csv(io.BytesIO(raw), dtype=str)
-    except Exception as e:
+    except (OSError, ValueError, pd.errors.ParserError) as e:
         raise HTTPException(status_code=400, detail=f"Could not parse CSV: {e}")
     if df.empty:
         raise HTTPException(status_code=400, detail="CSV has no data rows")

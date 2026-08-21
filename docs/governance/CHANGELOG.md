@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-21 - VEDA-MARKET-PORTFOLIO-INTELLIGENCE-REBASELINE-001
+
+Added the governed read-only Portfolio intelligence projection and API
+contract at `/api/portfolio/governed`, reusing the existing Portfolio engine.
+Registered the authenticated VEDA capability `market.portfolio.intelligence`
+with `portfolio` entitlement and READ-only actions. Theme-history, intraday,
+F&O freshness, local persistence and risk limitations remain explicit; no
+trading, broker mutation, ML, prediction, RAG, EMP, Jyotish or BEBOS behavior
+changed.
+
 ## 2026-08-21 - VEDA-MARKET-CORPORATE-INTELLIGENCE-FRESHNESS-AND-LIFECYCLE-RX1-001
 
 Repaired provider-local Corporate event-calendar freshness acquisition using

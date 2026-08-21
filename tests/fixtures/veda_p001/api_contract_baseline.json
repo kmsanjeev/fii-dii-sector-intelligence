@@ -2,8 +2,8 @@
   "meta": {
     "baseline_id": "VEDA-P001-M003",
     "generated_on": "2026-08-10",
-    "openapi_path_count": 152,
-    "operation_count": 165
+    "openapi_path_count": 153,
+    "operation_count": 166
   },
   "critical_endpoints": [
     {
@@ -2722,6 +2722,26 @@
       "response_codes": [
         "200",
         "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/portfolio/governed",
+      "owner": "portfolio",
+      "operation_id": "get_governed_portfolio_api_portfolio_governed_get",
+      "tags": [
+        "portfolio"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
       ],
       "response_content_types": [
         "application/json"
