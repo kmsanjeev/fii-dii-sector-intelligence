@@ -1,7 +1,7 @@
 # Validation
 
 - FII focused suite: 19 passed.
-- VEDA focused Market/provider suite: 44 passed.
+- VEDA focused Market/provider suite: 45 passed.
 - FII full repository suite: 1,364 passed, 1 existing deprecation warning, in
   566.63 seconds. Existing research-heavy tests regenerated live RAG
   artifacts; those generated files are outside this release.
