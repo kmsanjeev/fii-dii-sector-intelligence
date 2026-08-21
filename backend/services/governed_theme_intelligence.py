@@ -9,6 +9,7 @@ benchmark.  Missing prices remain missing and are excluded from denominators.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import threading
@@ -27,14 +28,25 @@ CLASSIFICATION_PATH = cfg.REFERENCE_DIR / "company_classification_v4.csv"
 TAGGING_PATH = cfg.REFERENCE_DIR / "theme_tagging.csv"
 FUNDAMENTALS_PATH = cfg.EQUITY_MASTER_DIR / "company_fundamentals_master.csv"
 PRICE_CACHE_DIR = cfg.STOCK_HISTORY_CACHE
+RUNTIME_CACHE_DIR = cfg.CACHE_DIR / "theme_intelligence"
+MEMBERSHIP_SNAPSHOT_PATH = RUNTIME_CACHE_DIR / "membership_snapshot.json"
+PRICE_PROJECTION_PATH = RUNTIME_CACHE_DIR / "price_projection.json"
+PRICE_MANIFEST_PATH = PRICE_CACHE_DIR / "manifest.json"
 WINDOWS = ("1D", "3D", "5D", "10D", "20D")
 ACTIVE_SOURCES = frozenset({"classification_v4", "cross_theme"})
+MEMBERSHIP_ARTIFACT_SCHEMA = "theme-membership-snapshot-1.0"
+PRICE_ARTIFACT_SCHEMA = "theme-price-projection-1.0"
 
 _lock = threading.RLock()
+_price_build_lock = threading.Lock()
 _cache_key: tuple[int, int, int, int] | None = None
 _registry: dict[str, Any] | None = None
 _memberships: pd.DataFrame | None = None
+_membership_fingerprint: str | None = None
 _price_cache: dict[str, dict[str, float | str | None]] = {}
+_price_projection_key: tuple[str, tuple[int, int] | None] | None = None
+_source_fingerprint_key: tuple[int, int, int, int] | None = None
+_source_fingerprint_value: str | None = None
 
 
 def _safe(value: Any) -> Any:
@@ -57,6 +69,50 @@ def _file_signature(path: Path) -> int:
         return 0
 
 
+def _file_state(path: Path) -> tuple[int, int] | None:
+    try:
+        stat = path.stat()
+        return int(stat.st_mtime_ns), int(stat.st_size)
+    except OSError:
+        return None
+
+
+def _canonical_hash(payload: Any) -> str:
+    encoded = json.dumps(
+        payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _source_fingerprint() -> str:
+    """Return a content fingerprint, hashing source files only when changed."""
+    global _source_fingerprint_key, _source_fingerprint_value
+    paths = (REGISTRY_PATH, CLASSIFICATION_PATH, TAGGING_PATH, FUNDAMENTALS_PATH)
+    key = tuple(_file_signature(path) for path in paths)
+    if _source_fingerprint_value is not None and _source_fingerprint_key == key:
+        return _source_fingerprint_value
+    digest = hashlib.sha256()
+    for path in paths:
+        digest.update(str(path.name).encode("utf-8"))
+        try:
+            digest.update(path.read_bytes())
+        except OSError:
+            digest.update(b"<missing>")
+    _source_fingerprint_key = key
+    _source_fingerprint_value = digest.hexdigest()
+    return _source_fingerprint_value
+
+
+def _write_json_atomic(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
 def _load_registry() -> dict[str, Any]:
     with REGISTRY_PATH.open(encoding="utf-8") as handle:
         payload = json.load(handle)
@@ -71,8 +127,162 @@ def _load_registry() -> dict[str, Any]:
     return payload
 
 
+def _build_memberships(registry: dict[str, Any]) -> pd.DataFrame:
+    code_to_id = {item["code"]: item["theme_id"] for item in registry["themes"]}
+    tagging = pd.read_csv(TAGGING_PATH, dtype=str).fillna("")
+    fundamentals = (
+        pd.read_csv(FUNDAMENTALS_PATH, dtype=str).fillna("")
+        if FUNDAMENTALS_PATH.exists()
+        else pd.DataFrame()
+    )
+    isin_by_symbol = {}
+    if not fundamentals.empty and {"symbol", "isin"}.issubset(fundamentals.columns):
+        isin_by_symbol = {
+            symbol: (
+                None
+                if not str(isin).strip() or str(isin).lower() == "nan"
+                else str(isin).strip()
+            )
+            for symbol, isin in zip(
+                fundamentals["symbol"].str.upper(), fundamentals["isin"]
+            )
+        }
+    rows: list[dict[str, Any]] = []
+    for _, row in tagging.iterrows():
+        code = str(row.get("THEME", "")).strip().upper()
+        source = str(row.get("SOURCE", "")).strip().lower()
+        symbol = str(row.get("SYMBOL", "")).strip().upper()
+        if code not in code_to_id or not symbol or source not in ACTIVE_SOURCES:
+            continue
+        primary = (
+            str(row.get("IS_PRIMARY", "")).lower() == "true"
+            or source == "classification_v4"
+        )
+        try:
+            purity = float(row.get("PURITY_SCORE", ""))
+        except (TypeError, ValueError):
+            purity = None
+        exposure = (
+            "CORE"
+            if primary
+            else "MATERIAL"
+            if purity is not None and purity >= 0.70
+            else "SECONDARY"
+        )
+        quality = "HIGH" if source == "classification_v4" else "MEDIUM"
+        rows.append(
+            {
+                "symbol": symbol,
+                "isin": isin_by_symbol.get(symbol),
+                "theme_id": code_to_id[code],
+                "theme_code": code,
+                "relationship_type": "PRIMARY" if primary else "CROSS_THEME",
+                "exposure": exposure,
+                "evidence": [
+                    {
+                        "source": "data/reference/company_classification_v4.csv"
+                        if source == "classification_v4"
+                        else "data/reference/theme_tagging.csv",
+                        "method": source,
+                    }
+                ],
+                "method": "DETERMINISTIC_CLASSIFICATION"
+                if source == "classification_v4"
+                else "DETERMINISTIC_CROSS_THEME",
+                "confidence": round(float(purity if purity is not None else 1.0), 2),
+                "quality": quality,
+                "effective_from": "2026-06-30",
+                "effective_to": None,
+                "last_verified": "2026-06-30",
+                "source": source,
+                "limitations": [
+                    "Current-universe membership; historical membership snapshots unavailable."
+                ],
+                "status": "ACTIVE",
+            }
+        )
+    return pd.DataFrame(rows).drop_duplicates(subset=["symbol", "theme_id", "source"])
+
+
+def _membership_records(frame: pd.DataFrame) -> list[dict[str, Any]]:
+    if frame.empty:
+        return []
+    columns = [
+        "symbol",
+        "isin",
+        "theme_id",
+        "theme_code",
+        "relationship_type",
+        "exposure",
+        "evidence",
+        "method",
+        "confidence",
+        "quality",
+        "effective_from",
+        "effective_to",
+        "last_verified",
+        "source",
+        "limitations",
+        "status",
+    ]
+    available = [column for column in columns if column in frame.columns]
+    view = frame[available].sort_values(
+        ["theme_id", "symbol", "relationship_type", "source"]
+    )
+    return [
+        {key: _safe(value) for key, value in record.items()}
+        for record in view.to_dict(orient="records")
+    ]
+
+
+def _load_membership_snapshot(
+    registry: dict[str, Any], source_fingerprint: str
+) -> pd.DataFrame | None:
+    try:
+        payload = json.loads(MEMBERSHIP_SNAPSHOT_PATH.read_text(encoding="utf-8"))
+        if payload.get("schema_version") != MEMBERSHIP_ARTIFACT_SCHEMA:
+            return None
+        if payload.get("source_fingerprint") != source_fingerprint:
+            return None
+        artifact_hash = payload.get("artifact_hash")
+        body = {key: value for key, value in payload.items() if key != "artifact_hash"}
+        if artifact_hash != _canonical_hash(body):
+            return None
+        records = payload.get("memberships")
+        if not isinstance(records, list):
+            return None
+        frame = pd.DataFrame(records)
+        if frame.empty or payload.get("row_count") != len(frame):
+            return None
+        valid_ids = {item["theme_id"] for item in registry["themes"]}
+        required = {"symbol", "theme_id", "source", "status"}
+        if not required.issubset(frame.columns):
+            return None
+        if not set(frame["theme_id"]).issubset(valid_ids):
+            return None
+        if not set(frame["source"]).issubset(ACTIVE_SOURCES):
+            return None
+        if set(frame["status"]) != {"ACTIVE"}:
+            return None
+        return frame
+    except (OSError, TypeError, ValueError, json.JSONDecodeError):
+        return None
+
+
+def _write_membership_snapshot(frame: pd.DataFrame, source_fingerprint: str) -> None:
+    body: dict[str, Any] = {
+        "schema_version": MEMBERSHIP_ARTIFACT_SCHEMA,
+        "source_fingerprint": source_fingerprint,
+        "row_count": len(frame),
+        "memberships": _membership_records(frame),
+    }
+    _write_json_atomic(
+        MEMBERSHIP_SNAPSHOT_PATH, {**body, "artifact_hash": _canonical_hash(body)}
+    )
+
+
 def _ensure_loaded() -> tuple[dict[str, Any], pd.DataFrame]:
-    global _cache_key, _registry, _memberships
+    global _cache_key, _registry, _memberships, _membership_fingerprint
     key = tuple(
         _file_signature(path)
         for path in (
@@ -86,86 +296,16 @@ def _ensure_loaded() -> tuple[dict[str, Any], pd.DataFrame]:
         if _registry is not None and _memberships is not None and _cache_key == key:
             return _registry, _memberships
         registry = _load_registry()
-        code_to_id = {item["code"]: item["theme_id"] for item in registry["themes"]}
-        tagging = pd.read_csv(TAGGING_PATH, dtype=str).fillna("")
-        fundamentals = (
-            pd.read_csv(FUNDAMENTALS_PATH, dtype=str).fillna("")
-            if FUNDAMENTALS_PATH.exists()
-            else pd.DataFrame()
-        )
-        isin_by_symbol = {}
-        if not fundamentals.empty and {"symbol", "isin"}.issubset(fundamentals.columns):
-            isin_by_symbol = {
-                symbol: (
-                    None
-                    if not str(isin).strip() or str(isin).lower() == "nan"
-                    else str(isin).strip()
-                )
-                for symbol, isin in zip(
-                    fundamentals["symbol"].str.upper(), fundamentals["isin"]
-                )
-            }
-        rows: list[dict[str, Any]] = []
-        for _, row in tagging.iterrows():
-            code = str(row.get("THEME", "")).strip().upper()
-            source = str(row.get("SOURCE", "")).strip().lower()
-            symbol = str(row.get("SYMBOL", "")).strip().upper()
-            if code not in code_to_id or not symbol or source not in ACTIVE_SOURCES:
-                continue
-            primary = (
-                str(row.get("IS_PRIMARY", "")).lower() == "true"
-                or source == "classification_v4"
-            )
-            try:
-                purity = float(row.get("PURITY_SCORE", ""))
-            except (TypeError, ValueError):
-                purity = None
-            exposure = (
-                "CORE"
-                if primary
-                else "MATERIAL"
-                if purity is not None and purity >= 0.70
-                else "SECONDARY"
-            )
-            quality = "HIGH" if source == "classification_v4" else "MEDIUM"
-            rows.append(
-                {
-                    "symbol": symbol,
-                    "isin": isin_by_symbol.get(symbol),
-                    "theme_id": code_to_id[code],
-                    "theme_code": code,
-                    "relationship_type": "PRIMARY" if primary else "CROSS_THEME",
-                    "exposure": exposure,
-                    "evidence": [
-                        {
-                            "source": "data/reference/company_classification_v4.csv"
-                            if source == "classification_v4"
-                            else "data/reference/theme_tagging.csv",
-                            "method": source,
-                        }
-                    ],
-                    "method": "DETERMINISTIC_CLASSIFICATION"
-                    if source == "classification_v4"
-                    else "DETERMINISTIC_CROSS_THEME",
-                    "confidence": round(
-                        float(purity if purity is not None else 1.0), 2
-                    ),
-                    "quality": quality,
-                    "effective_from": "2026-06-30",
-                    "effective_to": None,
-                    "last_verified": "2026-06-30",
-                    "source": source,
-                    "limitations": [
-                        "Current-universe membership; historical membership snapshots unavailable."
-                    ],
-                    "status": "ACTIVE",
-                }
-            )
-        memberships = pd.DataFrame(rows).drop_duplicates(
-            subset=["symbol", "theme_id", "source"]
-        )
+        source_fingerprint = _source_fingerprint()
+        memberships = _load_membership_snapshot(registry, source_fingerprint)
+        if memberships is None:
+            memberships = _build_memberships(registry)
+            _write_membership_snapshot(memberships, source_fingerprint)
         _registry, _memberships, _cache_key = registry, memberships, key
+        _membership_fingerprint = _canonical_hash(_membership_records(memberships))
         _price_cache.clear()
+        global _price_projection_key
+        _price_projection_key = None
         return registry, memberships
 
 
@@ -229,24 +369,111 @@ def _stock_returns(symbol: str) -> dict[str, float | str | None]:
     return result
 
 
+def _price_projection_key_for_current_membership() -> tuple[
+    str, tuple[int, int] | None
+]:
+    return (
+        _membership_fingerprint or "",
+        _file_state(PRICE_MANIFEST_PATH),
+    )
+
+
+def _load_price_projection(
+    symbols: list[str], key: tuple[str, tuple[int, int] | None]
+) -> bool:
+    try:
+        payload = json.loads(PRICE_PROJECTION_PATH.read_text(encoding="utf-8"))
+        if payload.get("schema_version") != PRICE_ARTIFACT_SCHEMA:
+            return False
+        if payload.get("membership_fingerprint") != key[0]:
+            return False
+        if tuple(payload.get("manifest_state") or ()) != key[1]:
+            return False
+        artifact_hash = payload.get("artifact_hash")
+        body = {
+            name: value for name, value in payload.items() if name != "artifact_hash"
+        }
+        if artifact_hash != _canonical_hash(body):
+            return False
+        prices = payload.get("prices")
+        if not isinstance(prices, dict) or not set(symbols).issubset(prices):
+            return False
+        with _lock:
+            _price_cache.update(
+                {
+                    symbol: value
+                    for symbol, value in prices.items()
+                    if isinstance(value, dict)
+                }
+            )
+            global _price_projection_key
+            _price_projection_key = key
+        return True
+    except (OSError, TypeError, ValueError, json.JSONDecodeError):
+        return False
+
+
+def _write_price_projection(
+    prices: dict[str, dict[str, float | str | None]],
+    key: tuple[str, tuple[int, int] | None],
+) -> None:
+    body: dict[str, Any] = {
+        "schema_version": PRICE_ARTIFACT_SCHEMA,
+        "membership_fingerprint": key[0],
+        "manifest_state": list(key[1]) if key[1] is not None else None,
+        "symbol_count": len(prices),
+        "prices": {
+            symbol: {name: _safe(value) for name, value in prices[symbol].items()}
+            for symbol in sorted(prices)
+        },
+        "limitations": [
+            "Derived projection only; stock-history manifest is the price freshness authority.",
+            "Static membership and dynamic price projection are invalidated independently.",
+        ],
+    }
+    _write_json_atomic(
+        PRICE_PROJECTION_PATH, {**body, "artifact_hash": _canonical_hash(body)}
+    )
+
+
 def _returns_for_symbols(
     symbols: list[str],
 ) -> dict[str, dict[str, float | str | None]]:
     """Load bounded local price histories concurrently, preserving symbol order."""
     if not symbols:
         return {}
-    with _lock:
-        cached = {
-            symbol: _price_cache[symbol] for symbol in symbols if symbol in _price_cache
-        }
-    missing = [symbol for symbol in symbols if symbol not in cached]
-    if missing:
-        workers = min(16, len(missing))
-        with ThreadPoolExecutor(
-            max_workers=workers, thread_name_prefix="theme-price"
-        ) as executor:
-            loaded = executor.map(_stock_returns, missing)
-            cached.update(zip(missing, loaded, strict=True))
+    key = _price_projection_key_for_current_membership()
+    with _price_build_lock:
+        global _price_projection_key
+        if _price_projection_key != key:
+            with _lock:
+                _price_cache.clear()
+            _price_projection_key = key
+        with _lock:
+            cached = {
+                symbol: _price_cache[symbol]
+                for symbol in symbols
+                if symbol in _price_cache
+            }
+        missing = [symbol for symbol in symbols if symbol not in cached]
+        if missing and not cached:
+            _load_price_projection(symbols, key)
+            with _lock:
+                cached = {
+                    symbol: _price_cache[symbol]
+                    for symbol in symbols
+                    if symbol in _price_cache
+                }
+            missing = [symbol for symbol in symbols if symbol not in cached]
+        if missing:
+            workers = min(16, len(missing))
+            with ThreadPoolExecutor(
+                max_workers=workers, thread_name_prefix="theme-price"
+            ) as executor:
+                loaded = executor.map(_stock_returns, missing)
+                cached.update(zip(missing, loaded, strict=True))
+            with _lock:
+                _write_price_projection(dict(_price_cache), key)
     return {symbol: cached[symbol] for symbol in symbols}
 
 
@@ -465,6 +692,26 @@ def summary() -> dict[str, Any]:
     }
 
 
+def build_runtime_cache(*, include_prices: bool = True) -> dict[str, Any]:
+    """Build validated local runtime artifacts outside the request path."""
+    _, memberships = _ensure_loaded()
+    symbols = (
+        sorted(set(memberships["symbol"].tolist())) if not memberships.empty else []
+    )
+    if include_prices:
+        _returns_for_symbols(symbols)
+    return {
+        "membership_snapshot": str(MEMBERSHIP_SNAPSHOT_PATH),
+        "membership_rows": len(memberships),
+        "price_projection": str(PRICE_PROJECTION_PATH),
+        "price_symbols": len(symbols) if include_prices else 0,
+        "price_manifest_state": list(_file_state(PRICE_MANIFEST_PATH) or ()),
+        "source_fingerprint": _source_fingerprint(),
+    }
+
+
 def reset_cache() -> None:
+    global _price_projection_key
     with _lock:
         _price_cache.clear()
+        _price_projection_key = None

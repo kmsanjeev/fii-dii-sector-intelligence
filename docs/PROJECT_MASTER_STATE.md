@@ -964,3 +964,13 @@ FII/DII attribution is not claimed, and persistence remains
 `INSUFFICIENT_HISTORY` until governed multi-date Theme history exists. No
 Corporate, Fundamentals, prediction, ML, RAG or EMP state changed. Evidence is
 in `docs/current-state/veda-market-theme-intelligence-001/`.
+
+`VEDA-MARKET-THEME-COLD-START-PERFORMANCE-RX1-001` is operational with
+conditions. The request path now loads validated local membership and bounded
+price-projection artifacts instead of reading 2,106 full Parquet histories on
+the first Theme request. Source fingerprints, artifact hashes, and the stock
+history manifest preserve membership invalidation and price freshness. The
+canonical preparation command is `py -3.11
+scripts/build_governed_theme_snapshot.py --write-cache`. Theme semantics and
+all current-membership survivorship limitations are unchanged. Evidence is in
+`docs/current-state/veda-market-theme-cold-start-performance-rx1-001/`.

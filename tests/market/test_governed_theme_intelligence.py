@@ -47,3 +47,50 @@ def test_stock_memberships_are_current_read_only_records() -> None:
     assert all(item["symbol"] == "AARTIIND" for item in memberships)
     assert any(item["relationship_type"] == "PRIMARY" for item in memberships)
     assert any(item["relationship_type"] == "CROSS_THEME" for item in memberships)
+
+
+def test_valid_runtime_artifacts_load_without_rebuilding_or_reading_prices(
+    monkeypatch,
+) -> None:
+    service.build_runtime_cache()
+    service.reset_cache()
+
+    def unexpected_membership_build(_registry):
+        raise AssertionError("valid membership snapshot was rebuilt")
+
+    def unexpected_price_read(*_args, **_kwargs):
+        raise AssertionError("valid price projection performed a Parquet read")
+
+    monkeypatch.setattr(service, "_build_memberships", unexpected_membership_build)
+    monkeypatch.setattr(service.pd, "read_parquet", unexpected_price_read)
+    payload = service.summary()
+    assert payload["count"] == 15
+
+
+def test_price_manifest_change_invalidates_projection(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(
+        service, "PRICE_PROJECTION_PATH", tmp_path / "price_projection.json"
+    )
+    service.build_runtime_cache()
+    service.reset_cache()
+    original_state = service._file_state
+    changed_state = service.PRICE_MANIFEST_PATH.stat()
+
+    def changed_file_state(path):
+        state = original_state(path)
+        if path == service.PRICE_MANIFEST_PATH and state is not None:
+            return (state[0] + 1, state[1])
+        return state
+
+    calls = []
+
+    def bounded_fake_price(symbol):
+        calls.append(symbol)
+        return {window: 0.0 for window in service.WINDOWS} | {"as_of": "2026-08-20"}
+
+    monkeypatch.setattr(service, "_file_state", changed_file_state)
+    monkeypatch.setattr(service, "_stock_returns", bounded_fake_price)
+    service.intelligence("theme.psu-revival")
+    assert calls
+    assert changed_state.st_size == service.PRICE_MANIFEST_PATH.stat().st_size
+    service.reset_cache()
