@@ -204,6 +204,10 @@ cython_debug/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
 
+# Governed Intraday store and provider-local acquisition state; never commit
+# authenticated/raw market data or local manifests.
+/data/intraday/
+
 # Ruff stuff:
 .ruff_cache/
 

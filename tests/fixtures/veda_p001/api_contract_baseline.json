@@ -2,8 +2,8 @@
   "meta": {
     "baseline_id": "VEDA-P001-M003",
     "generated_on": "2026-08-10",
-    "openapi_path_count": 158,
-    "operation_count": 171
+    "openapi_path_count": 162,
+    "operation_count": 175
   },
   "critical_endpoints": [
     {
@@ -2271,6 +2271,101 @@
       "response_codes": [
         "200",
         "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/intraday/candles",
+      "owner": "intraday-market-data",
+      "operation_id": "get_intraday_candles_api_intraday_candles_get",
+      "tags": [
+        "intraday-market-data"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [
+        "from",
+        "interval",
+        "limit",
+        "symbol",
+        "to"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/intraday/options/{underlying}",
+      "owner": "intraday-market-data",
+      "operation_id": "get_intraday_options_api_intraday_options__underlying__get",
+      "tags": [
+        "intraday-market-data"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "underlying"
+      ],
+      "query_params": [
+        "expiry"
+      ],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/intraday/quote/{symbol}",
+      "owner": "intraday-market-data",
+      "operation_id": "get_intraday_quote_api_intraday_quote__symbol__get",
+      "tags": [
+        "intraday-market-data"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [
+        "symbol"
+      ],
+      "query_params": [],
+      "response_codes": [
+        "200",
+        "422"
+      ],
+      "response_content_types": [
+        "application/json"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/intraday/status",
+      "owner": "intraday-market-data",
+      "operation_id": "get_intraday_status_api_intraday_status_get",
+      "tags": [
+        "intraday-market-data"
+      ],
+      "auth_requirement": "AUTH_MIDDLEWARE",
+      "request_body_required": false,
+      "request_body_content_types": [],
+      "path_params": [],
+      "query_params": [],
+      "response_codes": [
+        "200"
       ],
       "response_content_types": [
         "application/json"

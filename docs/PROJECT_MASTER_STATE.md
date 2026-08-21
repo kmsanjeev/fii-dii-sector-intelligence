@@ -1,6 +1,20 @@
 # FII-DII SECTOR INTELLIGENCE PLATFORM
 # MASTER PROJECT STATE
-# Version 4.85.0 | 2026-08-21
+# Version 4.86.0 | 2026-08-22
+
+## VEDA-MARKET-INTRADAY-DATA-FOUNDATION-001 — 2026-08-22
+
+The governed Intraday data foundation is implemented with conditions. FII-DII
+now owns an exact-identity, session-aware, timestamp-separated normalized
+candle seam, deterministic aggregation, quality checks, ignored partitioned
+Parquet persistence and bounded read routes. Official DhanHQ is the selected
+primary candidate, but the current runtime has no verified access token or
+Data API entitlement, so the final decision is
+`VEDA_MARKET_INTRADAY_DATA_FOUNDATION_BLOCKED`. Existing yfinance charts and
+`/ws/live` intelligence heartbeat remain compatibility-only. No Intraday
+strategy, recommendation, order, ML, prediction, RAG, EMP, Jyotish or BEBOS
+behavior changed. Evidence is in
+`docs/current-state/veda-market-intraday-data-foundation-001/`.
 
 ## VEDA-MARKET-POSITIONAL-AND-SWING-INTELLIGENCE-001 — 2026-08-21
 

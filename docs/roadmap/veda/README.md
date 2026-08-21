@@ -1,5 +1,15 @@
 # VEDA Roadmap Entry Point
 
+## 2026-08-22 — Intraday data foundation
+
+`VEDA-MARKET-INTRADAY-DATA-FOUNDATION-001` is implemented with conditions.
+The FII-DII provider owns a read-only normalized foundation and VEDA exposes
+`market.intraday.data`. The final foundation decision is
+`VEDA_MARKET_INTRADAY_DATA_FOUNDATION_BLOCKED` because the current runtime has
+no verified Dhan Data API access token/entitlement. yfinance and `/ws/live`
+remain compatibility-only paths. The next activity is a bounded provider
+access validation RX, not Intraday Intelligence.
+
 ## 2026-08-21 — Positional and Swing Intelligence
 
 `VEDA-MARKET-POSITIONAL-AND-SWING-INTELLIGENCE-001` is operational with

@@ -32,6 +32,7 @@ from backend.routers import (
     execution,
     fno,
     gochar,
+    intraday,
     governed_themes,
     kundli,
     market,
@@ -123,6 +124,7 @@ app.include_router(themes.router)
 app.include_router(trade_setups.router)
 app.include_router(kundli.router)
 app.include_router(gochar.router)
+app.include_router(intraday.router)
 app.include_router(news.router)
 app.include_router(social_pulse.router)
 app.include_router(risk.router)

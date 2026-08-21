@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## 2026-08-22 - VEDA-MARKET-INTRADAY-DATA-FOUNDATION-001 (blocked by access validation)
+
+- Added the bounded `intraday-market-data-1.0` foundation: exact provider
+  identity, Asia/Kolkata/session semantics, timestamp separation, candle
+  normalization, quality checks, deterministic aggregation and partitioned
+  Parquet persistence.
+- Added the lazy official DhanHQ provider seam and read-only Intraday status,
+  candle, quote and option routes. Current runtime reports
+  `CREDENTIALS_UNAVAILABLE`; no silent yfinance fallback is allowed.
+- Preserved the legacy yfinance chart path, `/ws/live` intelligence heartbeat,
+  broker/account adapter, execution adapter and EOD Swing/Positional semantics.
+- VEDA now exposes only `market.intraday.data` routing/provider access. No
+  strategy, BUY/SELL, prediction, ML, RAG, EMP, order or execution behavior
+  changed.
+- A bounded provider-access validation RX is required before Intraday
+  Intelligence can begin.
+
 ## 2026-08-21 - VEDA-MARKET-POSITIONAL-AND-SWING-INTELLIGENCE-001 (operational with conditions)
 
 - Added the read-only EOD `trade-setup-intelligence-1.0` contract for SWING and
