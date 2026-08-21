@@ -22,7 +22,7 @@
 | RAG/PRED/EMP/ML unchanged | PASS |
 | Raw provider files excluded from staging | PASS — no raw provider files in programme scope |
 | Full repository suites | PASS — FII 1340 passed; VEDA platform suite exit 0 |
-| Remote push/tag | PENDING ACCEPTANCE |
+| Remote push/tag | PASS — FII commit pushed and authorized tag published |
 
 Decision target: `VEDA_MARKET_CORPORATE_INTELLIGENCE_HARDENING_OPERATIONAL_WITH_CONDITIONS`.
 Conditions are source freshness/coverage, row-level retrieval metadata not
